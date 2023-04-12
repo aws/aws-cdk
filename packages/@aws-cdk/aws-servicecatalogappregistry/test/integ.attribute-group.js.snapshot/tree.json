@@ -8,6 +8,31 @@
         "id": "integ-servicecatalogappregistry-attribute-group",
         "path": "integ-servicecatalogappregistry-attribute-group",
         "children": {
+          "TestApplication": {
+            "id": "TestApplication",
+            "path": "integ-servicecatalogappregistry-attribute-group/TestApplication",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestApplication/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "TestApplication",
+                    "description": "My application description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnApplication",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry-alpha.Application",
+              "version": "0.0.0"
+            }
+          },
           "TestAttributeGroup": {
             "id": "TestAttributeGroup",
             "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup",
@@ -35,7 +60,32 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
+                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnAttributeGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "ApplicationAttributeGroupAssociation73d834483ae3": {
+                "id": "ApplicationAttributeGroupAssociation73d834483ae3",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/ApplicationAttributeGroupAssociation73d834483ae3",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "attributeGroup": {
+                      "Fn::GetAtt": [
+                        "TestAttributeGroupB1CB284F",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnAttributeGroupAssociation",
                   "version": "0.0.0"
                 }
               },
@@ -75,13 +125,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ram.CfnResourceShare",
+                  "fqn": "aws-cdk-lib.aws_ram.CfnResourceShare",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry-alpha.AttributeGroup",
               "version": "0.0.0"
             }
           },
@@ -93,7 +143,7 @@
                 "id": "ImportMyRole",
                 "path": "integ-servicecatalogappregistry-attribute-group/MyRole/ImportMyRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -133,13 +183,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -151,7 +201,7 @@
                 "id": "ImportMySecondRole",
                 "path": "integ-servicecatalogappregistry-attribute-group/MySecondRole/ImportMySecondRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -191,13 +241,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -205,7 +255,7 @@
             "id": "BootstrapVersion",
             "path": "integ-servicecatalogappregistry-attribute-group/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -213,13 +263,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-servicecatalogappregistry-attribute-group/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -233,7 +283,7 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

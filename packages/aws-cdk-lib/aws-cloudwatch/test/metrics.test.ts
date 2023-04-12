@@ -288,6 +288,7 @@ describe('Metrics', () => {
     checkParsingSingle('p99',    'p',  'percentile',     99);
     checkParsingSingle('P99',    'p',  'percentile',     99);
     checkParsingSingle('p99.99', 'p',  'percentile',     99.99);
+    checkParsingSingle('p100',   'p',  'percentile',     100);
     checkParsingSingle('tm99',   'tm', 'trimmedMean',    99);
     checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
     checkParsingSingle('tc99',   'tc', 'trimmedCount',   99);
@@ -337,8 +338,8 @@ describe('Metrics', () => {
     expect(parseStatistic('TM(10%:1500)').type).toEqual('generic');
     expect(parseStatistic('TM(10)').type).toEqual('generic');
     expect(parseStatistic('TM()').type).toEqual('generic');
-    expect(parseStatistic('TM(0.:)').type).toEqual('generic');
-    expect(parseStatistic('TM(:0.)').type).toEqual('generic');
+    expect(parseStatistic('TM(0.:)').type).toEqual('pair');
+    expect(parseStatistic('TM(:0.)').type).toEqual('pair');
     expect(parseStatistic('()').type).toEqual('generic');
     expect(parseStatistic('(:)').type).toEqual('generic');
     expect(parseStatistic('TM(:)').type).toEqual('generic');
