@@ -48,7 +48,7 @@ new redshift.Table(stack, 'Table', {
   tableColumns: [
     { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
     { id: 'col2', name: 'col2', dataType: 'float' },
-    { id: 'col3', name: 'col3', dataType: 'float' },
+    { name: 'col3', dataType: 'float' },
   ],
 });
 

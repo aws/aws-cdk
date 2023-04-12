@@ -242,7 +242,6 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
-    this.addColumnIds(props.tableColumns);
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -251,7 +250,7 @@ export class Table extends TableBase {
       this.validateSortStyle(props.sortStyle, props.tableColumns);
     }
 
-    this.tableColumns = props.tableColumns;
+    this.tableColumns = this.configureTableColumns(props.tableColumns);
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
@@ -327,16 +326,25 @@ export class Table extends TableBase {
     return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
 
-  private addColumnIds(columns: Column[]): void {
+  private configureTableColumns(columns: Column[]): Column[] {
+    const newColumns = [...columns];
     const columnIds = new Set<string>();
-    for (const column of columns) {
+    for (let i = 0; i < columns.length; i++) {
+      const column = newColumns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
           throw new Error(`Column id '${column.id}' is not unique.`);
         }
         columnIds.add(column.id);
+      } else {
+        if (columnIds.has(column.name)) {
+          throw new Error(`Column name '${column.name}' is not unique amongst the column ids.`);
+        }
+        newColumns[i] = { ...column, id: column.name };
+        columnIds.add(column.name);
       }
     }
+    return newColumns;
   }
 }
 
