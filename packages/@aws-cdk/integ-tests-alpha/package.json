@@ -87,7 +87,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/integ-tests"
+    "directory": "packages/@aws-cdk/integ-tests-alpha"
   },
   "keywords": [
     "aws",
