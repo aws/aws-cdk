@@ -177,7 +177,7 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('staging', options.staging),
       ...renderBooleanArg('asset-parallelism', options.assetParallelism),
       ...renderBooleanArg('asset-prebuild', options.assetPrebuild),
-      ...renderNumberArg('--concurrency', options.concurrency),
+      ...renderNumberArg('concurrency', options.concurrency),
       ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
       ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
       ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
