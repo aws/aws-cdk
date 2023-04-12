@@ -148,11 +148,10 @@ describe('cluster table', () => {
         { id: 'col1', name: 'col2', dataType: 'float' },
       ];
 
-      expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns: updatedTableColumns,
-        }),
+      expect(() => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: updatedTableColumns,
+      }),
       ).toThrow("Column id 'col1' is not unique.");
     });
 
