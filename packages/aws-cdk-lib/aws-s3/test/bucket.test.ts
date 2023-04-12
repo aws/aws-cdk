@@ -226,7 +226,7 @@ describe('bucket', () => {
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
 
-  testDeprecated('fails if encryption key is used with encryption set to unencrypted', () => {
+  testDeprecated('fails if encryption key is used with encryption set to UNENCRYPTED', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
@@ -236,7 +236,7 @@ describe('bucket', () => {
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
 
-  test('fails if encryption key is used with encryption set to s3 managed', () => {
+  test('fails if encryption key is used with encryption set to S3_MANAGED', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
@@ -365,14 +365,14 @@ describe('bucket', () => {
 
   });
 
-  testDeprecated('logs to self, no encryption does not throw error', () => {
+  testDeprecated('logs to self, UNENCRYPTED does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
     }).not.toThrowError();
   });
 
-  test('logs to self, S3 encryption does not throw error', () => {
+  test('logs to self, S3_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
@@ -409,7 +409,7 @@ describe('bucket', () => {
     }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
-  testDeprecated('logs to separate bucket, no encryption does not throw error', () => {
+  testDeprecated('logs to separate bucket, UNENCRYPTED does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
     expect(() => {
@@ -417,7 +417,7 @@ describe('bucket', () => {
     }).not.toThrowError();
   });
 
-  test('logs to separate bucket, S3 encryption does not throw error', () => {
+  test('logs to separate bucket, S3_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
     expect(() => {
