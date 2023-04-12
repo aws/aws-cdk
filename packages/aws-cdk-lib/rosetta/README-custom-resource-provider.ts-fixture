@@ -1,4 +1,5 @@
-import { CfnOutput, Construct, Token } from 'aws-cdk-lib';
+import { CfnOutput, Token } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 declare interface SumProps {
   readonly lhs: number;

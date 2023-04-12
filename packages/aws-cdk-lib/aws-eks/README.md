@@ -1320,7 +1320,7 @@ cluster.addCdk8sChart('my-chart', myChart);
 #### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
-you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
+you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `aws-cdk-lib` like you normally would.
 This is why we used `new cdk8s.App()` as the scope of the chart above.
 
 ```ts nofixture

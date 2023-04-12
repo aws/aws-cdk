@@ -261,7 +261,7 @@ export interface TagManagerOptions {
  * value that will resolve to the tags at synthesis time.
  *
  * @example
- * import * as cdk from '@aws-cdk/core';
+ * import * as cdk from 'aws-cdk-lib';
  *
  * class MyConstruct extends cdk.Resource implements cdk.ITaggable {
  *   public readonly tags = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Whatever::The::Type');

@@ -684,13 +684,13 @@ exports.handler = async (e) => {
 `sum.ts`:
 
 ```ts nofixture
+import { Construct } from 'constructs';
 import {
-  Construct,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
   Token,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 
 export interface SumProps {
   readonly lhs: number;

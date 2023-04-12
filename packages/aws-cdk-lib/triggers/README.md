@@ -34,9 +34,9 @@ be invoked when the stack is deployed.
 It is also possible to trigger a predefined Lambda function by using the `Trigger` construct:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as triggers from '@aws-cdk/triggers';
-import { Stack } from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as triggers from 'aws-cdk-lib/triggers';
+import { Stack } from 'aws-cdk-lib';
 
 declare const stack: Stack;
 
@@ -53,9 +53,9 @@ new triggers.Trigger(stack, 'MyTrigger', {
 });
 ```
 
-Addition properties can be used to fine-tune the behaviour of the trigger. 
+Addition properties can be used to fine-tune the behaviour of the trigger.
 The `timeout` property can be used to determine how long the invocation of the function should take.
-The `invocationType` property can be used to change the invocation type of the function. 
+The `invocationType` property can be used to change the invocation type of the function.
 This might be useful in scenarios where a fire-and-forget strategy for invoking the function is sufficient.
 
 ## Trigger Failures
