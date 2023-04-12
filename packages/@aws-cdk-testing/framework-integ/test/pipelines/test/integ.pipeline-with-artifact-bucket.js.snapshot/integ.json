@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "ClusterTest/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "assertionStack": "ClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterTestDefaultTestDeployAssert6A1BBA9D"
+    }
+  }
+}
