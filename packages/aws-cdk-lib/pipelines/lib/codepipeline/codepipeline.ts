@@ -426,7 +426,7 @@ export class S3LoggingOptions extends CodeBuildLoggingBase {
    * @param encrypted S3 object encrypted or not
    * @returns CodeBuild S3 logging settings
    */
-  static enable(bucket: IBucket, prefix?: string, encrypted?: boolean): S3LoggingOptions {
+  static enable(bucket: s3.IBucket, prefix?: string, encrypted?: boolean): S3LoggingOptions {
     return new S3LoggingOptions(true, { bucket, prefix, encrypted });
   }
 
@@ -441,7 +441,7 @@ export class S3LoggingOptions extends CodeBuildLoggingBase {
   /**
    * The S3 Bucket to send logs to
    */
-  readonly bucket?: IBucket;
+  readonly bucket?: s3.IBucket;
 
   /**
    * Encrypt the S3 build log output
