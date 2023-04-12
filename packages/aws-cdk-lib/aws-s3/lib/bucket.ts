@@ -1344,7 +1344,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Unencrypted` otherwise.
+   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -2422,7 +2422,10 @@ export class Bucket extends BucketBase {
  */
 export enum BucketEncryption {
   /**
-   * Objects in the bucket are not encrypted.
+   * Previous option. Buckets can not be unencrypted now.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
+   * @deprecated S3 applies server-side encryption with SSE-S3 for every bucket
+   * that default encryption is not configured.
    */
   UNENCRYPTED = 'UNENCRYPTED',
 
