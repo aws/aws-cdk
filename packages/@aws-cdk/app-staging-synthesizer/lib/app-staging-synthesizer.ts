@@ -13,11 +13,11 @@ import {
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRole, BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 
 /**
  * @internal
@@ -380,7 +380,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: asset.ephemeral ? EPHEMERAL_PREFIX : this.bucketPrefix,
       role: {
-        assumeRoleArn,
+        assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn),
       },
     });
     return this.cloudFormationLocationFromFileAsset(location);

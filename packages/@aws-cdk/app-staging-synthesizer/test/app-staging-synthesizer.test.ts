@@ -1,11 +1,11 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
-import { AppStagingSynthesizer } from '../lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
+import { AppStagingSynthesizer } from '../lib';
 // import { Repository } from 'aws-cdk-lib/aws-ecr';
 // import { Bucket } from 'aws-cdk-lib/aws-s3';
 
