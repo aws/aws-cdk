@@ -250,7 +250,7 @@ For example, if there are two shares defined as follows:
 The weight factors share the following relationship:
 
 ```math
-AvCpus / A_weight = BvCpus / B_weight
+AvCpus / AWeight = BvCpus / BWeight
 ```
 
 where `BvCpus` is the number of vCPUs allocated to jobs with share identifier `'B'`, and `B_weight` is the weight factor of `B`.
@@ -259,18 +259,23 @@ The total number of vCpus allocated to a share is equal to the amount of jobs in
 Let's say that each A job needs 32 VCpus (`A_requirement` = 32) and each B job needs 64 vCpus (`B_requirement` = 64):
 
 ```math
-A_vCpus = A_jobs * A_requirement
-B_vCpus = B_jobs * B_requirement
+AvCpus = AJobs * ARequirement
+
+BvCpus = BJobs * BRequirement
 ```
 
 We have:
 
 ```math
-A_vCpus / A_weight = B_vCpus / B_weight
-A_jobs * A_requirement / A_weight = B_jobs * B_requirement / B_weight
-A_jobs * 32 / 1 = B_jobs * 64 / 1
-A_jobs * 32 = B_jobs * 64 
-A_jobs = B_jobs * 2
+AvCpus / Aweight = BvCpus / BWeight
+
+Ajobs * Arequirement / AWeight = BJobs * BRequirement / BWeight
+
+Ajobs * 32 / 1 = BJobs * 64 / 1
+
+Ajobs * 32 = BJobs * 64 
+
+Ajobs = BJobs * 2
 ```
 
 Thus the scheduler will schedule two `'A'` jobs for each `'B'` job.
