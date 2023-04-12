@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.73.0](https://github.com/aws/aws-cdk/compare/v2.72.1...v2.73.0) (2023-04-05)
+
+
+### Features
+
+* **cli:** exposed synth's quiet option in cdk.json ([#24793](https://github.com/aws/aws-cdk/issues/24793)) ([8c58b25](https://github.com/aws/aws-cdk/commit/8c58b25dc8b74eabc277c611503a9dbb4c6a57fc)), closes [#24251](https://github.com/aws/aws-cdk/issues/24251)
+* **pipelines:** Add ability to define fileSystemLocations for a CodePipeline ([#24584](https://github.com/aws/aws-cdk/issues/24584)) ([55906bb](https://github.com/aws/aws-cdk/commit/55906bbffc01780f380e61f470c091abee4d6835)), closes [#24495](https://github.com/aws/aws-cdk/issues/24495)
+* **rds:** Add dbname parameter to RDS.DatabaseSecret construct ([#24729](https://github.com/aws/aws-cdk/issues/24729)) ([b9ce0ee](https://github.com/aws/aws-cdk/commit/b9ce0ee2e65952ff42487f898aaca719babeb4f6)), closes [#24728](https://github.com/aws/aws-cdk/issues/24728)
+* **trigger:** Allow trigger to work with Lambda functions with long timeouts ([#24435](https://github.com/aws/aws-cdk/issues/24435)) ([30e05f0](https://github.com/aws/aws-cdk/commit/30e05f0c543fed9964c6d68740ae65336ba0ae23)), closes [#23788](https://github.com/aws/aws-cdk/issues/23788)
+
+
+### Bug Fixes
+
+* **core:** some trace info is missing from the validation report ([#24889](https://github.com/aws/aws-cdk/issues/24889)) ([5003cad](https://github.com/aws/aws-cdk/commit/5003cadbd89ff5e960fe8eb1c057c40d03bc8198))
+* **ec2:** looking up a shared VPC has incorrect account ID in ARN ([#24486](https://github.com/aws/aws-cdk/issues/24486)) ([963634b](https://github.com/aws/aws-cdk/commit/963634b001c10dcc18d78d28d3e05504974bc140)), closes [#23865](https://github.com/aws/aws-cdk/issues/23865)
+* **ecr:** policytext errors when includes resource ([#24401](https://github.com/aws/aws-cdk/issues/24401)) ([a9d6966](https://github.com/aws/aws-cdk/commit/a9d6966ffc9b972e3e69d157f3f045d3c4e15827))
+* **globalaccelerator:** parameter name can exceed limit of 64 characters ([#24796](https://github.com/aws/aws-cdk/issues/24796)) ([334dc80](https://github.com/aws/aws-cdk/commit/334dc80ffb076ab9d229a7944a2d7d711d1a445f)), closes [#24325](https://github.com/aws/aws-cdk/issues/24325)
+* **iam:** roleName not validated in fromRoleName function ([#24549](https://github.com/aws/aws-cdk/issues/24549)) ([637fc6a](https://github.com/aws/aws-cdk/commit/637fc6a8526b6a090c1ffb4b08ca1149fdb9755d)), closes [#24503](https://github.com/aws/aws-cdk/issues/24503)
+* **lambda-nodejs:** pnpm installs frozen lockfile in a CI environment ([#24781](https://github.com/aws/aws-cdk/issues/24781)) ([552cef4](https://github.com/aws/aws-cdk/commit/552cef48a7d98cd320150897ebcf1f2867360d56)), closes [/github.com/pnpm/pnpm/issues/1994#issuecomment-609403673](https://github.com/aws//github.com/pnpm/pnpm/issues/1994/issues/issuecomment-609403673)
+
+## [2.72.1](https://github.com/aws/aws-cdk/compare/v2.72.0...v2.72.1) (2023-03-30)
+
 ## [2.72.0](https://github.com/aws/aws-cdk/compare/v2.71.0...v2.72.0) (2023-03-29)
 
 

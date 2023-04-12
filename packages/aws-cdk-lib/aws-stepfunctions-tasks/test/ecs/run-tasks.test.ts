@@ -127,6 +127,86 @@ test('Running a task with container override and container has explicitly set a 
   });
 });
 
+test('Running a task without propagated tag source', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).not.toContain('Parameters.PropagateTags');
+});
+
+test('Running a task with TASK_DEFINITION as propagated tag source', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+      propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
+    }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'TASK_DEFINITION');
+});
+
+test('Running a task with NONE as propagated tag source', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+      propagatedTagSource: ecs.PropagatedTagSource.NONE,
+    }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'NONE');
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
