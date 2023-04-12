@@ -386,6 +386,22 @@ describe('repository', () => {
     Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
   });
 
+  test('does not warn if repository policy does not have resources', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['ecr:*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements.');
+  });
+
   test('default encryption configuration', () => {
     // GIVEN
     const app = new cdk.App();
