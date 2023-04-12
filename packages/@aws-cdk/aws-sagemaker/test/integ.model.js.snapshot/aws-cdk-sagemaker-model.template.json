@@ -770,6 +770,198 @@
     "InferencePipelineModelRoleDefaultPolicy2AF0CDCF",
     "InferencePipelineModelRole6A99C5B3"
    ]
+  },
+  "HuggingFaceModelRoleDA17DA00": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSageMakerFullAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "HuggingFaceModelRoleDefaultPolicy50587D35": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Fn::FindInMap": [
+            "DlcRepositoryAccountMap",
+            {
+             "Ref": "AWS::Region"
+            },
+            "value"
+           ]
+          },
+          ":repository/huggingface-pytorch-training"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "HuggingFaceModelRoleDefaultPolicy50587D35",
+    "Roles": [
+     {
+      "Ref": "HuggingFaceModelRoleDA17DA00"
+     }
+    ]
+   }
+  },
+  "HuggingFaceModel8E13DAA5": {
+   "Type": "AWS::SageMaker::Model",
+   "Properties": {
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "HuggingFaceModelRoleDA17DA00",
+      "Arn"
+     ]
+    },
+    "PrimaryContainer": {
+     "Image": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::FindInMap": [
+          "DlcRepositoryAccountMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "value"
+         ]
+        },
+        ".dkr.ecr.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/huggingface-pytorch-training:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04"
+       ]
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "HuggingFaceModelRoleDefaultPolicy50587D35",
+    "HuggingFaceModelRoleDA17DA00"
+   ]
+  }
+ },
+ "Mappings": {
+  "DlcRepositoryAccountMap": {
+   "ap-east-1": {
+    "value": "871362719292"
+   },
+   "ap-northeast-1": {
+    "value": "763104351884"
+   },
+   "ap-northeast-2": {
+    "value": "763104351884"
+   },
+   "ap-south-1": {
+    "value": "763104351884"
+   },
+   "ap-southeast-1": {
+    "value": "763104351884"
+   },
+   "ap-southeast-2": {
+    "value": "763104351884"
+   },
+   "ca-central-1": {
+    "value": "763104351884"
+   },
+   "cn-north-1": {
+    "value": "727897471807"
+   },
+   "cn-northwest-1": {
+    "value": "727897471807"
+   },
+   "eu-central-1": {
+    "value": "763104351884"
+   },
+   "eu-north-1": {
+    "value": "763104351884"
+   },
+   "eu-west-1": {
+    "value": "763104351884"
+   },
+   "eu-west-2": {
+    "value": "763104351884"
+   },
+   "eu-west-3": {
+    "value": "763104351884"
+   },
+   "me-south-1": {
+    "value": "217643126080"
+   },
+   "sa-east-1": {
+    "value": "763104351884"
+   },
+   "us-east-1": {
+    "value": "763104351884"
+   },
+   "us-east-2": {
+    "value": "763104351884"
+   },
+   "us-west-1": {
+    "value": "763104351884"
+   },
+   "us-west-2": {
+    "value": "763104351884"
+   }
   }
  },
  "Parameters": {

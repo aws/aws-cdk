@@ -107,6 +107,19 @@ const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo')
 const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
 ```
 
+#### DLC Image
+
+Reference a deep learning container image:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+
+const repositoryName = 'huggingface-pytorch-training';
+const tag = '1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04';
+
+const image = sagemaker.ContainerImage.fromDlc(repositoryName, tag);
+```
+
 ### Model Artifacts
 
 If you choose to decouple your model artifacts from your inference code (as is natural given

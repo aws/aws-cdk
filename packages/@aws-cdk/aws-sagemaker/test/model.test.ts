@@ -295,3 +295,147 @@ test('When importing a model by name, the ARN is constructed correctly', () => {
   // THEN
   expect(model.modelArn).toMatch(/arn:.+:sagemaker:us-west-2:123456789012:model\/my-name/);
 });
+
+test('sagemaker model with deep learning container images with AccountId', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new sagemaker.Model(stack, 'Model', {
+    containers: [{
+      image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag', 'anyAwsAccount'),
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::SageMaker::Model', {
+    PrimaryContainer: {
+      Image: {
+        'Fn::Join': [
+          '',
+          [
+            'anyAwsAccount.dkr.ecr.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/anyRepositoryName:anyTag',
+          ],
+        ],
+      },
+    },
+  });
+});
+
+test('sagemaker model with deep learning container images without AccountId', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new sagemaker.Model(stack, 'Model', {
+    containers: [{
+      image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag'),
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::SageMaker::Model', {
+    PrimaryContainer: {
+      Image: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::FindInMap': [
+                'DlcRepositoryAccountMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
+            '.dkr.ecr.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/anyRepositoryName:anyTag',
+          ],
+        ],
+      },
+    },
+  });
+
+  template.hasMapping('DlcRepositoryAccountMap', {
+    'ap-east-1': {
+      value: '871362719292',
+    },
+    'ap-northeast-1': {
+      value: '763104351884',
+    },
+    'ap-northeast-2': {
+      value: '763104351884',
+    },
+    'ap-south-1': {
+      value: '763104351884',
+    },
+    'ap-southeast-1': {
+      value: '763104351884',
+    },
+    'ap-southeast-2': {
+      value: '763104351884',
+    },
+    'ca-central-1': {
+      value: '763104351884',
+    },
+    'cn-north-1': {
+      value: '727897471807',
+    },
+    'cn-northwest-1': {
+      value: '727897471807',
+    },
+    'eu-central-1': {
+      value: '763104351884',
+    },
+    'eu-north-1': {
+      value: '763104351884',
+    },
+    'eu-west-1': {
+      value: '763104351884',
+    },
+    'eu-west-2': {
+      value: '763104351884',
+    },
+    'eu-west-3': {
+      value: '763104351884',
+    },
+    'me-south-1': {
+      value: '217643126080',
+    },
+    'sa-east-1': {
+      value: '763104351884',
+    },
+    'us-east-1': {
+      value: '763104351884',
+    },
+    'us-east-2': {
+      value: '763104351884',
+    },
+    'us-west-1': {
+      value: '763104351884',
+    },
+    'us-west-2': {
+      value: '763104351884',
+    },
+  });
+});

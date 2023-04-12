@@ -16,7 +16,7 @@
                 "id": "Staging",
                 "path": "aws-cdk-sagemaker-model/EcrImage/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -24,13 +24,13 @@
                 "id": "Repository",
                 "path": "aws-cdk-sagemaker-model/EcrImage/Repository",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+              "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
               "version": "0.0.0"
             }
           },
@@ -42,7 +42,7 @@
                 "id": "Stage",
                 "path": "aws-cdk-sagemaker-model/S3ModelData/Stage",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -50,13 +50,13 @@
                 "id": "AssetBucket",
                 "path": "aws-cdk-sagemaker-model/S3ModelData/AssetBucket",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
               "version": "0.0.0"
             }
           },
@@ -83,7 +83,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -127,7 +127,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -135,7 +135,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-sagemaker-model/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -157,7 +157,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -176,7 +176,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -196,7 +196,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -216,7 +216,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -244,13 +244,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -294,7 +294,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -302,7 +302,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-sagemaker-model/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -324,7 +324,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -343,7 +343,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -363,7 +363,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -383,7 +383,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -411,13 +411,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -461,7 +461,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -469,7 +469,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-sagemaker-model/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -491,7 +491,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -510,7 +510,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -530,13 +530,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -580,7 +580,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -588,7 +588,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-sagemaker-model/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -610,7 +610,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -629,7 +629,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -649,13 +649,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -674,7 +674,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -693,13 +693,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -731,13 +731,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -745,6 +745,14 @@
                 "id": "Role",
                 "path": "aws-cdk-sagemaker-model/PrimaryContainerModel/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-model/PrimaryContainerModel/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-sagemaker-model/PrimaryContainerModel/Role/Resource",
@@ -780,7 +788,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -885,19 +893,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -979,13 +987,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sagemaker.CfnModel",
+                  "fqn": "aws-cdk-lib.aws_sagemaker.CfnModel",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sagemaker.Model",
+              "fqn": "@aws-cdk/aws-sagemaker-alpha.Model",
               "version": "0.0.0"
             }
           },
@@ -997,6 +1005,14 @@
                 "id": "Role",
                 "path": "aws-cdk-sagemaker-model/InferencePipelineModel/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-sagemaker-model/InferencePipelineModel/Role/Resource",
@@ -1032,7 +1048,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1137,71 +1153,71 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
-              "ModelImage7ffa8020b99fe9d130a903251c36866d": {
-                "id": "ModelImage7ffa8020b99fe9d130a903251c36866d",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage7ffa8020b99fe9d130a903251c36866d",
+              "ModelImage633a6e898c0256cb2deaf7e22053a66b": {
+                "id": "ModelImage633a6e898c0256cb2deaf7e22053a66b",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b",
                 "children": {
                   "Staging": {
                     "id": "Staging",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage7ffa8020b99fe9d130a903251c36866d/Staging",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Staging",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
                   "Repository": {
                     "id": "Repository",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage7ffa8020b99fe9d130a903251c36866d/Repository",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Repository",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                      "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+                  "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
                   "version": "0.0.0"
                 }
               },
-              "ModelData412d61f9c984d1aff5ee358daf994d58": {
-                "id": "ModelData412d61f9c984d1aff5ee358daf994d58",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelData412d61f9c984d1aff5ee358daf994d58",
+              "ModelDatab5852dea925d702939eb0aa28d4cf14d": {
+                "id": "ModelDatab5852dea925d702939eb0aa28d4cf14d",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelData412d61f9c984d1aff5ee358daf994d58/Stage",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelData412d61f9c984d1aff5ee358daf994d58/AssetBucket",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -1243,13 +1259,215 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sagemaker.CfnModel",
+                  "fqn": "aws-cdk-lib.aws_sagemaker.CfnModel",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sagemaker.Model",
+              "fqn": "@aws-cdk/aws-sagemaker-alpha.Model",
+              "version": "0.0.0"
+            }
+          },
+          "HuggingFaceModel": {
+            "id": "HuggingFaceModel",
+            "path": "aws-cdk-sagemaker-model/HuggingFaceModel",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sagemaker.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonSageMakerFullAccess"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Fn::FindInMap": [
+                                            "DlcRepositoryAccountMap",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            "value"
+                                          ]
+                                        },
+                                        ":repository/huggingface-pytorch-training"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ecr:GetAuthorizationToken",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "HuggingFaceModelRoleDefaultPolicy50587D35",
+                            "roles": [
+                              {
+                                "Ref": "HuggingFaceModelRoleDA17DA00"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "DlcRepository": {
+                "id": "DlcRepository",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/DlcRepository",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Model": {
+                "id": "Model",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Model",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SageMaker::Model",
+                  "aws:cdk:cloudformation:props": {
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "HuggingFaceModelRoleDA17DA00",
+                        "Arn"
+                      ]
+                    },
+                    "primaryContainer": {
+                      "image": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::FindInMap": [
+                                "DlcRepositoryAccountMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
+                            ".dkr.ecr.",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ".",
+                            {
+                              "Ref": "AWS::URLSuffix"
+                            },
+                            "/huggingface-pytorch-training:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04"
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sagemaker.CfnModel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sagemaker-alpha.Model",
+              "version": "0.0.0"
+            }
+          },
+          "DlcRepositoryAccountMap": {
+            "id": "DlcRepositoryAccountMap",
+            "path": "aws-cdk-sagemaker-model/DlcRepositoryAccountMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1257,7 +1475,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-sagemaker-model/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -1265,13 +1483,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-sagemaker-model/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -1288,7 +1506,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -1299,7 +1517,7 @@
                     "id": "BootstrapVersion",
                     "path": "integtest-model/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -1307,25 +1525,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "integtest-model/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -1334,12 +1552,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
