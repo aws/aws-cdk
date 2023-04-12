@@ -1,27 +1,28 @@
 {
-  "name": "@aws-cdk/aws-iot-actions-alpha",
+  "name": "@aws-cdk/aws-neptune-alpha",
   "version": "0.0.0",
-  "description": "Receipt rule actions for AWS IoT",
+  "private": false,
+  "description": "The CDK Construct Library for AWS::Neptune",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.services.iot.actions.alpha",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "iot-actions-alpha"
-        }
-      },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoT.Actions.Alpha",
-        "packageId": "Amazon.CDK.AWS.IoT.Actions.Alpha",
+        "namespace": "Amazon.CDK.AWS.Neptune.Alpha",
+        "packageId": "Amazon.CDK.AWS.Neptune.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
+      "java": {
+        "package": "software.amazon.awscdk.services.neptune.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "neptune-alpha"
+        }
+      },
       "python": {
-        "distName": "aws-cdk.aws-iot-actions-alpha",
-        "module": "aws_cdk.aws_iot_actions_alpha",
+        "distName": "aws-cdk.aws-neptune-alpha",
+        "module": "aws_cdk.aws_neptune_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -29,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkiotactionsalpha"
+        "packageName": "awscdkneptunealpha"
       }
     },
     "projectReferences": true,
@@ -44,16 +45,17 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-iot-actions"
+    "directory": "packages/@aws-cdk/aws-neptune-alpha"
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "watch": "cdk-watch",
-    "lint": "cdk-lint",
-    "test": "cdk-test",
     "integ": "integ-runner",
-    "pkglint": "pkglint -f",
+    "lint": "cdk-lint",
     "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
     "awslint": "cdk-awslint",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -71,8 +73,7 @@
     "aws",
     "cdk",
     "constructs",
-    "iot",
-    "actions"
+    "aws-neptune"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -83,33 +84,25 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1",
-    "constructs": "^10.0.0",
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "@aws-cdk/aws-iot-alpha": "0.0.0",
-    "@aws-cdk/aws-iotevents-alpha": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "case": "1.6.3"
-  },
-  "homepage": "https://github.com/aws/aws-cdk",
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-iot-alpha": "0.0.0",
-    "@aws-cdk/aws-iotevents-alpha": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
-  "bundledDependencies": [
-    "case"
-  ],
   "engines": {
     "node": ">= 14.15.0"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -118,12 +111,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  },
-  "private": false,
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
   },
   "pkglint": {
     "exclude": [
