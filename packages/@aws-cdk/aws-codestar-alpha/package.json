@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-amplify-alpha",
+  "name": "@aws-cdk/aws-codestar-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Amplify",
+  "description": "The CDK Construct Library for AWS::CodeStar",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Amplify.Alpha",
-        "packageId": "Amazon.CDK.AWS.Amplify.Alpha",
+        "namespace": "Amazon.CDK.AWS.Codestar.Alpha",
+        "packageId": "Amazon.CDK.AWS.CodeStar.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.amplify.alpha",
+        "package": "software.amazon.awscdk.services.codestar.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "amplify-alpha"
+          "artifactId": "codestar-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-amplify-alpha",
-        "module": "aws_cdk.aws_amplify_alpha",
+        "distName": "aws-cdk.aws-codestar-alpha",
+        "module": "aws_cdk.aws_codestar_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkamplifyalpha"
+        "packageName": "awscdkcodestaralpha"
       }
     },
     "projectReferences": true,
@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-amplify"
+    "directory": "packages/@aws-cdk/aws-codestar-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -73,8 +73,8 @@
     "aws",
     "cdk",
     "constructs",
-    "AWS::Amplify",
-    "aws-amplify"
+    "AWS::CodeStar",
+    "aws-codestar"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -88,7 +88,6 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1329.0",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
@@ -100,13 +99,13 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
+  "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
