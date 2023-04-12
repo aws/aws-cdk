@@ -1,8 +1,8 @@
-import { ArnFormat, Resource, Stack, IResource, Lazy } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IAction } from './action';
 import { IotSql } from './iot-sql';
-import { CfnTopicRule } from './iot.generated';
+import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 
 /**
  * Represents an AWS IoT Rule

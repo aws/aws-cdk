@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import * as appreg from '../lib';
 
 describe('Attribute Group', () => {
@@ -77,6 +77,20 @@ describe('Attribute Group', () => {
       'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
     expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
   }),
+
+  test('Associate an application to an imported attribute group', () => {
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
+      'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
+    const application = new appreg.Application(stack, 'MyApplication', {
+      applicationName: 'MyTestApplication',
+    });
+    attributeGroup.associateWith(application);
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+      Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+      AttributeGroup: '0aqmvxvgmry0ecc4mjhwypun6i',
+    });
+
+  });
 
   test('fails for attribute group imported by ARN missing attributeGroupId', () => {
     expect(() => {

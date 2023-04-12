@@ -1,13 +1,13 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as s3 from '@aws-cdk/aws-s3';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
-import { AwsCustomResource } from '@aws-cdk/custom-resources';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { CfnTable } from './glue.generated';
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { Column } from './schema';
 
 /**
@@ -46,8 +46,6 @@ export interface ITable extends IResource {
  * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
  */
 export enum TableEncryption {
-  UNENCRYPTED = 'Unencrypted',
-
   /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
@@ -155,7 +153,7 @@ export interface TableProps {
    * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
    * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
    *
-   * @default Unencrypted
+   * @default BucketEncryption.S3_MANAGED
    */
   readonly encryption?: TableEncryption;
 
@@ -317,7 +315,7 @@ export class Table extends Resource implements ITable {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': this.encryption !== TableEncryption.UNENCRYPTED,
+          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
         },
         storageDescriptor: {
@@ -505,18 +503,18 @@ const encryptionMappings = {
   [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3_MANAGED,
   [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
   [TableEncryption.KMS]: s3.BucketEncryption.KMS,
-  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.UNENCRYPTED,
-  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.UNENCRYPTED,
+  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.S3_MANAGED,
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
 function createBucket(table: Table, props: TableProps) {
-  const encryption = props.encryption || TableEncryption.UNENCRYPTED;
   let bucket = props.bucket;
 
-  if (bucket && (encryption !== TableEncryption.UNENCRYPTED && encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
+  if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
+
+  const encryption = props.encryption || TableEncryption.S3_MANAGED;
 
   let encryptionKey: kms.IKey | undefined;
   if (encryption === TableEncryption.CLIENT_SIDE_KMS && props.encryptionKey === undefined) {

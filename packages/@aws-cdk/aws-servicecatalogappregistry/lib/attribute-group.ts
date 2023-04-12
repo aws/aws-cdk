@@ -1,10 +1,10 @@
-import { CfnResourceShare } from '@aws-cdk/aws-ram';
-import * as cdk from '@aws-cdk/core';
+import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
-import { CfnAttributeGroup, CfnAttributeGroupAssociation } from './servicecatalogappregistry.generated';
+import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly';
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation';
@@ -32,6 +32,12 @@ export interface IAttributeGroup extends cdk.IResource {
    * @param shareOptions The options for the share.
    */
   shareAttributeGroup(id: string, shareOptions: ShareOptions): void;
+
+  /**
+   * Associate an application with attribute group
+   * If the attribute group is already associated, it will ignore duplicate request.
+   */
+  associateWith(application: IApplication): void;
 }
 
 /**
@@ -61,10 +67,6 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
   public abstract readonly attributeGroupId: string;
   private readonly associatedApplications: Set<string> = new Set();
 
-  /**
-   * Associate an application with attribute group
-   * If the attribute group is already associated, it will ignore duplicate request.
-   */
   public associateWith(application: IApplication): void {
     if (!this.associatedApplications.has(application.node.addr)) {
       const hashId = this.generateUniqueHash(application.node.addr);
