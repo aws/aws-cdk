@@ -1,0 +1,18 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Condition": "AlwaysFalseCond"
+    }
+  }
+}

@@ -1,15 +1,15 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from '@aws-cdk/aws-kinesisanalytics';
-import * as logs from '@aws-cdk/aws-logs';
-import * as core from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
-import { LogLevel, MetricsLevel, PropertyGroups, Runtime } from './types';
+import { LogLevel, MetricsLevel, Runtime } from './types';
 
 /**
  * An interface expressing the public properties on both an imported and
@@ -851,7 +851,7 @@ export interface ApplicationProps {
    *
    * @default - No property group configuration provided to the Flink app
    */
-  readonly propertyGroups?: PropertyGroups;
+  readonly propertyGroups?: { readonly [propertyId: string]: { [mapKey: string]: string } };
 
   /**
    * A role to use to grant permissions to your application. Prefer omitting

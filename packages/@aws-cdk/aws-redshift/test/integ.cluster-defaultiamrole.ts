@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import { Stack, App, StackProps, RemovalPolicy } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as redshift from '../lib';
 
