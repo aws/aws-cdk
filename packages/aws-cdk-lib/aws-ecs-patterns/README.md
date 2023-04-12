@@ -62,9 +62,9 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  ephemeralStorageGiB: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    ephemeralStorageGiB: 100,
   },
 });
 loadBalancedFargateService.targetGroup.configureHealthCheck({
@@ -150,9 +150,9 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  ephemeralStorageGiB: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    ephemeralStorageGiB: 100,
   },
   targetGroups: [
     {
@@ -212,9 +212,9 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  ephemeralStorageGiB: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    ephemeralStorageGiB: 100,
   },
 });
 ```
@@ -323,6 +323,7 @@ const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFa
   ephemeralStorageGiB: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    ephemeralStorageGiB: 100,
   },
   loadBalancers: [
     {
