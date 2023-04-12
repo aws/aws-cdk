@@ -334,7 +334,7 @@ maximum vCPU capacity that should be reserved for shares that are *not in the qu
 The actual reserved percentage is defined by Batch as:
 
 ```math
- \frac{computeReservation}{100} ^ {ActiveFairShares}
+ (\frac{computeReservation}{100}) ^ {ActiveFairShares}
 ```
 
 where `ActiveFairShares` is the number of shares for which there exists
