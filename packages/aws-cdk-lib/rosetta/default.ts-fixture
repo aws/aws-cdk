@@ -28,7 +28,6 @@ import {
   DefaultStackSynthesizer,
   Duration,
   Fn,
-  IConstruct,
   RemovalPolicy,
   SecretValue,
   Size,
@@ -39,8 +38,9 @@ import {
   Token,
 } from 'aws-cdk-lib';
 import {
+  IConstruct,
   Construct,
-  DependencyGroup, 
+  DependencyGroup,
 } from 'constructs';
 
 declare const app: App;

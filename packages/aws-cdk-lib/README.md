@@ -27,7 +27,7 @@ According to the kind of project you are developing:
 
 You can use a classic import to get access to each service namespaces:
 
-```ts
+```ts nofixture
 import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
 
 const app = new App();
@@ -40,7 +40,7 @@ new s3.Bucket(stack, 'TestBucket');
 
 Alternatively, you can use "barrel" imports:
 
-```ts
+```ts nofixture
 import { App, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -930,7 +930,7 @@ The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance
 
 The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
 The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
-3 success signals to occur within 15 minutes before the status of the resource will be set to 
+3 success signals to occur within 15 minutes before the status of the resource will be set to
 `CREATE_COMPLETE`.
 
 ```ts
@@ -1328,7 +1328,7 @@ To use one or more validation plugins in your application, use the
 const app = new App({
   policyValidationBeta1: [
     // These hypothetical classes implement IValidationPlugin:
-    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginX(),
     new ThirdPartyPluginY(),
   ],
 });
@@ -1351,12 +1351,12 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` 
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
 ```ts
-const app = new App({ 
-  context: { '@aws-cdk/core:validationReportJson': true }, 
+const app = new App({
+  context: { '@aws-cdk/core:validationReportJson': true },
 });
 ```
 
