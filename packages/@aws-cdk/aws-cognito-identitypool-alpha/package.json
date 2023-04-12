@@ -1,28 +1,27 @@
 {
-  "name": "@aws-cdk/aws-cloud9-alpha",
+  "name": "@aws-cdk/aws-cognito-identitypool-alpha",
   "version": "0.0.0",
-  "private": false,
-  "description": "The CDK Construct Library for AWS::Cloud9",
+  "description": "The CDK Construct Library for AWS::Cognito Identity Pools",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.cloud9.alpha",
+        "package": "software.amazon.awscdk.services.cognito.identitypool.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloud9-alpha"
+          "artifactId": "cognito-identitypool-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cloud9.Alpha",
-        "packageId": "Amazon.CDK.AWS.Cloud9.Alpha",
+        "namespace": "Amazon.CDK.AWS.Cognito.IdentityPool.Alpha",
+        "packageId": "Amazon.CDK.AWS.Cognito.IdentityPool.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-cloud9-alpha",
-        "module": "aws_cdk.aws_cloud9_alpha",
+        "distName": "aws-cdk.aws-cognito-identitypool-alpha",
+        "module": "aws_cdk.aws_cognito_identitypool_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +29,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkcloud9alpha"
+        "packageName": "awscdkcognitoidentitypoolalpha"
       }
     },
     "projectReferences": true,
@@ -45,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-cloud9"
+    "directory": "packages/@aws-cdk/aws-cognito-identitypool-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -72,7 +71,8 @@
     "aws",
     "cdk",
     "constructs",
-    "cloud9"
+    "cognito",
+    "identitypool"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -82,13 +82,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
@@ -112,6 +111,7 @@
   "publishConfig": {
     "tag": "latest"
   },
+  "private": false,
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
