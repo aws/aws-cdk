@@ -259,23 +259,18 @@ The total number of vCpus allocated to a share is equal to the amount of jobs in
 Let's say that each A job needs 32 VCpus (`A_requirement` = 32) and each B job needs 64 vCpus (`B_requirement` = 64):
 
 ```math
-AvCpus = AJobs * ARequirement
-
-BvCpus = BJobs * BRequirement
+AvCpus = AJobs * ARequirement\\
+BvCpus = BJobs * BRequirement\\
 ```
 
 We have:
 
 ```math
-AvCpus / Aweight = BvCpus / BWeight
-
-Ajobs * Arequirement / AWeight = BJobs * BRequirement / BWeight
-
-Ajobs * 32 / 1 = BJobs * 64 / 1
-
-Ajobs * 32 = BJobs * 64 
-
-Ajobs = BJobs * 2
+AvCpus / Aweight = BvCpus / BWeight\\
+Ajobs * Arequirement / AWeight = BJobs * BRequirement / BWeight\\
+Ajobs * 32 / 1 = BJobs * 64 / 1\\
+Ajobs * 32 = BJobs * 64\\
+Ajobs = BJobs * 2\\
 ```
 
 Thus the scheduler will schedule two `'A'` jobs for each `'B'` job.
