@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "9b42c0a06aa457a6f385d609549ebc74dadf6b3d17521f87a20ae322bd577579": {
+      "source": {
+        "path": "aws-cdk-kms-key-tokenized.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9b42c0a06aa457a6f385d609549ebc74dadf6b3d17521f87a20ae322bd577579.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

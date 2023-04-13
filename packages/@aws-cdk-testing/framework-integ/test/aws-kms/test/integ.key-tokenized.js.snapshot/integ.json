@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "aws-cdk-kms-key-tokenized-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-key-tokenized"
+      ],
+      "assertionStack": "aws-cdk-kms-key-tokenized-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkkmskeytokenizedtestDefaultTestDeployAssert1F102628"
+    }
+  }
+}

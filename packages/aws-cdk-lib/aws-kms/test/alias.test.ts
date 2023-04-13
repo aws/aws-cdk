@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
-import { App, CfnOutput, Stack } from '../../core';
+import { App, CfnOutput, Intrinsic, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
@@ -263,3 +263,19 @@ test('grants generate mac to the alias target key', () => {
   });
 });
 
+test('should prefix with REQUIRED_ALIAS_PREFIX a tokenized aliasName non starting with a tokenized value', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'MyKey');
+  const token = new Intrinsic('token');
+
+  new Alias(stack, 'Alias', {
+    targetKey: key,
+    aliasName: `MyKey${token}`,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: 'alias/MyKeytoken',
+    TargetKeyId: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'] },
+  });
+});

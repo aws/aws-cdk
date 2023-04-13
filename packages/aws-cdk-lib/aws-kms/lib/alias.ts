@@ -1,5 +1,5 @@
 import * as iam from '../../aws-iam';
-import { RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
@@ -196,6 +196,12 @@ export class Alias extends AliasBase {
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+      }
+    } else {
+      // add REQUIRED_ALIAS_PREFIX to tokenized alias name if it doesn't start with a tokenized value
+      const tokenizedAliasNameFirstValue = Tokenization.reverseString(aliasName).firstValue;
+      if (tokenizedAliasNameFirstValue.type !== 'token' && !tokenizedAliasNameFirstValue.toString().startsWith(REQUIRED_ALIAS_PREFIX)) {
+        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
       }
     }
 
