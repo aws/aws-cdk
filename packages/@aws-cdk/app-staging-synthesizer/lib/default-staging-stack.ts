@@ -78,6 +78,8 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
    * The ARN of the deploy action role, if given
    *
    * This role will need permissions to read from to the staging resources.
+   *
+   * @default - The CLI credentials are assumed, no additional permissions are granted.
    */
   readonly deployRoleArn?: string;
 

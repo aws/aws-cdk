@@ -24,6 +24,9 @@ export class BootstrapRole {
 
   private constructor(private readonly roleArn: string) {}
 
+  /**
+   * Whether or not this is object was created using BootstrapRole.cliCredentials()
+   */
   public isCliCredentials() {
     return this.roleArn === BootstrapRole.CLI_CREDS;
   }
