@@ -44,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink"
+    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink-alpha"
   },
   "scripts": {
     "build": "cdk-build",
