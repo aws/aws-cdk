@@ -1,6 +1,8 @@
 import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
 
-
+/**
+ * Amazon Linux 2023 kernel versions
+ */
 export class AmazonLinux2023Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
@@ -34,7 +36,7 @@ export class AmazonLinux2023Kernel {
 }
 
 /**
- * Storage doesn't apply to al2023 for example
+ * Properties specific to al2023 images
  */
 export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
@@ -46,6 +48,9 @@ export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageS
 }
 
 
+/**
+ * A SSM Parameter that contains the AMI ID for Amazon Linux 2023
+ */
 export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2022 AMI

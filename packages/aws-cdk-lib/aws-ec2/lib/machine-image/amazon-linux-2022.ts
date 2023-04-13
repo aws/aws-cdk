@@ -1,5 +1,8 @@
 import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
 
+/**
+ * Amazon Linux 2022 kernel versions
+ */
 export class AmazonLinux2022Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
@@ -45,6 +48,9 @@ export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageS
   readonly kernel?: AmazonLinux2022Kernel;
 }
 
+/**
+ * A SSM Parameter that contains the AMI ID for Amazon Linux 2023
+ */
 export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2022 AMI

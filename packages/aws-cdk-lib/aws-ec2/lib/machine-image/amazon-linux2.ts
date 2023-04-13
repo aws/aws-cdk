@@ -1,6 +1,8 @@
 import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
 
-
+/**
+ * Amazon Linux 2 kernel versions
+ */
 export class AmazonLinux2Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
@@ -38,7 +40,7 @@ export class AmazonLinux2Kernel {
 }
 
 /**
- * Storage doesn't apply to al2022 for example
+ * Properties specific to amzn2 images
  */
 export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
@@ -63,6 +65,9 @@ export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmP
   readonly virtualization?: AmazonLinuxVirt;
 }
 
+/**
+ * A SSM Parameter that contains the AMI ID for Amazon Linux 2
+ */
 export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2 AMI

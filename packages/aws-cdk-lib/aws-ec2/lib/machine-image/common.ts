@@ -21,6 +21,9 @@ export interface AmazonLinuxImageSsmParameterCommonOptions extends AmazonLinuxIm
   readonly cpuType?: AmazonLinuxCpuType;
 }
 
+/**
+ * Base options for amazon linux ssm parameters
+ */
 export interface AmazonLinuxImageSsmParameterBaseOptions {
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -51,6 +54,9 @@ export interface AmazonLinuxImageSsmParameterBaseOptions {
   readonly userData?: UserData;
 }
 
+/**
+ * Base properties for an Amazon Linux SSM Parameter
+ */
 export interface AmazonLinuxImageSsmParameterBaseProps extends AmazonLinuxImageSsmParameterBaseOptions {
   /**
    * The name of the SSM parameter that contains the AMI value
@@ -144,6 +150,7 @@ export enum OperatingSystemType {
    */
   UNKNOWN,
 }
+
 /**
  * CPU type
  */
@@ -189,6 +196,10 @@ export enum AmazonLinuxVirt {
   PV = 'pv',
 }
 
+/**
+ * Available storage options for Amazon Linux images
+ * Only applies to Amazon Linux & Amazon Linux 2
+ */
 export enum AmazonLinuxStorage {
   /**
    * EBS-backed storage
