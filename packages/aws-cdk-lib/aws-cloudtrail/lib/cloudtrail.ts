@@ -190,10 +190,6 @@ export class InsightType {
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
- * NOTE the above example creates an UNENCRYPTED bucket by default,
- * If you are required to use an Encrypted bucket you can supply a preconfigured bucket
- * via TrailProps
- *
  */
 export class Trail extends Resource {
 
@@ -247,7 +243,7 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED, enforceSSL: true });
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { enforceSSL: true });
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.bucketArn],

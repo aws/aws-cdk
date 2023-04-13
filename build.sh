@@ -38,6 +38,9 @@ done
 export PATH=$(npm bin):$PATH
 export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
+# Temporary log memory for long builds (this may mess with tests that check stderr)
+# export NODE_OPTIONS="-r $PWD/scripts/log-memory.js ${NODE_OPTIONS:-}"
+
 if ! [ -x "$(command -v yarn)" ]; then
   echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
   exit 1
@@ -83,7 +86,7 @@ concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
+time npx lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh

@@ -94,7 +94,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
   expression: '`Now waiting ${$.waitSeconds} seconds...`',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   resultPath: '$.message',
 });
 
@@ -469,6 +469,7 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
       ecs.PlacementConstraint.memberOf('blieptuut'),
     ],
   }),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 
@@ -516,6 +517,7 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
   }],
   launchTarget: new tasks.EcsFargateLaunchTarget(),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 

@@ -1365,3 +1365,20 @@ taskDefinition.addContainer('TheContainer', {
   pseudoTerminal: true
 });
 ```
+
+## Specify a container ulimit
+
+You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
+to the task definition.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  ulimits: [{
+    hardLimit: 128,
+    name: ecs.UlimitName.RSS,
+    softLimit: 128,
+  }],
+});
+```

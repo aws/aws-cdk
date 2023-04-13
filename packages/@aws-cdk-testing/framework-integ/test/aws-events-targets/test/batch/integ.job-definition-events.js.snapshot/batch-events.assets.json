@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "0776292c0a44d9b0a502c6e8f5151f85ce0df1368d7a891bc5eb433c315e0c24": {
+      "source": {
+        "path": "batch-events.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0776292c0a44d9b0a502c6e8f5151f85ce0df1368d7a891bc5eb433c315e0c24.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
