@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-sagemaker-alpha",
+  "name": "@aws-cdk/aws-kinesisfirehose-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::SageMaker",
+  "description": "The CDK Construct Library for AWS::KinesisFirehose",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.sagemaker.alpha",
+        "package": "software.amazon.awscdk.services.kinesisfirehose.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sagemaker-alpha"
+          "artifactId": "kinesisfirehose-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Sagemaker.Alpha",
-        "packageId": "Amazon.CDK.AWS.Sagemaker.Alpha",
+        "namespace": "Amazon.CDK.AWS.KinesisFirehose.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisFirehose.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-sagemaker-alpha",
-        "module": "aws_cdk.aws_sagemaker_alpha",
+        "distName": "aws-cdk.aws-kinesisfirehose-alpha",
+        "module": "aws_cdk.aws_kinesisfirehose_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdksagemakeralpha"
+        "packageName": "awscdkkinesisfirehosealpha"
       }
     },
     "projectReferences": true,
@@ -45,17 +45,16 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-sagemaker"
+    "directory": "packages/@aws-cdk/aws-kinesisfirehose-alpha"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner",
-    "lint": "cdk-lint",
-    "package": "cdk-package",
-    "pkglint": "pkglint -f",
-    "test": "cdk-test",
     "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
     "awslint": "cdk-awslint",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -73,7 +72,7 @@
     "aws",
     "cdk",
     "constructs",
-    "aws-sagemaker"
+    "kinesisfirehose"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -83,16 +82,15 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
