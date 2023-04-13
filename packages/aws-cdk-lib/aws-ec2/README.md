@@ -1029,29 +1029,19 @@ care of restarting your instance if it ever fails.
 declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 
-// Amazon Linux 1
-new ec2.Instance(this, 'Instance1', {
-  vpc,
-  instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux(),
-});
-
 // Amazon Linux 2
 new ec2.Instance(this, 'Instance2', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
 });
 
 // Amazon Linux 2 with kernel 5.x
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  machineImage: new ec2.AmazonLinux2Image({
+    kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
   }),
 });
 
@@ -1059,21 +1049,115 @@ new ec2.Instance(this, 'Instance3', {
 new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
 });
 
 // Graviton 3 Processor
 new ec2.Instance(this, 'Instance5', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  machineImage: ec2.MachineImage.latestAmazonLinux2022({
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
 ```
+
+### Latest Amazon Linux Images
+
+Rather than specifying a specific AMI ID to use, it is possible to specify a SSM
+Parameter that contains the AMI ID. AWS publishes a set of [public parameters](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-public-parameters-ami.html)
+that contain the latest Amazon Linux AMIs. To make it easier to query a
+particular image parameter, the CDK provides a couple of constructs `AmazonLinux2ImageSsmParameter`,
+`AmazonLinux2022ImageSsmParameter`, & `AmazonLinux2023SsmParameter`. For example
+to use the latest `al2023` image:
+
+```ts
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+});
+```
+
+> **Warning**
+> Since this retrieves the value from an SSM parameter at deployment time, the
+> value will be resolved each time the stack is deployed. This means that if
+> the parameter contains a different value on your next deployment, the instance
+> will be replaced.
+
+It is also possible to perform the lookup once at synthesis time and then cache
+the value in CDK context. This way the value will not change on future
+deployments unless you manually refresh the context.
+
+```ts
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true, // default is false
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
+});
+```
+
+#### Kernel Versions
+
+Each Amazon Linux AMI uses a specific kernel version. Most Amazon Linux
+generations come with an AMI using the "default" kernel and then 1 or more
+AMIs using a specific kernel version, which may or may not be different from the
+default kernel version.
+
+For example, Amazon Linux 2 has two different AMIs available from the SSM
+parameters.
+
+- `/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs`
+  - This is the "default" kernel which uses `kernel-4.14`
+- `/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-ebs`
+
+If a new Amazon Linux generation AMI is published with a new kernel version,
+then a new SSM parameter will be created with the new version
+(e.g. `/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.15-hvm-x86_64-ebs`),
+but the "default" AMI may or may not be updated.
+
+If you would like to make sure you always have the latest kernel version, then
+either specify the specific latest kernel version or opt-in to using the CDK
+latest kernel version.
+
+```ts
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    kernel: ec2.AmazonLinux2023Kernel.KERNEL_6_1,
+  }),
+});
+```
+_CDK managed latest_
+
+```ts
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    kernel: ec2.AmazonLinux2023Kernel.CDK_LATEST,
+  }),
+});
+
+// or
+
+new ec2.Instance(this, 'LatestAl2023', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(), // always uses latest kernel version
+});
+```
+
+When using the CDK managed latest version, when a new kernel version is made
+available the `LATEST` will be updated to point to the new kernel version. You
+then would be required to update the newest CDK version for it to take effect.
 
 ### Configuring Instances using CloudFormation Init (cfn-init)
 
@@ -1162,10 +1246,7 @@ declare const instanceType: ec2.InstanceType;
 new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    // Amazon Linux 2 uses SystemD
-    generation: ec2.AmazonLinuxGeneration: AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
 
   init: ec2.CloudFormationInit.fromElements([
     // Create a simple config file that runs a Python web server
@@ -1701,9 +1782,7 @@ The following demonstrates how to create a launch template with an Amazon Machin
 declare const vpc: ec2.Vpc;
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
@@ -1733,7 +1812,7 @@ declare const instanceType: ec2.InstanceType;
 new ec2.Instance(this, 'Instance1', {
   vpc,
   instanceType,
-  machineImage: ec2.MachineImage.latestAmazonLinux(),
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
   detailedMonitoring: true,
 });
 ```
@@ -1764,9 +1843,7 @@ new ec2.Instance(this, 'Instance1', {
   instanceType,
 
   // Amazon Linux 2 comes with SSM Agent by default
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
 
   // Turn on SSM
   ssmSessionPermissions: true,
