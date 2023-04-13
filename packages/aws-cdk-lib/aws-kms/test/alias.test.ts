@@ -330,3 +330,31 @@ test('throws error when alias contains illegal characters', () => {
   }).toThrowError();
 });
 
+test('does not add alias if starts with token', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  new Key(stack, 'Key', {
+    alias: `${Aws.ACCOUNT_ID}MyKey`,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            Ref: 'AWS::AccountId',
+          },
+          'MyKey',
+        ],
+      ],
+    },
+    TargetKeyId: {
+      'Fn::GetAtt': [
+        'Key961B73FD',
+        'Arn',
+      ],
+    },
+  });
+});
+
