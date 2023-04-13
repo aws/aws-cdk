@@ -1,39 +1,40 @@
 {
-  "name": "@aws-cdk/aws-iotevents-alpha",
+  "name": "@aws-cdk/aws-location-alpha",
   "version": "0.0.0",
-  "private": false,
-  "description": "The CDK Construct Library for AWS::IoTEvents",
+  "description": "The CDK Construct Library for AWS::Location",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
+    "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoTEvents.Alpha",
-        "packageId": "Amazon.CDK.AWS.IoTEvents.Alpha",
+        "namespace": "Amazon.CDK.AWS.Location.Alpha",
+        "packageId": "Amazon.CDK.AWS.Location.Alpha",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.iotevents.alpha",
+        "package": "software.amazon.awscdk.services.location.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iotevents-alpha"
+          "artifactId": "location-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-iotevents-alpha",
-        "module": "aws_cdk.aws_iotevents_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
-        ]
+        ],
+        "distName": "aws-cdk.aws-location-alpha",
+        "module": "aws_cdk.aws_location_alpha"
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkioteventsalpha"
+        "packageName": "awscdklocationalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
@@ -45,18 +46,18 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-iotevents"
+    "directory": "packages/@aws-cdk/aws-location-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner",
+    "watch": "cdk-watch",
     "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "pkglint": "pkglint -f",
-    "test": "cdk-test",
-    "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
@@ -66,15 +67,15 @@
   },
   "cdk-build": {
     "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
+      "AWSLINT_BASE_CONSTRUCT": "true"
     }
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "AWS::IoTEvents",
-    "aws-iotevents"
+    "AWS::Location",
+    "aws-location"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -88,7 +89,6 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
@@ -101,11 +101,6 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
@@ -113,6 +108,12 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "private": false,
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
   },
   "pkglint": {
     "exclude": [

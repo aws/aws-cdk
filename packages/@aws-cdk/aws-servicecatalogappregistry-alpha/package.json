@@ -1,25 +1,32 @@
 {
-  "name": "@aws-cdk/aws-location-alpha",
+  "name": "@aws-cdk/aws-servicecatalogappregistry-alpha",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::Location",
+  "description": "The CDK Construct Library for AWS::ServiceCatalogAppRegistry",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Location.Alpha",
-        "packageId": "Amazon.CDK.AWS.Location.Alpha",
+        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry.Alpha",
+        "packageId": "Amazon.CDK.AWS.ServiceCatalogAppRegistry.Alpha",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.location.alpha",
+        "package": "software.amazon.awscdk.services.servicecatalogappregistry.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "location-alpha"
+          "artifactId": "servicecatalogappregistry-alpha"
         }
       },
       "python": {
@@ -27,26 +34,19 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ],
-        "distName": "aws-cdk.aws-location-alpha",
-        "module": "aws_cdk.aws_location_alpha"
+        "distName": "aws-cdk.aws-servicecatalogappregistry-alpha",
+        "module": "aws_cdk.aws_servicecatalogappregistry_alpha"
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdklocationalpha"
-      }
-    },
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
+        "packageName": "awscdkservicecatalogappregistryalpha"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-location"
+    "directory": "packages/@aws-cdk/aws-servicecatalogappregistry-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -74,8 +74,8 @@
     "aws",
     "cdk",
     "constructs",
-    "AWS::Location",
-    "aws-location"
+    "AWS::ServiceCatalogAppRegistry",
+    "aws-servicecatalogappregistry"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -109,12 +109,12 @@
   "publishConfig": {
     "tag": "latest"
   },
-  "private": false,
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
+  "private": false,
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

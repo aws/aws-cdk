@@ -1,11 +1,37 @@
 {
-  "name": "@aws-cdk/aws-servicecatalogappregistry-alpha",
+  "name": "@aws-cdk/aws-kinesisanalytics-flink-alpha",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::ServiceCatalogAppRegistry",
+  "description": "A CDK Construct Library for Kinesis Analytics Flink applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.kinesisanalytics.flink.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "kinesisanalytics-flink-alpha"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-kinesisanalytics-flink-alpha",
+        "module": "aws_cdk.aws_kinesisanalytics_flink_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkkinesisanalyticsflinkalpha"
+      }
+    },
     "projectReferences": true,
     "metadata": {
       "jsii": {
@@ -13,42 +39,13 @@
           "strict": true
         }
       }
-    },
-    "targets": {
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry.Alpha",
-        "packageId": "Amazon.CDK.AWS.ServiceCatalogAppRegistry.Alpha",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
-      },
-      "java": {
-        "package": "software.amazon.awscdk.services.servicecatalogappregistry.alpha",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "servicecatalogappregistry-alpha"
-        }
-      },
-      "python": {
-        "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
-        ],
-        "distName": "aws-cdk.aws-servicecatalogappregistry-alpha",
-        "module": "aws_cdk.aws_servicecatalogappregistry_alpha"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkservicecatalogappregistryalpha"
-      }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-servicecatalogappregistry"
+    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink-alpha"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
@@ -65,17 +62,13 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": "true"
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "AWS::ServiceCatalogAppRegistry",
-    "aws-servicecatalogappregistry"
+    "kinesis",
+    "analytics",
+    "kinesisanalytcs",
+    "flink"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -86,14 +79,15 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
   "dependencies": {},
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
@@ -101,18 +95,23 @@
   "engines": {
     "node": ">= 14.15.0"
   },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
   "publishConfig": {
     "tag": "latest"
-  },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
   },
   "private": false,
   "pkglint": {
