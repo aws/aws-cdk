@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-batch"
+    "directory": "packages/@aws-cdk/aws-batch-alpha"
   },
   "scripts": {
     "build": "cdk-build",
