@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-glue-alpha",
+  "name": "@aws-cdk/aws-sagemaker-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Glue",
+  "description": "The CDK Construct Library for AWS::SageMaker",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.glue.alpha",
+        "package": "software.amazon.awscdk.services.sagemaker.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "glue-alpha"
+          "artifactId": "sagemaker-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Glue.Alpha",
-        "packageId": "Amazon.CDK.AWS.Glue.Alpha",
+        "namespace": "Amazon.CDK.AWS.Sagemaker.Alpha",
+        "packageId": "Amazon.CDK.AWS.Sagemaker.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-glue-alpha",
-        "module": "aws_cdk.aws_glue_alpha",
+        "distName": "aws-cdk.aws-sagemaker-alpha",
+        "module": "aws_cdk.aws_sagemaker_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkgluealpha"
+        "packageName": "awscdksagemakeralpha"
       }
     },
     "projectReferences": true,
@@ -45,16 +45,17 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-glue"
+    "directory": "packages/@aws-cdk/aws-sagemaker-alpha"
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "watch": "cdk-watch",
-    "lint": "cdk-lint",
-    "test": "cdk-test",
     "integ": "integ-runner",
-    "pkglint": "pkglint -f",
+    "lint": "cdk-lint",
     "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
     "awslint": "cdk-awslint",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -65,14 +66,14 @@
   },
   "cdk-build": {
     "env": {
-      "AWSLINT_BASE_CONSTRUCT": "true"
+      "AWSLINT_BASE_CONSTRUCT": true
     }
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "glue"
+    "aws-sagemaker"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -82,16 +83,16 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
   "dependencies": {},
-  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
@@ -101,16 +102,16 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
   },
   "pkglint": {
     "exclude": [

@@ -52,7 +52,7 @@ test('PythonFunction with defaults', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
+    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -69,7 +69,7 @@ test('PythonFunction with index in a subdirectory', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
+    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -86,7 +86,7 @@ test('PythonFunction with index in a nested subdirectory', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub-nested$/),
+    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub-nested$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
