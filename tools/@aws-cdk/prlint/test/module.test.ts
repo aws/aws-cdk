@@ -15,7 +15,7 @@ describe('findModulePath', () => {
   test('single fuzzy match', () => {
     expect(relative(findModulePath('lambda'))).toEqual('packages/aws-cdk-lib');
     expect(relative(findModulePath('s3'))).toEqual('packages/aws-cdk-lib');
-    expect(relative(findModulePath('gamelift'))).toEqual('packages/@aws-cdk/aws-gamelift');
+    expect(relative(findModulePath('gamelift'))).toEqual('packages/@aws-cdk/aws-gamelift-alpha');
     expect(relative(findModulePath('cdk-build-tools'))).toEqual('tools/@aws-cdk/cdk-build-tools');
   });
 
