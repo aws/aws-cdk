@@ -131,6 +131,7 @@ export class AssetManifestBuilder {
     stack: Stack,
     session: ISynthesisSession,
     options: cxschema.AssetManifestOptions = {},
+    dependencies: string[] = [],
   ): string {
     const artifactId = `${stack.artifactId}.assets`;
     const manifestFile = `${artifactId}.json`;
@@ -150,6 +151,7 @@ export class AssetManifestBuilder {
         file: manifestFile,
         ...options,
       },
+      dependencies: dependencies.length > 0 ? dependencies : undefined,
     });
 
     return artifactId;

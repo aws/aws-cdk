@@ -358,7 +358,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {}, [this.stagingStack.dependencyStack.artifactId]);
 
     this.emitArtifact(session, {
       assumeRoleArn: this.deploymentActionRoleArn,
