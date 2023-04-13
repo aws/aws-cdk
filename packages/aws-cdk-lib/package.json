@@ -48,7 +48,7 @@
       "ts-node ./cx-api/build-tools/flag-report.ts"
     ],
     "pre": [
-      "npx ts-node region-info/build-tools/generate-static-data.ts",
+      "npx ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
       "node aws-events-targets/build-tools/gen.js",
       "(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
