@@ -281,7 +281,7 @@ threshold (the "buffer interval"), whichever happens first. You can configure th
 thresholds based on the capabilities of the destination and your use-case. By default, the
 buffer size is 5 MiB and the buffer interval is 5 minutes.
 
-```ts 
+```ts
 // Increase the buffer interval and size to 10 minutes and 8 MiB, respectively
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
@@ -414,7 +414,7 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
-[Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations/test/integ.s3-bucket.lit.ts)
+[Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations-alpha/test/integ.s3-bucket.lit.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.
