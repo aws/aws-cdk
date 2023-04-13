@@ -53,6 +53,18 @@ fi
 
 echo "============================================================================================="
 echo "installing..."
+version=$(node -p "require('./package.json').version")
+# this is super weird. If you run 'npm install' twice
+# and it actually performs an install, then
+# node-bundle test will fail with "npm ERR! maxAge must be a number".
+# This won't happen in most instances because if nothing changes then npm install
+# won't perform an install.
+# In the pipeline however, npm install is run once when all the versions are '0.0.0' (via ./scripts/bump-candidate.sh)
+# and then `align-versions` is run which updates all the versions to
+# (for example) `2.74.0-rc.0` and then npm install is run again here.
+if [ "$version" != "0.0.0" ]; then
+  rm -rf node_modules
+fi
 yarn install --frozen-lockfile --network-timeout 1000000
 
 fail() {
