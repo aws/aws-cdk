@@ -403,5 +403,5 @@ test('Scheduled Ec2 Task throws an error if ephemeralStorageGiB is provided on t
       },
       schedule: events.Schedule.cron({ minute: '*' }),
     });
-  }).toThrow('ephemeralStorageGiB is only supported for Fargate service.');
+  }).toThrow('ephemeralStorageGiB is only supported for Fargate services.');
 });

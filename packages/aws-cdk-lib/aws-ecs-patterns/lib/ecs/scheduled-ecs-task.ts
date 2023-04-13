@@ -104,7 +104,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
     } else if (props.scheduledEc2TaskImageOptions) {
       const taskImageOptions = props.scheduledEc2TaskImageOptions;
       if (taskImageOptions.ephemeralStorageGiB) {
-        throw new Error('ephemeralStorageGiB is only supported for Fargate service.');
+        throw new Error('ephemeralStorageGiB is only supported for Fargate services.');
       }
       // Create a Task Definition for the container to start, also creates a log driver
       this.taskDefinition = new Ec2TaskDefinition(this, 'ScheduledTaskDef');

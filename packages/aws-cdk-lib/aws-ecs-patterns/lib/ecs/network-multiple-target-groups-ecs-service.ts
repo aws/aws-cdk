@@ -108,7 +108,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     } else if (props.taskImageOptions) {
       const taskImageOptions = props.taskImageOptions;
       if (taskImageOptions.ephemeralStorageGiB) {
-        throw new Error('ephemeralStorageGiB is only supported for Fargate service.');
+        throw new Error('ephemeralStorageGiB is only supported for Fargate services.');
       }
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
