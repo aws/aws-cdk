@@ -11,8 +11,21 @@ function replaceAll(s: string, search: string, replace: string) {
 }
 
 export class StringSpecializer {
-  constructor(private readonly stack: Stack, private readonly qualifier: string) {
+  /**
+   * Validate that the given string does not contain tokens
+   */
+  public static validateNoTokens(s: string, what: string) {
+    if (Token.isUnresolved(s)) {
+      throw new Error(`${what} may not contain tokens; only the following literal placeholder strings are allowed: ` + [
+        '${Qualifier}',
+        cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+        cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+        cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+      ].join(', ') + `. Got: ${s}`);
+    }
   }
+
+  constructor(private readonly stack: Stack, private readonly qualifier: string) { }
 
   /**
    * Function to replace placeholders in the input string as much as possible
@@ -29,6 +42,14 @@ export class StringSpecializer {
       accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
       partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
     });
+  }
+
+  /**
+   * Specialize the given string, make sure it doesn't contain tokens
+   */
+  public specializeNoTokens(s: string, what: string): string {
+    StringSpecializer.validateNoTokens(s, what);
+    return this.specialize(s);
   }
 
   /**

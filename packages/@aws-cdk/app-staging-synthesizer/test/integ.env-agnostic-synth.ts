@@ -7,7 +7,7 @@ import { AppStagingSynthesizer } from '../lib';
 const app = new App();
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
-  synthesizer: AppStagingSynthesizer.stackPerEnv({
+  synthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'envAgnostic',
   }),
 });

@@ -13,77 +13,21 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { IConstruct } from 'constructs';
-import { EPHEMERAL_PREFIX } from './app-staging-synthesizer';
+import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole } from './bootstrap-roles';
+import { FileStagingLocation, IStagingStack, IStagingStackFactory, ImageStagingLocation } from './staging-stack';
+
+const EPHEMERAL_PREFIX = 'handoff/';
 
 /**
- * Information returned by the Staging Stack for each file asset.
+ * User configurable options to the DefaultStagingStack
  */
-export interface FileAssetInfo {
+export interface DefaultStagingStackOptions {
   /**
-   * The name of the staging bucket
-   */
-  readonly bucketName: string;
-
-  /**
-   * The arn to assume (fileAssetPublishingRole)
-   */
-  readonly assumeRoleArn: string;
-}
-
-/**
- * Information returned by the Staging Stack for each image asset
- */
-export interface ImageAssetInfo {
-  /**
-   * The name of the staging repository
-   */
-  readonly repoName: string;
-
-  /**
-   * The arn to assume (imageAssetPublishingRole)
-   */
-  readonly assumeRoleArn: string;
-}
-
-/**
- * Information on how a Staging Stack should look.
- */
-export interface IStagingStack extends IConstruct {
-  /**
-   * The app-scoped, environment-keyed bucket created in this staging stack.
-   */
-  readonly stagingBucket?: s3.Bucket;
-
-  /**
-   * The app-scoped, environment-keyed repositories created in this staging stack.
-   * A repository is created per image asset family.
-   */
-  readonly stagingRepos: Record<string, ecr.Repository>;
-
-  /**
-   * The stack to add dependencies to.
-   */
-  readonly dependencyStack: Stack;
-
-  /**
-   * Return staging resource information for a file asset.
-   */
-  addFile(asset: FileAssetSource): FileAssetInfo;
-
-  /**
-   * Return staging resource information for a docker asset.
-   */
-  addDockerImage(asset: DockerImageAssetSource): ImageAssetInfo;
-}
-
-/**
- * Default Staging Stack Properties
- */
-export interface DefaultStagingStackProps extends StackProps {
-  /**
-   * The unique id of the app that the staging stack is scoped to.
+   * A unique identifier for the application that the staging stack belongs to
+   *
+   * This identifier will be used in the name of staging resources
+   * created for this application, and should be unique across CDK apps.
    */
   readonly appId: string;
 
@@ -97,63 +41,100 @@ export interface DefaultStagingStackProps extends StackProps {
   /**
    * Pass in an existing role to be used as the file publishing role.
    *
-   * @default - a well-known name unique to this app/env.
+   * @default - a new role will be created
    */
   readonly fileAssetPublishingRole?: BootstrapRole;
 
   /**
    * Pass in an existing role to be used as the image publishing role.
    *
-   * @default - a well-known name unique to this app/env.
+   * @default - a new role will be created
    */
   readonly imageAssetPublishingRole?: BootstrapRole;
 
-  readonly deployActionRoleArn?: string;
-
   /**
-   * Specify a custom lifecycle rule for ephemeral file assets. If you
-   * specify this property, you must set `prefix: 'eph-'` as part of the rule.
-   * This is the only way to identify ephemeral assets.
+   * The lifetime for handoff file assets
    *
-   * @default - ephemeral assets will be deleted after 10 days
-   */
-  readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
-
-  /**
-   * Retain all assets in the s3 bucket, even the ones that have been
-   * marked ephemeral.
+   * Assets that are only necessary at deployment time (for instance,
+   * CloudFormation templates and Lambda source code bundles) will be
+   * automatically deleted after this many days. Assets that may be
+   * read from the staging bucket during your application's run time
+   * will not be deleted.
    *
-   * @default false
+   * Set this to the length of time you wish to be able to roll back to
+   * previous versions of your application without having to do a new
+   * `cdk synth` and re-upload of assets.
+   *
+   * @default - Duration.days(30)
    */
-  readonly retainEphemeralFileAssets?: boolean;
-
-  /**
-   * Repository lifecycle rules (not fully implemented)
-   */
-  // readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
+  readonly handoffFileAssetLifetime?: Duration;
 }
 
-// export interface StagingRepoLifecycleRule {
-//   readonly lifecycleRules: ecr.LifecycleRule[];
-//   readonly assets: string[];
-// }
+/**
+ * Default Staging Stack Properties
+ */
+export interface DefaultStagingStackProps extends DefaultStagingStackOptions, StackProps {
+  /**
+   * The ARN of the deploy action role, if given
+   *
+   * This role will need permissions to read from to the staging resources.
+   *
+   * @default - The CLI credentials are assumed, no additional permissions are granted.
+   */
+  readonly deployRoleArn?: string;
+
+  /**
+   * The qualifier used to specialize strings
+   *
+   * Shouldn't be necessary but who knows what people might do.
+   */
+  readonly qualifier: string;
+}
 
 /**
  * A default Staging Stack
  */
 export class DefaultStagingStack extends Stack implements IStagingStack {
   /**
+   * Return a factory that will create DefaultStagingStacks
+   */
+  public static factory(options: DefaultStagingStackOptions): IStagingStackFactory {
+    return {
+      obtainStagingResources(stack, context) {
+        const app = App.of(stack);
+        if (!App.isApp(app)) {
+          throw new Error(`Stack ${stack.stackName} must be part of an App`);
+        }
+
+        const stackId = `StagingStack-${options.appId}-${context.environmentString}`;
+        return new DefaultStagingStack(app, stackId, {
+          ...options,
+
+          // Does not need to contain environment because stack names are unique inside an env anyway
+          stackName: `StagingStack-${options.appId}`,
+          env: {
+            account: stack.account,
+            region: stack.region,
+          },
+          appId: options.appId,
+          qualifier: context.qualifier,
+        });
+      },
+    };
+  }
+
+  /**
    * Default asset publishing role name for file (S3) assets.
    */
-  private get DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME() {
-    return `cdk-file-publishing-role-${this.region}-${this.appId}`.slice(0, 63);
+  private get fileRoleName() {
+    return `cdk-${this.appId}-file-publishing-role-${this.region}`.slice(0, 63);
   }
 
   /**
    * Default asset publishing role name for docker (ECR) assets.
    */
-  private get DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME() {
-    return `cdk-asset-publishing-role-${this.region}-${this.appId}`.slice(0, 63);
+  private get imageRoleName() {
+    return `cdk-${this.appId}-asset-publishing-role-${this.region}`.slice(0, 63);
   }
 
   /**
@@ -173,49 +154,43 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
   private readonly appId: string;
   private readonly stagingBucketName?: string;
-  private readonly fileAssetPublishingRoleArn?: string;
-  private readonly fileAssetPublishingRoleId = 'CdkFilePublishingRole';
-  private readonly imageAssetPublishingRoleArn?: string;
-  private readonly imageAssetPublishingRoleId = 'CdkImagePublishingRole';
-  private readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
-  private readonly retainEphemeralFileAssets?: boolean;
-  private readonly deployActionRoleArn?: string;
+
+  /**
+   * File publish role ARN in asset manifest format
+   */
+  private readonly providedFileRole?: BootstrapRole;
+  private fileRole?: iam.IRole;
+  private fileRoleManifestArn?: string;
+
+  /**
+   * Image publishing role ARN in asset manifest format
+   */
+  private readonly providedImageRole?: BootstrapRole;
+  private imageRole?: iam.IRole;
+  private didImageRole = false;
+  private imageRoleManifestArn?: string;
+
+  private readonly deployRoleArn?: string;
   // private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
-  constructor(scope: App, id: string, props: DefaultStagingStackProps) {
+  constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
     });
 
-    this.appId = props.appId;
+    this.appId = props.appId.toLocaleLowerCase();
     this.dependencyStack = this;
 
-    this.deployActionRoleArn = props.deployActionRoleArn;
-    this.ephemeralFileAssetLifecycleRule = this.validateEphemeralAssetLifecycleRule(props.ephemeralFileAssetLifecycleRule);
-    this.retainEphemeralFileAssets = props.retainEphemeralFileAssets;
+    this.deployRoleArn = props.deployRoleArn;
     this.stagingBucketName = props.stagingBucketName;
-    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ?
-      this.validateStagingRole(props.fileAssetPublishingRole).renderRoleArn() : undefined;
-    this.imageAssetPublishingRoleArn = props.imageAssetPublishingRole ?
-      this.validateStagingRole(props.imageAssetPublishingRole).renderRoleArn() : undefined;
+    const specializer = new StringSpecializer(this, props.qualifier);
+
+    this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
+    this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
+
     // this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
-  }
-
-  private validateStagingRole(stagingRole: BootstrapRole) {
-    if (stagingRole.isCliCredentials()) {
-      throw new Error('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
-    }
-    return stagingRole;
-  }
-
-  private validateEphemeralAssetLifecycleRule(rule?: s3.LifecycleRule) {
-    if (!rule) { return rule; }
-    if (rule.prefix !== EPHEMERAL_PREFIX) {
-      throw new Error(`ephemeralAssetLifecycleRule must contain "prefix: '${EPHEMERAL_PREFIX}'" but got "prefix: ${rule.prefix}". This prefix is the only way to identify ephemeral assets.`);
-    }
-    return rule;
   }
 
   // private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
@@ -231,80 +206,77 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   //   return ruleMap;
   // }
 
-  private getFilePublishingRoleArn(): string {
-    if (this.fileAssetPublishingRoleArn) {
-      return this.fileAssetPublishingRoleArn;
+  private ensureFilePublishingRole() {
+    if (this.providedFileRole) {
+      // Override
+      this.fileRoleManifestArn = this.providedFileRole._arnForCloudAssembly();
+      const cfnArn = this.providedFileRole._arnForCloudFormation();
+      this.fileRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkFilePublishingRole', cfnArn) : undefined;
+      return;
     }
-    const role = this.node.tryFindChild(this.fileAssetPublishingRoleId) as iam.Role;
-    if (role === undefined) {
-      throw new Error('Cannot call getFilePublishingRoleArn before createFilePublishingRole');
-    }
-    return Stack.of(this).formatArn({
+
+    const roleName = this.fileRoleName;
+    this.fileRole = new iam.Role(this, 'CdkFilePublishingRole', {
+      roleName,
+      assumedBy: new iam.AccountPrincipal(this.account),
+    });
+
+    this.fileRoleManifestArn = Stack.of(this).formatArn({
       partition: '${AWS::Partition}',
       region: '', // iam is global
       service: 'iam',
       resource: 'role',
-      resourceName: this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME,
+      resourceName: roleName,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
 
-  private createFilePublishingRole() {
-    const roleName = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME;
-    const role = new iam.Role(this, this.fileAssetPublishingRoleId, {
+  private ensureImagePublishingRole() {
+    // It may end up setting imageRole to undefined, but at least we tried
+    if (this.didImageRole) {
+      return;
+    }
+    this.didImageRole = true;
+
+    if (this.providedImageRole) {
+      // Override
+      this.imageRoleManifestArn = this.providedImageRole._arnForCloudAssembly();
+      const cfnArn = this.providedImageRole._arnForCloudFormation();
+      this.imageRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkImagePublishingRole', cfnArn) : undefined;
+      return;
+    }
+
+    const roleName = this.imageRoleName;
+    this.imageRole = new iam.Role(this, 'CdkImagePublishingRole', {
       roleName,
       assumedBy: new iam.AccountPrincipal(this.account),
     });
-    return role;
-  }
-
-  private getImagePublishingRoleArn(): string {
-    if (this.imageAssetPublishingRoleArn) {
-      return this.imageAssetPublishingRoleArn;
-    }
-    const role = this.node.tryFindChild(this.imageAssetPublishingRoleId) as iam.Role;
-    if (role === undefined) {
-      throw new Error('Cannot call getImagePublishingRoleArn before createImagePublishingRole');
-    }
-    return Stack.of(this).formatArn({
+    this.imageRoleManifestArn = Stack.of(this).formatArn({
       partition: '${AWS::Partition}',
       region: '', // iam is global
       service: 'iam',
       resource: 'role',
-      resourceName: this.DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME,
+      resourceName: roleName,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-  }
-
-  private createImagePublishingRole() {
-    const roleName = this.DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME;
-    const role = new iam.Role(this, this.imageAssetPublishingRoleId, {
-      roleName,
-      assumedBy: new iam.AccountPrincipal(this.account),
-    });
-    return role;
   }
 
   private createBucketKey(): kms.IKey {
-    const bucketKeyId = 'BucketKey';
-    const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
-      alias: `alias/cdkstagingkey/${this.account}-${this.region}-${this.appId}`,
+    return new kms.Key(this, 'BucketKey', {
+      alias: `alias/cdk-${this.appId}-staging`,
       admins: [new iam.AccountPrincipal(this.account)],
     });
-    return key;
   }
 
   private getCreateBucket() {
-    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.account}-${this.region}-${this.appId.toLocaleLowerCase()}`;
+    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
     const bucketId = 'CdkStagingBucket';
     const createdBucket = this.node.tryFindChild(bucketId) as s3.Bucket;
     if (createdBucket) {
       return stagingBucketName;
     }
 
-    // Create the role that the KMS key depends on
-    const role = this.createFilePublishingRole();
-    // Create the KMS key that the bucket depends on
+    this.ensureFilePublishingRole();
     const key = this.createBucketKey();
 
     // Create the bucket once the dependencies have been created
@@ -313,10 +285,18 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: s3.BucketEncryption.KMS,
       encryptionKey: key,
-    });
-    bucket.grantReadWrite(role);
 
-    if (this.deployActionRoleArn) {
+      // Many AWS account safety checkers will complain when buckets aren't versioned
+      versioned: true,
+      // Many AWS account safety checkers will complain when SSL isn't enforced
+      enforceSSL: true,
+    });
+
+    if (this.fileRole) {
+      bucket.grantReadWrite(this.fileRole);
+    }
+
+    if (this.deployRoleArn) {
       bucket.addToResourcePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetObject*',
@@ -324,17 +304,20 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
           's3:List*',
         ],
         resources: [bucket.bucketArn, bucket.arnForObjects('*')],
-        principals: [new iam.ArnPrincipal(this.deployActionRoleArn)],
+        principals: [new iam.ArnPrincipal(this.deployRoleArn)],
       }));
     }
 
-    if (this.retainEphemeralFileAssets !== true) {
-      const rule = this.ephemeralFileAssetLifecycleRule ?? {
-        prefix: EPHEMERAL_PREFIX,
-        expiration: Duration.days(10),
-      };
-      bucket.addLifecycleRule(rule);
-    }
+    // Objects should never be overwritten, but let's make sure we have a lifecycle policy
+    // for it anyway.
+    bucket.addLifecycleRule({
+      noncurrentVersionExpiration: Duration.days(365),
+    });
+
+    bucket.addLifecycleRule({
+      prefix: EPHEMERAL_PREFIX,
+      expiration: this.props.handoffFileAssetLifetime ?? Duration.days(30),
+    });
 
     return stagingBucketName;
   }
@@ -348,9 +331,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     }
 
     // Create image publishing role if it doesn't exist
-    this.node.tryFindChild(this.imageAssetPublishingRoleId) as iam.Role ?? this.createImagePublishingRole();
-
-    // TODO: grant permissions to the role
+    this.ensureImagePublishingRole();
 
     const repoName = `${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
     if (this.stagingRepos[asset.assetName] === undefined) {
@@ -358,21 +339,33 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
         repositoryName: repoName,
         // lifecycleRules: this.repositoryLifecycleRules[asset.assetName],
       });
+      if (this.imageRole) {
+        this.stagingRepos[asset.assetName].grantPullPush(this.imageRole);
+      }
     }
     return repoName;
   }
 
-  public addFile(_asset: FileAssetSource): FileAssetInfo {
+  public addFile(asset: FileAssetSource): FileStagingLocation {
+    // Has side effects so must go first
+    const bucketName = this.getCreateBucket();
+
     return {
-      bucketName: this.getCreateBucket(),
-      assumeRoleArn: this.getFilePublishingRoleArn(),
+      bucketName,
+      assumeRoleArn: this.fileRoleManifestArn,
+      prefix: asset.ephemeral ? EPHEMERAL_PREFIX : undefined,
+      dependencyStack: this,
     };
   }
 
-  public addDockerImage(asset: DockerImageAssetSource): ImageAssetInfo {
+  public addDockerImage(asset: DockerImageAssetSource): ImageStagingLocation {
+    // Has side effects so must go first
+    const repoName = this.getCreateRepo(asset);
+
     return {
-      repoName: this.getCreateRepo(asset),
-      assumeRoleArn: this.getImagePublishingRoleArn(),
+      repoName,
+      assumeRoleArn: this.imageRoleManifestArn,
+      dependencyStack: this,
     };
   }
 }

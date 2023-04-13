@@ -1,20 +1,20 @@
-import { App, Stack, CfnResource } from 'aws-cdk-lib';
-import { isAssetManifest } from 'aws-cdk-lib/pipelines/lib/private/cloud-assembly-internals';
-import { AppStagingSynthesizer, BootstrapRole } from '../lib';
-import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import * as fs from 'fs';
+import { App, Stack, CfnResource } from 'aws-cdk-lib';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import { isAssetManifest } from 'aws-cdk-lib/pipelines/lib/private/cloud-assembly-internals';
+import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
+import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 describe('Boostrap Roles', () => {
   test('Can supply existing arns for bootstrapped roles', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        bootstrapRoles: {
+        deploymentRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-          deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+          deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
         },
       }),
     });
@@ -43,11 +43,9 @@ describe('Boostrap Roles', () => {
   test('can supply existing arns for staging roles', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        stagingRoles: {
-          fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
-        },
+        fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'),
       }),
     });
     const stack = new Stack(app, 'Stack', {
@@ -69,18 +67,18 @@ describe('Boostrap Roles', () => {
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
-    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
   });
 
   test('bootstrap roles can be specified as current cli credentials instead', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        bootstrapRoles: {
+        deploymentRoles: {
           cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
           lookupRole: BootstrapRole.cliCredentials(),
-          deploymentActionRole: BootstrapRole.cliCredentials(),
+          deploymentRole: BootstrapRole.cliCredentials(),
         },
       }),
     });
@@ -106,23 +104,10 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.assumeRoleArn).toBeUndefined();
   });
 
-  test('staging roles cannot be specified as cli credentials', () => {
-    const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
-        appId: APP_ID,
-        stagingRoles: {
-          fileAssetPublishingRole: BootstrapRole.cliCredentials(),
-        },
-      }),
-    });
-
-    expect(() => new Stack(app, 'Stack')).toThrowError('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
-  });
-
   test('qualifier is resolved in the synthesizer', () => {
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
-        qualifier: 'abcdef',
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        bootstrapQualifier: 'abcdef',
         appId: APP_ID,
       }),
     });

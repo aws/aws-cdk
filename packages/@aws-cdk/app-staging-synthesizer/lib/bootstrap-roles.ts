@@ -16,6 +16,7 @@ export class BootstrapRole {
    * Specify an existing IAM Role to assume
    */
   public static fromRoleArn(arn: string) {
+    StringSpecializer.validateNoTokens(arn, 'BootstrapRole ARN');
     return new BootstrapRole(arn);
   }
 
@@ -23,28 +24,34 @@ export class BootstrapRole {
 
   private constructor(private readonly roleArn: string) {}
 
+  /**
+   * Whether or not this is object was created using BootstrapRole.cliCredentials()
+   */
   public isCliCredentials() {
     return this.roleArn === BootstrapRole.CLI_CREDS;
   }
 
-  public renderRoleArn(options: {
-    spec?: StringSpecializer,
-    tokenType?: 'asset' | 'cfn',
-  } = {}) {
-    if (this.isCliCredentials()) { return undefined; }
-    if (!options.spec) { return this.roleArn; }
+  /**
+   * @internal
+   */
+  public _arnForCloudFormation() {
+    return this.isCliCredentials() ? undefined : translateAssetTokenToCfnToken(this.roleArn);
+  }
 
-    const arn = options.spec.specialize(this.roleArn);
-    if (options.tokenType === 'asset') {
-      return translateCfnTokenToAssetToken(arn);
-    } else if (options.tokenType === 'cfn') {
-      return translateAssetTokenToCfnToken(arn);
-    } else {
-      return arn;
-    }
+  /**
+   * @internal
+   */
+  public _arnForCloudAssembly() {
+    return this.isCliCredentials() ? undefined : translateCfnTokenToAssetToken(this.roleArn);
+  }
+
+  /**
+   * @internal
+   */
+  public _specialize(spec: StringSpecializer) {
+    return new BootstrapRole(spec.specialize(this.roleArn));
   }
 }
-
 
 /**
  * Roles that are bootstrapped to your account.
@@ -62,7 +69,7 @@ export interface BootstrapRoles {
    *
    * @default - use boostrapped role
    */
-  readonly deploymentActionRole?: BootstrapRole;
+  readonly deploymentRole?: BootstrapRole;
 
   /**
    * Lookup Role
