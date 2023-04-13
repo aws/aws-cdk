@@ -1,28 +1,27 @@
 {
-  "name": "@aws-cdk/aws-gamelift-alpha",
+  "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
   "version": "0.0.0",
-  "private": false,
-  "description": "The CDK Construct Library for AWS::GameLift",
+  "description": "CDK Destinations Constructs for AWS Kinesis Firehose",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.gamelift.alpha",
+        "package": "software.amazon.awscdk.services.kinesisfirehose.destinations.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "gamelift-alpha"
+          "artifactId": "kinesisfirehose-destinations-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.GameLift.Alpha",
-        "packageId": "Amazon.CDK.AWS.GameLift.Alpha",
+        "namespace": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-gamelift-alpha",
-        "module": "aws_cdk.aws_gamelift_alpha",
+        "distName": "aws-cdk.aws-kinesisfirehose-destinations-alpha",
+        "module": "aws_cdk.aws_kinesisfirehose_destinations_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +29,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkgameliftalpha"
+        "packageName": "awscdkkinesisfirehosedestinationsalpha"
       }
     },
     "projectReferences": true,
@@ -45,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-gamelift"
+    "directory": "packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -63,16 +62,11 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "gamelift"
+    "kinesisfirehose"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -89,30 +83,37 @@
     "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"
   },
+  "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "publishConfig": {
     "tag": "latest"
   },
+  "private": false,
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
