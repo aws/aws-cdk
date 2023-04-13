@@ -1,8 +1,10 @@
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as assets from '@aws-cdk/aws-ecr-assets';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { Model } from './model';
 import { hashcode } from './private/util';
+import { FactName } from 'aws-cdk-lib/region-info';
+import { Stack } from 'aws-cdk-lib/core';
 
 /**
  * The configuration for creating a container image.
@@ -36,6 +38,13 @@ export abstract class ContainerImage {
    */
   public static fromAsset(directory: string, options: assets.DockerImageAssetOptions = {}): ContainerImage {
     return new AssetImage(directory, options);
+  }
+
+  /**
+   * Reference an AWS Deep Learning Container image
+   */
+  public static fromDlc(repositoryName: string, tag: string, accountId?: string): ContainerImage {
+    return new DlcEcrImage(repositoryName, tag, accountId);
   }
 
   /**
@@ -79,5 +88,29 @@ class AssetImage extends ContainerImage {
     return {
       imageName: this.asset.imageUri,
     };
+  }
+}
+
+class DlcEcrImage extends ContainerImage {
+
+  constructor(private readonly repositoryName: string, private readonly tag: string, private readonly accountId?: string) {
+    super();
+  }
+
+  public bind(scope: Construct, model: Model): ContainerImageConfig {
+    const accountId = this.accountId ?? Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
+
+    const repository = ecr.Repository.fromRepositoryAttributes(scope, 'DlcRepository', {
+      repositoryName: this.repositoryName,
+      repositoryArn: ecr.Repository.arnForLocalRepository(
+        this.repositoryName,
+        scope,
+        accountId,
+      ),
+    });
+
+    repository.grantPull(model);
+
+    return { imageName: `${repository.repositoryUri}:${this.tag}` };
   }
 }

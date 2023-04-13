@@ -1,82 +1,201 @@
-import { Template } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
-import * as batch from '../lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
-describe('Batch Job Queue', () => {
-  let stack: cdk.Stack;
-  let computeEnvironment: batch.ComputeEnvironment;
 
-  beforeEach(() => {
-    stack = new cdk.Stack();
-    computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
-      managed: false,
-    });
+test('JobQueue respects computeEnvironments', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
   });
 
-  it('can be imported from an ARN', () => {
-    // WHEN
-    const existingJobQ = new batch.JobQueue(stack, 'test-job-queue', {
-      priority: 1,
-      enabled: false,
-      computeEnvironments: [
-        {
-          computeEnvironment,
-          order: 1,
-        },
-      ],
-    });
-    const jobQFromArn = batch.JobQueue.fromJobQueueArn(stack, 'test-job-queue-from-arn', existingJobQ.jobQueueArn);
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    ComputeEnvironmentOrder: [{
+      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+      Order: 1,
+    }],
+    Priority: 10,
+    State: 'ENABLED',
+  });
+});
 
-    // THEN
-    expect(jobQFromArn.jobQueueArn).toEqual(existingJobQ.jobQueueArn);
+test('JobQueue respects enabled', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+    enabled: false,
   });
 
-  it('renders the correct CloudFormation properties', () => {
-    // WHEN
-    const props: batch.JobQueueProps = {
-      priority: 1,
-      enabled: false,
-      computeEnvironments: [
-        {
-          computeEnvironment,
-          order: 1,
-        },
-      ],
-      jobQueueName: 'test-job-queue-name',
-    };
-    new batch.JobQueue(stack, 'test-job-queue', props);
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    ComputeEnvironmentOrder: [{
+      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+      Order: 1,
+    }],
+    Priority: 10,
+    State: 'DISABLED',
+  });
+});
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-      JobQueueName: props.jobQueueName,
-      State: props.enabled ? 'ENABLED' : 'DISABLED',
-      Priority: props.priority,
-      ComputeEnvironmentOrder: [
-        {
-          ComputeEnvironment: {
-            Ref: 'testcomputeenv547FFD1A',
-          },
-          Order: 1,
-        },
-      ],
-    });
+test('JobQueue respects name', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+    jobQueueName: 'JoBBQ',
   });
 
-  it('should have a default queue priority of 1', () => {
-    // WHEN
-    new batch.JobQueue(stack, 'test-job-queue', {
-      enabled: false,
-      computeEnvironments: [
-        {
-          computeEnvironment,
-          order: 1,
-        },
-      ],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-      Priority: 1,
-    });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    ComputeEnvironmentOrder: [{
+      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+      Order: 1,
+    }],
+    Priority: 10,
+    JobQueueName: 'JoBBQ',
   });
+});
+
+test('JobQueue respects schedulingPolicy', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'JobQueue', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+    schedulingPolicy: new FairshareSchedulingPolicy(stack, 'FairsharePolicy'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    ComputeEnvironmentOrder: [{
+      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+      Order: 1,
+    }],
+    Priority: 10,
+    SchedulingPolicyArn: {
+      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+    },
+  });
+});
+
+test('JobQueue respects addComputeEnvironment', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  const queue = new JobQueue(stack, 'JobQueue', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+    schedulingPolicy: new FairshareSchedulingPolicy(stack, 'FairsharePolicy'),
+  });
+
+  queue.addComputeEnvironment(
+    new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
+      vpc,
+    }),
+    2,
+  );
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    ComputeEnvironmentOrder: [
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['FirstCEAD3794AD', 'ComputeEnvironmentArn'] },
+        Order: 1,
+      },
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['SecondCEEBA93938', 'ComputeEnvironmentArn'] },
+        Order: 2,
+      },
+    ],
+    Priority: 10,
+    SchedulingPolicyArn: {
+      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+    },
+  });
+});
+
+test('can be imported from ARN', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const queue = JobQueue.fromJobQueueArn(stack, 'importedJobQueue',
+    'arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
+
+  // THEN
+  expect(queue.jobQueueArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
+});
+
+test('JobQueue throws when the same order is assigned to multiple ComputeEnvironments', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  const joBBQ = new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+  });
+
+  joBBQ.addComputeEnvironment(
+    new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
+      vpc,
+    }),
+    1,
+  );
+
+  expect(() => {
+    Template.fromStack(stack);
+  }).toThrow(/assigns the same order to different ComputeEnvironments/);
 });
