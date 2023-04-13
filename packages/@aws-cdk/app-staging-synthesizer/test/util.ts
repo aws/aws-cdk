@@ -1,4 +1,4 @@
-import { StackPerEnvProps, AppStagingSynthesizer, BootstrapRole } from '../lib';
+import { DefaultResourcesOptions, AppStagingSynthesizer, BootstrapRole } from '../lib';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
 export const CFN_CONTEXT = {
@@ -20,8 +20,8 @@ export function last<A>(xs?: A[]): A | undefined {
 }
 
 export class TestAppScopedStagingSynthesizer {
-  public static stackPerEnv(props: Partial<StackPerEnvProps> = {}): AppStagingSynthesizer {
-    return AppStagingSynthesizer.stackPerEnv({
+  public static stackPerEnv(props: Partial<DefaultResourcesOptions> = {}): AppStagingSynthesizer {
+    return AppStagingSynthesizer.defaultResources({
       appId: props.appId ?? APP_ID,
       bootstrapRoles: {
         cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),

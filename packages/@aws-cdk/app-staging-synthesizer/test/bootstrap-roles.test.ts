@@ -9,7 +9,7 @@ describe('Boostrap Roles', () => {
   test('Can supply existing arns for bootstrapped roles', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         bootstrapRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
@@ -43,7 +43,7 @@ describe('Boostrap Roles', () => {
   test('can supply existing arns for staging roles', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         stagingRoles: {
           fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
@@ -75,7 +75,7 @@ describe('Boostrap Roles', () => {
   test('bootstrap roles can be specified as current cli credentials instead', () => {
     // GIVEN
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         bootstrapRoles: {
           cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
@@ -108,7 +108,7 @@ describe('Boostrap Roles', () => {
 
   test('staging roles cannot be specified as cli credentials', () => {
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         stagingRoles: {
           fileAssetPublishingRole: BootstrapRole.cliCredentials(),
@@ -121,8 +121,8 @@ describe('Boostrap Roles', () => {
 
   test('qualifier is resolved in the synthesizer', () => {
     const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
-        qualifier: 'abcdef',
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        bootstrapQualifier: 'abcdef',
         appId: APP_ID,
       }),
     });
