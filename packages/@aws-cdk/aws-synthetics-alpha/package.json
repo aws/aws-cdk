@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-redshift-alpha",
+  "name": "@aws-cdk/aws-synthetics-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Redshift",
+  "description": "The CDK Construct Library for AWS::Synthetics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.services.redshift.alpha",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "redshift-alpha"
-        }
-      },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Redshift.Alpha",
-        "packageId": "Amazon.CDK.AWS.Redshift.Alpha",
+        "namespace": "Amazon.CDK.AWS.Synthetics.Alpha",
+        "packageId": "Amazon.CDK.AWS.Synthetics.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
+      "java": {
+        "package": "software.amazon.awscdk.services.synthetics.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "synthetics-alpha"
+        }
+      },
       "python": {
-        "distName": "aws-cdk.aws-redshift-alpha",
-        "module": "aws_cdk.aws_redshift_alpha",
+        "distName": "aws-cdk.aws-synthetics-alpha",
+        "module": "aws_cdk.aws_synthetics_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,14 +30,14 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkredshiftalpha"
+        "packageName": "awscdksyntheticsalpha"
       }
     },
     "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": false
+          "strict": true
         }
       }
     }
@@ -45,8 +45,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-redshift"
+    "directory": "packages/@aws-cdk/aws-synthetics-alpha"
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
@@ -72,7 +73,8 @@
     "aws",
     "cdk",
     "constructs",
-    "redshift"
+    "AWS::Synthetics",
+    "aws-synthetics"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -86,14 +88,10 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1329.0",
-    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
-  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
@@ -101,18 +99,18 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
   },
   "pkglint": {
     "exclude": [
