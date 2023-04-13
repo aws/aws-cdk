@@ -31,7 +31,7 @@ test('GoFunction with defaults', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
+    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -48,7 +48,7 @@ test('GoFunction with using provided runtime', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
+    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -65,7 +65,7 @@ test('GoFunction with using golang runtime', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api$/),
+    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -106,7 +106,7 @@ test('resolves entry to an absolute path', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go\/test\/lambda-handler-vendor\/cmd\/api\/main.go$/),
+    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api\/main.go$/),
   }));
 });
 
