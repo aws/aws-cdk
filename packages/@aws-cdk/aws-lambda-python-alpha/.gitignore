@@ -18,7 +18,7 @@ nyc.config.js
 !jest.config.js
 
 junit.xml
-test/lambda-handler-*/requirements.txt
+test/lambda-handler*/requirements.txt
 
 !**/*.snapshot/**/asset.*/*.js
 !**/*.snapshot/**/asset.*/*.d.ts
