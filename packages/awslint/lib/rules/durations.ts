@@ -1,7 +1,7 @@
 import { Property } from 'jsii-reflect';
 import { Linter } from '../linter';
 
-const DURATION_FQN = '@aws-cdk/core.Duration';
+const DURATION_FQN = 'aws-cdk-lib.Duration';
 const DURATION_SUFFIX = /(Days|Milli(?:(?:S|s)econd)?s?|Sec(?:ond)?s?)$/;
 const EXCLUDE_ANNOTATION_DURATION_PROP_TYPE = '[disable-awslint:duration-prop-type]';
 

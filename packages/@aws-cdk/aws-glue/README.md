@@ -333,8 +333,7 @@ new glue.Table(this, 'MyTable', {
 
 You can enable encryption on a Table's data:
 
-* `Unencrypted` - files are not encrypted. The default encryption setting.
-* [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
+* [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - (default) Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
 
 ```ts
 declare const myDatabase: glue.Database;
