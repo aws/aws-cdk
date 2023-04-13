@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { Column } from './schema';
-import { ColumnCountMismatchHandlingAction, CompressionType, InvalidCharHandlingAction, NumericOverflowHandlingAction, StorageParameters, SurplusBytesHandlingAction, SurplusCharHandlingAction } from './storage-parameter';
+import { StorageParameterValue, StorageParameters } from './storage-parameter';
 
 /**
  * Properties of a Partition Index.
@@ -74,36 +74,16 @@ export enum TableEncryption {
   CLIENT_SIDE_KMS = 'CSE-KMS'
 }
 
-interface BaseStorageParameter {
+export interface StorageParameter {
   /**
    * The key of the property. If you want to use a custom key, use `StorageParameters.custom()`.
    */
   readonly key: StorageParameters;
-}
 
-/**
- * A property of the Storage Descriptor.
- */
-export interface CustomStorageParameter extends BaseStorageParameter {
   /**
-   * The value of the property.
+   * The value of the property. If you want to use a custom value, use `StorageParameter.custom()`.
    */
-  readonly value: string;
-}
-
-/**
- * A property of the Storage Descriptor, but with a value provided by the CDK.
- */
-export interface StorageParameter extends BaseStorageParameter {
-  /**
-   * The value of the property. This is a pre-defined value.
-   */
-  readonly value: ColumnCountMismatchHandlingAction
-  | CompressionType
-  | InvalidCharHandlingAction
-  | NumericOverflowHandlingAction
-  | SurplusBytesHandlingAction
-  | SurplusCharHandlingAction;
+  readonly value: StorageParameterValue;
 }
 
 export interface TableAttributes {
@@ -229,10 +209,10 @@ export interface TableProps {
    *    declare const glueDatabase: glue.IDatabase;
    *    const table = new glue.Table(this, 'Table', {
    *      storageParameters: [
-   *          { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '1' },
-   *          { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
-   *          { key: glue.StorageParameters.custom('foo'), value: 'bar' }, // Will have no effect
-   *          { key: glue.StorageParameters.custom('separatorChar'), value: ',' }, // Will describe the separator char used in the data
+   *          { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: glue.StorageParameterValue.custom('1') },
+   *          { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.StorageParameterValue.compressionType(glue.CompressionType.GZIP) },
+   *          { key: glue.StorageParameters.custom('foo'), value: glue.StorageParameterValue.custom('bar') }, // Will have no effect
+   *          { key: glue.StorageParameters.custom('separatorChar'), value: glue.StorageParameterValue.custom(',') }, // Will describe the separator char used in the data
    *      ],
    *      // ...
    *      database: glueDatabase,
@@ -245,7 +225,7 @@ export interface TableProps {
    *
    * @default - The parameter is not defined
    */
-  readonly storageParameters?: (StorageParameter | CustomStorageParameter)[];
+  readonly storageParameters?: StorageParameter[];
 }
 
 /**
@@ -341,7 +321,7 @@ export class Table extends Resource implements ITable {
   /**
    * The tables' storage descriptor properties.
    */
-  public readonly storageDescriptor?: (StorageParameter | CustomStorageParameter)[];
+  public readonly storageDescriptor?: StorageParameter[];
 
   /**
    * Partition indexes must be created one at a time. To avoid
@@ -401,7 +381,7 @@ export class Table extends Resource implements ITable {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             const key = param.key.key;
-            acc[key] = param.value;
+            acc[key] = param.value.value;
             return acc;
           }, {} as { [key: string]: string }) : undefined,
         },

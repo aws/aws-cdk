@@ -163,6 +163,60 @@ export enum ColumnCountMismatchHandlingAction {
   DROP_ROW = 'DROP_ROW',
 }
 
+export class StorageParameterValue {
+  /**
+   * Assigns a value of `CompressionType`
+   */
+  public static compressionType(value: CompressionType): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * Assigns a value of `InvalidCharHandlingAction`
+   */
+  public static invalidCharHandling(value: InvalidCharHandlingAction): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * Assigns a value of `NumericOverflowHandlingAction`
+   */
+  public static numericOverflowHandling(value: NumericOverflowHandlingAction): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * Assigns a value of `SurplusBytesHandlingAction`
+   */
+  public static surplusBytesHandling(value: SurplusBytesHandlingAction): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * Assigns a value of `SurplusCharHandlingAction`
+   */
+  public static surplusCharHandling(value: SurplusCharHandlingAction): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * Assigns a value of `ColumnCountMismatchHandlingAction`
+   */
+  public static columnCountMismatchHandling(value: ColumnCountMismatchHandlingAction): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  /**
+   * A custom storage parameter value that can be used to assign to any storage parameter.
+   * @param value - The value of the storage parameter.
+   */
+  public static custom(value: string): StorageParameterValue {
+    return new StorageParameterValue(value);
+  }
+
+  protected constructor(public readonly value: string) {}
+}
+
 export class StorageParameters {
   /**
    * The number of rows to skip at the top of a CSV file when the table is being created.

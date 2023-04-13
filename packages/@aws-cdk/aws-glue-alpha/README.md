@@ -225,9 +225,9 @@ Glue tables can be configured to contain user-defined properties, to describe th
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   storageParameters: [
-    { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '1' },
-    { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
-    { key: glue.StorageParameters.custom('separatorChar'), value: ',' }, // Will describe the separator char used in the data
+    { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: glue.StorageParameterValue.custom('1') },
+    { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.StorageParameterValue.compressionType(glue.CompressionType.GZIP) },
+    { key: glue.StorageParameters.custom('separatorChar'), value: glue.StorageParameterValue.custom(',') }, // Will describe the separator char used in the data
   ],
   // ...
   database: myDatabase,

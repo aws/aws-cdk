@@ -1612,9 +1612,9 @@ test('storage descriptor parameters', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
     storageParameters: [
-      { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '2' },
-      { key: glue.StorageParameters.custom('separatorChar'), value: ',' },
-      { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
+      { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: glue.StorageParameterValue.custom('2') },
+      { key: glue.StorageParameters.custom('separatorChar'), value: glue.StorageParameterValue.custom(',') },
+      { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.StorageParameterValue.compressionType(glue.CompressionType.GZIP) },
     ],
   });
 
