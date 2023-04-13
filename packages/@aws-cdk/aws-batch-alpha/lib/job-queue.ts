@@ -198,7 +198,7 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
-    this.jobQueueName = this.getResourceNameAttribute(resource.ref);
+    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }
@@ -221,5 +221,5 @@ function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeE
     seenOrders.push(ce.order);
   }
 
-  return [];
+  return seenOrders.length === 0 ? ['This JobQueue does not link any ComputeEnvironments'] : [];
 }
