@@ -398,6 +398,21 @@ export interface IBaseService extends IService {
    * The cluster that hosts the service.
    */
   readonly cluster: ICluster;
+
+  /**
+   * The method that returns the specified CloudWatch metric name for this service.
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The method that returns the CloudWatch metric for this service's memory utilization.
+   */
+  metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The method that returns the CloudWatch metric for this service's CPU utilization.
+   */
+  metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -439,6 +454,23 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
+
+      public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return new cloudwatch.Metric({
+          namespace: 'AWS/ECS',
+          metricName,
+          dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+          ...props,
+        }).attachTo(this);
+      }
+
+      public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('MemoryUtilization', props);
+      }
+
+      public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('CPUUtilization', props);
+      }
     }
 
     return new Import(scope, id, {

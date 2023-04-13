@@ -3,6 +3,7 @@ import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
+import * as cloudwatch from '../../../aws-cloudwatch';
 
 /**
  * The properties to import from the service.
@@ -57,6 +58,23 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
+
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+      return new cloudwatch.Metric({
+        namespace: 'AWS/ECS',
+        metricName,
+        dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+        ...props,
+      }).attachTo(this);
+    }
+
+    public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+      return this.metric('MemoryUtilization', props);
+    }
+
+    public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+      return this.metric('CPUUtilization', props);
+    }
   }
   return new Import(scope, id, {
     environmentFromArn: arn,
