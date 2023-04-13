@@ -20,18 +20,14 @@
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eddae78388dd938d03998219503a0c3e6662678efa97b8099af7c02290533da6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-glue.assets"
-        ],
+        "additionalDependencies": ["aws-cdk-glue.assets"],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": [
-        "aws-cdk-glue.assets"
-      ],
+      "dependencies": ["aws-cdk-glue.assets"],
       "metadata": {
         "/aws-cdk-glue/DataBucket/Resource": [
           {

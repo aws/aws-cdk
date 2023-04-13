@@ -1344,7 +1344,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Unencrypted` otherwise.
+   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -1983,7 +1983,22 @@ export class Bucket extends BucketBase {
 
   /**
    * Set up key properties and return the Bucket encryption property from the
-   * user's configuration.
+   * user's configuration, according to the following table:
+   *
+   * | props.encryption | props.encryptionKey | props.bucketKeyEnabled | bucketEncryption (return value) | encryptionKey (return value) |
+   * |------------------|---------------------|------------------------|---------------------------------|------------------------------|
+   * | undefined        | undefined           | e                      | undefined                       | undefined                    |
+   * | UNENCRYPTED      | undefined           | false                  | undefined                       | undefined                    |
+   * | undefined        | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+   * | KMS              | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+   * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
+   * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
+   * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
+   * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
+   * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
+   * | S3_MANAGED       | undefined           | true                   | ERROR!                          | ERROR!                       |
+   * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,
@@ -2407,7 +2422,10 @@ export class Bucket extends BucketBase {
  */
 export enum BucketEncryption {
   /**
-   * Objects in the bucket are not encrypted.
+   * Previous option. Buckets can not be unencrypted now.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
+   * @deprecated S3 applies server-side encryption with SSE-S3 for every bucket
+   * that default encryption is not configured.
    */
   UNENCRYPTED = 'UNENCRYPTED',
 
