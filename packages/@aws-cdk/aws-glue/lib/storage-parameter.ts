@@ -24,7 +24,7 @@ export enum CompressionType {
 }
 
 /**
- * The action to assign to `INVALID_CHAR_HANDLING`.
+ * Specifies the action to perform when query results contain invalid UTF-8 character values.
  */
 export enum InvalidCharHandlingAction {
   /**
