@@ -1,8 +1,7 @@
-import { StringParameter } from '@aws-cdk/aws-ssm';
-import * as cdk from '@aws-cdk/core';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
-import * as ec2 from '../lib';
-import { SubnetType } from '../lib';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import * as cdk from 'aws-cdk-lib/core';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const app = new cdk.App();
 const account = process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
@@ -27,7 +26,7 @@ new StringParameter(stackLookup, 'StringParameter', {
 });
 
 new cdk.CfnOutput(stackLookup, 'OutputFromLookup', { value: `Region fromLookup: ${vpcFromLookup.env.region}` });
-new cdk.CfnOutput(stackLookup, 'SuccessfulLookup', { value: `Lookup pending: ${vpcFromLookup.selectSubnets({ subnetType: SubnetType.PUBLIC }).isPendingLookup}` });
+new cdk.CfnOutput(stackLookup, 'SuccessfulLookup', { value: `Lookup pending: ${vpcFromLookup.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).isPendingLookup}` });
 
 const testCase = new IntegTest(app, 'ArchiveTest', {
   testCases: [stackLookup],
