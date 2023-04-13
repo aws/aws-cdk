@@ -45,7 +45,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+        fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'),
       }),
     });
     const stack = new Stack(app, 'Stack', {
@@ -67,7 +67,7 @@ describe('Boostrap Roles', () => {
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
-    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn');
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
   });
 
   test('bootstrap roles can be specified as current cli credentials instead', () => {
@@ -102,17 +102,6 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toBeUndefined();
     expect(stackArtifact.lookupRole).toBeUndefined();
     expect(stackArtifact.assumeRoleArn).toBeUndefined();
-  });
-
-  test('staging roles cannot be specified as cli credentials', () => {
-    const app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-        appId: APP_ID,
-        fileAssetPublishingRole: BootstrapRole.cliCredentials(),
-      }),
-    });
-
-    expect(() => new Stack(app, 'Stack')).toThrowError('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
   });
 
   test('qualifier is resolved in the synthesizer', () => {

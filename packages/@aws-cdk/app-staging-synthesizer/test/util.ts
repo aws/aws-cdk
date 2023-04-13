@@ -6,7 +6,7 @@ export const CFN_CONTEXT = {
   'AWS::AccountId': 'the_account',
   'AWS::URLSuffix': 'domain.aws',
 };
-export const APP_ID = 'appId';
+export const APP_ID = 'appid';
 export const CLOUDFORMATION_EXECUTION_ROLE = 'role';
 export const DEPLOY_ACTION_ROLE = 'role';
 export const LOOKUP_ROLE = 'role';

@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
@@ -38,7 +38,7 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -51,10 +51,10 @@ describe(AppStagingSynthesizer, () => {
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         '000000000000-us-east-1': {
-          bucketName: `cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`,
+          bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-file-publishing-role-us-east-1-${APP_ID}`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-publishing-role-us-east-1`,
         },
       },
     });
@@ -85,7 +85,7 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack2');
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${accountToken}-${regionToken}-${APP_ID.toLocaleLowerCase()}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -98,10 +98,10 @@ describe(AppStagingSynthesizer, () => {
       source: { path: 'Stack2.template.json', packaging: 'file' },
       destinations: {
         '111111111111-us-east-2': {
-          bucketName: `cdk-111111111111-us-east-2-${APP_ID.toLocaleLowerCase()}`,
+          bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
-          assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-file-publishing-role-us-east-2-${APP_ID}`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-${APP_ID}-file-publishing-role-us-east-2`,
         },
       },
     });
@@ -118,7 +118,7 @@ describe(AppStagingSynthesizer, () => {
     // THEN - we have a stack dependency on the staging stack
     expect(stack.dependencies.length).toEqual(1);
     const depStack = stack.dependencies[0];
-    expect(depStack.stackName).toEqual(`StagingStack${APP_ID}`);
+    expect(depStack.stackName).toEqual(`StagingStack-${APP_ID}`);
   });
 
   test('add file asset', () => {
@@ -130,8 +130,8 @@ describe(AppStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    expect(evalCFN(location.bucketName)).toEqual(`cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}`);
-    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-000000000000-us-east-1-${APP_ID.toLocaleLowerCase()}/abcdef.js`);
+    expect(evalCFN(location.bucketName)).toEqual(`cdk-${APP_ID}-staging-000000000000-us-east-1`);
+    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.js`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -155,7 +155,7 @@ describe(AppStagingSynthesizer, () => {
   });
 
   describe('ephemeral assets', () => {
-    test('ephemeral assets have the \'eph-\' prefix', () => {
+    test('ephemeral assets have the \'handoff/\' prefix', () => {
       // WHEN
       const location = stack.synthesizer.addFileAsset({
         fileName: __filename,
@@ -165,7 +165,7 @@ describe(AppStagingSynthesizer, () => {
       });
 
       // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual('eph-abcdef.js');
+      expect(evalCFN(location.objectKey)).toEqual('handoff/abcdef.js');
     });
 
     test('ephemeral assets do not get specified bucketPrefix', () => {
@@ -189,7 +189,7 @@ describe(AppStagingSynthesizer, () => {
       });
 
       // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual('eph/abcdef.js');
+      expect(evalCFN(location.objectKey)).toEqual('handoff/abcdef.js');
     });
 
     test('s3 bucket has lifecycle rule on ephemeral assets by default', () => {
@@ -202,15 +202,15 @@ describe(AppStagingSynthesizer, () => {
       const asm = app.synth();
 
       // THEN
-      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-east-1');
+      const stagingStackArtifact = asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-east-1`);
 
       Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
-          Rules: [{
-            ExpirationInDays: 10,
-            Prefix: 'eph-',
+          Rules: Match.arrayWith([{
+            ExpirationInDays: 30,
+            Prefix: 'handoff/',
             Status: 'Enabled',
-          }],
+          }]),
         },
       });
     });
@@ -219,7 +219,7 @@ describe(AppStagingSynthesizer, () => {
       // GIVEN
       app = new App({
         defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-          handoverFileAssetLifetime: Duration.days(1),
+          handoffFileAssetLifetime: Duration.days(1),
         }),
       });
       stack = new Stack(app, 'Stack', {
@@ -236,15 +236,15 @@ describe(AppStagingSynthesizer, () => {
       const asm = app.synth();
 
       // THEN
-      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-west-2');
+      const stagingStackArtifact = asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-west-2`);
 
       Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
-          Rules: [{
+          Rules: Match.arrayWith([{
             ExpirationInDays: 1,
-            Prefix: 'eph/',
+            Prefix: 'handoff/',
             Status: 'Enabled',
-          }],
+          }]),
         },
       });
     });
@@ -314,20 +314,7 @@ describe(AppStagingSynthesizer, () => {
       // GIVEN - App with Stack with specific environment
 
       // THEN - Expect environment agnostic stack to fail
-      expect(() => new Stack(app, 'NoEnvStack')).toThrowError('AppStagingSynthesizer cannot synthesize CDK Apps with BOTH environment-agnostic stacks and set environment stacks.\nPlease either specify environments for all stacks or no stacks in the CDK App.');
-    });
-
-    test('metadata for cdk-env is only added once on the app', () => {
-      // GIVEN - Additional App with specific environment
-      new Stack(app, 'EnvStack', {
-        env: {
-          account: '000000000000',
-          region: 'us-west-2',
-        },
-      });
-
-      // THEN - We only add the env metadata once
-      expect(app.node.metadata.filter((m) => m.type === 'cdk-env').length).toEqual(1);
+      expect(() => new Stack(app, 'NoEnvStack')).toThrowError(/It is not safe to use AppStagingSynthesizer/);
     });
   });
 
@@ -336,7 +323,7 @@ describe(AppStagingSynthesizer, () => {
       defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
         appId: Lazy.string({ produce: () => 'appId' }),
       }),
-    })).toThrowError(/AppStagingSynthesizer property 'appId' cannot contain tokens;/);
+    })).toThrowError(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
   });
 
   /**

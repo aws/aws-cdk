@@ -41,7 +41,7 @@ export class BootstrapRole {
   /**
    * @internal
    */
-  public _arnForAssetManifest() {
+  public _arnForCloudAssembly() {
     return this.isCliCredentials() ? undefined : translateCfnTokenToAssetToken(this.roleArn);
   }
 

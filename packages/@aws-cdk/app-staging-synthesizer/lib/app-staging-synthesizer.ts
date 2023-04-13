@@ -17,6 +17,7 @@ import { BootstrapRole, BootstrapRoles } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
 import { PerEnvironmenStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
+import { validateNoTokens } from './private/no-tokens';
 import { IStagingStack, IStagingStackFactory, ObtainStagingResourcesContext } from './staging-stack';
 
 const AGNOSTIC_STACKS = new AppScopedGlobal(() => new Set<Stack>());
@@ -121,10 +122,13 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   /**
    * Use the Default Staging Resources, creating a single stack per environment this app is deployed in
    */
-  public static defaultResources(props: DefaultResourcesOptions) {
+  public static defaultResources(options: DefaultResourcesOptions) {
+    validateNoTokens(options, 'AppStagingSynthesizer');
+
     return AppStagingSynthesizer.customFactory({
-      factory: DefaultStagingStack.factory(props),
-      deploymentRoles: props.deploymentRoles,
+      factory: DefaultStagingStack.factory(options),
+      deploymentRoles: options.deploymentRoles,
+      bootstrapQualifier: options.bootstrapQualifier,
       oncePerEnv: true,
     });
   }
@@ -135,6 +139,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   public static customResources(options: CustomResourcesOptions) {
     return AppStagingSynthesizer.customFactory({
       deploymentRoles: options.deploymentRoles,
+      bootstrapQualifier: options.bootstrapQualifier,
       oncePerEnv: false,
       factory: {
         obtainStagingResources() {
@@ -151,14 +156,14 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
    * By default, `oncePerEnv = true`, which means that a new instance of the IStagingStack
    * will be created in new environments. Set `oncePerEnv = false` to turn off that behavior.
    */
-  public static customFactory(props: CustomFactoryOptions) {
-    const oncePerEnv = props.oncePerEnv ?? true;
-    const factory = oncePerEnv ? new PerEnvironmenStagingFactory(props.factory) : props.factory;
+  public static customFactory(options: CustomFactoryOptions) {
+    const oncePerEnv = options.oncePerEnv ?? true;
+    const factory = oncePerEnv ? new PerEnvironmenStagingFactory(options.factory) : options.factory;
 
     return new AppStagingSynthesizer({
       factory,
-      bootstrapQualifier: props.bootstrapQualifier,
-      deploymentRoles: props.deploymentRoles,
+      bootstrapQualifier: options.bootstrapQualifier,
+      deploymentRoles: options.deploymentRoles,
     });
   }
 
@@ -191,8 +196,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     const context: ObtainStagingResourcesContext = {
       environmentString: [
-        Token.isUnresolved(stack.region) ? 'REGION' : stack.region,
         Token.isUnresolved(stack.account) ? 'ACCOUNT' : stack.account,
+        Token.isUnresolved(stack.region) ? 'REGION' : stack.region,
       ].join('-'),
       deployRoleArn: deployRole._arnForCloudFormation(),
       qualifier,
@@ -294,12 +299,9 @@ interface BoundAppStagingSynthesizerProps {
 class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppStagingSynthesizer {
   private readonly stagingStack: IStagingStack;
   private readonly assetManifest = new AssetManifestBuilder();
-  private readonly lookupRoleArn?: string;
-  private readonly cloudFormationExecutionRoleArn?: string;
-  private readonly deploymentActionRoleArn?: string;
   private readonly qualifier: string;
 
-  constructor(stack: Stack, props: BoundAppStagingSynthesizerProps) {
+  constructor(stack: Stack, private readonly props: BoundAppStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
@@ -315,19 +317,19 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   }
 
   public synthesize(session: ISynthesisSession): void {
-    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
+    const templateAssetSource = this.synthesizeTemplate(session, this.props.lookupRole?._arnForCloudAssembly());
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
 
+    const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
+
     this.emitArtifact(session, {
-      assumeRoleArn: this.deploymentActionRoleArn,
+      assumeRoleArn: this.props.deployRole?._arnForCloudAssembly(),
       additionalDependencies: [assetManifestId],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
-      lookupRole: this.lookupRoleArn ? {
-        arn: this.lookupRoleArn,
-      }: undefined,
+      cloudFormationExecutionRoleArn: this.props.cloudFormationExecutionRole?._arnForCloudAssembly(),
+      lookupRole: lookupRoleArn ? { arn: lookupRoleArn } : undefined,
     });
   }
 

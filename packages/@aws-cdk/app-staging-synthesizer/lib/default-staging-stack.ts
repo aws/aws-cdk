@@ -17,7 +17,7 @@ import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingStack, IStagingStackFactory, ImageStagingLocation } from './staging-stack';
 
-const EPHEMERAL_PREFIX = 'handover/';
+const EPHEMERAL_PREFIX = 'handoff/';
 
 /**
  * User configurable options to the DefaultStagingStack
@@ -53,7 +53,7 @@ export interface DefaultStagingStackOptions {
   readonly imageAssetPublishingRole?: BootstrapRole;
 
   /**
-   * The lifetime for handover file assets
+   * The lifetime for handoff file assets
    *
    * Assets that are only necessary at deployment time (for instance,
    * CloudFormation templates and Lambda source code bundles) will be
@@ -67,7 +67,7 @@ export interface DefaultStagingStackOptions {
    *
    * @default - Duration.days(30)
    */
-  readonly handoverFileAssetLifetime?: Duration;
+  readonly handoffFileAssetLifetime?: Duration;
 }
 
 /**
@@ -209,7 +209,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private ensureFilePublishingRole() {
     if (this.providedFileRole) {
       // Override
-      this.fileRoleManifestArn = this.providedFileRole._arnForAssetManifest();
+      this.fileRoleManifestArn = this.providedFileRole._arnForCloudAssembly();
       const cfnArn = this.providedFileRole._arnForCloudFormation();
       this.fileRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkFilePublishingRole', cfnArn) : undefined;
       return;
@@ -240,7 +240,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
     if (this.providedImageRole) {
       // Override
-      this.imageRoleManifestArn = this.providedImageRole._arnForAssetManifest();
+      this.imageRoleManifestArn = this.providedImageRole._arnForCloudAssembly();
       const cfnArn = this.providedImageRole._arnForCloudFormation();
       this.imageRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkImagePublishingRole', cfnArn) : undefined;
       return;
@@ -316,7 +316,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
     bucket.addLifecycleRule({
       prefix: EPHEMERAL_PREFIX,
-      expiration: this.props.handoverFileAssetLifetime ?? Duration.days(30),
+      expiration: this.props.handoffFileAssetLifetime ?? Duration.days(30),
     });
 
     return stagingBucketName;
@@ -354,6 +354,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       bucketName,
       assumeRoleArn: this.fileRoleManifestArn,
       prefix: asset.ephemeral ? EPHEMERAL_PREFIX : undefined,
+      dependencyStack: this,
     };
   }
 
@@ -364,6 +365,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     return {
       repoName,
       assumeRoleArn: this.imageRoleManifestArn,
+      dependencyStack: this,
     };
   }
 }
