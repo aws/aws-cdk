@@ -1,5 +1,5 @@
-import { DefaultResourcesOptions, AppStagingSynthesizer, BootstrapRole } from '../lib';
 import * as cxapi from 'aws-cdk-lib/cx-api';
+import { DefaultResourcesOptions, AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 export const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -23,9 +23,9 @@ export class TestAppScopedStagingSynthesizer {
   public static stackPerEnv(props: Partial<DefaultResourcesOptions> = {}): AppStagingSynthesizer {
     return AppStagingSynthesizer.defaultResources({
       appId: props.appId ?? APP_ID,
-      bootstrapRoles: {
+      deploymentRoles: {
         cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-        deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+        deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
         lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
       },
       ...props,

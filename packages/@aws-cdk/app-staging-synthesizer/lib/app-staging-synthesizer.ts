@@ -195,6 +195,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
         Token.isUnresolved(stack.account) ? 'ACCOUNT' : stack.account,
       ].join('-'),
       deployRoleArn: deployRole._arnForCloudFormation(),
+      qualifier,
     };
 
     return new BoundAppStagingSynthesizer(stack, {

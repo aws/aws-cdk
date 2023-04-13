@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
@@ -154,31 +154,6 @@ describe(AppStagingSynthesizer, () => {
     expect(evalCFN(location1.bucketName)).toEqual(evalCFN(location2.bucketName));
   });
 
-  test('can configure bucket prefix', () => {
-    // GIVEN
-    app = new App({
-      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-        bucketPrefix: 'prefix',
-      }),
-    });
-    stack = new Stack(app, 'Stack', {
-      env: {
-        account: '000000000000',
-        region: 'us-west-2',
-      },
-    });
-
-    // WHEN
-    const location = stack.synthesizer.addFileAsset({
-      fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
-      sourceHash: 'abcdef',
-    });
-
-    // THEN - assets have the same location
-    expect(evalCFN(location.objectKey)).toEqual('prefixabcdef.js');
-  });
-
   describe('ephemeral assets', () => {
     test('ephemeral assets have the \'eph-\' prefix', () => {
       // WHEN
@@ -196,9 +171,7 @@ describe(AppStagingSynthesizer, () => {
     test('ephemeral assets do not get specified bucketPrefix', () => {
       // GIVEN
       app = new App({
-        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-          bucketPrefix: 'prefix',
-        }),
+        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({}),
       });
       stack = new Stack(app, 'Stack', {
         env: {
@@ -216,7 +189,7 @@ describe(AppStagingSynthesizer, () => {
       });
 
       // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual('eph-abcdef.js');
+      expect(evalCFN(location.objectKey)).toEqual('eph/abcdef.js');
     });
 
     test('s3 bucket has lifecycle rule on ephemeral assets by default', () => {
@@ -246,11 +219,7 @@ describe(AppStagingSynthesizer, () => {
       // GIVEN
       app = new App({
         defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-          ephemeralFileAssetLifecycleRule: {
-            prefix: 'eph-',
-            objectSizeGreaterThan: 10000,
-            expiration: Duration.days(1),
-          },
+          handoverFileAssetLifetime: Duration.days(1),
         }),
       });
       stack = new Stack(app, 'Stack', {
@@ -273,59 +242,10 @@ describe(AppStagingSynthesizer, () => {
         LifecycleConfiguration: {
           Rules: [{
             ExpirationInDays: 1,
-            Prefix: 'eph-',
+            Prefix: 'eph/',
             Status: 'Enabled',
-            ObjectSizeGreaterThan: 10000,
           }],
         },
-      });
-    });
-
-    test('customized lifecycle rule must have correct prefix', () => {
-      // GIVEN
-      app = new App({
-        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-          ephemeralFileAssetLifecycleRule: {
-            objectSizeGreaterThan: 10000,
-            expiration: Duration.days(1),
-          },
-        }),
-      });
-      expect(() => {
-        new Stack(app, 'Stack', {
-          env: {
-            account: '000000000000',
-            region: 'us-west-2',
-          },
-        });
-      }).toThrowError('ephemeralAssetLifecycleRule must contain "prefix: \'eph-\'" but got "prefix: undefined". This prefix is the only way to identify ephemeral assets.');
-    });
-
-    test('lifecycle rule on ephemeral assets can be turned off', () => {
-      // GIVEN
-      app = new App({
-        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-          retainEphemeralFileAssets: true,
-        }),
-      });
-      stack = new Stack(app, 'Stack', {
-        env: {
-          account: '000000000000',
-          region: 'us-west-2',
-        },
-      });
-      new CfnResource(stack, 'Resource', {
-        type: 'Some::Resource',
-      });
-
-      // WHEN
-      const asm = app.synth();
-
-      // THEN
-      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-west-2');
-
-      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
-        LifecycleConfiguration: Match.absent(),
       });
     });
   });

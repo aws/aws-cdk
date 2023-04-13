@@ -110,4 +110,11 @@ export interface ObtainStagingResourcesContext {
    * @default - Deploy role ARN is unknown
    */
   readonly deployRoleArn?: string;
+
+  /**
+   * The qualifier passed to the synthesizer
+   *
+   * The staging stack shouldn't need this, but it might.
+   */
+  readonly qualifier: string;
 }

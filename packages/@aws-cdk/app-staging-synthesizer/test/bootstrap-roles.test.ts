@@ -1,9 +1,9 @@
-import { App, Stack, CfnResource } from 'aws-cdk-lib';
-import { isAssetManifest } from 'aws-cdk-lib/pipelines/lib/private/cloud-assembly-internals';
-import { AppStagingSynthesizer, BootstrapRole } from '../lib';
-import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import * as fs from 'fs';
+import { App, Stack, CfnResource } from 'aws-cdk-lib';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import { isAssetManifest } from 'aws-cdk-lib/pipelines/lib/private/cloud-assembly-internals';
+import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
+import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 describe('Boostrap Roles', () => {
   test('Can supply existing arns for bootstrapped roles', () => {
@@ -11,10 +11,10 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        bootstrapRoles: {
+        deploymentRoles: {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-          deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+          deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
         },
       }),
     });
@@ -45,9 +45,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        stagingRoles: {
-          fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
-        },
+        fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
       }),
     });
     const stack = new Stack(app, 'Stack', {
@@ -77,10 +75,10 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        bootstrapRoles: {
+        deploymentRoles: {
           cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
           lookupRole: BootstrapRole.cliCredentials(),
-          deploymentActionRole: BootstrapRole.cliCredentials(),
+          deploymentRole: BootstrapRole.cliCredentials(),
         },
       }),
     });
@@ -110,9 +108,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        stagingRoles: {
-          fileAssetPublishingRole: BootstrapRole.cliCredentials(),
-        },
+        fileAssetPublishingRole: BootstrapRole.cliCredentials(),
       }),
     });
 
