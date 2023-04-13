@@ -22,4 +22,5 @@ junit.xml
 
 !**/*.snapshot/**/asset.*/**
 
+!test/lambda-data-processor.js
 
