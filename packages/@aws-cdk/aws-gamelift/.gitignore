@@ -25,3 +25,5 @@ junit.xml
 
 #include game build js file
 !test/my-game-script/*.js  
+
+

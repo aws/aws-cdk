@@ -131,6 +131,14 @@ $ # Synthesize cloud assembly for StackName, but don't cloudFormation template o
 $ cdk synth MyStackName --quiet
 ```
 
+The `quiet` option can be set in the `cdk.json` file.
+
+```json
+{
+  "quiet": true
+}
+```
+
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
 See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
 
@@ -757,8 +765,11 @@ Some of the interesting keys that can be used in the JSON configuration files:
         "key": "value"
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
+    "toolkitBucket": {
+        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+    },
+    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 
