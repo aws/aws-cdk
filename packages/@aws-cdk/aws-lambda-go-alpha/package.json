@@ -1,27 +1,37 @@
 {
-  "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
+  "name": "@aws-cdk/aws-lambda-go-alpha",
   "version": "0.0.0",
-  "description": "CDK Destinations Constructs for AWS Kinesis Firehose",
+  "description": "The CDK Construct Library for AWS Lambda in Golang",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*",
+        ".types-compat/ts3.9/*/index.d.ts"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesisfirehose.destinations.alpha",
+        "package": "software.amazon.awscdk.services.lambda.go.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kinesisfirehose-destinations-alpha"
+          "artifactId": "lambda-go-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
-        "packageId": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
+        "namespace": "Amazon.CDK.AWS.Lambda.Go.Alpha",
+        "packageId": "Amazon.CDK.AWS.Lambda.Go.Alpha",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-kinesisfirehose-destinations-alpha",
-        "module": "aws_cdk.aws_kinesisfirehose_destinations_alpha",
+        "distName": "aws-cdk.aws-lambda-go-alpha",
+        "module": "aws_cdk.aws_lambda_go_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -29,7 +39,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkkinesisfirehosedestinationsalpha"
+        "packageName": "awscdklambdagoalpha"
       }
     },
     "projectReferences": true,
@@ -44,7 +54,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-kinesisfirehose-destinations"
+    "directory": "packages/@aws-cdk/aws-lambda-go-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -66,7 +76,7 @@
     "aws",
     "cdk",
     "constructs",
-    "kinesisfirehose"
+    "lambda"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -77,18 +87,14 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
@@ -97,23 +103,23 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
+  "nozem": {
+    "ostools": [
+      "docker"
+    ]
   },
   "publishConfig": {
     "tag": "latest"
   },
   "private": false,
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

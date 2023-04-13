@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-glue-alpha",
+  "name": "@aws-cdk/aws-gamelift-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Glue",
+  "description": "The CDK Construct Library for AWS::GameLift",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.glue.alpha",
+        "package": "software.amazon.awscdk.services.gamelift.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "glue-alpha"
+          "artifactId": "gamelift-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Glue.Alpha",
-        "packageId": "Amazon.CDK.AWS.Glue.Alpha",
+        "namespace": "Amazon.CDK.AWS.GameLift.Alpha",
+        "packageId": "Amazon.CDK.AWS.GameLift.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-glue-alpha",
-        "module": "aws_cdk.aws_glue_alpha",
+        "distName": "aws-cdk.aws-gamelift-alpha",
+        "module": "aws_cdk.aws_gamelift_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkgluealpha"
+        "packageName": "awscdkgameliftalpha"
       }
     },
     "projectReferences": true,
@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-glue"
+    "directory": "packages/@aws-cdk/aws-gamelift-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -65,14 +65,14 @@
   },
   "cdk-build": {
     "env": {
-      "AWSLINT_BASE_CONSTRUCT": "true"
+      "AWSLINT_BASE_CONSTRUCT": true
     }
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "glue"
+    "gamelift"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -88,7 +88,8 @@
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
@@ -99,13 +100,13 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
+  "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
