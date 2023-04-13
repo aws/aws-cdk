@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { deployStack, DeployStackOptions, destroyStack, ToolkitInfo, DestroyStackOptions } from '../../lib/api';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
@@ -82,6 +82,14 @@ function standardDeployStackArguments(): DeployStackOptions {
     sdkProvider,
     resolvedEnvironment: mockResolvedEnvironment(),
     toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+  };
+}
+
+function standardDestroyStackArguments(): DestroyStackOptions {
+  return {
+    stack: FAKE_STACK,
+    sdk,
+    deployName: FAKE_STACK.stackName,
   };
 }
 
@@ -799,6 +807,15 @@ test('updateTerminationProtection called when termination protection is undefine
   }));
 });
 
+test('destroy stack to throw error is stack does not already exists', async () => {
+  await expect(destroyStack({
+    ...standardDestroyStackArguments(),
+  })).rejects.toThrow(`${FAKE_STACK.stackName} is not deployed currently. Skipping deletion.`);
+
+  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
+  expect(cfnMocks.deleteChangeSet).not.toHaveBeenCalled();
+});
+
 describe('disable rollback', () => {
   test('by default, we do not disable rollback (and also do not pass the flag)', async () => {
     // WHEN
@@ -825,7 +842,6 @@ describe('disable rollback', () => {
       DisableRollback: true,
     }));
   });
-
 });
 
 /**

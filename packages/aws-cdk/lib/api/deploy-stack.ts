@@ -660,7 +660,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 
   const currentStack = await CloudFormationStack.lookup(cfn, deployName);
   if (!currentStack.exists) {
-    throw new Error(`currently stack ${deployName} is not deployed. Skipping deletion.`);
+    throw new Error(`${deployName} is not deployed currently. Skipping deletion.`);
   }
   const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
     ci: options.ci,
