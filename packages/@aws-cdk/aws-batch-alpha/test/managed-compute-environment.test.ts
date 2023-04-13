@@ -199,7 +199,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       vpc,
       images: [
         {
-          image: ec2.MachineImage.latestAmazonLinux(),
+          image: ec2.MachineImage.latestAmazonLinux2(),
         },
       ],
     });
@@ -211,7 +211,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ...defaultComputeResources,
         Ec2Configuration: [
           {
-            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
+            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
             ImageType: expectedImageType,
           },
         ],

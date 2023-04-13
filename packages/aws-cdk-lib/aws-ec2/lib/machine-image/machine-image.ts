@@ -1,20 +1,16 @@
-import * as ssm from '../../aws-ssm';
-import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, CfnMapping, Aws, Stack, Token } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
-import { UserData } from './user-data';
-import { WindowsVersion } from './windows-versions';
+import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022ImageSsmParameterProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
+import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023ImageSsmParameterProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
+import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, IMachineImage, MachineImageConfig, OperatingSystemType } from './common';
+import { lookupImage } from './utils';
+import * as ssm from '../../../aws-ssm';
+import * as cxschema from '../../../cloud-assembly-schema';
+import { ContextProvider, CfnMapping, Aws, Stack, Token } from '../../../core';
+import * as cxapi from '../../../cx-api';
+import { UserData } from '../user-data';
+import { WindowsVersion } from '../windows-versions';
 
-/**
- * Interface for classes that can select an appropriate machine image to use
- */
-export interface IMachineImage {
-  /**
-   * Return the image to use in the given context
-   */
-  getImage(scope: Construct): MachineImageConfig;
-}
 
 /**
  * Factory functions for standard Amazon Machine Image objects.
@@ -30,6 +26,54 @@ export abstract class MachineImage {
    */
   public static latestWindows(version: WindowsVersion, props?: WindowsImageProps): IMachineImage {
     return new WindowsImage(version, props);
+  }
+
+  /**
+   * An Amazon Linux 2 image that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   */
+  public static latestAmazonLinux2(props?: AmazonLinux2ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2ImageSsmParameter({
+      cachedInContext: false,
+      ...props,
+      kernel: AmazonLinux2Kernel.CDK_LATEST,
+    });
+  }
+
+  /**
+   * An Amazon Linux 2022 image that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   */
+  public static latestAmazonLinux2022(props?: AmazonLinux2022ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2022ImageSsmParameter({
+      cachedInContext: false,
+      ...props,
+      kernel: AmazonLinux2022Kernel.CDK_LATEST,
+    });
+  }
+
+  /**
+   * An Amazon Linux 2023 image that is automatically kept up-to-date
+   *
+   * This Machine Image automatically updates to the latest version on every
+   * deployment. Be aware this will cause your instances to be replaced when a
+   * new version of the image becomes available. Do not store stateful information
+   * on the instance if you are using this image.
+   */
+  public static latestAmazonLinux2023(props?: AmazonLinux2023ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2023ImageSsmParameter({
+      cachedInContext: false,
+      ...props,
+      kernel: AmazonLinux2023Kernel.CDK_LATEST,
+    });
   }
 
   /**
@@ -53,6 +97,7 @@ export abstract class MachineImage {
    *   generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
    * })
    * ```
+   * @deprecated use MachineImage.latestAmazonLinux2 instead
    */
   public static latestAmazonLinux(props?: AmazonLinuxImageProps): IMachineImage {
     return new AmazonLinuxImage(props);
@@ -129,26 +174,6 @@ export abstract class MachineImage {
   public static lookup(props: LookupMachineImageProps): IMachineImage {
     return new LookupMachineImage(props);
   }
-}
-
-/**
- * Configuration for a machine image
- */
-export interface MachineImageConfig {
-  /**
-   * The AMI ID of the image to use
-   */
-  readonly imageId: string;
-
-  /**
-   * Operating system type for this image
-   */
-  readonly osType: OperatingSystemType;
-
-  /**
-   * Initial UserData for this image
-   */
-  readonly userData: UserData;
 }
 
 /**
@@ -304,20 +329,6 @@ export class WindowsImage extends GenericSSMParameterImage {
   }
 }
 
-/**
- * CPU type
- */
-export enum AmazonLinuxCpuType {
-  /**
-   * arm64 CPU type
-   */
-  ARM_64 = 'arm64',
-
-  /**
-   * x86_64 CPU type
-   */
-  X86_64 = 'x86_64',
-}
 
 /**
  * Amazon Linux image properties
@@ -345,13 +356,6 @@ export interface AmazonLinuxImageProps {
   readonly kernel?: AmazonLinuxKernel;
 
   /**
-   * Virtualization type
-   *
-   * @default HVM
-   */
-  readonly virtualization?: AmazonLinuxVirt;
-
-  /**
    * What storage backed image to use
    *
    * @default GeneralPurpose
@@ -371,6 +375,13 @@ export interface AmazonLinuxImageProps {
    * @default X86_64
    */
   readonly cpuType?: AmazonLinuxCpuType;
+
+  /**
+   * Virtualization type
+   *
+   * @default HVM
+   */
+  readonly virtualization?: AmazonLinuxVirt;
 
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -465,25 +476,6 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
   }
 }
 
-/**
- * What generation of Amazon Linux to use
- */
-export enum AmazonLinuxGeneration {
-  /**
-   * Amazon Linux
-   */
-  AMAZON_LINUX = 'amzn',
-
-  /**
-   * Amazon Linux 2
-   */
-  AMAZON_LINUX_2 = 'amzn2',
-
-  /**
-   * Amazon Linux 2022
-   */
-  AMAZON_LINUX_2022 = 'al2022',
-}
 
 /**
  * Amazon Linux Kernel
@@ -493,53 +485,6 @@ export enum AmazonLinuxKernel {
    * Standard edition
    */
   KERNEL5_X = 'kernel-5.10',
-}
-
-/**
- * Amazon Linux edition
- */
-export enum AmazonLinuxEdition {
-  /**
-   * Standard edition
-   */
-  STANDARD = 'standard',
-
-  /**
-   * Minimal edition
-   */
-  MINIMAL = 'minimal',
-}
-
-/**
- * Virtualization type for Amazon Linux
- */
-export enum AmazonLinuxVirt {
-  /**
-   * HVM virtualization (recommended)
-   */
-  HVM = 'hvm',
-
-  /**
-   * PV virtualization
-   */
-  PV = 'pv',
-}
-
-export enum AmazonLinuxStorage {
-  /**
-   * EBS-backed storage
-   */
-  EBS = 'ebs',
-
-  /**
-   * S3-backed storage
-   */
-  S3 = 's3',
-
-  /**
-   * General Purpose-based storage (recommended)
-   */
-  GENERAL_PURPOSE = 'gp2',
 }
 
 /**
@@ -642,19 +587,6 @@ export class GenericWindowsImage implements IMachineImage {
 }
 
 /**
- * The OS type of a particular image
- */
-export enum OperatingSystemType {
-  LINUX,
-  WINDOWS,
-  /**
-   * Used when the type of the operating system is not known
-   * (for example, for imported Auto-Scaling Groups).
-   */
-  UNKNOWN,
-}
-
-/**
  * A machine image whose AMI ID will be searched using DescribeImages.
  *
  * The most recent, available, launchable image matching the given filter
@@ -743,8 +675,3 @@ export interface LookupMachineImageProps {
   readonly userData?: UserData;
 }
 
-function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
-  return cachedInContext
-    ? ssm.StringParameter.valueFromLookup(scope, parameterName)
-    : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
-}
