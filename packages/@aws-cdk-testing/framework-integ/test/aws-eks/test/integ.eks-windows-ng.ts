@@ -5,7 +5,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
+import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
 
@@ -36,6 +36,13 @@ class EksClusterStack extends Stack {
     });
     this.cluster.addNodegroupCapacity('WindowsNodegroup', {
       amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+      taints: [
+        {
+          effect: TaintEffect.NO_SCHEDULE,
+          key: 'os',
+          value: 'windows',
+        },
+      ],
     });
   }
 }
