@@ -227,7 +227,6 @@ new glue.Table(this, 'MyTable', {
   storageParameters: [
     { key: glue.StorageParameters.SKIP_HEADER_LINE_COUNT, value: '1' },
     { key: glue.StorageParameters.COMPRESSION_TYPE, value: glue.CompressionType.GZIP },
-    { key: glue.StorageParameters.custom('foo'), value: 'bar' }, // Will have no effect
     { key: glue.StorageParameters.custom('separatorChar'), value: ',' }, // Will describe the separator char used in the data
   ],
   // ...
