@@ -1,27 +1,28 @@
 {
-  "name": "@aws-cdk/aws-kinesisanalytics-flink-alpha",
+  "name": "@aws-cdk/aws-iot-alpha",
   "version": "0.0.0",
-  "description": "A CDK Construct Library for Kinesis Analytics Flink applications",
+  "private": false,
+  "description": "The CDK Construct Library for AWS::IoT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesisanalytics.flink.alpha",
+        "package": "software.amazon.awscdk.services.iot.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kinesisanalytics-flink-alpha"
+          "artifactId": "iot-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink.Alpha",
-        "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink.Alpha",
+        "namespace": "Amazon.CDK.AWS.IoT.Alpha",
+        "packageId": "Amazon.CDK.AWS.IoT.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-kinesisanalytics-flink-alpha",
-        "module": "aws_cdk.aws_kinesisanalytics_flink_alpha",
+        "distName": "aws-cdk.aws-iot-alpha",
+        "module": "aws_cdk.aws_iot_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -29,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkkinesisanalyticsflinkalpha"
+        "packageName": "awscdkiotalpha"
       }
     },
     "projectReferences": true,
@@ -44,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink"
+    "directory": "packages/@aws-cdk/aws-iot-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -55,20 +56,23 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
   "keywords": [
     "aws",
     "cdk",
-    "kinesis",
-    "analytics",
-    "kinesisanalytcs",
-    "flink"
+    "constructs",
+    "iot"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -79,6 +83,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
@@ -105,15 +110,9 @@
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
   "publishConfig": {
     "tag": "latest"
   },
-  "private": false,
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

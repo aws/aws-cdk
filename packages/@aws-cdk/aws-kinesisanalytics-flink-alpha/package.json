@@ -1,28 +1,27 @@
 {
-  "name": "@aws-cdk/aws-cloud9-alpha",
+  "name": "@aws-cdk/aws-kinesisanalytics-flink-alpha",
   "version": "0.0.0",
-  "private": false,
-  "description": "The CDK Construct Library for AWS::Cloud9",
+  "description": "A CDK Construct Library for Kinesis Analytics Flink applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.cloud9.alpha",
+        "package": "software.amazon.awscdk.services.kinesisanalytics.flink.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloud9-alpha"
+          "artifactId": "kinesisanalytics-flink-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cloud9.Alpha",
-        "packageId": "Amazon.CDK.AWS.Cloud9.Alpha",
+        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-cloud9-alpha",
-        "module": "aws_cdk.aws_cloud9_alpha",
+        "distName": "aws-cdk.aws-kinesisanalytics-flink-alpha",
+        "module": "aws_cdk.aws_kinesisanalytics_flink_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,7 +29,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkcloud9alpha"
+        "packageName": "awscdkkinesisanalyticsflinkalpha"
       }
     },
     "projectReferences": true,
@@ -45,7 +44,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-cloud9"
+    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -56,23 +55,20 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "cloud9"
+    "kinesis",
+    "analytics",
+    "kinesisanalytcs",
+    "flink"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -82,10 +78,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
@@ -109,9 +105,15 @@
   "awscdkio": {
     "announce": false
   },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
   "publishConfig": {
     "tag": "latest"
   },
+  "private": false,
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
