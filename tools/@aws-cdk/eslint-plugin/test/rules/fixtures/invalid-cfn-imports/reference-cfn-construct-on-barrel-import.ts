@@ -1,4 +1,4 @@
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as glue from '../lib';
 
 let x: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
