@@ -17,17 +17,21 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5e918941c8c1948aee7eef54957c6e0f9e2b2f8b36e6378143ee00f89977fbe2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d430893c9d9551ffbfaf5ef745ae853ce6c50ff4aae68844cceb265e18bf69b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": ["aws-cdk-glue.assets"],
+        "additionalDependencies": [
+          "aws-cdk-glue.assets"
+        ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": ["aws-cdk-glue.assets"],
+      "dependencies": [
+        "aws-cdk-glue.assets"
+      ],
       "metadata": {
         "/aws-cdk-glue/DataBucket/Resource": [
           {
@@ -141,13 +145,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyPartitionFilteredTableBucket6ACAA137": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPartitionFilteredTableBucket6ACAA137",
-            "trace": ["!!DESTRUCTIVE_CHANGES: WILL_DESTROY"]
           }
         ]
       },
