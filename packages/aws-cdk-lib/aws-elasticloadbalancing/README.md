@@ -8,9 +8,8 @@ classic load balancers.
 
 Load balancers send traffic to one or more AutoScalingGroups. Create a load
 balancer, set up listeners and a health check, and supply the fleet(s) you want
-to load balance to in the `targets` property. Additionally, you need to set `internetFacing`
-as `true` on the load balancer(this is an internet facing load balancer), otherwise the
-load balancer would not be accessible from the internet.
+to load balance to in the `targets` property. If you want the load balancer to be
+ accessible from the internet, set `internetFacing: true`.
 
 ```ts
 declare const vpc: ec2.IVpc;
