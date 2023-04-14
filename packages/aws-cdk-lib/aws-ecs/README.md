@@ -727,22 +727,22 @@ The feature flag changes behavior for the entire CDK project. Therefore it is no
 declare const cluster: ecs.Cluster;
 
 // Import service from EC2 service attributes
-const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+const service = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'EcsService', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from EC2 service ARN
-const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const service = ecs.Ec2Service.fromEc2ServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 
 // Import service from Fargate service attributes
-const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsService', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from Fargate service ARN
-const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
 ## Task Auto-Scaling
@@ -1156,7 +1156,7 @@ When the service does not have a capacity provider strategy, the cluster's defau
 ```ts
 declare const capacityProvider: ecs.CapacityProvider;
 
-const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
@@ -1170,7 +1170,7 @@ cluster.addDefaultCapacityProviderStrategy([
 ```ts
 declare const capacityProvider: ecs.CapacityProvider;
 
-const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
 });
 cluster.addAsgCapacityProvider(capacityProvider);

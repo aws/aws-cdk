@@ -416,7 +416,7 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
@@ -457,14 +457,14 @@ and green target groups.
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 // Alarm on the number of unhealthy ECS tasks in each target group
-const blueUnhealthyHosts = new cloudwatch.Alarm(stack, 'BlueUnhealthyHosts', {
+const blueUnhealthyHosts = new cloudwatch.Alarm(this, 'BlueUnhealthyHosts', {
   alarmName: stack.stackName + '-Unhealthy-Hosts-Blue',
   metric: blueTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });
 
-const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
+const greenUnhealthyHosts = new cloudwatch.Alarm(this, 'GreenUnhealthyHosts', {
   alarmName: stack.stackName + '-Unhealthy-Hosts-Green',
   metric: greenTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
@@ -472,7 +472,7 @@ const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
 });
 
 // Alarm on the number of HTTP 5xx responses returned by each target group
-const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
+const blueApiFailure = new cloudwatch.Alarm(this, 'Blue5xx', {
   alarmName: stack.stackName + '-Http-5xx-Blue',
   metric: blueTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
@@ -482,7 +482,7 @@ const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
   evaluationPeriods: 1,
 });
 
-const greenApiFailure = new cloudwatch.Alarm(stack, 'Green5xx', {
+const greenApiFailure = new cloudwatch.Alarm(this, 'Green5xx', {
   alarmName: stack.stackName + '-Http-5xx-Green',
   metric: greenTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
@@ -492,7 +492,7 @@ const greenApiFailure = new cloudwatch.Alarm(stack, 'Green5xx', {
   evaluationPeriods: 1,
 });
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   // CodeDeploy will monitor these alarms during a deployment and automatically roll back
   alarms: [blueUnhealthyHosts, greenUnhealthyHosts, blueApiFailure, greenApiFailure],
   autoRollback: {
@@ -526,7 +526,7 @@ declare const greenTargetGroup: elbv2.ITargetGroup;
 declare const listener: elbv2.IApplicationListener;
 declare const testListener: elbv2.IApplicationListener;
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
@@ -558,7 +558,7 @@ If the ContinueDeployment API is not called within the approval wait time period
 deployment and can automatically roll back the deployment.
 
 ```ts
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
@@ -583,7 +583,7 @@ is complete in order to let the deployment "bake" a while. During this bake time
 CloudWatch alarms specified for the deployment group and will automatically roll back if those alarms go into a failed state.
 
 ```ts
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,

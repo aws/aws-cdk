@@ -916,13 +916,13 @@ In addition, the StateMachine can be imported via the `StateMachine.fromStateMac
 const app = new App();
 const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
-  stack,
+  this,
   "ViaArnImportedStateMachine",
   "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
 );
 
 sfn.StateMachine.fromStateMachineName(
-  stack,
+  this,
   "ViaResourceNameImportedStateMachine",
   "StateMachine2E01A3A5-N5TJppzoevKQ"
 );

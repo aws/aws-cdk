@@ -725,7 +725,7 @@ export class Sum extends Construct {
 
 Usage will look like this:
 
-```ts fixture=validation-plugin
+```ts fixture=README-custom-resource-provider
 const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
 new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
@@ -1384,6 +1384,8 @@ represents the report that the user wil receive at the end of the synthesis.
 
 ```ts fixture=validation-plugin
 class MyPlugin implements IPolicyValidationPluginBeta1 {
+  public readonly name = 'MyPlugin';
+
   public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     // First read the templates using context.templatePaths...
 
@@ -1398,7 +1400,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
         violatingResources: [{
           resourceName: 'MyFunction3BAA72D1',
           templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
-          locations: 'Properties/VpcConfig',
+          locations: ['Properties/VpcConfig'],
         }],
       }],
     };

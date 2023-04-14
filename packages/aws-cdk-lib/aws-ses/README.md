@@ -161,7 +161,7 @@ To verify an identity for a hosted zone, you create an `EmailIdentity`:
 ```ts
 declare const myHostedZone: route53.IPublicHostedZone;
 
-const identity = new ses.EmailIdentity(stack, 'Identity', {
+const identity = new ses.EmailIdentity(this, 'Identity', {
   identity: ses.Identity.publicHostedZone(myHostedZone),
   mailFromDomain: 'mail.cdk.dev',
 });
@@ -176,7 +176,7 @@ as [Bring Your Own DKIM (BYODKIM)](https://docs.aws.amazon.com/ses/latest/dg/sen
 ```ts
 declare const myHostedZone: route53.IPublicHostedZone;
 
-new ses.EmailIdentity(stack, 'Identity', {
+new ses.EmailIdentity(this, 'Identity', {
   identity: ses.Identity.publicHostedZone(myHostedZone),
   dkimIdentity: DkimIdentity.byoDkim({
     privateKey: SecretValue.secretsManager('dkim-private-key'),
@@ -195,7 +195,7 @@ When using `publicHostedZone()` for the identity, all necessary Amazon Route 53 
 When working with `domain()`, records must be created manually:
 
 ```ts
-const identity = new ses.EmailIdentity(stack, 'Identity', {
+const identity = new ses.EmailIdentity(this, 'Identity', {
   identity: ses.Identity.domain('cdk.dev'),
 });
 

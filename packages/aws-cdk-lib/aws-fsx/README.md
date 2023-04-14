@@ -120,7 +120,7 @@ inst.userData.addCommands(
 
 ### Importing an existing Lustre filesystem
 
-An FSx for Lustre file system can be imported with `fromLustreFileSystemAttributes(stack, id, attributes)`. The
+An FSx for Lustre file system can be imported with `fromLustreFileSystemAttributes(this, id, attributes)`. The
 following example lays out how you could import the SecurityGroup a file system belongs to, use that to import the file
 system, and then also import the VPC the file system is in and add an EC2 instance to it, giving it access to the file
 system.

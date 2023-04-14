@@ -208,7 +208,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
   // The idle timeout value, in seconds
   idleTimeout: cdk.Duration.seconds(1000),
-  
+
   // Whether HTTP headers with header fields thatare not valid
   // are removed by the load balancer (true), or routed to targets
   dropInvalidHeaderFields: true,
@@ -622,7 +622,7 @@ Metrics are also available to imported resources:
 ```ts
 declare const stack: Stack;
 
-const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this, 'MyTargetGroup', {
   targetGroupArn: Fn.importValue('TargetGroupArn'),
   loadBalancerArns: Fn.importValue('LoadBalancerArn'),
 });
@@ -635,7 +635,7 @@ throw an error:
 
 ```ts
 declare const stack: Stack;
-const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this, 'MyTargetGroup', {
   targetGroupArn: Fn.importValue('TargetGroupArn'),
 });
 

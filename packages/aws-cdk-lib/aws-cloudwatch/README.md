@@ -698,7 +698,7 @@ the relative time(eg. 7 days) as `cdk.Duration.days(7)`.
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
-const dashboard = new cw.Dashboard(stack, 'Dash', {
+const dashboard = new cw.Dashboard(this, 'Dash', {
   defaultInterval: cdk.Duration.days(7),
 });
 ```

@@ -38,13 +38,13 @@ You can also reference an existing SSM Parameter Store value that matches an
 [AWS specific parameter type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-specific-parameter-types):
 
 ```ts
-ssm.StringParameter.valueForTypedStringParameterV2(stack, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
+ssm.StringParameter.valueForTypedStringParameterV2(this, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 ```
 
 To do the same for a SSM Parameter Store value that is stored as a list:
 
 ```ts
-ssm.StringListParameter.valueForTypedListParameter(stack, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
+ssm.StringListParameter.valueForTypedListParameter(this, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 ```
 
 ### Lookup existing parameters
@@ -53,7 +53,7 @@ You can also use an existing parameter by looking up the parameter from the AWS 
 This method uses AWS API calls to lookup the value from SSM during synthesis.
 
 ```ts
-const stringValue = ssm.StringParameter.valueFromLookup(stack, '/My/Public/Parameter');
+const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter');
 ```
 
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
@@ -117,7 +117,7 @@ new ssm.StringParameter(this, 'Parameter', {
 
 ```ts
 // Create a new SSM Parameter holding a String
-const param = new ssm.StringParameter(stack, 'StringParameter', {
+const param = new ssm.StringParameter(this, 'StringParameter', {
   // description: 'Some user-friendly description',
   // name: 'ParameterName',
   stringValue: 'Initial parameter value',
@@ -128,7 +128,7 @@ const param = new ssm.StringParameter(stack, 'StringParameter', {
 param.grantRead(role);
 
 // Create a new SSM Parameter holding a StringList
-const listParameter = new ssm.StringListParameter(stack, 'StringListParameter', {
+const listParameter = new ssm.StringListParameter(this, 'StringListParameter', {
   // description: 'Some user-friendly description',
   // name: 'ParameterName',
   stringListValue: ['Initial parameter value A', 'Initial parameter value B'],

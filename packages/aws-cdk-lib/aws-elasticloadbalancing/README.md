@@ -48,7 +48,7 @@ const lb = new elb.LoadBalancer(this, 'LB', {
   vpc,
 });
 // instance to add as the target for load balancer.
-const instance = new Instance(stack, 'targetInstance', {
+const instance = new Instance(this, 'targetInstance', {
   vpc: vpc,
   instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO),
   machineImage: new AmazonLinuxImage(),

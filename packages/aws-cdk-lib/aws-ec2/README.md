@@ -225,7 +225,7 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 ```ts
 import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
-new ec2.Vpc(stack, 'TheVPC', {
+new ec2.Vpc(this, 'TheVPC', {
   ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
 });
 ```
@@ -246,7 +246,7 @@ import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
 declare const pool: ec2.CfnIPAMPool;
 
-new ec2.Vpc(stack, 'TheVPC', {
+new ec2.Vpc(this, 'TheVPC', {
   ipAddresses: ec2.IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,

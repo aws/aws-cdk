@@ -899,11 +899,11 @@ const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-queue');
 stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
-const vpc = new ec2.Vpc(stack, 'VPC', {
+const vpc = new ec2.Vpc(this, 'VPC', {
   maxAzs: 2,
 });
 
-new ecsPatterns.QueueProcessingFargateService(stack, 'QueueProcessingService', {
+new ecsPatterns.QueueProcessingFargateService(this, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),

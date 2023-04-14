@@ -1039,7 +1039,7 @@ Lambda runtime management controls help reduce the risk of impact to your worklo
 For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
 
 ```ts
-new Function(stack, 'Lambda', {
+new Function(this, 'Lambda', {
   runtimeManagementMode: RuntimeManagementMode.AUTO,
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
@@ -1050,7 +1050,7 @@ new Function(stack, 'Lambda', {
 If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
 
 ```ts
-new Function(stack, 'Lambda', {
+new Function(this, 'Lambda', {
   runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',

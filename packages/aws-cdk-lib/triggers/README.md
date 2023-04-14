@@ -17,11 +17,8 @@ triggered *during* deployment:
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as triggers from 'aws-cdk-lib/triggers';
-import { Stack } from 'aws-cdk-lib';
 
-declare const stack: Stack;
-
-new triggers.TriggerFunction(stack, 'MyTrigger', {
+new triggers.TriggerFunction(this, 'MyTrigger', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
@@ -38,15 +35,14 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as triggers from 'aws-cdk-lib/triggers';
 import { Stack } from 'aws-cdk-lib';
 
-declare const stack: Stack;
 
-const func = new lambda.Function(stack, 'MyFunction', {
+const func = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
   code: lambda.Code.fromInline('foo'),
 });
 
-new triggers.Trigger(stack, 'MyTrigger', {
+new triggers.Trigger(this, 'MyTrigger', {
   handler: func,
   timeout: Duration.minutes(10),
   invocationType: triggers.InvocationType.EVENT,
