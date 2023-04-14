@@ -456,16 +456,21 @@ and green target groups.
 ```ts
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+
 // Alarm on the number of unhealthy ECS tasks in each target group
 const blueUnhealthyHosts = new cloudwatch.Alarm(this, 'BlueUnhealthyHosts', {
-  alarmName: stack.stackName + '-Unhealthy-Hosts-Blue',
+  alarmName: Stack.of(this).stackName + '-Unhealthy-Hosts-Blue',
   metric: blueTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });
 
 const greenUnhealthyHosts = new cloudwatch.Alarm(this, 'GreenUnhealthyHosts', {
-  alarmName: stack.stackName + '-Unhealthy-Hosts-Green',
+  alarmName: Stack.of(this).stackName + '-Unhealthy-Hosts-Green',
   metric: greenTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
@@ -473,7 +478,7 @@ const greenUnhealthyHosts = new cloudwatch.Alarm(this, 'GreenUnhealthyHosts', {
 
 // Alarm on the number of HTTP 5xx responses returned by each target group
 const blueApiFailure = new cloudwatch.Alarm(this, 'Blue5xx', {
-  alarmName: stack.stackName + '-Http-5xx-Blue',
+  alarmName: Stack.of(this).stackName + '-Http-5xx-Blue',
   metric: blueTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
     { period: cdk.Duration.minutes(1) },
@@ -483,7 +488,7 @@ const blueApiFailure = new cloudwatch.Alarm(this, 'Blue5xx', {
 });
 
 const greenApiFailure = new cloudwatch.Alarm(this, 'Green5xx', {
-  alarmName: stack.stackName + '-Http-5xx-Green',
+  alarmName: Stack.of(this).stackName + '-Http-5xx-Green',
   metric: greenTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
     { period: cdk.Duration.minutes(1) },
@@ -558,6 +563,12 @@ If the ContinueDeployment API is not called within the approval wait time period
 deployment and can automatically roll back the deployment.
 
 ```ts
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const testListener: elbv2.IApplicationListener;
+
 new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
@@ -583,6 +594,17 @@ is complete in order to let the deployment "bake" a while. During this bake time
 CloudWatch alarms specified for the deployment group and will automatically roll back if those alarms go into a failed state.
 
 ```ts
+import { aws_cloudwatch as cloudwatch } from 'aws-cdk-lib';
+
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const blueUnhealthyHosts: cloudwatch.Alarm;
+declare const greenUnhealthyHosts: cloudwatch.Alarm;
+declare const blueApiFailure: cloudwatch.Alarm;
+declare const greenApiFailure: cloudwatch.Alarm;
+
 new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
@@ -627,7 +649,7 @@ letting you specify precisely how fast an ECS service is deployed.
 ```ts
 new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
   trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
 });
@@ -638,7 +660,7 @@ You can specify a custom name for your deployment config, but if you do you will
 ```ts
 const config = new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
   trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
   deploymentConfigName: 'MyDeploymentConfig',
