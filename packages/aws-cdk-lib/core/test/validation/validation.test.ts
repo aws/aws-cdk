@@ -53,7 +53,6 @@ describe('validations', () => {
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    // eslint-disable-next-line no-console
     console.log(consoleErrorMock.mock.calls[0][0]);
     expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
