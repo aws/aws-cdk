@@ -186,7 +186,8 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
-    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
+    const cloudArtifacts = stackCollection.assembly.assembly.artifacts;
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY; // TODO: deal with this
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
@@ -336,7 +337,7 @@ export class CdkToolkit {
     }
 
     try {
-      await deployStacks(stacks, { concurrency, deployStack });
+      await deployStacks(cloudArtifacts, { concurrency, deployStack });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);
       throw e;

@@ -1,69 +1,76 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import PQueue from 'p-queue';
+// import PQueue from 'p-queue';
+import { WorkGraph } from './util/work-graph';
 
 type Options = {
   concurrency: number;
   deployStack: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
 };
 
-type DeploymentState = 'pending' | 'queued' | 'deploying' | 'completed' | 'failed' | 'skipped';
+// type DeploymentState = 'pending' | 'queued' | 'deploying' | 'completed' | 'failed' | 'skipped';
 
-export const deployStacks = async (stacks: cxapi.CloudFormationStackArtifact[], { concurrency, deployStack }: Options): Promise<void> => {
-  const queue = new PQueue({ concurrency });
-  const deploymentStates = stacks.reduce((acc, stack) => ({ ...acc, [stack.id]: 'pending' as const }), {} as Record<string, DeploymentState>);
+export const deployStacks = async (artifacts: cxapi.CloudArtifact[], { concurrency, deployStack }: Options): Promise<void> => {
+  // const queue = new PQueue({ concurrency });
+  // const deploymentStates = stacks.reduce((acc, stack) => ({ ...acc, [stack.id]: 'pending' as const }), {} as Record<string, DeploymentState>);
+  // eslint-disable-next-line no-console
+  const graph = WorkGraph.fromCloudArtifacts(artifacts);
+  // eslint-disable-next-line no-console
+  console.log(graph.toString());
+  // eslint-disable-next-line no-console
+  console.log(concurrency, deployStack.name);
 
-  const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
-    stack.dependencies
-      .map(({ id }) => id)
-      .filter((id) => !id.endsWith('.assets'))
-      .every((id) => !deploymentStates[id] || deploymentStates[id] === 'completed'); // Dependency not selected or already finished
+  // const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
+  //   stack.dependencies
+  //     .map(({ id }) => id)
+  //     .filter((id) => !id.endsWith('.assets'))
+  //     .every((id) => !deploymentStates[id] || deploymentStates[id] === 'completed'); // Dependency not selected or already finished
 
-  const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
+  // const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
 
-  const deploymentErrors: Error[] = [];
+  // const deploymentErrors: Error[] = [];
 
-  const enqueueStackDeploys = () => {
-    stacks.forEach(async (stack) => {
-      if (deploymentStates[stack.id] === 'pending' && isStackUnblocked(stack)) {
-        deploymentStates[stack.id] = 'queued';
+  // const enqueueStackDeploys = () => {
+  //   stacks.forEach(async (stack) => {
+  //     if (deploymentStates[stack.id] === 'pending' && isStackUnblocked(stack)) {
+  //       deploymentStates[stack.id] = 'queued';
 
-        await queue.add(async () => {
-          // Do not start new deployments if any has already failed
-          if (hasAnyStackFailed(deploymentStates)) {
-            deploymentStates[stack.id] = 'skipped';
-            return;
-          }
+  //       await queue.add(async () => {
+  //         // Do not start new deployments if any has already failed
+  //         if (hasAnyStackFailed(deploymentStates)) {
+  //           deploymentStates[stack.id] = 'skipped';
+  //           return;
+  //         }
 
-          deploymentStates[stack.id] = 'deploying';
+  //         deploymentStates[stack.id] = 'deploying';
 
-          await deployStack(stack).catch((err) => {
-            // By recording the failure immediately as the queued task exits, we prevent the next
-            // queued task from starting (its 'hasAnyStackFailed' will return 'true').
-            deploymentStates[stack.id] = 'failed';
-            throw err;
-          });
+  //         await deployStack(stack).catch((err) => {
+  //           // By recording the failure immediately as the queued task exits, we prevent the next
+  //           // queued task from starting (its 'hasAnyStackFailed' will return 'true').
+  //           deploymentStates[stack.id] = 'failed';
+  //           throw err;
+  //         });
 
-          deploymentStates[stack.id] = 'completed';
-          enqueueStackDeploys();
-        }).catch((err) => {
-          deploymentStates[stack.id] = 'failed';
-          deploymentErrors.push(err);
-        });
-      }
-    });
-  };
+  //         deploymentStates[stack.id] = 'completed';
+  //         enqueueStackDeploys();
+  //       }).catch((err) => {
+  //         deploymentStates[stack.id] = 'failed';
+  //         deploymentErrors.push(err);
+  //       });
+  //     }
+  //   });
+  // };
 
-  enqueueStackDeploys();
+  // enqueueStackDeploys();
 
-  await queue.onIdle();
+  // await queue.onIdle();
 
-  if (deploymentErrors.length) {
-    throw Error(`Stack Deployments Failed: ${deploymentErrors}`);
-  }
+  // if (deploymentErrors.length) {
+  //   throw Error(`Stack Deployments Failed: ${deploymentErrors}`);
+  // }
 
-  // We shouldn't be able to get here, but check it anyway
-  const neverUnblocked = Object.entries(deploymentStates).filter(([_, s]) => s === 'pending').map(([n, _]) => n);
-  if (neverUnblocked.length > 0) {
-    throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}. Please report this at https://github.com/aws/aws-cdk/issues`);
-  }
+  // // We shouldn't be able to get here, but check it anyway
+  // const neverUnblocked = Object.entries(deploymentStates).filter(([_, s]) => s === 'pending').map(([n, _]) => n);
+  // if (neverUnblocked.length > 0) {
+  //   throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}. Please report this at https://github.com/aws/aws-cdk/issues`);
+  // }
 };

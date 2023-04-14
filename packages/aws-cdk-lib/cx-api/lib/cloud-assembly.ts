@@ -228,7 +228,7 @@ export class CloudAssembly {
       }
     }
 
-    return topologicalSort(result, x => x.id, x => x._dependencyIDs);
+    return topologicalSort(result, x => x.id, x => x._dependencyIDs); // TODO: remove redundant toposort
   }
 }
 
