@@ -100,6 +100,9 @@ in order to access the cross stack/region certificate.
 > **This feature is currently experimental**
 
 ```ts
+declare const app: App;
+import { aws_cloudfront as cloudfront, aws_cloudfront_origins as origins } from 'aws-cdk-lib';
+
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',

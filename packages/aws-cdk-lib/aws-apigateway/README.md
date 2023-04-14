@@ -730,7 +730,7 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 
 A full working example is shown below.
 
-```ts
+```ts nofixture
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';

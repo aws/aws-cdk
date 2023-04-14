@@ -179,6 +179,8 @@ The most common values are provided in the `cloudwatch.Stats` class. You can pro
 Read more at [CloudWatch statistics definitions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html).
 
 ```ts
+declare const hostedZone: route53.HostedZone;
+
 new cloudwatch.Metric({
   namespace: 'AWS/Route53',
   metricName: 'DNSQueries',
@@ -186,7 +188,7 @@ new cloudwatch.Metric({
     HostedZoneId: hostedZone.hostedZoneId
   },
   statistic: cloudwatch.Stats.SAMPLE_COUNT,
-  period: cloudwatch.Duration.minutes(5)
+  period: Duration.minutes(5)
 });
 
 new cloudwatch.Metric({
@@ -196,7 +198,7 @@ new cloudwatch.Metric({
     HostedZoneId: hostedZone.hostedZoneId
   },
   statistic: cloudwatch.Stats.p(99),
-  period: cloudwatch.Duration.minutes(5)
+  period: Duration.minutes(5)
 });
 
 new cloudwatch.Metric({
@@ -206,7 +208,7 @@ new cloudwatch.Metric({
     HostedZoneId: hostedZone.hostedZoneId
   },
   statistic: 'TS(7.5%:90%)',
-  period: cloudwatch.Duration.minutes(5)
+  period: Duration.minutes(5)
 });
 ```
 

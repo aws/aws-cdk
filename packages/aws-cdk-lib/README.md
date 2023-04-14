@@ -725,7 +725,7 @@ export class Sum extends Construct {
 
 Usage will look like this:
 
-```ts fixture=README-custom-resource-provider
+```ts fixture=validation-plugin
 const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
 new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
@@ -911,7 +911,7 @@ a property of the creationPolicy on the resource options. Setting it to true wil
 resources that depend on the fleet resource.
 
 ```ts
-const fleet = new CfnFleet(stack, 'Fleet', {
+const fleet = new appstream.CfnFleet(this, 'Fleet', {
   instanceType: 'stream.standard.small',
   name: 'Fleet',
   computeCapacity: {
@@ -934,6 +934,8 @@ The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation
 `CREATE_COMPLETE`.
 
 ```ts
+declare const resource: CfnResource;
+
 resource.cfnOptions.resourceSignal = {
   count: 3,
   timeout: 'PR15M',
@@ -1290,10 +1292,8 @@ to all roles within a specific construct scope. The most common use case would
 be to apply a permissions boundary at the `Stage` level.
 
 ```ts
-declare const app: App;
-
 const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+  permissionsBoundary: iam.PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
 });
 ```
 
@@ -1323,11 +1323,11 @@ will be printed to the console or to a file (see below).
 To use one or more validation plugins in your application, use the
 `policyValidationBeta1` property of `Stage`:
 
-```ts
+```ts fixture=validation-plugin
 // globally for the entire app (an app is a stage)
 const app = new App({
   policyValidationBeta1: [
-    // These hypothetical classes implement IValidationPlugin:
+    // These hypothetical classes implement IPolicyValidationPluginBeta1:
     new ThirdPartyPluginX(),
     new ThirdPartyPluginY(),
   ],
@@ -1372,35 +1372,37 @@ the standard output.
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
-defined by the `IValidationPluginBeta1` interface. To create a new plugin you must
+defined by the `IPolicyValidationPluginBeta1` interface. To create a new plugin you must
 write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
 
-The framework will call `validate()`, passing an `IValidationContextBeta1` object.
+The framework will call `validate()`, passing an `IPolicyValidationContextBeta1` object.
 The location of the templates to be validated is given by `templatePaths`. The
-plugin should return an instance of `ValidationPluginReportBeta1`. This object
+plugin should return an instance of `PolicyValidationPluginReportBeta1`. This object
 represents the report that the user wil receive at the end of the synthesis.
 
-```ts
-validate(context: ValidationContextBeta1): ValidationReportBeta1 {
-  // First read the templates using context.templatePaths...
+```ts fixture=validation-plugin
+class MyPlugin implements IPolicyValidationPluginBeta1 {
+  public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+    // First read the templates using context.templatePaths...
 
-  // ...then perform the validation, and then compose and return the report.
-  // Using hard-coded values here for better clarity:
-  return {
-    success: false,
-    violations: [{
-      ruleName: 'CKV_AWS_117',
-      recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
-      fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
-      violatingResources: [{
-        resourceName: 'MyFunction3BAA72D1',
-        templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
-        locations: 'Properties/VpcConfig',
+    // ...then perform the validation, and then compose and return the report.
+    // Using hard-coded values here for better clarity:
+    return {
+      success: false,
+      violations: [{
+        ruleName: 'CKV_AWS_117',
+        recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+        fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+        violatingResources: [{
+          resourceName: 'MyFunction3BAA72D1',
+          templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+          locations: 'Properties/VpcConfig',
+        }],
       }],
-    }],
-  };
+    };
+  }
 }
 ```
 
