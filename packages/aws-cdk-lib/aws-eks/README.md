@@ -38,7 +38,9 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-// provisiong a cluster
+import { KubectlV25Layer } from 'aws-cdk-lib/lambda-layer-kubectl-v25';
+
+// provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_25,
   kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
@@ -1326,7 +1328,7 @@ This is why we used `new cdk8s.App()` as the scope of the chart above.
 ```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-22';
 
 export interface LoadBalancedWebService {
   readonly port: number;

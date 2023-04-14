@@ -226,7 +226,7 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
 new ec2.Vpc(this, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
+  ipAddresses: IpAddresses.cidr('10.0.1.0/20')
 });
 ```
 
@@ -247,7 +247,7 @@ import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 declare const pool: ec2.CfnIPAMPool;
 
 new ec2.Vpc(this, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.awsIpamAllocation({
+  ipAddresses: IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
@@ -300,7 +300,7 @@ subnet configuration could look like this:
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   // 'IpAddresses' configures the IP range and size of the entire VPC.
   // The IP space will be divided based on configuration for the subnets.
-  ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/21'),
 
   // 'maxAzs' configures the maximum number of availability zones to use.
   // If you want to specify the exact availability zones you want the VPC

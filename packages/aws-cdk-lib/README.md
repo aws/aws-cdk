@@ -1399,7 +1399,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
       success: false,
       violations: [{
         ruleName: 'CKV_AWS_117',
-        recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+        description: 'Ensure that AWS Lambda function is configured inside a VPC',
         fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
         violatingResources: [{
           resourceLogicalId: 'MyFunction3BAA72D1',

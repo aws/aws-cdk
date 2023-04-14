@@ -682,7 +682,7 @@ const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigN
 An experimental construct is available on the Construct Hub called [@cdklabs/cdk-ecs-codedeploy](https://constructs.dev/packages/@cdklabs/cdk-ecs-codedeploy) that manages ECS CodeDeploy deployments.
 
 ```ts fixture=constructhub
-declare const deploymentGroup: codeDeploy.IEcsDeploymentGroup;
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
 declare const taskDefinition: ecs.ITaskDefinition;
 
 new EcsDeployment({
@@ -698,6 +698,9 @@ new EcsDeployment({
 The deployment will use the AutoRollbackConfig for the EcsDeploymentGroup unless it is overridden in the deployment:
 
 ```ts fixture=constructhub
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
 new EcsDeployment({
   deploymentGroup,
   targetService: {
@@ -716,6 +719,9 @@ new EcsDeployment({
 By default, the CodeDeploy Deployment will timeout after 30 minutes. The timeout value can be overridden:
 
 ```ts fixture=constructhub
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
 new EcsDeployment({
   deploymentGroup,
   targetService: {

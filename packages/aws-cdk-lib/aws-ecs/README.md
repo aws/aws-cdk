@@ -1154,7 +1154,7 @@ For more information visit https://docs.aws.amazon.com/AmazonECS/latest/develope
 When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used. Default Capacity Provider Strategy can be added by using the method `addDefaultCapacityProviderStrategy`. A capacity provider strategy cannot contain a mix of EC2 Autoscaling Group capacity providers and Fargate providers.
 
 ```ts
-declare const capacityProvider: ecs.CapacityProvider;
+declare const capacityProvider: ecs.AsgCapacityProvider;
 
 const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
@@ -1168,7 +1168,7 @@ cluster.addDefaultCapacityProviderStrategy([
 ```
 
 ```ts
-declare const capacityProvider: ecs.CapacityProvider;
+declare const capacityProvider: ecs.AsgCapacityProvider;
 
 const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
@@ -1294,7 +1294,7 @@ container.addPortMappings({
   containerPort: 8080,
 });
 
-taskDefinition.addContainer(container);
+taskDefinition.addContainer('MyContainer', container);
 
 cluster.addDefaultCloudMapNamespace({
   name: 'local',
@@ -1321,6 +1321,9 @@ be routed to the container's port 8080.
 To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition
@@ -1331,11 +1334,14 @@ service.enableServiceConnect();
 Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
 const customService = new ecs.FargateService(this, 'CustomizedService', {
   cluster,
   taskDefinition,
   serviceConnectConfiguration: {
-    logDriver: ecs.LogDrivers.awslogs({
+    logDriver: ecs.LogDrivers.awsLogs({
       streamPrefix: 'sc-traffic',
     }),
     services: [
