@@ -85,6 +85,32 @@ describe('When Application Load Balancer', () => {
     });
   });
 
+  test('throws an error if ephemeralStorageGiB is provided on task image options', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // THEN
+    expect(() =>
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('test'),
+          ephemeralStorageGiB: 2,
+        },
+      }),
+    ).toThrow(/ephemeralStorageGiB is only supported for Fargate services./);
+  });
+
   test('test ECS ALB construct with all settings', () => {
     // GIVEN
     const stack = new Stack();
@@ -965,6 +991,31 @@ describe('When Network Load Balancer', () => {
     });
   });
 
+  test('throws an error if ephemeralStorageGiB is provided on task image options', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // THEN
+    expect(() =>
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('test'),
+          ephemeralStorageGiB: 2,
+        },
+      }),
+    ).toThrow(/ephemeralStorageGiB is only supported for Fargate services./);
+  });
 
   test('Assert EnableExecuteCommand is missing if not set', () => {
     // GIVEN
