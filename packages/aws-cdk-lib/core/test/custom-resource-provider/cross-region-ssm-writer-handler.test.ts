@@ -34,7 +34,8 @@ beforeEach(() => {
   mockDeleteParameters = jest.fn().mockImplementation(() => {
     return {};
   });
-  mocklistTagsForResource = jest.fn().mockImplementation(() => {
+  mocklistTagsForResource = jest.fn();
+  mocklistTagsForResource.mockImplementation(() => {
     return {};
   });
   mockPutParameter.mockImplementation(() => {
@@ -42,11 +43,11 @@ beforeEach(() => {
   });
 });
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
-describe('cross-region-ssm-writer throws', () => {
-
+afterAll(() => {
+  jest.restoreAllMocks();
 });
 
 describe('cross-region-ssm-writer entrypoint', () => {

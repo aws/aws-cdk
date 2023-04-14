@@ -99,6 +99,7 @@ concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 flags=""
 if [ "$ci" == "true" ]; then
   flags="--stream --no-progress --skip-nx-cache"
+  export FORCE_COLOR=false
 fi
 
 echo "============================================================================================="
