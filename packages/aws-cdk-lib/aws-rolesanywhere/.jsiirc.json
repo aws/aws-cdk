@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.RolesAnywhere"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.rolesanywhere"
+    },
+    "python": {
+      "module": "aws_cdk.aws_rolesanywhere"
+    }
+  }
+}
