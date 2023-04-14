@@ -29,6 +29,7 @@ import {
   DefaultStackSynthesizer,
   Duration,
   Fn,
+  PermissionsBoundary,
   RemovalPolicy,
   SecretValue,
   Size,

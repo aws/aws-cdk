@@ -342,8 +342,8 @@ new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
 If you want to disable actions of a Composite Alarm based on a certain condition, you can use [Actions Suppression](https://www.amazonaws.cn/en/new/2022/amazon-cloudwatch-supports-composite-alarm-actions-suppression/).
 
 ```ts
-declare const childAlarm1: cloudwatch.Alarm;
-declare const childAlarm2: cloudwatch.Alarm;
+declare const alarm1: cloudwatch.Alarm;
+declare const alarm2: cloudwatch.Alarm;
 declare const onAlarmAction: cloudwatch.IAlarmAction;
 declare const onOkAction: cloudwatch.IAlarmAction;
 declare const actionsSuppressor: cloudwatch.Alarm;
@@ -354,8 +354,8 @@ const myCompositeAlarm = new cloudwatch.CompositeAlarm(this, 'MyAwesomeComposite
   alarmRule,
   actionsSuppressor,
 });
-myCompositeAlarm.addAlarmActions(onAlarmAction);
-myComposireAlarm.addOkAction(onOkAction);
+myCompositeAlarm.addAlarmAction(onAlarmAction);
+myCompositeAlarm.addOkAction(onOkAction);
 ```
 
 In the provided example, if `actionsSuppressor` is in `ALARM` state, `onAlarmAction` won't be triggered even if `myCompositeAlarm` goes into `ALARM` state.
@@ -564,7 +564,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TextWidget({
   markdown: '# Key Performance Indicators',
-  background: TextWidgetBackground.TRANSPARENT
+  background: cloudwatch.TextWidgetBackground.TRANSPARENT
 }));
 ```
 
@@ -693,13 +693,13 @@ You can add a widget after object instantiation with the method
 ### Interval duration for dashboard
 
 Interval duration for metrics in dashboard. You can specify `defaultInterval` with
-the relative time(eg. 7 days) as `cdk.Duration.days(7)`.
+the relative time(eg. 7 days) as `Duration.days(7)`.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
 const dashboard = new cw.Dashboard(this, 'Dash', {
-  defaultInterval: cdk.Duration.days(7),
+  defaultInterval: Duration.days(7),
 });
 ```
 

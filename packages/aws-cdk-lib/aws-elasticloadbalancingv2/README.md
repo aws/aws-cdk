@@ -207,7 +207,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   http2Enabled: false,
 
   // The idle timeout value, in seconds
-  idleTimeout: cdk.Duration.seconds(1000),
+  idleTimeout: Duration.seconds(1000),
 
   // Whether HTTP headers with header fields thatare not valid
   // are removed by the load balancer (true), or routed to targets

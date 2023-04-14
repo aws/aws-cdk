@@ -1164,10 +1164,10 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux({
     // Amazon Linux 2 uses SystemD
-    generation: ec2.AmazonLinuxGeneration: AMAZON_LINUX_2,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
 
-  init: ec2.CloudFormationInit.fromElements([
+  init: ec2.CloudFormationInit.fromElements(
     // Create a simple config file that runs a Python web server
     ec2.InitService.systemdConfigFile('simpleserver', {
       command: '/usr/bin/python3 -m http.server 8080',
@@ -1179,7 +1179,7 @@ new ec2.Instance(this, 'Instance', {
     }),
     // Drop an example file to show the web server working
     ec2.InitFile.fromString('/var/www/html/index.html', 'Hello! It\'s working!'),
-  ]),
+  ),
 });
 ```
 
@@ -1391,8 +1391,8 @@ You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
 ```ts
 new ec2.Volume(this, 'Volume', {
   availabilityZone: 'us-east-1a',
-  size: cdk.Size.gibibytes(125),
-  volumeType: EbsDeviceVolumeType.GP3,
+  size: Size.gibibytes(125),
+  volumeType: ec2.EbsDeviceVolumeType.GP3,
   throughput: 125,
 });
 ```
@@ -1469,7 +1469,7 @@ vpc.addFlowLog('FlowLogS3', {
 // Only reject traffic and interval every minute.
 vpc.addFlowLog('FlowLogCloudWatch', {
   trafficType: ec2.FlowLogTrafficType.REJECT,
-  maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
+  maxAggregationInterval: ec2.FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
 
@@ -1597,7 +1597,7 @@ When creating a Windows UserData you can use the `persist` option to set whether
 `<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
 
 ```ts
-const windowsUserData = UserData.forWindows({ persist: true });
+const windowsUserData = ec2.UserData.forWindows({ persist: true });
 ```
 
 For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed

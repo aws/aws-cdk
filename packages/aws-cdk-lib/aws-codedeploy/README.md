@@ -141,8 +141,6 @@ With Application Load Balancer or Network Load Balancer,
 you provide a Target Group as the load balancer:
 
 ```ts
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const alb: elbv2.ApplicationLoadBalancer;
 const listener = alb.addListener('Listener', { port: 80 });
 const targetGroup = listener.addTargets('Fleet', { port: 80 });
@@ -325,8 +323,8 @@ letting you specify precisely how fast a new function version is deployed.
 
 ```ts
 const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
 });
@@ -344,8 +342,8 @@ You can specify a custom name for your deployment config, but if you do you will
 
 ```ts
 const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
   deploymentConfigName: 'MyDeploymentConfig',
@@ -457,8 +455,8 @@ and green target groups.
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const service: ecs.FargateService;
-declare const blueTargetGroup: elbv2.ITargetGroup;
-declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
 declare const listener: elbv2.IApplicationListener;
 
 // Alarm on the number of unhealthy ECS tasks in each target group
@@ -481,7 +479,7 @@ const blueApiFailure = new cloudwatch.Alarm(this, 'Blue5xx', {
   alarmName: Stack.of(this).stackName + '-Http-5xx-Blue',
   metric: blueTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
-    { period: cdk.Duration.minutes(1) },
+    { period: Duration.minutes(1) },
   ),
   threshold: 1,
   evaluationPeriods: 1,
@@ -491,7 +489,7 @@ const greenApiFailure = new cloudwatch.Alarm(this, 'Green5xx', {
   alarmName: Stack.of(this).stackName + '-Http-5xx-Green',
   metric: greenTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
-    { period: cdk.Duration.minutes(1) },
+    { period: Duration.minutes(1) },
   ),
   threshold: 1,
   evaluationPeriods: 1,
@@ -648,7 +646,7 @@ letting you specify precisely how fast an ECS service is deployed.
 
 ```ts
 new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
     interval: Duration.minutes(15),
     percentage: 5,
   }),
@@ -659,7 +657,7 @@ You can specify a custom name for your deployment config, but if you do you will
 
 ```ts
 const config = new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
     interval: Duration.minutes(15),
     percentage: 5,
   }),
@@ -683,7 +681,7 @@ const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigN
 
 An experimental construct is available on the Construct Hub called [@cdklabs/cdk-ecs-codedeploy](https://constructs.dev/packages/@cdklabs/cdk-ecs-codedeploy) that manages ECS CodeDeploy deployments.
 
-```ts
+```ts fixture=constructhub
 declare const deploymentGroup: codeDeploy.IEcsDeploymentGroup;
 declare const taskDefinition: ecs.ITaskDefinition;
 
@@ -699,7 +697,7 @@ new EcsDeployment({
 
 The deployment will use the AutoRollbackConfig for the EcsDeploymentGroup unless it is overridden in the deployment:
 
-```ts
+```ts fixture=constructhub
 new EcsDeployment({
   deploymentGroup,
   targetService: {
@@ -717,7 +715,7 @@ new EcsDeployment({
 
 By default, the CodeDeploy Deployment will timeout after 30 minutes. The timeout value can be overridden:
 
-```ts
+```ts fixture=constructhub
 new EcsDeployment({
   deploymentGroup,
   targetService: {

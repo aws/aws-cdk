@@ -733,8 +733,9 @@ A full working example is shown below.
 ```ts nofixture
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import { App, Stack } from 'aws-cdk-lib';
-import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from '../../lib';
+import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from 'aws-cdk-lib/aws-apigateway';
 
 /// !show
 class MyStack extends Stack {

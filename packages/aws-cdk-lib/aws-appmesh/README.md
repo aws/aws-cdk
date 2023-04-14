@@ -152,9 +152,9 @@ const node = mesh.addVirtualNode('virtual-node', {
     port: 8081,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5), // minimum
+      interval: Duration.seconds(5), // minimum
       path: '/health-check-path',
-      timeout: cdk.Duration.seconds(2), // minimum
+      timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     }),
   })],
@@ -175,13 +175,13 @@ const node = new appmesh.VirtualNode(this, 'node', {
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5),
+      interval: Duration.seconds(5),
       path: '/ping',
-      timeout: cdk.Duration.seconds(2),
+      timeout: Duration.seconds(2),
       unhealthyThreshold: 2,
     }),
     timeout: {
-      idle: cdk.Duration.seconds(5),
+      idle: Duration.seconds(5),
     },
   })],
   backendDefaults: {
@@ -211,13 +211,13 @@ const node = new appmesh.VirtualNode(this, 'node', {
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5),
+      interval: Duration.seconds(5),
       path: '/ping',
-      timeout: cdk.Duration.seconds(2),
+      timeout: Duration.seconds(2),
       unhealthyThreshold: 2,
     }),
     timeout: {
-      idle: cdk.Duration.seconds(5),
+      idle: Duration.seconds(5),
     },
   })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -381,8 +381,8 @@ const node = mesh.addVirtualNode('virtual-node', {
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.http({
     outlierDetection: {
-      baseEjectionDuration: cdk.Duration.seconds(10),
-      interval: cdk.Duration.seconds(30),
+      baseEjectionDuration: Duration.seconds(10),
+      interval: Duration.seconds(30),
       maxEjectionPercent: 50,
       maxServerErrors: 5,
     },
@@ -576,7 +576,7 @@ router.addRoute('route-http2-retry', {
       // Retry five times
       retryAttempts: 5,
       // Use a 1 second timeout per retry
-      retryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: Duration.seconds(1),
     },
   }),
 });
@@ -603,7 +603,7 @@ router.addRoute('route-grpc-retry', {
         appmesh.GrpcRetryEvent.UNAVAILABLE,
       ],
       retryAttempts: 5,
-      retryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: Duration.seconds(1),
     },
   }),
 });
@@ -649,8 +649,8 @@ router.addRoute('route-http', {
       serviceName: 'my-service.default.svc.cluster.local',
     },
     timeout:  {
-      idle : cdk.Duration.seconds(2),
-      perRequest: cdk.Duration.seconds(1),
+      idle : Duration.seconds(2),
+      perRequest: Duration.seconds(1),
     },
   }),
 });
@@ -677,7 +677,7 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: appmesh.HealthCheck.http({
-      interval: cdk.Duration.seconds(10),
+      interval: Duration.seconds(10),
     }),
   })],
   backendDefaults: {
@@ -705,7 +705,7 @@ const gateway = mesh.addVirtualGateway('gateway', {
     listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
       healthCheck: appmesh.HealthCheck.http({
-        interval: cdk.Duration.seconds(10),
+        interval: Duration.seconds(10),
       }),
   })],
 });

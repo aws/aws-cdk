@@ -608,8 +608,8 @@ new s3.Bucket(this, 'MyBucket', {
     {
       name: 'foo',
       prefix: 'folder/name',
-      archiveAccessTierTime: cdk.Duration.days(90),
-      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      archiveAccessTierTime: Duration.days(90),
+      deepArchiveAccessTierTime: Duration.days(180),
       tags: [{ key: 'tagname', value: 'tagvalue' }],
     },
   ],
@@ -624,20 +624,20 @@ new s3.Bucket(this, 'MyBucket', {
 const bucket = new s3.Bucket(this, 'MyBucket', {
   lifecycleRules: [
     {
-      abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
+      abortIncompleteMultipartUploadAfter: Duration.minutes(30),
       enabled: false,
-      expiration: cdk.Duration.days(30),
+      expiration: Duration.days(30),
       expirationDate: new Date(),
       expiredObjectDeleteMarker: false,
       id: 'id',
-      noncurrentVersionExpiration: cdk.Duration.days(30),
+      noncurrentVersionExpiration: Duration.days(30),
 
       // the properties below are optional
       noncurrentVersionsToRetain: 123,
       noncurrentVersionTransitions: [
         {
           storageClass: s3.StorageClass.GLACIER,
-          transitionAfter: cdk.Duration.days(30),
+          transitionAfter: Duration.days(30),
 
           // the properties below are optional
           noncurrentVersionsToRetain: 123,
@@ -651,7 +651,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
           storageClass: s3.StorageClass.GLACIER,
 
           // the properties below are optional
-          transitionAfter: cdk.Duration.days(30),
+          transitionAfter: Duration.days(30),
           transitionDate: new Date(),
         },
       ],
@@ -683,11 +683,11 @@ These can be specified by providing `objectLockDefaultRetention`:
 ```ts
 // Configure for governance mode with a duration of 7 years
 new s3.Bucket(this, 'Bucket1', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(Duration.days(7 * 365)),
 });
 
 // Configure for compliance mode with a duration of 1 year
 new s3.Bucket(this, 'Bucket2', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(365)),
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(365)),
 });
 ```

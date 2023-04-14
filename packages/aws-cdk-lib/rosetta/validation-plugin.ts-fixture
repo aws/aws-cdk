@@ -1,8 +1,15 @@
 import { Construct } from 'constructs';
 import { App, IPolicyValidationPluginBeta1, Stage, IPolicyValidationContextBeta1, PolicyValidationPluginReportBeta1 } from 'aws-cdk-lib';
 
-declare class ThirdPartyPluginX implements IPolicyValidationPluginBeta1 {}
-declare class ThirdPartyPluginY implements IPolicyValidationPluginBeta1 {}
+declare class ThirdPartyPluginX implements IPolicyValidationPluginBeta1 {
+  public readonly name: string;
+  public validate(x: any): any;
+}
+
+declare class ThirdPartyPluginY implements IPolicyValidationPluginBeta1 {
+  public readonly name: string;
+  public validate(x: any): any;
+}
 
 class fixture$construct extends Construct {
   public constructor(scope: Construct, id: string) {

@@ -936,10 +936,12 @@ The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation
 ```ts
 declare const resource: CfnResource;
 
-resource.cfnOptions.resourceSignal = {
-  count: 3,
-  timeout: 'PR15M',
-}
+resource.cfnOptions.creationPolicy = {
+  resourceSignal: {
+    count: 3,
+    timeout: 'PR15M',
+  }
+};
 ```
 
 [creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
@@ -1293,7 +1295,7 @@ be to apply a permissions boundary at the `Stage` level.
 
 ```ts
 const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: iam.PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
 });
 ```
 
@@ -1335,7 +1337,9 @@ const app = new App({
 
 // only apply to a particular stage
 const prodStage = new Stage(app, 'ProdStage', {
-  policyValidationBeta1: [...],
+  policyValidationBeta1: [
+    new ThirdPartyPluginX(),
+  ],
 });
 ```
 
@@ -1398,7 +1402,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
         recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
         fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
         violatingResources: [{
-          resourceName: 'MyFunction3BAA72D1',
+          resourceLogicalId: 'MyFunction3BAA72D1',
           templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
           locations: ['Properties/VpcConfig'],
         }],

@@ -58,7 +58,7 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
-  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy
+  maxEventAge: Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
@@ -183,7 +183,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
 });
 
 const dlq = new sqs.Queue(this, 'DeadLetterQueue');
@@ -192,7 +192,7 @@ const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
 });
 const stateMachine = new sfn.StateMachine(this, 'SM', {
-  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(Duration.seconds(10)) })
 });
 
 rule.addTarget(new targets.SfnStateMachine(stateMachine, {
@@ -236,7 +236,7 @@ const jobDefinition = new batch.JobDefinition(this, 'MyJob', {
 const queue = new sqs.Queue(this, 'Queue');
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  schedule: events.Schedule.rate(Duration.hours(1)),
 });
 
 rule.addTarget(new targets.BatchJob(
@@ -247,7 +247,7 @@ rule.addTarget(new targets.BatchJob(
     deadLetterQueue: queue,
     event: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     retryAttempts: 2,
-    maxEventAge: cdk.Duration.hours(2),
+    maxEventAge: Duration.hours(2),
   },
 ));
 ```
@@ -263,7 +263,7 @@ import * as api from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
 });
 
 const fn = new lambda.Function( this, 'MyFunc', {
@@ -313,7 +313,7 @@ const destination = new events.ApiDestination(this, 'Destination', {
 });
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```
