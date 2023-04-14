@@ -440,7 +440,7 @@ they must all match for the action to be taken; the conditions are ANDed togethe
 
 ### Running single-container ECS workflows
 
-Batch can run jobs on ECS or EKS. ECS jobs can defined as single container or multinode.
+Batch can run jobs on ECS or EKS. ECS jobs can be defined as single container or multinode.
 This example creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
