@@ -8,10 +8,9 @@ import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Size, Stack } from 'aws-cdk-lib';
-import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
-
+import { capitalizePropertyNames } from './utils';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {
