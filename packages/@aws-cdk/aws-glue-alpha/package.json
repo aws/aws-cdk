@@ -1,28 +1,28 @@
 {
-  "name": "@aws-cdk/aws-redshift-alpha",
+  "name": "@aws-cdk/aws-glue-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Redshift",
+  "description": "The CDK Construct Library for AWS::Glue",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.redshift.alpha",
+        "package": "software.amazon.awscdk.services.glue.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "redshift-alpha"
+          "artifactId": "glue-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Redshift.Alpha",
-        "packageId": "Amazon.CDK.AWS.Redshift.Alpha",
+        "namespace": "Amazon.CDK.AWS.Glue.Alpha",
+        "packageId": "Amazon.CDK.AWS.Glue.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-redshift-alpha",
-        "module": "aws_cdk.aws_redshift_alpha",
+        "distName": "aws-cdk.aws-glue-alpha",
+        "module": "aws_cdk.aws_glue_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -30,14 +30,14 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkredshiftalpha"
+        "packageName": "awscdkgluealpha"
       }
     },
     "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": false
+          "strict": true
         }
       }
     }
@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-redshift"
+    "directory": "packages/@aws-cdk/aws-glue-alpha"
   },
   "scripts": {
     "build": "cdk-build",
@@ -65,14 +65,14 @@
   },
   "cdk-build": {
     "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
+      "AWSLINT_BASE_CONSTRUCT": "true"
     }
   },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "redshift"
+    "glue"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -86,11 +86,9 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1329.0",
     "jest": "^27.5.1",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
@@ -101,13 +99,13 @@
   "engines": {
     "node": ">= 14.15.0"
   },
+  "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
