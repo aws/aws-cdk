@@ -1,10 +1,10 @@
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { FileAssetPackaging } from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
+import { FileAssetPackaging } from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
