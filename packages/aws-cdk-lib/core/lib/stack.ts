@@ -1360,11 +1360,11 @@ export class Stack extends Construct implements ITaggable {
     const containingAssembly = Stage.of(this);
 
     if (env.account && typeof(env.account) !== 'string') {
-      throw Error(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`);
+      throw new Error(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`);
     }
 
     if (env.region && typeof(env.region) !== 'string') {
-      throw Error(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`);
+      throw new Error(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
