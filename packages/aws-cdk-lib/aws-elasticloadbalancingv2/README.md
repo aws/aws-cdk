@@ -18,6 +18,7 @@ and adding Targets to the Listener:
 ```ts
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 declare const asg: AutoScalingGroup;
+
 declare const vpc: ec2.Vpc;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
@@ -198,8 +199,6 @@ ingress rules then set `open: false` and use the listener's `connections` object
 You can modify attributes of Application Load Balancers:
 
 ```ts
-declare const vpc: ec2.Vpc;
-
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
@@ -208,8 +207,8 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   http2Enabled: false,
 
   // The idle timeout value, in seconds
-  idleTimeout: Duration.seconds(1000),
-
+  idleTimeout: cdk.Duration.seconds(1000),
+  
   // Whether HTTP headers with header fields thatare not valid
   // are removed by the load balancer (true), or routed to targets
   dropInvalidHeaderFields: true,
@@ -623,7 +622,7 @@ Metrics are also available to imported resources:
 ```ts
 declare const stack: Stack;
 
-const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this, 'MyTargetGroup', {
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
   targetGroupArn: Fn.importValue('TargetGroupArn'),
   loadBalancerArns: Fn.importValue('LoadBalancerArn'),
 });
@@ -636,7 +635,7 @@ throw an error:
 
 ```ts
 declare const stack: Stack;
-const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this, 'MyTargetGroup', {
+const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'MyTargetGroup', {
   targetGroupArn: Fn.importValue('TargetGroupArn'),
 });
 

@@ -161,11 +161,19 @@
           "spawn": "compile"
         },
         {
-          "exec": "jest --passWithNoTests --updateSnapshot",
-          "receiveArgs": true
+          "exec": "jest --passWithNoTests --all --updateSnapshot"
         },
         {
           "spawn": "eslint"
+        }
+      ]
+    },
+    "test:update": {
+      "name": "test:update",
+      "description": "Update jest snapshots",
+      "steps": [
+        {
+          "exec": "jest --updateSnapshot"
         }
       ]
     },

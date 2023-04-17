@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
 import * as cxschema from '../../../cloud-assembly-schema';
+import { Construct } from 'constructs';
 import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
@@ -46,7 +46,7 @@ describe('tree metadata', () => {
             children: {
               BootstrapVersion: {
                 constructInfo: {
-                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnParameter|constructs.Construct)/),
+                  fqn: 'aws-cdk-lib.CfnParameter',
                   version: expect.any(String),
                 },
                 id: 'BootstrapVersion',
@@ -54,7 +54,7 @@ describe('tree metadata', () => {
               },
               CheckBootstrapVersion: {
                 constructInfo: {
-                  fqn: expect.stringMatching(/(aws-cdk-lib.CfnRule|constructs.Construct)/),
+                  fqn: 'aws-cdk-lib.CfnRule',
                   version: expect.any(String),
                 },
                 id: 'CheckBootstrapVersion',

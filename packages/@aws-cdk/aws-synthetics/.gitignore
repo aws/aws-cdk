@@ -16,7 +16,7 @@ coverage
 nyc.config.js
 !.eslintrc.js
 !jest.config.js
-!test/canaries/**/*
+!test/canaries/nodejs/*
 
 junit.xml
 

@@ -34,14 +34,6 @@ class MyError extends Error {
   }
 }
 
-beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation();
-});
-
-afterAll(() => {
-  jest.restoreAllMocks();
-});
-
 describe('log retention provider', () => {
   afterEach(() => {
     AWS.restore();

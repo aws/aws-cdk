@@ -167,10 +167,10 @@ To use a bucket in a different stack in the same CDK application, pass the objec
 /**
  * Stack that defines the bucket
  */
-class Producer extends Stack {
+class Producer extends cdk.Stack {
   public readonly myBucket: s3.Bucket;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const bucket = new s3.Bucket(this, 'MyBucket', {
@@ -187,8 +187,8 @@ interface ConsumerProps extends cdk.StackProps {
 /**
  * Stack that consumes the bucket
  */
-class Consumer extends Stack {
-  constructor(scope: Construct, id: string, props: ConsumerProps) {
+class Consumer extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props: ConsumerProps) {
     super(scope, id, props);
 
     const user = new iam.User(this, 'MyUser');
@@ -196,7 +196,6 @@ class Consumer extends Stack {
   }
 }
 
-const app = new App();
 const producer = new Producer(app, 'ProducerStack');
 new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
 ```
@@ -609,8 +608,8 @@ new s3.Bucket(this, 'MyBucket', {
     {
       name: 'foo',
       prefix: 'folder/name',
-      archiveAccessTierTime: Duration.days(90),
-      deepArchiveAccessTierTime: Duration.days(180),
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
       tags: [{ key: 'tagname', value: 'tagvalue' }],
     },
   ],
@@ -625,20 +624,20 @@ new s3.Bucket(this, 'MyBucket', {
 const bucket = new s3.Bucket(this, 'MyBucket', {
   lifecycleRules: [
     {
-      abortIncompleteMultipartUploadAfter: Duration.minutes(30),
+      abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
       enabled: false,
-      expiration: Duration.days(30),
+      expiration: cdk.Duration.days(30),
       expirationDate: new Date(),
       expiredObjectDeleteMarker: false,
       id: 'id',
-      noncurrentVersionExpiration: Duration.days(30),
+      noncurrentVersionExpiration: cdk.Duration.days(30),
 
       // the properties below are optional
       noncurrentVersionsToRetain: 123,
       noncurrentVersionTransitions: [
         {
           storageClass: s3.StorageClass.GLACIER,
-          transitionAfter: Duration.days(30),
+          transitionAfter: cdk.Duration.days(30),
 
           // the properties below are optional
           noncurrentVersionsToRetain: 123,
@@ -652,7 +651,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
           storageClass: s3.StorageClass.GLACIER,
 
           // the properties below are optional
-          transitionAfter: Duration.days(30),
+          transitionAfter: cdk.Duration.days(30),
           transitionDate: new Date(),
         },
       ],
@@ -684,11 +683,11 @@ These can be specified by providing `objectLockDefaultRetention`:
 ```ts
 // Configure for governance mode with a duration of 7 years
 new s3.Bucket(this, 'Bucket1', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.governance(Duration.days(7 * 365)),
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(7 * 365)),
 });
 
 // Configure for compliance mode with a duration of 1 year
 new s3.Bucket(this, 'Bucket2', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(365)),
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(365)),
 });
 ```

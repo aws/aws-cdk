@@ -30,7 +30,7 @@ phases:
       - codebuild-breakpoint
       - 'if ${BUMP_CANDIDATE:-false}; then env NODE_OPTIONS="--max-old-space-size=8196 ${NODE_OPTIONS:-}" /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
-      - /bin/bash ./build.sh --ci
+      - /bin/bash ./build.sh
   post_build:
     commands:
       # Short-circuit: Don't run pack if the above build failed.

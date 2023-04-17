@@ -84,6 +84,9 @@
        "KeyId": "alias/aws/kinesis"
       }
      ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "PROVISIONED"
     }
    }
   }

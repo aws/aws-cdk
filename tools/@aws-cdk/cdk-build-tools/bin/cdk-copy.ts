@@ -185,6 +185,7 @@ function autoIgnore(source: string): string[] {
   return [
     // package.json `main` is lib/index.js so no need for top level index.ts
     ...['.ts', '.js', '.d.ts'].map((ext: string) => path.join(source, `index${ext}`)),
+    '**/__snapshots__/**',
     'node_modules/**',
   ];
 }

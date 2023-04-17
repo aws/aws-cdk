@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Stack, Duration } from 'aws-cdk-lib';
-import { capitalizePropertyNames } from './utils';
+import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
 import * as batch from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
@@ -199,7 +199,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       vpc,
       images: [
         {
-          image: ec2.MachineImage.latestAmazonLinux2(),
+          image: ec2.MachineImage.latestAmazonLinux(),
         },
       ],
     });
@@ -211,7 +211,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ...defaultComputeResources,
         Ec2Configuration: [
           {
-            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
+            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
             ImageType: expectedImageType,
           },
         ],
