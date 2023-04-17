@@ -142,7 +142,7 @@ Use `addEventDestination()` to publish email sending events to Amazon SNS or Ama
 
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;
-declare const myTopic: ses.Topic;
+declare const myTopic: sns.Topic;
 
 myConfigurationSet.addEventDestination('ToSns', {
   destination: ses.EventDestination.snsTopic(myTopic),

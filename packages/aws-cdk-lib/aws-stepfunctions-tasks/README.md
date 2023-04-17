@@ -298,7 +298,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
+import * as batch from '@aws-cdk/aws-batch-alpha';
 declare const batchJobDefinition: batch.JobDefinition;
 declare const batchQueue: batch.JobQueue;
 

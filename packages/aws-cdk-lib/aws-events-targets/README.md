@@ -213,7 +213,7 @@ You can optionally attach a
 to the target.
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
+import * as batch from '@aws-cdk/aws-batch-alpha';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 const jobQueue = new batch.JobQueue(this, 'MyQueue', {

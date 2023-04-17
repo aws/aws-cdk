@@ -70,8 +70,6 @@ Entities with granted access will be able to utilize the portfolios resources an
 Once resources are deployed end users will be able to access them via the console or service catalog CLI.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 
 const user = new iam.User(this, 'User');
@@ -153,7 +151,6 @@ such as an S3 Bucket, IAM roles, and EC2 instances. This stack is passed in as a
 product.  This will not create a separate CloudFormation stack during deployment.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
@@ -296,9 +293,6 @@ The `locked` boolean which when set to true will prevent your `currentVersionNam
 from being overwritten when there is an existing snapshot for that version.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-
 class S3BucketProduct extends servicecatalog.ProductStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -317,9 +311,6 @@ const productStackHistory = new servicecatalog.ProductStackHistory(this, 'Produc
 We can deploy the current version `v1` by using `productStackHistory.currentVersion()`
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-
 class S3BucketProduct extends servicecatalog.ProductStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -515,8 +506,6 @@ You can only have one launch role set for a portfolio-product association,
 and you cannot set a launch role on a product that already has a StackSets deployment configured.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -535,8 +524,6 @@ as well as in any end user accounts that wish to provision a product with the la
 You can do this by passing in the role with an explicitly set name:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -551,8 +538,6 @@ portfolio.setLocalLaunchRole(product, launchRole);
 Or you can simply pass in a role name and CDK will create a role with that name that trusts service catalog in the account:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -575,8 +560,6 @@ You can only define one StackSets deployment configuration per portfolio-product
 and you cannot both set a launch role and StackSets deployment configuration for an assocation.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 

@@ -576,7 +576,6 @@ Tasks are executed using the State Machine's execution role. In some cases, e.g.
 This can be achieved by providing the optional `credentials` property which allows using a fixed role or a json expression to resolve the role at runtime from the task's inputs.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const submitLambda: lambda.Function;
