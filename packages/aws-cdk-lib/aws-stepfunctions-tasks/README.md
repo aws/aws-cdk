@@ -167,7 +167,7 @@ new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
-import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
 const httpApi = new apigatewayv2.HttpApi(this, 'MyHttpApi');
 
 const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API', {

@@ -9,6 +9,8 @@ You can reference existing SSM Parameter Store values that you want to use in
 your CDK app by using `ssm.StringParameter.fromStringParameterAttributes`:
 
 ```ts
+declare const parameterVersion: string;
+
 // Retrieve the latest value of the non-secret parameter
 // with name "/My/String/Parameter".
 const stringValue = ssm.StringParameter.fromStringParameterAttributes(this, 'MyValue', {
@@ -125,6 +127,7 @@ const param = new ssm.StringParameter(this, 'StringParameter', {
 });
 
 // Grant read access to some Role
+declare const role: iam.IRole;
 param.grantRead(role);
 
 // Create a new SSM Parameter holding a StringList
