@@ -77,6 +77,7 @@ export class CompositeAlarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: compositeAlarmName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     }));
   }
 
@@ -85,12 +86,12 @@ export class CompositeAlarm extends AlarmBase {
    *
    * @param scope The parent creating construct (usually `this`)
    * @param id The construct's name
-   * @param compositeAlarmArn Composite Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm/CompositeAlarmName)
+   * @param compositeAlarmArn Composite Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:CompositeAlarmName)
    */
   public static fromCompositeAlarmArn(scope: Construct, id: string, compositeAlarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
