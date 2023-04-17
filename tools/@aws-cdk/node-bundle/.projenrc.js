@@ -22,6 +22,18 @@ const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
 });
 
+project.tryFindObjectFile('package.json').addDeletionOverride('jest.globals');
+project.tryFindObjectFile('package.json').addOverride('jest.transform', {
+  '^.+\\.tsx?$': [
+    'ts-jest',
+    {
+      tsconfig: 'tsconfig.dev.json',
+      isolatedModules: true,
+    },
+  ],
+});
+
+
 project.gitignore.exclude('.vscode/');
 
 // required for esbuild > v0.14.32

@@ -1385,7 +1385,7 @@
         "EndpointConfiguration": "A list of the endpoint types of the API. Use this property when creating an API. When importing an existing API, specify the endpoint configuration types using the `Parameters` property.",
         "FailOnWarnings": "A query parameter to indicate whether to rollback the API update ( `true` ) or not ( `false` ) when a warning is encountered. The default value is `false` .",
         "MinimumCompressionSize": "A nullable integer that is used to enable compression (with non-negative between 0 and 10485760 (10M) bytes, inclusive) or disable compression (with a null value) on an API. When compression is enabled, compression or decompression is not applied on the payload if the payload size is smaller than this value. Setting it to zero allows compression for any payload size.",
-        "Mode": "This property applies only when you use OpenAPI to define your REST API. The `Mode` determines how API Gateway handles resource updates.\n\nValid values are `overwrite` or `merge` .\n\nFor `overwrite` , the new API definition replaces the existing one. The existing API identifier remains unchanged.\n\nFor `merge` , the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API. Use `merge` to define top-level `RestApi` properties in addition to using OpenAPI. Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.\n\nIf you don't specify this property, a default value is chosen. For REST APIs created before March 29, 2021, the default is `overwrite` . Otherwise, the default value is `merge` .",
+        "Mode": "This property applies only when you use OpenAPI to define your REST API. The `Mode` determines how API Gateway handles resource updates.\n\nValid values are `overwrite` or `merge` .\n\nFor `overwrite` , the new API definition replaces the existing one. The existing API identifier remains unchanged.\n\nFor `merge` , the new API definition is merged with the existing API.\n\nIf you don't specify this property, a default value is chosen. For REST APIs created before March 29, 2021, the default is `overwrite` . For REST APIs created after March 29, 2021, the new API definition takes precedence, but any container types such as endpoint configurations and binary media types are merged with the existing API.\n\nUse the default mode to define top-level `RestApi` properties in addition to using OpenAPI. Generally, it's preferred to use API Gateway's OpenAPI extensions to model these properties.",
         "Name": "The name of the RestApi.",
         "Parameters": "Custom header parameters as part of the request. For example, to exclude DocumentationParts from an imported API, set `ignore=documentation` as a `parameters` value, as in the AWS CLI command of `aws apigateway import-rest-api --parameters ignore=documentation --body 'file:///path/to/imported-api-body.json'` .",
         "Policy": "A policy document that contains the permissions for the `RestApi` resource. To set the ARN for the policy, use the `!Join` intrinsic function with `\"\"` as delimiter and values of `\"execute-api:/\"` and `\"*\"` .",
@@ -1962,7 +1962,7 @@
         "DeploymentStrategyId": "The deployment strategy ID.",
         "Description": "A description of the deployment.",
         "EnvironmentId": "The environment ID.",
-        "KmsKeyIdentifier": "",
+        "KmsKeyIdentifier": "The AWS KMS key identifier (key ID, key alias, or key ARN). AWS AppConfig uses this ID to encrypt the configuration data using a customer managed key.",
         "Tags": "Metadata to assign to the deployment. Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define."
       }
     },
@@ -2025,6 +2025,48 @@
       "properties": {
         "Key": "The key-value string map. The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
         "Value": "The tag value can be up to 256 characters."
+      }
+    },
+    "AWS::AppConfig::Extension": {
+      "attributes": {
+        "Arn": "The system-generated Amazon Resource Name (ARN) for the extension.",
+        "Id": "The system-generated ID of the extension.",
+        "Ref": "`Ref` returns information about the extension.",
+        "VersionNumber": "The extension version number."
+      },
+      "description": "Creates an AWS AppConfig extension. An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of creating or deploying a configuration.\n\nYou can create your own extensions or use the AWS authored extensions provided by AWS AppConfig . For an AWS AppConfig extension that uses AWS Lambda , you must create a Lambda function to perform any computation and processing defined in the extension. If you plan to create custom versions of the AWS authored notification extensions, you only need to specify an Amazon Resource Name (ARN) in the `Uri` field for the new extension version.\n\n- For a custom EventBridge notification extension, enter the ARN of the EventBridge default events in the `Uri` field.\n- For a custom Amazon SNS notification extension, enter the ARN of an Amazon SNS topic in the `Uri` field.\n- For a custom Amazon SQS notification extension, enter the ARN of an Amazon SQS message queue in the `Uri` field.\n\nFor more information about extensions, see [Working with AWS AppConfig extensions](https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html) in the *AWS AppConfig User Guide* .",
+      "properties": {
+        "Actions": "The actions defined in the extension.",
+        "Description": "Information about the extension.",
+        "LatestVersionNumber": "You can omit this field when you create an extension. When you create a new version, specify the most recent current version number. For example, you create version 3, enter 2 for this field.",
+        "Name": "A name for the extension. Each extension name in your account must be unique. Extension versions use the same name.",
+        "Parameters": "The parameters accepted by the extension. You specify parameter values when you associate the extension to an AWS AppConfig resource by using the `CreateExtensionAssociation` API action. For AWS Lambda extension actions, these parameters are included in the Lambda request object.",
+        "Tags": "Adds one or more tags for the specified extension. Tags are metadata that help you categorize resources in different ways, for example, by purpose, owner, or environment. Each tag consists of a key and an optional value, both of which you define."
+      }
+    },
+    "AWS::AppConfig::Extension.Parameter": {
+      "attributes": {},
+      "description": "A value such as an Amazon Resource Name (ARN) or an Amazon Simple Notification Service topic entered in an extension when invoked. Parameter values are specified in an extension association. For more information about extensions, see [Working with AWS AppConfig extensions](https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html) in the *AWS AppConfig User Guide* .",
+      "properties": {
+        "Description": "Information about the parameter.",
+        "Required": "A parameter value must be specified in the extension association."
+      }
+    },
+    "AWS::AppConfig::ExtensionAssociation": {
+      "attributes": {
+        "Arn": "The ARN of the extension defined in the association.",
+        "ExtensionArn": "The ARN of the extension defined in the association.",
+        "Id": "The system-generated ID for the association.",
+        "Ref": "`Ref` returns information about the extension association.",
+        "ResourceArn": "The ARNs of applications, configuration profiles, or environments defined in the association."
+      },
+      "description": "When you create an extension or configure an AWS authored extension, you associate the extension with an AWS AppConfig application, environment, or configuration profile. For example, you can choose to run the `AWS AppConfig deployment events to Amazon SNS` AWS authored extension and receive notifications on an Amazon SNS topic anytime a configuration deployment is started for a specific application. Defining which extension to associate with an AWS AppConfig resource is called an *extension association* . An extension association is a specified relationship between an extension and an AWS AppConfig resource, such as an application or a configuration profile. For more information about extensions and associations, see [Working with AWS AppConfig extensions](https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html) in the *AWS AppConfig User Guide* .",
+      "properties": {
+        "ExtensionIdentifier": "The name, the ID, or the Amazon Resource Name (ARN) of the extension.",
+        "ExtensionVersionNumber": "The version number of the extension. If not specified, AWS AppConfig uses the maximum version of the extension.",
+        "Parameters": "The parameter names and values defined in the extensions. Extension parameters marked `Required` must be entered for this field.",
+        "ResourceIdentifier": "The ARN of an application, configuration profile, or environment.",
+        "Tags": "Adds one or more tags for the specified extension association. Tags are metadata that help you categorize resources in different ways, for example, by purpose, owner, or environment. Each tag consists of a key and an optional value, both of which you define."
       }
     },
     "AWS::AppConfig::HostedConfigurationVersion": {
@@ -7019,7 +7061,7 @@
         "Description": "The pricing rule description.",
         "ModifierPercentage": "A percentage modifier applied on the public pricing rates.",
         "Name": "The name of a pricing rule.",
-        "Operation": "",
+        "Operation": "Operation is the specific AWS action covered by this line item. This describes the specific usage of the line item.",
         "Scope": "The scope of pricing rule that indicates if it is globally applicable, or if it is service-specific.",
         "Service": "If the `Scope` attribute is `SERVICE` , this attribute indicates which service the `PricingRule` is applicable for.",
         "Tags": "A map that contains tag keys and tag values that are attached to a pricing rule.",
@@ -7030,9 +7072,9 @@
     },
     "AWS::BillingConductor::PricingRule.FreeTier": {
       "attributes": {},
-      "description": "",
+      "description": "The possible AWS Free Tier configurations.",
       "properties": {
-        "Activated": ""
+        "Activated": "Activate or deactivate AWS Free Tier."
       }
     },
     "AWS::BillingConductor::PricingRule.Tiering": {
@@ -17390,7 +17432,7 @@
         "DnsSearchDomains": "A list of DNS search domains that are presented to the container. This parameter maps to `DnsSearch` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns-search` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
         "DnsServers": "A list of DNS servers that are presented to the container. This parameter maps to `Dns` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
         "DockerLabels": "A key/value map of labels to add to the container. This parameter maps to `Labels` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--label` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`",
-        "DockerSecurityOptions": "A list of strings to provide custom labels for SELinux and AppArmor multi-level security systems. This field isn't valid for containers in tasks using the Fargate launch type.\n\nWith Windows containers, this parameter can be used to reference a credential spec file when configuring a container for Active Directory authentication. For more information, see [Using gMSAs for Windows Containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nThis parameter maps to `SecurityOpt` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--security-opt` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> The Amazon ECS container agent running on a container instance must register with the `ECS_SELINUX_CAPABLE=true` or `ECS_APPARMOR_CAPABLE=true` environment variables before containers placed on that instance can use these security options. For more information, see [Amazon ECS Container Agent Configuration](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-config.html) in the *Amazon Elastic Container Service Developer Guide* . \n\nFor more information about valid values, see [Docker Run Security Configuration](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nValid values: \"no-new-privileges\" | \"apparmor:PROFILE\" | \"label:value\" | \"credentialspec:CredentialSpecFilePath\"",
+        "DockerSecurityOptions": "A list of strings to provide custom configuration for multiple security systems. For more information about valid values, see [Docker Run Security Configuration](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . This field isn't valid for containers in tasks using the Fargate launch type.\n\nFor Linux tasks on EC2, this parameter can be used to reference custom labels for SELinux and AppArmor multi-level security systems.\n\nFor any tasks on EC2, this parameter can be used to reference a credential spec file that configures a container for Active Directory authentication. For more information, see [Using gMSAs for Windows Containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html) and [Using gMSAs for Linux Containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nThis parameter maps to `SecurityOpt` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--security-opt` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> The Amazon ECS container agent running on a container instance must register with the `ECS_SELINUX_CAPABLE=true` or `ECS_APPARMOR_CAPABLE=true` environment variables before containers placed on that instance can use these security options. For more information, see [Amazon ECS Container Agent Configuration](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-config.html) in the *Amazon Elastic Container Service Developer Guide* . \n\nFor more information about valid values, see [Docker Run Security Configuration](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nValid values: \"no-new-privileges\" | \"apparmor:PROFILE\" | \"label:value\" | \"credentialspec:CredentialSpecFilePath\"",
         "EntryPoint": "> Early versions of the Amazon ECS container agent don't properly handle `entryPoint` parameters. If you have problems using `entryPoint` , update your container agent or enter your commands and arguments as `command` array items instead. \n\nThe entry point that's passed to the container. This parameter maps to `Entrypoint` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--entrypoint` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . For more information, see [https://docs.docker.com/engine/reference/builder/#entrypoint](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/builder/#entrypoint) .",
         "Environment": "The environment variables to pass to a container. This parameter maps to `Env` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--env` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> We don't recommend that you use plaintext environment variables for sensitive information, such as credential data.",
         "EnvironmentFiles": "A list of files containing the environment variables to pass to a container. This parameter maps to the `--env-file` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nYou can specify up to ten environment files. The file must have a `.env` file extension. Each line in an environment file contains an environment variable in `VARIABLE=VALUE` format. Lines beginning with `#` are treated as comments and are ignored. For more information about the environment variable file syntax, see [Declare default environment variables in file](https://docs.aws.amazon.com/https://docs.docker.com/compose/env-file/) .\n\nIf there are environment variables specified using the `environment` parameter in a container definition, they take precedence over the variables contained within an environment file. If multiple environment files are specified that contain the same variable, they're processed from the top down. We recommend that you use unique variable names. For more information, see [Specifying Environment Variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -22027,6 +22069,16 @@
         "Tables": "A list of the tables to be synchronized."
       }
     },
+    "AWS::Glue::Crawler.DeltaTarget": {
+      "attributes": {},
+      "description": "Specifies a Delta data store to crawl one or more Delta tables.",
+      "properties": {
+        "ConnectionName": "The name of the connection to use to connect to the Delta table target.",
+        "CreateNativeDeltaTable": "Specifies whether the crawler will create native tables, to allow integration with query engines that support querying of the Delta transaction log directly.",
+        "DeltaTables": "A list of the Amazon S3 paths to the Delta tables.",
+        "WriteManifest": "Specifies whether to write the manifest files to the Delta table path."
+      }
+    },
     "AWS::Glue::Crawler.DynamoDBTarget": {
       "attributes": {},
       "description": "Specifies an Amazon DynamoDB table to crawl.",
@@ -22090,6 +22142,7 @@
       "description": "Specifies data stores to crawl.",
       "properties": {
         "CatalogTargets": "Specifies AWS Glue Data Catalog targets.",
+        "DeltaTargets": "",
         "DynamoDBTargets": "Specifies Amazon DynamoDB targets.",
         "JdbcTargets": "Specifies JDBC targets.",
         "MongoDBTargets": "A list of Mongo DB targets.",
@@ -22161,10 +22214,19 @@
       "properties": {
         "CreateTableDefaultPermissions": "Creates a set of default permissions on the table for principals. Used by AWS Lake Formation . Not used in the normal course of AWS Glue operations.",
         "Description": "A description of the database.",
+        "FederatedDatabase": "",
         "LocationUri": "The location of the database (for example, an HDFS path).",
         "Name": "The name of the database. For Hive compatibility, this is folded to lowercase when it is stored.",
         "Parameters": "These key-value pairs define parameters and properties of the database.",
         "TargetDatabase": "A `DatabaseIdentifier` structure that describes a target database for resource linking."
+      }
+    },
+    "AWS::Glue::Database.FederatedDatabase": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ConnectionName": "",
+        "Identifier": ""
       }
     },
     "AWS::Glue::Database.PrincipalPrivileges": {
@@ -25150,8 +25212,7 @@
         "ResourcesToAdd": "The resources to add to a monitor, which you provide as a set of Amazon Resource Names (ARNs).\n\nYou can add a combination of Virtual Private Clouds (VPCs) and Amazon CloudFront distributions, or you can add WorkSpaces directories. You can't add all three types of resources.\n\n> If you add only VPC resources, at least one VPC must have an Internet Gateway attached to it, to make sure that it has internet connectivity.",
         "ResourcesToRemove": "The resources to remove from a monitor. Provide the resources as a set of Amazon Resource Names (ARNs).",
         "Status": "The status of a monitor. The accepted values that you can specify for `Status` are `ACTIVE` and `INACTIVE` .",
-        "Tags": "The tags for a monitor, listed as a set of *key:value* pairs.",
-        "TrafficPercentageToMonitor": ""
+        "Tags": "The tags for a monitor, listed as a set of *key:value* pairs."
       }
     },
     "AWS::InternetMonitor::Monitor.InternetMeasurementsLogDelivery": {
@@ -26759,7 +26820,7 @@
         "IotSiteWise": "Sends information about the detector model instance and the event that triggered the action to a specified asset property in AWS IoT SiteWise .\n\nYou must use expressions for all parameters in `IotSiteWiseAction` . The expressions accept literals, operators, functions, references, and substitutions templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `propertyAlias` parameter can be `'/company/windfarm/3/turbine/7/temperature'` .\n- For references, you must specify either variables or input values. For example, the value for the `assetId` parameter can be `$input.TurbineInput.assetId1` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `propertyAlias` parameter uses a substitution template.\n\n`'company/windfarm/${$input.TemperatureInput.sensorData.windfarmID}/turbine/ ${$input.TemperatureInput.sensorData.turbineID}/temperature'`\n\nYou must specify either `propertyAlias` or both `assetId` and `propertyId` to identify the target asset property in AWS IoT SiteWise .\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .",
         "IotTopicPublish": "Information required to publish the MQTT message through the AWS IoT message broker.",
         "Lambda": "Calls a Lambda function, passing in information about the detector model instance and the event that triggered the action.",
-        "Sns": "",
+        "Sns": "Information required to publish the Amazon SNS message.",
         "Sqs": "Sends information about the detector model instance and the event that triggered the action to an Amazon SQS queue."
       }
     },
@@ -26832,7 +26893,7 @@
       "attributes": {},
       "description": "Defines an action to write to the Amazon DynamoDB table that you created. The default action payload contains all the information about the detector model instance and the event that triggered the action. You can customize the [payload](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Payload.html) . A separate column of the DynamoDB table receives one attribute-value pair in the payload that you specify.\n\nYou must use expressions for all parameters in `DynamoDBv2Action` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `tableName` parameter can be `'GreenhouseTemperatureTable'` .\n- For references, you must specify either variables or input values. For example, the value for the `tableName` parameter can be `$variable.ddbtableName` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `contentExpression` parameter in `Payload` uses a substitution template.\n\n`'{\\\"sensorID\\\": \\\"${$input.GreenhouseInput.sensor_id}\\\", \\\"temperature\\\": \\\"${$input.GreenhouseInput.temperature * 9 / 5 + 32}\\\"}'`\n- For a string concatenation, you must use `+` . A string concatenation can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `tableName` parameter uses a string concatenation.\n\n`'GreenhouseTemperatureTable ' + $input.GreenhouseInput.date`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nThe value for the `type` parameter in `Payload` must be `JSON` .",
       "properties": {
-        "Payload": "",
+        "Payload": "Information needed to configure the payload.\n\nBy default, AWS IoT Events generates a standard payload in JSON for any action. This action payload contains all attribute-value pairs that have the information about the detector model instance and the event triggered the action. To configure the action payload, you can use `contentExpression` .",
         "TableName": "The name of the DynamoDB table."
       }
     },
@@ -27794,10 +27855,10 @@
     },
     "AWS::IoTSiteWise::Portal.Alarms": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the configuration information of an alarm created in an AWS IoT SiteWise Monitor portal. You can use the alarm to monitor an asset property and get notified when the asset property value is outside a specified range. For more information, see [Monitoring with alarms](https://docs.aws.amazon.com/iot-sitewise/latest/appguide/monitor-alarms.html) in the *AWS IoT SiteWise Application Guide* .",
       "properties": {
-        "AlarmRoleArn": "",
-        "NotificationLambdaArn": ""
+        "AlarmRoleArn": "The [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) of the IAM role that allows the alarm to perform actions and access AWS resources and services, such as AWS IoT Events .",
+        "NotificationLambdaArn": "The [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) of the Lambda function that manages alarm notifications. For more information, see [Managing alarm notifications](https://docs.aws.amazon.com/iotevents/latest/developerguide/lambda-support.html) in the *AWS IoT Events Developer Guide* ."
       }
     },
     "AWS::IoTSiteWise::Project": {
@@ -28491,6 +28552,7 @@
         "OnboardedImportedDevicesCount": "The summary information of count of wireless devices that have been onboarded to the import task.",
         "PendingImportedDevicesCount": "The summary information of count of wireless devices that are waiting in the queue to be onboarded to the import task.",
         "Ref": "`Ref` returns the wireless device import task.",
+        "Sidewalk.DeviceCreationFileList": "",
         "Status": "The status of a wireless device import task. The status can be `INITIALIZING` , `INITIALIZED` , `PENDING` , `COMPLETE` , `FAILED` , or `DELETING` .",
         "StatusReason": "The reason that provides additional information about the import task status."
       },
@@ -30641,6 +30703,12 @@
       "description": "The `AWS::LakeFormation::DataLakeSettings` resource is an AWS Lake Formation resource type that manages the data lake settings for your account. Note that the CloudFormation template only supports updating the `Admins` list. It does not support updating the [CreateDatabaseDefaultPermissions](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-settings.html#aws-lake-formation-api-aws-lake-formation-api-settings-DataLakeSettings) or [CreateTableDefaultPermissions](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-settings.html#aws-lake-formation-api-aws-lake-formation-api-settings-DataLakeSettings) . Those permissions can only be edited in the DataLakeSettings resource via the API.",
       "properties": {
         "Admins": "A list of AWS Lake Formation principals.",
+        "AllowExternalDataFiltering": "Whether to allow Amazon EMR clusters to access data managed by Lake Formation.\n\nIf true, you allow Amazon EMR clusters to access data in Amazon S3 locations that are registered with Lake Formation.\n\nIf false or null, no Amazon EMR clusters will be able to access data in Amazon S3 locations that are registered with Lake Formation.\n\nFor more information, see [(Optional) Allow Data Filtering on Amazon EMR](https://docs.aws.amazon.com/https://docs-aws.amazon.com/lake-formation/latest/dg/getting-started-setup.html#emr-switch) .",
+        "AuthorizedSessionTagValueList": "Lake Formation relies on a privileged process secured by Amazon EMR or the third party integrator to tag the user's role while assuming it. Lake Formation will publish the acceptable key-value pair, for example key = \"LakeFormationTrustedCaller\" and value = \"TRUE\" and the third party integrator must properly tag the temporary security credentials that will be used to call Lake Formation's administrative APIs.",
+        "CreateDatabaseDefaultPermissions": "Specifies whether access control on newly created database is managed by Lake Formation permissions or exclusively by IAM permissions.\n\nA null value indicates access control by Lake Formation permissions. A value that assigns ALL to IAM_ALLOWED_PRINCIPALS indicates access control by IAM permissions. This is referred to as the setting \"Use only IAM access control,\" and is for backward compatibility with the AWS Glue permission model implemented by IAM permissions.\n\nThe only permitted values are an empty array or an array that contains a single JSON object that grants ALL to IAM_ALLOWED_PRINCIPALS.\n\nFor more information, see [Changing the Default Security Settings for Your Data Lake](https://docs.aws.amazon.com/https://docs.aws.amazon.com/lake-formation/latest/dg/change-settings.html) .",
+        "CreateTableDefaultPermissions": "Specifies whether access control on newly created table is managed by Lake Formation permissions or exclusively by IAM permissions.\n\nA null value indicates access control by Lake Formation permissions. A value that assigns ALL to IAM_ALLOWED_PRINCIPALS indicates access control by IAM permissions. This is referred to as the setting \"Use only IAM access control,\" and is for backward compatibility with the AWS Glue permission model implemented by IAM permissions.\n\nThe only permitted values are an empty array or an array that contains a single JSON object that grants ALL to IAM_ALLOWED_PRINCIPALS.\n\nFor more information, see [Changing the Default Security Settings for Your Data Lake](https://docs.aws.amazon.com/https://docs.aws.amazon.com/lake-formation/latest/dg/change-settings.html) .",
+        "ExternalDataFilteringAllowList": "A list of the account IDs of AWS accounts with Amazon EMR clusters that are to perform data filtering.>",
+        "Parameters": "A key-value map that provides an additional configuration on your data lake. CrossAccountVersion is the key you can configure in the Parameters field. Accepted values for the CrossAccountVersion key are 1, 2, and 3.",
         "TrustedResourceOwners": "An array of UTF-8 strings.\n\nA list of the resource-owning account IDs that the caller's account can use to share their user access details (user ARNs). The user ARNs can be logged in the resource owner's CloudTrail log. You may want to specify this property when you are in a high-trust boundary, such as the same team or company."
       }
     },
@@ -30649,11 +30717,39 @@
       "description": "A list of AWS Lake Formation principals.",
       "properties": {}
     },
+    "AWS::LakeFormation::DataLakeSettings.CreateDatabaseDefaultPermissions": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::LakeFormation::DataLakeSettings.CreateTableDefaultPermissions": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
     "AWS::LakeFormation::DataLakeSettings.DataLakePrincipal": {
       "attributes": {},
       "description": "The Lake Formation principal.",
       "properties": {
         "DataLakePrincipalIdentifier": "An identifier for the Lake Formation principal."
+      }
+    },
+    "AWS::LakeFormation::DataLakeSettings.ExternalDataFilteringAllowList": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::LakeFormation::DataLakeSettings.Permissions": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
+    },
+    "AWS::LakeFormation::DataLakeSettings.PrincipalPermissions": {
+      "attributes": {},
+      "description": "Permissions granted to a principal.",
+      "properties": {
+        "Permissions": "The permissions that are granted to the principal.",
+        "Principal": "The principal who is granted permissions."
       }
     },
     "AWS::LakeFormation::Permissions": {
@@ -33715,7 +33811,7 @@
       "description": "The `AWS::MWAA::Environment` resource creates an Amazon Managed Workflows for Apache Airflow (MWAA) environment.",
       "properties": {
         "AirflowConfigurationOptions": "A list of key-value pairs containing the Airflow configuration options for your environment. For example, `core.default_timezone: utc` . To learn more, see [Apache Airflow configuration options](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-env-variables.html) .",
-        "AirflowVersion": "The version of Apache Airflow to use for the environment. If no value is specified, defaults to the latest version. Valid values: `2.0.2` , `1.10.12` , `2.2.2` , and `2.4.3` .",
+        "AirflowVersion": "The version of Apache Airflow to use for the environment. If no value is specified, defaults to the latest version.\n\n*Allowed Values* : `2.0.2` | `1.10.12` | `2.2.2` | `2.4.3` | `2.5.1` (latest)",
         "DagS3Path": "The relative path to the DAGs folder on your Amazon S3 bucket. For example, `dags` . To learn more, see [Adding or updating DAGs](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-folder.html) .",
         "EnvironmentClass": "The environment class type. Valid values: `mw1.small` , `mw1.medium` , `mw1.large` . To learn more, see [Amazon MWAA environment class](https://docs.aws.amazon.com/mwaa/latest/userguide/environment-class.html) .",
         "ExecutionRoleArn": "The Amazon Resource Name (ARN) of the execution role in IAM that allows MWAA to access AWS resources in your environment. For example, `arn:aws:iam::123456789:role/my-execution-role` . To learn more, see [Amazon MWAA Execution role](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-create-role.html) .",
@@ -33731,6 +33827,8 @@
         "RequirementsS3Path": "The relative path to the `requirements.txt` file on your Amazon S3 bucket. For example, `requirements.txt` . To learn more, see [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html) .",
         "Schedulers": "The number of schedulers that you want to run in your environment. Valid values:\n\n- *v2* - Accepts between 2 to 5. Defaults to 2.\n- *v1* - Accepts 1.",
         "SourceBucketArn": "The Amazon Resource Name (ARN) of the Amazon S3 bucket where your DAG code and supporting files are stored. For example, `arn:aws:s3:::my-airflow-bucket-unique-name` . To learn more, see [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html) .",
+        "StartupScriptS3ObjectVersion": "The version of the startup shell script in your Amazon S3 bucket. You must specify the [version ID](https://docs.aws.amazon.com/AmazonS3/latest/userguide/versioning-workflows.html) that Amazon S3 assigns to the file every time you update the script.\n\nVersion IDs are Unicode, UTF-8 encoded, URL-ready, opaque strings that are no more than 1,024 bytes long. The following is an example:\n\n`3sL4kqtJlcpXroDTDmJ+rmSpXd3dIbrHY+MTRCxf3vjVBH40Nr8X8gdRQBpUMLUo`\n\nFor more information, see [Using a startup script](https://docs.aws.amazon.com/mwaa/latest/userguide/using-startup-script.html) .",
+        "StartupScriptS3Path": "The relative path to the startup shell script in your Amazon S3 bucket. For example, `s3://mwaa-environment/startup.sh` .\n\nAmazon MWAA runs the script as your environment starts, and before running the Apache Airflow process. You can use this script to install dependencies, modify Apache Airflow configuration options, and set environment variables. For more information, see [Using a startup script](https://docs.aws.amazon.com/mwaa/latest/userguide/using-startup-script.html) .",
         "Tags": "The key-value tag pairs associated to your environment. For example, `\"Environment\": \"Staging\"` . To learn more, see [Tagging](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
         "WebserverAccessMode": "The Apache Airflow *Web server* access mode. To learn more, see [Apache Airflow access modes](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-networking.html) . Valid values: `PRIVATE_ONLY` or `PUBLIC_ONLY` .",
         "WeeklyMaintenanceWindowStart": "The day and time of the week to start weekly maintenance updates of your environment in the following format: `DAY:HH:MM` . For example: `TUE:03:30` . You can specify a start time in 30 minute increments only. Supported input includes the following:\n\n- MON|TUE|WED|THU|FRI|SAT|SUN:([01]\\\\d|2[0-3]):(00|30)"
@@ -33828,19 +33926,19 @@
     },
     "AWS::Macie::FindingsFilter.CriterionAdditionalProperties": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies a condition that defines the property, operator, and one or more values to use in a findings filter. A *findings filter* , also referred to as a *filter rule* , is a set of custom criteria that specifies which findings to include or exclude from the results of a query for findings. You can also configure a findings filter to suppress (automatically archive) findings that match the filter's criteria. For more information, see [Filtering findings](https://docs.aws.amazon.com/macie/latest/user/findings-filter-overview.html) in the *Amazon Macie User Guide* .",
       "properties": {
-        "eq": "",
-        "gt": "",
-        "gte": "",
-        "lt": "",
-        "lte": "",
-        "neq": ""
+        "eq": "The value for the specified property matches (equals) the specified value. If you specify multiple values, Amazon Macie uses OR logic to join the values.",
+        "gt": "The value for the specified property is greater than the specified value.",
+        "gte": "The value for the specified property is greater than or equal to the specified value.",
+        "lt": "The value for the specified property is less than the specified value.",
+        "lte": "The value for the specified property is less than or equal to the specified value.",
+        "neq": "The value for the specified property doesn't match (doesn't equal) the specified value. If you specify multiple values, Amazon Macie uses OR logic to join the values."
       }
     },
     "AWS::Macie::FindingsFilter.FindingCriteria": {
       "attributes": {},
-      "description": "Specifies, as a map, one or more property-based conditions that filter the results of a query for findings. For more information, see [Filtering findings](https://docs.aws.amazon.com/macie/latest/user/findings-filter-overview.html) in the *Amazon Macie User Guide* .",
+      "description": "Specifies, as a map, one or more property-based conditions for a findings filter. A *findings filter* , also referred to as a *filter rule* , is a set of custom criteria that specifies which findings to include or exclude from the results of a query for findings. You can also configure a findings filter to suppress (automatically archive) findings that match the filter's criteria. For more information, see [Filtering findings](https://docs.aws.amazon.com/macie/latest/user/findings-filter-overview.html) in the *Amazon Macie User Guide* .",
       "properties": {
         "Criterion": "Specifies a condition that defines the property, operator, and one or more values to use to filter the results."
       }
@@ -34014,7 +34112,7 @@
         "FailoverMode": "The type of failover you choose for this flow. MERGE combines the source streams into a single stream, allowing graceful recovery from any single-source loss. FAILOVER allows switching between different streams.",
         "RecoveryWindow": "The size of the buffer (delay) that the service maintains. A larger buffer means a longer delay in transmitting the stream, but more room for error correction. A smaller buffer means a shorter delay, but less room for error correction. You can choose a value from 100-500 ms. If you keep this field blank, the service uses the default value of 200 ms. This setting only applies when Failover Mode is set to MERGE.",
         "SourcePriority": "The priority you want to assign to a source. You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
-        "State": "The state of source failover on the flow. If the state is disabled, the flow can have only one source. If the state is enabled, the flow can have one or two sources."
+        "State": "The state of source failover on the flow. If the state is inactive, the flow can have only one source. If the state is active, the flow can have one or two sources."
       }
     },
     "AWS::MediaConnect::Flow.Source": {
@@ -49060,7 +49158,7 @@
       "properties": {
         "CopySourceArn": "The Amazon Resource Name (ARN) of a data source that has the credential pair that you want to use. When `CopySourceArn` is not null, the credential pair from the data source in the ARN is used as the credentials for the `DataSourceCredentials` structure.",
         "CredentialPair": "Credential pair. For more information, see `[CredentialPair](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_CredentialPair.html)` .",
-        "SecretArn": ""
+        "SecretArn": "The Amazon Resource Name (ARN) of the secret associated with the data source in AWS Secrets Manager ."
       }
     },
     "AWS::QuickSight::DataSource.DataSourceErrorInfo": {
@@ -49080,7 +49178,7 @@
         "AthenaParameters": "The parameters for Amazon Athena.",
         "AuroraParameters": "The parameters for Amazon Aurora MySQL.",
         "AuroraPostgreSqlParameters": "The parameters for Amazon Aurora.",
-        "DatabricksParameters": "",
+        "DatabricksParameters": "The required parameters that are needed to connect to a Databricks data source.",
         "MariaDbParameters": "The parameters for MariaDB.",
         "MySqlParameters": "The parameters for MySQL.",
         "OracleParameters": "Oracle parameters.",
@@ -49097,11 +49195,11 @@
     },
     "AWS::QuickSight::DataSource.DatabricksParameters": {
       "attributes": {},
-      "description": "",
+      "description": "The required parameters that are needed to connect to a Databricks data source.",
       "properties": {
-        "Host": "",
-        "Port": "",
-        "SqlEndpointPath": ""
+        "Host": "The host name of the Databricks data source.",
+        "Port": "The port for the Databricks data source.",
+        "SqlEndpointPath": "The HTTP path of the Databricks data source."
       }
     },
     "AWS::QuickSight::DataSource.ManifestFileLocation": {
@@ -49237,6 +49335,46 @@
       "description": "VPC connection properties.",
       "properties": {
         "VpcConnectionArn": "The Amazon Resource Name (ARN) for the VPC connection."
+      }
+    },
+    "AWS::QuickSight::RefreshSchedule": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) for the refresh schedule.",
+        "Ref": ""
+      },
+      "description": "Creates a refresh schedule for a dataset in Amazon QuickSight .",
+      "properties": {
+        "AwsAccountId": "The AWS account ID of the account that you are creating a schedule in.",
+        "DataSetId": "The ID of the dataset that you are creating a refresh schedule for.",
+        "Schedule": "The refresh schedule of a dataset."
+      }
+    },
+    "AWS::QuickSight::RefreshSchedule.RefreshOnDay": {
+      "attributes": {},
+      "description": "The day that you want yout dataset to refresh.",
+      "properties": {
+        "DayOfMonth": "The day of the month that you want your dataset to refresh. This value is required for monthly refresh intervals.",
+        "DayOfWeek": "The day of the week that you want to schedule the refresh on. This value is required for weekly and monthly refresh intervals."
+      }
+    },
+    "AWS::QuickSight::RefreshSchedule.RefreshScheduleMap": {
+      "attributes": {},
+      "description": "A summary of a configured refresh schedule for a dataset.",
+      "properties": {
+        "RefreshType": "The type of refresh that a dataset undergoes. Valid values are as follows:\n\n- `FULL_REFRESH` : A complete refresh of a dataset.\n- `INCREMENTAL_REFRESH` : A partial refresh of some rows of a dataset, based on the time window specified.\n\nFor more information on full and incremental refreshes, see [Refreshing SPICE data](https://docs.aws.amazon.com/quicksight/latest/user/refreshing-imported-data.html) in the *Amazon QuickSight User Guide* .",
+        "ScheduleFrequency": "The frequency for the refresh schedule.",
+        "ScheduleId": "An identifier for the refresh schedule.",
+        "StartAfterDateTime": "Time after which the refresh schedule can be started, expressed in `YYYY-MM-DDTHH:MM:SS` format."
+      }
+    },
+    "AWS::QuickSight::RefreshSchedule.ScheduleFrequency": {
+      "attributes": {},
+      "description": "The frequency for the refresh schedule.",
+      "properties": {
+        "Interval": "The interval between scheduled refreshes. Valid values are as follows:\n\n- `MINUTE15` : The dataset refreshes every 15 minutes. This value is only supported for incremental refreshes. This interval can only be used for one schedule per dataset.\n- `MINUTE30` : The dataset refreshes every 30 minutes. This value is only supported for incremental refreshes. This interval can only be used for one schedule per dataset.\n- `HOURLY` : The dataset refreshes every hour. This interval can only be used for one schedule per dataset.\n- `DAILY` : The dataset refreshes every day.\n- `WEEKLY` : The dataset refreshes every week.\n- `MONTHLY` : The dataset refreshes every month.",
+        "RefreshOnDay": "The day of the week that you want to schedule the refresh on. This value is required for weekly and monthly refresh intervals.",
+        "TimeOfTheDay": "The time of day that you want the dataset to refresh. This value is expressed in HH:MM format. This field is not required for schedules that refresh hourly.",
+        "TimeZone": "The timezone that you want the refresh schedule to use. The timezone ID must match a corresponding ID found on `java.util.time.getAvailableIDs()` ."
       }
     },
     "AWS::QuickSight::Template": {
@@ -53837,6 +53975,7 @@
         "PubliclyAccessible": "Indicates whether the DB instance is an internet-facing instance. If you specify true, AWS CloudFormation creates an instance with a publicly resolvable DNS name, which resolves to a public IP address. If you specify false, AWS CloudFormation creates an internal instance with a DNS name that resolves to a private IP address.\n\nThe default behavior value depends on your VPC setup and the database subnet group. For more information, see the `PubliclyAccessible` parameter in the [CreateDBInstance](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBInstance.html) in the *Amazon RDS API Reference* .",
         "ReplicaMode": "The open mode of an Oracle read replica. For more information, see [Working with Oracle Read Replicas for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-read-replicas.html) in the *Amazon RDS User Guide* .\n\nThis setting is only supported in RDS for Oracle.\n\nDefault: `open-read-only`\n\nValid Values: `open-read-only` or `mounted`",
         "RestoreTime": "The date and time to restore from.\n\nValid Values: Value must be a time in Universal Coordinated Time (UTC) format\n\nConstraints:\n\n- Must be before the latest restorable time for the DB instance\n- Can't be specified if the `UseLatestRestorableTime` parameter is enabled\n\nExample: `2009-09-07T23:45:00Z`",
+        "SourceDBClusterIdentifier": "The identifier of the Multi-AZ DB cluster that will act as the source for the read replica. Each DB cluster can have up to 15 read replicas.\n\nConstraints:\n\n- Must be the identifier of an existing Multi-AZ DB cluster.\n- Can't be specified if the `SourceDBInstanceIdentifier` parameter is also specified.\n- The specified DB cluster must have automatic backups enabled, that is, its backup retention period must be greater than 0.\n- The source DB cluster must be in the same AWS Region as the read replica. Cross-Region replication isn't supported.",
         "SourceDBInstanceAutomatedBackupsArn": "The Amazon Resource Name (ARN) of the replicated automated backups from which to restore, for example, `arn:aws:rds:useast-1:123456789012:auto-backup:ab-L2IJCEXJP7XQ7HOJ4SIEXAMPLE` .\n\nThis setting doesn't apply to RDS Custom.",
         "SourceDBInstanceIdentifier": "If you want to create a read replica DB instance, specify the ID of the source DB instance. Each DB instance can have a limited number of read replicas. For more information, see [Working with Read Replicas](https://docs.aws.amazon.com/AmazonRDS/latest/DeveloperGuide/USER_ReadRepl.html) in the *Amazon RDS User Guide* .\n\nFor information about constraints that apply to DB instance identifiers, see [Naming constraints in Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.Constraints) in the *Amazon RDS User Guide* .\n\nThe `SourceDBInstanceIdentifier` property determines whether a DB instance is a read replica. If you remove the `SourceDBInstanceIdentifier` property from your template and then update your stack, AWS CloudFormation promotes the Read Replica to a standalone DB instance.\n\n> - If you specify a source DB instance that uses VPC security groups, we recommend that you specify the `VPCSecurityGroups` property. If you don't specify the property, the read replica inherits the value of the `VPCSecurityGroups` property from the source DB when you create the replica. However, if you update the stack, AWS CloudFormation reverts the replica's `VPCSecurityGroups` property to the default value because it's not defined in the stack's template. This change might cause unexpected issues.\n> - Read replicas don't support deletion policies. AWS CloudFormation ignores any deletion policy that's associated with a read replica.\n> - If you specify `SourceDBInstanceIdentifier` , don't specify the `DBSnapshotIdentifier` property. You can't create a read replica from a snapshot.\n> - Don't set the `BackupRetentionPeriod` , `DBName` , `MasterUsername` , `MasterUserPassword` , and `PreferredBackupWindow` properties. The database attributes are inherited from the source DB instance, and backups are disabled for read replicas.\n> - If the source DB instance is in a different region than the read replica, specify the source region in `SourceRegion` , and specify an ARN for a valid DB instance in `SourceDBInstanceIdentifier` . For more information, see [Constructing a Amazon RDS Amazon Resource Name (ARN)](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Tagging.html#USER_Tagging.ARN) in the *Amazon RDS User Guide* .\n> - For DB instances in Amazon Aurora clusters, don't specify this property. Amazon RDS automatically assigns writer and reader DB instances.",
         "SourceDbiResourceId": "The resource ID of the source DB instance from which to restore.",
@@ -57661,7 +57800,7 @@
         "Alias": "The unique and identifiable alias of the contact or escalation plan.",
         "DisplayName": "The full name of the contact or escalation plan.",
         "Plan": "A list of stages. A contact has an engagement plan with stages that contact specified contact channels. An escalation plan uses stages that contact specified contacts.",
-        "Type": "Refers to the type of contact. A single contact is type `PERSONAL` and an escalation plan is type `ESCALATION` ."
+        "Type": "Refers to the type of contact:\n\n- `PERSONAL` : A single, individual contact.\n- `ESCALATION` : An escalation plan.\n- `ONCALL_SCHEDULE` : An on-call schedule."
       }
     },
     "AWS::SSMContacts::Contact.ChannelTargetInfo": {
@@ -58720,14 +58859,14 @@
       "description": "The configuration of an `OfflineStore` .\n\nProvide an `OfflineStoreConfig` in a request to `CreateFeatureGroup` to create an `OfflineStore` .\n\nTo encrypt an `OfflineStore` using at rest data encryption, specify AWS Key Management Service (KMS) key ID, or `KMSKeyId` , in `S3StorageConfig` .",
       "properties": {
         "DataCatalogConfig": "The meta data of the Glue table that is autogenerated when an `OfflineStore` is created.",
-        "DisableGlueTableCreation": "Set to `True` to disable the automatic creation of an AWS Glue table when configuring an `OfflineStore` . If set to `False` , Feature Store will name the `OfflineStore` Glue table following [Athena's naming recommendations](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) .",
+        "DisableGlueTableCreation": "Set to `True` to disable the automatic creation of an AWS Glue table when configuring an `OfflineStore` . If set to `False` , Feature Store will name the `OfflineStore` Glue table following [Athena's naming recommendations](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) .\n\nThe default value is `False` .",
         "S3StorageConfig": "The Amazon Simple Storage (Amazon S3) location of `OfflineStore` .",
         "TableFormat": ""
       }
     },
     "AWS::SageMaker::FeatureGroup.OnlineStoreConfig": {
       "attributes": {},
-      "description": "Use this to specify the AWS Key Management Service (KMS) Key ID, or `KMSKeyId` , for at rest data encryption. You can turn `OnlineStore` on or off by specifying the `EnableOnlineStore` flag at General Assembly; the default value is `False` .",
+      "description": "Use this to specify the AWS Key Management Service (KMS) Key ID, or `KMSKeyId` , for at rest data encryption. You can turn `OnlineStore` on or off by specifying the `EnableOnlineStore` flag at General Assembly.\n\nThe default value is `False` .",
       "properties": {
         "EnableOnlineStore": "Turn `OnlineStore` off by specifying `False` for the `EnableOnlineStore` flag. Turn `OnlineStore` on by specifying `True` for the `EnableOnlineStore` flag.\n\nThe default value is `False` .",
         "SecurityConfig": "Use to specify KMS Key ID ( `KMSKeyId` ) for at-rest encryption of your `OnlineStore` ."

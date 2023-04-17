@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
