@@ -32,6 +32,7 @@ for (const file of files) {
   processSection(pkg.dependencies || { }, file);
   processSection(pkg.devDependencies || { }, file);
   processSection(pkg.peerDependencies || { }, file);
+  processSection(pkg.jsiiRosetta?.exampleDependencies ?? { }, file);
 
   console.error(`${file} => ${version}`);
   fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
