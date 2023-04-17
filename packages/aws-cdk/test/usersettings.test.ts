@@ -2,11 +2,12 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
+import { mocked } from 'ts-jest/utils';
 import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '../lib/settings';
 
 // mock fs deeply
 jest.mock('fs-extra');
-const mockedFs = jest.mocked(fs, { shallow: true });
+const mockedFs = mocked(fs, true);
 
 const USER_CONFIG = fs_path.join(os.homedir(), '.cdk.json');
 

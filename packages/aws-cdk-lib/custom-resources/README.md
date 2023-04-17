@@ -533,14 +533,14 @@ Additionally, the Lambda function can be placed in a private VPC by using the `v
 and `vpcSubnets` properties.
 
 ```ts
-declare const vpc: ec2.Vpc;
+declare const myVpc: ec2.Vpc;
 new cr.AwsCustomResource(this, 'CustomizedInVpc', {
   vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_NAT },
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-});
+  }
+})
 ```
 
 Note that Lambda functions in a VPC
