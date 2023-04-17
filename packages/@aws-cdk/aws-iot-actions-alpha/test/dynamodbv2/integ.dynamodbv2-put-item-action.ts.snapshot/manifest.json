@@ -1,27 +1,27 @@
 {
   "version": "31.0.0",
   "artifacts": {
-    "kinesis-logsubscription-integ.assets": {
+    "test-dynamodbv2-put-item-action-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "kinesis-logsubscription-integ.assets.json",
+        "file": "test-dynamodbv2-put-item-action-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "kinesis-logsubscription-integ": {
+    "test-dynamodbv2-put-item-action-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "kinesis-logsubscription-integ.template.json",
+        "templateFile": "test-dynamodbv2-put-item-action-stack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efceebbbcc092c93099cfaca90900ecfff8e9bfcacb36ee0f61c69d9485ab5c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d5ae52b69c9656b617087e12c3cbd7486ab8a18a0e5e927442d682ecc704529.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "kinesis-logsubscription-integ.assets"
+          "test-dynamodbv2-put-item-action-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,73 +30,69 @@
         }
       },
       "dependencies": [
-        "kinesis-logsubscription-integ.assets"
+        "test-dynamodbv2-put-item-action-stack.assets"
       ],
       "metadata": {
-        "/kinesis-logsubscription-integ/MyStream/Resource": [
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyStream5C050E93"
+            "data": "TopicRule40A4EA44"
           }
         ],
-        "/kinesis-logsubscription-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+            "data": "TopicRuleTopicRuleActionRole246C4F77"
           }
         ],
-        "/kinesis-logsubscription-integ/LogGroup/Resource": [
+        "/test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LogGroupF5B46931"
+            "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
           }
         ],
-        "/kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/Resource": [
+        "/test-dynamodbv2-put-item-action-stack/MyTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "MyTable794EDED1"
+            }
+          }
+        ],
+        "/test-dynamodbv2-put-item-action-stack/MyTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubscriptionCloudWatchLogsCanPutRecords9C1223EC"
+            "data": "MyTable794EDED1"
           }
         ],
-        "/kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubscriptionCloudWatchLogsCanPutRecordsDefaultPolicy50D4970F"
-          }
-        ],
-        "/kinesis-logsubscription-integ/Subscription/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Subscription391C9821"
-          }
-        ],
-        "/kinesis-logsubscription-integ/BootstrapVersion": [
+        "/test-dynamodbv2-put-item-action-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/kinesis-logsubscription-integ/CheckBootstrapVersion": [
+        "/test-dynamodbv2-put-item-action-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "kinesis-logsubscription-integ"
+      "displayName": "test-dynamodbv2-put-item-action-stack"
     },
-    "KinesisIntegDefaultTestDeployAssertE6E3ADDB.assets": {
+    "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "KinesisIntegDefaultTestDeployAssertE6E3ADDB.assets.json",
+        "file": "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "KinesisIntegDefaultTestDeployAssertE6E3ADDB": {
+    "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "KinesisIntegDefaultTestDeployAssertE6E3ADDB.template.json",
+        "templateFile": "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -104,7 +100,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "KinesisIntegDefaultTestDeployAssertE6E3ADDB.assets"
+          "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -113,23 +109,23 @@
         }
       },
       "dependencies": [
-        "KinesisIntegDefaultTestDeployAssertE6E3ADDB.assets"
+        "dynamodbv2integtestDefaultTestDeployAssertEF9A9A37.assets"
       ],
       "metadata": {
-        "/KinesisInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/dynamodbv2-integtest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/KinesisInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/dynamodbv2-integtest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "KinesisInteg/DefaultTest/DeployAssert"
+      "displayName": "dynamodbv2-integtest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -6,16 +6,17 @@
     "TopicRulePayload": {
      "Actions": [
       {
-       "Kinesis": {
-        "PartitionKey": "${timestamp()}",
+       "DynamoDBv2": {
+        "PutItem": {
+         "TableName": {
+          "Ref": "MyTable794EDED1"
+         }
+        },
         "RoleArn": {
          "Fn::GetAtt": [
           "TopicRuleTopicRuleActionRole246C4F77",
           "Arn"
          ]
-        },
-        "StreamName": {
-         "Ref": "MyStream5C050E93"
         }
        }
       }
@@ -48,11 +49,11 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "kinesis:PutRecord",
+       "Action": "dynamodb:PutItem",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "MyStream5C050E93",
+         "MyTable794EDED1",
          "Arn"
         ]
        }
@@ -68,46 +69,37 @@
     ]
    }
   },
-  "MyStream5C050E93": {
-   "Type": "AWS::Kinesis::Stream",
+  "MyTable794EDED1": {
+   "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "RetentionPeriodHours": 24,
-    "ShardCount": 3,
-    "StreamEncryption": {
-     "Fn::If": [
-      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-      {
-       "Ref": "AWS::NoValue"
-      },
-      {
-       "EncryptionType": "KMS",
-       "KeyId": "alias/aws/kinesis"
-      }
-     ]
-    }
-   }
-  }
- },
- "Conditions": {
-  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-   "Fn::Or": [
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-north-1"
-     ]
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sortKey",
+      "AttributeType": "N"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 1,
+     "WriteCapacityUnits": 1
     },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-northwest-1"
-     ]
-    }
-   ]
+    "TableName": "MyTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

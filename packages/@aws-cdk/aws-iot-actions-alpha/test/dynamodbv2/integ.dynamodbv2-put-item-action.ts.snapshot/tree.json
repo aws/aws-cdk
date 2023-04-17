@@ -4,90 +4,55 @@
     "id": "App",
     "path": "",
     "children": {
-      "kinesis-logsubscription-integ": {
-        "id": "kinesis-logsubscription-integ",
-        "path": "kinesis-logsubscription-integ",
+      "test-dynamodbv2-put-item-action-stack": {
+        "id": "test-dynamodbv2-put-item-action-stack",
+        "path": "test-dynamodbv2-put-item-action-stack",
         "children": {
-          "MyStream": {
-            "id": "MyStream",
-            "path": "kinesis-logsubscription-integ/MyStream",
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "test-dynamodbv2-put-item-action-stack/TopicRule",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "kinesis-logsubscription-integ/MyStream/Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
                   "aws:cdk:cloudformation:props": {
-                    "retentionPeriodHours": 24,
-                    "shardCount": 1,
-                    "streamEncryption": {
-                      "Fn::If": [
-                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                    "topicRulePayload": {
+                      "actions": [
                         {
-                          "Ref": "AWS::NoValue"
-                        },
-                        {
-                          "EncryptionType": "KMS",
-                          "KeyId": "alias/aws/kinesis"
+                          "dynamoDBv2": {
+                            "putItem": {
+                              "tableName": {
+                                "Ref": "MyTable794EDED1"
+                              }
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "TopicRuleTopicRuleActionRole246C4F77",
+                                "Arn"
+                              ]
+                            }
+                          }
                         }
-                      ]
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "sql": "SELECT * FROM 'device/+/data'"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
+                  "fqn": "aws-cdk-lib.aws_iot.CfnTopicRule",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
-              "version": "0.0.0"
-            }
-          },
-          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-            "path": "kinesis-logsubscription-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnCondition",
-              "version": "0.0.0"
-            }
-          },
-          "LogGroup": {
-            "id": "LogGroup",
-            "path": "kinesis-logsubscription-integ/LogGroup",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "kinesis-logsubscription-integ/LogGroup/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "0.0.0"
-            }
-          },
-          "Subscription": {
-            "id": "Subscription",
-            "path": "kinesis-logsubscription-integ/Subscription",
-            "children": {
-              "CloudWatchLogsCanPutRecords": {
-                "id": "CloudWatchLogsCanPutRecords",
-                "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords",
+              },
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole",
                 "children": {
-                  "ImportCloudWatchLogsCanPutRecords": {
-                    "id": "ImportCloudWatchLogsCanPutRecords",
-                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/ImportCloudWatchLogsCanPutRecords",
+                  "ImportTopicRuleActionRole": {
+                    "id": "ImportTopicRuleActionRole",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -95,7 +60,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/Resource",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -105,7 +70,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "logs.amazonaws.com"
+                                "Service": "iot.amazonaws.com"
                               }
                             }
                           ],
@@ -120,36 +85,22 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy",
+                    "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource",
+                        "path": "test-dynamodbv2-put-item-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": [
-                                    "kinesis:ListShards",
-                                    "kinesis:PutRecord",
-                                    "kinesis:PutRecords"
-                                  ],
+                                  "Action": "dynamodb:PutItem",
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "MyStream5C050E93",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "SubscriptionCloudWatchLogsCanPutRecords9C1223EC",
+                                      "MyTable794EDED1",
                                       "Arn"
                                     ]
                                   }
@@ -157,10 +108,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "SubscriptionCloudWatchLogsCanPutRecordsDefaultPolicy50D4970F",
+                            "policyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
                             "roles": [
                               {
-                                "Ref": "SubscriptionCloudWatchLogsCanPutRecords9C1223EC"
+                                "Ref": "TopicRuleTopicRuleActionRole246C4F77"
                               }
                             ]
                           }
@@ -181,45 +132,72 @@
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "MyTable": {
+            "id": "MyTable",
+            "path": "test-dynamodbv2-put-item-action-stack/MyTable",
+            "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "kinesis-logsubscription-integ/Subscription/Resource",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::SubscriptionFilter",
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "destinationArn": {
-                      "Fn::GetAtt": [
-                        "MyStream5C050E93",
-                        "Arn"
-                      ]
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 1,
+                      "writeCapacityUnits": 1
                     },
-                    "filterPattern": "",
-                    "logGroupName": {
-                      "Ref": "LogGroupF5B46931"
-                    },
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "SubscriptionCloudWatchLogsCanPutRecords9C1223EC",
-                        "Arn"
-                      ]
-                    }
+                    "tableName": "MyTable"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnSubscriptionFilter",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "test-dynamodbv2-put-item-action-stack/MyTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.SubscriptionFilter",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "kinesis-logsubscription-integ/BootstrapVersion",
+            "path": "test-dynamodbv2-put-item-action-stack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -227,7 +205,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "kinesis-logsubscription-integ/CheckBootstrapVersion",
+            "path": "test-dynamodbv2-put-item-action-stack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -239,17 +217,17 @@
           "version": "0.0.0"
         }
       },
-      "KinesisInteg": {
-        "id": "KinesisInteg",
-        "path": "KinesisInteg",
+      "dynamodbv2-integtest": {
+        "id": "dynamodbv2-integtest",
+        "path": "dynamodbv2-integtest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "KinesisInteg/DefaultTest",
+            "path": "dynamodbv2-integtest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "KinesisInteg/DefaultTest/Default",
+                "path": "dynamodbv2-integtest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.270"
@@ -257,11 +235,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "KinesisInteg/DefaultTest/DeployAssert",
+                "path": "dynamodbv2-integtest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "KinesisInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "dynamodbv2-integtest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -269,7 +247,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "KinesisInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "dynamodbv2-integtest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
