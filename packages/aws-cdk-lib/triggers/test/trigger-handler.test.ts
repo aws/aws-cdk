@@ -1,14 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as lambda from '../lib/lambda';
 
-beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation();
-});
-
-afterAll(() => {
-  jest.restoreAllMocks();
-});
-
 afterEach(() => {
   jest.clearAllMocks();
 });

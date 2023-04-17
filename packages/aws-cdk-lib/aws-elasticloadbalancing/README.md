@@ -44,16 +44,14 @@ lb.addListener({
 You can add an EC2 instance to the load balancer by calling using `new InstanceTarget` as the argument to `addTarget()`:
 
 ```ts
-declare const vpc: ec2.IVpc;
 const lb = new elb.LoadBalancer(this, 'LB', {
   vpc,
 });
-
 // instance to add as the target for load balancer.
-const instance = new ec2.Instance(this, 'targetInstance', {
+const instance = new Instance(stack, 'targetInstance', {
   vpc: vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO),
+  machineImage: new AmazonLinuxImage(),
 });
-lb.addTarget(new elb.InstanceTarget(instance));
+lb.addTarget(elb.InstanceTarget(instance));
 ```

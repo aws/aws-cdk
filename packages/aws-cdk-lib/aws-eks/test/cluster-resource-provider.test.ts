@@ -1,14 +1,6 @@
 import * as mocks from './cluster-resource-handler-mocks';
 import { ClusterResourceHandler } from '../lib/cluster-resource-handler/cluster';
 
-beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation();
-});
-
-afterAll(() => {
-  jest.restoreAllMocks();
-});
-
 describe('cluster resource provider', () => {
   beforeEach(() => {
     mocks.reset();

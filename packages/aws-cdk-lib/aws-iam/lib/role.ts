@@ -201,15 +201,13 @@ export interface CustomizeRolesOptions {
    * The constructPath can be either a relative or absolute path
    * from the scope that `customizeRoles` is used on to the role being created.
    *
+   * For example, if you were creating a role
+   *
    * @example
-   * declare const app: App;
-   *
    * const stack = new Stack(app, 'MyStack');
-   * new iam.Role(stack, 'MyRole', {
-   *  assumedBy: new iam.AccountPrincipal('1111111111'),
-   * });
+   * new Role(stack, 'MyRole');
    *
-   * iam.Role.customizeRoles(stack, {
+   * Role.customizeRoles(stack, {
    *   usePrecreatedRoles: {
    *      // absolute path
    *     'MyStack/MyRole': 'my-precreated-role-name',
@@ -349,7 +347,7 @@ export class Role extends Resource implements IRole {
    *
    * @example
    * declare const app: App;
-   * iam.Role.customizeRoles(app, {
+   * Role.customizeRoles(app, {
    *   usePrecreatedRoles: {
    *     'ConstructPath/To/Role': 'my-precreated-role-name',
    *   },
