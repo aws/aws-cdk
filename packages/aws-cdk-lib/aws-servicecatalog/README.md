@@ -184,8 +184,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Bucket } from "aws-cdk-lib/aws-s3";
 
 class LambdaProduct extends servicecatalog.ProductStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: servicecatalog.ProductStackProps) {
+    super(scope, id, props);
 
     new lambda.Function(this, 'LambdaProduct', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -223,7 +223,6 @@ reads from a specific launch role, refer to the following example policy:
 
 ```ts
 declare const bucket: s3.IBucket;
-declare const launchRoleName: string;
 
 new iam.PolicyStatement({
   actions: [
@@ -239,9 +238,9 @@ new iam.PolicyStatement({
     new iam.ArnPrincipal(Stack.of(this).formatArn({
       service: 'iam',
       region: '',
-      sharedAccount,
+      account: '111111111111',,
       resource: 'role',
-      resourceName: launchRoleName,
+      resourceName: 'MyLaunchRole',
     }))
   ],
   conditions: {

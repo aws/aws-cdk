@@ -870,7 +870,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
   private stackOutputReference: pipelines.StackOutputReference
 
   constructor(
-    private readonly function: lambda.Function,
+    private readonly fn: lambda.Function,
     stackOutput: CfnOutput,
   ) {
     super('MyLambdaStep');
@@ -884,7 +884,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
       runOrder: options.runOrder,
       // Map the reference to the variable name the CDK has generated for you.
       userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
-      lambda: this.function,
+      lambda: this.fn,
     }));
 
     return { runOrdersConsumed: 1 };
