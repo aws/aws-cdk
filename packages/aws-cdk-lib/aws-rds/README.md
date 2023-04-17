@@ -185,14 +185,14 @@ to use for the instance:
 declare const vpc: ec2.Vpc;
 
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
   vpc,
   storageType: rds.StorageType.IO1,
   iops: 5000,
 });
 
 const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
   vpc,
   allocatedStorage: 500,
   storageType: rds.StorageType.GP3,

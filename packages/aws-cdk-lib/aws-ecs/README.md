@@ -1287,14 +1287,14 @@ or you can specify a custom namespace. You must also have created a named port m
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const container: ecs.ContainerDefinitionOptions;
+declare const containerOptions: ecs.ContainerDefinitionOptions;
+
+const container = taskDefinition.addContainer('MyContainer', containerOptions);
 
 container.addPortMappings({
   name: 'api',
   containerPort: 8080,
 });
-
-taskDefinition.addContainer('MyContainer', container);
 
 cluster.addDefaultCloudMapNamespace({
   name: 'local',

@@ -162,6 +162,8 @@ Note: CloudFormation does not currently support for `PERSISTENT_2` filesystems, 
 The following example illustrates setting up a DRA to an S3 bucket, including automated metadata import whenever a file is changed, created or deleted in the S3 bucket:
 
 ```ts
+import { aws_s3 as s3 } from 'aws-cdk-lib';
+
 declare const vpc: ec2.Vpc;
 declare const bucket: s3.Bucket;
 

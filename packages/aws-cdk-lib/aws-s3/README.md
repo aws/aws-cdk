@@ -167,10 +167,10 @@ To use a bucket in a different stack in the same CDK application, pass the objec
 /**
  * Stack that defines the bucket
  */
-class Producer extends cdk.Stack {
+class Producer extends Stack {
   public readonly myBucket: s3.Bucket;
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const bucket = new s3.Bucket(this, 'MyBucket', {
@@ -187,8 +187,8 @@ interface ConsumerProps extends cdk.StackProps {
 /**
  * Stack that consumes the bucket
  */
-class Consumer extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: ConsumerProps) {
+class Consumer extends Stack {
+  constructor(scope: Construct, id: string, props: ConsumerProps) {
     super(scope, id, props);
 
     const user = new iam.User(this, 'MyUser');
@@ -196,6 +196,7 @@ class Consumer extends cdk.Stack {
   }
 }
 
+const app = new App();
 const producer = new Producer(app, 'ProducerStack');
 new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
 ```

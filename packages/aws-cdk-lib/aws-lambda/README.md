@@ -1039,8 +1039,8 @@ Lambda runtime management controls help reduce the risk of impact to your worklo
 For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
 
 ```ts
-new Function(this, 'Lambda', {
-  runtimeManagementMode: RuntimeManagementMode.AUTO,
+new lambda.Function(this, 'Lambda', {
+  runtimeManagementMode: lambda.RuntimeManagementMode.AUTO,
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
@@ -1050,8 +1050,8 @@ new Function(this, 'Lambda', {
 If you want to set the "Manual" setting, using the ARN of the runtime version as the argument.
 
 ```ts
-new Function(this, 'Lambda', {
-  runtimeManagementMode: RuntimeManagementMode.manual('runtimeVersion-arn'),
+new lambda.Function(this, 'Lambda', {
+  runtimeManagementMode: lambda.RuntimeManagementMode.manual('runtimeVersion-arn'),
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),

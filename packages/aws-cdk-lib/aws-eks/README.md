@@ -1171,6 +1171,8 @@ cluster.addHelmChart('test-chart', {
 Nested values passed to the `values` parameter should be provided as a nested dictionary:
 
 ```ts
+declare const cluster: eks.Cluster;
+
 cluster.addHelmChart('ExternalSecretsOperator', {
   chart: 'external-secrets',
   release: 'external-secrets',

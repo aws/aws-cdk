@@ -9,7 +9,7 @@ import s3n = require('aws-cdk-lib/aws-s3-notifications');
 import sns = require('aws-cdk-lib/aws-sns');
 import sqs = require('aws-cdk-lib/aws-sqs');
 import assert = require('assert');
-import { Duration } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {

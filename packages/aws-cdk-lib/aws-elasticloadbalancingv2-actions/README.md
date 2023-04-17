@@ -12,7 +12,7 @@ Cognito](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lis
 Here's an example:
 
 ```ts
-import { aws_acm as acm } from 'aws-cdk-lib';
+import { aws_certificatemanager as acm } from 'aws-cdk-lib';
 
 declare const vpc: ec2.Vpc;
 declare const certificate: acm.Certificate;
