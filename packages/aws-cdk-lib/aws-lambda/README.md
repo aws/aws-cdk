@@ -797,7 +797,7 @@ profiling group -
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.PYTHON_3_9,
+  runtime: lambda.Runtime.PYTHON_3_10,
   handler: 'index.handler',
   code: lambda.Code.fromAsset('lambda-handler'),
   profiling: true,
@@ -966,14 +966,14 @@ Example with Python:
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: lambda.Runtime.PYTHON_3_9.bundlingImage,
+      image: lambda.Runtime.PYTHON_3_10.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: lambda.Runtime.PYTHON_3_9,
+  runtime: lambda.Runtime.PYTHON_3_10,
   handler: 'index.handler',
 });
 ```
@@ -995,7 +995,7 @@ new lambda.Function(this, 'Function', {
       command: ['my', 'cool', 'command'],
     },
   }),
-  runtime: lambda.Runtime.PYTHON_3_9,
+  runtime: lambda.Runtime.PYTHON_3_10,
   handler: 'index.handler',
 });
 ```
