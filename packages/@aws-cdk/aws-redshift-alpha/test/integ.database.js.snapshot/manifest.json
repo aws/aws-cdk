@@ -17,17 +17,21 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2cf2a437f9007286a4d7bc2cb4d6008231236f7c800e4503142a26d808b75d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f50f34bacfa31c486d56f3494f8781027db43581eaf9eff8d6919bd5daedb37e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": ["aws-cdk-redshift-cluster-database.assets"],
+        "additionalDependencies": [
+          "aws-cdk-redshift-cluster-database.assets"
+        ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": ["aws-cdk-redshift-cluster-database.assets"],
+      "dependencies": [
+        "aws-cdk-redshift-cluster-database.assets"
+      ],
       "metadata": {
         "/aws-cdk-redshift-cluster-database/custom-kms-key/Resource": [
           {
