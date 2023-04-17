@@ -1157,7 +1157,7 @@ export interface SubnetConfiguration {
  *
  * ```ts
  * const vpc = new ec2.Vpc(this, 'TheVPC', {
- *   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+ *   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
  * })
  *
  * // Iterate the private subnets

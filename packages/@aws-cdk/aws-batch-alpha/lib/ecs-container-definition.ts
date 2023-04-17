@@ -309,8 +309,6 @@ export interface IEcsContainerDefinition extends IConstruct {
   /**
    * The role that the container can assume.
    *
-   * @default - no jobRole
-   *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
    */
   readonly jobRole?: iam.IRole;
@@ -416,7 +414,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
    *
-   * @default - no job role
+   * @default - a role will be created
    */
   readonly jobRole?: iam.IRole;
 
