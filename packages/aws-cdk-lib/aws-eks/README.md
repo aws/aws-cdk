@@ -38,7 +38,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV25Layer } from 'aws-cdk-lib/lambda-layer-kubectl-v25';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -676,7 +676,7 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV25Layer } from 'aws-cdk-lib/lambda-layer-kubectl-v25';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_25,
@@ -1259,12 +1259,12 @@ To get started, add the following dependencies to your `package.json` file:
 ```json
 "dependencies": {
   "cdk8s": "^2.0.0",
-  "cdk8s-plus-22": "^2.0.0-rc.30",
+  "cdk8s-plus-25": "^2.0.0",
   "constructs": "^10.0.0"
 }
 ```
 
-Note that here we are using `cdk8s-plus-22` as we are targeting Kubernetes version 1.22.0. If you operate a different kubernetes version, you should
+Note that here we are using `cdk8s-plus-25` as we are targeting Kubernetes version 1.25.0. If you operate a different kubernetes version, you should
 use the corresponding `cdk8s-plus-XX` library.
 See [Select the appropriate cdk8s+ library](https://cdk8s.io/docs/latest/plus/#i-operate-kubernetes-version-1xx-which-cdk8s-library-should-i-be-using)
 for more details.
@@ -1280,7 +1280,7 @@ In this example we create a chart that accepts an `s3.Bucket` and passes its nam
 import { aws_s3 as s3 } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-22';
+import * as kplus from 'cdk8s-plus-25';
 
 export interface MyChartProps {
   readonly bucket: s3.Bucket;
@@ -1328,7 +1328,7 @@ This is why we used `new cdk8s.App()` as the scope of the chart above.
 ```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-22';
+import * as kplus from 'cdk8s-plus-25';
 
 export interface LoadBalancedWebService {
   readonly port: number;

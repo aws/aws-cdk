@@ -452,5 +452,11 @@
   "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v25": "^2.0.3",
+      "cdk8s-plus-25": "^2.7.0"
+    }
   }
 }

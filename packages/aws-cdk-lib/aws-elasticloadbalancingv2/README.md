@@ -18,7 +18,6 @@ and adding Targets to the Listener:
 ```ts
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 declare const asg: AutoScalingGroup;
-
 declare const vpc: ec2.Vpc;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
@@ -199,6 +198,8 @@ ingress rules then set `open: false` and use the listener's `connections` object
 You can modify attributes of Application Load Balancers:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,

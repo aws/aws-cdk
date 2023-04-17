@@ -1287,7 +1287,7 @@ or you can specify a custom namespace. You must also have created a named port m
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const container: ecs.ContainerDefinition;
+declare const container: ecs.ContainerDefinitionOptions;
 
 container.addPortMappings({
   name: 'api',
@@ -1326,8 +1326,8 @@ declare const taskDefinition: ecs.TaskDefinition;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
-  taskDefinition
-)
+  taskDefinition,
+});
 service.enableServiceConnect();
 ```
 

@@ -55,5 +55,5 @@ const instance = new ec2.Instance(this, 'targetInstance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
 });
-lb.addTarget(elb.InstanceTarget(instance));
+lb.addTarget(new elb.InstanceTarget(instance));
 ```

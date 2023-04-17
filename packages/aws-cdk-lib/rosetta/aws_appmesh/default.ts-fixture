@@ -1,5 +1,5 @@
 // Fixture with packages imported, but nothing else
-import { Construct, Duration } from 'constructs';
+import { Construct } from 'constructs';
 import cdk = require('aws-cdk-lib');
 import acmpca = require('aws-cdk-lib/aws-acmpca');
 import appmesh = require('aws-cdk-lib/aws-appmesh');
@@ -7,6 +7,7 @@ import certificatemanager = require('aws-cdk-lib/aws-certificatemanager');
 import cloudmap = require('aws-cdk-lib/aws-servicediscovery');
 import ec2 = require('aws-cdk-lib/aws-ec2');
 import iam = require('aws-cdk-lib/aws-iam');
+import { Duration } from 'aws-cdk-lib';
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {
