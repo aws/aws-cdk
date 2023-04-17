@@ -2,6 +2,14 @@ import * as sinon from 'sinon';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from '../lib/cluster-resource-handler/consts';
 import { FargateProfileResourceHandler } from '../lib/cluster-resource-handler/fargate';
 
+beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+
 describe('fargate resource provider', () => {
   describe('create', () => {
     test('calls createFargateProfile with a generated name', async () => {

@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-vpc-nat-instances.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/37e0c4dfe9c2afeff7fb5beab5ab205de8e42b55f7c46884d976fe647d43c06b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/d28780ff347cb790782f733de5ab866ea07bb7ee12ee3e8876c976146f2073d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +42,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1SubnetF6608456"
+            "data": "MyVpcPublicSubnet1SubnetF6608456",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/RouteTable": [
@@ -60,7 +57,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/DefaultRoute": [
@@ -78,13 +78,19 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7"
+            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/RouteTable": [
@@ -96,7 +102,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/DefaultRoute": [
@@ -114,13 +123,19 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3"
+            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3Subnet57EEE236"
+            "data": "MyVpcPublicSubnet3Subnet57EEE236",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/RouteTable": [
@@ -132,7 +147,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4"
+            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/DefaultRoute": [
@@ -144,7 +162,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/RouteTable": [
@@ -156,7 +177,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/DefaultRoute": [
@@ -168,7 +192,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2Subnet0040C983"
+            "data": "MyVpcPrivateSubnet2Subnet0040C983",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/RouteTable": [
@@ -180,7 +207,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/DefaultRoute": [
@@ -192,7 +222,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3Subnet772D6AD7"
+            "data": "MyVpcPrivateSubnet3Subnet772D6AD7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/RouteTable": [
@@ -204,7 +237,10 @@
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C"
+            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/DefaultRoute": [
@@ -251,6 +287,93 @@
         ]
       },
       "displayName": "aws-cdk-vpc-nat-instances"
+    },
+    "integtestDefaultTestDeployAssert24D5C536.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestDefaultTestDeployAssert24D5C536.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestDefaultTestDeployAssert24D5C536": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestDefaultTestDeployAssert24D5C536.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestDefaultTestDeployAssert24D5C536.assets"
+      ],
+      "metadata": {
+        "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "availability-zones:account=12345678:region=test-region",
+      "provider": "availability-zones",
+      "props": {
+        "account": "12345678",
+        "region": "test-region",
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
+    },
+    {
+      "key": "ami:account=12345678:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=test-region",
+      "provider": "ami",
+      "props": {
+        "account": "12345678",
+        "region": "test-region",
+        "owners": [
+          "amazon"
+        ],
+        "filters": {
+          "name": [
+            "amzn-ami-vpc-nat-*"
+          ],
+          "state": [
+            "available"
+          ],
+          "image-type": [
+            "machine"
+          ]
+        },
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region"
+      }
+    }
+  ]
 }
