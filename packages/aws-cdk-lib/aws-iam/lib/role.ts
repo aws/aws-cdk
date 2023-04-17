@@ -206,7 +206,7 @@ export interface CustomizeRolesOptions {
    *
    * const stack = new Stack(app, 'MyStack');
    * new iam.Role(stack, 'MyRole', {
-   *  assumedBy: new iam.ServicePrincipal(
+   *  assumedBy: new iam.AccountPrincipal('1111111111'),
    * });
    *
    * iam.Role.customizeRoles(stack, {
