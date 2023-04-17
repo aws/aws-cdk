@@ -70,6 +70,9 @@ describe('deploy', () => {
       versionReporting: true,
       usePreviousParameters: true,
       progress: StackActivityProgress.BAR,
+      concurrency: 5,
+      assetParallelism: true,
+      assetPrebuild: true
     });
 
     // THEN
@@ -107,6 +110,9 @@ describe('deploy', () => {
         '--proxy', 'https://proxy',
         '--ca-bundle-path', '/some/path',
         '--role-arn', 'arn:aws:iam::1111111111:role/my-role',
+        '--concurrency', '5',
+        '--assetParallelism',
+        '--assetPrebuild',
         'Stack1',
       ]),
       expect.anything(),
@@ -204,6 +210,24 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
+
+    test('can parse number arguments', async () => {
+        // WHEN
+        await cdk.deploy({
+            stacks: ['Stack1'],
+            concurrency: 5
+        });
+
+        // THEN
+        expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+            [
+                'deploy',
+                '--concurrency', '5',
+                'Stack1',
+            ],
+            expect.anything(),
+        );
+    });
 });
 
 describe('synth', () => {
