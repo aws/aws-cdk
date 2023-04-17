@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { AwsCustomResource } from '../../custom-resources';
+import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**
  * Properties for EvaluateExpression
@@ -57,7 +57,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime ?? AwsCustomResource.regionalDefaultRuntime(scope), this);
+    this.evalFn = createEvalFn(this.props.runtime ?? builtInCustomResourceNodeRuntime(scope), this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({

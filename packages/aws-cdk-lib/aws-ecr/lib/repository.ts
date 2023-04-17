@@ -16,6 +16,7 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
@@ -793,7 +794,7 @@ export class Repository extends RepositoryBase {
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: CustomResourceProvider.regionalDefaultRuntime(this),
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [
         {

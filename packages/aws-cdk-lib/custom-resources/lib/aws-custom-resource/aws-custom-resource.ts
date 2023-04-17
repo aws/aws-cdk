@@ -11,6 +11,20 @@ import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 import { FactName } from '../../../region-info';
 
+
+/**
+ * The lambda runtime used by default for aws-cdk vended custom resources. Can change
+ * based on region.
+ */
+export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
+  // Runtime regional fact should always return a known runtime string that lambda.Runtime
+  // can index off, but for type safety we also default it here.
+  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
+  return runtimeName
+    ? lambda.Runtime.fromRegionDefaultString(runtimeName)
+    : lambda.Runtime.NODEJS_16_X;
+}
+
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
@@ -373,15 +387,6 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   private readonly customResource: cdk.CustomResource;
   private readonly props: AwsCustomResourceProps;
 
-  public static regionalDefaultRuntime(scope: Construct): lambda.Runtime {
-    // Runtime regional fact should always return a known runtime string that lambda.Runtime
-    // can index off, but for type safety we also default it here.
-    const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
-    return runtimeName
-      ? lambda.Runtime.fromRegionDefaultString(runtimeName)
-      : lambda.Runtime.NODEJS_16_X;
-  }
-
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
   constructor(scope: Construct, id: string, props: AwsCustomResourceProps) {
@@ -419,7 +424,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: AwsCustomResource.regionalDefaultRuntime(scope),
+      runtime: builtInCustomResourceNodeRuntime(scope),
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
