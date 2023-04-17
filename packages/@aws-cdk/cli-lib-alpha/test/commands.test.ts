@@ -72,7 +72,7 @@ describe('deploy', () => {
       progress: StackActivityProgress.BAR,
       concurrency: 5,
       assetParallelism: true,
-      assetPrebuild: true
+      assetPrebuild: true,
     });
 
     // THEN
@@ -211,23 +211,23 @@ describe('deploy', () => {
     );
   });
 
-    test('can parse number arguments', async () => {
-        // WHEN
-        await cdk.deploy({
-            stacks: ['Stack1'],
-            concurrency: 5
-        });
-
-        // THEN
-        expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-            [
-                'deploy',
-                '--concurrency', '5',
-                'Stack1',
-            ],
-            expect.anything(),
-        );
+  test('can parse number arguments', async () => {
+    // WHEN
+    await cdk.deploy({
+      stacks: ['Stack1'],
+      concurrency: 5,
     });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      [
+        'deploy',
+        '--concurrency', '5',
+        'Stack1',
+      ],
+      expect.anything(),
+    );
+  });
 });
 
 describe('synth', () => {
