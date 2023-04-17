@@ -143,7 +143,7 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "lambda-tester": "^3.6.0",
     "@types/aws-lambda": "^8.10.111",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.0",
     "@types/lodash": "^4.14.191",
     "@types/punycode": "^2.1.0",
     "typescript-json-schema": "^0.55.0"
@@ -443,6 +443,15 @@
   "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v25": "^2.0.3",
+      "cdk8s-plus-25": "^2.7.0",
+      "@aws-cdk/aws-apigatewayv2-alpha": "^0.0.0",
+      "@aws-cdk/aws-batch-alpha": "^0.0.0",
+      "@aws-cdk/aws-kinesisfirehose-alpha": "^0.0.0"
+    }
   },
   "awslint": {
     "exclude": [

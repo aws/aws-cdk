@@ -99,12 +99,12 @@ Most contributions only require working on a single package, usually `aws-cdk-li
 time, you can execute the following to build it and it's dependencies.
 
 ```console
-$ cd packages/aws-cdk-lib
-$ ../../scripts/buildup
+$ npx lerna run build --scope=aws-cdk-lib
 ```
 
-Note: The `buildup` command is resumable. If your build fails, you can fix the issue and run `buildup --resume` to
-resume.
+Note: `lerna` uses a local cache by default. If your build fails, you can fix
+the issue and run the command again and it will not rerun any previously
+successful steps.
 
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
@@ -121,12 +121,18 @@ However, if you wish to build the entire repository, the following command will 
 
 ```console
 cd <root of the CDK repo>
-scripts/foreach.sh yarn build
+npx lerna run build
 ```
-Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
+
+If you want to run a build without using the local cache, provide the
+`--skip-nx-cache` flag.
+
+```console
+$ npx lerna run build --skip-nx-cache
+```
 
 ### Pack
 
