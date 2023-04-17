@@ -261,15 +261,13 @@ export interface TagManagerOptions {
  * value that will resolve to the tags at synthesis time.
  *
  * @example
- * import * as cdk from 'aws-cdk-lib';
- *
- * class MyConstruct extends cdk.Resource implements cdk.ITaggable {
+ * class MyConstruct extends Resource implements ITaggable {
  *   public readonly tags = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Whatever::The::Type');
  *
- *   constructor(scope: cdk.Construct, id: string) {
+ *   constructor(scope: Construct, id: string) {
  *     super(scope, id);
  *
- *     new cdk.CfnResource(this, 'Resource', {
+ *     new CfnResource(this, 'Resource', {
  *       type: 'Whatever::The::Type',
  *       properties: {
  *         // ...

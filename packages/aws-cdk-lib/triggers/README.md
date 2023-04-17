@@ -73,7 +73,6 @@ parallel, and then the trigger `myTrigger` will be executed. Only then the
 resources under `goodbye` will be provisioned:
 
 ```ts
-import { Construct, Node } from 'constructs';
 import * as triggers from 'aws-cdk-lib/triggers';
 
 declare const myTrigger: triggers.Trigger;

@@ -215,9 +215,10 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build secrets
    *
    * @example
+   * import { DockerBuildSecret } from 'aws-cdk-lib';
    *
    * const buildSecrets = {
-   *   'MY_SECRET': ecr_assets.DockerBuildSecret.fromSrc('file.txt')
+   *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
    * };
    */
   readonly buildSecrets?: { [key: string]: string }

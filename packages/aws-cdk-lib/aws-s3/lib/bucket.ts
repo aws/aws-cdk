@@ -1610,10 +1610,11 @@ export interface Tag {
  * BucketResource.
  *
  * @example
+ * import { RemovalPolicy } from 'aws-cdk-lib';
  *
- * new Bucket(scope, 'Bucket', {
- *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
- *   encryption: BucketEncryption.S3_MANAGED,
+ * new s3.Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+ *   encryption: s3.BucketEncryption.S3_MANAGED,
  *   enforceSSL: true,
  *   versioned: true,
  *   removalPolicy: RemovalPolicy.RETAIN,
