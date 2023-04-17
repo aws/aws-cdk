@@ -450,7 +450,7 @@ Example:
 ```ts
 new codebuild.Project(this, 'Project', {
   environment: {
-    buildImage: codebuild.LinuxBuildImage.STANDARD_6_0,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
   ssmSessionPermissions: true,
   buildSpec: codebuild.BuildSpec.fromObject({
