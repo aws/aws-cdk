@@ -6,6 +6,8 @@ runtarget="build"
 run_tests="true"
 check_prereqs="true"
 check_compat="true"
+ci="false"
+scope=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -27,6 +29,9 @@ while [[ "${1:-}" != "" ]]; do
         --skip-compat)
             check_compat="false"
             ;;
+        --ci)
+          ci=true
+          ;;
         *)
             echo "Unrecognized parameter: $1"
             exit 1
@@ -48,6 +53,18 @@ fi
 
 echo "============================================================================================="
 echo "installing..."
+version=$(node -p "require('./package.json').version")
+# this is super weird. If you run 'npm install' twice
+# and it actually performs an install, then
+# node-bundle test will fail with "npm ERR! maxAge must be a number".
+# This won't happen in most instances because if nothing changes then npm install
+# won't perform an install.
+# In the pipeline however, npm install is run once when all the versions are '0.0.0' (via ./scripts/bump-candidate.sh)
+# and then `align-versions` is run which updates all the versions to
+# (for example) `2.74.0-rc.0` and then npm install is run again here.
+if [ "$version" != "0.0.0" ]; then
+  rm -rf node_modules
+fi
 yarn install --frozen-lockfile --network-timeout 1000000
 
 fail() {
@@ -72,21 +89,22 @@ node ./scripts/check-yarn-lock.js
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
 
-# Speed up build by reusing calculated tree hashes
-# On dev machine, this speeds up the TypeScript part of the build by ~30%.
-export MERKLE_BUILD_CACHE=$(mktemp -d)
-trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
-
 if [ "$run_tests" == "true" ]; then
-    runtarget="$runtarget+test"
+    runtarget="$runtarget,test"
 fi
 
 # Limit top-level concurrency to available CPUs - 1 to limit CPU load.
 concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
+flags=""
+if [ "$ci" == "true" ]; then
+  flags="--stream --no-progress --skip-nx-cache"
+  export FORCE_COLOR=false
+fi
+
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
+time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
