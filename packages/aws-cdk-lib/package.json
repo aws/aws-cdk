@@ -99,7 +99,14 @@
         "packageName": "awscdk"
       }
     },
-    "projectReferences": false
+    "projectReferences": false,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "author": {
     "name": "Amazon Web Services",
