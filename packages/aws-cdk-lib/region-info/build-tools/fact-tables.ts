@@ -118,15 +118,12 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
 };
 
-/**
- * Default NodeJS runtime for aws-cdk vended custom resources by partition.
- */
 export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: 'node16.x',
-  [Partition.Cn]: 'node16.x',
-  [Partition.UsGov]: 'node16.x',
-  [Partition.UsIso]: 'node14.x',
-  [Partition.UsIsoB]: 'node14.x',
+  [Partition.Default]: 'nodejs16.x',
+  [Partition.Cn]: 'nodejs16.x',
+  [Partition.UsGov]: 'nodejs16.x',
+  [Partition.UsIso]: 'nodejs14.x',
+  [Partition.UsIsoB]: 'nodejs14.x',
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
