@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import {
@@ -12,9 +11,8 @@ import {
   Duration,
   NestedStack,
   Stack,
-  CustomResourceProvider,
 } from 'aws-cdk-lib';
-import { AwsCustomResource, Provider } from 'aws-cdk-lib/custom-resources';
+import { builtInCustomResourceNodeRuntime, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
@@ -238,7 +236,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
           __dirname,
           'asset-deployment-handler/index.js',
         ),
-        runtime: AwsCustomResource.regionalDefaultRuntime(scope),
+        runtime: builtInCustomResourceNodeRuntime(scope),
         handler: 'onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
@@ -262,7 +260,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
           __dirname,
           'asset-deployment-handler/index.js',
         ),
-        runtime: AwsCustomResource.regionalDefaultRuntime(scope),
+        runtime: builtInCustomResourceNodeRuntime(scope),
         handler: 'isComplete',
         initialPolicy: [
           new iam.PolicyStatement({
