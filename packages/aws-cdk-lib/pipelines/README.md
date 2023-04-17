@@ -1685,7 +1685,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Configure CodeBuild to use a drop-in Docker replacement.
   codeBuildDefaults: {
     buildEnvironment: {
-      partialBuildSpec: Codebuild.BuildSpec.fromObject({
+      partialBuildSpec: codebuild.BuildSpec.fromObject({
         phases: {
           install: {
             // Add the shell commands to install your drop-in Docker
@@ -1698,7 +1698,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
         // Instruct the AWS CDK to use `drop-in-replacement` instead of
         // `docker` when building / publishing docker images.
         // e.g., `drop-in-replacement build . -f path/to/Dockerfile`
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },
@@ -1733,7 +1733,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
         // If you haven't provided an `ENV` in your Dockerfile that overrides
         // `CDK_DOCKER`, then you must provide the name of the command that
         // the AWS CDK should run instead of `docker` here.
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },

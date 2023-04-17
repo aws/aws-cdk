@@ -15,7 +15,6 @@ The `TriggerFunction` construct will define an AWS Lambda function which is
 triggered *during* deployment:
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as triggers from 'aws-cdk-lib/triggers';
 
 new triggers.TriggerFunction(this, 'MyTrigger', {
@@ -31,10 +30,7 @@ be invoked when the stack is deployed.
 It is also possible to trigger a predefined Lambda function by using the `Trigger` construct:
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as triggers from 'aws-cdk-lib/triggers';
-import { Stack } from 'aws-cdk-lib';
-
 
 const func = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',

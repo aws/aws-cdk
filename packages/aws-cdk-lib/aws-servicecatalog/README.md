@@ -238,7 +238,7 @@ new iam.PolicyStatement({
     new iam.ArnPrincipal(Stack.of(this).formatArn({
       service: 'iam',
       region: '',
-      account: '111111111111',,
+      account: '111111111111',
       resource: 'role',
       resourceName: 'MyLaunchRole',
     }))

@@ -9,7 +9,7 @@ You can reference existing SSM Parameter Store values that you want to use in
 your CDK app by using `ssm.StringParameter.fromStringParameterAttributes`:
 
 ```ts
-const parameterVersion = Token.asNumber({ Ref: MyParameter });
+const parameterVersion = Token.asNumber({ Ref: 'MyParameter' });
 
 // Retrieve the latest value of the non-secret parameter
 // with name "/My/String/Parameter".
