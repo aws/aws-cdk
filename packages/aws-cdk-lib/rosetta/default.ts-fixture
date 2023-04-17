@@ -29,14 +29,18 @@ import {
   DefaultStackSynthesizer,
   Duration,
   Fn,
+  ITaggable,
   PermissionsBoundary,
   RemovalPolicy,
+  Resource,
   SecretValue,
   Size,
   SizeRoundingBehavior,
   Stack,
   StackProps,
   Stage,
+  TagManager,
+  TagType,
   Token,
 } from 'aws-cdk-lib';
 import {

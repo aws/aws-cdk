@@ -262,7 +262,7 @@ export interface TagManagerOptions {
  *
  * @example
  * class MyConstruct extends Resource implements ITaggable {
- *   public readonly tags = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Whatever::The::Type');
+ *   public readonly tags = new TagManager(TagType.KEY_VALUE, 'Whatever::The::Type');
  *
  *   constructor(scope: Construct, id: string) {
  *     super(scope, id);
