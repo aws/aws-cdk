@@ -152,9 +152,9 @@ const node = mesh.addVirtualNode('virtual-node', {
     port: 8081,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5), // minimum
+      interval: Duration.seconds(5), // minimum
       path: '/health-check-path',
-      timeout: cdk.Duration.seconds(2), // minimum
+      timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     }),
   })],
@@ -175,13 +175,13 @@ const node = new appmesh.VirtualNode(this, 'node', {
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5), 
+      interval: Duration.seconds(5),
       path: '/ping',
-      timeout: cdk.Duration.seconds(2), 
+      timeout: Duration.seconds(2),
       unhealthyThreshold: 2,
     }),
     timeout: {
-      idle: cdk.Duration.seconds(5),
+      idle: Duration.seconds(5),
     },
   })],
   backendDefaults: {
@@ -211,13 +211,13 @@ const node = new appmesh.VirtualNode(this, 'node', {
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
-      interval: cdk.Duration.seconds(5), 
+      interval: Duration.seconds(5),
       path: '/ping',
-      timeout: cdk.Duration.seconds(2), 
+      timeout: Duration.seconds(2),
       unhealthyThreshold: 2,
     }),
     timeout: {
-      idle: cdk.Duration.seconds(5),
+      idle: Duration.seconds(5),
     },
   })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -257,7 +257,7 @@ node.addBackend(appmesh.Backend.virtualService(virtualService));
 
 ### Adding TLS to a listener
 
-The `tls` property specifies TLS configuration when creating a listener for a virtual node or a virtual gateway. 
+The `tls` property specifies TLS configuration when creating a listener for a virtual node or a virtual gateway.
 Provide the TLS certificate to the proxy in one of the following ways:
 
 - A certificate from AWS Certificate Manager (ACM).
@@ -312,7 +312,7 @@ const gateway2 = new appmesh.VirtualGateway(this, 'gateway2', {
 
 ### Adding mutual TLS authentication
 
-Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication. 
+Mutual TLS authentication is an optional component of TLS that offers two-way peer authentication.
 To enable mutual TLS authentication, add the `mutualTlsCertificate` property to TLS client policy and/or the `mutualTlsValidation` property to your TLS listener.
 
 `tls.mutualTlsValidation` and `tlsClientPolicy.mutualTlsCertificate` can be sourced from either:
@@ -364,7 +364,7 @@ const node2 = new appmesh.VirtualNode(this, 'node2', {
 
 ### Adding outlier detection to a Virtual Node listener
 
-The `outlierDetection` property adds outlier detection to a Virtual Node listener. The properties 
+The `outlierDetection` property adds outlier detection to a Virtual Node listener. The properties
 `baseEjectionDuration`, `interval`, `maxEjectionPercent`, and `maxServerErrors` are required.
 
 ```ts
@@ -381,8 +381,8 @@ const node = mesh.addVirtualNode('virtual-node', {
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
   listeners: [appmesh.VirtualNodeListener.http({
     outlierDetection: {
-      baseEjectionDuration: cdk.Duration.seconds(10),
-      interval: cdk.Duration.seconds(30),
+      baseEjectionDuration: Duration.seconds(10),
+      interval: Duration.seconds(30),
       maxEjectionPercent: 50,
       maxServerErrors: 5,
     },
@@ -441,19 +441,19 @@ There a four different IP preferences available to use which each specify what I
 - `IPv6_PREFERRED` - Prefer IPv6 and fall back to IPv4. For CloudMap service discovery, an IPv6 address will be used if returned from CloudMap. Otherwise, an IPv4 address will be used if available. For DNS service discovery, Envoy's DNS resolver will first attempt to resolve DNS queries using IPv6 and fall back to IPv4.
 
 ```ts
-const mesh = new appmesh.Mesh(stack, 'mesh', {
+const mesh = new appmesh.Mesh(this, 'mesh', {
   meshName: 'mesh-with-preference',
 });
 
 // Virtual Node with DNS service discovery and an IP preference
-const dnsNode = new appmesh.VirtualNode(stack, 'dns-node', {
+const dnsNode = new appmesh.VirtualNode(this, 'dns-node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOAD_BALANCER, appmesh.IpPreference.IPV4_ONLY),
 });
 
 // Virtual Node with CloudMap service discovery and an IP preference
-const vpc = new ec2.Vpc(stack, 'vpc');
-const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+const vpc = new ec2.Vpc(this, 'vpc');
+const namespace = new cloudmap.PrivateDnsNamespace(this, 'test-namespace', {
   vpc,
   name: 'domain.local',
 });
@@ -462,7 +462,7 @@ const service = namespace.createService('Svc');
 const instanceAttribute : { [key: string]: string} = {};
 instanceAttribute.testKey = 'testValue';
 
-const cloudmapNode = new appmesh.VirtualNode(stack, 'cloudmap-node', {
+const cloudmapNode = new appmesh.VirtualNode(this, 'cloudmap-node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service, instanceAttribute, appmesh.IpPreference.IPV4_ONLY),
 });
@@ -470,14 +470,14 @@ const cloudmapNode = new appmesh.VirtualNode(stack, 'cloudmap-node', {
 
 ## Adding a Route
 
-A _route_ matches requests with an associated virtual router and distributes traffic to its associated virtual nodes. 
+A _route_ matches requests with an associated virtual router and distributes traffic to its associated virtual nodes.
 The route distributes matching requests to one or more target virtual nodes with relative weighting.
 
 The `RouteSpec` class lets you define protocol-specific route specifications.
 The `tcp()`, `http()`, `http2()`, and `grpc()` methods create a specification for the named protocols.
 
-For HTTP-based routes, the match field can match on path (prefix, exact, or regex), HTTP method, scheme, 
-HTTP headers, and query parameters. By default, HTTP-based routes match all requests. 
+For HTTP-based routes, the match field can match on path (prefix, exact, or regex), HTTP method, scheme,
+HTTP headers, and query parameters. By default, HTTP-based routes match all requests.
 
 For gRPC-based routes, the match field can  match on service name, method name, and metadata.
 When specifying the method name, the service name must also be specified.
@@ -576,7 +576,7 @@ router.addRoute('route-http2-retry', {
       // Retry five times
       retryAttempts: 5,
       // Use a 1 second timeout per retry
-      retryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: Duration.seconds(1),
     },
   }),
 });
@@ -603,7 +603,7 @@ router.addRoute('route-grpc-retry', {
         appmesh.GrpcRetryEvent.UNAVAILABLE,
       ],
       retryAttempts: 5,
-      retryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: Duration.seconds(1),
     },
   }),
 });
@@ -618,7 +618,7 @@ declare const node: appmesh.VirtualNode;
 router.addRoute('route-grpc-retry', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [{ virtualNode: node }],
-    match: { 
+    match: {
       // When method name is specified, service name must be also specified.
       methodName: 'methodname',
       serviceName: 'servicename',
@@ -649,8 +649,8 @@ router.addRoute('route-http', {
       serviceName: 'my-service.default.svc.cluster.local',
     },
     timeout:  {
-      idle : cdk.Duration.seconds(2),
-      perRequest: cdk.Duration.seconds(1),
+      idle : Duration.seconds(2),
+      perRequest: Duration.seconds(1),
     },
   }),
 });
@@ -677,7 +677,7 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
   listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: appmesh.HealthCheck.http({
-      interval: cdk.Duration.seconds(10),
+      interval: Duration.seconds(10),
     }),
   })],
   backendDefaults: {
@@ -705,7 +705,7 @@ const gateway = mesh.addVirtualGateway('gateway', {
     listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
       healthCheck: appmesh.HealthCheck.http({
-        interval: cdk.Duration.seconds(10),
+        interval: Duration.seconds(10),
       }),
   })],
 });
@@ -720,7 +720,7 @@ The `backendDefaults` property, provided when creating the virtual gateway, spec
 
 A _gateway route_ is attached to a virtual gateway and routes matching traffic to an existing virtual service.
 
-For HTTP-based gateway routes, the `match` field can be used to match on 
+For HTTP-based gateway routes, the `match` field can be used to match on
 path (prefix, exact, or regex), HTTP method, host name, HTTP headers, and query parameters.
 By default, HTTP-based gateway routes match all requests.
 
@@ -777,7 +777,7 @@ gateway.addGatewayRoute('gateway-route-http-1', {
     match: {
       // If the request full path is '/path-to-app/xxxxx', this rewrites the path to '/rewrittenUri/xxxxx'.
       // Please note both `prefixPathMatch` and `rewriteTo` must start and end with the `/` character.
-      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', '/rewrittenUri/'),    
+      path: appmesh.HttpGatewayRoutePathMatch.startsWith('/path-to-app/', '/rewrittenUri/'),
     },
   }),
 });
@@ -795,13 +795,13 @@ gateway.addGatewayRoute('gateway-route-http-2', {
     routeTarget: virtualService,
     match: {
       // This rewrites the path from '/test' to '/rewrittenPath'.
-      path: appmesh.HttpGatewayRoutePathMatch.exactly('/test', '/rewrittenPath'),    
+      path: appmesh.HttpGatewayRoutePathMatch.exactly('/test', '/rewrittenPath'),
     },
   }),
 });
 ```
 
-For HTTP/gRPC based routes, App Mesh automatically rewrites 
+For HTTP/gRPC based routes, App Mesh automatically rewrites
 the original request received at the Virtual Gateway to the destination Virtual Service name.
 This default host name rewrite can be configured by specifying the rewrite rule as one of the `match` property:
 
@@ -852,7 +852,7 @@ appmesh.Mesh.fromMeshName(this, 'imported-mesh', 'abc');
 
 ## IAM Grants
 
-`VirtualNode` and `VirtualGateway` provide `grantStreamAggregatedResources` methods that grant identities that are running 
+`VirtualNode` and `VirtualGateway` provide `grantStreamAggregatedResources` methods that grant identities that are running
 Envoy access to stream generated config from App Mesh.
 
 ```ts
@@ -864,7 +864,7 @@ const envoyUser = new iam.User(this, 'envoyUser');
  * This will grant `grantStreamAggregatedResources` ONLY for this gateway.
  */
 gateway.grantStreamAggregatedResources(envoyUser)
-``` 
+```
 
 ## Adding Resources to shared meshes
 
