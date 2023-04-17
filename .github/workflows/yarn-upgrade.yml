@@ -40,6 +40,8 @@ jobs:
       - name: Install Tools
         run: |-
           npm -g install lerna npm-check-updates
+      - name: Build Integ Runner
+        run: npx lerna run build --scope @aws-cdk/integ-runner
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
