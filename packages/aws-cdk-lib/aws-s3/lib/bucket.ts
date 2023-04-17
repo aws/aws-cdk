@@ -1610,10 +1610,11 @@ export interface Tag {
  * BucketResource.
  *
  * @example
+ * import { RemovalPolicy } from 'aws-cdk-lib';
  *
- * new Bucket(scope, 'Bucket', {
- *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
- *   encryption: BucketEncryption.S3_MANAGED,
+ * new s3.Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+ *   encryption: s3.BucketEncryption.S3_MANAGED,
  *   enforceSSL: true,
  *   versioned: true,
  *   removalPolicy: RemovalPolicy.RETAIN,
@@ -1983,7 +1984,22 @@ export class Bucket extends BucketBase {
 
   /**
    * Set up key properties and return the Bucket encryption property from the
-   * user's configuration.
+   * user's configuration, according to the following table:
+   *
+   * | props.encryption | props.encryptionKey | props.bucketKeyEnabled | bucketEncryption (return value) | encryptionKey (return value) |
+   * |------------------|---------------------|------------------------|---------------------------------|------------------------------|
+   * | undefined        | undefined           | e                      | undefined                       | undefined                    |
+   * | UNENCRYPTED      | undefined           | false                  | undefined                       | undefined                    |
+   * | undefined        | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+   * | KMS              | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+   * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
+   * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
+   * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
+   * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
+   * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
+   * | S3_MANAGED       | undefined           | true                   | ERROR!                          | ERROR!                       |
+   * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,

@@ -28,7 +28,7 @@ export abstract class TaskRole {
    *
    * @example
    *
-   * TaskRole.fromRoleArnJsonPath('$.RoleArn');
+   * sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn');
    */
   public static fromRoleArnJsonPath(expression: string): TaskRole {
     return new JsonExpressionTaskRole(expression);

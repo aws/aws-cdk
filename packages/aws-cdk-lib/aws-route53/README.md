@@ -267,25 +267,21 @@ Assuming your account has ownership of the particular domain/subdomain,
 this construct sets up the private DNS configuration on the endpoint service,
 creates all the necessary Route53 entries, and verifies domain ownership.
 
-```ts nofixture
-import { Stack } from 'aws-cdk-lib';
-import { Vpc, VpcEndpointService } from 'aws-cdk-lib/aws-ec2';
+```ts
 import { NetworkLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
 
-const stack = new Stack();
-const vpc = new Vpc(stack, 'VPC');
-const nlb = new NetworkLoadBalancer(stack, 'NLB', {
+const vpc = new ec2.Vpc(this, 'VPC');
+const nlb = new NetworkLoadBalancer(this, 'NLB', {
   vpc,
 });
-const vpces = new VpcEndpointService(stack, 'VPCES', {
+const vpces = new ec2.VpcEndpointService(this, 'VPCES', {
   vpcEndpointServiceLoadBalancers: [nlb],
 });
 // You must use a public hosted zone so domain ownership can be verified
-const zone = new PublicHostedZone(stack, 'PHZ', {
+const zone = new route53.PublicHostedZone(this, 'PHZ', {
   zoneName: 'aws-cdk.dev',
 });
-new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+new route53.VpcEndpointServiceDomainName(this, 'EndpointDomain', {
   endpointService: vpces,
   domainName: 'my-stuff.aws-cdk.dev',
   publicHostedZone: zone,

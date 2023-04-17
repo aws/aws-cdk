@@ -1,4 +1,4 @@
-The @aws-cdk/cli-lib package includes the following third-party software/licensing:
+The @aws-cdk/cli-lib-alpha package includes the following third-party software/licensing:
 
 ** @jsii/check-node@1.78.1 - https://www.npmjs.com/package/@jsii/check-node/v/1.78.1 | Apache-2.0
 jsii
