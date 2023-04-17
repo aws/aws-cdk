@@ -67,27 +67,31 @@ interface DuplicateConfig {
 async function duplicateModule(config: DuplicateConfig) {
   const sourceModuleDirectory = path.resolve(config.sourcePackageDir, config.moduleName);
   const targetModuleDirectory = path.resolve(config.outDir);
-  const filesPattern = path.join(sourceModuleDirectory, '**', '*');
-  const files = await glob(filesPattern, {
+
+  await copyAndRewrite(sourceModuleDirectory, targetModuleDirectory, config.ignore);
+
+  const sourceRosettaDirectory = path.resolve(config.sourcePackageDir, 'rosetta', config.moduleName.replace(/-/g, '_'));
+  const targetRosettaDirectory = path.resolve(config.outDir, 'rosetta');
+
+  await copyAndRewrite(sourceRosettaDirectory, targetRosettaDirectory, config.ignore);
+}
+
+async function copyAndRewrite(sourceDirectory: string, targetDirectory: string, ignore: string[]) {
+  const files = await glob(path.join(sourceDirectory, '**', '*'), {
     ignore: [
-      ...autoIgnore(sourceModuleDirectory),
-      ...config.ignore,
+      ...autoIgnore(sourceDirectory),
+      ...ignore,
     ],
   });
-
 
   // Copy all files to new destination and rewrite imports if needed
   await Promise.all(
     files.map(async (filePath: string) => {
       const stat = await fs.stat(filePath);
-      const relativePath = filePath.replace(sourceModuleDirectory, '');
-      const newPath = path.join(targetModuleDirectory, relativePath);
-      // Create missing directories if needed
-      if (stat.isDirectory()) {
-        if (!fs.existsSync(newPath)) {
-          await fs.mkdir(newPath, { recursive: true });
-        }
-      } else {
+      const relativePath = filePath.replace(sourceDirectory, '');
+      const newPath = path.join(targetDirectory, relativePath);
+      if (stat.isFile()) {
+        await fs.mkdir(path.dirname(newPath), { recursive: true });
         if (fs.existsSync(newPath)) {
           await fs.remove(newPath);
         }
@@ -102,31 +106,64 @@ async function duplicateModule(config: DuplicateConfig) {
   );
 }
 
-const importRegex = new RegExp('from [\'"](.*)[\'"]');
-const libRegx = new RegExp('(?<=.*from ["\'].*)(\/lib.*)(?=["\'])');
+/**
+ * Find a package reference
+ *
+ * ```
+ * import * as xyz from "<somewhere>";
+ * import { xyz }  from '<somewhere>';
+ *                 ^^^^^^^^^^^^^^^^^^^
+ * ```
+ */
+const importRegex = new RegExp('^(.*from [\'"])([^\'"]*)([\'"].*)');
+
 export async function rewriteFileTo(source: string, target: string, relativeDepth: number) {
   const lines = (await fs.readFile(source, 'utf8'))
     .split('\n')
     .map((line) => {
       const importMatches = importRegex.exec(line);
-      const importPath = importMatches?.[1];
 
-      if (importPath) {
-        const newPath = rewritePath(importPath, relativeDepth);
-        return line.replace(/(?<=.*from ["'])(.*)(?=["'])/, `${newPath}`).replace(libRegx, '');
+      if (importMatches) {
+        const newPath = rewriteImportPath(importMatches[2], relativeDepth);
+        return importMatches[1] + newPath + importMatches[3];
       }
 
-      return line.replace(libRegx, '');
+      return line;
     });
 
   await fs.writeFile(target, lines.join('\n'));
 }
 
-function rewritePath(importPath: string, relativeDepth: number) {
+/**
+ * Rewrite monopackage-relative imports to imports that import from the monopackage
+ *
+ * E.g., turn
+ *
+ * ```
+ * import { blah } from '../../aws-something';
+ * ```
+ *
+ * Into
+ *
+ * ```
+ * import { blah } from 'aws-cdk-lib/aws-something';
+ * ```
+ *
+ * Make an exception for packages that are `cdk-copied` (only
+ * cloud-assembly-schema and cx-api).
+ */
+function rewriteImportPath(importPath: string, relativeDepth: number) {
   const otherImportPath = new Array(relativeDepth).fill('..').join('/');
 
   if (importPath.startsWith(otherImportPath)) {
-    return importPath.replace(otherImportPath, 'aws-cdk-lib');
+    const remainder = importPath.substring(otherImportPath.length + 1);
+
+    let newPrefix = 'aws-cdk-lib'; // aws-cdk-lib/aws-mypackage
+    if (remainder.startsWith('cloud-assembly-schema') || remainder.startsWith('cx-api')) {
+      newPrefix = '@aws-cdk'; // @aws-cdk/aws-mypackage
+    }
+
+    return importPath.replace(otherImportPath, newPrefix);
   }
 
   return importPath;
@@ -148,7 +185,6 @@ function autoIgnore(source: string): string[] {
   return [
     // package.json `main` is lib/index.js so no need for top level index.ts
     ...['.ts', '.js', '.d.ts'].map((ext: string) => path.join(source, `index${ext}`)),
-    '**/__snapshots__/**',
     'node_modules/**',
   ];
 }
