@@ -118,16 +118,16 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
 };
 
-// Compute this from our Partition list so new ones are added automatically
-export const CR_DEFAULT_RUNTIME_MAP: { [partition: string]: string } = Object.values(Partition)
-  .reduce((accum, partition) => {
-    const hasNode16 = [Partition.Default, Partition.Cn, Partition.UsGov].includes(partition);
-
-    return {
-      ...accum,
-      [partition]: hasNode16 ?  'nodejs16.x' : 'nodejs14.x',
-    };
-  }, {});
+/**
+ * Default NodeJS runtime for aws-cdk vended custom resources by partition.
+ */
+export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
+  [Partition.Default]: 'node16.x',
+  [Partition.Cn]: 'node16.x',
+  [Partition.UsGov]: 'node16.x',
+  [Partition.UsIso]: 'node14.x',
+  [Partition.UsIsoB]: 'node14.x',
+};
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
