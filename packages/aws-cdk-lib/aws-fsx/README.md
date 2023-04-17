@@ -120,7 +120,7 @@ inst.userData.addCommands(
 
 ### Importing an existing Lustre filesystem
 
-An FSx for Lustre file system can be imported with `fromLustreFileSystemAttributes(stack, id, attributes)`. The
+An FSx for Lustre file system can be imported with `fromLustreFileSystemAttributes(this, id, attributes)`. The
 following example lays out how you could import the SecurityGroup a file system belongs to, use that to import the file
 system, and then also import the VPC the file system is in and add an EC2 instance to it, giving it access to the file
 system.
@@ -162,6 +162,8 @@ Note: CloudFormation does not currently support for `PERSISTENT_2` filesystems, 
 The following example illustrates setting up a DRA to an S3 bucket, including automated metadata import whenever a file is changed, created or deleted in the S3 bucket:
 
 ```ts
+import { aws_s3 as s3 } from 'aws-cdk-lib';
+
 declare const vpc: ec2.Vpc;
 declare const bucket: s3.Bucket;
 

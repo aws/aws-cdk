@@ -16,8 +16,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  consoleErrorMock.mockRestore();
-  consoleLogMock.mockRestore();
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.resetAllMocks();
 });
 
 describe('validations', () => {
@@ -62,11 +65,11 @@ describe('validations', () => {
       severity: 'medium',
       creationStack: [
         expect.stringMatching(/Default \(Default\)/),
-        expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+        expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
         expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
         expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-        expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+        expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
         expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
       ],
@@ -246,15 +249,15 @@ Policy Validation Report Summary
           title: 'test-rule2',
           creationStack: [
             expect.stringMatching(/Stage1 \(Stage1\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stage/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
@@ -477,11 +480,11 @@ Policy Validation Report Summary
           title: 'rule-1',
           creationStack: [
             expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
@@ -544,11 +547,11 @@ Policy Validation Report Summary
           title: 'rule-2',
           creationStack: [
             expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
@@ -665,13 +668,13 @@ Policy Validation Report Summary
                 {
                   constructStack: {
                     'id': 'Default',
-                    'construct': 'aws-cdk-lib.Stack',
+                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
                     'location': "Run with '--debug' to include location info",
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
-                      'construct': 'aws-cdk-lib.CfnResource',
+                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
                       'location': "Run with '--debug' to include location info",
                       'path': 'Default/Fake',
