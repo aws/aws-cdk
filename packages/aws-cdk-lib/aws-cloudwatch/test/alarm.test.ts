@@ -382,6 +382,20 @@ describe('Alarm', () => {
       ExtendedStatistic: 'p100',
     });
   });
+
+  test('imported alarm arn and name generated correctly', () => {
+    const stack = new Stack();
+
+    const alarmFromArn = Alarm.fromAlarmArn(stack, 'AlarmFromArn', 'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName');
+
+    expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
+
+    const alarmFromName = Alarm.fromAlarmName(stack, 'AlarmFromName', 'TestAlarmName');
+
+    expect(alarmFromName.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
+  });
 });
 
 class TestAlarmAction implements IAlarmAction {

@@ -1358,6 +1358,15 @@ export class Stack extends Construct implements ITaggable {
     // in which Export/Fn::ImportValue would work is if the value are the same
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
+
+    if (env.account && typeof(env.account) !== 'string') {
+      throw new Error(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`);
+    }
+
+    if (env.region && typeof(env.region) !== 'string') {
+      throw new Error(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`);
+    }
+
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
     const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
@@ -1424,7 +1433,7 @@ export class Stack extends Construct implements ITaggable {
   private generateStackName() {
     const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
-    return `${this.generateStackId(assembly, prefix)}`;
+    return `${prefix}${this.generateStackId(assembly)}`;
   }
 
   /**
@@ -1439,7 +1448,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined, prefix: string='') {
+  private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1449,7 +1458,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('unexpected: stack id must always be defined');
     }
 
-    return makeStackName(ids, prefix);
+    return makeStackName(ids);
   }
 
   private resolveExportedValue(exportedValue: any): ResolvedExport {
@@ -1635,14 +1644,9 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[], prefix: string='') {
-  if (components.length === 1) {
-    const stack_name = prefix + components[0];
-    if (stack_name.length <= 128) {
-      return stack_name;
-    }
-  }
-  return makeUniqueResourceName(components, { maxLength: 128, prefix: prefix });
+function makeStackName(components: string[]) {
+  if (components.length === 1) { return components[0]; }
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {

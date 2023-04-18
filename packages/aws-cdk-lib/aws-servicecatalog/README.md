@@ -65,13 +65,11 @@ const portfolio = servicecatalog.Portfolio.fromPortfolioArn(this, 'ReferencedPor
 
 ### Granting access to a portfolio
 
-You can grant access to and manage the `IAM` users, groups, or roles that have access to the products within a portfolio. 
+You can grant access to and manage the `IAM` users, groups, or roles that have access to the products within a portfolio.
 Entities with granted access will be able to utilize the portfolios resources and products via the console or AWS CLI.
 Once resources are deployed end users will be able to access them via the console or service catalog CLI.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 
 const user = new iam.User(this, 'User');
@@ -101,7 +99,7 @@ portfolio.shareWithAccount('012345678901');
 
 Products are version friendly infrastructure-as-code templates that admins create and add to portfolios for end users to provision and create AWS resources.
 Service Catalog supports products from AWS Marketplace or ones defined by a CloudFormation template.
-The CDK currently only supports adding products of type CloudFormation. 
+The CDK currently only supports adding products of type CloudFormation.
 Using the CDK, a new Product can be created with the `CloudFormationProduct` construct.
 You can use `CloudFormationTemplate.fromUrl` to create a Product from a CloudFormation template directly from a URL that points to the template in S3, GitHub, or CodeCommit:
 
@@ -150,10 +148,9 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 You can create a Service Catalog `CloudFormationProduct` entirely defined with CDK code using a service catalog `ProductStack`.
 A separate child stack for your product is created and you can add resources like you would for any other CDK stack,
 such as an S3 Bucket, IAM roles, and EC2 instances. This stack is passed in as a product version to your
-product.  This will not create a separate CloudFormation stack during deployment. 
+product.  This will not create a separate CloudFormation stack during deployment.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
@@ -187,8 +184,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Bucket } from "aws-cdk-lib/aws-s3";
 
 class LambdaProduct extends servicecatalog.ProductStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: servicecatalog.ProductStackProps) {
+    super(scope, id, props);
 
     new lambda.Function(this, 'LambdaProduct', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -216,61 +213,63 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
-When a product containing an asset is shared with a spoke account, the corresponding asset bucket 
-will automatically grant read permissions to the spoke account. 
-Note, it is not recommended using a referenced bucket as permissions cannot be added from CDK. 
+When a product containing an asset is shared with a spoke account, the corresponding asset bucket
+will automatically grant read permissions to the spoke account.
+Note, it is not recommended using a referenced bucket as permissions cannot be added from CDK.
 In this case, it will be your responsibility to grant read permissions for the asset bucket to
 the spoke account.
-If you want to provide your own bucket policy or scope down your bucket policy further to only allow 
+If you want to provide your own bucket policy or scope down your bucket policy further to only allow
 reads from a specific launch role, refer to the following example policy:
 
 ```ts
+declare const bucket: s3.IBucket;
+
 new iam.PolicyStatement({
-	actions: [
-		's3:GetObject*',
-		's3:GetBucket*',
-		's3:List*', ],
-	effect: iam.Effect.ALLOW,
-	resources: [
-		bucket.bucketArn,
-		bucket.arnForObjects('*'),
-	],
-	principals: [
-		new iam.ArnPrincipal(cdk.Stack.of(this).formatArn({
-        			service: 'iam',
-        			region: '',
-        			sharedAccount,
-        			resource: 'role',
-        			resourceName: launchRoleName,
-        		}))
-	],
-	conditions: {
-		'ForAnyValue:StringEquals': {
-			'aws:CalledVia': ['cloudformation.amazonaws.com'],
-		},
-		'Bool': {
-			'aws:ViaAWSService': true,
-		},
-	},
+  actions: [
+    's3:GetObject*',
+    's3:GetBucket*',
+    's3:List*', ],
+  effect: iam.Effect.ALLOW,
+  resources: [
+    bucket.bucketArn,
+    bucket.arnForObjects('*'),
+  ],
+  principals: [
+    new iam.ArnPrincipal(Stack.of(this).formatArn({
+      service: 'iam',
+      region: '',
+      account: '111111111111',
+      resource: 'role',
+      resourceName: 'MyLaunchRole',
+    }))
+  ],
+  conditions: {
+    'ForAnyValue:StringEquals': {
+      'aws:CalledVia': ['cloudformation.amazonaws.com'],
+    },
+    'Bool': {
+      'aws:ViaAWSService': true,
+    },
+  },
 });
 ```
 
-Furthermore, in order for a spoke account to provision a product with an asset, the role launching 
+Furthermore, in order for a spoke account to provision a product with an asset, the role launching
 the product needs permissions to read from the asset bucket.
 We recommend you utilize a launch role with permissions to read from the asset bucket.
 For example your launch role would need to include at least the following policy:
 
 ```json
 {
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "*"
+    }
+  ]
 }
 ```
 
@@ -281,7 +280,7 @@ to understand the permissions that launch roles need.
 ### Creating a Product from a stack with a history of previous versions
 
 The default behavior of Service Catalog is to overwrite each product version upon deployment.
-This applies to Product Stacks as well, where only the latest changes to your Product Stack will 
+This applies to Product Stacks as well, where only the latest changes to your Product Stack will
 be deployed.
 To keep a history of the revisions of a ProductStack available in Service Catalog,
 you would need to define a ProductStack for each historical copy.
@@ -293,11 +292,8 @@ The `locked` boolean which when set to true will prevent your `currentVersionNam
 from being overwritten when there is an existing snapshot for that version.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProduct');
@@ -314,11 +310,8 @@ const productStackHistory = new servicecatalog.ProductStackHistory(this, 'Produc
 We can deploy the current version `v1` by using `productStackHistory.currentVersion()`
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProductV2');
@@ -342,19 +335,16 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
 
 Using `ProductStackHistory` all deployed templates for the ProductStack will be written to disk,
 so that they will still be available in the future as the definition of the `ProductStack` subclass changes over time.
-**It is very important** that you commit these old versions to source control as these versions 
+**It is very important** that you commit these old versions to source control as these versions
 determine whether a version has already been deployed and can also be deployed themselves.
 
-After using `ProductStackHistory` to deploy version `v1` of your `ProductStack`, we 
+After using `ProductStackHistory` to deploy version `v1` of your `ProductStack`, we
 make changes to the `ProductStack` and update the `currentVersionName` to `v2`.
 We still want our `v1` version to still be deployed, so we reference it by calling `productStackHistory.versionFromSnapshot('v1')`.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProductV2');
@@ -424,7 +414,7 @@ Constraints are governance gestures that you place on product-portfolio associat
 Using the CDK, if you do not explicitly associate a product to a portfolio and add a constraint, it will automatically add an association for you.
 
 There are rules around how constraints are applied to portfolio-product associations.
-For example, you can only have a single "launch role" constraint applied to a portfolio-product association. 
+For example, you can only have a single "launch role" constraint applied to a portfolio-product association.
 If a misconfigured constraint is added, `synth` will fail with an error message.
 
 Read more at [Service Catalog Constraints](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints.html).
@@ -472,7 +462,7 @@ portfolio.notifyOnStackEvents(product, topic1);
 
 const topic2 = new sns.Topic(this, 'Topic2');
 portfolio.notifyOnStackEvents(product, topic2, {
-  description: 'description for topic2', // description is an optional field. 
+  description: 'description for topic2', // description is an optional field.
 });
 ```
 
@@ -496,9 +486,9 @@ declare const product: servicecatalog.CloudFormationProduct;
 portfolio.constrainCloudFormationParameters(product, {
   rule: {
     ruleName: 'testInstanceType',
-    condition: cdk.Fn.conditionEquals(cdk.Fn.ref('Environment'), 'test'),
+    condition: Fn.conditionEquals(Fn.ref('Environment'), 'test'),
     assertions: [{
-      assert: cdk.Fn.conditionContains(['t2.micro', 't2.small'], cdk.Fn.ref('InstanceType')),
+      assert: Fn.conditionContains(['t2.micro', 't2.small'], Fn.ref('InstanceType')),
       description: 'For test environment, the instance type should be small',
     }],
   },
@@ -515,8 +505,6 @@ You can only have one launch role set for a portfolio-product association,
 and you cannot set a launch role on a product that already has a StackSets deployment configured.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -529,14 +517,12 @@ portfolio.setLaunchRole(product, launchRole);
 
 You can also set the launch role using just the name of a role which is locally deployed in end user accounts.
 This is useful for when roles and users are separately managed outside of the CDK.
-The given role must exist in both the account that creates the launch role constraint, 
-as well as in any end user accounts that wish to provision a product with the launch role. 
+The given role must exist in both the account that creates the launch role constraint,
+as well as in any end user accounts that wish to provision a product with the launch role.
 
 You can do this by passing in the role with an explicitly set name:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -551,8 +537,6 @@ portfolio.setLocalLaunchRole(product, launchRole);
 Or you can simply pass in a role name and CDK will create a role with that name that trusts service catalog in the account:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 
@@ -565,8 +549,8 @@ to understand the permissions that launch roles need.
 
 ### Deploy with StackSets
 
-A StackSets deployment constraint allows you to configure product deployment options using 
-[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
+A StackSets deployment constraint allows you to configure product deployment options using
+[AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html).
 You can specify one or more accounts and regions into which stack instances will launch when the product is provisioned.
 There is an additional field `allowStackSetInstanceOperations` that sets ability for end users to create, edit, or delete the stacks created by the StackSet.
 By default, this field is set to `false`.
@@ -575,8 +559,6 @@ You can only define one StackSets deployment configuration per portfolio-product
 and you cannot both set a launch role and StackSets deployment configuration for an assocation.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const portfolio: servicecatalog.Portfolio;
 declare const product: servicecatalog.CloudFormationProduct;
 

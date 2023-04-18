@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.123"
-        }
-      },
       "aws-cdk-vpc-nat-instances": {
         "id": "aws-cdk-vpc-nat-instances",
         "path": "aws-cdk-vpc-nat-instances",
@@ -39,7 +31,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -56,7 +48,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -76,7 +68,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -84,7 +76,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -106,7 +98,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -125,7 +117,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -145,7 +137,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -167,7 +159,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                           "version": "0.0.0"
                         }
                       },
@@ -177,7 +169,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1a",
+                            "availabilityZone": "dummy1a",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
                             },
@@ -207,19 +199,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnInstance",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnInstance",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.Instance",
+                      "fqn": "aws-cdk-lib.aws_ec2.Instance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -236,7 +228,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -256,7 +248,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -264,7 +256,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -286,7 +278,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -305,7 +297,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -325,7 +317,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -347,7 +339,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                           "version": "0.0.0"
                         }
                       },
@@ -357,7 +349,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                           "aws:cdk:cloudformation:props": {
-                            "availabilityZone": "test-region-1b",
+                            "availabilityZone": "dummy1b",
                             "iamInstanceProfile": {
                               "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
                             },
@@ -387,19 +379,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnInstance",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnInstance",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.Instance",
+                      "fqn": "aws-cdk-lib.aws_ec2.Instance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -416,7 +408,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -436,7 +428,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -444,7 +436,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PublicSubnet3/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -466,7 +458,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -485,7 +477,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -505,13 +497,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -528,7 +520,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -548,7 +540,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -556,7 +548,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -578,7 +570,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -597,7 +589,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -617,13 +609,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -640,7 +632,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -660,7 +652,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -668,7 +660,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -690,7 +682,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -709,7 +701,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -729,13 +721,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -752,7 +744,7 @@
                         "vpcId": {
                           "Ref": "MyVpcF9F0CA6F"
                         },
-                        "availabilityZone": "test-region-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -772,7 +764,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -780,7 +772,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/PrivateSubnet3/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -802,7 +794,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -821,7 +813,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -841,13 +833,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -866,7 +858,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -885,7 +877,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               },
@@ -926,13 +918,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -940,6 +932,14 @@
                 "id": "NatRole",
                 "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole",
                 "children": {
+                  "ImportNatRole": {
+                    "id": "ImportNatRole",
+                    "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole/ImportNatRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-vpc-nat-instances/MyVpc/NatRole/Resource",
@@ -967,31 +967,109 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-vpc-nat-instances/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-vpc-nat-instances/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "integ-test": {
+        "id": "integ-test",
+        "path": "integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

@@ -124,7 +124,7 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 });
 ```
 
-A maximum of 10 tables with replication can be added to a stack without a limit increase for 
+A maximum of 10 tables with replication can be added to a stack without a limit increase for
 [managed policies attached to an IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities).
 This is because more than 10 managed policies will be attached to the DynamoDB service replication role - one policy per replication table.
 Consider splitting your tables across multiple stacks if your reach this limit.
@@ -220,7 +220,7 @@ const metric = table.metricThrottledRequestsForOperations({
   period: Duration.minutes(1),
 });
 
-new cloudwatch.Alarm(stack, 'Alarm', {
+new cloudwatch.Alarm(this, 'Alarm', {
   metric: metric,
   evaluationPeriods: 1,
   threshold: 1,
@@ -229,7 +229,7 @@ new cloudwatch.Alarm(stack, 'Alarm', {
 
 ## Deletion Protection for Tables
 
-You can enable deletion protection for a table by setting the `deletionProtection` property to `true`. 
+You can enable deletion protection for a table by setting the `deletionProtection` property to `true`.
 When deletion protection is enabled for a table, it cannot be deleted by anyone. By default, deletion protection is disabled.
 
 ```ts

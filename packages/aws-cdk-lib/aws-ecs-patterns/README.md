@@ -887,6 +887,7 @@ stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 The following is an example of an application with the REMOVE_DEFAULT_DESIRED_COUNT feature flag enabled:
 
 ```ts nofixture
+import { Construct } from 'constructs';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -894,20 +895,23 @@ import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as path from 'path';
 
-const app = new App();
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
-const stack = new Stack(app, 'aws-ecs-patterns-queue');
-stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+    this.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
-const vpc = new ec2.Vpc(stack, 'VPC', {
-  maxAzs: 2,
-});
+    const vpc = new ec2.Vpc(this, 'VPC', {
+      maxAzs: 2,
+    });
 
-new ecsPatterns.QueueProcessingFargateService(stack, 'QueueProcessingService', {
-  vpc,
-  memoryLimitMiB: 512,
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
-});
+    new ecsPatterns.QueueProcessingFargateService(this, 'QueueProcessingService', {
+      vpc,
+      memoryLimitMiB: 512,
+      image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+    });
+  }
+}
 ```
 
 ### Deploy application and metrics sidecar
