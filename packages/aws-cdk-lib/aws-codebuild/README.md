@@ -114,7 +114,7 @@ You can specify a specific filename that exists within the project's source arti
 
 ```ts
 const project = new codebuild.Project(this, 'MyProject', {
-  buildSpec: codebuild.BuildSpec.fromSourceFileName('my-buildspec.yml'),
+  buildSpec: codebuild.BuildSpec.fromSourceFilename('my-buildspec.yml'),
   source: codebuild.Source.gitHub({
     owner: 'awslabs',
     repo: 'aws-cdk',
@@ -450,7 +450,7 @@ Example:
 ```ts
 new codebuild.Project(this, 'Project', {
   environment: {
-    buildImage: codebuild.LinuxBuildImage.STANDARD_6_0,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
   ssmSessionPermissions: true,
   buildSpec: codebuild.BuildSpec.fromObject({
