@@ -1397,6 +1397,10 @@ validate(context: ValidationContextBeta1): ValidationReportBeta1 {
 }
 ```
 
+In addition to the name, plugins may optionally report their version (`version`
+property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property).
+
 Note that plugins are not allowed to modify anything in the cloud assembly. Any
 attempt to do so will result in synthesis failure.
 
