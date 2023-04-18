@@ -1201,12 +1201,16 @@ describe('ec2 task definition', () => {
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
+      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
       // WHEN
       const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
+        executionRole: expectExecutionRole,
       });
 
       // THEN
@@ -1216,6 +1220,7 @@ describe('ec2 task definition', () => {
       expect(taskDefinition.isFargateCompatible).toBeFalsy();
       expect(taskDefinition.networkMode).toBe(expectNetworkMode);
       expect(taskDefinition.taskRole).toBe(expectTaskRole);
+      expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
     });
 
     test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
