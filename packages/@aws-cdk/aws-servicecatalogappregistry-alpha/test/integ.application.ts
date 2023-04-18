@@ -10,29 +10,7 @@ const application = new appreg.Application(stack, 'TestApplication', {
   description: 'My application description',
 });
 
-const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
-  attributeGroupName: 'myAttributeGroup',
-  description: 'my attribute group description',
-  attributes: {
-    stage: 'alpha',
-    teamMembers: [
-      'markI',
-      'markII',
-      'markIII',
-    ],
-    public: false,
-    publishYear: 2021,
-    plannedRoadMap: {
-      alpha: 'some time',
-      beta: 'another time',
-      gamma: 'penultimate time',
-      release: 'go time',
-    },
-  },
-});
 
-application.associateStack(stack);
-application.associateAttributeGroup(attributeGroup);
 application.addAttributeGroup('myAnotherAttributeGroup', {
   attributeGroupName: 'myAnotherAttributeGroup',
   attributes: {
