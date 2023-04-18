@@ -213,24 +213,33 @@ You can optionally attach a
 to the target.
 
 ```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as batch from '@aws-cdk/aws-batch-alpha';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
-const jobQueue = new batch.JobQueue(this, 'MyQueue', {
+declare const vpc: ec2.Vpc;
+
+const computeEnvironment = new batch.FargateComputeEnvironment(this, 'ComputeEnv', {
+  vpc,
+});
+
+const jobQueue = new batch.JobQueue(this, 'JobQueue', {
+  priority: 1,
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnvironment', {
-        managed: false,
-      }),
+      computeEnvironment,
       order: 1,
     },
   ],
 });
 
-const jobDefinition = new batch.JobDefinition(this, 'MyJob', {
-  container: {
-    image: ContainerImage.fromRegistry('test-repo'),
-  },
+const jobDefinition = new batch.EcsJobDefinition(this, 'MyJob', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
+    image: ecs.ContainerImage.fromRegistry('test-repo'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
 });
 
 const queue = new sqs.Queue(this, 'Queue');
@@ -243,7 +252,8 @@ rule.addTarget(new targets.BatchJob(
   jobQueue.jobQueueArn,
   jobQueue,
   jobDefinition.jobDefinitionArn,
-  jobDefinition, {
+  jobDefinition,
+  {
     deadLetterQueue: queue,
     event: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     retryAttempts: 2,

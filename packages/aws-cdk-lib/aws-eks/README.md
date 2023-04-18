@@ -1296,7 +1296,7 @@ export class MyChart extends cdk8s.Chart {
       containers: [
         {
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }
@@ -1351,7 +1351,9 @@ export class LoadBalancedWebService extends constructs.Construct {
     });
 
     deployment.exposeViaService({
-      port: props.port,
+      ports: [
+        { port: props.port },
+      ],
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }
