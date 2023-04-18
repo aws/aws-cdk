@@ -669,7 +669,7 @@ export class Repository extends RepositoryBase {
    * It will fail if a resource section is present at all.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (statement.resources) {
+    if (statement.resources.length) {
       Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
