@@ -344,6 +344,11 @@ Use the `EcsTask` target to run an ECS Task.
 
 The code snippet below creates a scheduled event rule that will run the task described in `taskDefinition` every hour.
 
+By default, ECS tasks run from EventBridge targets will not have tags applied to them. You can set the `propagateTags` 
+field to propagate the tags set on the task definition to the task initialized by the event trigger. If you want to set 
+tags independent of those applied to the TaskDefinition, you can use the `tags` array. Both of these fields can be used 
+together or separately to set tags on the triggered task.
+
 ```ts
 import * as ecs from "@aws-cdk/aws-ecs"
 declare const cluster: ecs.ICluster
@@ -358,7 +363,7 @@ rule.addTarget(
       cluster: cluster,
       taskDefinition: taskDefinition,
       propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
-      tagList: [
+      tags: [
         {
           key: 'my-tag',
           value: 'my-tag-value',

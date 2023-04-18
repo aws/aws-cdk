@@ -8,16 +8,16 @@ import { ContainerOverride } from './ecs-task-properties';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
-  * Tag
+  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
   */
 export interface Tag {
 
   /**
-   * key to e tagged
+   * Key is the name of the tag
    */
   readonly key: string;
   /**
-   * additional value
+   * Value is the metadata contents of the tag
    */
   readonly value: string;
 }
@@ -106,9 +106,9 @@ export interface EcsTaskProps extends TargetBaseProps {
   /**
      * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
      *
-     * @default - No tags are applied to the task
+     * @default - No additional tags are applied to the task
      */
-  readonly tagList?: Tag[]
+  readonly tags?: Tag[]
 }
 
 /**
@@ -137,7 +137,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
   private readonly propagateTags?: ecs.PropagatedTagSource;
-  private readonly tagList?: Tag[]
+  private readonly tags?: Tag[]
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -160,9 +160,7 @@ export class EcsTask implements events.IRuleTarget {
       this.role.addToPrincipalPolicy(stmt);
     }
 
-    if (props.tagList) {
-      this.tagList = props.tagList;
-    }
+    this.tags = props.tags;
 
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
@@ -200,7 +198,7 @@ export class EcsTask implements events.IRuleTarget {
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
     const propagateTags = this.propagateTags;
-    const tagList = this.tagList;
+    const tagList = this.tags;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
     const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';

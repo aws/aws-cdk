@@ -861,7 +861,7 @@ test('sets tag lists', () => {
       containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }],
-    tagList: [
+    tags: [
       {
         key: 'my-tag',
         value: 'my-tag-value',
