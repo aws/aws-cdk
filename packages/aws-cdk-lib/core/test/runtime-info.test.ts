@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { App, NestedStack, Stack, Stage } from '../lib';
+import { App, NestedStack, Stack, Stage, IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from '../lib';
 import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
@@ -157,6 +157,24 @@ describeTscSafe('constructInfoForStack', () => {
     expect(fqns).not.toContain('@aws-cdk/test.TestNestedStackInsideStack');
     expect(fqns).not.toContain('@aws-cdk/test.TestStageInsideStack');
   });
+
+  test('return info from validator plugins', () => {
+    const validatedApp = new App({
+      policyValidationBeta1: [new FakePlugin('fake', [], '1.0.0', ['RULE_1', 'RULE_2'])],
+    });
+    const validatedStack = new Stack(validatedApp, 'ValidatedStack');
+    const constructInfos = constructInfoFromStack(validatedStack);
+
+    expect(constructInfos.map(info => info.fqn)).toContain('policyValidation.fake.RULE_1|RULE_2');
+  });
+
+  test('does not return info from validator plugins when no plugin is registered', () => {
+    const constructInfos = constructInfoFromStack(stack);
+
+    expect(constructInfos.map(info => info.fqn)).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/^policyValidation\./),
+    ]));
+  });
 });
 
 class TestConstruct extends Construct {
@@ -190,4 +208,21 @@ function findParentPkgJson(dir: string, depth: number = 1, limit: number = 5): {
   }
 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
+}
+
+class FakePlugin implements IPolicyValidationPluginBeta1 {
+  constructor(
+    public readonly name: string,
+    private readonly violations: PolicyViolationBeta1[],
+    public readonly version?: string,
+    public readonly ruleIds?: string []) {
+  }
+
+  validate(_context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations,
+      pluginVersion: this.version,
+    };
+  }
 }
