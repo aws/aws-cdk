@@ -24,7 +24,7 @@ const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
  */
 export function builtInCustomResourceProviderNodeRuntime(scope: Construct): CustomResourceProviderRuntime {
   const runtimeName = Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
-  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_14_X;
+  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_16_X;
 }
 
 /**
