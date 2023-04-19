@@ -1,4 +1,16 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '../../core';
+import {
+    App,
+    CfnCondition,
+    CfnMapping,
+    CfnOutput,
+    CfnParameter,
+    CfnResource,
+    Fn,
+    LegacyStackSynthesizer,
+    NestedStack,
+    Stack,
+    Stage
+} from '../../core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -1353,6 +1365,29 @@ describe('Template', () => {
       });
     }).not.toThrow(/dependency cycle/);
   });
+
+    test('nested stack inside a Stage in an App', () => {
+        const app = new App();
+        const stage = new Stage(app, 'Stage');
+        const stack = new Stack(stage);
+        const nested = new NestedStack(stack, 'MyNestedStack');
+        new CfnResource(nested, 'Bar', {
+            type: 'Bar::Baz',
+            properties: {
+                Qux: 'Foo',
+            },
+        });
+        const template = Template.fromStack(nested);
+
+        expect(template.toJSON()).toEqual({
+            Resources: {
+                Bar: {
+                    Type: 'Bar::Baz',
+                    Properties: { Qux: 'Foo' },
+                },
+            },
+        });
+    });
 });
 
 function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
