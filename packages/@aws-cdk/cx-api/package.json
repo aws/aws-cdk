@@ -4,6 +4,23 @@
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/**/*.js",
+          "{projectRoot}/**/*.d.ts",
+          "{projectRoot}/.jsii",
+          "{projectRoot}/.warnings.jsii.js",
+          "{projectRoot}/.gitignore",
+          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/README.md",
+          "{projectRoot}/rosetta",
+          "!{projectRoot}/node_modules/**/*"
+        ]
+      }
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
