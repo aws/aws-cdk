@@ -293,7 +293,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * @example
  * // create a pipeline
- * import * as codecommit from '@aws-cdk/aws-codecommit';
+ * import * as codecommit from 'aws-cdk-lib/aws-codecommit';
  *
  * const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
  *

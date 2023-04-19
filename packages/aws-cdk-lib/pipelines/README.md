@@ -870,7 +870,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
   private stackOutputReference: pipelines.StackOutputReference
 
   constructor(
-    private readonly function: lambda.Function,
+    private readonly fn: lambda.Function,
     stackOutput: CfnOutput,
   ) {
     super('MyLambdaStep');
@@ -884,7 +884,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
       runOrder: options.runOrder,
       // Map the reference to the variable name the CDK has generated for you.
       userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
-      lambda: this.function,
+      lambda: this.fn,
     }));
 
     return { runOrdersConsumed: 1 };
@@ -1684,21 +1684,21 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 
   // Configure CodeBuild to use a drop-in Docker replacement.
   codeBuildDefaults: {
-    buildEnvironment: {
-      partialBuildSpec: Codebuild.BuildSpec.fromObject({
-        phases: {
-          install: {
-            // Add the shell commands to install your drop-in Docker
-            // replacement to the CodeBuild enviromment.
-            commands: installCommands,
-          }
+    partialBuildSpec: codebuild.BuildSpec.fromObject({
+      phases: {
+        install: {
+          // Add the shell commands to install your drop-in Docker
+          // replacement to the CodeBuild enviromment.
+          commands: installCommands,
         }
-      }),
+      }
+    }),
+    buildEnvironment: {
       environmentVariables: {
         // Instruct the AWS CDK to use `drop-in-replacement` instead of
         // `docker` when building / publishing docker images.
         // e.g., `drop-in-replacement build . -f path/to/Dockerfile`
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },
@@ -1733,7 +1733,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
         // If you haven't provided an `ENV` in your Dockerfile that overrides
         // `CDK_DOCKER`, then you must provide the name of the command that
         // the AWS CDK should run instead of `docker` here.
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },
