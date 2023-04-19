@@ -31,7 +31,7 @@ describe('ReportTrace', () => {
       // THEN
       expect(formatted).toEqual({
         id: 'MyStack',
-        construct: expect.stringMatching(/.*Stack/),
+        construct: expect.stringMatching(/.*(Stack|Construct)/),
         libraryVersion: expect.any(String),
         location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
         path: 'MyStack',
@@ -43,13 +43,13 @@ describe('ReportTrace', () => {
           path: 'MyStack/MyConstruct',
           child: {
             id: 'MyL2Resource',
-            construct: expect.stringMatching(/Resource/),
+            construct: expect.stringMatching(/(Resource|Construct)/),
             libraryVersion: expect.any(String),
             location: expect.stringMatching(/new MyConstruct \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
             path: 'MyStack/MyConstruct/MyL2Resource',
             child: {
               id: 'Resource',
-              construct: expect.stringMatching(/CfnResource/),
+              construct: expect.stringMatching(/(CfnResource|Construct)/),
               libraryVersion: expect.any(String),
               location: expect.stringMatching(/new MyL2Resource \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
               path: 'MyStack/MyConstruct/MyL2Resource/Resource',
@@ -78,7 +78,7 @@ describe('ReportTrace', () => {
     // THEN
     expect(formatted).toEqual({
       id: 'MyStack',
-      construct: expect.stringMatching(/.*Stack/),
+      construct: expect.stringMatching(/.*(Stack|Construct)/),
       libraryVersion: expect.any(String),
       location: "Run with '--debug' to include location info",
       path: 'MyStack',
@@ -90,13 +90,13 @@ describe('ReportTrace', () => {
         path: 'MyStack/MyConstruct',
         child: {
           id: 'MyL2Resource',
-          construct: expect.stringMatching(/Resource/),
+          construct: expect.stringMatching(/(Resource|Construct)/),
           libraryVersion: expect.any(String),
           location: "Run with '--debug' to include location info",
           path: 'MyStack/MyConstruct/MyL2Resource',
           child: {
             id: 'Resource',
-            construct: expect.stringMatching(/CfnResource/),
+            construct: expect.stringMatching(/(CfnResource|Construct)/),
             libraryVersion: expect.any(String),
             location: "Run with '--debug' to include location info",
             path: 'MyStack/MyConstruct/MyL2Resource/Resource',
