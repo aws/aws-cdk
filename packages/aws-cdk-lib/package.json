@@ -56,6 +56,7 @@
     ]
   },
   "cdk-package": {
+    "pre": "/bin/bash ./scripts/minify-sources.sh",
     "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
