@@ -1298,3 +1298,34 @@ test('can set match port property', () => {
     },
   });
 });
+
+test('throws error when port not included when VirtualGateway has multuple listeners', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+
+  // WHEN
+  const mesh = new appmesh.Mesh(stack, 'mesh', {
+    meshName: 'test-mesh',
+  });
+
+  const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+    listeners: [appmesh.VirtualGatewayListener.http(), appmesh.VirtualGatewayListener.http()],
+    mesh: mesh,
+  });
+
+  const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+    virtualServiceName: 'target.local',
+  });
+
+  // Add an HTTP Route
+  virtualGateway.addGatewayRoute('gateway-http-route', {
+    routeSpec: appmesh.GatewayRouteSpec.http({
+      routeTarget: virtualService,
+    }),
+    gatewayRouteName: 'gateway-http-route',
+  });
+
+  expect(() => app.synth()).toThrow(/Gateway route must define a match port if the parent Virtual Gateway has multiple listeners./);
+});
