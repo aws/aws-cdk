@@ -41,7 +41,9 @@ jobs:
         run: |-
           npm -g install lerna npm-check-updates
       - name: Build Integ Runner
-        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+          npx lerna run build --scope @aws-cdk/integ-runner
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
@@ -65,7 +67,7 @@ jobs:
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
           done
           # Upgrade dependencies at an aws-eks integ test docker image
-          cd packages/@aws-cdk/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
+          cd packages/aws-cdk-lib/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn upgrade" to run)
       - name: Run "yarn install"

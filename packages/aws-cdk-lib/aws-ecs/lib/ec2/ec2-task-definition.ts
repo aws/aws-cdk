@@ -106,6 +106,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       compatibility: Compatibility.EC2,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 
