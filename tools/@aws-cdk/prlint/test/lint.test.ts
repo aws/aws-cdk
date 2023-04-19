@@ -127,6 +127,20 @@ describe('commit message format', () => {
     expect(await prLinter.validate()).resolves;
   });
 
+  test('valid with aws-cdk-lib as a scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(aws-cdk-lib): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves;
+  });
+
   test.each(['core', 'prlint', 'awslint'])('valid scope for packages that dont use aws- prefix', async (scope) => {
     const issue = {
       number: 1,
@@ -142,8 +156,8 @@ describe('commit message format', () => {
   })
 });
 
-describe.only('ban breaking changes in stable modules', () => {
-  test.only('breaking change in stable module', async () => {
+describe('ban breaking changes in stable modules', () => {
+  test('breaking change in stable module', async () => {
     const issue = {
       number: 1,
       title: 'chore(s3): some title',
