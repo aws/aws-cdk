@@ -108,7 +108,7 @@ const rule = new events.Rule(this, 'rule', {
         events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
-    'detail-type': events.Match.equalsIgnoreCase('object created'),
+    detailType: events.Match.equalsIgnoreCase('object created'),
 
     // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
     source: ['aws.s3'],

@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.76.0](https://github.com/aws/aws-cdk/compare/v2.75.1...v2.76.0) (2023-04-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** this change will deprecated **associateStack** and **associateAttributeGroup** in Application Construct. 
+The user who are using these two method need to update to use alternative method.
+For associateStack, the alternative method is **associateApplicationWithStack**
+For associateAttributeGroup, the alternative method is **AttributeGroup.associateWith**
+
+The user who are using these two method need to update to use alternative method. For associateStack, the alternative method is **associateApplicationWithStack** For associateAttributeGroup, the alternative method is **AttributeGroup.associateWith**
+
+Purpose of this PR:
+
+we need to remove deprecated resource before we moving into stable version The method that we remove is: associateStack and associateAttributeGroup
+
+CHANGES:
+
+1. in lib/application.ts, we remove these two methods and update their corresponding interface
+2. in test/ application.test.ts & test/integ.application.ts, we update application.test.ts and integ.application.ts to remove these two methods' related test
+
+
+*By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
+
+### Features
+
+* **cli-lib:** add missing deploy options ([#25042](https://github.com/aws/aws-cdk/issues/25042)) ([ac40aed](https://github.com/aws/aws-cdk/commit/ac40aed6f79129d6793c663dcb81bb983e21f123))
+* **codebuild:** adds support for standard (7.0) image ([#25136](https://github.com/aws/aws-cdk/issues/25136)) ([4eb5e99](https://github.com/aws/aws-cdk/commit/4eb5e99ef94fba1c1a643e159acd9e39f61ac7f7)), closes [#25124](https://github.com/aws/aws-cdk/issues/25124)
+* **core:** add rule IDs to the analytics string ([#25084](https://github.com/aws/aws-cdk/issues/25084)) ([0c1e885](https://github.com/aws/aws-cdk/commit/0c1e885b9d56718e21fde5c838b6a755a4c81235))
+* **ec2:** add new latest amazon linux machine images ([#25083](https://github.com/aws/aws-cdk/issues/25083)) ([01fd89a](https://github.com/aws/aws-cdk/commit/01fd89a660710b27cd42e07a838a9a548e4f106e)), closes [#21011](https://github.com/aws/aws-cdk/issues/21011) [#24873](https://github.com/aws/aws-cdk/issues/24873) [#23523](https://github.com/aws/aws-cdk/issues/23523)
+* **events-targets:** Add tagging for ECS tasks triggered by an event ([#23838](https://github.com/aws/aws-cdk/issues/23838)) ([e3bc59a](https://github.com/aws/aws-cdk/commit/e3bc59a7ca8fc282051d97123f4d5a8bdd660db7)), closes [/github.com/aws/aws-cdk/pull/19583#pullrequestreview-936428722](https://github.com/aws//github.com/aws/aws-cdk/pull/19583/issues/pullrequestreview-936428722) [/github.com/aws/aws-cdk/pull/19583#pullrequestreview-936428722](https://github.com/aws//github.com/aws/aws-cdk/pull/19583/issues/pullrequestreview-936428722)
+* **kms:** add required aliasname prefix to aliasnames with tokens ([#25116](https://github.com/aws/aws-cdk/issues/25116)) ([1b18a19](https://github.com/aws/aws-cdk/commit/1b18a192fab79c6f65cb9c554a7473e36aa67297)), closes [#25033](https://github.com/aws/aws-cdk/issues/25033)
+* **rds:** Support SQL Server for RDS proxy ([#25102](https://github.com/aws/aws-cdk/issues/25102)) ([2ea3e45](https://github.com/aws/aws-cdk/commit/2ea3e455712e175a914fd9362ce26137a75f4fc7)), closes [#22164](https://github.com/aws/aws-cdk/issues/22164) [/github.com/aws/aws-cdk/issues/22164#issuecomment-1297767306](https://github.com/aws//github.com/aws/aws-cdk/issues/22164/issues/issuecomment-1297767306)
+
+
+### Bug Fixes
+
+* **assertions:** nested stacks inside non-root stages don't resolve t… ([#25006](https://github.com/aws/aws-cdk/issues/25006)) ([2d4a60d](https://github.com/aws/aws-cdk/commit/2d4a60dee7892041786482ac001e858511ac0b40)), closes [#24004](https://github.com/aws/aws-cdk/issues/24004)
+* **aws-cdk-lib:** compiled .js files are no longer being minified ([#25160](https://github.com/aws/aws-cdk/issues/25160)) ([b53727f](https://github.com/aws/aws-cdk/commit/b53727fccdb41eb7f95bb6b867f5295722cb085f))
+* **batch:** `jobQueueName` returns ARN instead of name ([#25093](https://github.com/aws/aws-cdk/issues/25093)) ([a344507](https://github.com/aws/aws-cdk/commit/a34450771f908057f5a194c6bb3bb9694ce1682c)), closes [#23018](https://github.com/aws/aws-cdk/issues/23018)
+* **cloudwatch:** correct CompositeAlarm.fromCompositeAlarmName ARN format ([#24604](https://github.com/aws/aws-cdk/issues/24604)) ([3bf6adb](https://github.com/aws/aws-cdk/commit/3bf6adb48a96c89455017fc0aeba97a1fe118542)), closes [#24594](https://github.com/aws/aws-cdk/issues/24594)
+* **core:** Duration.parse() doesn't parse milliseconds ([#25010](https://github.com/aws/aws-cdk/issues/25010)) ([8ca4c09](https://github.com/aws/aws-cdk/commit/8ca4c09817d03a094ac395f9ad1adace931f74b4)), closes [#24971](https://github.com/aws/aws-cdk/issues/24971)
+* **core:** pull alpine image from ecr public ([#25179](https://github.com/aws/aws-cdk/issues/25179)) ([6d906f8](https://github.com/aws/aws-cdk/commit/6d906f8f99d3adc38f3dd15390bd3118701f2f81)), closes [#24969](https://github.com/aws/aws-cdk/issues/24969)
+* **ecs:** allow passing execution role to imported TaskDefinitions ([#24987](https://github.com/aws/aws-cdk/issues/24987)) ([0d156a8](https://github.com/aws/aws-cdk/commit/0d156a810a7a049e03f2d84582f12b7a231dea2e)), closes [#24984](https://github.com/aws/aws-cdk/issues/24984) [#24984](https://github.com/aws/aws-cdk/issues/24984)
+* **kinesis:** remove StreamModeDetails in template when not specified ([#24994](https://github.com/aws/aws-cdk/issues/24994)) ([787f38a](https://github.com/aws/aws-cdk/commit/787f38acf687f854cc77b9b258f0de8ad27520b0)), closes [#21829](https://github.com/aws/aws-cdk/issues/21829)
+* stack account id throws error if not a string ([#25134](https://github.com/aws/aws-cdk/issues/25134)) ([d9468c5](https://github.com/aws/aws-cdk/commit/d9468c5ce5e73bf2d987e0427b04c767e008bca0))
+* **servicecatalogappregistry:** Remove deprecated resource in Application Construct ([#25095](https://github.com/aws/aws-cdk/issues/25095)) ([9222f21](https://github.com/aws/aws-cdk/commit/9222f217aa5f199dd88addc9d0dee0f3f900b5a2))
+
 ## [2.75.1](https://github.com/aws/aws-cdk/compare/v2.75.0...v2.75.1) (2023-04-18)
 
 ### Reverts

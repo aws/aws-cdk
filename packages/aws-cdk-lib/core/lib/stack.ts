@@ -1358,6 +1358,15 @@ export class Stack extends Construct implements ITaggable {
     // in which Export/Fn::ImportValue would work is if the value are the same
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
+
+    if (env.account && typeof(env.account) !== 'string') {
+      throw new Error(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`);
+    }
+
+    if (env.region && typeof(env.region) !== 'string') {
+      throw new Error(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`);
+    }
+
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
     const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 

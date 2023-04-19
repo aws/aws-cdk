@@ -2,6 +2,7 @@ import { IConstruct } from 'constructs';
 import { App } from '../app';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
+import { IPolicyValidationPluginBeta1 } from '../validation';
 
 const ALLOWED_FQN_PREFIXES = [
   // SCOPES
@@ -55,9 +56,7 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
       allConstructInfos.push(...stage.policyValidationBeta1.map(
         plugin => {
           return {
-            // the fqn can be in the format of `package.module.construct`
-            // those get pulled out into separate fields
-            fqn: `policyValidation.${plugin.name}`,
+            fqn: pluginFqn(plugin),
             version: plugin.version ?? '0.0.0',
           };
         },
@@ -65,6 +64,25 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
       stage = Stage.of(stage);
     }
   } while (!done && stage);
+}
+
+/**
+ * Returns the fully-qualified name for a validation plugin, in the form:
+ *
+ *     policyValidation.<plugin-name>[.<rule-ids>]
+ *
+ * where <rule-ids> is a pipe-separated list of rule IDs.
+ */
+function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
+  let components = [
+    'policyValidation',
+    plugin.name,
+    plugin.ruleIds?.join('|'),
+  ];
+
+  return components
+    .filter(x => x != null)
+    .join('.');
 }
 
 /**
