@@ -1,23 +1,73 @@
 import * as cxapi from '@aws-cdk/cx-api';
-// import PQueue from 'p-queue';
-import { WorkGraph } from './util/work-graph';
+import { WorkGraph, WorkNode, WorkType } from './util/work-graph';
 
 type Options = {
   concurrency: number;
   deployStack: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
+  buildAsset: (assetNode: WorkNode) => Promise<void>;
+  publishAsset: (assetNode: WorkNode) => Promise<void>;
 };
 
-// type DeploymentState = 'pending' | 'queued' | 'deploying' | 'completed' | 'failed' | 'skipped';
-
-export const deployStacks = async (artifacts: cxapi.CloudArtifact[], { concurrency, deployStack }: Options): Promise<void> => {
-  // const queue = new PQueue({ concurrency });
-  // const deploymentStates = stacks.reduce((acc, stack) => ({ ...acc, [stack.id]: 'pending' as const }), {} as Record<string, DeploymentState>);
-  // eslint-disable-next-line no-console
+export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
+  concurrency,
+  deployStack,
+  buildAsset,
+  publishAsset,
+}: Options): Promise<void> => {
   const graph = WorkGraph.fromCloudArtifacts(artifacts);
-  // eslint-disable-next-line no-console
-  console.log(graph.toString());
-  // eslint-disable-next-line no-console
-  console.log(concurrency, deployStack.name);
+
+  await forAllArtifacts(concurrency, async (x: WorkNode) => {
+    // Execute this function with as much parallelism as possible
+    switch (x.type) {
+      case WorkType.STACK_DEPLOY:
+        await deployStack(x.artifact as cxapi.CloudFormationStackArtifact).catch((err) => {
+          // By recording the failure immediately as the queued task exits, we prevent the next
+          // queued task from starting (its 'hasAnyStackFailed' will return 'true').
+          graph.failed(x);
+          throw err;
+        });
+        break;
+      case WorkType.ASSET_BUILD:
+        await buildAsset(x).catch((err) => {
+          graph.failed(x);
+          throw err;
+        });
+        break;
+      case WorkType.ASSET_PUBLISH:
+        await publishAsset(x).catch((err) => {
+          graph.failed(x);
+          throw err;
+        });
+        break;
+    }
+  });
+
+  function forAllArtifacts(n: number, fn: (x: WorkNode) => Promise<void>): Promise<void> {
+    return new Promise((ok) => {
+      let active = 0;
+
+      start();
+
+      function start() {
+        while (graph.peek() && active < n) {
+          startOne(graph.next()!);
+        }
+
+        if (!graph.peek() && active === 0) {
+          ok();
+        }
+      }
+
+      function startOne(x: WorkNode) {
+        active++;
+        void fn(x).then(() => {
+          active--;
+          graph.deployed(x);
+          start();
+        });
+      }
+    });
+  }
 
   // const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
   //   stack.dependencies

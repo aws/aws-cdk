@@ -1,45 +1,91 @@
+/* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
 
-enum WorkType {
+export enum WorkType {
   STACK_DEPLOY = 'stack-deploy',
   ASSET_BUILD = 'asset-build',
   ASSET_PUBLISH = 'asset-publish',
 };
 
-interface WorkNode {
+export enum DeploymentState {
+  PENDING = 'pending',
+  QUEUED = 'queued',
+  DEPLOYING = 'deploying',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  SKIPPED = 'skipped',
+};
+
+export interface WorkNode {
   readonly id: string;
   readonly type: WorkType;
   readonly dependencies: string[];
+  readonly artifact: cxapi.CloudArtifact;
+  readonly stack: cxapi.CloudFormationStackArtifact;
+  deploymentState: DeploymentState;
 }
 
 export class WorkGraph {
   public static fromCloudArtifacts(artifacts: cxapi.CloudArtifact[]) {
     const graph = new WorkGraph();
-    // eslint-disable-next-line no-console
-    console.log('artifacts', artifacts);
+
+    // Associated stack will be lazily added for Assets
+    const graphNodes: Omit<WorkNode, 'stack'>[] = [];
+    const associatedStacks: Record<string, cxapi.CloudFormationStackArtifact> = {};
+
     for (const artifact of artifacts) {
       if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
         const buildNode = {
           id: `${artifact.id}-build`,
           type: WorkType.ASSET_BUILD,
           dependencies: getDepIds(artifact.dependencies),
+          artifact,
+          deploymentState: 'pending' as DeploymentState,
         };
-        graph.addNode(buildNode);
-        graph.addNode({
+        graphNodes.push(buildNode);
+        graphNodes.push({
           id: `${artifact.id}-publish`,
           type: WorkType.ASSET_PUBLISH,
           dependencies: [buildNode.id],
+          artifact,
+          deploymentState: DeploymentState.PENDING,
         });
-      } else {
-        graph.addNode({
+      } else if (artifact instanceof cxapi.CloudFormationStackArtifact) { // TODO: not sure if we can instanceof here
+        graphNodes.push({
           id: artifact.id,
           type: WorkType.STACK_DEPLOY,
           dependencies: getDepIds(artifact.dependencies),
+          artifact,
+          deploymentState: DeploymentState.PENDING,
         });
+        updateAssociatedStacks(artifact);
       }
     }
 
+    // post-process stacks associated with each nodes because we only know
+    // we have this information after all artifacts have been processed.
+    const finalGraphNodes: WorkNode[] = [];
+    for (const node of graphNodes) {
+      const stack = associatedStacks[node.id];
+      if (!stack) {
+        throw new Error(`No stack associated with ${node.id} artifact. Something in the source code or asset manifest is wrong.`);
+      }
+      finalGraphNodes.push({
+        ...node,
+        stack,
+      });
+    }
+    graph.addNodes(...finalGraphNodes);
     return graph;
+
+    function updateAssociatedStacks(stack: cxapi.CloudFormationStackArtifact) {
+      const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
+      for (const art of assetArtifacts) {
+        associatedStacks[`${art.id}-publish`] = stack;
+        associatedStacks[`${art.id}-build`] = stack;
+      }
+      associatedStacks[stack.id] = stack;
+    }
 
     function getDepIds(deps: cxapi.CloudArtifact[]): string[] {
       const ids = [];
@@ -56,13 +102,41 @@ export class WorkGraph {
   }
 
   private readonly nodes: Record<string, WorkNode>;
+  private readonly readyPool: Array<WorkNode> = [];
 
-  public constructor(nodes: Record<string, WorkNode> = {}) {
+  private constructor(nodes: Record<string, WorkNode> = {}) {
     this.nodes = nodes;
   }
 
-  public addNode(node: WorkNode) {
-    this.nodes[node.id] = node;
+  public addNodes(...nodes: WorkNode[]) {
+    for (const node of nodes) {
+      this.nodes[node.id] = node;
+    }
+  }
+
+  public peek(): boolean {
+    return this.readyPool.length > 0;
+  }
+
+  public next(): WorkNode | undefined {
+    this.updateReadyPool();
+    if (this.readyPool.length > 0) {
+      const node = this.readyPool.shift()!;
+      // we experienced a failed deployment elsewhere
+      if (node.deploymentState !== DeploymentState.QUEUED) { return undefined; }
+      node.deploymentState = DeploymentState.DEPLOYING;
+      return node;
+    }
+    return undefined;
+  }
+
+  public deployed(node: WorkNode) {
+    node.deploymentState = DeploymentState.COMPLETED;
+  }
+
+  public failed(node: WorkNode) {
+    node.deploymentState = DeploymentState.FAILED;
+    this.skipRest();
   }
 
   public toString() {
@@ -71,5 +145,23 @@ export class WorkGraph {
       n.push([id, node.type, node.dependencies]);
     }
     return n;
+  }
+
+  private updateReadyPool() {
+    for (const node of Object.values(this.nodes)) {
+      if (node.deploymentState === DeploymentState.PENDING &&
+        (node.dependencies.length === 0 || node.dependencies.every((id) => this.nodes[id].deploymentState === 'completed'))) {
+        node.deploymentState = DeploymentState.QUEUED;
+        this.readyPool.push(node);
+      }
+    }
+  }
+
+  private skipRest() {
+    for (const node of Object.values(this.nodes)) {
+      if ([DeploymentState.QUEUED, DeploymentState.PENDING].includes(node.deploymentState)) {
+        node.deploymentState = DeploymentState.SKIPPED;
+      }
+    }
   }
 }

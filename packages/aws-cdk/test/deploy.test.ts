@@ -1,11 +1,10 @@
 /* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { deployStacks } from '../lib/deploy';
-import * as path from 'path';
-import { App } from 'aws-cdk-lib';
+import { deployArtifacts } from '../lib/deploy';
 
+type Artifact = cxapi.CloudArtifact;
 type Stack = cxapi.CloudFormationStackArtifact;
+type Asset = cxapi.AssetManifestArtifact;
 
 const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
@@ -38,19 +37,14 @@ describe('DeployStacks', () => {
   });
 
   test('kaizen test', async () => {
-    const app = new App();
-    const assembly: cxapi.CloudAssembly = app.synth();
-    const stack = new cxapi.CloudFormationStackArtifact(assembly, 'stack', {
-      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-      dependencies: [],
-    });
-    const asset = new cxapi.AssetManifestArtifact(assembly, 'asset', {
-      type: cxschema.ArtifactType.ASSET_MANIFEST,
-      dependencies: [stack.id],
-    });
-    await expect(deployStacks([stack, asset], { concurrency: 1, deployStack })).resolves.toBeUndefined();
+    const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
+    const asset = { id: 'AssetA', dependencies: [], [ASSET_MANIFEST_ARTIFACT_SYM]: true } as unknown as Asset;
+    const assetB = { id: 'AssetB', dependencies: [], [ASSET_MANIFEST_ARTIFACT_SYM]: true } as unknown as Asset;
+    const stack = { id: 'StackA', dependencies: [asset] } as unknown as Stack;
+    const stackB = { id: 'StackB', dependencies: [assetB, stack] } as unknown as Stack;
+    await expect(deployArtifacts([stack, asset, stackB, assetB] as Artifact[], { concurrency: 1, deployStack })).resolves.toBeUndefined();
 
-    expect(deployedStacks).toStrictEqual('');
+    expect(deployedStacks).toStrictEqual('a');
   });
 
   // Success
@@ -143,7 +137,7 @@ describe('DeployStacks', () => {
       expected: ['B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
-    await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).resolves.toBeUndefined();
+    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack })).resolves.toBeUndefined();
 
     expect(deployedStacks).toStrictEqual(expected);
   });
@@ -212,7 +206,7 @@ describe('DeployStacks', () => {
       expectedStacks: ['A', 'B'],
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
-    await expect(deployStacks(toDeploy as unknown as Stack[], { concurrency, deployStack })).rejects.toThrowError(expectedError);
+    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack })).rejects.toThrowError(expectedError);
 
     expect(deployedStacks).toStrictEqual(expectedStacks);
   });

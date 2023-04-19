@@ -263,7 +263,7 @@ export interface DeployStackOptions {
   readonly assetParallelism?: boolean;
 }
 
-export interface BuildStackAssetsOptions {
+interface AssetOptions {
   /**
    * Stack with assets to build.
    */
@@ -282,21 +282,16 @@ export interface BuildStackAssetsOptions {
    * @default - Current role
    */
   readonly roleArn?: string;
+}
 
+export interface BuildStackAssetsOptions extends AssetOptions {
   /**
    * Options to pass on to `buildAsests()` function
    */
   readonly buildOptions?: BuildAssetsOptions;
 }
 
-interface PublishStackAssetsOptions {
-  /**
-   * Whether to build assets before publishing.
-   *
-   * @default true To remain backward compatible.
-   */
-  readonly buildAssets?: boolean;
-
+interface PublishStackAssetsOptions extends AssetOptions {
   /**
    * Options to pass on to `publishAsests()` function
    */
@@ -415,16 +410,6 @@ export class CloudFormationDeployments {
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
-    // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
-    if (options.resourcesToImport === undefined) {
-      await this.publishStackAssets(options.stack, toolkitInfo, {
-        buildAssets: options.buildAssets ?? true,
-        publishOptions: {
-          parallel: options.assetParallelism,
-        },
-      });
-    }
-
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
@@ -533,48 +518,31 @@ export class CloudFormationDeployments {
     };
   }
 
-  /**
-   * Build a stack's assets.
-   */
-  public async buildStackAssets(options: BuildStackAssetsOptions) {
+  private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
     const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
     const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
-    const assetArtifacts = options.stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
-    for (const assetArtifact of assetArtifacts) {
-      await this.validateBootstrapStackVersion(
-        options.stack.stackName,
-        assetArtifact.requiresBootstrapStackVersion,
-        assetArtifact.bootstrapStackVersionSsmParameter,
-        toolkitInfo);
+    await this.validateBootstrapStackVersion(
+      options.stack.stackName,
+      asset.requiresBootstrapStackVersion,
+      asset.bootstrapStackVersionSsmParameter,
+      toolkitInfo);
 
-      const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
-    }
+    const manifest = AssetManifest.fromFile(asset.file);
+
+    return { manifest, stackEnv };
   }
 
-  /**
-   * Publish all asset manifests that are referenced by the given stack
-   */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo, options: PublishStackAssetsOptions = {}) {
-    const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
-    const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
+  public async buildAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
+    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
+    await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
+  }
 
-    for (const assetArtifact of assetArtifacts) {
-      await this.validateBootstrapStackVersion(
-        stack.stackName,
-        assetArtifact.requiresBootstrapStackVersion,
-        assetArtifact.bootstrapStackVersionSsmParameter,
-        toolkitInfo);
-
-      const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv, {
-        ...options.publishOptions,
-        buildAssets: options.buildAssets ?? true,
-      });
-    }
+  public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
+    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
   }
 
   /**
