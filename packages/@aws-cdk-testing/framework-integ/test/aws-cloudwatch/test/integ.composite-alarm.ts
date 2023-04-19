@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 
@@ -64,8 +64,23 @@ class CompositeAlarmIntegrationTest extends Stack {
 
 }
 
+class CompositeAlarmImportIntegrationTest extends Stack {
+
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const alarm = CompositeAlarm.fromCompositeAlarmName(this, 'alarm', 'TestAlarm');
+
+    new CfnOutput(this, 'AlarmName', { value: alarm.alarmName });
+    new CfnOutput(this, 'AlarmArn', { value: alarm.alarmArn });
+  }
+}
+
 const app = new App();
 
 new IntegTest(app, 'cdk-integ-composite-alarm', {
-  testCases: [new CompositeAlarmIntegrationTest(app, 'CompositeAlarmIntegrationTest')],
+  testCases: [
+    new CompositeAlarmIntegrationTest(app, 'CompositeAlarmIntegrationTest'),
+    new CompositeAlarmImportIntegrationTest(app, 'CompositeAlarmImportIntegrationTest'),
+  ],
 });

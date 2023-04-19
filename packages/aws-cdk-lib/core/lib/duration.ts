@@ -67,16 +67,18 @@ export class Duration {
    * @returns the parsed `Duration`.
    */
   public static parse(duration: string): Duration {
-    const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
+    const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/);
     if (!matches) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
-    const [, days, hours, minutes, seconds] = matches;
-    if (!days && !hours && !minutes && !seconds) {
+    const [, days, hours, minutes, seconds, milliseconds] = matches;
+    if (!days && !hours && !minutes && !seconds && !milliseconds) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
+    const millis = milliseconds ? milliseconds.padEnd(3, '0') : '';
     return Duration.millis(
-      _toInt(seconds) * TimeUnit.Seconds.inMillis
+      _toInt(millis)
+      + _toInt(seconds) * TimeUnit.Seconds.inMillis
       + (_toInt(minutes) * TimeUnit.Minutes.inMillis)
       + (_toInt(hours) * TimeUnit.Hours.inMillis)
       + (_toInt(days) * TimeUnit.Days.inMillis),
@@ -251,8 +253,8 @@ export class Duration {
       }
     }
 
-    // Remainder in millis
-    if (millis > 0) {
+    // Remainder in millis (keep only above threshold)
+    if (millis > 0.0001) {
       ret.push([millis, TimeUnit.Milliseconds]);
     }
     return ret;

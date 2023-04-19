@@ -296,12 +296,12 @@ export interface TemplateParsingOptions {
 }
 
 function toTemplate(stack: Stack): any {
-  const root = stack.node.root;
-  if (!Stage.isStage(root)) {
+  const stage = Stage.of(stack);
+  if (!Stage.isStage(stage)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  const assembly = root.synth();
+  const assembly = stage.synth();
   if (stack.nestedStackParent) {
     // if this is a nested stack (it has a parent), then just read the template as a string
     return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));

@@ -175,6 +175,9 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('previous-parameters', options.usePreviousParameters),
       ...renderBooleanArg('rollback', options.rollback),
       ...renderBooleanArg('staging', options.staging),
+      ...renderBooleanArg('asset-parallelism', options.assetParallelism),
+      ...renderBooleanArg('asset-prebuild', options.assetPrebuild),
+      ...renderNumberArg('concurrency', options.concurrency),
       ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
       ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
       ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
@@ -255,6 +258,14 @@ function renderBooleanArg(arg: string, value?: boolean): string[] {
   } else {
     return [`--no-${arg}`];
   }
+}
+
+function renderNumberArg(arg: string, value?: number): string[] {
+  if (typeof value === 'undefined') {
+    return [];
+  }
+
+  return [`--${arg}`, value.toString(10)];
 }
 
 /**
