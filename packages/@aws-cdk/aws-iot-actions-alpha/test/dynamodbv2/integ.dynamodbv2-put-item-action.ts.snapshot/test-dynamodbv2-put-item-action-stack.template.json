@@ -1,0 +1,139 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "DynamoDBv2": {
+        "PutItem": {
+         "TableName": {
+          "Ref": "MyTable794EDED1"
+         }
+        },
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "TopicRuleTopicRuleActionRole246C4F77",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT * FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:PutItem",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyTable794EDED1",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+    "Roles": [
+     {
+      "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+     }
+    ]
+   }
+  },
+  "MyTable794EDED1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sortKey",
+      "AttributeType": "N"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 1,
+     "WriteCapacityUnits": 1
+    },
+    "TableName": "MyTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
