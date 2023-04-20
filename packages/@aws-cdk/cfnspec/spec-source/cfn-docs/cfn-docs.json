@@ -693,7 +693,7 @@
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
         "Properties": "Describes the component's properties. You can't specify `tags` as a valid property for `properties` .",
-        "SchemaVersion": "",
+        "SchemaVersion": "The schema version of the component when it was imported.",
         "SourceId": "The unique ID of the component in its original source system, such as Figma.",
         "Tags": "One or more key-value pairs to use when tagging the component.",
         "Variants": "A list of the component's variants. A variant is a unique style configuration of a main component."
@@ -701,7 +701,7 @@
     },
     "AWS::AmplifyUIBuilder::Component.ActionParameters": {
       "attributes": {},
-      "description": "The `ActionParameters` property specifies the event action configuration for an element of a `Component` or `ComponentChild` . Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components. `ActionParameters` defines the action that is performed when an event occurs on the component.",
+      "description": "Represents the event action configuration for an element of a `Component` or `ComponentChild` . Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components. `ActionParameters` defines the action that is performed when an event occurs on the component.",
       "properties": {
         "Anchor": "The HTML anchor link to the location to open. Specify this value for a navigation action.",
         "Fields": "A dictionary of key-value pairs mapping Amplify Studio properties to fields in a data model. Use when the action performs an operation on an Amplify DataStore model.",
@@ -825,7 +825,7 @@
     },
     "AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter": {
       "attributes": {},
-      "description": "The `MutationActionSetStateParameter` property specifies the state configuration when an action modifies a property of another element within the same component.",
+      "description": "Represents the state configuration when an action modifies a property of another element within the same component.",
       "properties": {
         "ComponentName": "The name of the component that is being modified.",
         "Property": "The name of the component property to apply the state configuration to.",
@@ -853,59 +853,59 @@
     },
     "AWS::AmplifyUIBuilder::Form": {
       "attributes": {
-        "Id": "",
+        "Id": "The ID for the form.",
         "Ref": ""
       },
-      "description": "",
+      "description": "The AWS::AmplifyUIBuilder::Form resource specifies all of the information that is required to create a form.",
       "properties": {
-        "AppId": "",
-        "Cta": "",
-        "DataType": "",
-        "EnvironmentName": "",
-        "Fields": "",
-        "FormActionType": "",
-        "Name": "",
-        "SchemaVersion": "",
-        "SectionalElements": "",
-        "Style": "",
-        "Tags": ""
+        "AppId": "The unique ID of the Amplify app associated with the form.",
+        "Cta": "The `FormCTA` object that stores the call to action configuration for the form.",
+        "DataType": "The type of data source to use to create the form.",
+        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
+        "Fields": "The configuration information for the form's fields.",
+        "FormActionType": "Specifies whether to perform a create or update action on the form.",
+        "Name": "The name of the form.",
+        "SchemaVersion": "The schema version of the form.",
+        "SectionalElements": "The configuration information for the visual helper elements for the form. These elements are not associated with any data.",
+        "Style": "The configuration for the form's style.",
+        "Tags": "One or more key-value pairs to use when tagging the form data."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FieldConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The `FieldConfig` property specifies the configuration information for a field in a table.",
       "properties": {
-        "Excluded": "",
-        "InputType": "",
-        "Label": "",
-        "Position": "",
-        "Validations": ""
+        "Excluded": "Specifies whether to hide a field.",
+        "InputType": "Describes the configuration for the default input value to display for a field.",
+        "Label": "The label for the field.",
+        "Position": "Specifies the field position.",
+        "Validations": "The validations to perform on the value in the field."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FieldInputConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The `FieldInputConfig` property specifies the configuration for the default input values to display for a field.",
       "properties": {
-        "DefaultChecked": "",
-        "DefaultCountryCode": "",
-        "DefaultValue": "",
-        "DescriptiveText": "",
+        "DefaultChecked": "Specifies whether a field has a default value.",
+        "DefaultCountryCode": "The default country code for a phone number.",
+        "DefaultValue": "The default value for the field.",
+        "DescriptiveText": "The text to display to describe the field.",
         "IsArray": "",
-        "MaxValue": "",
-        "MinValue": "",
-        "Name": "",
-        "Placeholder": "",
-        "ReadOnly": "",
-        "Required": "",
-        "Step": "",
-        "Type": "",
-        "Value": "",
-        "ValueMappings": ""
+        "MaxValue": "The maximum value to display for the field.",
+        "MinValue": "The minimum value to display for the field.",
+        "Name": "The name of the field.",
+        "Placeholder": "The text to display as a placeholder for the field.",
+        "ReadOnly": "Specifies a read only field.",
+        "Required": "Specifies a field that requires input.",
+        "Step": "The stepping increment for a numeric value in a field.",
+        "Type": "The input type for the field.",
+        "Value": "The value for the field.",
+        "ValueMappings": "The information to use to customize the input fields with data at runtime."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FieldPosition": {
       "attributes": {},
-      "description": "",
+      "description": "The `FieldPosition` property specifies the field position.",
       "properties": {
         "Below": "",
         "Fixed": "",
@@ -914,60 +914,60 @@
     },
     "AWS::AmplifyUIBuilder::Form.FieldValidationConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "The `FieldValidationConfiguration` property specifies the validation configuration for a field.",
       "properties": {
-        "NumValues": "",
-        "StrValues": "",
-        "Type": "",
-        "ValidationMessage": ""
+        "NumValues": "The validation to perform on a number value.",
+        "StrValues": "The validation to perform on a string value.",
+        "Type": "The validation to perform on an object type. ``",
+        "ValidationMessage": "The validation message to display."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormButton": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormButton` property specifies the configuration for a button UI element that is a part of a form.",
       "properties": {
-        "Children": "",
-        "Excluded": "",
-        "Position": ""
+        "Children": "Describes the button's properties.",
+        "Excluded": "Specifies whether the button is visible on the form.",
+        "Position": "The position of the button."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormCTA": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormCTA` property specifies the call to action button configuration for the form.",
       "properties": {
-        "Cancel": "",
-        "Clear": "",
-        "Position": "",
-        "Submit": ""
+        "Cancel": "Displays a cancel button.",
+        "Clear": "Displays a clear button.",
+        "Position": "The position of the button.",
+        "Submit": "Displays a submit button."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormDataTypeConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormDataTypeConfig` property specifies the data type configuration for the data source associated with a form.",
       "properties": {
-        "DataSourceType": "",
-        "DataTypeName": ""
+        "DataSourceType": "The data source type, either an Amplify DataStore model or a custom data type.",
+        "DataTypeName": "The unique name of the data type you are using as the data source for the form."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormInputValueProperty": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormInputValueProperty` property specifies the configuration for an input field on a form. Use `FormInputValueProperty` to specify the values to render or bind by default.",
       "properties": {
-        "Value": ""
+        "Value": "The value to assign to the input field."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormStyle": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormStyle` property specifies the configuration for the form's style.",
       "properties": {
-        "HorizontalGap": "",
-        "OuterPadding": "",
-        "VerticalGap": ""
+        "HorizontalGap": "The spacing for the horizontal gap.",
+        "OuterPadding": "The size of the outer padding for the form.",
+        "VerticalGap": "The spacing for the vertical gap."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormStyleConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The `FormStyleConfig` property specifies the configuration settings for the form's style properties.",
       "properties": {
         "TokenReference": "",
         "Value": ""
@@ -975,29 +975,29 @@
     },
     "AWS::AmplifyUIBuilder::Form.SectionalElement": {
       "attributes": {},
-      "description": "",
+      "description": "The `SectionalElement` property specifies the configuration information for a visual helper element for a form. A sectional element can be a header, a text block, or a divider. These elements are static and not associated with any data.",
       "properties": {
         "Excluded": "",
-        "Level": "",
-        "Orientation": "",
-        "Position": "",
-        "Text": "",
-        "Type": ""
+        "Level": "Specifies the size of the font for a `Heading` sectional element. Valid values are `1 | 2 | 3 | 4 | 5 | 6` .",
+        "Orientation": "Specifies the orientation for a `Divider` sectional element. Valid values are `horizontal` or `vertical` .",
+        "Position": "Specifies the position of the text in a field for a `Text` sectional element.",
+        "Text": "The text for a `Text` sectional element.",
+        "Type": "The type of sectional element. Valid values are `Heading` , `Text` , and `Divider` ."
       }
     },
     "AWS::AmplifyUIBuilder::Form.ValueMapping": {
       "attributes": {},
-      "description": "",
+      "description": "The `ValueMapping` property specifies the association between a complex object and a display value. Use `ValueMapping` to store how to represent complex objects when they are displayed.",
       "properties": {
-        "DisplayValue": "",
-        "Value": ""
+        "DisplayValue": "The value to display for the complex object.",
+        "Value": "The complex object."
       }
     },
     "AWS::AmplifyUIBuilder::Form.ValueMappings": {
       "attributes": {},
-      "description": "",
+      "description": "The `ValueMappings` property specifies the data binding configuration for a value map.",
       "properties": {
-        "Values": ""
+        "Values": "The value and display value pairs."
       }
     },
     "AWS::AmplifyUIBuilder::Theme": {
@@ -10509,7 +10509,7 @@
         "FlywheelName": "Name for the flywheel.",
         "ModelType": "Model type of the flywheel's model.",
         "Tags": "Tags associated with the endpoint being created. A tag is a key-value pair that adds metadata to the endpoint. For example, a tag with \"Sales\" as the key might be added to an endpoint to indicate its use by the sales department.",
-        "TaskConfig": "Configuration about the custom classifier associated with the flywheel."
+        "TaskConfig": "Configuration about the model associated with a flywheel."
       }
     },
     "AWS::Comprehend::Flywheel.DataSecurityConfig": {
@@ -10524,7 +10524,7 @@
     },
     "AWS::Comprehend::Flywheel.DocumentClassificationConfig": {
       "attributes": {},
-      "description": "Configuration required for a custom classification model.",
+      "description": "Configuration required for a document classification model.",
       "properties": {
         "Labels": "One or more labels to associate with the custom classifier.",
         "Mode": "Classification mode indicates whether the documents are `MULTI_CLASS` or `MULTI_LABEL` ."
@@ -10546,9 +10546,9 @@
     },
     "AWS::Comprehend::Flywheel.TaskConfig": {
       "attributes": {},
-      "description": "Configuration about the custom classifier associated with the flywheel.",
+      "description": "Configuration about the model associated with a flywheel.",
       "properties": {
-        "DocumentClassificationConfig": "Configuration required for a classification model.",
+        "DocumentClassificationConfig": "Configuration required for a document classification model.",
         "EntityRecognitionConfig": "Configuration required for an entity recognition model.",
         "LanguageCode": "Language code for the language that the model supports."
       }
@@ -17515,7 +17515,7 @@
     },
     "AWS::ECS::TaskDefinition.EphemeralStorage": {
       "attributes": {},
-      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> For tasks using the Fargate launch type, the task requires the following platforms:\n> \n> - Linux platform version `1.4.0` or later.",
+      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> For tasks using the Fargate launch type, the task requires the following platforms:\n> \n> - Linux platform version `1.4.0` or later.\n> - Windows platform version `1.0.0` or later.",
       "properties": {
         "SizeInGiB": "The total amount, in GiB, of ephemeral storage to set for the task. The minimum supported value is `21` GiB and the maximum supported value is `200` GiB."
       }
@@ -17585,9 +17585,9 @@
         "Capabilities": "The Linux capabilities for the container that are added to or dropped from the default configuration provided by Docker.\n\n> For tasks that use the Fargate launch type, `capabilities` is supported for all platform versions but the `add` parameter is only supported if using platform version 1.4.0 or later.",
         "Devices": "Any host devices to expose to the container. This parameter maps to `Devices` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--device` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> If you're using tasks that use the Fargate launch type, the `devices` parameter isn't supported.",
         "InitProcessEnabled": "Run an `init` process inside the container that forwards signals and reaps processes. This parameter maps to the `--init` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . This parameter requires version 1.25 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`",
-        "MaxSwap": "The total amount of swap memory (in MiB) a container can use. This parameter will be translated to the `--memory-swap` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) where the value would be the sum of the container memory plus the `maxSwap` value.\n\nIf a `maxSwap` value of `0` is specified, the container will not use swap. Accepted values are `0` or any positive integer. If the `maxSwap` parameter is omitted, the container will use the swap configuration for the container instance it is running on. A `maxSwap` value must be set for the `swappiness` parameter to be used.\n\n> If you're using tasks that use the Fargate launch type, the `maxSwap` parameter isn't supported.",
+        "MaxSwap": "The total amount of swap memory (in MiB) a container can use. This parameter will be translated to the `--memory-swap` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) where the value would be the sum of the container memory plus the `maxSwap` value.\n\nIf a `maxSwap` value of `0` is specified, the container will not use swap. Accepted values are `0` or any positive integer. If the `maxSwap` parameter is omitted, the container will use the swap configuration for the container instance it is running on. A `maxSwap` value must be set for the `swappiness` parameter to be used.\n\n> If you're using tasks that use the Fargate launch type, the `maxSwap` parameter isn't supported.\n> \n> If you're using tasks on Amazon Linux 2023 the `swappiness` parameter isn't supported.",
         "SharedMemorySize": "The value for the size (in MiB) of the `/dev/shm` volume. This parameter maps to the `--shm-size` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> If you are using tasks that use the Fargate launch type, the `sharedMemorySize` parameter is not supported.",
-        "Swappiness": "This allows you to tune a container's memory swappiness behavior. A `swappiness` value of `0` will cause swapping to not happen unless absolutely necessary. A `swappiness` value of `100` will cause pages to be swapped very aggressively. Accepted values are whole numbers between `0` and `100` . If the `swappiness` parameter is not specified, a default value of `60` is used. If a value is not specified for `maxSwap` then this parameter is ignored. This parameter maps to the `--memory-swappiness` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> If you're using tasks that use the Fargate launch type, the `swappiness` parameter isn't supported.",
+        "Swappiness": "This allows you to tune a container's memory swappiness behavior. A `swappiness` value of `0` will cause swapping to not happen unless absolutely necessary. A `swappiness` value of `100` will cause pages to be swapped very aggressively. Accepted values are whole numbers between `0` and `100` . If the `swappiness` parameter is not specified, a default value of `60` is used. If a value is not specified for `maxSwap` then this parameter is ignored. This parameter maps to the `--memory-swappiness` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> If you're using tasks that use the Fargate launch type, the `swappiness` parameter isn't supported.\n> \n> If you're using tasks on Amazon Linux 2023 the `swappiness` parameter isn't supported.",
         "Tmpfs": "The container path, mount options, and size (in MiB) of the tmpfs mount. This parameter maps to the `--tmpfs` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> If you're using tasks that use the Fargate launch type, the `tmpfs` parameter isn't supported."
       }
     },
@@ -31143,7 +31143,7 @@
         "MaximumRetryAttempts": "(Kinesis and DynamoDB Streams only) Discard records after the specified number of retries. The default value is -1,\nwhich sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, Lambda retries failed records until the record expires in the event source.",
         "ParallelizationFactor": "(Kinesis and DynamoDB Streams only) The number of batches to process concurrently from each shard. The default value is 1.",
         "Queues": "(Amazon MQ) The name of the Amazon MQ broker destination queue to consume.",
-        "ScalingConfig": "( Amazon Simple Queue Service only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
+        "ScalingConfig": "(Amazon SQS only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
         "SelfManagedEventSource": "The self-managed Apache Kafka cluster for your event source.",
         "SelfManagedKafkaEventSourceConfig": "Specific configuration settings for a self-managed Apache Kafka event source.",
         "SourceAccessConfigurations": "An array of the authentication protocol, VPC components, or virtual host to secure and define your event source.",
@@ -31206,7 +31206,7 @@
     },
     "AWS::Lambda::EventSourceMapping.ScalingConfig": {
       "attributes": {},
-      "description": "( Amazon Simple Queue Service only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
+      "description": "(Amazon SQS only) The scaling configuration for the event source. To remove the configuration, pass an empty value.",
       "properties": {
         "MaximumConcurrency": "Limits the number of concurrent instances that the Amazon SQS event source can invoke."
       }
@@ -31266,7 +31266,7 @@
         "Tags": "A list of [tags](https://docs.aws.amazon.com/lambda/latest/dg/tagging.html) to apply to the function.",
         "Timeout": "The amount of time (in seconds) that Lambda allows a function to run before stopping it. The default is 3 seconds. The maximum allowed value is 900 seconds. For more information, see [Lambda execution environment](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html) .",
         "TracingConfig": "Set `Mode` to `Active` to sample and trace a subset of incoming requests with [X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) .",
-        "VpcConfig": "For network connectivity to AWS resources in a [VPC](https://docs.aws.amazon.com/lambda/latest/dg/configuration-network.html) , specify a list of security groups and subnets in the VPC."
+        "VpcConfig": "For network connectivity to AWS resources in a VPC, specify a list of security groups and subnets in the VPC. When you connect a function to a VPC, it can access resources and the internet only through that VPC. For more information, see [Configuring a Lambda function to access resources in a VPC](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html) ."
       }
     },
     "AWS::Lambda::Function.Code": {
@@ -31335,10 +31335,10 @@
     },
     "AWS::Lambda::Function.SnapStartResponse": {
       "attributes": {},
-      "description": "",
+      "description": "The function's [SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) setting.",
       "properties": {
-        "ApplyOn": "",
-        "OptimizationStatus": ""
+        "ApplyOn": "When set to `PublishedVersions` , Lambda creates a snapshot of the execution environment when you publish a function version.",
+        "OptimizationStatus": "When you provide a [qualified Amazon Resource Name (ARN)](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html#versioning-versions-using) , this response element indicates whether SnapStart is activated for the specified function version."
       }
     },
     "AWS::Lambda::Function.TracingConfig": {
@@ -53768,7 +53768,7 @@
         "AllowExternalPrincipals": "Specifies whether principals outside your organization in AWS Organizations can be associated with a resource share. A value of `true` lets you share with individual AWS accounts that are *not* in your organization. A value of `false` only has meaning if your account is a member of an AWS Organization. The default value is `true` .",
         "Name": "Specifies the name of the resource share.",
         "PermissionArns": "Specifies the [Amazon Resource Names (ARNs)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of the AWS RAM permission to associate with the resource share. If you do not specify an ARN for the permission, AWS RAM automatically attaches the default version of the permission for each resource type. You can associate only one permission with each resource type included in the resource share.",
-        "Principals": "Specifies a list of one or more principals to associate with the resource share.\n\nYou can include the following values:\n\n- An AWS account ID, for example: `123456789012`\n- An [Amazon Resoure Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of an organization in AWS Organizations , for example: `arn:aws:organizations::123456789012:organization/o-exampleorgid`\n- An ARN of an organizational unit (OU) in AWS Organizations , for example: `arn:aws:organizations::123456789012:ou/o-exampleorgid/ou-examplerootid-exampleouid123`\n- An ARN of an IAM role, for example: `arn:aws:iam::123456789012:role/rolename`\n- An ARN of an IAM user, for example: `arn:aws:iam::123456789012user/username`\n\n> Not all resource types can be shared with IAM roles and users. For more information, see [Sharing with IAM roles and users](https://docs.aws.amazon.com//ram/latest/userguide/permissions.html#permissions-rbp-supported-resource-types) in the *AWS Resource Access Manager User Guide* .",
+        "Principals": "Specifies a list of one or more principals to associate with the resource share.\n\nYou can include the following values:\n\n- An AWS account ID, for example: `123456789012`\n- An [Amazon Resource Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of an organization in AWS Organizations , for example: `arn:aws:organizations::123456789012:organization/o-exampleorgid`\n- An ARN of an organizational unit (OU) in AWS Organizations , for example: `arn:aws:organizations::123456789012:ou/o-exampleorgid/ou-examplerootid-exampleouid123`\n- An ARN of an IAM role, for example: `arn:aws:iam::123456789012:role/rolename`\n- An ARN of an IAM user, for example: `arn:aws:iam::123456789012user/username`\n\n> Not all resource types can be shared with IAM roles and users. For more information, see [Sharing with IAM roles and users](https://docs.aws.amazon.com//ram/latest/userguide/permissions.html#permissions-rbp-supported-resource-types) in the *AWS Resource Access Manager User Guide* .",
         "ResourceArns": "Specifies a list of one or more ARNs of the resources to associate with the resource share.",
         "Tags": "Specifies one or more tags to attach to the resource share itself. It doesn't attach the tags to the resources associated with the resource share."
       }
@@ -60882,7 +60882,7 @@
         "Runtime": "The Python runtime version associated with the Lambda function.",
         "SuperuserSecretArn": "The ARN of the secret that contains superuser credentials, if you use the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . CloudFormation grants the execution role for the Lambda rotation function `GetSecretValue` permission to the secret in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou must create the superuser secret before you can set this property.\n\nYou must also include the superuser secret ARN as a key in the JSON of the rotating secret so that the Lambda rotation function can find it. CloudFormation does not hardcode secret ARNs in the Lambda rotation function, so you can use the function to rotate multiple secrets. For more information, see [JSON structure of Secrets Manager secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_secret_json_structure.html) .\n\nYou can specify `MasterSecretArn` or `SuperuserSecretArn` but not both. They represent the same superuser secret.",
         "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager used to encrypt the superuser secret, if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) and the superuser secret is encrypted with a customer managed key. You don't need to specify this property if the superuser secret is encrypted using the key `aws/secretsmanager` . CloudFormation grants the execution role for the Lambda rotation function `Decrypt` , `DescribeKey` , and `GenerateDataKey` permission to the key in this property. For more information, see [Lambda rotation function execution role permissions for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions-function.html) .\n\nYou can specify `MasterSecretKmsKeyArn` or `SuperuserSecretKmsKeyArn` but not both. They represent the same superuser secret KMS key .",
-        "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe templates applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
+        "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe template applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
         "VpcSubnetIds": "A comma separated list of VPC subnet IDs of the target database network. The Lambda rotation function is in the same subnet group."
       }
     },
