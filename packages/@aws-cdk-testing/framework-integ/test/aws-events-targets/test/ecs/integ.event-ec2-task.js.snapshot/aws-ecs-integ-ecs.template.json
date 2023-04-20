@@ -942,6 +942,13 @@
        }
       },
       "EcsParameters": {
+       "PropagateTags": "TASK_DEFINITION",
+       "TagList": [
+        {
+         "Key": "my-tag",
+         "Value": "my-tag-value"
+        }
+       ],
        "TaskCount": 1,
        "TaskDefinitionArn": {
         "Ref": "TaskDef54694570"

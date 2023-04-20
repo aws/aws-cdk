@@ -125,6 +125,11 @@ enabled it is possible to do something like creating a CloudFront distribution i
 an ACM certificate in `us-east-1`.
 
 ```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+
+declare const app: App;
+
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',

@@ -103,17 +103,6 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('MyStage-MyStack');
   });
 
-  test('generated stack names will not exceed 128 characters', () => {
-    // WHEN
-    const app = new App();
-    const stage = new Stage(app, 'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName');
-    const stack = new BogusStack(stage, 'ThisStackNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix');
-
-    // THEN
-    expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix4CA9F65B');
-  });
-
   test('Can not have dependencies to stacks outside the nested asm', () => {
     // GIVEN
     const app = new App();

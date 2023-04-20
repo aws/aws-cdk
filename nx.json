@@ -20,34 +20,34 @@
       "implicitDependencies": ["aws-cdk-lib"],
       "dependsOn": ["^build"],
       "inputs": [
-        "{projectRoot}/lib/!(*.d|*.generated).ts",
-        "{projectRoot}/test/!(*.d).ts",
+        "{projectRoot}/**/lib/!(*.d|*.generated).ts",
+        "{projectRoot}/**/test/!(*.d).ts",
         "!{workspaceRoot}/**/tsconfig.json",
         "!{workspaceRoot}/**/tsconfig.json",
         "!{workspaceRoot}/tsconfig.base.json",
         "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
       ],
       "outputs": [
-        "!{projectRoot}/**/*.integ.snapshot/*",
+        "!{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
-        "{projectRoot}/lib/aws-custom-resource/sdk-api-metadata.json",
-        "{projectRoot}/build-info.json",
-        "{projectRoot}/lib/**/*.js",
-        "{projectRoot}/lib/layer.zip",
-        "{projectRoot}/bin/**/*.js",
-        "{projectRoot}/lib/**/*.js.map",
-        "{projectRoot}/lib/**/*.generated.ts",
-        "{projectRoot}/lib/**/*.d.ts",
-        "{projectRoot}/test/**/*.d.ts",
-        "{projectRoot}/test/**/*.js",
-        "{projectRoot}/.jsii",
-        "{projectRoot}/spec/*.json",
-        "{projectRoot}/.warnings.jsii.js"
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-api-metadata.json",
+        "{projectRoot}/**/build-info.json",
+        "{projectRoot}/**/*.js",
+        "{projectRoot}/**/*.js.map",
+        "{projectRoot}/**/*.d.ts",
+        "{projectRoot}/**/lib/layer.zip",
+        "{projectRoot}/**/*.generated.ts",
+        "{projectRoot}/**/built-ins.generated/*",
+        "{projectRoot}/**/schema/*.json",
+        "{projectRoot}/**/.jsii",
+        "{projectRoot}/**/.jsii.gz",
+        "{projectRoot}/**/spec/*.json",
+        "{projectRoot}/**/.warnings.jsii.js"
       ]
     },
     "test": {
       "dependsOn": ["build"]
-    },
+    }
   },
   "affected": {
     "defaultBase": "main"

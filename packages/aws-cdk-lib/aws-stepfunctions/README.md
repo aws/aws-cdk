@@ -576,7 +576,6 @@ Tasks are executed using the State Machine's execution role. In some cases, e.g.
 This can be achieved by providing the optional `credentials` property which allows using a fixed role or a json expression to resolve the role at runtime from the task's inputs.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const submitLambda: lambda.Function;
@@ -916,13 +915,13 @@ In addition, the StateMachine can be imported via the `StateMachine.fromStateMac
 const app = new App();
 const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
-  stack,
+  this,
   "ViaArnImportedStateMachine",
   "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
 );
 
 sfn.StateMachine.fromStateMachineName(
-  stack,
+  this,
   "ViaResourceNameImportedStateMachine",
   "StateMachine2E01A3A5-N5TJppzoevKQ"
 );
