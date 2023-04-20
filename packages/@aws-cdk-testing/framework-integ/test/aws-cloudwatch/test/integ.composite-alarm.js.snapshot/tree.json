@@ -28,13 +28,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -58,13 +58,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -88,13 +88,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -118,13 +118,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -149,13 +149,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -224,13 +224,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnCompositeAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnCompositeAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.CompositeAlarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CompositeAlarm",
               "version": "0.0.0"
             }
           },
@@ -238,7 +238,7 @@
             "id": "BootstrapVersion",
             "path": "CompositeAlarmIntegrationTest/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -246,13 +246,63 @@
             "id": "CheckBootstrapVersion",
             "path": "CompositeAlarmIntegrationTest/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CompositeAlarmImportIntegrationTest": {
+        "id": "CompositeAlarmImportIntegrationTest",
+        "path": "CompositeAlarmImportIntegrationTest",
+        "children": {
+          "alarm": {
+            "id": "alarm",
+            "path": "CompositeAlarmImportIntegrationTest/alarm",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.AlarmBase",
+              "version": "0.0.0"
+            }
+          },
+          "AlarmName": {
+            "id": "AlarmName",
+            "path": "CompositeAlarmImportIntegrationTest/AlarmName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AlarmArn": {
+            "id": "AlarmArn",
+            "path": "CompositeAlarmImportIntegrationTest/AlarmArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CompositeAlarmImportIntegrationTest/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CompositeAlarmImportIntegrationTest/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -269,7 +319,7 @@
                 "path": "cdk-integ-composite-alarm/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -280,7 +330,7 @@
                     "id": "BootstrapVersion",
                     "path": "cdk-integ-composite-alarm/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -288,25 +338,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "cdk-integ-composite-alarm/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -315,12 +365,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
