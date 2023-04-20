@@ -53,7 +53,7 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
    */
-  readonly instanceResourceId: string;
+  readonly instanceResourceId?: string;
 
   /**
    * The instance endpoint.
@@ -112,7 +112,7 @@ export interface DatabaseInstanceAttributes {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
    */
-  readonly instanceResourceId: string;
+  readonly instanceResourceId?: string;
 
   /**
    * The security groups of the instance.
@@ -156,7 +156,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly instanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
-  public abstract readonly instanceResourceId: string;
+  public abstract readonly instanceResourceId?: string;
   public abstract readonly instanceEndpoint: Endpoint;
   // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
   public abstract readonly engine?: IInstanceEngine;
@@ -180,6 +180,10 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    if (!this.instanceResourceId) {
+      throw new Error('For imported Database Instances, instanceResourceId is required to grantConnect()');
     }
 
     if (!dbUser) {
@@ -1126,7 +1130,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
-  public readonly instanceResourceId: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -1195,7 +1199,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
-  public readonly instanceResourceId: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -1285,7 +1289,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
-  public readonly instanceResourceId: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;

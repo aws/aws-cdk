@@ -189,7 +189,6 @@ describe('proxy', () => {
     const importedInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Cluster', {
       instanceIdentifier: 'my-instance',
       instanceEndpointAddress: 'instance-address',
-      instanceResourceId: 'resource-id',
       port: 5432,
       securityGroups: [],
       engine: rds.DatabaseInstanceEngine.mariaDb({

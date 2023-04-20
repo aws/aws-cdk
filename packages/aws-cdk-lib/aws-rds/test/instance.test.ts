@@ -471,7 +471,6 @@ describe('instance', () => {
         instanceIdentifier: '',
         securityGroups: [],
         instanceEndpointAddress: '',
-        instanceResourceId: '',
         port: databasePort,
       });
 
@@ -686,7 +685,6 @@ describe('instance', () => {
     const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
-      instanceResourceId: 'resource-id',
       port: 3306,
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false,

@@ -438,7 +438,6 @@ test('fromRdsDatabaseInstance', () => {
   const existingInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Existing', {
     instanceEndpointAddress: 'address',
     instanceIdentifier: 'existing-instance',
-    instanceResourceId: 'resource-id',
     port: 3306,
     securityGroups: [],
   });
