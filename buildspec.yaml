@@ -20,6 +20,9 @@ phases:
       # allows our build to more consistently succeed
       - /sbin/sysctl -w vm.max_map_count=2251954
 
+      # install dependencies. align-version.sh depends on this.
+      - yarn install --frozen-lockfile
+
   pre_build:
     commands:
       # Print our ulimits to find out if we might run into a resource limit
