@@ -1,6 +1,6 @@
 import * as cdk from '../../core';
 import { Construct } from 'constructs';
-import { CfnGatewayRoute } from './appmesh.generated';
+import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
@@ -129,6 +129,19 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
       service: 'appmesh',
       resource: `mesh/${props.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
       resourceName: this.physicalName,
+    });
+
+    this.node.addValidation({
+      validate() {
+        if (cdk.Resource.isOwnedResource(props.virtualGateway)) {
+          const cfnGateway = props.virtualGateway.node.defaultChild as CfnVirtualGateway;
+          const listeners = (cfnGateway.spec as CfnVirtualGateway.VirtualGatewaySpecProperty).listeners;
+          if (Array.isArray(listeners) && listeners.length > 1) {
+            return ['Gateway route must define a match port if the parent Virtual Gateway has multiple listeners.'];
+          }
+        }
+        return [];
+      },
     });
   }
 }
