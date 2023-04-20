@@ -116,3 +116,15 @@ test('JobDefinitionName is parsed from arn', () => {
     ],
   });
 });
+
+test('JobDefinitionName is parsed from arn in imported job', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const importedJob = EcsJobDefinition.fromJobDefinitionArn(stack, 'importedJobDefinition',
+    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+
+  // THEN
+  expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');
+});
