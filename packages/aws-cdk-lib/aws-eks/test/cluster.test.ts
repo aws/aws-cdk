@@ -2104,11 +2104,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });
@@ -2305,11 +2318,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });
