@@ -242,6 +242,17 @@ describe('instance engine', () => {
     });
   });
 
+  describe('SQL Server engine family', () => {
+    test.each([
+      ['SQL Server Standard Edition', rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
+      ['SQL Server Enterprise Edition', rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
+      ['SQL Server Web Edition', rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
+      ['SQL Server Express Edition', rds.DatabaseInstanceEngine.sqlServerEx({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
+    ])('is passed correctly for %s', (_, engine) => {
+      expect(engine.engineFamily).toEqual('SQLSERVER');
+    });
+  });
+
   describe('PostgreSQL engine bindToInstance', () => {
     test('returns s3 import/export feature if the version supports it', () => {
       const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });

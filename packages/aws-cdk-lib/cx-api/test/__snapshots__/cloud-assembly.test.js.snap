@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`assembly with a single cloudformation stack and tree metadata 1`] = `
-Object {
+{
   "environment": "aws://37736633/us-region-1",
-  "properties": Object {
+  "properties": {
     "templateFile": "template.json",
   },
   "type": "aws:cloudformation:stack",
@@ -11,8 +11,8 @@ Object {
 `;
 
 exports[`assembly with a single cloudformation stack and tree metadata 2`] = `
-Object {
-  "properties": Object {
+{
+  "properties": {
     "file": "foo.tree.json",
   },
   "type": "cdk:tree",
@@ -20,12 +20,12 @@ Object {
 `;
 
 exports[`assembly with missing context 1`] = `
-Array [
-  Object {
+[
+  {
     "key": "missing:context:key",
-    "props": Object {
+    "props": {
       "account": "1234",
-      "filter": Object {
+      "filter": {
         "foo": 123,
       },
       "region": "us-east-1",
@@ -36,8 +36,8 @@ Array [
 `;
 
 exports[`assets 1`] = `
-Array [
-  Object {
+[
+  {
     "artifactHashParameter": "hashParameter",
     "id": "logical-id-of-the-asset",
     "packaging": "zip",
@@ -46,7 +46,7 @@ Array [
     "s3KeyParameter": "keyParameter",
     "sourceHash": "xoxoxox",
   },
-  Object {
+  {
     "id": "logical-id-of-the-asset-x1234",
     "packaging": "container-image",
     "path": "docker-asset",
@@ -56,17 +56,17 @@ Array [
 `;
 
 exports[`empty assembly 1`] = `
-Object {
+{
   "version": "0.0.0",
 }
 `;
 
 exports[`messages 1`] = `
-Array [
-  Object {
-    "entry": Object {
+[
+  {
+    "entry": {
       "data": "boom",
-      "trace": Array [
+      "trace": [
         "bam",
       ],
       "type": "aws:cdk:warning",
@@ -74,10 +74,10 @@ Array [
     "id": "foo",
     "level": "warning",
   },
-  Object {
-    "entry": Object {
+  {
+    "entry": {
       "data": "error!!",
-      "trace": Array [
+      "trace": [
         "bam!Error",
       ],
       "type": "aws:cdk:error",
@@ -85,10 +85,10 @@ Array [
     "id": "foo",
     "level": "error",
   },
-  Object {
-    "entry": Object {
+  {
+    "entry": {
       "data": "info?",
-      "trace": Array [
+      "trace": [
         "bam!Error",
       ],
       "type": "aws:cdk:info",

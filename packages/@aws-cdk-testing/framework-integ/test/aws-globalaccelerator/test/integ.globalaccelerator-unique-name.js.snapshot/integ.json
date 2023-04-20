@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "GlobalAcceleratorUniqueName/DefaultTest": {
+      "stacks": [
+        "global-accelerator-unique-name"
+      ],
+      "assertionStack": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorUniqueNameDefaultTestDeployAssertCA235111"
+    }
+  }
+}
