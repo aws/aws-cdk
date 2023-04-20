@@ -459,6 +459,7 @@
     "DefaultActions": [
      {
       "AuthenticateCognitoConfig": {
+       "SessionTimeout": "86400",
        "UserPoolArn": {
         "Fn::GetAtt": [
          "UserPool6BA7E5F2",
@@ -495,6 +496,55 @@
     ],
     "Port": 443,
     "Protocol": "HTTPS"
+   }
+  },
+  "LBListenerAction2RuleDEE172B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "AuthenticateCognitoConfig": {
+       "SessionTimeout": 86400,
+       "UserPoolArn": {
+        "Fn::GetAtt": [
+         "UserPool6BA7E5F2",
+         "Arn"
+        ]
+       },
+       "UserPoolClientId": {
+        "Ref": "Client4A7F64DF"
+       },
+       "UserPoolDomain": {
+        "Ref": "Domain66AC69E0"
+       }
+      },
+      "Order": 1,
+      "Type": "authenticate-cognito"
+     },
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Authenticated",
+       "StatusCode": "200"
+      },
+      "Order": 2,
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "Values": [
+        "action2*"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": {
+     "Ref": "LBListener49E825B4"
+    },
+    "Priority": 1
    }
   },
   "UserPool6BA7E5F2": {
