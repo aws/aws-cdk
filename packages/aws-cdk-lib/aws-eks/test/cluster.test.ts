@@ -2042,6 +2042,14 @@ describe('cluster', () => {
 
       // THEN
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(providerStack).hasCondition('HasEcrPublic', {
+        'Fn::Equals': [
+          {
+            Ref: 'AWS::Partition',
+          },
+          'aws',
+        ],
+      });
       Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
