@@ -284,7 +284,7 @@ async function main() {
  * Safeguard check: make sure that all old property type names in the old spec exist in the new spec
  *
  * If not, it's probably because the service team renamed a type between spec
- * version `v(N)` to `v(N+1)`.. In the CloudFormation spec itself, this is not a
+ * version `v(N)` to `v(N+1)`. In the CloudFormation spec itself, this is not a
  * problem. However, CDK will have generated actual classes and interfaces with
  * the type names at `v(N)`, which people will have written code against. If the
  * classes and interfaces would have a new name at `v(N+1)`, all user code would

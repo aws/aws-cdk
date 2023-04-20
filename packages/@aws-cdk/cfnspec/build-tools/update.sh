@@ -97,14 +97,6 @@ update-spec \
 
 npm run build
 
-echo >&2 "Creating missing AWS construct libraries for new resource types..."
-node ${scriptdir}/create-missing-libraries.js || {
-    echo "------------------------------------------------------------------------------------"
-    echo "cfn-spec update script failed when trying to create modules for new services"
-    echo "Fix the error (you will likely need to add RefKind patches), and then run 'npm run update' again"
-    exit 1
-}
-
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
 _changelog_contents=$(cat CHANGELOG.md.new)
 if [ -n "${_changelog_contents}" ]; then
