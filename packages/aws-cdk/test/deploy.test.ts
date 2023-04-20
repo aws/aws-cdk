@@ -1,6 +1,7 @@
 /* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import { deployArtifacts } from '../lib/deploy';
+import { WorkNode } from '../lib/util/work-graph';
 
 type Artifact = cxapi.CloudArtifact;
 type Stack = cxapi.CloudFormationStackArtifact;
@@ -31,6 +32,14 @@ describe('DeployStacks', () => {
 
     deployedStacks.push(id);
   };
+  const builtAssets: string[] = [];
+  const buildAsset = async({ id }: WorkNode) => {
+    builtAssets.push(id);
+  };
+  const publishedAssets: string[] = [];
+  const publishAsset = async({ id }: WorkNode) => {
+    publishedAssets.push(id);
+  };
 
   beforeEach(() => {
     deployedStacks.splice(0);
@@ -42,7 +51,8 @@ describe('DeployStacks', () => {
     const assetB = { id: 'AssetB', dependencies: [], [ASSET_MANIFEST_ARTIFACT_SYM]: true } as unknown as Asset;
     const stack = { id: 'StackA', dependencies: [asset] } as unknown as Stack;
     const stackB = { id: 'StackB', dependencies: [assetB, stack] } as unknown as Stack;
-    await expect(deployArtifacts([stack, asset, stackB, assetB] as Artifact[], { concurrency: 1, deployStack })).resolves.toBeUndefined();
+    // eslint-disable-next-line max-len
+    await expect(deployArtifacts([stack, asset, stackB, assetB] as Artifact[], { concurrency: 1, deployStack, buildAsset, publishAsset })).resolves.toBeUndefined();
 
     expect(deployedStacks).toStrictEqual('a');
   });
@@ -137,7 +147,7 @@ describe('DeployStacks', () => {
       expected: ['B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
-    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack })).resolves.toBeUndefined();
+    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).resolves.toBeUndefined();
 
     expect(deployedStacks).toStrictEqual(expected);
   });
@@ -206,7 +216,8 @@ describe('DeployStacks', () => {
       expectedStacks: ['A', 'B'],
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
-    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack })).rejects.toThrowError(expectedError);
+    // eslint-disable-next-line max-len
+    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).rejects.toThrowError(expectedError);
 
     expect(deployedStacks).toStrictEqual(expectedStacks);
   });

@@ -884,6 +884,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
+// eslint-disable-next-line jest/no-commented-out-tests
 // test('building assets', async () => {
 //   // GIVEN
 //   const stack = testStackWithAssetManifest();

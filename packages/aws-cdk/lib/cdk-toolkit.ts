@@ -211,7 +211,9 @@ export class CdkToolkit {
         stack: assetNode.stack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
-        // publish assets options
+        publishOptions: {
+          parallel: options.assetParallelism,
+        },
       });
       print('\n%s: assets published\n', chalk.bold(assetNode.stack.displayName));
     };

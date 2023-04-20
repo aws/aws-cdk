@@ -601,7 +601,7 @@ describe('deploy', () => {
 
       // WHEN
       // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+      await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildStackAssets) => {
         await toolkit.deploy({
           selector: { patterns: ['Test-Stack-Asset'] },
           assetParallelism: false,
@@ -632,7 +632,7 @@ describe('deploy', () => {
 
       // WHEN
       // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+      await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildStackAssets) => {
         await toolkit.deploy({
           selector: { patterns: ['Test-Stack-Asset'] },
           assetBuildTime: AssetBuildTime.JUST_IN_TIME,
