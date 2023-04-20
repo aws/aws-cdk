@@ -385,23 +385,3 @@ test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
   // THEN
   Annotations.fromStack(stack).hasNoWarning('/Default', Match.anyValue());
 });
-
-test('Scheduled Ec2 Task throws an error if ephemeralStorageGiB is provided on task image options', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
-  // THEN
-  expect(() => {
-    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
-      cluster,
-      scheduledEc2TaskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('henk'),
-        memoryLimitMiB: 512,
-        ephemeralStorageGiB: 2,
-      },
-      schedule: events.Schedule.cron({ minute: '*' }),
-    });
-  }).toThrow('ephemeralStorageGiB is only supported for Fargate services.');
-});

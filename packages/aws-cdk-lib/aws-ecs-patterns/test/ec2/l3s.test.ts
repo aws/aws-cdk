@@ -1278,32 +1278,6 @@ test('test Fargate application loadbalanced construct with taskDefinition provid
   });
 });
 
-test('ALB - throws an error if ephemeralStorageGiB is provided on task image options', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // THEN
-  expect(() =>
-    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-      cluster,
-      memoryLimitMiB: 1024,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        ephemeralStorageGiB: 2,
-      },
-    }),
-  ).toThrow(/ephemeralStorageGiB is only supported for Fargate services./);
-});
-
 test('ALB - throws if desiredTaskCount is 0', () => {
   // GIVEN
   const stack = new cdk.Stack();

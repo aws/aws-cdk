@@ -31,6 +31,15 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
  */
 export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps, FargateServiceBaseProps {
 
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   */
+  readonly ephemeralStorageGiB?: number;
+
 }
 
 /**
