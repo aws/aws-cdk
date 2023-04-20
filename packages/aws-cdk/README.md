@@ -611,8 +611,10 @@ boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cd
 
 Once a bootstrap template has been deployed with a set of parameters, you must
 use the `--no-previous-parameters` CLI flag to change any of these parameters on
-future deployments. *Please note that when you use this flag, you must resupply
-*all* previously supplied parameters.*
+future deployments. 
+
+> **Note** Please note that when you use this flag, you must resupply
+>*all* previously supplied parameters.
 
 For example if you bootstrap with a custom permissions boundary
 
