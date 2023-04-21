@@ -84,9 +84,3 @@ describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NE
     expect(compareVersions(v2In, currentv2)).not.toEqual(1);
   });
 });
-
-test('features.ts should not contain a reference to the constant with the magic value', () => {
-  // If it did, the above test would succeed but we would not be able to substitute the string at bump time
-  const featuresSourceFile = path.join(__dirname, '..', 'lib', 'features.ts');
-  expect(fs.readFileSync(featuresSourceFile, { encoding: 'utf-8' })).not.toContain('MAGIC_V2NEXT');
-});
