@@ -7,29 +7,29 @@
      "Fn::Join": [
       "",
       [
-       "https://s3.us-east-2.",
+       "https://s3.us-west-2.",
        {
         "Ref": "AWS::URLSuffix"
        },
        "/",
        {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
        },
-       "/e8a524074c21b1828365d86b0554b5a5282843ef099edb36de4091e50a8b4ac2.json"
+       "/84d9dca339aba67f809c2fc9e42e0446ec4e7ed0bce437a58a7e4edabf6bdd02.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
+     "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
       "Fn::GetAtt": [
        "ExportsReader8B249524",
-       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+       "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
       ]
      },
-     "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
+     "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
       "Fn::GetAtt": [
        "ExportsReader8B249524",
-       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+       "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
       ]
      }
     }
@@ -44,7 +44,7 @@
     "Value": {
      "Fn::GetAtt": [
       "ExportsReader8B249524",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
      ]
     },
     "Name": "integ-parameter0"
@@ -57,7 +57,7 @@
     "Value": {
      "Fn::GetAtt": [
       "ExportsReader8B249524",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
      ]
     },
     "Name": "integ-parameter1"
@@ -73,11 +73,11 @@
      ]
     },
     "ReaderProps": {
-     "region": "us-east-2",
-     "prefix": "cross-region-consumer",
+     "region": "us-west-2",
+     "prefix": "cross-region-consumer2",
      "imports": {
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}"
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": "{{resolve:ssm:/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": "{{resolve:ssm:/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}"
      }
     }
    },
@@ -116,11 +116,11 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:ssm:us-east-2:",
+            "arn:aws:ssm:us-west-2:",
             {
              "Ref": "AWS::AccountId"
             },
-            ":parameter/cdk/exports/cross-region-consumer/*"
+            ":parameter/cdk/exports/cross-region-consumer2/*"
            ]
           ]
          },
@@ -141,7 +141,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
      "S3Key": "4b6a500a9b63c31028b69751201d80225328cfb9df5c4a6abaac18e7d4c48a8c.zip"
     },
