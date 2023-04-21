@@ -169,13 +169,17 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
      * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
      * we conditionally attach this policy when the AWS partition is `aws`.
      */
-    const policyArn = iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly').managedPolicyArn;
     const hasEcrPublicCondition = new CfnCondition(this, 'HasEcrPublic', {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
     });
-    (this.handlerRole.node.defaultChild as iam.CfnRole).addPropertyOverride('ManagedPolicyArns.3',
-      Fn.conditionIf(hasEcrPublicCondition.logicalId, policyArn, Aws.NO_VALUE));
 
+    const conditionalPolicy = iam.ManagedPolicy.fromManagedPolicyArn(this, 'ConditionalPolicyArn',
+      Fn.conditionIf(hasEcrPublicCondition.logicalId,
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly').managedPolicyArn,
+        Aws.NO_VALUE).toString(),
+    );
+
+    this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
