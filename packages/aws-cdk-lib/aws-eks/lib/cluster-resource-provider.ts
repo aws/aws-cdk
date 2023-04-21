@@ -14,7 +14,7 @@ export interface ClusterResourceProviderProps {
   /**
    * The IAM role to assume in order to interact with the cluster.
    */
-  readonly adminRole: iam.IRole;
+  readonly adminRole?: iam.IRole;
 
   /**
    * The VPC to provision the functions in.
@@ -115,8 +115,10 @@ export class ClusterResourceProvider extends NestedStack {
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
     });
 
-    props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
-    props.adminRole.grant(isComplete.role!, 'sts:AssumeRole');
+    if (props.adminRole) {
+      props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
+      props.adminRole.grant(isComplete.role!, 'sts:AssumeRole');
+    }
   }
 
   /**

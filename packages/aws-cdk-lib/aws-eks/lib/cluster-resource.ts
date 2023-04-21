@@ -57,16 +57,15 @@ export class ClusterResource extends Construct {
       throw new Error('"roleArn" is required');
     }
 
-    this.adminRole = this.createAdminRole(props);
-
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: this.adminRole,
       subnets: props.subnets,
       vpc: props.vpc,
       environment: props.environment,
       onEventLayer: props.onEventLayer,
       securityGroup: props.clusterHandlerSecurityGroup,
     });
+
+    this.adminRole = this.createAdminRole(provider.provider.isCompleteHandler?.role!, props);
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
@@ -113,13 +112,13 @@ export class ClusterResource extends Construct {
     this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
   }
 
-  private createAdminRole(props: ClusterResourceProps) {
+  private createAdminRole(principal: iam.IPrincipal, props: ClusterResourceProps) {
     const stack = Stack.of(this);
 
     // the role used to create the cluster. this becomes the administrator role
     // of the cluster.
     const creationRole = new iam.Role(this, 'CreationRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: principal,
     });
 
     // the CreateCluster API will allow the cluster to assume this role, so we
