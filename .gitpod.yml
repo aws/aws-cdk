@@ -6,7 +6,11 @@ github:
 image: jsii/superchain:1-buster-slim-node16
 
 tasks:
-  - init: yarn install && cd packages/aws-cdk-lib && NODE_OPTIONS=--max-old-space-size=8192 ../../scripts/buildup
+  - init: yarn install
+  # build for aws-cdk-lib
+  - init: cd packages/aws-cdk-lib && NODE_OPTIONS=--max-old-space-size=8192 ../../scripts/buildup
+  # build for framework-integ
+  - init: cd packages/@aws-cdk-testing/framework-integ && NODE_OPTIONS=--max-old-space-size=8192 ../../../scripts/buildup
 
 vscode:
   extensions:
