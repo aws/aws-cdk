@@ -130,12 +130,13 @@ export class AssemblyManifestReader {
     const assets: string[] = [];
     for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
       if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
-        assets.push(...this.assetsFromAssetManifest(artifact).map(asset => {
-          if (asset.type === 'file') {
+        assets.push(...this.assetsFromAssetManifest(artifact).flatMap(asset => {
+          if (asset.type === 'file' && !asset.source.path?.endsWith('nested.template.json')) {
             return asset.source.path!;
-          } else {
+          } else if (asset.type !== 'file') {
             return asset.source.directory!;
           }
+          return [];
         }));
       } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
         assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.path));
