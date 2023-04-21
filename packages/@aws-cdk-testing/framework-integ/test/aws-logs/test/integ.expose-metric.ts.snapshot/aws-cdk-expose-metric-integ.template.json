@@ -21,8 +21,19 @@
       "MetricNamespace": "MyApp",
       "MetricValue": "$.latency"
      }
-    ],
-    "FilterName": "MyFilterName"
+    ]
+   }
+  },
+  "alarmfrommetricfilterF546D67D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "MetricName": "Latency",
+    "Namespace": "MyApp",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100
    }
   }
  },

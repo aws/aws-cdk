@@ -8,21 +8,28 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MetricFilter1B93B6E5": {
-   "Type": "AWS::Logs::MetricFilter",
+  "QueryDefinition4190BC36": {
+   "Type": "AWS::Logs::QueryDefinition",
    "Properties": {
-    "FilterPattern": "{ $.latency = \"*\" }",
-    "LogGroupName": {
-     "Ref": "LogGroupF5B46931"
-    },
-    "MetricTransformations": [
+    "Name": "QueryDefinition",
+    "QueryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| filter loggingType = \"ERROR\"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage",
+    "LogGroupNames": [
      {
-      "MetricName": "Latency",
-      "MetricNamespace": "MyApp",
-      "MetricValue": "$.latency"
+      "Ref": "LogGroupF5B46931"
      }
-    ],
-    "FilterName": "MyFilterName"
+    ]
+   }
+  },
+  "QueryDefinitionWithMultipleStatements58A3EF74": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "Name": "QueryDefinitionWithMultipleStatements",
+    "QueryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| parse @message \"<*>: *\" as differentLoggingType, differentLoggingMessage\n| filter loggingType = \"ERROR\"\n| filter loggingMessage = \"A very strange error occurred!\"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage",
+    "LogGroupNames": [
+     {
+      "Ref": "LogGroupF5B46931"
+     }
+    ]
    }
   }
  },

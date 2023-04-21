@@ -14,6 +14,7 @@ class MetricFilterIntegStack extends Stack {
       logGroup,
       metricNamespace: 'MyApp',
       metricName: 'Latency',
+      filterName: 'MyFilterName',
       filterPattern: FilterPattern.exists('$.latency'),
       metricValue: '$.latency',
     });

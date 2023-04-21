@@ -1,8 +1,8 @@
-import { Metric, MetricOptions } from '../../aws-cloudwatch';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
+import { Metric, MetricOptions } from '../../aws-cloudwatch';
+import { Resource } from '../../core';
 
 /**
  * Properties for a MetricFilter
@@ -28,8 +28,9 @@ export class MetricFilter extends Resource {
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
 
-    if (Object.keys(props.dimensions ?? {}).length > 3) {
-      throw new Error('MetricFilter only supports a maximum of 3 Dimensions');
+    const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
+    if (numberOfDimensions > 3) {
+      throw new Error(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`);
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -42,6 +43,7 @@ export class MetricFilter extends Resource {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
     new CfnMetricFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
+      filterName: props.filterName,
       filterPattern: props.filterPattern.logPatternString,
       metricTransformations: [{
         metricNamespace: props.metricNamespace,

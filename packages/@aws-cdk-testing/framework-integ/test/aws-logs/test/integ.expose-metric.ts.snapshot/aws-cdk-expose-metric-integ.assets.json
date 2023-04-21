@@ -1,15 +1,15 @@
 {
   "version": "31.0.0",
   "files": {
-    "02ed2687a3e340ff22289dcacf3e4ed024865b2aae1c13bf6bf5c995590480ac": {
+    "eca17ca94625bc7a08a880410570afed5eecf3d9a01b6c401155caa073187adb": {
       "source": {
-        "path": "aws-cdk-metricfilter-integ.template.json",
+        "path": "aws-cdk-expose-metric-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "02ed2687a3e340ff22289dcacf3e4ed024865b2aae1c13bf6bf5c995590480ac.json",
+          "objectKey": "eca17ca94625bc7a08a880410570afed5eecf3d9a01b6c401155caa073187adb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
