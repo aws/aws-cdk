@@ -1372,6 +1372,7 @@
         "Exact": "example.com"
        },
        "Method": "POST",
+       "Port": 8080,
        "Prefix": "/",
        "QueryParameters": [
         {
