@@ -326,6 +326,13 @@ export interface AwsCustomResourceProps {
   readonly functionName?: string;
 
   /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
    * The vpc to provision the lambda function in.
    *
    * @default - the function is not provisioned inside a vpc.
@@ -440,6 +447,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
+      removalPolicy: props.removalPolicy,
       properties: {
         create: create && this.encodeJson(create),
         update: props.onUpdate && this.encodeJson(props.onUpdate),
