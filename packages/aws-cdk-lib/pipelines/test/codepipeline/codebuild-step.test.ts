@@ -434,7 +434,7 @@ test('CodeBuild project have logs config - s3', () => {
 test('CodeBuild project have logs config - cloudwatch', () => {
   // GIVEN
   const stack = new Stack();
-  const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'bucketname');
+  const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'loggroupname');
 
   // WHEN
   new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
@@ -444,8 +444,8 @@ test('CodeBuild project have logs config - cloudwatch', () => {
     }),
     codeBuildDefaults: {
       logging: {
-        s3: {
-          bucket,
+        cloudWatch: {
+          logGroup,
         },
       },
     },
