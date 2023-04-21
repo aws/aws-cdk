@@ -1240,6 +1240,47 @@ test.each([
   });
 });
 
+test('default removal policy is DESTROY', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('Custom::AWS', {
+    DeletionPolicy: 'Delete',
+  });
+});
+
+test('can specify removal policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    removalPolicy: cdk.RemovalPolicy.RETAIN,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('Custom::AWS', {
+    DeletionPolicy: 'Retain',
+  });
+});
+
 describe('builtInCustomResourceNodeRuntime', () => {
   test('returns node16 for commercial region', () => {
     const app = new App();
@@ -1257,3 +1298,4 @@ describe('builtInCustomResourceNodeRuntime', () => {
     expect(rt).toEqual(lambda.Runtime.NODEJS_14_X);
   });
 });
+
