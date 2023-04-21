@@ -158,6 +158,7 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   logGroup,
   metricNamespace: 'MyApp',
   metricName: 'Latency',
+  filterName: 'MyFilterName',
   filterPattern: logs.FilterPattern.exists('$.latency'),
   metricValue: '$.latency',
   dimensions: {
