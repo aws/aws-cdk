@@ -243,6 +243,14 @@ export interface BucketDeploymentProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * If set to true, uploads will precompute the value of `x-amz-content-sha256`
+   * and include it in the signed S3 request headers.
+   *
+   * @default - `x-amz-content-sha256` will not be computed
+   */
+  readonly signContent?: boolean;
 }
 
 /**
@@ -392,6 +400,7 @@ export class BucketDeployment extends Construct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
+        SignContent: props.signContent,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },

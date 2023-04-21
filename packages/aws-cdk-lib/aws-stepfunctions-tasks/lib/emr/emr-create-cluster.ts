@@ -319,6 +319,22 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       );
     }
 
+    // Allow the StateMachine to tag clusters if tags are defined
+    if (this.props.tags) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['elasticmapreduce:AddTags'],
+          resources: [
+            stack.formatArn({
+              service: 'elasticmapreduce',
+              resource: 'cluster',
+              resourceName: '*',
+            }),
+          ],
+        }),
+      );
+    }
+
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(
         new iam.PolicyStatement({
