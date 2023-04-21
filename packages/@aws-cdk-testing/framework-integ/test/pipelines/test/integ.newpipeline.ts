@@ -4,10 +4,15 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    const bucket = s3.Bucket.fromBucketName(this, 'LogBucket', 'bucketname');
+    const logGroup = logs.LogGroup.fromLogGroupName(this, 'LogGroup', 'loggroupname');
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
@@ -18,6 +23,16 @@ class PipelineStack extends Stack {
           'npx cdk synth',
         ],
       }),
+      codeBuildDefaults: {
+        logging: {
+          cloudWatch: {
+            logGroup,
+          },
+          s3: {
+            bucket,
+          },
+        },
+      },
     });
 
     pipeline.addStage(new AppStage(this, 'Beta'));
