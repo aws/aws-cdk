@@ -396,3 +396,71 @@ test('CodeBuild projects have logs config - cloudwatch and s3', () => {
     },
   );
 });
+
+test('CodeBuild project have logs config - s3', () => {
+  // GIVEN
+  const stack = new Stack();
+  const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'bucketname');
+
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    }),
+    codeBuildDefaults: {
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    },
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties(
+    'AWS::CodeBuild::Project',
+    {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Location: 'bucketname',
+          Status: 'ENABLED',
+        },
+      }),
+    },
+  );
+});
+
+test('CodeBuild project have logs config - cloudwatch', () => {
+  // GIVEN
+  const stack = new Stack();
+  const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'bucketname');
+
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    }),
+    codeBuildDefaults: {
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    },
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties(
+    'AWS::CodeBuild::Project',
+    {
+      LogsConfig: Match.objectLike({
+        CloudWatchLogs: {
+          GroupName: 'loggroupname',
+          Status: 'ENABLED',
+        },
+      }),
+    },
+  );
+});
