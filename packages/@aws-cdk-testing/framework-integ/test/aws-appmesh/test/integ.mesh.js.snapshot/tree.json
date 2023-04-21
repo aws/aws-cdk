@@ -1604,7 +1604,10 @@
                           "logging": {
                             "accessLog": {
                               "file": {
-                                "path": "/dev/stdout"
+                                "path": "/dev/stdout",
+                                "format": {
+                                  "text": "test_pattern"
+                                }
                               }
                             }
                           }
@@ -1721,7 +1724,19 @@
                           "logging": {
                             "accessLog": {
                               "file": {
-                                "path": "/dev/stdout"
+                                "path": "/dev/stdout",
+                                "format": {
+                                  "json": [
+                                    {
+                                      "key": "testKey1",
+                                      "value": "testValue1"
+                                    },
+                                    {
+                                      "key": "testKey2",
+                                      "value": "testValue2"
+                                    }
+                                  ]
+                                }
                               }
                             }
                           }
