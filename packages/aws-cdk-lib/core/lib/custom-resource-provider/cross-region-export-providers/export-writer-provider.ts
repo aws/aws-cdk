@@ -61,14 +61,7 @@ export class ExportWriter extends Construct {
     super(scope, id);
     const stack = Stack.of(this);
     const region = props.region ?? stack.region;
-    this.resourceArns.add(
-      stack.formatArn({
-        service: 'ssm',
-        resource: 'parameter',
-        region,
-        resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
-      }),
-    );
+    this.addRegionToPolicy(region);
 
     const resourceType = 'Custom::CrossRegionExportWriter';
     this.provider = CustomResourceProvider.getOrCreateProvider(this, resourceType, {
