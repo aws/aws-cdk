@@ -97,7 +97,9 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
-    this.jobDefinitionName = Stack.of(this).splitArn(this.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    // Removes the revision from the resource name to retrieve the job definition name
+    const resourceName = Stack.of(this).splitArn(this.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    this.jobDefinitionName = resourceName.split(':')[0];
   }
 
   private renderPlatformCapabilities() {
