@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.76.1](https://github.com/aws/aws-cdk/compare/v2.76.0...v2.76.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* **custom-resources:** State functionActiveV2 not found  ([#25228](https://github.com/aws/aws-cdk/issues/25228)) ([be8e8aa](https://github.com/aws/aws-cdk/commit/be8e8aa42443ea96071123c6277ce08222c62191)), closes [#24358](https://github.com/aws/aws-cdk/issues/24358)
+
 ## [2.76.0](https://github.com/aws/aws-cdk/compare/v2.75.1...v2.76.0) (2023-04-19)
 
 
