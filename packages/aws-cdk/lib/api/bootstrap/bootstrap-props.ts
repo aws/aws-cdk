@@ -40,6 +40,15 @@ export interface BootstrapEnvironmentOptions {
    * @default true
    */
   readonly terminationProtection?: boolean;
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 }
 
 /**

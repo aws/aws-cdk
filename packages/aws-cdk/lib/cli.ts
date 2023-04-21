@@ -109,7 +109,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
-      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -499,6 +500,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           execute: args.execute,
           tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
+          usePreviousParameters: args['previous-parameters'],
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
