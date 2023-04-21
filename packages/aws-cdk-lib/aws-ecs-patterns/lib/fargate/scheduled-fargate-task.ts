@@ -30,7 +30,6 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
  * The properties for the ScheduledFargateTask using an image.
  */
 export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps, FargateServiceBaseProps {
-
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200GiB.
    *
@@ -39,7 +38,6 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
    * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
   readonly ephemeralStorageGiB?: number;
-
 }
 
 /**
