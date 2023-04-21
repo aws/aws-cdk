@@ -80,23 +80,12 @@ class EksClusterStack extends Stack {
     // testing the disable mechanism of the installation of CRDs
     this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'lambda-chart',
-      release: 'lambda-chart-release',
+      release: 'lambda-chart-release-skip-crd',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
       version: 'v0.1.4',
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
-    });
-
-    // testing the disable mechanism of the installation of CRDs
-    this.cluster.addHelmChart('test-atomic-flag', {
-      chart: 'lambda-chart',
-      release: 'lambda-chart-release-atomic',
-      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
-      version: 'v0.1.4',
-      namespace: 'ack-system',
-      createNamespace: true,
-      atomic: true,
     });
   }
 }
