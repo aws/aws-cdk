@@ -186,6 +186,12 @@ export class WorkGraph {
         this.readyPool.push(node);
       }
     }
+    for (let i = 0; i < this.readyPool.length; i++) {
+      const node = this.readyPool[i];
+      if (node.deploymentState !== DeploymentState.QUEUED) {
+        this.readyPool.splice(i, 1);
+      }
+    }
   }
 
   private skipRest() {
