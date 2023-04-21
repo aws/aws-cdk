@@ -164,6 +164,13 @@ export class Runtime {
   });
 
   /**
+   * The Java 17 runtime (java17)
+   */
+  public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The .NET 6 runtime (dotnet6)
    */
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
