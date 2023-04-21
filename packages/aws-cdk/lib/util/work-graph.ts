@@ -50,7 +50,7 @@ export class WorkGraph {
           artifact,
           deploymentState: DeploymentState.PENDING,
         });
-      } else if (artifact instanceof cxapi.CloudFormationStackArtifact) { // TODO: not sure if we can instanceof here
+      } else if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
         graphNodes.push({
           id: artifact.id,
           type: WorkType.STACK_DEPLOY,
@@ -75,7 +75,26 @@ export class WorkGraph {
         stack,
       });
     }
+
     graph.addNodes(...finalGraphNodes);
+
+    // Ensure all dependencies actually exist. This protects against scenarios such as the following:
+    // StackA depends on StackB, but StackB is not selected to deploy. The dependency is redundant
+    // and will be dropped.
+    for (const node of Object.values(graph.nodes)) {
+      if (node.type !== WorkType.STACK_DEPLOY) { continue; }
+      const removeDeps = [];
+      for (const dep of node.dependencies) {
+        if (graph.nodes[dep] === undefined) {
+          removeDeps.push(dep);
+        }
+      }
+      removeDeps.forEach((d) => {
+        const i = node.dependencies.indexOf(d);
+        node.dependencies.splice(i, 1);
+      });
+    }
+
     return graph;
 
     function updateAssociatedStacks(stack: cxapi.CloudFormationStackArtifact) {
@@ -103,6 +122,7 @@ export class WorkGraph {
 
   private readonly nodes: Record<string, WorkNode>;
   private readonly readyPool: Array<WorkNode> = [];
+  public error?: Error;
 
   private constructor(nodes: Record<string, WorkNode> = {}) {
     this.nodes = nodes;
@@ -114,7 +134,16 @@ export class WorkGraph {
     }
   }
 
-  public peek(): boolean {
+  public done(): boolean {
+    return Object.values(this.nodes).every((n) => [DeploymentState.COMPLETED, DeploymentState.DEPLOYING].includes(n.deploymentState));
+  }
+
+  public hasFailed(): boolean {
+    return Object.values(this.nodes).some((n) => n.deploymentState === DeploymentState.FAILED);
+  }
+
+  public hasNext(): boolean {
+    this.updateReadyPool();
     return this.readyPool.length > 0;
   }
 
@@ -134,7 +163,9 @@ export class WorkGraph {
     node.deploymentState = DeploymentState.COMPLETED;
   }
 
-  public failed(node: WorkNode) {
+  public failed(node: WorkNode, error?: Error) {
+    console.log('managing failure');
+    this.error = error;
     node.deploymentState = DeploymentState.FAILED;
     this.skipRest();
   }

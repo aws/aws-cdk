@@ -15,54 +15,61 @@ export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
   publishAsset,
 }: Options): Promise<void> => {
   const graph = WorkGraph.fromCloudArtifacts(artifacts);
+  console.log(graph.toString());
 
   await forAllArtifacts(concurrency, async (x: WorkNode) => {
+    console.log('fn called');
     // Execute this function with as much parallelism as possible
     switch (x.type) {
       case WorkType.STACK_DEPLOY:
-        await deployStack(x.artifact as cxapi.CloudFormationStackArtifact).catch((err) => {
-          // By recording the failure immediately as the queued task exits, we prevent the next
-          // queued task from starting (its 'hasAnyStackFailed' will return 'true').
-          graph.failed(x);
-          throw err;
-        });
+        await deployStack(x.artifact as cxapi.CloudFormationStackArtifact);
         break;
       case WorkType.ASSET_BUILD:
-        await buildAsset(x).catch((err) => {
-          graph.failed(x);
-          throw err;
-        });
+        await buildAsset(x);
         break;
       case WorkType.ASSET_PUBLISH:
-        await publishAsset(x).catch((err) => {
-          graph.failed(x);
-          throw err;
-        });
+        await publishAsset(x);
         break;
     }
   });
 
   function forAllArtifacts(n: number, fn: (x: WorkNode) => Promise<void>): Promise<void> {
-    return new Promise((ok) => {
+    console.log('forallartiacts');
+    return new Promise((ok, fail) => {
       let active = 0;
 
       start();
 
       function start() {
-        while (graph.peek() && active < n) {
+        console.log('start');
+        while (graph.hasNext() && active < n) {
+          console.log('startingone');
           startOne(graph.next()!);
         }
 
-        if (!graph.peek() && active === 0) {
+        if (graph.done() && active === 0) {
           ok();
+        }
+
+        // wait for other active deploys to finish before failing
+        if (graph.hasFailed() && active === 0) {
+          fail(graph.error);
         }
       }
 
       function startOne(x: WorkNode) {
+        console.log('startOne');
         active++;
         void fn(x).then(() => {
+          console.log('fn finised');
           active--;
           graph.deployed(x);
+          start();
+        }).catch((err) => {
+          active--;
+          // By recording the failure immediately as the queued task exits, we prevent the next
+          // queued task from starting.
+          graph.failed(x, err);
           start();
         });
       }
