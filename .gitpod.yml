@@ -3,10 +3,10 @@ github:
     pullRequestsFromForks: true
     addComment: true
 
-image: jsii/superchain:1-buster-slim
+image: jsii/superchain:1-buster-slim-node16
 
 tasks:
-  - init: yarn install && ./scripts/foreach.sh yarn build
+  - init: yarn install && cd packages/aws-cdk-lib && NODE_OPTIONS=--max-old-space-size=8192 ../../scripts/buildup
 
 vscode:
   extensions:

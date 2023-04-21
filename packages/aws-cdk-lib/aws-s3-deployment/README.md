@@ -268,6 +268,21 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
+## Signed Content Payloads
+
+By default, deployment uses streaming uploads which set the `x-amz-content-sha256`
+request header to `UNSIGNED-PAYLOAD` (matching default behavior of the AWS CLI tool).
+In cases where bucket policy restrictions require signed content payloads, you can enable
+generation of a signed `x-amz-content-sha256` request header with `signContent: true`.
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: bucket,
+  signContent: true,
+});
+```
+
 ## Size Limits
 
 The default memory limit for the deployment resource is 128MiB. If you need to
