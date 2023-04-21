@@ -126,5 +126,5 @@ test('JobDefinitionName is parsed from arn in imported job', () => {
     'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 
   // THEN
-  expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');
+  expect(importedJob.jobDefinitionName).toEqual('job-def-name');
 });

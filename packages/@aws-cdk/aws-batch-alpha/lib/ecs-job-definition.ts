@@ -58,17 +58,19 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
    * Import a JobDefinition by its arn.
    */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
-    const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-
     class Import extends JobDefinitionBase implements IEcsJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
-      public readonly jobDefinitionName = jobDefinitionName;
+      public readonly jobDefinitionName = EcsJobDefinition.getJobDefinitionName(this, jobDefinitionArn);
       public readonly enabled = true;
       container = {} as any;
     }
 
     return new Import(scope, id);
+  }
+
+  private static getJobDefinitionName(scope: Construct, jobDefinitionArn: string) {
+    const resourceName = Stack.of(scope).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    return resourceName.split(':')[0];
   }
 
   readonly container: IEcsContainerDefinition
@@ -97,9 +99,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
-    // Removes the revision from the resource name to retrieve the job definition name
-    const resourceName = Stack.of(this).splitArn(this.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-    this.jobDefinitionName = resourceName.split(':')[0];
+    this.jobDefinitionName = EcsJobDefinition.getJobDefinitionName(scope, this.jobDefinitionArn);
   }
 
   private renderPlatformCapabilities() {
