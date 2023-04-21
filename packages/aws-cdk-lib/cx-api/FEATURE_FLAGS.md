@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders](#aws-cdkaws-ecs-patternsaddsecuritygrouptoasgcapacityproviders) | Add security group through "configureAutoScalingGroup" | V2·NEXT | (default) |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
@@ -61,6 +62,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 ```json
 {
   "context": {
+    "@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -318,6 +320,26 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders
+
+*Add security group through "configureAutoScalingGroup"* (default)
+
+ConfigureAutoScalingGroup currently does not connect the ASG security group to the cluster's security group.
+The result of this is that on new deployments, EC2 instances which have been autoscaled can have their security groups
+reconfigured and lose connectivity to the ECS cluster. This feature flag enables the correct behavior. 
+
+If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
+Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** You can use `configureAutoScalingGroup()`, to add secuirty group.
 
 
 ### @aws-cdk/aws-route53-patters:useCertificate
