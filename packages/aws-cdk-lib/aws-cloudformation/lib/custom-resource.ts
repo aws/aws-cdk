@@ -96,9 +96,9 @@ export interface CustomResourceProps {
    * [resource provider framework]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
    *
    * ```ts
-   * import * as custom_resources from '@aws-cdk/custom-resources';
-   * import * as lambda from '@aws-cdk/aws-lambda';
-   * import { Stack } from '@aws-cdk/core';
+   * import * as custom_resources from 'aws-cdk-lib/custom-resources';
+   * import * as lambda from 'aws-cdk-lib/aws-lambda';
+   * import { Stack } from 'aws-cdk-lib';
    * declare const myOnEventLambda: lambda.Function;
    * declare const myIsCompleteLambda: lambda.Function;
    * const stack = new Stack();

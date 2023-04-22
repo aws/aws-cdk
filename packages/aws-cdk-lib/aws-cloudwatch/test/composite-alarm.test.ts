@@ -195,4 +195,18 @@ describe('CompositeAlarm', () => {
     });
   });
 
+  test('imported alarm arn and name generated correctly', () => {
+    const stack = new Stack();
+
+    const alarmFromArn = CompositeAlarm.fromCompositeAlarmArn(stack, 'AlarmFromArn', 'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName');
+
+    expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
+
+    const alarmFromName = CompositeAlarm.fromCompositeAlarmName(stack, 'AlarmFromName', 'TestAlarmName');
+
+    expect(alarmFromName.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
+  });
+
 });
