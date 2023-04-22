@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03b4d158d0add3f414e246227b019ec3a9848a1f539b3c90c17f687872402977.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c2d0def6db3389453a3efadab8db4804f46dd1e84431da6a970923085b33a51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -187,6 +187,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LBListener49E825B4"
+          }
+        ],
+        "/integ-cognito/LB/Listener/Action2Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBListenerAction2RuleDEE172B4"
           }
         ],
         "/integ-cognito/UserPool/Resource": [

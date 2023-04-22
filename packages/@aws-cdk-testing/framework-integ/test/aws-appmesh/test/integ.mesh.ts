@@ -367,6 +367,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
       rewriteRequestHostname: true,
+      port: 8080,
     },
   }),
 });

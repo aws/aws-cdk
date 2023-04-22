@@ -762,7 +762,8 @@
                               },
                               "userPoolDomain": {
                                 "Ref": "Domain66AC69E0"
-                              }
+                              },
+                              "sessionTimeout": "86400"
                             },
                             "order": 1
                           },
@@ -790,6 +791,73 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Action2Rule": {
+                    "id": "Action2Rule",
+                    "path": "integ-cognito/LB/Listener/Action2Rule",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-cognito/LB/Listener/Action2Rule/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+                          "aws:cdk:cloudformation:props": {
+                            "actions": [
+                              {
+                                "type": "authenticate-cognito",
+                                "authenticateCognitoConfig": {
+                                  "userPoolArn": {
+                                    "Fn::GetAtt": [
+                                      "UserPool6BA7E5F2",
+                                      "Arn"
+                                    ]
+                                  },
+                                  "userPoolClientId": {
+                                    "Ref": "Client4A7F64DF"
+                                  },
+                                  "userPoolDomain": {
+                                    "Ref": "Domain66AC69E0"
+                                  },
+                                  "sessionTimeout": 86400
+                                },
+                                "order": 1
+                              },
+                              {
+                                "type": "fixed-response",
+                                "fixedResponseConfig": {
+                                  "statusCode": "200",
+                                  "contentType": "text/plain",
+                                  "messageBody": "Authenticated"
+                                },
+                                "order": 2
+                              }
+                            ],
+                            "conditions": [
+                              {
+                                "field": "path-pattern",
+                                "pathPatternConfig": {
+                                  "values": [
+                                    "action2*"
+                                  ]
+                                }
+                              }
+                            ],
+                            "listenerArn": {
+                              "Ref": "LBListener49E825B4"
+                            },
+                            "priority": 1
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnListenerRule",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerRule",
                       "version": "0.0.0"
                     }
                   }
