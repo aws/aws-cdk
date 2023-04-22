@@ -8,13 +8,11 @@ image: jsii/superchain:1-buster-slim-node16
 tasks:
   - init: |
       (
-        set -e # Tells bash to immediately exit on failure off a command
+        set -e
         yarn install
         export NODE_OPTIONS=--max-old-space-size=8192
-        # build aws-cdk-lib
-        cd packages/aws-cdk-lib && ../../scripts/buildup
-        # build framework-integ
-        cd ../@aws-cdk-testing/framework-integ && ../../../scripts/buildup
+        # build the entire repository 
+        npx lerna run build
       )
 
 vscode:
