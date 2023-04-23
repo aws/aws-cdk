@@ -3,8 +3,7 @@ import * as ec2 from '../lib';
 /// !show
 // Pick the right Amazon Linux edition. All arguments shown are optional
 // and will default to these values when omitted.
-const amznLinux = ec2.MachineImage.latestAmazonLinux({
-  generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
+const amznLinux = ec2.MachineImage.latestAmazonLinux2({
   edition: ec2.AmazonLinuxEdition.STANDARD,
   virtualization: ec2.AmazonLinuxVirt.HVM,
   storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,

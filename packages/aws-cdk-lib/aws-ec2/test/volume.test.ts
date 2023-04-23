@@ -589,13 +589,13 @@ describe('volume', () => {
     const instance1 = new Instance(stack, 'Instance1', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const instance2 = new Instance(stack, 'Instance2', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
@@ -671,7 +671,7 @@ describe('volume', () => {
     const instance = new Instance(stack, 'Instance', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
@@ -740,7 +740,7 @@ describe('volume', () => {
     const instance = new Instance(stack, 'Instance', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
@@ -879,13 +879,13 @@ describe('volume', () => {
     const instance1 = new Instance(stack, 'Instance1', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const instance2 = new Instance(stack, 'Instance2', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
@@ -961,7 +961,7 @@ describe('volume', () => {
     const instance = new Instance(stack, 'Instance', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
@@ -1030,7 +1030,7 @@ describe('volume', () => {
     const instance = new Instance(stack, 'Instance', {
       vpc,
       instanceType: new InstanceType('t3.small'),
-      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       availabilityZone: 'us-east-1a',
     });
     const volume = new Volume(stack, 'Volume', {
