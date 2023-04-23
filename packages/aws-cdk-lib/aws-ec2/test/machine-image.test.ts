@@ -233,7 +233,7 @@ test('throw error if storage param is set for Amazon Linux 2022', () => {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
       storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
     }).getImage(stack).imageId;
-  }).toThrow(/Storage parameter does not exist in smm parameter name for Amazon Linux 2022./);
+  }).toThrow(/Storage parameter does not exist in ssm parameter name for Amazon Linux 2022./);
 });
 
 test('throw error if virtualization param is set for Amazon Linux 2022', () => {
@@ -243,7 +243,7 @@ test('throw error if virtualization param is set for Amazon Linux 2022', () => {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
       virtualization: ec2.AmazonLinuxVirt.HVM,
     }).getImage(stack).imageId;
-  }).toThrow(/Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022./);
+  }).toThrow(/Virtualization parameter does not exist in ssm parameter name for Amazon Linux 2022./);
 });
 
 test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
