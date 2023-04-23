@@ -29,32 +29,7 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#oidc-requirements
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
-    const config: CfnListener.AuthenticateOidcConfigProperty = {
-      authorizationEndpoint: options.authorizationEndpoint,
-      clientId: options.clientId,
-      clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
-      issuer: options.issuer,
-      tokenEndpoint: options.tokenEndpoint,
-      userInfoEndpoint: options.userInfoEndpoint,
-      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
-      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
-      scope: options.scope,
-      sessionCookieName: options.sessionCookieName,
-      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
-    };
-    const listenerAction = new ListenerAction({
-      type: 'authenticate-oidc',
-      authenticateOidcConfig: config,
-    }, options.next);
-    listenerAction.addRuleAction({
-      type: 'authenticate-oidc',
-      authenticateOidcConfig: {
-        ...config,
-        sessionTimeout: options.sessionTimeout?.toSeconds(),
-      },
-    });
-    listenerAction._bindHook = (_scope, listener) => listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
-    return listenerAction;
+    return new AuthenticateOidcAction(options);
   }
 
   /**
@@ -455,6 +430,18 @@ export interface AuthenticateOidcOptions {
    * This must be a full URL, including the HTTPS protocol, the domain, and the path.
    */
   readonly userInfoEndpoint: string;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the IdP.
+   *
+   * Set this property to false if the IP address used for the IdP endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the IdP's IP address using the listener's `connections` property.
+   *
+   * @default true
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**
@@ -489,5 +476,47 @@ class TargetGroupListenerAction extends ListenerAction {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }
+  }
+}
+
+/**
+ * A Listener Action to authenticate with OIDC
+ */
+class AuthenticateOidcAction extends ListenerAction {
+  private readonly allowHttpsOutbound: boolean;
+
+  constructor(options: AuthenticateOidcOptions) {
+    const defaultActionConfig: CfnListener.AuthenticateOidcConfigProperty = {
+      authorizationEndpoint: options.authorizationEndpoint,
+      clientId: options.clientId,
+      clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
+      issuer: options.issuer,
+      tokenEndpoint: options.tokenEndpoint,
+      userInfoEndpoint: options.userInfoEndpoint,
+      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
+      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
+      scope: options.scope,
+      sessionCookieName: options.sessionCookieName,
+      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+    };
+    super({
+      type: 'authenticate-oidc',
+      authenticateOidcConfig: defaultActionConfig,
+    }, options.next);
+
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
+    this.addRuleAction({
+      type: 'authenticate-oidc',
+      authenticateOidcConfig: {
+        ...defaultActionConfig,
+        sessionTimeout: options.sessionTimeout?.toSeconds(),
+      },
+    });
+  }
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    if (!this.allowHttpsOutbound) return;
+    listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
   }
 }
