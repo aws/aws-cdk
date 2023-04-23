@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { SamlMetadataDocument, SamlProvider } from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '../../core';
 import * as ec2 from '../lib';
 import {
