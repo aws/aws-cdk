@@ -123,6 +123,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     const cluster = props.cluster;
 
+    const handlerRole = cluster.kubectlLambdaRole ?? new iam.Role(scope, 'KubectlHandlerRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
+
     if (!cluster.kubectlRole) {
       throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
     }
@@ -141,7 +146,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
-      role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
+      role: handlerRole,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
@@ -160,6 +165,10 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    if (handler.isBoundToVpc) {
+      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
@@ -169,7 +178,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
      * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
      * we conditionally attach this policy when the AWS partition is `aws`.
      */
-    const hasEcrPublicCondition = new CfnCondition(this, 'HasEcrPublic', {
+    const hasEcrPublicCondition = new CfnCondition(this.handlerRole.node.scope!, 'HasEcrPublic', {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
     });
 
@@ -181,12 +190,12 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
-    // the handler is going to run 'aws eks update-kubeconfig' on the
+    // the handler is going to run 'aws eks update-kubeconfig' with the
     // kubectl role, so its needs to be able to assume it.
     // there are two options for the kubectl role.
 
     if (iam.Role.isRole(cluster.kubectlRole)) {
-      // managed role, we can change its trust policy
+      // managed role, we can add ourselves to its trust policy
       cluster.kubectlRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         principals: [this.handlerRole],
