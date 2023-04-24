@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Stack, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
 /**
  * Properties for a Kafka event source
@@ -118,6 +118,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
   private innerProps: ManagedKafkaEventSourceProps;
   private _eventSourceMappingId?: string = undefined;
+  private _eventSourceMappingArn?: string = undefined;
 
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
@@ -137,6 +138,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     );
 
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+    this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
     if (this.innerProps.secret !== undefined) {
       this.innerProps.secret.grantRead(target);
@@ -175,6 +177,16 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       throw new Error('KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
+  }
+
+  /**
+   * The ARN for this EventSourceMapping
+   */
+  public get eventSourceMappingArn(): string {
+    if (!this._eventSourceMappingArn) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingArn;
   }
 }
 
