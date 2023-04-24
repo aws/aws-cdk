@@ -26,7 +26,7 @@ test('Eval with Node.js', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -35,7 +35,14 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs16.x',
+    Runtime: {
+      'Fn::FindInMap': [
+        'DefaultCrNodeVersionMap',
+        { 'Ref': 'AWS::Region' },
+        'value',
+      ],
+    },
+    // Runtime: 'nodejs16.x',
   });
 });
 
@@ -55,7 +62,7 @@ test('expression does not contain paths', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -80,7 +87,7 @@ test('with dash and underscore in path', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
