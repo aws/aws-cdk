@@ -24,9 +24,14 @@ const eventSource = new SqsEventSource(queue);
 fn.addEventSource(eventSource);
 
 const eventSourceId = eventSource.eventSourceMappingId;
+const eventSourceMappingArn = eventSource.eventSourceMappingArn;
 ```
 
 The `eventSourceId` property contains the event source id. This will be a
+[token](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) that will resolve to the final value at the time of
+deployment.
+
+The `eventSourceMappingArn` property contains the event source mapping ARN. This will be a
 [token](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) that will resolve to the final value at the time of
 deployment.
 
