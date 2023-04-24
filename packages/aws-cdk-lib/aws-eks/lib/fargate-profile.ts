@@ -1,10 +1,10 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '../../core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -144,7 +144,6 @@ export class FargateProfile extends Construct implements ITaggable {
     super(scope, id);
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: props.cluster.adminRole,
       onEventLayer: props.cluster.onEventLayer,
     });
 

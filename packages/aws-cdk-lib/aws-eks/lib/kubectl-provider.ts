@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct, IConstruct } from 'constructs';
+import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 import { KubectlLayer } from '../../lambda-layer-kubectl';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
 
 /**
  * Properties for a KubectlProvider
@@ -181,8 +181,21 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
-    // allow this handler to assume the kubectl role
-    cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
+    // the handler is going to run 'aws eks update-kubeconfig' on the
+    // kubectl role, so its needs to be able to assume it.
+    // there are two options for the kubectl role.
+
+    if (iam.Role.isRole(cluster.kubectlRole)) {
+      // managed role, we can change its trust policy
+      cluster.kubectlRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        principals: [this.handlerRole],
+      }));
+    } else {
+      // imported role, we can only hope its trust policy will allow
+      // us to assume it.
+      cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
+    }
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
