@@ -56,6 +56,7 @@
     ]
   },
   "cdk-package": {
+    "pre": "/bin/bash ./scripts/minify-sources.sh",
     "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
@@ -443,6 +444,15 @@
   "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v25": "^2.0.3",
+      "cdk8s-plus-25": "^2.7.0",
+      "@aws-cdk/aws-apigatewayv2-alpha": "^0.0.0",
+      "@aws-cdk/aws-batch-alpha": "^0.0.0",
+      "@aws-cdk/aws-kinesisfirehose-alpha": "^0.0.0"
+    }
   },
   "awslint": {
     "exclude": [

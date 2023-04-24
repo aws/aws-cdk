@@ -24,9 +24,14 @@ const eventSource = new SqsEventSource(queue);
 fn.addEventSource(eventSource);
 
 const eventSourceId = eventSource.eventSourceMappingId;
+const eventSourceMappingArn = eventSource.eventSourceMappingArn;
 ```
 
 The `eventSourceId` property contains the event source id. This will be a
+[token](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) that will resolve to the final value at the time of
+deployment.
+
+The `eventSourceMappingArn` property contains the event source mapping ARN. This will be a
 [token](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) that will resolve to the final value at the time of
 deployment.
 
@@ -254,11 +259,8 @@ const topic = 'some-cool-topic';
 // The secret that allows access to your self hosted Kafka cluster
 declare const secret: Secret;
 
-// (Optional) The secret containing the root CA certificate that your Kafka brokers use for TLS encryption
-declare const encryption: Secret;
-
 // (Optional) The consumer group id to use when connecting to the Kafka broker. If omitted the UUID of the event source mapping will be used.
-const consumerGroupId: "my-consumer-group-id";
+const consumerGroupId = "my-consumer-group-id";
 
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
@@ -268,7 +270,6 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-  encryption: encryption // optional
 }));
 ```
 

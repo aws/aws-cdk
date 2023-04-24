@@ -225,8 +225,8 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 ```ts
 import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
-new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
+new ec2.Vpc(this, 'TheVPC', {
+  ipAddresses: IpAddresses.cidr('10.0.1.0/20')
 });
 ```
 
@@ -246,8 +246,8 @@ import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
 declare const pool: ec2.CfnIPAMPool;
 
-new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.awsIpamAllocation({
+new ec2.Vpc(this, 'TheVPC', {
+  ipAddresses: IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
@@ -300,7 +300,7 @@ subnet configuration could look like this:
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   // 'IpAddresses' configures the IP range and size of the entire VPC.
   // The IP space will be divided based on configuration for the subnets.
-  ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/21'),
 
   // 'maxAzs' configures the maximum number of availability zones to use.
   // If you want to specify the exact availability zones you want the VPC
@@ -1248,7 +1248,7 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2022(),
 
-  init: ec2.CloudFormationInit.fromElements([
+  init: ec2.CloudFormationInit.fromElements(
     // Create a simple config file that runs a Python web server
     ec2.InitService.systemdConfigFile('simpleserver', {
       command: '/usr/bin/python3 -m http.server 8080',
@@ -1260,7 +1260,7 @@ new ec2.Instance(this, 'Instance', {
     }),
     // Drop an example file to show the web server working
     ec2.InitFile.fromString('/var/www/html/index.html', 'Hello! It\'s working!'),
-  ]),
+  ),
 });
 ```
 
@@ -1472,8 +1472,8 @@ You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
 ```ts
 new ec2.Volume(this, 'Volume', {
   availabilityZone: 'us-east-1a',
-  size: cdk.Size.gibibytes(125),
-  volumeType: EbsDeviceVolumeType.GP3,
+  size: Size.gibibytes(125),
+  volumeType: ec2.EbsDeviceVolumeType.GP3,
   throughput: 125,
 });
 ```
@@ -1550,7 +1550,7 @@ vpc.addFlowLog('FlowLogS3', {
 // Only reject traffic and interval every minute.
 vpc.addFlowLog('FlowLogCloudWatch', {
   trafficType: ec2.FlowLogTrafficType.REJECT,
-  maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
+  maxAggregationInterval: ec2.FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
 
@@ -1678,7 +1678,7 @@ When creating a Windows UserData you can use the `persist` option to set whether
 `<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
 
 ```ts
-const windowsUserData = UserData.forWindows({ persist: true });
+const windowsUserData = ec2.UserData.forWindows({ persist: true });
 ```
 
 For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
