@@ -1,4 +1,5 @@
 import * as lambda from '../../aws-lambda';
+import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { LambdaIntegration, LambdaIntegrationOptions } from './integrations';
 import { Method } from './method';
@@ -68,6 +69,23 @@ export class LambdaRestApi extends RestApi {
       this.root.addMethod = addMethodThrows;
       this.root.addProxy = addProxyThrows;
     }
+
+    this.node.addValidation({
+      validate() {
+        if (props.deployOptions?.variables && cdk.Resource.isOwnedResource(scope)) {
+          for (let key in props.deployOptions.variables) {
+            // Checks that variable Stage values match regex
+            const regexp = /[A-Za-z0-9-._~:/?#&amp;=,]+/;
+            const value = props.deployOptions.variables[key];
+            const matchesRegex = value.match(regexp);
+            if (!matchesRegex) {
+              return ['Stage variables value must match regex: ' + value + ' does not match ' + regexp + '.'];
+            }
+          }
+        }
+        return [];
+      },
+    });
   }
 }
 
