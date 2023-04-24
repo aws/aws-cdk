@@ -1,7 +1,7 @@
+import { StreamEventSource, StreamEventSourceProps } from './stream';
 import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
 import { Names, Token } from '../../core';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
@@ -11,6 +11,7 @@ export interface DynamoEventSourceProps extends StreamEventSourceProps {
  */
 export class DynamoEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
+  private _eventSourceMappingArn?: string = undefined;
 
   constructor(private readonly table: dynamodb.ITable, props: DynamoEventSourceProps) {
     super(props);
@@ -31,6 +32,7 @@ export class DynamoEventSource extends StreamEventSource {
       this.enrichMappingOptions({ eventSourceArn: this.table.tableStreamArn }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+    this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
     this.table.grantStreamRead(target);
   }
@@ -43,5 +45,15 @@ export class DynamoEventSource extends StreamEventSource {
       throw new Error('DynamoEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
+  }
+
+  /**
+   * The ARN for this EventSourceMapping
+   */
+  public get eventSourceMappingArn(): string {
+    if (!this._eventSourceMappingArn) {
+      throw new Error('DynamoEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingArn;
   }
 }

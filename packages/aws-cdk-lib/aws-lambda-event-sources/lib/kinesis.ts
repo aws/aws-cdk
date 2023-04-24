@@ -1,7 +1,7 @@
+import { StreamEventSource, StreamEventSourceProps } from './stream';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface KinesisEventSourceProps extends StreamEventSourceProps {
   /**
@@ -17,6 +17,7 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
  */
 export class KinesisEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
+  private _eventSourceMappingArn?: string = undefined;
   private startingPositionTimestamp?: number;
 
   constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
@@ -38,6 +39,7 @@ export class KinesisEventSource extends StreamEventSource {
       }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+    this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
     this.stream.grantRead(target);
 
@@ -57,5 +59,15 @@ export class KinesisEventSource extends StreamEventSource {
       throw new Error('KinesisEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
+  }
+
+  /**
+   * The ARN for this EventSourceMapping
+   */
+  public get eventSourceMappingArn(): string {
+    if (!this._eventSourceMappingArn) {
+      throw new Error('KinesisEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingArn;
   }
 }

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "lambda-event-source-dynamodb.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e143da2a8687914f63b1adc3553d6af9014851503b71a4e1d068416fd906061e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bd69e1fd092b2d77dfe5884db2c3213c0c79d892c1fef9c3e4d29fb7f33547e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +63,12 @@
             "data": "TD925BC7E"
           }
         ],
+        "/lambda-event-source-dynamodb/OutputEventSourceMappingArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputEventSourceMappingArn"
+          }
+        ],
         "/lambda-event-source-dynamodb/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -83,6 +83,12 @@
         ]
       },
       "displayName": "lambda-event-source-dynamodb"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

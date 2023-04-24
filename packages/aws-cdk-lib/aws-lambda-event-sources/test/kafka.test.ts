@@ -1,9 +1,9 @@
+import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 describe('KafkaEventSource', () => {
@@ -682,6 +682,7 @@ describe('KafkaEventSource', () => {
       // WHEN
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
 
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -707,6 +708,7 @@ describe('KafkaEventSource', () => {
       // WHEN
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
     });
   });
 });

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "lambda-event-source-sqs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c4572e84df4c12b2ef0b057a88c0514dff86c6f71cdc8b81467b9c4feb06737.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/595d99c2b432adb98648c72d1b52415a1b1238ea1e7a309ad60e31ca0ec2cfba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +63,12 @@
             "data": "Q63C6E3AB"
           }
         ],
+        "/lambda-event-source-sqs/OutputEventSourceMappingArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputEventSourceMappingArn"
+          }
+        ],
         "/lambda-event-source-sqs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -83,6 +83,12 @@
         ]
       },
       "displayName": "lambda-event-source-sqs"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
