@@ -119,7 +119,7 @@ export class BootstrapStack {
       tags: options.tags,
       deploymentMethod: { method: 'change-set', execute: options.execute },
       parameters,
-      usePreviousParameters: true,
+      usePreviousParameters: options.usePreviousParameters ?? true,
       // Obviously we can't need a bootstrap stack to deploy a bootstrap stack
       toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(this.sdk),
     });

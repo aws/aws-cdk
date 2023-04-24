@@ -385,3 +385,85 @@ test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
   // THEN
   Annotations.fromStack(stack).hasNoWarning('/Default', Match.anyValue());
 });
+
+test('Scheduled Ec2 Task - with tag propagation', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          PropagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+        }),
+      }),
+    ],
+  });
+});
+
+test('Scheduled Ec2 Task - with list of tags', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux2023(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    tags: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          TagList: [
+            {
+              Key: 'my-tag',
+              Value: 'my-tag-value',
+            },
+          ],
+        }),
+      }),
+    ],
+  });
+});
