@@ -1,88 +1,70 @@
 /* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
-
-export enum WorkType {
-  STACK_DEPLOY = 'stack-deploy',
-  ASSET_BUILD = 'asset-build',
-  ASSET_PUBLISH = 'asset-publish',
-};
-
-export enum DeploymentState {
-  PENDING = 'pending',
-  QUEUED = 'queued',
-  DEPLOYING = 'deploying',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  SKIPPED = 'skipped',
-};
-
-export interface WorkNode {
-  readonly id: string;
-  readonly type: WorkType;
-  readonly dependencies: string[];
-  readonly artifact: cxapi.CloudArtifact;
-  readonly stack: cxapi.CloudFormationStackArtifact;
-  deploymentState: DeploymentState;
-}
+import { WorkNode, DeploymentState, AssetBuildNode, AssetPublishNode, PartialAssetNodeOptions, StackNode } from './work-graph-types';
 
 export class WorkGraph {
   public static fromCloudArtifacts(artifacts: cxapi.CloudArtifact[]) {
     const graph = new WorkGraph();
 
     // Associated stack will be lazily added for Assets
-    const graphNodes: Omit<WorkNode, 'stack'>[] = [];
-    const associatedStacks: Record<string, cxapi.CloudFormationStackArtifact> = {};
+    const graphNodes: WorkNode[] = [];
+    const partialAssetNodes: PartialAssetNodeOptions[] = [];
+    const parentStacks: Record<string, cxapi.CloudFormationStackArtifact> = {};
 
     for (const artifact of artifacts) {
       if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        const buildNode = {
-          id: `${artifact.id}-build`,
-          type: WorkType.ASSET_BUILD,
+        partialAssetNodes.push({
+          id: `${artifact.id}`,
           dependencies: getDepIds(artifact.dependencies),
-          artifact,
-          deploymentState: DeploymentState.PENDING,
-        };
-        graphNodes.push(buildNode);
-        graphNodes.push({
-          id: `${artifact.id}-publish`,
-          type: WorkType.ASSET_PUBLISH,
-          dependencies: [buildNode.id],
-          artifact,
-          deploymentState: DeploymentState.PENDING,
+          asset: artifact,
         });
       } else if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
-        graphNodes.push({
+        graphNodes.push(new StackNode({
           id: artifact.id,
-          type: WorkType.STACK_DEPLOY,
           dependencies: getDepIds(artifact.dependencies),
-          artifact,
-          deploymentState: DeploymentState.PENDING,
-        });
-        updateAssociatedStacks(artifact);
+          stack: artifact,
+        }));
+        updateParentStacks(artifact);
+      } else if (cxapi.TreeCloudArtifact.isTreeCloudArtifact(artifact)) {
+        // ignore tree artifacts
+        continue;
+      } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
+        // TODO: this
+        continue;
       }
     }
 
-    // post-process stacks associated with each nodes because we only know
-    // we have this information after all artifacts have been processed.
-    const finalGraphNodes: WorkNode[] = [];
-    for (const node of graphNodes) {
-      const stack = associatedStacks[node.id];
+    // post-process parent stacks of each asset because we only know
+    // this information after all artifacts have been processed.
+    for (const node of partialAssetNodes) {
+      const stack = parentStacks[node.id];
       if (!stack) {
         throw new Error(`No stack associated with ${node.id} artifact. Something in the source code or asset manifest is wrong.`);
       }
-      finalGraphNodes.push({
-        ...node,
-        stack,
-      });
+      graphNodes.push(...[
+        new AssetBuildNode({
+          id: `${node.id}-build`,
+          dependencies: node.dependencies,
+          asset: node.asset,
+          parentStack: stack,
+        }),
+        new AssetPublishNode({
+          id: `${node.id}-publish`,
+          dependencies: [`${node.id}-build`], // only depend on the build asset step
+          asset: node.asset,
+          parentStack: stack,
+        }),
+      ]);
     }
 
-    graph.addNodes(...finalGraphNodes);
+    graph.addNodes(...graphNodes);
 
     // Ensure all dependencies actually exist. This protects against scenarios such as the following:
     // StackA depends on StackB, but StackB is not selected to deploy. The dependency is redundant
     // and will be dropped.
+    // This assumes the manifest comes uncorrupted so we will not fail if a dependency is not found.
     for (const node of Object.values(graph.nodes)) {
-      if (node.type !== WorkType.STACK_DEPLOY) { continue; }
+      if (node.type !== 'stack') { continue; }
       const removeDeps = [];
       for (const dep of node.dependencies) {
         if (graph.nodes[dep] === undefined) {
@@ -97,13 +79,11 @@ export class WorkGraph {
 
     return graph;
 
-    function updateAssociatedStacks(stack: cxapi.CloudFormationStackArtifact) {
+    function updateParentStacks(stack: cxapi.CloudFormationStackArtifact) {
       const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
       for (const art of assetArtifacts) {
-        associatedStacks[`${art.id}-publish`] = stack;
-        associatedStacks[`${art.id}-build`] = stack;
+        parentStacks[art.id] = stack;
       }
-      associatedStacks[stack.id] = stack;
     }
 
     function getDepIds(deps: cxapi.CloudArtifact[]): string[] {
@@ -202,3 +182,5 @@ export class WorkGraph {
     }
   }
 }
+export { WorkNode };
+

@@ -1,10 +1,12 @@
+/* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
-import { WorkGraph, WorkNode, WorkType } from './util/work-graph';
+import { WorkGraph } from './util/work-graph';
+import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode, WorkType } from './util/work-graph-types';
 
 interface CallbackActions {
-  deployStack: (assetNode: WorkNode) => Promise<void>;
-  buildAsset: (assetNode: WorkNode) => Promise<void>;
-  publishAsset: (assetNode: WorkNode) => Promise<void>;
+  deployStack: (stackNode: StackNode) => Promise<void>;
+  buildAsset: (assetNode: AssetBuildNode) => Promise<void>;
+  publishAsset: (assetNode: AssetPublishNode) => Promise<void>;
 }
 
 type Options = {
@@ -24,13 +26,13 @@ export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
     // Execute this function with as much parallelism as possible
     switch (x.type) {
       case WorkType.STACK_DEPLOY:
-        await callbacks.deployStack(x);
+        await callbacks.deployStack(x as StackNode);
         break;
       case WorkType.ASSET_BUILD:
-        await callbacks.buildAsset(x);
+        await callbacks.buildAsset(x as AssetBuildNode);
         break;
       case WorkType.ASSET_PUBLISH:
-        await callbacks.publishAsset(x);
+        await callbacks.publishAsset(x as AssetPublishNode);
         break;
     }
   });
@@ -77,59 +79,4 @@ export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
       }
     });
   }
-
-  // const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
-  //   stack.dependencies
-  //     .map(({ id }) => id)
-  //     .filter((id) => !id.endsWith('.assets'))
-  //     .every((id) => !deploymentStates[id] || deploymentStates[id] === 'completed'); // Dependency not selected or already finished
-
-  // const hasAnyStackFailed = (states: Record<string, DeploymentState>) => Object.values(states).includes('failed');
-
-  // const deploymentErrors: Error[] = [];
-
-  // const enqueueStackDeploys = () => {
-  //   stacks.forEach(async (stack) => {
-  //     if (deploymentStates[stack.id] === 'pending' && isStackUnblocked(stack)) {
-  //       deploymentStates[stack.id] = 'queued';
-
-  //       await queue.add(async () => {
-  //         // Do not start new deployments if any has already failed
-  //         if (hasAnyStackFailed(deploymentStates)) {
-  //           deploymentStates[stack.id] = 'skipped';
-  //           return;
-  //         }
-
-  //         deploymentStates[stack.id] = 'deploying';
-
-  //         await deployStack(stack).catch((err) => {
-  //           // By recording the failure immediately as the queued task exits, we prevent the next
-  //           // queued task from starting (its 'hasAnyStackFailed' will return 'true').
-  //           deploymentStates[stack.id] = 'failed';
-  //           throw err;
-  //         });
-
-  //         deploymentStates[stack.id] = 'completed';
-  //         enqueueStackDeploys();
-  //       }).catch((err) => {
-  //         deploymentStates[stack.id] = 'failed';
-  //         deploymentErrors.push(err);
-  //       });
-  //     }
-  //   });
-  // };
-
-  // enqueueStackDeploys();
-
-  // await queue.onIdle();
-
-  // if (deploymentErrors.length) {
-  //   throw Error(`Stack Deployments Failed: ${deploymentErrors}`);
-  // }
-
-  // // We shouldn't be able to get here, but check it anyway
-  // const neverUnblocked = Object.entries(deploymentStates).filter(([_, s]) => s === 'pending').map(([n, _]) => n);
-  // if (neverUnblocked.length > 0) {
-  //   throw new Error(`The following stacks never became unblocked: ${neverUnblocked.join(', ')}. Please report this at https://github.com/aws/aws-cdk/issues`);
-  // }
 };

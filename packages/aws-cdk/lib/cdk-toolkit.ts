@@ -23,8 +23,8 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
-import { WorkNode } from './util/work-graph';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 
 export interface CdkToolkitProps {
 
@@ -192,33 +192,33 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    const buildAsset = async (assetNode: WorkNode) => {
-      print('%s: building assets...\n', chalk.bold(assetNode.stack.displayName));
-      await this.props.cloudFormation.buildAssets(assetNode.artifact as cxapi.AssetManifestArtifact, {
-        stack: assetNode.stack,
+    const buildAsset = async (assetNode: AssetBuildNode) => {
+      print('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
+      await this.props.cloudFormation.buildAssets(assetNode.asset, {
+        stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
         buildOptions: {
           parallel: options.assetParallelism,
         },
       });
-      print('\n%s: assets built\n', chalk.bold(assetNode.stack.displayName));
+      print('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
-    const publishAsset = async (assetNode: WorkNode) => {
-      print('%s: publishing assets...\n', chalk.bold(assetNode.stack.displayName));
-      await this.props.cloudFormation.publishAssets(assetNode.artifact as cxapi.AssetManifestArtifact, {
-        stack: assetNode.stack,
+    const publishAsset = async (assetNode: AssetPublishNode) => {
+      print('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
+      await this.props.cloudFormation.publishAssets(assetNode.asset, {
+        stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
         publishOptions: {
           parallel: options.assetParallelism,
         },
       });
-      print('\n%s: assets published\n', chalk.bold(assetNode.stack.displayName));
+      print('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
-    const deployStack = async (assetNode: WorkNode) => {
+    const deployStack = async (assetNode: StackNode) => {
       const stack = assetNode.stack;
       if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
 

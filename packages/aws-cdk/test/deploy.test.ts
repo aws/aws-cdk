@@ -1,7 +1,6 @@
-/* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import { deployArtifacts } from '../lib/deploy';
-import { WorkNode } from '../lib/util/work-graph';
+import { AssetBuildNode, AssetPublishNode, StackNode } from '../lib/util/work-graph-types';
 
 const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
@@ -24,7 +23,7 @@ const SLOW = 200;
 describe('DeployAssets', () => {
   const actionedAssets: string[] = [];
   const callbacks = {
-    deployStack: async (x: WorkNode) => {
+    deployStack: async (x: StackNode) => {
       const errorMessage = x.stack.displayName;
       const timeout = Number(x.stack.name) || 0;
 
@@ -36,10 +35,10 @@ describe('DeployAssets', () => {
 
       actionedAssets.push(x.id);
     },
-    buildAsset: async({ id }: WorkNode) => {
+    buildAsset: async({ id }: AssetBuildNode) => {
       actionedAssets.push(id);
     },
-    publishAsset: async({ id }: WorkNode) => {
+    publishAsset: async({ id }: AssetPublishNode) => {
       actionedAssets.push(id);
     },
   };
