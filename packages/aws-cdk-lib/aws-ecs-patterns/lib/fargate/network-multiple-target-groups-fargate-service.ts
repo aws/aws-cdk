@@ -3,7 +3,7 @@ import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import { FargateServiceBaseProps, FargateTaskImageOptions } from '../base/fargate-service-base';
 import {
   NetworkMultipleTargetGroupsServiceBase,
   NetworkMultipleTargetGroupsServiceBaseProps,
@@ -12,7 +12,7 @@ import {
 /**
  * The properties for the NetworkMultipleTargetGroupsFargateService service.
  */
-export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkMultipleTargetGroupsServiceBaseProps, FargateServiceBaseProps {
+export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkMultipleTargetGroupsServiceBaseProps, FargateServiceBaseProps, FargateTaskImageOptions {
 
   /**
    * Determines whether the service will be assigned a public IP address.
@@ -69,7 +69,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
-        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
       });
 
       const containerName = taskImageOptions.containerName ?? 'web';

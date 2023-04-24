@@ -58,7 +58,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default none
    */
-  readonly taskImageOptions?: ApplicationLoadBalancedFargateTaskImageOptions;
+  readonly taskImageOptions?: ApplicationLoadBalancedTaskImageOptions;
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
@@ -277,17 +277,6 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
   readonly idleTimeout?: Duration;
-}
-
-export interface ApplicationLoadBalancedFargateTaskImageOptions extends ApplicationLoadBalancedTaskImageOptions {
-  /**
-   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200GiB.
-   *
-   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
-   *
-   * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
-   */
-  readonly ephemeralStorageGiB?: number;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {

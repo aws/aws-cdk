@@ -3,13 +3,13 @@ import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import { FargateServiceBaseProps, FargateTaskImageOptions } from '../base/fargate-service-base';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
 /**
  * The properties for the NetworkLoadBalancedFargateService service.
  */
-export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalancedServiceBaseProps, FargateServiceBaseProps {
+export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalancedServiceBaseProps, FargateServiceBaseProps, FargateTaskImageOptions {
 
   /**
    * Determines whether the service will be assigned a public IP address.
@@ -62,7 +62,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
-        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
       });
 
       // Create log driver if logging is enabled

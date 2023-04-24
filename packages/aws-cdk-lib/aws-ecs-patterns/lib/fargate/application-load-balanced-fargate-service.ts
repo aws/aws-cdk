@@ -4,11 +4,11 @@ import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import { FargateServiceBaseProps, FargateTaskImageOptions } from '../base/fargate-service-base';
 /**
  * The properties for the ApplicationLoadBalancedFargateService service.
  */
-export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps, FargateServiceBaseProps {
+export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps, FargateServiceBaseProps, FargateTaskImageOptions {
   /**
    * Determines whether the service will be assigned a public IP address.
    *
@@ -71,7 +71,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
-        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
       });
 
       // Create log driver if logging is enabled

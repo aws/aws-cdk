@@ -7,12 +7,12 @@ import {
   ApplicationMultipleTargetGroupsServiceBase,
   ApplicationMultipleTargetGroupsServiceBaseProps,
 } from '../base/application-multiple-target-groups-service-base';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import { FargateServiceBaseProps, FargateTaskImageOptions } from '../base/fargate-service-base';
 
 /**
  * The properties for the ApplicationMultipleTargetGroupsFargateService service.
  */
-export interface ApplicationMultipleTargetGroupsFargateServiceProps extends ApplicationMultipleTargetGroupsServiceBaseProps, FargateServiceBaseProps {
+export interface ApplicationMultipleTargetGroupsFargateServiceProps extends ApplicationMultipleTargetGroupsServiceBaseProps, FargateServiceBaseProps, FargateTaskImageOptions {
 
   /**
    * Determines whether the service will be assigned a public IP address.
@@ -69,7 +69,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
-        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
       });
 
       const containerName = taskImageOptions.containerName ?? 'web';
