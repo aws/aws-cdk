@@ -75,4 +75,30 @@ describe('prefix list', () => {
     }).toThrow('Lengths exceeding 255 characters cannot be set.');
   });
 
+  test('invalid ipv4', () => {
+    // GIVEN
+    const stack = new Stack();
+    expect(() => {
+      new PrefixList(stack, 'prefix-list', {
+        entries: [
+          { cidr: '10.0.0.1/32' },
+          { cidr: '::/0', description: 'sample1' },
+        ],
+      });
+    }).toThrow('Invalid IP address range: ::/0');
+  });
+
+  test('invalid ipv6', () => {
+    // GIVEN
+    const stack = new Stack();
+    expect(() => {
+      new PrefixList(stack, 'prefix-list', {
+        addressFamily: AddressFamily.IP_V6,
+        entries: [
+          { cidr: '10.0.0.1/32' },
+          { cidr: '::/0', description: 'sample1' },
+        ],
+      });
+    }).toThrow('Invalid IP address range: 10.0.0.1/32');
+  });
 });
