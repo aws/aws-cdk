@@ -23,23 +23,25 @@ const SLOW = 200;
  */
 describe('DeployAssets', () => {
   const actionedAssets: string[] = [];
-  const deployStack = async ({ id, displayName, name }: Stack) => {
-    const errorMessage = displayName;
-    const timeout = Number(name) || 0;
+  const callbacks = {
+    deployStack: async (x: WorkNode) => {
+      const errorMessage = x.stack.displayName;
+      const timeout = Number(x.stack.name) || 0;
 
-    await sleep(timeout);
+      await sleep(timeout);
 
-    if (errorMessage) {
-      throw Error(errorMessage);
-    }
+      if (errorMessage) {
+        throw Error(errorMessage);
+      }
 
-    actionedAssets.push(id);
-  };
-  const buildAsset = async({ id }: WorkNode) => {
-    actionedAssets.push(id);
-  };
-  const publishAsset = async({ id }: WorkNode) => {
-    actionedAssets.push(id);
+      actionedAssets.push(x.id);
+    },
+    buildAsset: async({ id }: WorkNode) => {
+      actionedAssets.push(id);
+    },
+    publishAsset: async({ id }: WorkNode) => {
+      actionedAssets.push(id);
+    },
   };
 
   beforeEach(() => {
@@ -229,7 +231,7 @@ describe('DeployAssets', () => {
       expected: ['c-build', 'c-publish', 'A', 'b-build', 'b-publish', 'B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
-    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).resolves.toBeUndefined();
+    await expect(deployArtifacts(toDeploy, { concurrency, callbacks })).resolves.toBeUndefined();
 
     expect(actionedAssets).toStrictEqual(expected);
   });
@@ -299,7 +301,7 @@ describe('DeployAssets', () => {
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
     // eslint-disable-next-line max-len
-    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).rejects.toThrowError(expectedError);
+    await expect(deployArtifacts(toDeploy, { concurrency, callbacks })).rejects.toThrowError(expectedError);
 
     expect(actionedAssets).toStrictEqual(expectedStacks);
   });

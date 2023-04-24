@@ -218,7 +218,8 @@ export class CdkToolkit {
       print('\n%s: assets published\n', chalk.bold(assetNode.stack.displayName));
     };
 
-    const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
+    const deployStack = async (assetNode: WorkNode) => {
+      const stack = assetNode.stack;
       if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
 
       if (!stack.environment) {
@@ -351,7 +352,14 @@ export class CdkToolkit {
     }
 
     try {
-      await deployArtifacts(cloudArtifacts, { concurrency, deployStack, buildAsset, publishAsset });
+      await deployArtifacts(cloudArtifacts, {
+        concurrency,
+        callbacks: {
+          deployStack,
+          buildAsset,
+          publishAsset,
+        },
+      });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);
       throw e;

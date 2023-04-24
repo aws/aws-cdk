@@ -1,18 +1,20 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { WorkGraph, WorkNode, WorkType } from './util/work-graph';
 
-type Options = {
-  concurrency: number;
-  deployStack: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
+interface CallbackActions {
+  deployStack: (assetNode: WorkNode) => Promise<void>;
   buildAsset: (assetNode: WorkNode) => Promise<void>;
   publishAsset: (assetNode: WorkNode) => Promise<void>;
+}
+
+type Options = {
+  concurrency: number;
+  callbacks: CallbackActions;
 };
 
 export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
   concurrency,
-  deployStack,
-  buildAsset,
-  publishAsset,
+  callbacks,
 }: Options): Promise<void> => {
   const graph = WorkGraph.fromCloudArtifacts(artifacts);
   console.log(graph.toString());
@@ -22,13 +24,13 @@ export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
     // Execute this function with as much parallelism as possible
     switch (x.type) {
       case WorkType.STACK_DEPLOY:
-        await deployStack(x.artifact as cxapi.CloudFormationStackArtifact);
+        await callbacks.deployStack(x);
         break;
       case WorkType.ASSET_BUILD:
-        await buildAsset(x);
+        await callbacks.buildAsset(x);
         break;
       case WorkType.ASSET_PUBLISH:
-        await publishAsset(x);
+        await callbacks.publishAsset(x);
         break;
     }
   });
