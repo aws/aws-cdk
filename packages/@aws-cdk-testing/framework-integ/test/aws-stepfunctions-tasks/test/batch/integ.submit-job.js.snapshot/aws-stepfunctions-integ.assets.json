@@ -1,7 +1,7 @@
 {
   "version": "31.0.0",
   "files": {
-    "623b1af92135203676ac225832cfe869116bf8df7e613d053395af1ea0d8266e": {
+    "40eeb6dc0a7fbe38cdca73b998f41d71b047bf499a3554164309a332a0d0e539": {
       "source": {
         "path": "aws-stepfunctions-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "623b1af92135203676ac225832cfe869116bf8df7e613d053395af1ea0d8266e.json",
+          "objectKey": "40eeb6dc0a7fbe38cdca73b998f41d71b047bf499a3554164309a332a0d0e539.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
