@@ -5080,7 +5080,7 @@
       "attributes": {},
       "description": "Configuration for AWS Lambda function authorization.",
       "properties": {
-        "AuthorizerResultTtlInSeconds": "The number of seconds a response should be cached for. The default is 5 minutes (300 seconds). The Lambda function can override this by returning a `ttlOverride` key in its response. A value of 0 disables caching of responses.",
+        "AuthorizerResultTtlInSeconds": "The number of seconds a response should be cached for. The default is 0 seconds, which disables caching. If you don't specify a value for `authorizerResultTtlInSeconds` , the default value is used. The maximum value is one hour (3600 seconds). The Lambda function can override this by returning a `ttlOverride` key in its response.",
         "AuthorizerUri": "The ARN of the Lambda function to be called for authorization. This may be a standard Lambda ARN, a version ARN ( `.../v3` ) or alias ARN.\n\n*Note* : This Lambda function must have the following resource-based policy assigned to it. When configuring Lambda authorizers in the console, this is done for you. To do so with the AWS CLI , run the following:\n\n`aws lambda add-permission --function-name \"arn:aws:lambda:us-east-2:111122223333:function:my-function\" --statement-id \"appsync\" --principal appsync.amazonaws.com --action lambda:InvokeFunction`",
         "IdentityValidationExpression": "A regular expression for validation of tokens before the Lambda function is called."
       }
@@ -12137,6 +12137,7 @@
         "HeartbeatEnable": "The write-ahead log (WAL) heartbeat feature mimics a dummy transaction. By doing this, it prevents idle logical replication slots from holding onto old WAL logs, which can result in storage full situations on the source. This heartbeat keeps `restart_lsn` moving and prevents storage full scenarios.",
         "HeartbeatFrequency": "Sets the WAL heartbeat frequency (in minutes).",
         "HeartbeatSchema": "Sets the schema in which the heartbeat artifacts are created.",
+        "MapBooleanAsBoolean": "",
         "MaxFileSize": "Specifies the maximum size (in KB) of any .csv file used to transfer data to PostgreSQL.\n\nExample: `maxFileSize=512`",
         "PluginName": "Specifies the plugin to use to create a replication slot.",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the PostgreSQL endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
@@ -12174,6 +12175,7 @@
         "ExplicitIds": "This setting is only valid for a full-load migration task. Set `ExplicitIds` to `true` to have tables with `IDENTITY` columns override their auto-generated values with explicit values loaded from the source data files used to populate the tables. The default is `false` .",
         "FileTransferUploadStreams": "The number of threads used to upload a single file. This parameter accepts a value from 1 through 64. It defaults to 10.\n\nThe number of parallel streams used to upload a single .csv file to an S3 bucket using S3 Multipart Upload. For more information, see [Multipart upload overview](https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html) .\n\n`FileTransferUploadStreams` accepts a value from 1 through 64. It defaults to 10.",
         "LoadTimeout": "The amount of time to wait (in milliseconds) before timing out of operations performed by AWS DMS on a Redshift cluster, such as Redshift COPY, INSERT, DELETE, and UPDATE.",
+        "MapBooleanAsBoolean": "",
         "MaxFileSize": "The maximum size (in KB) of any .csv file used to load data on an S3 bucket and transfer data to Amazon Redshift. It defaults to 1048576KB (1 GB).",
         "RemoveQuotes": "A value that specifies to remove surrounding quotation marks from strings in the incoming data. All characters within the quotation marks, including delimiters, are retained. Choose `true` to remove quotation marks. The default is `false` .",
         "ReplaceChars": "A value that specifies to replaces the invalid characters specified in `ReplaceInvalidChars` , substituting the specified characters instead. The default is `\"?\"` .",
@@ -13993,8 +13995,8 @@
       "attributes": {},
       "description": "Throughput for the specified table, which consists of values for `ReadCapacityUnits` and `WriteCapacityUnits` . For more information about the contents of a provisioned throughput structure, see [Amazon DynamoDB Table ProvisionedThroughput](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_ProvisionedThroughput.html) .",
       "properties": {
-        "ReadCapacityUnits": "The maximum number of strongly consistent reads consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0.",
-        "WriteCapacityUnits": "The maximum number of writes consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0."
+        "ReadCapacityUnits": "The maximum number of strongly consistent reads consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughput.html) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0.",
+        "WriteCapacityUnits": "The maximum number of writes consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughput.html) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0."
       }
     },
     "AWS::DynamoDB::Table.S3BucketSource": {
@@ -15968,14 +15970,14 @@
         "Ref": "`Ref` returns the resource ID.",
         "VpcId": "The physical ID of the VPC. You can obtain the physical ID by using a reference to an [AWS::EC2::VPC](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html) , such as: `{ \"Ref\" : \"myVPC\" }` ."
       },
-      "description": "Specifies a security group. To create a security group, use the [VpcId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2-securitygroup-vpcid) property to specify the VPC for which to create the security group.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\n> To cross-reference two security groups in the ingress and egress rules of those security groups, use the [AWS::EC2::SecurityGroupEgress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-egress.html) and [AWS::EC2::SecurityGroupIngress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-ingress.html) resources to define your rules. Do not use the embedded ingress and egress rules in the `AWS::EC2::SecurityGroup` . Doing so creates a circular dependency, which AWS CloudFormation doesn't allow.",
+      "description": "Specifies a security group. To create a security group, use the [VpcId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2-securitygroup-vpcid) property to specify the VPC for which to create the security group.\n\nIf you do not specify an egress rule, we add egress rules that allow IPv4 and IPv6 traffic on all ports and protocols to any destination. We do not add these rules if you specify your own egress rules. If you later remove your egress rules, we restore the default egress rules.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\n> To cross-reference two security groups in the ingress and egress rules of those security groups, use the [AWS::EC2::SecurityGroupEgress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-egress.html) and [AWS::EC2::SecurityGroupIngress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-ingress.html) resources to define your rules. Do not use the embedded ingress and egress rules in the `AWS::EC2::SecurityGroup` . Doing so creates a circular dependency, which AWS CloudFormation doesn't allow.",
       "properties": {
         "GroupDescription": "A description for the security group.\n\nConstraints: Up to 255 characters in length\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
-        "SecurityGroupEgress": "[VPC only] The outbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
+        "SecurityGroupEgress": "The outbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
         "SecurityGroupIngress": "The inbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
         "Tags": "Any tags assigned to the security group.",
-        "VpcId": "[VPC only] The ID of the VPC for the security group."
+        "VpcId": "The ID of the VPC for the security group."
       }
     },
     "AWS::EC2::SecurityGroup.Egress": {
@@ -15988,7 +15990,7 @@
         "DestinationPrefixListId": "The prefix list IDs for the destination AWS service. This is the AWS service that you want to access through a VPC endpoint from instances associated with the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "DestinationSecurityGroupId": "The ID of the destination VPC security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "FromPort": "If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all ICMP/ICMPv6 codes.",
-        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
+        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\nUse `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "ToPort": "If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all ICMP/ICMPv6 codes."
       }
     },
@@ -16000,7 +16002,7 @@
         "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a source security group ( `SourcePrefixListId` or `SourceSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all ICMP/ICMPv6 codes.",
-        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
+        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\nUse `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "SourcePrefixListId": "The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.",
         "SourceSecurityGroupName": "[Default VPC] The name of the source security group. You must specify either the security group ID or the security group name. You can't specify the group name in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nFor security groups in a nondefault VPC, you must specify the group ID.",
@@ -16021,7 +16023,7 @@
         "DestinationSecurityGroupId": "The ID of the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "FromPort": "If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all ICMP/ICMPv6 codes.",
         "GroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.",
-        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
+        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\nUse `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "ToPort": "If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all ICMP/ICMPv6 codes."
       }
     },
@@ -16035,7 +16037,7 @@
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports.",
         "GroupId": "The ID of the security group.",
         "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
-        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
+        "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\nUse `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "SourcePrefixListId": "The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name. For security groups in a nondefault VPC, you must specify the security group ID.",
         "SourceSecurityGroupName": "[Default VPC] The name of the source security group. You must specify either the security group ID or the security group name. You can't specify the group name in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nFor security groups in a nondefault VPC, you must specify the group ID.",
@@ -22499,7 +22501,7 @@
       "attributes": {},
       "description": "Specifies code executed when a job is run.",
       "properties": {
-        "Name": "The name of the job command. For an Apache Spark ETL job, this must be `glueetl` . For a Python shell job, it must be `pythonshell` .",
+        "Name": "The name of the job command. For an Apache Spark ETL job, this must be `glueetl` . For a Python shell job, it must be `pythonshell` . For an Apache Spark streaming ETL job, this must be `gluestreaming` .",
         "PythonVersion": "The Python version being used to execute a Python shell job. Allowed values are 3 or 3.9. Version 2 is deprecated.",
         "ScriptLocation": "Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job (required)."
       }
@@ -28341,6 +28343,7 @@
       "attributes": {
         "Arn": "The scene ARN.",
         "CreationDateTime": "The date and time when the scene was created.",
+        "GeneratedSceneMetadata": "",
         "Ref": "`Ref` returns the workspace Id and the sence Id.",
         "UpdateDateTime": "The scene the update time."
       },
@@ -28350,6 +28353,7 @@
         "ContentLocation": "The relative path that specifies the location of the content definition file.",
         "Description": "The description of this scene.",
         "SceneId": "The scene ID.",
+        "SceneMetadata": "",
         "Tags": "The ComponentType tags.",
         "WorkspaceId": "The ID of the workspace."
       }
@@ -31667,7 +31671,7 @@
         "BotFileS3Location": "The Amazon S3 location of files used to import a bot. The files must be in the import format specified in [JSON format for importing and exporting](https://docs.aws.amazon.com/lexv2/latest/dg/import-export-format.html) in the *Amazon Lex developer guide.*",
         "BotLocales": "A list of locales for the bot.",
         "BotTags": "A list of tags to add to the bot. You can only add tags when you import a bot. You can't use the `UpdateBot` operation to update tags. To update tags, use the `TagResource` operation.",
-        "DataPrivacy": "",
+        "DataPrivacy": "By default, data stored by Amazon Lex is encrypted. The `DataPrivacy` structure provides settings that determine how Amazon Lex handles special cases of securing the data for your bot.",
         "Description": "The description of the version.",
         "IdleSessionTTLInSeconds": "The time, in seconds, that Amazon Lex should keep information about a user's conversation with the bot.\n\nA user interaction remains active for the amount of time specified. If no conversation occurs during this time, the session expires and Amazon Lex deletes any data provided before the timeout.\n\nYou can specify between 60 (1 minute) and 86,400 (24 hours) seconds.",
         "Name": "The name of the bot locale.",
@@ -31844,7 +31848,7 @@
     },
     "AWS::Lex::Bot.DataPrivacy": {
       "attributes": {},
-      "description": "Provides information on additional privacy protections Amazon Lex should use with the bot's data.",
+      "description": "",
       "properties": {
         "ChildDirected": "For each Amazon Lex bot created with the Amazon Lex Model Building Service, you must specify whether your use of Amazon Lex is related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to the Children's Online Privacy Protection Act (COPPA) by specifying `true` or `false` in the `childDirected` field. By specifying `true` in the `childDirected` field, you confirm that your use of Amazon Lex *is* related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. By specifying `false` in the `childDirected` field, you confirm that your use of Amazon Lex *is not* related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. You may not specify a default value for the `childDirected` field that does not accurately reflect whether your use of Amazon Lex is related to a website, program, or other application that is directed or targeted, in whole or in part, to children under age 13 and subject to COPPA. If your use of Amazon Lex relates to a website, program, or other application that is directed in whole or in part, to children under age 13, you must obtain any required verifiable parental consent under COPPA. For information regarding the use of Amazon Lex in connection with websites, programs, or other applications that are directed or targeted, in whole or in part, to children under age 13, see the [Amazon Lex FAQ](https://docs.aws.amazon.com/lex/faqs#data-security) ."
       }
@@ -32411,7 +32415,7 @@
       },
       "description": "> Amazon Lex V2 is the only supported version in AWS CloudFormation . \n\nSpecifies an alias for the specified version of a bot. Use an alias to enable you to change the version of a bot without updating applications that use the bot.\n\nFor example, you can specify an alias called \"PROD\" that your applications use to call the Amazon Lex bot.",
       "properties": {
-        "BotAliasLocaleSettings": "",
+        "BotAliasLocaleSettings": "Specifies settings that are unique to a locale. For example, you can use different Lambda function depending on the bot's locale.",
         "BotAliasName": "The name of the bot alias.",
         "BotAliasTags": "An array of key-value pairs to apply to this resource.\n\nYou can only add tags when you specify an alias.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "BotId": "The unique identifier of the bot.",
@@ -36181,8 +36185,8 @@
     "AWS::MediaPackage::Asset": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the asset. You can get this from the response to any request to the asset.",
-        "CreatedAt": "The time that the asset was initially submitted for ingest.",
-        "Ref": ""
+        "CreatedAt": "The date and time that the asset was initially submitted for ingest.",
+        "Ref": "`Ref` returns the name of the asset.\n\nFor example: `{ \"Ref\": \"myAsset\" }`"
       },
       "description": "Creates an asset to ingest VOD content.\n\nAfter it's created, the asset starts ingesting content and generates playback URLs for the packaging configurations associated with it. When ingest is complete, downstream devices use the appropriate URL to request VOD content from AWS Elemental MediaPackage .",
       "properties": {
@@ -36206,13 +36210,13 @@
     "AWS::MediaPackage::Channel": {
       "attributes": {
         "Arn": "The channel's unique system-generated resource name, based on the AWS record.",
-        "Ref": ""
+        "Ref": "`Ref` returns the name of the channel.\n\nFor example: `{ \"Ref\": \"myChannel\" }`"
       },
       "description": "Creates a channel to receive content.\n\nAfter it's created, a channel provides static input URLs. These URLs remain the same throughout the lifetime of the channel, regardless of any failures or upgrades that might occur. Use these URLs to configure the outputs of your upstream encoder.",
       "properties": {
         "Description": "Any descriptive information that you want to add to the channel for future identification purposes.",
         "EgressAccessLogs": "Configures egress access logs.",
-        "HlsIngest": "",
+        "HlsIngest": "The input URL where the source stream should be sent.",
         "Id": "Unique identifier that you assign to the channel.",
         "IngressAccessLogs": "Configures ingress access logs.",
         "Tags": "The tags to assign to the channel."
@@ -36220,19 +36224,19 @@
     },
     "AWS::MediaPackage::Channel.HlsIngest": {
       "attributes": {},
-      "description": "",
+      "description": "HLS ingest configuration.",
       "properties": {
-        "ingestEndpoints": ""
+        "ingestEndpoints": "The input URL where the source stream should be sent."
       }
     },
     "AWS::MediaPackage::Channel.IngestEndpoint": {
       "attributes": {},
-      "description": "",
+      "description": "An endpoint for ingesting source content for a channel.",
       "properties": {
-        "Id": "",
-        "Password": "",
-        "Url": "",
-        "Username": ""
+        "Id": "The endpoint identifier.",
+        "Password": "The system-generated password for WebDAV input authentication.",
+        "Url": "The input URL where the source stream should be sent.",
+        "Username": "The system-generated username for WebDAV input authentication."
       }
     },
     "AWS::MediaPackage::Channel.LogConfiguration": {
@@ -36245,7 +36249,7 @@
     "AWS::MediaPackage::OriginEndpoint": {
       "attributes": {
         "Arn": "The endpoint's unique system-generated resource name, based on the AWS record.",
-        "Ref": "",
+        "Ref": "`Ref` returns the name of the origin endpoint.\n\nFor example: `{ \"Ref\": \"myOriginEndpoint\" }`",
         "Url": "URL for the key provider\u2019s key retrieval API endpoint. Must start with https://."
       },
       "description": "Create an endpoint on an AWS Elemental MediaPackage channel.\n\nAn endpoint represents a single delivery point of a channel, and defines content output handling through various components, such as packaging protocols, DRM and encryption integration, and more.\n\nAfter it's created, an endpoint provides a fixed public URL. This URL remains the same throughout the lifetime of the endpoint, regardless of any failures or upgrades that might occur. Integrate the URL with a downstream CDN (such as Amazon CloudFront) or playback device.",
@@ -36279,7 +36283,7 @@
       "description": "Holds encryption information so that access to the content can be controlled by a DRM solution.",
       "properties": {
         "ConstantInitializationVector": "An optional 128-bit, 16-byte hex value represented by a 32-character string, used in conjunction with the key for encrypting blocks. If you don't specify a value, then AWS Elemental MediaPackage creates the constant initialization vector (IV).",
-        "EncryptionMethod": "",
+        "EncryptionMethod": "The encryption method to use.",
         "KeyRotationIntervalSeconds": "Number of seconds before AWS Elemental MediaPackage rotates to a new key. By default, rotation is set to 60 seconds. Set to `0` to disable key rotation.",
         "SpekeKeyProvider": "Parameters for the SPEKE key provider."
       }
@@ -36365,7 +36369,7 @@
         "AdTriggers": "Specifies the SCTE-35 message types that AWS Elemental MediaPackage treats as ad markers in the output manifest.\n\nValid values:\n\n- `BREAK`\n- `DISTRIBUTOR_ADVERTISEMENT`\n- `DISTRIBUTOR_OVERLAY_PLACEMENT_OPPORTUNITY`\n- `DISTRIBUTOR_PLACEMENT_OPPORTUNITY`\n- `PROVIDER_ADVERTISEMENT`\n- `PROVIDER_OVERLAY_PLACEMENT_OPPORTUNITY`\n- `PROVIDER_PLACEMENT_OPPORTUNITY`\n- `SPLICE_INSERT`",
         "AdsOnDeliveryRestrictions": "The flags on SCTE-35 segmentation descriptors that have to be present for AWS Elemental MediaPackage to insert ad markers in the output manifest. For information about SCTE-35 in AWS Elemental MediaPackage , see [SCTE-35 Message Options in AWS Elemental MediaPackage](https://docs.aws.amazon.com/mediapackage/latest/ug/scte.html) .",
         "Encryption": "Parameters for encrypting content.",
-        "IncludeDvbSubtitles": "",
+        "IncludeDvbSubtitles": "When enabled, MediaPackage passes through digital video broadcasting (DVB) subtitles into the output.",
         "IncludeIframeOnlyStream": "Only applies to stream sets with a single video track. When true, the stream set includes an additional I-frame only stream, along with the other tracks. If false, this extra stream is not included.",
         "PlaylistType": "When specified as either `event` or `vod` , a corresponding `EXT-X-PLAYLIST-TYPE` entry is included in the media playlist. Indicates if the playlist is live-to-VOD content.",
         "PlaylistWindowSeconds": "Time window (in seconds) contained in each parent manifest.",
@@ -36394,7 +36398,7 @@
     },
     "AWS::MediaPackage::OriginEndpoint.SpekeKeyProvider": {
       "attributes": {},
-      "description": "Keyprovider settings for DRM.",
+      "description": "Key provider settings for DRM.",
       "properties": {
         "CertificateArn": "The Amazon Resource Name (ARN) for the certificate that you imported to AWS Certificate Manager to add content key encryption to this endpoint. For this feature to work, your DRM key provider must support content key encryption.",
         "EncryptionContractConfiguration": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines which content keys are used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use.",
@@ -36416,7 +36420,7 @@
     "AWS::MediaPackage::PackagingConfiguration": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the packaging configuration. You can get this from the response to any request to the packaging configuration.",
-        "Ref": ""
+        "Ref": "`Ref` returns the name of the packaging configuration.\n\nFor example: `{ \"Ref\": \"myPackagingConfiguration\" }`"
       },
       "description": "Creates a packaging configuration in a packaging group.\n\nThe packaging configuration represents a single delivery point for an asset. It determines the format and setting for the egressing content. Specify only one package format per configuration, such as `HlsPackage` .",
       "properties": {
@@ -36472,7 +36476,7 @@
         "DashManifests": "A list of DASH manifest configurations that are available from this endpoint.",
         "Encryption": "Parameters for encrypting content.",
         "IncludeEncoderConfigurationInSegments": "When includeEncoderConfigurationInSegments is set to true, AWS Elemental MediaPackage places your encoder's Sequence Parameter Set (SPS), Picture Parameter Set (PPS), and Video Parameter Set (VPS) metadata in every video segment instead of in the init fragment. This lets you use different SPS/PPS/VPS settings for your assets during content playback.",
-        "IncludeIframeOnlyStream": "",
+        "IncludeIframeOnlyStream": "This applies only to stream sets with a single video track. When true, the stream set includes an additional I-frame trick-play only stream, along with the other tracks. If false, this extra stream is not included.",
         "PeriodTriggers": "Controls whether AWS Elemental MediaPackage produces single-period or multi-period DASH manifests. For more information about periods, see [Multi-period DASH in AWS Elemental MediaPackage](https://docs.aws.amazon.com/mediapackage/latest/ug/multi-period.html) .\n\nValid values:\n\n- `ADS` - AWS Elemental MediaPackage will produce multi-period DASH manifests. Periods are created based on the SCTE-35 ad markers present in the input manifest.\n- *No value* - AWS Elemental MediaPackage will produce single-period DASH manifests. This is the default setting.",
         "SegmentDurationSeconds": "Duration (in seconds) of each fragment. Actual fragments are rounded to the nearest multiple of the source segment duration.",
         "SegmentTemplateFormat": "Determines the type of SegmentTemplate included in the Media Presentation Description (MPD). When set to `NUMBER_WITH_TIMELINE` , a full timeline is presented in each SegmentTemplate, with $Number$ media URLs. When set to `TIME_WITH_TIMELINE` , a full timeline is presented in each SegmentTemplate, with $Time$ media URLs. When set to `NUMBER_WITH_DURATION` , only a duration is included in each SegmentTemplate, with $Number$ media URLs."
@@ -36480,7 +36484,7 @@
     },
     "AWS::MediaPackage::PackagingConfiguration.EncryptionContractConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines the content keys used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use. For more information about these presets, see [SPEKE Version 2.0 Presets](https://docs.aws.amazon.com/mediapackage/latest/ug/drm-content-speke-v2-presets.html) .\n\nNote the following considerations when using `encryptionContractConfiguration` :\n\n- You can use `encryptionContractConfiguration` for DASH endpoints that use SPEKE Version 2.0. SPEKE Version 2.0 relies on the CPIX Version 2.3 specification.\n- You cannot combine an `UNENCRYPTED` preset with `UNENCRYPTED` or `SHARED` presets across `presetSpeke20Audio` and `presetSpeke20Video` .\n- When you use a `SHARED` preset, you must use it for both `presetSpeke20Audio` and `presetSpeke20Video` .",
       "properties": {}
     },
     "AWS::MediaPackage::PackagingConfiguration.HlsEncryption": {
@@ -36510,7 +36514,7 @@
       "properties": {
         "Encryption": "Parameters for encrypting content.",
         "HlsManifests": "A list of HLS manifest configurations that are available from this endpoint.",
-        "IncludeDvbSubtitles": "",
+        "IncludeDvbSubtitles": "When enabled, MediaPackage passes through digital video broadcasting (DVB) subtitles into the output.",
         "SegmentDurationSeconds": "Duration (in seconds) of each fragment. Actual fragments are rounded to the nearest multiple of the source fragment duration.",
         "UseAudioRenditionGroup": "When true, AWS Elemental MediaPackage bundles all audio tracks in a rendition group. All other tracks in the stream can be used with any audio rendition from the group."
       }
@@ -36543,7 +36547,7 @@
       "attributes": {},
       "description": "A configuration for accessing an external Secure Packager and Encoder Key Exchange (SPEKE) service that provides encryption keys.",
       "properties": {
-        "EncryptionContractConfiguration": "",
+        "EncryptionContractConfiguration": "Use `encryptionContractConfiguration` to configure one or more content encryption keys for your endpoints that use SPEKE Version 2.0. The encryption contract defines which content keys are used to encrypt the audio and video tracks in your stream. To configure the encryption contract, specify which audio and video encryption presets to use.",
         "RoleArn": "The ARN for the IAM role that's granted by the key provider to provide access to the key provider API. Valid format: arn:aws:iam::{accountID}:role/{name}",
         "SystemIds": "List of unique identifiers for the DRM systems to use, as defined in the CPIX specification.",
         "Url": "URL for the key provider's key retrieval API endpoint. Must start with https://."
@@ -36562,7 +36566,7 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the packaging group. You can get this from the response to any request to the packaging group.",
         "DomainName": "The URL for the assets in the PackagingGroup.",
-        "Ref": ""
+        "Ref": "`Ref` returns the name of the packaging group.\n\nFor example: `{ \"Ref\": \"myPackagingGroup\" }`"
       },
       "description": "Creates a packaging group.\n\nThe packaging group holds one or more packaging configurations. When you create an asset, you specify the packaging group associated with the asset. The asset has playback endpoints for each packaging configuration within the group.",
       "properties": {
@@ -54169,7 +54173,7 @@
         "EnableIAMDatabaseAuthentication": "A value that indicates whether to enable mapping of AWS Identity and Access Management (IAM) accounts to database accounts. By default, mapping is disabled.\n\nThis property is supported for RDS for MariaDB, RDS for MySQL, and RDS for PostgreSQL. For more information, see [IAM Database Authentication for MariaDB, MySQL, and PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) in the *Amazon RDS User Guide.*\n\n*Amazon Aurora*\n\nNot applicable. Mapping AWS IAM accounts to database accounts is managed by the DB cluster.",
         "EnablePerformanceInsights": "A value that indicates whether to enable Performance Insights for the DB instance. For more information, see [Using Amazon Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html) in the *Amazon RDS User Guide* .\n\nThis setting doesn't apply to RDS Custom.",
         "Endpoint": "Specifies the connection endpoint.\n\n> The endpoint might not be shown for instances whose status is `creating` .",
-        "Engine": "The name of the database engine that you want to use for this DB instance.\n\n> When you are creating a DB instance, the `Engine` property is required. \n\nValid Values:\n\n- `aurora` (for MySQL 5.6-compatible Aurora)\n- `aurora-mysql` (for MySQL 5.7-compatible Aurora)\n- `aurora-postgresql`\n- `custom-oracle-ee`\n- `custom-oracle-ee-cdb`\n- `custom-sqlserver-ee`\n- `custom-sqlserver-se`\n- `custom-sqlserver-web`\n- `mariadb`\n- `mysql`\n- `oracle-ee`\n- `oracle-ee-cdb`\n- `oracle-se2`\n- `oracle-se2-cdb`\n- `postgres`\n- `sqlserver-ee`\n- `sqlserver-se`\n- `sqlserver-ex`\n- `sqlserver-web`",
+        "Engine": "The name of the database engine that you want to use for this DB instance.\n\n> When you are creating a DB instance, the `Engine` property is required. \n\nValid Values:\n\n- `aurora` (for MySQL 5.6-compatible Aurora)\n- `aurora-mysql` (for MySQL 5.7-compatible and MySQL 8.0-compatible Aurora)\n- `aurora-postgresql`\n- `custom-oracle-ee`\n- `custom-oracle-ee-cdb`\n- `custom-sqlserver-ee`\n- `custom-sqlserver-se`\n- `custom-sqlserver-web`\n- `mariadb`\n- `mysql`\n- `oracle-ee`\n- `oracle-ee-cdb`\n- `oracle-se2`\n- `oracle-se2-cdb`\n- `postgres`\n- `sqlserver-ee`\n- `sqlserver-se`\n- `sqlserver-ex`\n- `sqlserver-web`",
         "EngineVersion": "The version number of the database engine to use.\n\nFor a list of valid engine versions, use the `DescribeDBEngineVersions` action.\n\nThe following are the database engines and links to information about the major and minor versions that are available with Amazon RDS. Not every database engine is available for every AWS Region.\n\n*Amazon Aurora*\n\nNot applicable. The version number of the database engine to be used by the DB instance is managed by the DB cluster.\n\n*MariaDB*\n\nSee [MariaDB on Amazon RDS Versions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MariaDB.html#MariaDB.Concepts.VersionMgmt) in the *Amazon RDS User Guide.*\n\n*Microsoft SQL Server*\n\nSee [Microsoft SQL Server Versions on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html#SQLServer.Concepts.General.VersionSupport) in the *Amazon RDS User Guide.*\n\n*MySQL*\n\nSee [MySQL on Amazon RDS Versions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html#MySQL.Concepts.VersionMgmt) in the *Amazon RDS User Guide.*\n\n*Oracle*\n\nSee [Oracle Database Engine Release Notes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.PatchComposition.html) in the *Amazon RDS User Guide.*\n\n*PostgreSQL*\n\nSee [Supported PostgreSQL Database Versions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.DBVersions) in the *Amazon RDS User Guide.*",
         "Iops": "The number of I/O operations per second (IOPS) that the database provisions. The value must be equal to or greater than 1000.\n\nIf you specify this property, you must follow the range of allowed ratios of your requested IOPS rate to the amount of storage that you allocate (IOPS to allocated storage). For example, you can provision an Oracle database instance with 1000 IOPS and 200 GiB of storage (a ratio of 5:1), or specify 2000 IOPS with 200 GiB of storage (a ratio of 10:1). For more information, see [Amazon RDS Provisioned IOPS Storage to Improve Performance](https://docs.aws.amazon.com/AmazonRDS/latest/DeveloperGuide/CHAP_Storage.html#USER_PIOPS) in the *Amazon RDS User Guide* .\n\n> If you specify `io1` for the `StorageType` property, then you must also specify the `Iops` property.",
         "KmsKeyId": "The ARN of the AWS KMS key that's used to encrypt the DB instance, such as `arn:aws:kms:us-east-1:012345678910:key/abcd1234-a123-456a-a12b-a123b4cd56ef` . If you enable the StorageEncrypted property but don't specify this property, AWS CloudFormation uses the default KMS key. If you specify this property, you must set the StorageEncrypted property to true.\n\nIf you specify the `SourceDBInstanceIdentifier` property, the value is inherited from the source DB instance if the read replica is created in the same region.\n\nIf you create an encrypted read replica in a different AWS Region, then you must specify a KMS key for the destination AWS Region. KMS encryption keys are specific to the region that they're created in, and you can't use encryption keys from one region in another region.\n\nIf you specify the `SnapshotIdentifier` property, the `StorageEncrypted` property value is inherited from the snapshot, and if the DB instance is encrypted, the specified `KmsKeyId` property is used.\n\nIf you specify `DBSecurityGroups` , AWS CloudFormation ignores this property. To specify both a security group and this property, you must use a VPC security group. For more information about Amazon RDS and VPC, see [Using Amazon RDS with Amazon VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html) in the *Amazon RDS User Guide* .\n\n*Amazon Aurora*\n\nNot applicable. The KMS key identifier is managed by the DB cluster.",
@@ -58906,6 +58910,7 @@
       "description": "Specifies the configuration for notifications of inference results for asynchronous inference.",
       "properties": {
         "ErrorTopic": "Amazon SNS topic to post a notification to when an inference fails. If no topic is provided, no notification is sent on failure.",
+        "IncludeInferenceResponseIn": "",
         "SuccessTopic": "Amazon SNS topic to post a notification to when an inference completes successfully. If no topic is provided, no notification is sent on success."
       }
     },
@@ -58915,6 +58920,7 @@
       "properties": {
         "KmsKeyId": "The AWS Key Management Service ( AWS KMS) key that Amazon SageMaker uses to encrypt the asynchronous inference output in Amazon S3.",
         "NotificationConfig": "Specifies the configuration for notifications of inference results for asynchronous inference.",
+        "S3FailurePath": "",
         "S3OutputPath": "The Amazon S3 location to upload inference responses to."
       }
     },
@@ -64462,14 +64468,6 @@
         "NotificationsEnabled": "Set the NotificationsEnabled value to true to enable insights notifications. Notifications can only be enabled on a group with InsightsEnabled set to true."
       }
     },
-    "AWS::XRay::Group.TagsItems": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Key": "",
-        "Value": ""
-      }
-    },
     "AWS::XRay::ResourcePolicy": {
       "attributes": {
         "Ref": ""
@@ -64489,8 +64487,6 @@
       "properties": {
         "RuleName": "The name of the sampling rule. Specify a rule by either name or ARN, but not both. Used only when deleting a sampling rule. When creating or updating a sampling rule, use the `RuleName` or `RuleARN` properties within `SamplingRule` or `SamplingRuleUpdate` .",
         "SamplingRule": "The sampling rule to be created.\n\nMust be provided if creating a new sampling rule. Not valid when updating an existing sampling rule.",
-        "SamplingRuleRecord": "",
-        "SamplingRuleUpdate": "A document specifying changes to a sampling rule's configuration.\n\nMust be provided if updating an existing sampling rule. Not valid when creating a new sampling rule.\n\n> The `Version` of a sampling rule cannot be updated, and is not part of `SamplingRuleUpdate` .",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -64511,41 +64507,6 @@
         "ServiceType": "Matches the `origin` that the service uses to identify its type in segments.",
         "URLPath": "Matches the path from a request URL.",
         "Version": "The version of the sampling rule format ( `1` )."
-      }
-    },
-    "AWS::XRay::SamplingRule.SamplingRuleRecord": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "CreatedAt": "",
-        "ModifiedAt": "",
-        "SamplingRule": ""
-      }
-    },
-    "AWS::XRay::SamplingRule.SamplingRuleUpdate": {
-      "attributes": {},
-      "description": "A document specifying changes to a sampling rule's configuration.",
-      "properties": {
-        "Attributes": "Matches attributes derived from the request.\n\n*Map Entries:* Maximum number of 5 items.\n\n*Key Length Constraints:* Minimum length of 1. Maximum length of 32.\n\n*Value Length Constraints:* Minimum length of 1. Maximum length of 32.",
-        "FixedRate": "The percentage of matching requests to instrument, after the reservoir is exhausted.",
-        "HTTPMethod": "Matches the HTTP method of a request.",
-        "Host": "Matches the hostname from a request URL.",
-        "Priority": "The priority of the sampling rule.",
-        "ReservoirSize": "A fixed number of matching requests to instrument per second, prior to applying the fixed rate. The reservoir is not used directly by services, but applies to all services using the rule collectively.",
-        "ResourceARN": "Matches the ARN of the AWS resource on which the service runs.",
-        "RuleARN": "The ARN of the sampling rule. You must specify either RuleARN or RuleName, but not both.",
-        "RuleName": "The name of the sampling rule. You must specify either RuleARN or RuleName, but not both.",
-        "ServiceName": "Matches the `name` that the service uses to identify itself in segments.",
-        "ServiceType": "Matches the `origin` that the service uses to identify its type in segments.",
-        "URLPath": "Matches the path from a request URL."
-      }
-    },
-    "AWS::XRay::SamplingRule.TagsItems": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Key": "",
-        "Value": ""
       }
     },
     "Alexa::ASK::Skill": {
