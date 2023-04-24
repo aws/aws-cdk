@@ -21,7 +21,7 @@ export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runti
   // can index off, but for type safety we also default it here.
   const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
   return runtimeName
-    ? lambda.Runtime.fromRegionDefaultString(runtimeName)
+    ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
     : lambda.Runtime.NODEJS_16_X;
 }
 
