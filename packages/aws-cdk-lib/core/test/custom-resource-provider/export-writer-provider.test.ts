@@ -63,7 +63,7 @@ describe('export writer provider', () => {
                         'ssm:PutParameter',
                       ],
                       Effect: 'Allow',
-                      Resource: {
+                      Resource: [{
                         'Fn::Join': [
                           '',
                           [
@@ -78,7 +78,7 @@ describe('export writer provider', () => {
                             ':parameter/cdk/exports/*',
                           ],
                         ],
-                      },
+                      }],
                     },
                   ],
                   Version: '2012-10-17',
@@ -255,6 +255,126 @@ describe('export writer provider', () => {
     });
   });
 
+  test('multi region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack1', { env: { region: 'producer-region' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'consumer-region1' } });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'consumer-region2' } });
+    const resource = new CfnResource(stack, 'MyResource', {
+      type: 'Custom::MyResource',
+    });
+
+    // WHEN
+    const exportWriter = new ExportWriter(stack, 'ExportWriter', {
+      region: 'us-east-1',
+    });
+    exportWriter.exportValue('MyResourceName', resource.getAtt('arn'), stack2);
+    exportWriter.exportValue('MyResourceName', resource.getAtt('arn'), stack3);
+
+    // THEN
+    const cfn = toCloudFormation(stack);
+
+    expect(cfn).toMatchObject({
+      Resources: {
+        MyResource: {
+          Type: 'Custom::MyResource',
+        },
+        CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    Service: 'lambda.amazonaws.com',
+                  },
+                },
+              ],
+            },
+            Policies: [
+              {
+                PolicyDocument: {
+                  Statement: [
+                    {
+                      Action: [
+                        'ssm:DeleteParameters',
+                        'ssm:ListTagsForResource',
+                        'ssm:GetParameters',
+                        'ssm:PutParameter',
+                      ],
+                      Effect: 'Allow',
+                      Resource: [
+                        {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':ssm:us-east-1:',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':parameter/cdk/exports/*',
+                            ],
+                          ],
+                        },
+                        {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':ssm:consumer-region1:',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':parameter/cdk/exports/*',
+                            ],
+                          ],
+                        },
+                        {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':ssm:consumer-region2:',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':parameter/cdk/exports/*',
+                            ],
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                  Version: '2012-10-17',
+                },
+                PolicyName: 'Inline',
+              },
+            ],
+            ManagedPolicyArns: [
+              {
+                'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
   test('when consumer is a nested stack, ExportReader is created in the parent stack', () => {
     // GIVEN
     const app = new App();
@@ -312,7 +432,7 @@ describe('export writer provider', () => {
                         'ssm:PutParameter',
                       ],
                       Effect: 'Allow',
-                      Resource: {
+                      Resource: [{
                         'Fn::Join': [
                           '',
                           [
@@ -327,7 +447,7 @@ describe('export writer provider', () => {
                             ':parameter/cdk/exports/*',
                           ],
                         ],
-                      },
+                      }],
                     },
                   ],
                   Version: '2012-10-17',
