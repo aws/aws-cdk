@@ -1,0 +1,380 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "parent-stack": {
+        "id": "parent-stack",
+        "path": "parent-stack",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "parent-stack/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "parent-stack/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "uniqueexample.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CrossAccountRole": {
+            "id": "CrossAccountRole",
+            "path": "parent-stack/CrossAccountRole",
+            "children": {
+              "ImportCrossAccountRole": {
+                "id": "ImportCrossAccountRole",
+                "path": "parent-stack/CrossAccountRole/ImportCrossAccountRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "parent-stack/CrossAccountRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "arn:aws:iam::234567890123:root"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "MyUniqueDelegationRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "parent-stack/CrossAccountRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "parent-stack/CrossAccountRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "route53:ChangeResourceRecordSets",
+                              "Condition": {
+                                "ForAllValues:StringEquals": {
+                                  "route53:ChangeResourceRecordSetsRecordTypes": [
+                                    "NS"
+                                  ],
+                                  "route53:ChangeResourceRecordSetsActions": [
+                                    "UPSERT",
+                                    "DELETE"
+                                  ]
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:aws:route53:::hostedzone/",
+                                    {
+                                      "Ref": "HostedZoneDB99F866"
+                                    }
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "route53:ListHostedZonesByName",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "CrossAccountRoleDefaultPolicy212A317F",
+                        "roles": [
+                          {
+                            "Ref": "CrossAccountRoleFACE29D1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "parent-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "parent-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      },
+      "child-stack": {
+        "id": "child-stack",
+        "path": "child-stack",
+        "children": {
+          "MutableRoleDelegationRole": {
+            "id": "MutableRoleDelegationRole",
+            "path": "child-stack/MutableRoleDelegationRole",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "DelegationRole": {
+            "id": "DelegationRole",
+            "path": "child-stack/DelegationRole",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "NewSubZone": {
+            "id": "NewSubZone",
+            "path": "child-stack/NewSubZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "child-stack/NewSubZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "new.uniqueexample.com."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "delegate": {
+            "id": "delegate",
+            "path": "child-stack/delegate",
+            "children": {
+              "cross-account-zone-delegation-handler-role": {
+                "id": "cross-account-zone-delegation-handler-role",
+                "path": "child-stack/delegate/cross-account-zone-delegation-handler-role",
+                "children": {
+                  "PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E": {
+                    "id": "PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E",
+                    "path": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:iam::234567890123:role/MyUniqueDelegationRole"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E",
+                            "roles": [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::Select": [
+                                          5,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.70"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "CrossAccountZoneDelegationCustomResource": {
+                "id": "CrossAccountZoneDelegationCustomResource",
+                "path": "child-stack/delegate/CrossAccountZoneDelegationCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "child-stack/delegate/CrossAccountZoneDelegationCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "Custom::CrossAccountZoneDelegationCustomResourceProvider": {
+            "id": "Custom::CrossAccountZoneDelegationCustomResourceProvider",
+            "path": "child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "child-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "child-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.2.70"
+    }
+  }
+}

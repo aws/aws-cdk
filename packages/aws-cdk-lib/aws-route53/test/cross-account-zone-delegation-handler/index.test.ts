@@ -1,4 +1,4 @@
-import { handler } from '../../lib/cross-account-zone-delegation-handler';
+import { handler, CrossAccountZoneDelegationEvent } from '../../lib/cross-account-zone-delegation-handler';
 
 const mockAssumeRole = jest.fn();
 const mockChangeResourceRecordSets = jest.fn();
@@ -77,6 +77,95 @@ test('calls create resource record set with Upsert for Create event', async () =
   });
 });
 
+test('calls update resource record set with Upsert for Update event', async () => {
+  // GIVEN
+  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+
+  // WHEN
+  const event= getCfnEvent({
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      AssumeRoleArn: 'roleArn',
+      ParentZoneId: '1',
+      DelegatedZoneName: 'recordName',
+      DelegatedZoneNameServers: ['three', 'four'],
+      TTL: 172800,
+    },
+  });
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(1);
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [{
+        Action: 'UPSERT',
+        ResourceRecordSet: {
+          Name: 'recordName',
+          Type: 'NS',
+          TTL: 172800,
+          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+        },
+      }],
+    },
+
+  });
+});
+
+test('calls update resource record set with Upsert and Delete for Update event', async () => {
+  // GIVEN
+  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+
+  // WHEN
+  const event= getCfnEvent({
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      AssumeRoleArn: 'roleArn',
+      ParentZoneId: '1',
+      DelegatedZoneName: 'anotherRecordName',
+      DelegatedZoneNameServers: ['three', 'four'],
+      TTL: 172800,
+    },
+  });
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(2);
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [{
+        Action: 'UPSERT',
+        ResourceRecordSet: {
+          Name: 'recordName',
+          Type: 'NS',
+          TTL: 172800,
+          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+        },
+      }],
+    },
+  });
+  expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
+    HostedZoneId: '1',
+    ChangeBatch: {
+      Changes: [{
+        Action: 'DELETE',
+        ResourceRecordSet: {
+          Name: 'anotherRecordName',
+          Type: 'NS',
+          TTL: 172800,
+          ResourceRecords: [{ Value: 'three' }, { Value: 'four' }],
+        },
+      }],
+    },
+  });
+});
+
 test('calls create resource record set with DELETE for Delete event', async () => {
   // GIVEN
   mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
@@ -141,7 +230,7 @@ test('calls listHostedZonesByName to get zoneId if ParentZoneId is not provided'
   });
 });
 
-test('throws if more than one HostedZones are returnd for the provided ParentHostedZone', async () => {
+test('throws if more than one HostedZones are returned for the provided ParentHostedZone', async () => {
   // GIVEN
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
@@ -167,9 +256,9 @@ test('throws if more than one HostedZones are returnd for the provided ParentHos
 });
 
 function getCfnEvent(
-  event?: Partial<AWSLambda.CloudFormationCustomResourceEvent>,
+  event?: Partial<CrossAccountZoneDelegationEvent>,
   resourceProps?: any,
-): Partial<AWSLambda.CloudFormationCustomResourceEvent> {
+): Partial<CrossAccountZoneDelegationEvent> {
   return {
     RequestType: 'Create',
     ResourceProperties: {
@@ -187,6 +276,6 @@ function getCfnEvent(
 
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
-async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
-  return handler(event as AWSLambda.CloudFormationCustomResourceEvent);
+async function invokeHandler(event: Partial<CrossAccountZoneDelegationEvent>) {
+  return handler(event as CrossAccountZoneDelegationEvent);
 }
