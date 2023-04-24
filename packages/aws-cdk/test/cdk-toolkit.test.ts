@@ -288,11 +288,11 @@ describe('readCurrentTemplate', () => {
     // GIVEN
     // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
     mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('error'); })
-      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };});
+      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        return { };
+        return {};
       },
     });
     const cdkToolkit = new CdkToolkit({
@@ -335,7 +335,7 @@ describe('readCurrentTemplate', () => {
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        return { };
+        return {};
       },
     });
 
@@ -530,7 +530,7 @@ describe('deploy', () => {
     });
 
     test('globless bootstrap uses environment without question', async () => {
-    // GIVEN
+      // GIVEN
       const toolkit = defaultToolkitSetup();
 
       // WHEN
@@ -657,6 +657,19 @@ describe('destroy', () => {
         fromDeploy: true,
       });
     }).resolves;
+  });
+
+  test('throw error if the stack to be destroyed is not already deployed', async () => {
+    const toolKit = defaultToolkitSetup();
+    await expect(() => {
+      return toolKit.destroy({
+        exclusively: true,
+        force: true,
+        selector: {
+          patterns: ['Test-Stack-C'],
+        },
+      });
+    }).rejects.toThrowError('test');
   });
 });
 
@@ -932,13 +945,13 @@ describe('synth', () => {
       });
     });
 
-    test('causes synth to fail if autoValidate=true', async() => {
+    test('causes synth to fail if autoValidate=true', async () => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = true;
       await expect(toolkit.synth([], false, true, autoValidate)).rejects.toBeDefined();
     });
 
-    test('causes synth to succeed if autoValidate=false', async() => {
+    test('causes synth to succeed if autoValidate=false', async () => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
       await toolkit.synth([], false, true, autoValidate);
@@ -946,7 +959,7 @@ describe('synth', () => {
     });
   });
 
-  test('stack has error and was explicitly selected', async() => {
+  test('stack has error and was explicitly selected', async () => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [
         MockStack.MOCK_STACK_A,
