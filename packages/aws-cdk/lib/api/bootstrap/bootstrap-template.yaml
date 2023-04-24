@@ -492,10 +492,10 @@ Resources:
                     Fn::Split:
                       - "|"
                       - Fn::Sub:
-                        - "arn:aws:kms:*:${JoinedAccounts}:*"
+                        - "arn:${AWS::Partition}:kms:*:${JoinedAccounts}:*"
                         - JoinedAccounts:
                             Fn::Join:
-                              - ":*|arn:aws:kms:*:"
+                              - ":*|arn:${AWS::Partition}:kms:*:"
                               - { Ref: TrustedAccounts }
                   Condition:
                     StringEquals:
@@ -633,7 +633,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '17'
+      Value: '18'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
