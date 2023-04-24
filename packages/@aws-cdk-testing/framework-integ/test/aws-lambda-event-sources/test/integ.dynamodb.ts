@@ -17,12 +17,15 @@ class DynamoEventSourceTest extends cdk.Stack {
       stream: dynamodb.StreamViewType.NEW_IMAGE,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-
-    fn.addEventSource(new DynamoEventSource(queue, {
+    const eventSource = new DynamoEventSource(queue, {
       batchSize: 5,
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       tumblingWindow: cdk.Duration.seconds(60),
-    }));
+    });
+
+    fn.addEventSource(eventSource);
+
+    new cdk.CfnOutput(this, 'OutputEventSourceMappingArn', { value: eventSource.eventSourceMappingArn });
   }
 }
 

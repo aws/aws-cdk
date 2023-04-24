@@ -130,6 +130,33 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "OutputEventSourceMappingArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":lambda:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":event-source-mapping:",
+      {
+       "Ref": "FDynamoDBEventSourcelambdaeventsourcedynamodbT7967476AE652DA48"
+      }
+     ]
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
