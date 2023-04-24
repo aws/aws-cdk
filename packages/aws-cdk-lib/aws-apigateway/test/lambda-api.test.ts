@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
+import { LambdaRestApi } from '../lib';
 
 describe('lambda api', () => {
   test('LambdaRestApi defines a REST API with Lambda proxy integration', () => {
@@ -404,5 +405,36 @@ describe('lambda api', () => {
         Type: 'AWS',
       },
     });
+  });
+
+  test('setting deployOptions variable with invalid value throws validation error', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const versionAlias = lambda.Version.fromVersionAttributes(stack, 'VersionInfo', {
+      lambda: handler,
+      version: '${stageVariables.lambdaAlias}',
+    });
+
+    // const api: RestApi =
+    new LambdaRestApi(stack, 'RestApi', {
+      restApiName: 'my-test-api',
+      handler: versionAlias,
+      deployOptions: {
+        variables: {
+          functionName: handler.functionName,
+          // lambdaAlias: handler.latestVersion, // == '$LATEST'
+        },
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/Stage variables value must match regex: handler does not match [A-Za-z0-9-._~:/?#&amp;=,]+./);
   });
 });
