@@ -71,22 +71,34 @@ export interface AuthenticateCognitoActionProps {
  * A Listener Action to authenticate with Cognito
  */
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
+
+  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
+    return {
+      userPoolArn: options.userPool.userPoolArn,
+      userPoolClientId: options.userPoolClient.userPoolClientId,
+      userPoolDomain: options.userPoolDomain.domainName,
+      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
+      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
+      scope: options.scope,
+      sessionCookieName: options.sessionCookieName,
+      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+    };
+  }
+
   /**
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
   constructor(options: AuthenticateCognitoActionProps) {
     super({
       type: 'authenticate-cognito',
-      authenticateCognitoConfig: {
-        userPoolArn: options.userPool.userPoolArn,
-        userPoolClientId: options.userPoolClient.userPoolClientId,
-        userPoolDomain: options.userPoolDomain.domainName,
-        authenticationRequestExtraParams: options.authenticationRequestExtraParams,
-        onUnauthenticatedRequest: options.onUnauthenticatedRequest,
-        scope: options.scope,
-        sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
-      },
+      authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
     }, options.next);
+    this.addRuleAction({
+      type: 'authenticate-cognito',
+      authenticateCognitoConfig: {
+        ...AuthenticateCognitoAction.config(options),
+        sessionTimeout: options.sessionTimeout?.toSeconds(),
+      },
+    });
   }
 }
