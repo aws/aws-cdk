@@ -103,7 +103,7 @@ describe('DeployAssets', () => {
       toDeploy: createArtifacts([
         { id: 'A', type: 'stack', stackDependencies: ['B'], assetDependencies: ['a'] },
         { id: 'B', type: 'stack' },
-        { id: 'a', type: 'asset' },
+        { id: 'a', type: 'asset', name: SLOW },
       ]),
       expected: ['B', 'a-build', 'a-publish', 'A'],
     },
@@ -235,117 +235,74 @@ describe('DeployAssets', () => {
   });
 
   // Failure
-  // test.each([
-  //   // Concurrency 1
-  //   { scenario: 'A (error)', concurrency: 1, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-  //   { scenario: 'A (error), B', concurrency: 1, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }]), expectedError: 'A', expectedStacks: [] },
-  //   { scenario: 'A, B (error)', concurrency: 1, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [], displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
-  //   { scenario: 'A (error) -> B', concurrency: 1, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [{ id: 'A' }] }]), expectedError: 'A', expectedStacks: [] },
-  //   { scenario: '[unsorted] A (error) -> B', concurrency: 1, toDeploy: createStackArtifacts([{ id: 'B', dependencies: [{ id: 'A' }] }, { id: 'A', dependencies: [], displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-  //   {
-  //     scenario: 'A (error) -> B, C -> D',
-  //     concurrency: 1,
-  //     toDeploy: createStackArtifacts([
-  //       { id: 'A', dependencies: [], displayName: 'A' },
-  //       { id: 'B', dependencies: [{ id: 'A' }] },
-  //       { id: 'C', dependencies: [] },
-  //       { id: 'D', dependencies: [{ id: 'C' }] },
-  //     ]),
-  //     expectedError: 'A',
-  //     expectedStacks: [],
-  //   },
-  //   {
-  //     scenario: 'A -> B, C (error) -> D',
-  //     concurrency: 1,
-  //     toDeploy: createStackArtifacts([
-  //       { id: 'A', dependencies: [] },
-  //       { id: 'B', dependencies: [{ id: 'A' }] },
-  //       { id: 'C', dependencies: [], displayName: 'C', name: SLOW },
-  //       { id: 'D', dependencies: [{ id: 'C' }] },
-  //     ]),
-  //     expectedError: 'C',
-  //     expectedStacks: ['A'],
-  //   },
+  test.each([
+    // Concurrency 1
+    { scenario: 'A (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A (error), B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A, B (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
+    { scenario: 'A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    {
+      scenario: 'A (error) -> B, C -> D',
+      concurrency: 1,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', displayName: 'A' },
+        { id: 'B', type: 'stack', stackDependencies: ['A'] },
+        { id: 'C', type: 'stack' },
+        { id: 'D', type: 'stack', stackDependencies: ['C'] },
+      ]),
+      expectedError: 'A',
+      expectedStacks: [],
+    },
+    {
+      scenario: 'A -> B, C (error) -> D',
+      concurrency: 1,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack' },
+        { id: 'B', type: 'stack', stackDependencies: ['A'] },
+        { id: 'C', type: 'stack', displayName: 'C', name: SLOW },
+        { id: 'D', type: 'stack', stackDependencies: ['C'] },
+      ]),
+      expectedError: 'C',
+      expectedStacks: ['A'],
+    },
 
-  //   // Concurrency 2
-  //   { scenario: 'A (error)', concurrency: 2, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-  //   { scenario: 'A (error), B', concurrency: 2, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [] }]), expectedError: 'A', expectedStacks: ['B'] },
-  //   { scenario: 'A, B (error)', concurrency: 2, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [] }, { id: 'B', dependencies: [], displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
-  //   { scenario: 'A (error) -> B', concurrency: 2, toDeploy: createStackArtifacts([{ id: 'A', dependencies: [], displayName: 'A' }, { id: 'B', dependencies: [{ id: 'A' }] }]), expectedError: 'A', expectedStacks: [] },
-  //   { scenario: '[unsorted] A (error) -> B', concurrency: 2, toDeploy: createStackArtifacts([{ id: 'B', dependencies: [{ id: 'A' }] }, { id: 'A', dependencies: [], displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-  //   {
-  //     scenario: 'A (error) -> B, C -> D',
-  //     concurrency: 2,
-  //     toDeploy: createStackArtifacts([
-  //       { id: 'A', dependencies: [], displayName: 'A' },
-  //       { id: 'B', dependencies: [{ id: 'A' }] },
-  //       { id: 'C', dependencies: [] },
-  //       { id: 'D', dependencies: [{ id: 'C' }] },
-  //     ]),
-  //     expectedError: 'A',
-  //     expectedStacks: ['C'],
-  //   },
-  //   {
-  //     scenario: 'A -> B, C (error) -> D',
-  //     concurrency: 2,
-  //     toDeploy: createStackArtifacts([
-  //       { id: 'A', dependencies: [] },
-  //       { id: 'B', dependencies: [{ id: 'A' }] },
-  //       { id: 'C', dependencies: [], displayName: 'C', name: SLOW },
-  //       { id: 'D', dependencies: [{ id: 'C' }] },
-  //     ]),
-  //     expectedError: 'C',
-  //     expectedStacks: ['A', 'B'],
-  //   },
-  // ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
-  //   // eslint-disable-next-line max-len
-  //   await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).rejects.toThrowError(expectedError);
+    // Concurrency 2
+    { scenario: 'A (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A (error), B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expectedStacks: ['B'] },
+    { scenario: 'A, B (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
+    { scenario: 'A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    {
+      scenario: 'A (error) -> B, C -> D',
+      concurrency: 2,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', displayName: 'A' },
+        { id: 'B', type: 'stack', stackDependencies: ['A'] },
+        { id: 'C', type: 'stack' },
+        { id: 'D', type: 'stack', stackDependencies: ['C'] },
+      ]),
+      expectedError: 'A',
+      expectedStacks: ['C'],
+    },
+    {
+      scenario: 'A -> B, C (error) -> D',
+      concurrency: 2,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack' },
+        { id: 'B', type: 'stack', stackDependencies: ['A'] },
+        { id: 'C', type: 'stack', displayName: 'C', name: SLOW },
+        { id: 'D', type: 'stack', stackDependencies: ['C'] },
+      ]),
+      expectedError: 'C',
+      expectedStacks: ['A', 'B'],
+    },
+  ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
+    // eslint-disable-next-line max-len
+    await expect(deployArtifacts(toDeploy as unknown as Stack[], { concurrency, deployStack, buildAsset, publishAsset })).rejects.toThrowError(expectedError);
 
-  //   expect(deployedStacks).toStrictEqual(expectedStacks);
-  // });
-
-  // Success with Asset Artifacts
-  // test.each([
-  //   {
-  //     scenario: 'A -> [a, B]',
-  //     concurrency: 1,
-  //     toDeploy: createArtifacts([
-  //       { id: 'A', type: 'stack', stackDependencies: ['B'], assetDependencies: ['a'] },
-  //       { id: 'B', type: 'stack' },
-  //       { id: 'a', type: 'asset' },
-  //     ]),
-  //   },
-  //   {
-  //     scenario: 'A -> a, B -> b',
-  //     concurrency: 1,
-  //     toDeploy: [
-  //       createStackArtifact({ id: 'A', dependencies: ['a'] }),
-  //       createStackArtifact({ id: 'B', dependencies: ['b'] }),
-  //       createAssetArtifact({ id: 'a', dependencies: [] }),
-  //       createAssetArtifact({ id: 'b', dependencies: [] }),
-  //     ],
-  //   },
-  //   {
-  //     scenario: 'A, B -> b -> A',
-  //     concurrency: 1,
-  //     toDeploy: [
-  //       createStackArtifact({ id: 'A', dependencies: [] }),
-  //       createStackArtifact({ id: 'B', dependencies: ['b'] }),
-  //       createAssetArtifact({ id: 'b', dependencies: ['A'] }),
-  //     ],
-  //   },
-  // ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, toDeploy, expectedStacks }) => {
-  //   const asset = createAssetArtifact({ id: 'AssetA', dependencies: [] });
-  //   const assetB = createAssetArtifact({ id: 'AssetB', dependencies: [] });
-  //   const stack = createStackArtifact({ id: 'StackA', dependencies: [asset] });
-  //   const stackB = createStackArtifact({ id: 'StackB', dependencies: [assetB, stack] });
-  //   // eslint-disable-next-line max-len
-  //   await expect(deployArtifacts([stack, asset, stackB, assetB] as Artifact[], { concurrency, deployStack, buildAsset, publishAsset })).resolves.toBeUndefined();
-
-  //   expect(deployedStacks).toStrictEqual(['StackA', 'StackB']);
-  //   expect(publishedAssets).toStrictEqual(['AssetA-publish', 'AssetB-publish']);
-  //   expect(builtAssets).toStrictEqual(['AssetA-build', 'AssetB-build']);
-  // });
+    expect(actionedAssets).toStrictEqual(expectedStacks);
+  });
 });
 
 interface TestArtifact {
@@ -354,6 +311,7 @@ interface TestArtifact {
   id: string;
   type: 'stack' | 'asset';
   name?: number;
+  displayName?: string;
 }
 
 function createArtifact(artifact: TestArtifact): Artifact {
@@ -364,6 +322,7 @@ function createArtifact(artifact: TestArtifact): Artifact {
     id: artifact.id,
     dependencies: stackDeps.concat(assetDeps),
     name: artifact.name,
+    displayName: artifact.displayName,
   };
   if (artifact.type === 'stack') {
     return {

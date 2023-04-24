@@ -40,7 +40,7 @@ export class WorkGraph {
           type: WorkType.ASSET_BUILD,
           dependencies: getDepIds(artifact.dependencies),
           artifact,
-          deploymentState: 'pending' as DeploymentState,
+          deploymentState: DeploymentState.PENDING,
         };
         graphNodes.push(buildNode);
         graphNodes.push({

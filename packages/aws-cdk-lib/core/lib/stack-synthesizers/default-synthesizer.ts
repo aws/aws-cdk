@@ -1,10 +1,10 @@
-import * as cxapi from '../../../cx-api';
-import { StringSpecializer } from '../helpers-internal';
 import { assertBound } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import * as cxapi from '../../../cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { StringSpecializer } from '../helpers-internal';
 import { Stack } from '../stack';
 import { Token } from '../token';
 
