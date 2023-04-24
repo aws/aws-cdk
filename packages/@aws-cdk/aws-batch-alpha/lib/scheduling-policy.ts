@@ -215,7 +215,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
     this.shares = props?.shares ?? [];
-    const resource = new CfnSchedulingPolicy(this, id, {
+    const resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
