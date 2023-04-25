@@ -72,16 +72,7 @@ export class ListenerAction implements IListenerAction {
       });
     }
 
-    return new TargetGroupListenerAction(targetGroups, {
-      type: 'forward',
-      forwardConfig: {
-        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
-        targetGroupStickinessConfig: options.stickinessDuration ? {
-          durationSeconds: options.stickinessDuration.toSeconds(),
-          enabled: true,
-        } : undefined,
-      },
-    });
+    return ListenerAction.weightedForward(targetGroups.map(g => ({ targetGroup: g, weight: 1 })), options)
   }
 
   /**
