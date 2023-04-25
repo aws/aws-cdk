@@ -2738,6 +2738,28 @@ describe('bucket', () => {
     });
   });
 
+  test('Log bucket has ACL enabled when feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+    });
+
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
   test('Defaults for an inventory bucket', () => {
     // Given
     const stack = new cdk.Stack();

@@ -540,6 +540,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected notificationsHandlerRole?: iam.IRole;
 
+  protected objectOwnership?: ObjectOwnership;
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -1834,6 +1836,7 @@ export class Bucket extends BucketBase {
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
 
+    this.objectOwnership = props.objectOwnership;
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1846,7 +1849,7 @@ export class Bucket extends BucketBase {
       accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: this.parseOwnershipControls(props),
+      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls(this.objectOwnership) }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
@@ -2190,7 +2193,7 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
+  private parseOwnershipControls(objectOwnership?: ObjectOwnership): CfnBucket.OwnershipControlsProperty | undefined {
     if (!objectOwnership) {
       return undefined;
     }
@@ -2325,6 +2328,9 @@ export class Bucket extends BucketBase {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
     } else {
       this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+      // Enabling an ACL explicitly is required for all new buckets.
+      // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
+      this.objectOwnership = this.objectOwnership ?? ObjectOwnership.OBJECT_WRITER;
     }
   }
 
