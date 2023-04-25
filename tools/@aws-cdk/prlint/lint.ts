@@ -206,7 +206,7 @@ export class PullRequestLinter {
       await this.client.pulls.dismissReview({
         ...this.prParams,
         review_id: existingReview.id,
-        message: '✅ Updated pull request passes all PRLinter validations. Dissmissing previous PRLinter review.'
+        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.'
       })
     }
   }
@@ -274,7 +274,7 @@ export class PullRequestLinter {
 
   /**
    * Performs validations and communicates results via pull request comments, upon failure.
-   * This also dissmisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
+   * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
   public async validate(): Promise<void> {
     const number = this.props.number;
@@ -468,6 +468,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
  */
 function validateTitleScope(pr: GitHubPr): TestResult {
   const result = new TestResult();
+  const scopesExemptFromThisRule = [ 'aws-cdk-lib' ];
   // Specific commit types are handled by `validateTitlePrefix`. This just checks whether
   // the scope includes an `aws-` prefix or not.
   // Group 1: Scope with parens - "(aws-<name>)"
@@ -475,7 +476,7 @@ function validateTitleScope(pr: GitHubPr): TestResult {
   // Group 3: Preferred scope name - "<name>"
   const titleRe = /^\w+(\((aws-([\w_-]+))\))?: /;
   const m = titleRe.exec(pr.title);
-  if (m) {
+  if (m && !scopesExemptFromThisRule.includes(m[2])) {
     result.assessFailure(
       !!(m[2] && m[3]),
       `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,

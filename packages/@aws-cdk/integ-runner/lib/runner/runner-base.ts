@@ -1,3 +1,4 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';

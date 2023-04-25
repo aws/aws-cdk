@@ -741,8 +741,15 @@ new pipelines.CodeBuildStep('Synth', {
   // Control the build environment
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
+    privileged: true,
   },
   timeout: Duration.minutes(90),
+  fileSystemLocations: [codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts",
+    })],
 
   // Control Elastic Network Interface creation
   vpc: vpc,
@@ -764,8 +771,11 @@ or just for the synth, asset publishing, and self-mutation projects by passing `
 `assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
+import { aws_logs as logs } from 'aws-cdk-lib';
+
 declare const vpc: ec2.Vpc;
 declare const mySecurityGroup: ec2.SecurityGroup;
+
 new pipelines.CodePipeline(this, 'Pipeline', {
   // Standard CodePipeline properties
   synth: new pipelines.ShellStep('Synth', {
@@ -801,6 +811,16 @@ new pipelines.CodePipeline(this, 'Pipeline', {
     rolePolicy: [
       new iam.PolicyStatement({ /* ... */ }),
     ],
+
+    // Information about logs
+    logging: {
+      cloudWatch: {
+        logGroup: new logs.LogGroup(this, `MyLogGroup`),
+      },
+      s3: {
+        bucket: new s3.Bucket(this, `LogBucket`),
+      },
+    },
   },
 
   synthCodeBuildDefaults: { /* ... */ },
@@ -863,7 +883,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
   private stackOutputReference: pipelines.StackOutputReference
 
   constructor(
-    private readonly function: lambda.Function,
+    private readonly fn: lambda.Function,
     stackOutput: CfnOutput,
   ) {
     super('MyLambdaStep');
@@ -877,7 +897,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
       runOrder: options.runOrder,
       // Map the reference to the variable name the CDK has generated for you.
       userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
-      lambda: this.function,
+      lambda: this.fn,
     }));
 
     return { runOrdersConsumed: 1 };
@@ -1291,6 +1311,15 @@ We therefore expect you to mind the following:
   come with CDK Pipelines will expect `package-lock.json` and `yarn.lock` to
   ensure your dependencies are the ones you expect.
 
+- CDK Pipelines runs on resources created in your own account, and the configuration
+  of those resources is controlled by developers submitting code through the pipeline.
+  Therefore, CDK Pipelines by itself cannot protect against malicious
+  developers trying to bypass compliance checks. If your threat model includes
+  developers writing CDK code, you should have external compliance mechanisms in place like
+  [AWS CloudFormation Hooks](https://aws.amazon.com/blogs/mt/proactively-keep-resources-secure-and-compliant-with-aws-cloudformation-hooks/)
+  (preventive) or [AWS Config](https://aws.amazon.com/config/) (reactive) that
+  the CloudFormation Execution Role does not have permissions to disable.
+
 - Credentials to production environments should be short-lived. After
   bootstrapping and the initial pipeline provisioning, there is no more need for
   developers to have access to any of the account credentials; all further
@@ -1668,21 +1697,21 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 
   // Configure CodeBuild to use a drop-in Docker replacement.
   codeBuildDefaults: {
-    buildEnvironment: {
-      partialBuildSpec: Codebuild.BuildSpec.fromObject({
-        phases: {
-          install: {
-            // Add the shell commands to install your drop-in Docker
-            // replacement to the CodeBuild enviromment.
-            commands: installCommands,
-          }
+    partialBuildSpec: codebuild.BuildSpec.fromObject({
+      phases: {
+        install: {
+          // Add the shell commands to install your drop-in Docker
+          // replacement to the CodeBuild enviromment.
+          commands: installCommands,
         }
-      }),
+      }
+    }),
+    buildEnvironment: {
       environmentVariables: {
         // Instruct the AWS CDK to use `drop-in-replacement` instead of
         // `docker` when building / publishing docker images.
         // e.g., `drop-in-replacement build . -f path/to/Dockerfile`
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },
@@ -1717,7 +1746,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
         // If you haven't provided an `ENV` in your Dockerfile that overrides
         // `CDK_DOCKER`, then you must provide the name of the command that
         // the AWS CDK should run instead of `docker` here.
-        CDK_DOCKER: 'drop-in-replacement',
+        CDK_DOCKER: { value: 'drop-in-replacement' },
       }
     }
   },

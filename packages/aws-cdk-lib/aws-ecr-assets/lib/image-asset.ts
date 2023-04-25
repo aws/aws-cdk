@@ -165,7 +165,13 @@ export interface DockerCacheOption {
    * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
    * @default {} No options provided
    *
-   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   * @example
+   * declare const branch: string;
+   *
+   * const params = {
+   *   ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,
+   *   mode: "max",
+   * };
    */
   readonly params?: { [key: string]: string };
 }
@@ -209,10 +215,11 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build secrets
    *
    * @example
+   * import { DockerBuildSecret } from 'aws-cdk-lib';
    *
-   * {
+   * const buildSecrets = {
    *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
-   * }
+   * };
    */
   readonly buildSecrets?: { [key: string]: string }
 

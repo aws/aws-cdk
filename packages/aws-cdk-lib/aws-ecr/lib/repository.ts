@@ -4,6 +4,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
+  Annotations,
   ArnFormat,
   IResource,
   Lazy,
@@ -15,7 +16,7 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
@@ -424,7 +425,7 @@ export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
  */
 export interface OnImageScanCompletedOptions extends events.OnEventOptions {
   /**
-   * Only watch changes to the image tags spedified.
+   * Only watch changes to the image tags specified.
    * Leave it undefined to watch the full repository.
    *
    * @default - Watch the changes to the repository with all image tags
@@ -660,7 +661,17 @@ export class Repository extends RepositoryBase {
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
+  /**
+   * Add a policy statement to the repository's resource policy.
+   *
+   * While other resources policies in AWS either require or accept a resource section,
+   * Cfn for ECR does not allow us to specify a resource policy.
+   * It will fail if a resource section is present at all.
+   */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (statement.resources.length) {
+      Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
+    }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
@@ -783,7 +794,7 @@ export class Repository extends RepositoryBase {
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [
         {

@@ -1,11 +1,12 @@
+import { Construct } from 'constructs';
 import { Template, Annotations, Match, Capture } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
+import * as s3 from '../../../aws-s3';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, NamedAssetApp } from '../testhelpers';
@@ -491,6 +492,20 @@ test('pipeline asset action can have named assets', () => {
   });
 
   expect(assetActions.asArray().map(action => action.Name)).toEqual(expect.arrayContaining([fileAsset1, fileAsset2, imageAsset1, imageAsset2].map(name => name.replace(/ /g, '_'))));
+});
+
+test('artifactBucket can be overridden', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+      bucketName: 'my-custom-artifact-bucket',
+    }),
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    BucketName: 'my-custom-artifact-bucket',
+  });
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
