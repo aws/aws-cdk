@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import { Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
 import * as tasks from '../lib';
@@ -25,7 +26,7 @@ test('Eval with Node.js', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -34,7 +35,14 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs14.x',
+    Runtime: {
+      'Fn::FindInMap': [
+        'DefaultCrNodeVersionMap',
+        { 'Ref': 'AWS::Region' },
+        'value',
+      ],
+    },
+    // Runtime: 'nodejs16.x',
   });
 });
 
@@ -54,7 +62,7 @@ test('expression does not contain paths', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -79,11 +87,26 @@ test('with dash and underscore in path', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
       ],
     },
+  });
+});
+
+test('With Node.js 18.x', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: new Runtime('nodejs18.x', RuntimeFamily.NODEJS),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
   });
 });

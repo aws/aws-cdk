@@ -169,6 +169,7 @@ export function parseLambdaPermission(x: any): Statement {
       statement.Principal = '*';
     } else if (/^\d{12}$/.test(x.Principal)) {
       // Account number
+      // eslint-disable-next-line @aws-cdk/no-literal-partition
       statement.Principal = { AWS: `arn:aws:iam::${x.Principal}:root` };
     } else {
       // Assume it's a service principal

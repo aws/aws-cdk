@@ -166,6 +166,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         cloudWatchLogging: step.cloudWatchLogging,
         s3logging: step.s3logging,
         fileSystemLocations: step.fileSystemLocations,
+        logging: step.logging,
       }),
     });
 
@@ -313,6 +314,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       timeout: projectOptions.timeout,
       logging: exportLoggingSettings(projectOptions),
       fileSystemLocations: projectOptions.fileSystemLocations,
+      logging: projectOptions.logging,
     });
 
     if (this.props.additionalDependable) {
@@ -444,6 +446,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       cloudWatchLogging: b.cloudWatchLogging ?? a.cloudWatchLogging,
       s3logging: b.s3logging ?? a.s3logging,
       fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
+      logging: b.logging ?? a.logging,
     };
   }
 }
