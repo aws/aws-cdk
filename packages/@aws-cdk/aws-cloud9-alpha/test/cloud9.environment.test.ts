@@ -141,7 +141,7 @@ test('environment owner can be account root', () => {
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
-    OwnerArn: 'arn:aws:iam::12345678:root',
+    OwnerArn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::12345678:root']] },
   });
 });
 

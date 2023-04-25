@@ -243,7 +243,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -258,7 +264,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -275,7 +287,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -292,7 +310,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -308,7 +332,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -324,7 +354,13 @@ describe('Attribute Group', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation',
+          ]],
+        }],
       });
     });
   });
