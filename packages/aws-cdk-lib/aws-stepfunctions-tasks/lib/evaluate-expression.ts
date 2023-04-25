@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
+import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**
  * Properties for EvaluateExpression
@@ -19,7 +20,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_14_X
+   * @default lambda.Runtime.NODEJS_16_X
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -56,7 +57,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime ?? lambda.Runtime.NODEJS_14_X, this);
+    this.evalFn = createEvalFn(this.props.runtime, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -94,7 +95,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
+function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
@@ -105,26 +106,35 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
     [lambda.Runtime.NODEJS_10_X.name]: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
   };
 
-  switch (runtime.name) {
-    case lambda.Runtime.NODEJS_18_X.name:
-    case lambda.Runtime.NODEJS_16_X.name:
-    case lambda.Runtime.NODEJS_14_X.name:
-    case lambda.Runtime.NODEJS_12_X.name:
-    case lambda.Runtime.NODEJS_10_X.name:
-      const uuid = nodeJsGuids[runtime.name];
-      if (uuid) {
-        return new lambda.SingletonFunction(scope, 'EvalFunction', {
-          runtime,
-          uuid,
-          handler: 'index.handler',
-          lambdaPurpose,
-          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
-            exclude: ['*.ts'],
-          }),
-        });
-      }
-      break;
+  // UUID used when using the default node runtime, which is a token and different
+  // pre region.
+  let uuid;
+  if (runtime) {
+    switch (runtime?.name) {
+      case lambda.Runtime.NODEJS_18_X.name:
+      case lambda.Runtime.NODEJS_16_X.name:
+      case lambda.Runtime.NODEJS_14_X.name:
+      case lambda.Runtime.NODEJS_12_X.name:
+      case lambda.Runtime.NODEJS_10_X.name:
+        uuid = nodeJsGuids[runtime.name];
+        break;
+    }
+  } else {
+    uuid = '41256dc5-4457-4273-8ed9-17bc818694e5';
   }
 
-  throw new Error(`The runtime ${runtime.name} is currently not supported.`);
+  if (uuid) {
+    return new lambda.SingletonFunction(scope, 'EvalFunction', {
+      runtime: runtime ?? builtInCustomResourceNodeRuntime(scope),
+      uuid,
+      handler: 'index.handler',
+      lambdaPurpose,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+        exclude: ['*.ts'],
+      }),
+    });
+  }
+
+  // Runtime always defined here
+  throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
 }
