@@ -1040,7 +1040,7 @@ new ec2.Instance(this, 'Instance2', {
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinux2Image({
+  machineImage: ec2.MachineImage.latestAmazonLinux2({
     kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
   }),
 });
@@ -1072,7 +1072,10 @@ particular image parameter, the CDK provides a couple of constructs `AmazonLinux
 to use the latest `al2023` image:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 });
@@ -1089,7 +1092,10 @@ the value in CDK context. This way the value will not change on future
 deployments unless you manually refresh the context.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023({
     cachedInContext: true, // default is false
@@ -1098,6 +1104,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 
 // or
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
@@ -1128,7 +1135,10 @@ either specify the specific latest kernel version or opt-in to using the CDK
 latest kernel version.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1139,7 +1149,10 @@ new ec2.Instance(this, 'LatestAl2023', {
 _CDK managed latest_
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1150,6 +1163,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 // or
 
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(), // always uses latest kernel version
 });
