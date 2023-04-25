@@ -554,7 +554,9 @@ new cloudfront.Distribution(this, 'myDist', {
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
   enableLogging: true, // Optional, this is implied if logBucket is specified
-  logBucket: new s3.Bucket(this, 'LogBucket'),
+  logBucket: new s3.Bucket(this, 'LogBucket', {
+    objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+  }),
   logFilePrefix: 'distribution-access-logs/',
   logIncludesCookies: true,
 });

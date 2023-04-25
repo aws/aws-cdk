@@ -197,6 +197,14 @@
               "version": "0.0.0"
             }
           },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "MyStack/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWSCDK.TriggerCustomResourceProviderCustomResourceProvider": {
             "id": "AWSCDK.TriggerCustomResourceProviderCustomResourceProvider",
             "path": "MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider",

@@ -299,7 +299,7 @@ The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_Submit
 
 ```ts
 import * as batch from '@aws-cdk/aws-batch-alpha';
-declare const batchJobDefinition: batch.JobDefinition;
+declare const batchJobDefinition: batch.EcsJobDefinition;
 declare const batchQueue: batch.JobQueue;
 
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
