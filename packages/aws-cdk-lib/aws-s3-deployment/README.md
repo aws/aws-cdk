@@ -147,7 +147,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
-This option also enables you to 
+This option also enables you to
 multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
@@ -276,6 +276,8 @@ In cases where bucket policy restrictions require signed content payloads, you c
 generation of a signed `x-amz-content-sha256` request header with `signContent: true`.
 
 ```ts
+declare const bucket: s3.IBucket;
+
 new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
@@ -290,7 +292,7 @@ copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
 The default ephemeral storage size for the deployment resource is 512MiB. If you
-need to upload larger files, you may hit this limit. You can use the 
+need to upload larger files, you may hit this limit. You can use the
 `ephemeralStorageSize` configuration to increase the storage size of the AWS Lambda
 resource handler.
 

@@ -508,7 +508,7 @@ const prodStage = new Stage(app, 'ProdStage', {
 new Stack(prodStage, 'ProdStack', {
   synthesizer: new DefaultStackSynthesizer({
     qualifier: 'custom',
-  });
+  }),
 });
 ```
 

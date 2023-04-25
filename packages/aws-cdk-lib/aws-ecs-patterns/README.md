@@ -989,11 +989,13 @@ to work, you need to have the SSM plugin for the AWS CLI installed locally. For 
 
 ### Propagate Tags from task definition for ScheduledFargateTask
 
-For tasks that are defined by a Task Definition, tags applied to the definition will not be applied 
-to the running task by default. To get this behavior, set `propagateTags` to `ecs.PropagatedTagSource.TASK_DEFINITION` as 
+For tasks that are defined by a Task Definition, tags applied to the definition will not be applied
+to the running task by default. To get this behavior, set `propagateTags` to `ecs.PropagatedTagSource.TASK_DEFINITION` as
 shown below:
 
 ```ts
+import { Tags } from 'aws-cdk-lib';
+
 const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
 const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
 const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
@@ -1014,7 +1016,7 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 
 ### Pass a list of tags for ScheduledFargateTask
 
-You can pass a list of tags to be applied to a Fargate task directly. These tags are in addition to any tags 
+You can pass a list of tags to be applied to a Fargate task directly. These tags are in addition to any tags
 that could be applied to the task definition and propagated using the `propagateTags` attribute.
 
 ```ts

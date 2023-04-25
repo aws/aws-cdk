@@ -771,8 +771,11 @@ or just for the synth, asset publishing, and self-mutation projects by passing `
 `assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
+import { aws_logs as logs } from 'aws-cdk-lib';
+
 declare const vpc: ec2.Vpc;
 declare const mySecurityGroup: ec2.SecurityGroup;
+
 new pipelines.CodePipeline(this, 'Pipeline', {
   // Standard CodePipeline properties
   synth: new pipelines.ShellStep('Synth', {
