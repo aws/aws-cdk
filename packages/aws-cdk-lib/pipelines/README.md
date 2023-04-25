@@ -829,6 +829,36 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+### Named Assets
+
+When stacks with assets are deployed in a pipeline, an Asset step will be included where each Asset will be built if needed. These assets by default use an Auto-generated name like FileAsset1, and DockerAsset1 depending on the type of the asset. This behaviour can be overriden for some assets by explicitly setting the `displayName` property when instantiating them in the deployed stack. For example:
+
+```ts
+declare const functionPath: string;
+
+class MyApplicationStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    new lambda.Function(this, 'MyFunction', {
+      path: functionPath,
+      displayName: 'Human-readable name',
+    })
+  }
+}
+
+declare const pipeline: pipelines.CodePipeline;
+
+pipeline.addStage(new MyApplicationStage(this, 'Prod', {
+  env: {
+    account: '123456789012',
+    region: 'eu-west-1',
+  }
+}));
+```
+
+Will generate an Assets step with an action named 'Human-readable name'.
+
 ### Arbitrary CodePipeline actions
 
 If you want to add a type of CodePipeline action to the CDK Pipeline that
