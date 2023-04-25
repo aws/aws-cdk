@@ -808,6 +808,16 @@ new pipelines.CodePipeline(this, 'Pipeline', {
     rolePolicy: [
       new iam.PolicyStatement({ /* ... */ }),
     ],
+
+    // Information about logs
+    logging: {
+      cloudWatch: {
+        logGroup: new logs.LogGroup(this, `MyLogGroup`),
+      },
+      s3: {
+        bucket: new s3.Bucket(this, `LogBucket`),
+      },
+    },
   },
 
   synthCodeBuildDefaults: { /* ... */ },
