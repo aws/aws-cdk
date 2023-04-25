@@ -610,6 +610,13 @@ describe('logging', () => {
         },
       },
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      OwnershipControls: {
+        Rules: [
+          { ObjectOwnership: 'ObjectWriter' },
+        ],
+      },
+    });
   });
 
   test('uses existing bucket if provided', () => {
