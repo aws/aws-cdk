@@ -5,8 +5,9 @@ import * as path from 'path';
  */
 export function isProdFile(filename: string) {
   const isInTestFolder = new RegExp(/\/test\//).test(filename);
+  const isTestingPackage = new RegExp(/@aws-cdk-testing/).test(filename);
 
-  const isOnOurTestFolder = path.resolve(filename).startsWith(path.resolve(__dirname, '..', '..', 'test'));
+  const isInOurTestFolder = path.resolve(filename).startsWith(path.resolve(__dirname, '..', '..', 'test'));
 
-  return !isInTestFolder || isOnOurTestFolder;
+  return (!isInTestFolder && !isTestingPackage) || isInOurTestFolder;
 }
