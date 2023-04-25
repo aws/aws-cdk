@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a35d0cda0527141a90eae5c8f0a6f9bfd78c541725e209d2eebdfb53a59daa9a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f55bcb265aafb0b949e29d87cb1cd790d2bf1b93e1cd25d3df67b498cacdd3b8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -523,6 +523,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller-test/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [

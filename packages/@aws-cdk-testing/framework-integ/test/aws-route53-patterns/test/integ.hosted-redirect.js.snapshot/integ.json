@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "22.0.0",
+  "version": "31.0.0",
   "testCases": {
     "integ-test/DefaultTest": {
       "stacks": [

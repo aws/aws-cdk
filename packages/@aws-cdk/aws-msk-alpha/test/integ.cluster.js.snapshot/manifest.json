@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "artifacts": {
     "aws-cdk-msk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9b33d873aac9026db60e46ffd1764d09d46440f81b1ffd7fdb395e54501d620.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0230859429222f75f9de60f31496539edc4f83e5adb84de16f8ef69c83327082.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -187,6 +187,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LoggingBucketAutoDeleteObjectsCustomResource3835D361"
+          }
+        ],
+        "/aws-cdk-msk-integ/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-cdk-msk-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -504,7 +510,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26ebb083b5aa4c4938dd01e52996de45327a2629e9d6d262659c6f011a7b21a1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83641d92419bd3438409bf1cbcfba15e216c23225c08b735d15a2787a7bb6b6c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

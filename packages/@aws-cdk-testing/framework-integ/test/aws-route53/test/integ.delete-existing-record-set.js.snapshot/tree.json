@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.123"
-        }
-      },
       "cdk-route53-integ-delete-existing-record-set": {
         "id": "cdk-route53-integ-delete-existing-record-set",
         "path": "cdk-route53-integ-delete-existing-record-set",
@@ -30,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
               "version": "0.0.0"
             }
           },
@@ -62,13 +54,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
               "version": "0.0.0"
             }
           },
@@ -94,7 +86,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               },
@@ -106,19 +98,27 @@
                     "id": "Default",
                     "path": "cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "cdk-route53-integ-delete-existing-record-set/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -130,7 +130,7 @@
                 "id": "Staging",
                 "path": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -138,7 +138,7 @@
                 "id": "Role",
                 "path": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -146,25 +146,49 @@
                 "id": "Handler",
                 "path": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-route53-integ-delete-existing-record-set/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-route53-integ-delete-existing-record-set/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

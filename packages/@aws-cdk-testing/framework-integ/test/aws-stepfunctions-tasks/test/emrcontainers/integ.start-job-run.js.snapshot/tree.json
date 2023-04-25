@@ -1878,7 +1878,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2099,7 +2099,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2317,7 +2317,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2553,7 +2553,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/cf6dc03ebf79ed51ed899f7065979f183779b62b680fcec5c3fcff1349e6e8d3.json"
+                          "/86334bf3a85f82e56adc33619675e28205a4064287e144003bc515fa085ecadb.json"
                         ]
                       ]
                     },
@@ -2651,6 +2651,26 @@
                                     },
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
                                   ]
+                                ]
+                              },
+                              {
+                                "Fn::If": [
+                                  "HasEcrPublic",
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "Ref": "AWS::NoValue"
+                                  }
                                 ]
                               }
                             ]
@@ -2751,7 +2771,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "2427a81588377445b76031dc4adb9190776c951949a535cb32fde3ba6db8ee92.zip"
+                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2917,6 +2937,22 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
+              "ConditionalPolicyArn": {
+                "id": "ConditionalPolicyArn",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "conditionalPolicy": {
+                "id": "conditionalPolicy",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -3093,7 +3129,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3229,7 +3265,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1fdb8baa47bfd1f12c5d41eed42d2cfcceb73a94cca787d53d7d26fc13f0ea92.json"
+                          "/f03d61a2c93b212783204abf6ce82577ce0ac02b4526df11b1c4c1fe48d9d8e5.json"
                         ]
                       ]
                     },
@@ -3696,7 +3732,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3758,6 +3794,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EmrContainersStartJobRun",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -3867,7 +3911,15 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },

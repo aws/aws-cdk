@@ -1298,7 +1298,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d3d00e450f9542ac0160a65a1f2192afa175561986623e59ac42ee14da853ab9.json"
+       "/33ed18f371121f45de87e6c69f1d62df5cfbfcfc8317f5e8d6e05735e02b0bcc.json"
       ]
      ]
     },
@@ -1333,7 +1333,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/0f4125af9a679650cd6cd72578ced4f7dd01565984e76926ffa45a40b1dd5f28.json"
+       "/86b36ba83bd02e3273873dc9098af135dfff7751d6303395e1bacf73a069750c.json"
       ]
      ]
     },
@@ -1910,7 +1910,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
@@ -1964,6 +1964,109 @@
       }
      ]
     ]
+   }
+  }
+ },
+ "Mappings": {
+  "DefaultCrNodeVersionMap": {
+   "af-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs16.x"
+   },
+   "me-central-1": {
+    "value": "nodejs16.x"
+   },
+   "me-south-1": {
+    "value": "nodejs16.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-2": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs14.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-west-2": {
+    "value": "nodejs16.x"
    }
   }
  },

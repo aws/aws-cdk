@@ -20,7 +20,7 @@
                     "id": "ImportServiceRole",
                     "path": "integ-lambda-python-function-dockercopy/my_handler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -77,7 +77,7 @@
                     "id": "Stage",
                     "path": "integ-lambda-python-function-dockercopy/my_handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -85,13 +85,13 @@
                     "id": "AssetBucket",
                     "path": "integ-lambda-python-function-dockercopy/my_handler/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "d7f71e188167c705d230ed88d3e1935d888bb138e142570c4c22139b79f23aa9.zip"
+                      "s3Key": "3c2ed391e078514ddb84bd57e3f97944ac837457403ed4fae0e9aac1face9e67.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -118,13 +118,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-python.PythonFunction",
+              "fqn": "@aws-cdk/aws-lambda-python-alpha.PythonFunction",
               "version": "0.0.0"
             }
           },
@@ -132,7 +132,7 @@
             "id": "FunctionArn",
             "path": "integ-lambda-python-function-dockercopy/FunctionArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -144,21 +144,21 @@
                 "id": "Output{\"Ref\":\"myhandlerD202FA8E\"}",
                 "path": "integ-lambda-python-function-dockercopy/Exports/Output{\"Ref\":\"myhandlerD202FA8E\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-lambda-python-function-dockercopy/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -166,13 +166,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-lambda-python-function-dockercopy/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -189,7 +189,7 @@
                 "path": "lambda-python-function-dockercopy/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -209,12 +209,12 @@
                             "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.189"
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -226,13 +226,13 @@
                             "id": "Default",
                             "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
@@ -240,7 +240,7 @@
                         "id": "Invoke",
                         "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Invoke",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -248,13 +248,13 @@
                         "id": "AssertionResults",
                         "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -266,7 +266,7 @@
                         "id": "Staging",
                         "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -274,7 +274,7 @@
                         "id": "Role",
                         "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -282,21 +282,21 @@
                         "id": "Handler",
                         "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "version": "10.1.270"
                     }
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -304,25 +304,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "lambda-python-function-dockercopy/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -331,12 +331,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
