@@ -107,7 +107,7 @@ export class FileAssetHandler implements IAssetHandler {
       const contentType = 'application/zip';
 
       await fs.mkdir(this.fileCacheRoot, { recursive: true });
-      const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+      const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.${randomString()}.zip`);
 
       if (await pathExists(packagedPath)) {
         this.host.emitMessage(EventType.CACHED, `From cache ${packagedPath}`);
@@ -271,4 +271,8 @@ async function cached<A, B>(cache: Map<A, B>, key: A, factory: (x: A) => Promise
   const fresh = await factory(key);
   cache.set(key, fresh);
   return fresh;
+}
+
+function randomString() {
+  return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }
