@@ -356,16 +356,16 @@ The code snippet below creates a scheduled event rule that will run the task des
 
 ### Tagging Tasks
 
-By default, ECS tasks run from EventBridge targets will not have tags applied to 
-them. You can set the `propagateTags` field to propagate the tags set on the task 
-definition to the task initialized by the event trigger. 
+By default, ECS tasks run from EventBridge targets will not have tags applied to
+them. You can set the `propagateTags` field to propagate the tags set on the task
+definition to the task initialized by the event trigger.
 
-If you want to set tags independent of those applied to the TaskDefinition, you 
-can use the `tags` array. Both of these fields can be used together or separately 
+If you want to set tags independent of those applied to the TaskDefinition, you
+can use the `tags` array. Both of these fields can be used together or separately
 to set tags on the triggered task.
 
 ```ts
-import * as ecs from "@aws-cdk/aws-ecs"
+import * as ecs from "aws-cdk-lib/aws-ecs"
 declare const cluster: ecs.ICluster
 declare const taskDefinition: ecs.TaskDefinition
 
