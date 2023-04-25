@@ -80,7 +80,7 @@ export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParamet
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
 
-  constructor(props: AmazonLinux2023ImageSsmParameterProps) {
+  constructor(props: AmazonLinux2023ImageSsmParameterProps = {}) {
     super({
       parameterName: AmazonLinux2023ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
