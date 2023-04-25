@@ -2041,8 +2041,7 @@ describe('cluster', () => {
       });
 
       // THEN
-      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(providerStack).hasCondition('HasEcrPublic', {
+      Template.fromStack(stack).hasCondition('HasEcrPublic', {
         'Fn::Equals': [
           {
             Ref: 'AWS::Partition',
@@ -2050,34 +2049,29 @@ describe('cluster', () => {
           'aws',
         ],
       });
-      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
               Action: 'eks:DescribeCluster',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackMyClusterD33CAEABArn',
-              },
-            },
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Resource: {
-                Ref: 'referencetoStackMyClusterCreationRoleA67486E4Arn',
+                'Fn::GetAtt': ['MyCluster8AD82BF8', 'Arn'],
               },
             },
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'HandlerServiceRoleDefaultPolicyCBD0CC91',
+        PolicyName: 'KubectlHandlerRoleDefaultPolicyA09B4223',
         Roles: [
           {
-            Ref: 'HandlerServiceRoleFCDC14AE',
+            Ref: 'KubectlHandlerRoleD25EBD08',
           },
         ],
       });
 
+      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
@@ -2103,33 +2097,6 @@ describe('cluster', () => {
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
             ]],
-          },
-          {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
-            ]],
-          },
-          {
-            'Fn::If': [
-              'HasEcrPublic',
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-                  ],
-                ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
           },
         ],
       });
@@ -2274,18 +2241,24 @@ describe('cluster', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: 'eks:DescribeCluster',
+              Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: {
-                Ref: 'referencetoStackCluster18DFEAC17Arn',
-              },
-            },
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Resource: {
-                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
-              },
+              Resource: [
+                {
+                  'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
+                      },
+                      ':*',
+                    ],
+                  ],
+                },
+              ],
             },
           ],
           Version: '2012-10-17',
@@ -2317,33 +2290,6 @@ describe('cluster', () => {
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
             ]],
-          },
-          {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
-            ]],
-          },
-          {
-            'Fn::If': [
-              'HasEcrPublic',
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-                  ],
-                ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
           },
         ],
       });

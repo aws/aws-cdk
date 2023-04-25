@@ -496,22 +496,26 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "KubectlHandlerRoleD25EBD08",
+           "Arn"
           ]
-         ]
-        }
+         },
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole956A78E2Arn"
+          ]
+         },
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole4392FD6EArn"
+          ]
+         }
+        ]
        }
       }
      ],
@@ -909,17 +913,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/348bcf9d5fc48b242cb72ba5de1170e247caac115ce24e962f4f7475f3e88919.json"
+       "/abddbbb8808e122863ce564fe349fd7b8901e141dff6f704406266a497f2a859.json"
       ]
      ]
-    },
-    "Parameters": {
-     "referencetoawscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
-      "Fn::GetAtt": [
-       "ClusterCreationRole360249B6",
-       "Arn"
-      ]
-     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -944,20 +940,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4ac6bcc8c726c902b3dd2c6982a8420862cba5323173ed1671480120217c2818.json"
+       "/3868a46af2290abf6768eb578366fefc5ba2e66c81906b054fcd6aa94779ecea.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetoawscdkeksclusterprivateendpointtestClusterF4CF4FE8Arn": {
+     "referencetoawscdkeksclusterprivateendpointtestKubectlHandlerRole2F2A0553Arn": {
       "Fn::GetAtt": [
-       "Cluster9EE0221C",
-       "Arn"
-      ]
-     },
-     "referencetoawscdkeksclusterprivateendpointtestClusterCreationRole990BAAEAArn": {
-      "Fn::GetAtt": [
-       "ClusterCreationRole360249B6",
+       "KubectlHandlerRoleD25EBD08",
        "Arn"
       ]
      },
@@ -979,6 +969,8 @@
     }
    },
    "DependsOn": [
+    "KubectlHandlerRoleDefaultPolicyA09B4223",
+    "KubectlHandlerRoleD25EBD08",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -986,6 +978,107 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "KubectlHandlerRoleD25EBD08": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     },
+     {
+      "Fn::If": [
+       "HasEcrPublic",
+       {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+         ]
+        ]
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "KubectlHandlerRoleDefaultPolicyA09B4223": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "eks:DescribeCluster",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Cluster9EE0221C",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "KubectlHandlerRoleDefaultPolicyA09B4223",
+    "Roles": [
+     {
+      "Ref": "KubectlHandlerRoleD25EBD08"
+     }
+    ]
+   }
   }
  },
  "Outputs": {
@@ -1036,6 +1129,16 @@
      ]
     ]
    }
+  }
+ },
+ "Conditions": {
+  "HasEcrPublic": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Partition"
+    },
+    "aws"
+   ]
   }
  },
  "Parameters": {
