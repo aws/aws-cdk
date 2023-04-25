@@ -11,10 +11,8 @@ tasks:
           set -e
           yarn install
           export NODE_OPTIONS=--max-old-space-size=8192
-          # build aws-cdk-lib
-          cd packages/aws-cdk-lib && ../../scripts/buildup
-          # build framework-integ
-          cd ../@aws-cdk-testing/framework-integ && ../../../scripts/buildup
+          # pre-build packages
+          npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ --skip-nx-cache
         )
 
 vscode:
