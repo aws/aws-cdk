@@ -209,6 +209,45 @@ describe('repository', () => {
     expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
   });
 
+  test('import with invalid concrete arn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'fooBar';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError('There was an error parsing repository arn: fooBar.');
+  });
+
+  test('import with concrete arn with invalid aws partition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'arn:foo:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError('The mentioned aws partition in the repository arn is invalid: foo.');
+  });
+
+  test('import with concrete arn with invalid aws region', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'arn:aws:ecr:foo-bar-1:585695036304:repository/foo/bar/foo/fooo';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError('The mentioned region in the repository arn does not exists: foo-bar-1.');
+  });
+
   test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();

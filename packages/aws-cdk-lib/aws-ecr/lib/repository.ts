@@ -1,5 +1,8 @@
 import { EOL } from 'os';
 import * as path from 'path';
+import { IConstruct, Construct } from 'constructs';
+import { CfnRepository } from './ecr.generated';
+import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -18,9 +21,8 @@ import {
   CustomResourceProvider,
   CustomResourceProviderRuntime,
 } from '../../core';
-import { IConstruct, Construct } from 'constructs';
-import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
+import { Fact } from '../../region-info';
+import { getAllPartitions } from '../../region-info/lib/aws-entities';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -544,6 +546,8 @@ export class Repository extends RepositoryBase {
       throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
+    isValidEcrRepoArn(repositoryArn);
+
     const repositoryName = repositoryArn.split('/').slice(1).join('/');
 
     class Import extends RepositoryBase {
@@ -826,6 +830,31 @@ export class Repository extends RepositoryBase {
     // the repository as a side effect.
     Tags.of(this._resource).add(AUTO_DELETE_IMAGES_TAG, 'true');
   }
+}
+
+function isValidEcrRepoArn(arn: string): boolean {
+  const arnRegex = /^arn:(\w+):ecr:([a-z]+-[a-z]+-\d{1}):(\d{12}):repository\/([A-Za-z]+.*)$/;
+  const arnInfo = arnRegex.exec(arn);
+
+  if (arnInfo === null) {
+    throw new Error(`There was an error parsing repository arn: ${arn}.`);
+  }
+
+  const partition = arnInfo[1];
+  const allPartitions = getAllPartitions();
+
+  if (!allPartitions.includes(partition)) {
+    throw new Error(`The mentioned aws partition in the repository arn is invalid: ${partition}.`);
+  }
+
+  const region = arnInfo[2];
+  const allRegions = Fact.regions;
+
+  if (!allRegions.includes(region)) {
+    throw new Error(`The mentioned region in the repository arn does not exists: ${region}.`);
+  }
+
+  return true;
 }
 
 function validateAnyRuleLast(rules: LifecycleRule[]) {
