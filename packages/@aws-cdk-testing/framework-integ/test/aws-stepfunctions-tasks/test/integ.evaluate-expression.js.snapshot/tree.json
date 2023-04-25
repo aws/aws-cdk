@@ -26,17 +26,25 @@
               "version": "0.0.0"
             }
           },
-          "Evalda2d1181604e4a4586941a6abd7fe42d": {
-            "id": "Evalda2d1181604e4a4586941a6abd7fe42d",
-            "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d",
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "cdk-sfn-evaluate-expression-integ/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "Eval41256dc5445742738ed917bc818694e5": {
+            "id": "Eval41256dc5445742738ed917bc818694e5",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole/ImportServiceRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -44,7 +52,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole/Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -89,11 +97,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code/Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -101,7 +109,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code/AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -115,7 +123,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-sfn-evaluate-expression-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -127,12 +135,20 @@
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
+                        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
                         "Arn"
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -501,7 +517,7 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                                        "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                         "Arn"
                                       ]
                                     },
@@ -539,7 +555,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                               "Arn"
                                             ]
                                           },
@@ -596,7 +612,7 @@
                           "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
                               "Arn"
                             ]
                           },
