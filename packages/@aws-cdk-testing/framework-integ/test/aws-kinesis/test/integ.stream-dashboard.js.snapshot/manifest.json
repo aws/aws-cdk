@@ -1,0 +1,76 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "integ-kinesis-stream-dashboard.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-kinesis-stream-dashboard.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-kinesis-stream-dashboard": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-kinesis-stream-dashboard.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73caf7840b0aa456be74c211b26d03fc0aa23d95b113e7a3353dedc9b89ef469.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-kinesis-stream-dashboard.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-kinesis-stream-dashboard.assets"
+      ],
+      "metadata": {
+        "/integ-kinesis-stream-dashboard/myStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myStream547FAD7F"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/StreamDashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamDashboardAAF4FCF8"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-kinesis-stream-dashboard"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

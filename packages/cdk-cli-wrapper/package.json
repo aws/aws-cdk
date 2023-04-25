@@ -61,11 +61,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "jest": "^27.5.1",
-    "@aws-cdk/pkglint": "0.0.0",
-    "jsii": "v4.9-next"
+    "jest": "^29.5.0",
+    "@aws-cdk/pkglint": "0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
