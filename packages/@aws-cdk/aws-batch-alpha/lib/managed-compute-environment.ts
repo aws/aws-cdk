@@ -1120,6 +1120,7 @@ function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole
 
   result.instanceRole = instanceRole ?? new iam.Role(scope, 'InstanceProfileRole', {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')],
   });
 
   result.instanceProfile = new iam.CfnInstanceProfile(scope, 'InstanceProfile', {
