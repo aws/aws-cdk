@@ -7,7 +7,7 @@ import { ApplicationLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns'
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {

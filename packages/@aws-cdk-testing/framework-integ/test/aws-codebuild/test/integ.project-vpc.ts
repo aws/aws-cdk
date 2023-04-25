@@ -9,6 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
 const vpc = new ec2.Vpc(stack, 'MyVPC', {
   maxAzs: 1,
   natGateways: 1,
+  restrictDefaultSecurityGroup: false,
 });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
   allowAllOutbound: true,

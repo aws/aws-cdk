@@ -6,7 +6,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-dual-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 0 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 0, restrictDefaultSecurityGroup: false });
 const ipv6 = new ec2.CfnVPCCidrBlock(stack, 'Ipv6CidrBlock', { vpcId: vpc.vpcId, amazonProvidedIpv6CidrBlock: true });
 vpc.isolatedSubnets.forEach((subnet, idx) => {
   const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;

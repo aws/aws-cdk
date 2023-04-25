@@ -11,7 +11,7 @@ const stack = new cdk.Stack(
 );
 
 // Create VPC and cluster
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'TestFargateCluster', { vpc });
 
 // Create ALB service with Command and EntryPoint

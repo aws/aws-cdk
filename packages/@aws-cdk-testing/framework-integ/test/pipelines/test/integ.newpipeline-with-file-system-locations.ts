@@ -12,7 +12,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc');
+    const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       removalPolicy: RemovalPolicy.DESTROY,

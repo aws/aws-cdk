@@ -7,7 +7,7 @@ import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patte
 
 const app = new App({ postCliContext: { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: false } });
 const stack = new Stack(app, 'aws-ecs-integ-circuit-breaker');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 new ApplicationLoadBalancedFargateService(stack, 'myService', {

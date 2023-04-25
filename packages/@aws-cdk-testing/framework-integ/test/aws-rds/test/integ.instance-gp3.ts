@@ -8,7 +8,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
+    const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'Instance', {
       engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),

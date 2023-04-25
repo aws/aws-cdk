@@ -13,7 +13,7 @@ import * as docdb from 'aws-cdk-lib/aws-docdb';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-docdb-cluster-rotation');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 /// !show
 const cluster = new docdb.DatabaseCluster(stack, 'Database', {

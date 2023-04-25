@@ -6,7 +6,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-s3-mysql-8-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const importExportBucket = new s3.Bucket(stack, 'ImportExportBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });

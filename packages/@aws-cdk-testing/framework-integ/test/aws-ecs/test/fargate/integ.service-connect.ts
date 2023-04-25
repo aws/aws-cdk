@@ -2,11 +2,12 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class ServiceConnect extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const cluster = new ecs.Cluster(this, 'EcsCluster', {
       defaultCloudMapNamespace: {
         name: 'scorekeep.com',

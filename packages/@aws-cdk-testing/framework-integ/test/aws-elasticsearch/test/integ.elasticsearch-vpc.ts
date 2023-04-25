@@ -16,7 +16,7 @@ class TestStack extends Stack {
       },
     });
 
-    const vpc = new ec2.Vpc(this, 'Vpc');
+    const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
     const domainProps: es.DomainProps = {
       version: es.ElasticsearchVersion.V7_1,
       removalPolicy: RemovalPolicy.DESTROY,

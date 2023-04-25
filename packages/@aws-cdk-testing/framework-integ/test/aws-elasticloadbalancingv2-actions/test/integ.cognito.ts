@@ -13,7 +13,7 @@ class CognitoStack extends Stack {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Stack', {
-      maxAzs: 2,
+      maxAzs: 2, restrictDefaultSecurityGroup: false,
     });
 
     const certificate: elbv2.IListenerCertificate = {

@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const appWithVpc = new cdk.App();
 const stack = new cdk.Stack(appWithVpc, 'StackWithVpc', {
@@ -9,6 +10,7 @@ const stack = new cdk.Stack(appWithVpc, 'StackWithVpc', {
     account: '123456',
   },
 });
+stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const testVpc = new ec2.Vpc(stack, 'MyVpc', {
   vpcName: 'my-vpc-name',

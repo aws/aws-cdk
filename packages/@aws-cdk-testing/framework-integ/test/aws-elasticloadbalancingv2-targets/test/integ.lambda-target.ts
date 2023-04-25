@@ -9,7 +9,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Stack', { maxAzs: 2, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Stack', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
     const listener = lb.addListener('Listener', { port: 80 });

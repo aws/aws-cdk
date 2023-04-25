@@ -23,6 +23,7 @@ const ltOverrideT4g = new ec2.LaunchTemplate(stack, 'T4gLT', {
 });
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
 });
 

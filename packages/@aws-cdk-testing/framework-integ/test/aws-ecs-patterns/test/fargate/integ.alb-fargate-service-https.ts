@@ -8,7 +8,7 @@ import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patte
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb-fg-https');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 // Loadbalancer with HTTPS

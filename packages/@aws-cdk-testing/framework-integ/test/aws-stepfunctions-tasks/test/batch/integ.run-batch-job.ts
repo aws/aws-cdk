@@ -19,7 +19,7 @@ class RunBatchStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'vpc');
+    const vpc = new ec2.Vpc(this, 'vpc', { restrictDefaultSecurityGroup: false });
 
     const batchQueue = new batch.JobQueue(this, 'JobQueue', {
       computeEnvironments: [
