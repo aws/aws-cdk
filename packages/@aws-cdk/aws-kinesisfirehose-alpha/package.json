@@ -111,6 +111,11 @@
       "*:*"
     ]
   },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "*"
+    }
+  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
