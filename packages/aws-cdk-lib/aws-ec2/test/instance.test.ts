@@ -625,3 +625,31 @@ test('ssm permissions adds right managed policy', () => {
   });
 });
 
+test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
+  // GIVEN
+  const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
+  //WHEN
+  const sameInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
+  //THEN
+  expect(sameInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
+});
+
+test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', () => {
+  // GIVEN
+  const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
+  //WHEN
+  const largerInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.XLARGE);
+  //THEN
+  expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
+});
+
+
+test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
+  // GIVEN
+  const comparitor = InstanceType.of(InstanceClass.C4, InstanceSize.LARGE);
+  //WHEN
+  const instanceType = new InstanceType('t3.large');
+  //THEN
+  expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
+});
+
