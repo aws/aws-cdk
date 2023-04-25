@@ -1,5 +1,5 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { Resource } from 'aws-cdk-lib';
+import { Aws, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
@@ -103,7 +103,7 @@ export abstract class IntegrationCredentials {
 
   /** Use the calling user's identity to call the integration */
   public static useCallerIdentity(): IntegrationCredentials {
-    return { credentialsArn: 'arn:aws:iam::*:user/*' };
+    return { credentialsArn: `arn:${Aws.PARTITION}:iam::*:user/*` };
   }
 
   /**
