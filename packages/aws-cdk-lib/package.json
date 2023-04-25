@@ -105,6 +105,9 @@
     "yaml"
   ],
   "dependencies": {
+    "@aws-cdk/asset-awscli-v1": "^2.2.97",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.1",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.77",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
@@ -113,10 +116,7 @@
     "minimatch": "^3.1.2",
     "punycode": "^2.3.0",
     "semver": "^7.3.8",
-    "yaml": "1.10.2",
-    "@aws-cdk/asset-awscli-v1": "^2.2.97",
-    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.77",
-    "@aws-cdk/asset-kubectl-v20": "^2.1.1"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -670,5 +670,15 @@
   "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "bundleDependencies": [
+    "@balena/dockerignore",
+    "case",
+    "fs-extra",
+    "ignore",
+    "jsonschema",
+    "minimatch",
+    "punycode",
+    "semver"
+  ]
 }
