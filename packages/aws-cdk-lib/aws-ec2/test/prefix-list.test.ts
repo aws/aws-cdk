@@ -85,7 +85,7 @@ describe('prefix list', () => {
           { cidr: '::/0', description: 'sample1' },
         ],
       });
-    }).toThrow('Invalid IP address range: ::/0');
+    }).toThrow('Invalid IPv4 address range: ::/0');
   });
 
   test('invalid ipv6', () => {
@@ -99,6 +99,6 @@ describe('prefix list', () => {
           { cidr: '::/0', description: 'sample1' },
         ],
       });
-    }).toThrow('Invalid IP address range: 10.0.0.1/32');
+    }).toThrow('Invalid IPv6 address range: 10.0.0.1/32');
   });
 });
