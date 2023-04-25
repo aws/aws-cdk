@@ -6,7 +6,6 @@ import * as kms from '../../aws-kms';
 import {
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Duration,
   FeatureFlags,
   Fn,
@@ -20,6 +19,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
@@ -2375,7 +2375,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
