@@ -393,8 +393,8 @@ const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true });
 
 As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
 
-Alternatively, you can just write this test as a new integration test like `integ.my-test.ts` and deploy it
-with `yarn integ` and generate snapshots for you. This would be very useful when you need to publish a new 
+Alternatively, you can write this test as a new integration test like `integ.my-test.ts` and deploy it
+using `yarn integ --no-clean`. This may be useful when you need to publish a new 
 integration test:
 
 ```console
