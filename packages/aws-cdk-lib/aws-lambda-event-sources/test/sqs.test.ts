@@ -1,10 +1,10 @@
+import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { App } from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 /* eslint-disable quote-props */
@@ -239,6 +239,21 @@ describe('SQSEventSource', () => {
 
   });
 
+  test('contains eventSourceMappingArn after lambda binding', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(eventSource.eventSourceMappingArn).toBeDefined();
+
+  });
+
   test('eventSourceMappingId throws error before binding to lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -247,6 +262,17 @@ describe('SQSEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/SqsEventSource is not yet bound to an event source mapping/);
+
+  });
+
+  test('eventSourceMappingArn throws error before binding to lambda', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const q = new sqs.Queue(stack, 'Q');
+    const eventSource = new sources.SqsEventSource(q);
+
+    // WHEN/THEN
+    expect(() => eventSource.eventSourceMappingArn).toThrow(/SqsEventSource is not yet bound to an event source mapping/);
 
   });
 

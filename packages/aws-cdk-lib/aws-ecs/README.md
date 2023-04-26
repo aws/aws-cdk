@@ -727,22 +727,22 @@ The feature flag changes behavior for the entire CDK project. Therefore it is no
 declare const cluster: ecs.Cluster;
 
 // Import service from EC2 service attributes
-const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+const service = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'EcsService', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from EC2 service ARN
-const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const service = ecs.Ec2Service.fromEc2ServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 
 // Import service from Fargate service attributes
-const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
+const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsService', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from Fargate service ARN
-const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
 ## Task Auto-Scaling
@@ -1154,9 +1154,9 @@ For more information visit https://docs.aws.amazon.com/AmazonECS/latest/develope
 When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used. Default Capacity Provider Strategy can be added by using the method `addDefaultCapacityProviderStrategy`. A capacity provider strategy cannot contain a mix of EC2 Autoscaling Group capacity providers and Fargate providers.
 
 ```ts
-declare const capacityProvider: ecs.CapacityProvider;
+declare const capacityProvider: ecs.AsgCapacityProvider;
 
-const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
@@ -1168,9 +1168,9 @@ cluster.addDefaultCapacityProviderStrategy([
 ```
 
 ```ts
-declare const capacityProvider: ecs.CapacityProvider;
+declare const capacityProvider: ecs.AsgCapacityProvider;
 
-const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+const cluster = new ecs.Cluster(this, 'EcsCluster', {
   enableFargateCapacityProviders: true,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
@@ -1287,14 +1287,14 @@ or you can specify a custom namespace. You must also have created a named port m
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const container: ecs.ContainerDefinition;
+declare const containerOptions: ecs.ContainerDefinitionOptions;
+
+const container = taskDefinition.addContainer('MyContainer', containerOptions);
 
 container.addPortMappings({
   name: 'api',
   containerPort: 8080,
 });
-
-taskDefinition.addContainer(container);
 
 cluster.addDefaultCloudMapNamespace({
   name: 'local',
@@ -1321,21 +1321,27 @@ be routed to the container's port 8080.
 To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
-  taskDefinition
-)
+  taskDefinition,
+});
 service.enableServiceConnect();
 ```
 
 Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
 const customService = new ecs.FargateService(this, 'CustomizedService', {
   cluster,
   taskDefinition,
   serviceConnectConfiguration: {
-    logDriver: ecs.LogDrivers.awslogs({
+    logDriver: ecs.LogDrivers.awsLogs({
       streamPrefix: 'sc-traffic',
     }),
     services: [
@@ -1363,5 +1369,22 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   pseudoTerminal: true
+});
+```
+
+## Specify a container ulimit
+
+You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
+to the task definition.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  ulimits: [{
+    hardLimit: 128,
+    name: ecs.UlimitName.RSS,
+    softLimit: 128,
+  }],
 });
 ```

@@ -62,8 +62,12 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
      * Exits the loop on 'Active' state and throws an error on 'Inactive' or 'Failed'.
      *
      * And now we wait.
+     *
+     * Use functionActive instead of functionActiveV2, since functionActiveV2 is only
+     * available on SDK 2.1080.0 and up, Lambda installs 2.1055.0 by default,
+     * and we use the SDK version that Lambda includes by default.
      */
-    await lambda.waitFor('functionActiveV2', {
+    await lambda.waitFor('functionActive', {
       FunctionName: req.FunctionName,
     }).promise();
     return await lambda.invoke(req).promise();

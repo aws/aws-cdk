@@ -15,13 +15,9 @@ The `TriggerFunction` construct will define an AWS Lambda function which is
 triggered *during* deployment:
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as triggers from 'aws-cdk-lib/triggers';
-import { Stack } from 'aws-cdk-lib';
 
-declare const stack: Stack;
-
-new triggers.TriggerFunction(stack, 'MyTrigger', {
+new triggers.TriggerFunction(this, 'MyTrigger', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
@@ -30,6 +26,29 @@ new triggers.TriggerFunction(stack, 'MyTrigger', {
 
 In the above example, the AWS Lambda function defined in `myLambdaFunction` will
 be invoked when the stack is deployed.
+
+It is also possible to trigger a predefined Lambda function by using the `Trigger` construct:
+
+```ts
+import * as triggers from 'aws-cdk-lib/triggers';
+
+const func = new lambda.Function(this, 'MyFunction', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  code: lambda.Code.fromInline('foo'),
+});
+
+new triggers.Trigger(this, 'MyTrigger', {
+  handler: func,
+  timeout: Duration.minutes(10),
+  invocationType: triggers.InvocationType.EVENT,
+});
+```
+
+Addition properties can be used to fine-tune the behaviour of the trigger.
+The `timeout` property can be used to determine how long the invocation of the function should take.
+The `invocationType` property can be used to change the invocation type of the function.
+This might be useful in scenarios where a fire-and-forget strategy for invoking the function is sufficient.
 
 ## Trigger Failures
 
@@ -54,7 +73,6 @@ parallel, and then the trigger `myTrigger` will be executed. Only then the
 resources under `goodbye` will be provisioned:
 
 ```ts
-import { Construct, Node } from 'constructs';
 import * as triggers from 'aws-cdk-lib/triggers';
 
 declare const myTrigger: triggers.Trigger;

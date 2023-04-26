@@ -141,6 +141,7 @@ describe('event source mapping', () => {
 
     expect(imported.eventSourceMappingId).toEqual('14e0db71-5d35-4eb5-b481-8945cf9d10c2');
     expect(imported.stack.stackName).toEqual('test-stack');
+    expect(imported.eventSourceMappingArn.endsWith(':event-source-mapping:14e0db71-5d35-4eb5-b481-8945cf9d10c2')).toBeTruthy();
   });
 
   test('accepts if kafkaTopic is a parameter', () => {
