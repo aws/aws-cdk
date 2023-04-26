@@ -200,7 +200,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -215,7 +221,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -232,7 +244,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -249,7 +267,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -265,7 +289,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -281,7 +311,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation',
+          ]],
+        }],
       });
     });
   });

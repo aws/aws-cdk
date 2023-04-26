@@ -393,7 +393,9 @@ describe('HttpRoute', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:execute-api:',
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
                   { Ref: 'AWS::Region' },
                   ':',
                   { Ref: 'AWS::AccountId' },
@@ -444,7 +446,9 @@ describe('HttpRoute', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:execute-api:',
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
                     { Ref: 'AWS::Region' },
                     ':',
                     { Ref: 'AWS::AccountId' },
@@ -458,7 +462,9 @@ describe('HttpRoute', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:execute-api:',
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
                     { Ref: 'AWS::Region' },
                     ':',
                     { Ref: 'AWS::AccountId' },
@@ -507,7 +513,9 @@ describe('HttpRoute', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:execute-api:',
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
                   { Ref: 'AWS::Region' },
                   ':',
                   { Ref: 'AWS::AccountId' },
@@ -580,7 +588,9 @@ describe('HttpRoute', () => {
     // THEN
     expect(stack.resolve(route.routeArn)).toEqual({
       'Fn::Join': ['', [
-        'arn:aws:execute-api:',
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
@@ -605,7 +615,9 @@ describe('HttpRoute', () => {
     // THEN
     expect(stack.resolve(route.routeArn)).toEqual({
       'Fn::Join': ['', [
-        'arn:aws:execute-api:',
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },

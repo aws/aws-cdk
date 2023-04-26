@@ -16,7 +16,11 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:execute-api:",
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":execute-api:",
            {
             "Ref": "AWS::Region"
            },
@@ -36,7 +40,11 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:execute-api:",
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":execute-api:",
            {
             "Ref": "AWS::Region"
            },
