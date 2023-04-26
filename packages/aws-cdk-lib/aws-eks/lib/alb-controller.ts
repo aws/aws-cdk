@@ -88,6 +88,46 @@ export class AlbControllerVersion {
   public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', false);
 
   /**
+   * v2.4.2
+   */
+  public static readonly V2_4_2 = new AlbControllerVersion('v2.4.2', false);
+
+  /**
+   * v2.4.3
+   */
+  public static readonly V2_4_3 = new AlbControllerVersion('v2.4.3', false);
+
+  /**
+   * v2.4.4
+   */
+  public static readonly V2_4_4 = new AlbControllerVersion('v2.4.4', false);
+
+  /**
+   * v2.4.5
+   */
+  public static readonly V2_4_5 = new AlbControllerVersion('v2.4.5', false);
+
+  /**
+   * v2.4.6
+   */
+  public static readonly V2_4_6 = new AlbControllerVersion('v2.4.6', false);
+
+  /**
+   * v2.4.7
+   */
+  public static readonly V2_4_7 = new AlbControllerVersion('v2.4.7', false);
+
+  /**
+   * v2.5.0
+   */
+  public static readonly V2_5_0 = new AlbControllerVersion('v2.5.0', false);
+
+  /**
+   * v2.5.1
+   */
+  public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
