@@ -432,7 +432,7 @@ test('Scheduled Ec2 Task - with list of tags', () => {
     autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
       vpc,
       instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux2023(),
+      machineImage: MachineImage.latestAmazonLinux(),
     }),
   }));
 
