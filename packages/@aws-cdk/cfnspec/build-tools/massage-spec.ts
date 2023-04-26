@@ -17,6 +17,13 @@ export function massageSpec(spec: schema.Specification) {
  */
 function replaceIncompleteTypes(spec: schema.Specification) {
   for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
+    if (!definition) {
+      // eslint-disable-next-line no-console
+      console.log(`[${name}] **ERROR** Nullish type definition: a patch probably copied a nonexistent value!`);
+      process.exitCode = 1;
+      continue;
+    }
+
     if (!schema.isRecordType(definition)
     && !schema.isCollectionProperty(definition)
     && !schema.isScalarProperty(definition)
