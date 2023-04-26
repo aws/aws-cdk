@@ -330,9 +330,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const actionRole = this.props.actionRole
       ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
       ?? new iam.Role(options.pipeline, actionRoleCid, {
-        assumedBy: new iam.PrincipalWithConditions(new iam.AccountRootPrincipal(), {
-          Bool: { 'aws:ViaAWSService': iam.ServicePrincipal.servicePrincipalName('codepipeline.amazonaws.com') },
-        }),
+        assumedBy: options.pipeline.pipeline.role,
       });
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
