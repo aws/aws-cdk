@@ -334,15 +334,15 @@ $ yarn watch & # runs in the background
 
 #### Verify your fix by deployment
 
-If your PR updates some libraries, you will need to write a simple CDK application and make sure it synthesizes and
-deploys correctly. For example, if you have changed libraries under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
+If your PR updates a specific library, you will need to write a simple CDK application and make sure it synthesizes and
+deploys correctly. For example, if you modify files under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
 
 
 ```console
 $ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
 ```
 
-Now, create a `sample.ts` like this:
+Create a `sample.ts` like this:
 
 ```ts
 import {
@@ -363,7 +363,7 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
 });
 ```
 
-Run `yarn watch` or `npx tsc --watch` to compile the `sample.ts` to `sample.js`:
+Run `yarn watch` or `npx tsc --watch` in a separate terminal to compile `sample.ts` to `sample.js`:
 
 ```console
 $ cd packages/@aws-cdk-testing/framework-integ
@@ -372,9 +372,9 @@ or
 $ npx tsc --watch
 ```
 
-Make sure you have configured [AWS CLI with AWS Authentication](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth).
+Make sure you have configured [AWS CLI with AWS Authentication](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth) as we will deploy it in our AWS account.
 
-Now, let's deploy this sample app with our fix in our AWS account:
+Deploy the sample app:
 
 ```console
 $ cd packages/@aws-cdk-testing/framework-integ
@@ -382,11 +382,11 @@ $ npx cdk -a test/aws-eks/test/sample.js diff
 $ npx cdk -a test/aws-eks/test/sample.js deploy
 ```
 
-This allows you to iterate your PR development and ensure a minimal simple app with your fix can
+This allows you to iterate your development and ensure a minimal sample app with your hack can
 successfully deploy as you expect. Do not commit `sample.ts` and `sample.js` to your PR branch.
 
-You will also need to ensure your fix can pass all existing unit tests and integ tests and fix 
-them when required.
+You will also need to ensure your hack can pass all existing unit tests and integ tests and fix 
+them if necessary.
 
 Run all the unit tests for a specific module(e.g. aws-eks):
 
