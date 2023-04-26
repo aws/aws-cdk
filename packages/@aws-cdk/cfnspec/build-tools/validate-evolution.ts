@@ -26,7 +26,7 @@ export async function validateSpecificationEvolution(specProducer: () => Promise
     ].join('\n') + '\n');
 
     child_process.execSync(`git checkout ${commit}`);
-    const oldSpec = await specProducer();
+    specs.push(await specProducer());
   }
 
   validatePropertyTypeNameConsistency(specs[0], specs[1]);
