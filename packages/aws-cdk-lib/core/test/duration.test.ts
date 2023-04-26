@@ -98,20 +98,25 @@ describe('duration', () => {
 
     expect(Duration.seconds(65).toIsoString()).toEqual('PT1M5S');
     expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString()).toEqual('P1DT1H1M1S');
+    expect(Duration.millis(1 + (1000 * (1 + 60 * (1 + 60 * (1 + 24))))).toIsoString()).toEqual('P1DT1H1M1.001S');
   });
 
   test('parse', () => {
+    expect(Duration.parse('PT0.000S').toMilliseconds()).toEqual(0);
     expect(Duration.parse('PT0S').toSeconds()).toEqual(0);
     expect(Duration.parse('PT0M').toSeconds()).toEqual(0);
     expect(Duration.parse('PT0H').toSeconds()).toEqual(0);
     expect(Duration.parse('P0D').toSeconds()).toEqual(0);
 
+    expect(Duration.parse('PT0.005S').toMilliseconds()).toEqual(5);
+    expect(Duration.parse('PT0.5S').toMilliseconds()).toEqual(500);
     expect(Duration.parse('PT5S').toSeconds()).toEqual(5);
     expect(Duration.parse('PT5M').toSeconds()).toEqual(300);
     expect(Duration.parse('PT5H').toSeconds()).toEqual(18_000);
     expect(Duration.parse('P5D').toSeconds()).toEqual(432_000);
 
     expect(Duration.parse('P1DT1H1M1S').toSeconds()).toEqual(1 + 60 * (1 + 60 * (1 + 24)));
+    expect(Duration.parse('P1DT1H1M1.001S').toMilliseconds()).toEqual(1 + (1000 * (1 + 60 * (1 + 60 * (1 + 24)))));
   });
 
   test('reject illegal parses', () => {

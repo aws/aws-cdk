@@ -286,7 +286,7 @@ interface AssetOptions {
 
 export interface BuildStackAssetsOptions extends AssetOptions {
   /**
-   * Options to pass on to `buildAsests()` function
+   * Options to pass on to `buildAssets()` function
    */
   readonly buildOptions?: BuildAssetsOptions;
 }

@@ -1,9 +1,9 @@
-import * as cb from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
 import { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildOptions, CodePipeline } from './codepipeline';
 import { StackOutputsMap } from './stack-outputs-map';
+import * as cb from '../../../aws-codebuild';
+import * as cp from '../../../aws-codepipeline';
 
 /**
  * Options for the `CodePipelineActionFactory.produce()` method.
