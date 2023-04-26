@@ -74,8 +74,8 @@
       "rm"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
   }
