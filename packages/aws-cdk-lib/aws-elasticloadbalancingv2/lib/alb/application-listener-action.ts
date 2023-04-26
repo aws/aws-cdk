@@ -1,8 +1,8 @@
-import { Duration, SecretValue, Tokenization } from '../../../core';
 import { Construct, IConstruct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
+import { Duration, SecretValue, Tokenization } from '../../../core';
+import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
 /**
@@ -28,22 +28,31 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#oidc-requirements
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
-    return new ListenerAction({
+    const config: CfnListener.AuthenticateOidcConfigProperty = {
+      authorizationEndpoint: options.authorizationEndpoint,
+      clientId: options.clientId,
+      clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
+      issuer: options.issuer,
+      tokenEndpoint: options.tokenEndpoint,
+      userInfoEndpoint: options.userInfoEndpoint,
+      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
+      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
+      scope: options.scope,
+      sessionCookieName: options.sessionCookieName,
+      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+    };
+    const listenerAction = new ListenerAction({
+      type: 'authenticate-oidc',
+      authenticateOidcConfig: config,
+    }, options.next);
+    listenerAction.addRuleAction({
       type: 'authenticate-oidc',
       authenticateOidcConfig: {
-        authorizationEndpoint: options.authorizationEndpoint,
-        clientId: options.clientId,
-        clientSecret: options.clientSecret.unsafeUnwrap(), // Safe usage
-        issuer: options.issuer,
-        tokenEndpoint: options.tokenEndpoint,
-        userInfoEndpoint: options.userInfoEndpoint,
-        authenticationRequestExtraParams: options.authenticationRequestExtraParams,
-        onUnauthenticatedRequest: options.onUnauthenticatedRequest,
-        scope: options.scope,
-        sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+        ...config,
+        sessionTimeout: options.sessionTimeout?.toSeconds(),
       },
-    }, options.next);
+    });
+    return listenerAction;
   }
 
   /**
@@ -63,16 +72,7 @@ export class ListenerAction implements IListenerAction {
       });
     }
 
-    return new TargetGroupListenerAction(targetGroups, {
-      type: 'forward',
-      forwardConfig: {
-        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
-        targetGroupStickinessConfig: options.stickinessDuration ? {
-          durationSeconds: options.stickinessDuration.toSeconds(),
-          enabled: true,
-        } : undefined,
-      },
-    });
+    return ListenerAction.weightedForward(targetGroups.map(g => ({ targetGroup: g, weight: 1 })), options)
   }
 
   /**
@@ -153,20 +153,35 @@ export class ListenerAction implements IListenerAction {
   }
 
   /**
+   * If set, it is preferred as Action for the `ListenerRule`.
+   * This is necessary if `CfnListener.ActionProperty` and `CfnListenerRule.ActionProperty`
+   * have different structures.
+   */
+  private _actionJson?: CfnListenerRule.ActionProperty;
+
+  /**
    * Create an instance of ListenerAction
    *
    * The default class should be good enough for most cases and
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: ListenerAction) {
+  protected constructor(private readonly defaultActionJson: CfnListener.ActionProperty, protected readonly next?: ListenerAction) {
   }
 
   /**
-   * Render the actions in this chain
+   * Render the listener rule actions in this chain
+   */
+  public renderRuleActions(): CfnListenerRule.ActionProperty[] {
+    const actionJson = this._actionJson ?? this.defaultActionJson as CfnListenerRule.ActionProperty;
+    return this._renumber([actionJson, ...this.next?.renderRuleActions() ?? []]);
+  }
+
+  /**
+   * Render the listener default actions in this chain
    */
   public renderActions(): CfnListener.ActionProperty[] {
-    return this.renumber([this.actionJson, ...this.next?.renderActions() ?? []]);
+    return this._renumber([this.defaultActionJson, ...this.next?.renderActions() ?? []]);
   }
 
   /**
@@ -174,6 +189,13 @@ export class ListenerAction implements IListenerAction {
    */
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     this.next?.bind(scope, listener, associatingConstruct);
+  }
+
+  private _renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
+  (actions: ActionProperty[]): ActionProperty[] {
+    if (actions.length < 2) { return actions; }
+
+    return actions.map((action, i) => ({ ...action, order: i + 1 }));
   }
 
   /**
@@ -186,9 +208,21 @@ export class ListenerAction implements IListenerAction {
    * users the opportunity to override by subclassing and overriding `renderActions`.
    */
   protected renumber(actions: CfnListener.ActionProperty[]): CfnListener.ActionProperty[] {
-    if (actions.length < 2) { return actions; }
+    return this._renumber(actions);
+  }
 
-    return actions.map((action, i) => ({ ...action, order: i + 1 }));
+  /**
+   * Sets the Action for the `ListenerRule`.
+   * This method is required to set a dedicated Action to a `ListenerRule`
+   * when the Action for the `CfnListener` and the Action for the `CfnListenerRule`
+   * have different structures. (e.g. `AuthenticateOidcConfig`)
+   * @param actionJson Action for `ListenerRule`
+   */
+  protected addRuleAction(actionJson: CfnListenerRule.ActionProperty) {
+    if (this._actionJson) {
+      throw new Error('rule action is already set');
+    }
+    this._actionJson = actionJson;
   }
 }
 
@@ -430,8 +464,8 @@ export enum UnauthenticatedAction {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends ListenerAction {
-  constructor(private readonly targetGroups: IApplicationTargetGroup[], actionJson: CfnListener.ActionProperty) {
-    super(actionJson);
+  constructor(private readonly targetGroups: IApplicationTargetGroup[], defaultActionJson: CfnListener.ActionProperty) {
+    super(defaultActionJson);
   }
 
   public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {

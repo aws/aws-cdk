@@ -239,7 +239,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          // only talk to user if concurreny is 1 (otherwise, fail)
+          // only talk to user if concurrency is 1 (otherwise, fail)
           if (concurrency > 1) {
             throw new Error(
               '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
@@ -570,7 +570,7 @@ export class CdkToolkit {
    * Synthesize the given set of stacks (called when the user runs 'cdk synth')
    *
    * INPUT: Stack names can be supplied using a glob filter. If no stacks are
-   * given, all stacks from the application are implictly selected.
+   * given, all stacks from the application are implicitly selected.
    *
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
@@ -1159,7 +1159,7 @@ function roundPercentage(num: number): number {
 }
 
 /**
- * Given a time in miliseconds, return an equivalent amount in seconds.
+ * Given a time in milliseconds, return an equivalent amount in seconds.
  */
 function millisecondsToSeconds(num: number): number {
   return num / 1000;

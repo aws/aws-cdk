@@ -118,6 +118,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - no file system locations
    */
   readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: codebuild.LoggingOptions;
 }
 
 /**
@@ -217,6 +224,13 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
 
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuilde project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: codebuild.LoggingOptions;
+
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;
   private readonly exportedVariables = new Set<string>();
@@ -237,6 +251,7 @@ export class CodeBuildStep extends ShellStep {
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
     this.fileSystemLocations = props.fileSystemLocations;
+    this.logging = props.logging;
   }
 
   /**

@@ -682,6 +682,13 @@
        ]
       },
       "EcsParameters": {
+       "PropagateTags": "TASK_DEFINITION",
+       "TagList": [
+        {
+         "Key": "my-tag",
+         "Value": "my-tag-value"
+        }
+       ],
        "TaskCount": 2,
        "TaskDefinitionArn": {
         "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"

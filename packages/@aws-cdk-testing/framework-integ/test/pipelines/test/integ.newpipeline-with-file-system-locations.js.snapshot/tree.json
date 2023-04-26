@@ -767,6 +767,14 @@
               "version": "0.0.0"
             }
           },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "PipelinesFileSystemLocations/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "PipelinesFileSystemLocations/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -2077,27 +2085,12 @@
                           "Statement": [
                             {
                               "Action": "sts:AssumeRole",
-                              "Condition": {
-                                "Bool": {
-                                  "aws:ViaAWSService": "codepipeline.amazonaws.com"
-                                }
-                              },
                               "Effect": "Allow",
                               "Principal": {
                                 "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
+                                  "Fn::GetAtt": [
+                                    "PipelineRoleB27FAA37",
+                                    "Arn"
                                   ]
                                 }
                               }

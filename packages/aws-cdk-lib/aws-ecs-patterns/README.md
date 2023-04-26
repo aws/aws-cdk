@@ -986,3 +986,54 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
 [Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+
+### Propagate Tags from task definition for ScheduledFargateTask
+
+For tasks that are defined by a Task Definition, tags applied to the definition will not be applied
+to the running task by default. To get this behavior, set `propagateTags` to `ecs.PropagatedTagSource.TASK_DEFINITION` as
+shown below:
+
+```ts
+import { Tags } from 'aws-cdk-lib';
+
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+});
+taskDefinition.addContainer("WebContainer", {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+});
+Tags.of(taskDefinition).add('my-tag', 'my-tag-value')
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  taskDefinition: taskDefinition,
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+});
+```
+
+### Pass a list of tags for ScheduledFargateTask
+
+You can pass a list of tags to be applied to a Fargate task directly. These tags are in addition to any tags
+that could be applied to the task definition and propagated using the `propagateTags` attribute.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  tags: [
+    {
+      key: 'my-tag',
+      value: 'my-tag-value',
+    },
+  ],
+});
+```

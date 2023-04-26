@@ -513,7 +513,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
+Use the `role`, `timeout`, `logRetention`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -523,6 +523,7 @@ new cr.AwsCustomResource(this, 'Customized', {
   timeout: Duration.minutes(10), // defaults to 2 minutes
   logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs
   functionName: 'my-custom-name', // defaults to a CloudFormation generated name
+  removalPolicy: RemovalPolicy.RETAIN, // defaults to `RemovalPolicy.DESTROY`
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
   }),
