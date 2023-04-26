@@ -34,7 +34,10 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
+    cfnDiff.formatDifferences(stream || process.stderr, diff, {
+      ...logicalIdMapFromTemplate(oldTemplate),
+      ...buildLogicalToPathMap(newTemplate),
+    }, context);
   } else {
     print(chalk.green('There were no differences'));
   }
@@ -90,4 +93,16 @@ function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
     map[md.data as string] = md.path;
   }
   return map;
+}
+
+function logicalIdMapFromTemplate(template: any) {
+  const ret: Record<string, string> = {};
+
+  for (const [logicalId, resource] of Object.entries(template.Resources ?? {})) {
+    const path = (resource as any)?.Metadata?.['aws:cdk:path'];
+    if (path) {
+      ret[logicalId] = path;
+    }
+  }
+  return ret;
 }
