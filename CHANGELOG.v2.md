@@ -37,6 +37,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **elasticloadbalancingv2:** can not set sessionTimeout ([#24457](https://github.com/aws/aws-cdk/issues/24457)) ([cefbb33](https://github.com/aws/aws-cdk/commit/cefbb334609869b65bbd5e2b8aabbc153c423466)), closes [#12843](https://github.com/aws/aws-cdk/issues/12843) [#21768](https://github.com/aws/aws-cdk/issues/21768)
 * **rds:** Correct ARN in IAM policy for IAM database access ([#25141](https://github.com/aws/aws-cdk/issues/25141)) ([227ea09](https://github.com/aws/aws-cdk/commit/227ea0905c1d299395c1f93779d23426144d6df5)), closes [#12416](https://github.com/aws/aws-cdk/issues/12416) [#11851](https://github.com/aws/aws-cdk/issues/11851)
 
+## [2.76.1](https://github.com/aws/aws-cdk/compare/v2.76.0...v2.76.1) (2023-04-21)
+
+### Bug Fixes
+
+* **custom-resources:** State functionActiveV2 not found  ([#25228](https://github.com/aws/aws-cdk/issues/25228)) ([be8e8aa](https://github.com/aws/aws-cdk/commit/be8e8aa42443ea96071123c6277ce08222c62191)), closes [#24358](https://github.com/aws/aws-cdk/issues/24358)
+
 ## [2.76.0](https://github.com/aws/aws-cdk/compare/v2.75.1...v2.76.0) (2023-04-19)
 
 
