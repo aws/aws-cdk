@@ -941,6 +941,14 @@
     chalk "^4.1.2"
     semver "^7.3.8"
 
+"@jsii/check-node@1.80.0":
+  version "1.80.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.80.0.tgz#73602eee7625b93b9bd9d39840748a9aa77377ec"
+  integrity sha512-QWdvFrjoDxSkj0E7CuSD65y0nMk1K48geQ8UxCFy0fz8COERYK3ZOhyDW8K2iOwZp0H3LWa4dByrNZIMt8xVAw==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.8"
+
 "@jsii/spec@1.77.0":
   version "1.77.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.77.0.tgz#2ee31c32e26d61880e422a546a62296c6543bff9"
@@ -966,6 +974,13 @@
   version "1.79.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.79.0.tgz#0fc9d9dfda05c85cf67295a5b7d6e438128e74d1"
   integrity sha512-ZmHObap/rOSjvoeqTmQOYrxm26vRftYepAmtd7yVwnNu/3tbwXcdSQMs/2rjaMsn6H3pmDwn048g3lUtYszzaw==
+  dependencies:
+    ajv "^8.12.0"
+
+"@jsii/spec@^1.80.0":
+  version "1.80.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.80.0.tgz#55ab7c6b610ce76044e21c3c3c1861293055ae5a"
+  integrity sha512-BkRHjwxwnmRRVA0rx3XFH9iPvEF+AvJGq21uic6qT8lWJEpM82aRse6hGHMofJstP1X3ChRmfmg8JELvHB0gzA==
   dependencies:
     ajv "^8.12.0"
 
@@ -2415,6 +2430,11 @@
   version "0.8.6"
   resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.6.tgz#8a1524eb5bd5e965c1e3735476f0262469f71440"
   integrity sha512-uRjjusqpoqfmRkTaNuLJ2VohVr67Q5YwDATW3VU7PfzTj6IRaihGrYI7zckGZjxQPBIp63nfvJbM+Yu5ICh0Bg==
+
+"@xmldom/xmldom@^0.8.7":
+  version "0.8.7"
+  resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.7.tgz#8b1e39c547013941974d83ad5e9cf5042071a9a0"
+  integrity sha512-sI1Ly2cODlWStkINzqGrZ8K6n+MTSbAeQnAipGyL+KZCXuHaRlj2gyyy8B/9MvsFFqN7XHryQnB2QwhzvJXovg==
 
 "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
@@ -6971,21 +6991,22 @@ jsii-rosetta@^1.78.1:
     workerpool "^6.4.0"
     yargs "^16.2.0"
 
-jsii-rosetta@~5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.0.tgz#14801f97427db6cb4ad4b693924b3c9427069df1"
-  integrity sha512-DQ20nZCJO0idMnTlIxCxJs+3zt7JEhmbTtuzGkS0e9E62iT1cMB4qiyCZ97rFqzUcWxKjq31HiEEjp9ou28row==
+jsii-rosetta@~5.0.7:
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.7.tgz#38db6fbb97166208081941a731fc9c0fc7b6655e"
+  integrity sha512-cJGoILr4jNnOIDtNY3LLldsZujmtEILOzwX7yHFu+sVcqlpyeT8VYd34hQwIh3D9HA9DqJh30thTqoQbRMdN+A==
   dependencies:
-    "@jsii/check-node" "1.78.1"
-    "@jsii/spec" "^1.78.1"
-    "@xmldom/xmldom" "^0.8.6"
+    "@jsii/check-node" "1.80.0"
+    "@jsii/spec" "^1.80.0"
+    "@xmldom/xmldom" "^0.8.7"
     chalk "^4"
     commonmark "^0.30.0"
     fast-glob "^3.2.12"
-    jsii v5.0-next
-    semver "^7.3.8"
+    jsii "5.0.x"
+    semver "^7.5.0"
     semver-intersect "^1.4.0"
-    typescript "~5.0.2"
+    stream-json "^1.7.5"
+    typescript "~5.0.4"
     workerpool "^6.4.0"
     yargs "^17.7.1"
 
@@ -7027,23 +7048,23 @@ jsii@1.78.1:
     typescript "~3.9.10"
     yargs "^16.2.0"
 
-jsii@v5.0-next:
-  version "5.0.2-dev.2"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.2-dev.2.tgz#03df0368380f6c7deeafc0996d2d18f9a5dfafca"
-  integrity sha512-DO9nWtNV0XCG0Be3xxn/bOaWmwgXuTzlDyj8w6fF+odUpnDFx/CJDtqfaOfhC6ITUmpr3rkicNTAhBAZQD/xuQ==
+jsii@5.0.x:
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.7.tgz#3b35ec28097fbbb2315486a7c3933b66bfce3325"
+  integrity sha512-T1So9pQiWBtjq+ki6HrilEDbV/YSxiorY05TjzjHbQtHsIZ1lJlLEIdN1YW9JVD2CrCRZgIPqeBIHwNZazDRcA==
   dependencies:
-    "@jsii/check-node" "1.79.0"
-    "@jsii/spec" "^1.79.0"
+    "@jsii/check-node" "1.80.0"
+    "@jsii/spec" "^1.80.0"
     case "^1.6.3"
     chalk "^4"
     downlevel-dts "^0.11.0"
     fast-deep-equal "^3.1.3"
     log4js "^6.9.1"
-    semver "^7.3.8"
+    semver "^7.5.0"
     semver-intersect "^1.4.0"
     sort-json "^2.0.1"
     spdx-license-list "^6.6.0"
-    typescript "~5.0.2"
+    typescript "~5.0.4"
     yargs "^17.7.1"
 
 jsii@~5.0.2:
@@ -10202,6 +10223,13 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.3.0:
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
+semver@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.5.0.tgz#ed8c5dc8efb6c629c88b23d41dc9bf40c1d96cd0"
+  integrity sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==
+  dependencies:
+    lru-cache "^6.0.0"
+
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
@@ -10563,6 +10591,18 @@ statuses@2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz#55cb000ccf1d48728bd23c685a063998cf1a1b63"
   integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==
+
+stream-chain@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.npmjs.org/stream-chain/-/stream-chain-2.2.5.tgz#b30967e8f14ee033c5b9a19bbe8a2cba90ba0d09"
+  integrity sha512-1TJmBx6aSWqZ4tx7aTpBDXK0/e2hhcNSTV8+CbFJtDjbb+I1mZ8lHit0Grw9GRT+6JbIrrDd8esncgBi8aBXGA==
+
+stream-json@^1.7.5:
+  version "1.7.5"
+  resolved "https://registry.npmjs.org/stream-json/-/stream-json-1.7.5.tgz#2ff0563011f22cea4f6a28dbfc0344a53c761fe4"
+  integrity sha512-NSkoVduGakxZ8a+pTPUlcGEeAGQpWL9rKJhOFCV+J/QtdQUEU5vtBgVg6eJXn8JB8RZvpbJWZGvXkhz70MLWoA==
+  dependencies:
+    stream-chain "^2.2.5"
 
 streamroller@^3.1.5:
   version "3.1.5"
@@ -11170,6 +11210,11 @@ typescript@~5.0.2:
   version "5.0.2"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.0.2.tgz#891e1a90c5189d8506af64b9ef929fca99ba1ee5"
   integrity sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==
+
+typescript@~5.0.4:
+  version "5.0.4"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.0.4.tgz#b217fd20119bd61a94d4011274e0ab369058da3b"
+  integrity sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
