@@ -332,6 +332,93 @@ $ cd packages/aws-cdk
 $ yarn watch & # runs in the background
 ```
 
+#### Verify your fix by deployment
+
+If your PR updates some libraries, you will need to write a simple CDK application and make sure it synthesizes and
+deploys correctly. For example, if you have changed libraries under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
+
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
+```
+
+Now, create a `sample.ts` like this:
+
+```ts
+import {
+  App, Stack,
+  aws_eks as eks,
+  aws_ec2 as ec2,
+} from 'aws-cdk-lib';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+
+const app = new App();
+const env = { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT };
+const stack = new Stack(app, 'my-test-stack', { env });
+
+const cluster = new eks.Cluster(stack, 'Cluster', {
+  vpc,
+  ...getClusterVersionConfig(stack),
+  defaultCapacity: 0,
+});
+```
+
+Run `yarn watch` or `npx tsc --watch` to compile the `sample.ts` to `sample.js`:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn watch
+or
+$ npx tsc --watch
+```
+
+Make sure you have configured [AWS CLI with AWS Authentication](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth).
+
+Now, let's deploy this sample app with our fix in our AWS account:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ npx cdk -a test/aws-eks/test/sample.js diff
+$ npx cdk -a test/aws-eks/test/sample.js deploy
+```
+
+This allows you to iterate your PR development and ensure a minimal simple app with your fix can
+successfully deploy as you expect. Do not commit `sample.ts` and `sample.js` to your PR branch.
+
+You will also need to ensure your fix can pass all existing unit tests and integ tests and fix 
+them when required.
+
+Run all the unit tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/aws-cdk-lib
+$ yarn test aws-eks
+```
+
+Or run a specific unit test
+
+```console
+$ cd packages/aws-cdk-lib
+$ npx jest aws-eks/test/name.test.js
+```
+
+Run all integ tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ --directory test/aws-eks/test
+```
+
+Or run a specific integ test:
+
+```console
+$ yarn integ --directory test/aws-eks/test/integ.name.js
+```
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
+
+
 ### Step 4: Pull Request
 
 * Create a commit with your changes and push them to a
