@@ -13,9 +13,19 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { FactName } from '../../../region-info';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
+
+/**
+ * The lambda runtime used by default for aws-cdk vended custom resources. Can change
+ * based on region.
+ */
+export function builtInCustomResourceProviderNodeRuntime(scope: Construct): CustomResourceProviderRuntime {
+  const runtimeName = Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
+  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_16_X;
+}
 
 /**
  * Initialization properties for `CustomResourceProvider`.

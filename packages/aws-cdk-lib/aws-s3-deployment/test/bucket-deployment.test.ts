@@ -1436,6 +1436,23 @@ test('can add sources with addSource', () => {
   });
 });
 
+test('deploy with payload signing enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    signContent: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SignContent: true,
+  });
+});
+
 test('if any source has markers then all sources have markers', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
