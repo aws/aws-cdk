@@ -334,7 +334,7 @@ $ yarn watch & # runs in the background
 
 #### Verify your fix by deployment
 
-If your PR updates a specific library, you will need to write a simple CDK application and make sure it synthesizes and
+If your PR updates a specific library, you might want to write a simple CDK application and make sure it synthesizes and
 deploys correctly. For example, if you modify files under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
 
 
