@@ -382,11 +382,28 @@ $ npx cdk -a test/aws-eks/test/sample.js diff
 $ npx cdk -a test/aws-eks/test/sample.js deploy
 ```
 
-This allows you to iterate your development and ensure a minimal sample app with your hack can
-successfully deploy as you expect. Do not commit `sample.ts` and `sample.js` to your PR branch.
+This allows you to iterate your development and ensure a minimal sample app successfully deploy as you expect.
+You have the freedom to interact with it just as a common CDK app such as viewing differences with `npx cdk diff`
+or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments 
+by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
 
-You will also need to ensure your hack can pass all existing unit tests and integ tests and fix 
-them if necessary.
+```ts
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true }),
+```
+
+As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
+
+Alternatively, you can just write this test as a new integration test like `integ.my-test.ts` and deploy it
+with `yarn integ` and generate snapshots for you. This would be very useful when you need to publish a new 
+integration test:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ test/aws-eks/test/integ.my-test.js --no-clean --update-on-failed
+```
+
+After verifying your work with a simple deployment as above, you need to ensure your hack can pass all existing
+unit tests and integ tests and fix them if necessary.
 
 Run all the unit tests for a specific module(e.g. aws-eks):
 
