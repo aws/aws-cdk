@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { Stack } from '../../core';
+import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 import * as apigw from '../lib';
 
 /* eslint-disable quote-props */
@@ -422,6 +423,60 @@ describe('resource', () => {
       });
 
     });
+  });
+
+  test('can add multiple valiators through addMethod', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext(APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, true);
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    const resource = api.root.addResource('path');
+    const resource2 = api.root.addResource('anotherPath');
+
+    resource.addMethod('GET', undefined, {
+      requestValidatorOptions: {
+        requestValidatorName: 'validator1',
+      },
+    });
+
+    resource2.addMethod('GET', undefined, {
+      requestValidatorOptions: {
+        requestValidatorName: 'validator3',
+      },
+    });
+
+    resource.addMethod('POST', undefined, {
+      requestValidatorOptions: {
+        requestValidatorName: 'validator2',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::RequestValidator', 3);
+    Template.fromStack(stack).templateMatches(Match.objectLike({
+      Resources: {
+        apiapipathGETValidator833E9D62E0C84E70: {
+          Type: 'AWS::ApiGateway::RequestValidator',
+          Properties: {
+            Name: 'validator1',
+          },
+        },
+        apiapipathPOSTValidatorA9DA2EF22AA0453F: {
+          Type: 'AWS::ApiGateway::RequestValidator',
+          Properties: {
+            Name: 'validator2',
+          },
+        },
+        apiapianotherPathGETValidator0A5B8E231A9FC6EA: {
+          Type: 'AWS::ApiGateway::RequestValidator',
+          Properties: {
+            Name: 'validator3',
+          },
+        },
+      },
+    }));
   });
 
 });
