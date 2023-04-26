@@ -2813,7 +2813,7 @@ describe('bucket', () => {
     // THEN
     expect(() => {
       app.synth();
-    }).toThrow(/objectOwnership cannot be set to \"BucketOwnerEnforced\" when accessControl is \"LogDeliveryWrite\"/);
+    }).toThrow(/objectOwnership must be set to \"ObjectWriter\" when accessControl is \"LogDeliveryWrite\"/);
   });
 
   test('Defaults for an inventory bucket', () => {

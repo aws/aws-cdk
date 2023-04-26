@@ -1849,7 +1849,7 @@ export class Bucket extends BucketBase {
       accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls(this.objectOwnership, this.accessControl) }),
+      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
@@ -2193,24 +2193,21 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls(
-    objectOwnership?: ObjectOwnership,
-    accessControl?: BucketAccessControl,
-  ): CfnBucket.OwnershipControlsProperty | undefined {
+  private parseOwnershipControls(): CfnBucket.OwnershipControlsProperty | undefined {
     // Enabling an ACL explicitly is required for all new buckets.
     // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
-    const accessControlRequiresObjectOwnership = (accessControl && accessControl !== BucketAccessControl.PRIVATE);
-    if (!objectOwnership && !accessControlRequiresObjectOwnership) {
+    const accessControlRequiresObjectOwnership = (this.accessControl && this.accessControl !== BucketAccessControl.PRIVATE);
+    if (!this.objectOwnership && !accessControlRequiresObjectOwnership) {
       return undefined;
     }
 
-    if (accessControlRequiresObjectOwnership && objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new Error (`objectOwnership cannot be set to "${ObjectOwnership.BUCKET_OWNER_ENFORCED}" when accessControl is "${accessControl}"`);
+    if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
+      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
     }
 
     return {
       rules: [{
-        objectOwnership: objectOwnership ?? ObjectOwnership.OBJECT_WRITER,
+        objectOwnership: this.objectOwnership ?? ObjectOwnership.OBJECT_WRITER,
       }],
     };
   }
