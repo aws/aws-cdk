@@ -138,7 +138,7 @@
     "punycode": "^2.3.0",
     "semver": "^7.3.8",
     "table": "^6.8.1",
-    "yaml": "1.10.2"
+    "yaml": "2.2.2"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
