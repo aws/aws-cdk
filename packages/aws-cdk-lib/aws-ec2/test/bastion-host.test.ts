@@ -97,7 +97,7 @@ describe('bastion host', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
-        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
 
@@ -117,7 +117,7 @@ describe('bastion host', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
-        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
 
