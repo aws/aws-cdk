@@ -388,7 +388,7 @@ or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your
 by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
 
 ```ts
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true }),
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true });
 ```
 
 As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
