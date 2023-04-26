@@ -402,7 +402,7 @@ $ cd packages/@aws-cdk-testing/framework-integ
 $ yarn integ test/aws-eks/test/integ.my-test.js --no-clean --update-on-failed
 ```
 
-After verifying your work with a simple deployment as above, you need to ensure your hack can pass all existing
+After verifying your work with a simple deployment as above, you need to ensure your change can pass all existing
 unit tests and integ tests and fix them if necessary.
 
 Run all the unit tests for a specific module(e.g. aws-eks):
