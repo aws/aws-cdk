@@ -17,6 +17,7 @@ cdk.Aspects.of(stack).add({
 
 const elasticIp = new ec2.CfnEIP(stack, 'ElasticIPAddress');
 const vpc = new ec2.Vpc(stack, 'Vpc', {
+  restrictDefaultSecurityGroup: false,
   enableDnsHostnames: true,
   enableDnsSupport: true,
 });

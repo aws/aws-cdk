@@ -34,6 +34,7 @@ class RedshiftRebootStack extends cdk.Stack {
     props = { ...props, ...requiredStackName };
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc', {
+      restrictDefaultSecurityGroup: false,
       subnetConfiguration: [{
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         name: 'foobar',

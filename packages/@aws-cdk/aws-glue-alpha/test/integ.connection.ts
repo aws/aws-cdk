@@ -6,7 +6,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-glue-connection');
 
-const vpc = new ec2.Vpc(stack, 'Vpc');
+const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
 
 const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', {
   vpc,

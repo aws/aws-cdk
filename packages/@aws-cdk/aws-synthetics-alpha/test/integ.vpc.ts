@@ -14,7 +14,7 @@ import * as synthetics from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'canary-vpc');
 
-const vpc = new ec2.Vpc(stack, 'MyVpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'MyVpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 new synthetics.Canary(stack, 'MyVpcCanary', {
   canaryName: 'canary-vpc',

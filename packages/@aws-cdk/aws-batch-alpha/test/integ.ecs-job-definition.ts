@@ -7,7 +7,7 @@ import * as batch from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
-const vpc = new Vpc(stack, 'vpc');
+const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
 new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
   container: new batch.EcsEc2ContainerDefinition(stack, 'myContainer', {

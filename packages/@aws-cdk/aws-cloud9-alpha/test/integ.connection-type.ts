@@ -11,6 +11,7 @@ export class Cloud9Env extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC', {
+      restrictDefaultSecurityGroup: false,
       maxAzs: 2,
       natGateways: 1,
     });

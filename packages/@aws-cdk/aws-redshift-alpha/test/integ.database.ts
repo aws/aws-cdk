@@ -23,7 +23,7 @@ cdk.Aspects.of(stack).add({
 });
 
 const key = new kms.Key(stack, 'custom-kms-key');
-const vpc = new ec2.Vpc(stack, 'Vpc');
+const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
 const databaseName = 'my_db';
 const cluster = new redshift.Cluster(stack, 'Cluster', {
   vpc: vpc,
