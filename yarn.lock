@@ -6991,10 +6991,10 @@ jsii-rosetta@^1.78.1:
     workerpool "^6.4.0"
     yargs "^16.2.0"
 
-jsii-rosetta@~5.0.6:
-  version "5.0.6"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.6.tgz#5dddb8949cf5ad5dae54f855c4076cd4bf960492"
-  integrity sha512-fJfqXXt0Tfi2fohP4WBSSXLHKv48SHAZGIOgx0fRWxSMxFkVFtf32VWVlEB8BfK4dehShU209qMYzqfWBOk6Dw==
+jsii-rosetta@~5.0.7:
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.0.7.tgz#38db6fbb97166208081941a731fc9c0fc7b6655e"
+  integrity sha512-cJGoILr4jNnOIDtNY3LLldsZujmtEILOzwX7yHFu+sVcqlpyeT8VYd34hQwIh3D9HA9DqJh30thTqoQbRMdN+A==
   dependencies:
     "@jsii/check-node" "1.80.0"
     "@jsii/spec" "^1.80.0"
