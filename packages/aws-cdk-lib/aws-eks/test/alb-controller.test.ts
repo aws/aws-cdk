@@ -244,7 +244,7 @@ test('can configure custom repository with alb controller version 2.4.7', () => 
 
   AlbController.create(stack, {
     cluster,
-    version: AlbControllerVersion.V2_4_4,
+    version: AlbControllerVersion.V2_4_7,
     repository: 'custom',
   });
 
