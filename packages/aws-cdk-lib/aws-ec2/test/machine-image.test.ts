@@ -272,9 +272,7 @@ test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
 describe('latest amazon linux', () => {
   test('latestAmazonLinux2', () => {
     // WHEN
-    ec2.MachineImage.latestAmazonLinux({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    }).getImage(stack);
+    ec2.MachineImage.latestAmazonLinux2().getImage(stack);
 
     // THEN
     Template.fromStack(stack).hasParameter('*', {
@@ -285,9 +283,13 @@ describe('latest amazon linux', () => {
 
   test('AmazonLinux2ImageSsmParameter', () => {
     // WHEN
-    const ami = ec2.AmazonLinuxImage.ssmParameterName({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    });
+    const ami = new ec2.AmazonLinux2ImageSsmParameter({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      virtualization: ec2.AmazonLinuxVirt.PV,
+      storage: ec2.AmazonLinuxStorage.EBS,
+      kernel: ec2.AmazonLinux2Kernel.DEFAULT,
+    }).getImage(stack).imageId;
 
     // THEN
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs');
@@ -307,9 +309,7 @@ describe('latest amazon linux', () => {
 
   test('latestAmazonLinux2022', () => {
     // WHEN
-    ec2.MachineImage.latestAmazonLinux({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
-    }).getImage(stack);
+    ec2.MachineImage.latestAmazonLinux2022().getImage(stack);
 
     // THEN
     Template.fromStack(stack).hasParameter('*', {
@@ -320,9 +320,11 @@ describe('latest amazon linux', () => {
 
   test('AmazonLinux2022ImageSsmParameter', () => {
     // WHEN
-    const ami = ec2.AmazonLinuxImage.ssmParameterName({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
-    });
+    const ami = new ec2.AmazonLinux2022ImageSsmParameter({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      kernel: ec2.AmazonLinux2022Kernel.DEFAULT,
+    }).getImage(stack).imageId;
 
     // THEN
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64');
@@ -342,7 +344,7 @@ describe('latest amazon linux', () => {
 
   test('latestAmazonLinux2023', () => {
     // WHEN
-    ec2.MachineImage.latestAmazonLinux().getImage(stack);
+    ec2.MachineImage.latestAmazonLinux2023().getImage(stack);
 
     // THEN
     Template.fromStack(stack).hasParameter('*', {
@@ -353,9 +355,11 @@ describe('latest amazon linux', () => {
 
   test('AmazonLinux2023ImageSsmParameter', () => {
     // WHEN
-    const ami = ec2.AmazonLinuxImage.ssmParameterName({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
-    });
+    const ami = new ec2.AmazonLinux2023ImageSsmParameter({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      kernel: ec2.AmazonLinux2023Kernel.DEFAULT,
+    }).getImage(stack).imageId;
 
     // THEN
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64');
