@@ -382,7 +382,7 @@ $ npx cdk -a test/aws-eks/test/sample.js diff
 $ npx cdk -a test/aws-eks/test/sample.js deploy
 ```
 
-This allows you to iterate your development and ensure a minimal sample app successfully deploy as you expect.
+This allows you to iterate your development and ensure a minimal sample app would successfully deploy as you expect.
 You have the freedom to interact with it just as a common CDK app such as viewing differences with `npx cdk diff`
 or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments 
 by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
