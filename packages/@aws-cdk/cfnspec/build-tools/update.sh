@@ -47,17 +47,17 @@ function update-spec() {
     echo >&2 "Updating source spec..."
     mkdir -p ${targetdir}
 
-    node build-tools/patch-set.js --quiet "${targetdir}" "${oldcombined}"
+    ts-node --preferTsExts build-tools/patch-set.ts --quiet "${targetdir}" "${oldcombined}"
     if ${split}; then
-        node build-tools/split-spec-by-service.js "${newspec}" "${targetdir}" "${services}"
+        ts-node --preferTsExts build-tools/split-spec-by-service.ts "${newspec}" "${targetdir}" "${services}"
     else
         cp "${newspec}" "${targetdir}/spec.json"
         sort-json "${targetdir}/spec.json"
     fi
-    node build-tools/patch-set.js --quiet "${targetdir}" "${newcombined}"
+    ts-node --preferTsExts build-tools/patch-set.ts --quiet "${targetdir}" "${newcombined}"
 
     echo >&2 "Updating CHANGELOG.md..."
-    node build-tools/spec-diff.js "${title}" "${oldcombined}" "${newcombined}" >> CHANGELOG.md.new
+    ts-node --preferTsExts build-tools/spec-diff.ts "${title}" "${oldcombined}" "${newcombined}" >> CHANGELOG.md.new
 
     echo "" >> CHANGELOG.md.new
 }
@@ -85,8 +85,8 @@ echo "$new_version" > cfn.version
 # Only report outdated specs if we made changes, otherwise we're stuck reporting changes every time.
 if [[ "$new_version" != "$old_version" ]]; then
     echo >&2 "Reporting outdated specs..."
-    node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
-    node build-tools/report-issues spec-source/specification/001_cfn_us-west-2/000_official/ outdated >> CHANGELOG.md.new
+    ts-node --preferTsExts build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
+    ts-node --preferTsExts build-tools/report-issues spec-source/specification/001_cfn_us-west-2/000_official/ outdated >> CHANGELOG.md.new
 fi
 
 update-spec \
@@ -96,14 +96,6 @@ update-spec \
     false false
 
 npm run build
-
-echo >&2 "Creating missing AWS construct libraries for new resource types..."
-node ${scriptdir}/create-missing-libraries.js || {
-    echo "------------------------------------------------------------------------------------"
-    echo "cfn-spec update script failed when trying to create modules for new services"
-    echo "Fix the error (you will likely need to add RefKind patches), and then run 'npm run update' again"
-    exit 1
-}
 
 # append old changelog after new and replace as the last step because otherwise we will not be idempotent
 _changelog_contents=$(cat CHANGELOG.md.new)
