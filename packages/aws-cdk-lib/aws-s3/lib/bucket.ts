@@ -2196,7 +2196,12 @@ export class Bucket extends BucketBase {
   private parseOwnershipControls(): CfnBucket.OwnershipControlsProperty | undefined {
     // Enabling an ACL explicitly is required for all new buckets.
     // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
-    const accessControlRequiresObjectOwnership = (this.accessControl && this.accessControl !== BucketAccessControl.PRIVATE);
+    const allowedAcls = [
+      BucketAccessControl.PRIVATE,
+      BucketAccessControl.BUCKET_OWNER_READ,
+      BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+    ];
+    const accessControlRequiresObjectOwnership = (this.accessControl && !allowedAcls.includes(this.accessControl));
     if (!this.objectOwnership && !accessControlRequiresObjectOwnership) {
       return undefined;
     }
