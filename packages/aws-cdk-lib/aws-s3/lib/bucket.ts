@@ -1,5 +1,13 @@
 import { EOL } from 'os';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { BucketPolicy } from './bucket-policy';
+import { IBucketNotificationDestination } from './destination';
+import { BucketNotifications } from './notifications-resource';
+import * as perms from './perms';
+import { LifecycleRule } from './rule';
+import { CfnBucket } from './s3.generated';
+import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -24,14 +32,6 @@ import {
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
-import { Construct } from 'constructs';
-import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
-import { BucketNotifications } from './notifications-resource';
-import * as perms from './perms';
-import { LifecycleRule } from './rule';
-import { CfnBucket } from './s3.generated';
-import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -1849,7 +1849,7 @@ export class Bucket extends BucketBase {
       accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls(this.objectOwnership) }),
+      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls(this.objectOwnership, this.accessControl) }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
@@ -2193,13 +2193,24 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls(objectOwnership?: ObjectOwnership): CfnBucket.OwnershipControlsProperty | undefined {
-    if (!objectOwnership) {
+  private parseOwnershipControls(
+    objectOwnership?: ObjectOwnership,
+    accessControl?: BucketAccessControl,
+  ): CfnBucket.OwnershipControlsProperty | undefined {
+    // Enabling an ACL explicitly is required for all new buckets.
+    // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
+    const accessControlRequiresObjectOwnership = (accessControl && accessControl !== BucketAccessControl.PRIVATE);
+    if (!objectOwnership && !accessControlRequiresObjectOwnership) {
       return undefined;
     }
+
+    if (accessControlRequiresObjectOwnership && objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
+      throw new Error (`objectOwnership cannot be set to "${ObjectOwnership.BUCKET_OWNER_ENFORCED}" when accessControl is "${accessControl}"`);
+    }
+
     return {
       rules: [{
-        objectOwnership,
+        objectOwnership: objectOwnership ?? ObjectOwnership.OBJECT_WRITER,
       }],
     };
   }
@@ -2328,9 +2339,6 @@ export class Bucket extends BucketBase {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
     } else {
       this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
-      // Enabling an ACL explicitly is required for all new buckets.
-      // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
-      this.objectOwnership = this.objectOwnership ?? ObjectOwnership.OBJECT_WRITER;
     }
   }
 
