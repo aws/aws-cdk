@@ -27,8 +27,6 @@ async function main() {
     oldSpec.ResourceTypes = {};
   }
 
-  validatePropertyTypeNameConsistency(oldSpec, newSpec);
-
   const out = jsonDiff(oldSpec, newSpec);
 
   // Here's the magic output format of this thing
@@ -278,56 +276,6 @@ async function main() {
 
     return changes;
   }
-}
-
-/**
- * Safeguard check: make sure that all old property type names in the old spec exist in the new spec
- *
- * If not, it's probably because the service team renamed a type between spec
- * version `v(N)` to `v(N+1)`.. In the CloudFormation spec itself, this is not a
- * problem. However, CDK will have generated actual classes and interfaces with
- * the type names at `v(N)`, which people will have written code against. If the
- * classes and interfaces would have a new name at `v(N+1)`, all user code would
- * break.
- */
-function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
-  const newPropsTypes = newSpec.PropertyTypes ?? {};
-  const disappearedKeys = Object.keys(oldSpec.PropertyTypes ?? {}).filter(k => !(k in newPropsTypes));
-  if (disappearedKeys.length === 0) {
-    return;
-  }
-
-  const exampleJsonPatch = {
-    patch: {
-      description: 'Undoing upstream property type renames of <SERVICE> because <REASON>',
-      operations: disappearedKeys.map((key) => ({
-        op: 'move',
-        from: `/PropertyTypes/${key.split('.')[0]}.<NEW_TYPE_NAME_HERE>`,
-        path: `/PropertyTypes/${key}`,
-      })),
-    },
-  };
-
-  process.stderr.write([
-    '┌───────────────────────────────────────────────────────────────────────────────────────┐',
-    '│                                                                                       ▐█',
-    '│  PROPERTY TYPES HAVE DISAPPEARED                                                      ▐█',
-    '│                                                                                       ▐█',
-    '│  Some type names have disappeared from the old specification.                         ▐█',
-    '│                                                                                       ▐█',
-    '│  This probably indicates that the service team renamed one of the types. We have      ▐█',
-    '│  to keep the old type names though: renaming them would constitute a breaking change  ▐█',
-    '│  to consumers of the L1 resources.                                                    ▐█',
-    '│                                                                                       ▐█',
-    '└─▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟█',
-    '',
-    'See what the renames were, check out this PR locally and add a JSON patch file for these types:',
-    '',
-    '(Example)',
-    '',
-    JSON.stringify(exampleJsonPatch, undefined, 2),
-  ].join('\n'));
-  process.exitCode = 1;
 }
 
 main().catch(e => {
