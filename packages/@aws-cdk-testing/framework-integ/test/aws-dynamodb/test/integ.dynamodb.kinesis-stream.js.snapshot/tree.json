@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-dynamodb-kinesis-stream": {
         "id": "aws-cdk-dynamodb-kinesis-stream",
         "path": "aws-cdk-dynamodb-kinesis-stream",
@@ -39,20 +31,17 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    },
-                    "streamModeDetails": {
-                      "streamMode": "PROVISIONED"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
               "version": "0.0.0"
             }
           },
@@ -60,8 +49,8 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "aws-cdk-dynamodb-kinesis-stream/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CfnCondition",
+              "version": "0.0.0"
             }
           },
           "Table": {
@@ -101,7 +90,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -109,26 +98,50 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb-kinesis-stream/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-dynamodb-kinesis-stream/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-dynamodb-kinesis-stream/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

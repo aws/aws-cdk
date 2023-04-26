@@ -2042,6 +2042,14 @@ describe('cluster', () => {
 
       // THEN
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(providerStack).hasCondition('HasEcrPublic', {
+        'Fn::Equals': [
+          {
+            Ref: 'AWS::Partition',
+          },
+          'aws',
+        ],
+      });
       Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
@@ -2104,11 +2112,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });
@@ -2305,11 +2326,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });

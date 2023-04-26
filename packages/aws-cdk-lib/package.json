@@ -56,6 +56,7 @@
     ]
   },
   "cdk-package": {
+    "pre": "/bin/bash ./scripts/minify-sources.sh",
     "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
@@ -97,7 +98,14 @@
         "packageName": "awscdk"
       }
     },
-    "projectReferences": false
+    "projectReferences": false,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -443,6 +451,15 @@
   "preferredCdkCliVersion": "2",
   "publishConfig": {
     "tag": "latest"
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v25": "^2.0.3",
+      "cdk8s-plus-25": "^2.7.0",
+      "@aws-cdk/aws-apigatewayv2-alpha": "*",
+      "@aws-cdk/aws-batch-alpha": "*",
+      "@aws-cdk/aws-kinesisfirehose-alpha": "*"
+    }
   },
   "awslint": {
     "exclude": [

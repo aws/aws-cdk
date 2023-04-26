@@ -6,7 +6,6 @@ import * as kms from '../../aws-kms';
 import {
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Duration,
   FeatureFlags,
   Fn,
@@ -20,6 +19,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
@@ -1610,10 +1610,11 @@ export interface Tag {
  * BucketResource.
  *
  * @example
+ * import { RemovalPolicy } from 'aws-cdk-lib';
  *
- * new Bucket(scope, 'Bucket', {
- *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
- *   encryption: BucketEncryption.S3_MANAGED,
+ * new s3.Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+ *   encryption: s3.BucketEncryption.S3_MANAGED,
  *   enforceSSL: true,
  *   versioned: true,
  *   removalPolicy: RemovalPolicy.RETAIN,
@@ -2374,7 +2375,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

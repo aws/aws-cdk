@@ -1,8 +1,8 @@
+import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 /* eslint-disable quote-props */
@@ -232,6 +232,23 @@ describe('KinesisEventSource', () => {
 
   });
 
+  test('contains eventSourceMappingArn after lambda binding', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(eventSource.eventSourceMappingArn).toBeDefined();
+
+  });
+
   test('eventSourceMappingId throws error before binding to lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -242,6 +259,19 @@ describe('KinesisEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
+
+  });
+
+  test('eventSourceMappingArn throws error before binding to lambda', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN/THEN
+    expect(() => eventSource.eventSourceMappingArn).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
 
   });
 

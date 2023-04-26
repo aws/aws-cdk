@@ -3,7 +3,7 @@ import { CfnOutput, Fn, Size, Stack } from 'aws-cdk-lib';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-25';
 
 interface MyChartProps {
   readonly bucket: s3.Bucket;
@@ -17,7 +17,7 @@ class MyChart extends cdk8s.Chart {
       containers: [
         new kplus.Container({
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }),
