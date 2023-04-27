@@ -1436,9 +1436,8 @@ export class Stack extends Construct implements ITaggable {
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     if (FeatureFlags.of(this).isEnabled(INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION)) {
       return `${this.generateStackId(assembly, prefix)}`;
-    }
-    else {
-      return `${prefix}-${this.generateStackId(assembly)}`
+    } else {
+      return `${prefix}${this.generateStackId(assembly)}`;
     }
   }
 

@@ -103,9 +103,13 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('MyStage-MyStack');
   });
 
-  test('generated stack names will not exceed 128 characters', () => {
+  test('generated stack names will not exceed 128 characters when using prefixes', () => {
     // WHEN
-    const app = new App();
+    const app = new App({
+      context: {
+        '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+      },
+    });
     const stage = new Stage(app, 'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName');
     const stack = new BogusStack(stage, 'ThisStackNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix');
 
