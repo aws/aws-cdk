@@ -123,6 +123,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     const cluster = props.cluster;
 
+    // note that 'scope' is used here intentionally because we have to create the role
+    // outside of the nested stack, so that it can be used in the trust policy of the
+    // creation role.
     const handlerRole = cluster.kubectlLambdaRole ?? new iam.Role(scope, 'KubectlHandlerRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
