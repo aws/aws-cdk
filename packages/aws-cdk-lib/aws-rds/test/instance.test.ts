@@ -1349,6 +1349,47 @@ describe('instance', () => {
       });
     });
 
+    test.each<keyof typeof rds.PerformanceInsightRetention>([
+      'DEFAULT',
+      'FREE_TIER',
+      'MONTHS_1',
+      'MONTHS_2',
+      'MONTHS_3',
+      'MONTHS_4',
+      'MONTHS_5',
+      'MONTHS_6',
+      'MONTHS_7',
+      'MONTHS_8',
+      'MONTHS_9',
+      'MONTHS_10',
+      'MONTHS_11',
+      'MONTHS_12',
+      'ONE_YEAR',
+      'MONTHS_13',
+      'MONTHS_14',
+      'MONTHS_15',
+      'MONTHS_16',
+      'MONTHS_17',
+      'MONTHS_18',
+      'MONTHS_19',
+      'MONTHS_20',
+      'MONTHS_21',
+      'MONTHS_22',
+      'MONTHS_23',
+      'TWO_YEARS',
+      'LONG_TERM',
+    ])('performance insights retention of %s', (performanceInsightRetentionKey) => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        PerformanceInsightsRetentionPeriod: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+    });
+
     test('throws if performance insights fields are set but performance insights is disabled', () => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
