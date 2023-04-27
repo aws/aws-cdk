@@ -26,7 +26,7 @@ export class NestedCloudAssemblyArtifact extends CloudArtifact {
    * unpredictably. It is safest to avoid using `instanceof`, and using
    * this type-testing method instead.
    */
-  public static isCloudFormationStackArtifact(art: any): art is NestedCloudAssemblyArtifact {
+  public static isNestedCloudAssemblyArtifact(art: any): art is NestedCloudAssemblyArtifact {
     return art && typeof art === 'object' && art[NESTED_CLOUD_ASSEMBLY_SYM];
   }
 
