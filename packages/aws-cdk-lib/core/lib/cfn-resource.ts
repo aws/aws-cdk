@@ -609,7 +609,7 @@ function deepMerge(target: any, ...sources: any[]) {
 
     for (const key of Object.keys(source)) {
       const value = source[key];
-      if (typeof(value) === 'object' && value != null && !Array.isArray(value) && !(value instanceof Intrinsic)) {
+      if (typeof(value) === 'object' && value != null && !(value instanceof Intrinsic) && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
         if (typeof(target[key]) !== 'object') {
