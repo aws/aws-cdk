@@ -23,39 +23,13 @@ if ${CHECK_PREREQS:-true}; then
   /bin/bash ./scripts/check-pack-prerequisites.sh
 fi
 
-# Split out jsii and non-jsii packages. Jsii packages will be built all at once.
-# Non-jsii packages will be run individually.
-echo "Collecting package list..." >&2
-scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
-
-# Return lerna scopes from a package list
-function lerna_scopes() {
-  while [[ "${1:-}" != "" ]]; do
-    echo "--scope $1 "
-    shift
-  done
-}
-
-scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
-
-# Execute any pre-package steps for the jsii modules here:
-echo "Running aws-cdk-lib pre-package"
-npx lerna run --scope aws-cdk-lib package -- --pre-only
-
-# Jsii packaging (all at once using jsii-pacmak)
-echo "Packaging jsii modules" >&2
-$PACMAK \
-  --verbose \
-  $(cat $TMPDIR/jsii.txt)
-
-# Execute any post-package steps for the jsii modules here:
-echo "Running aws-cdk-lib post-package"
-npx lerna run --scope aws-cdk-lib package -- --post-only
+# Limit top-level concurrency to available CPUs - 1 to limit CPU load.
+concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
 # Non-jsii packaging, which means running 'package' in every individual
 # module
 echo "Packaging non-jsii modules" >&2
-npx lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
+npx lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt $TMPDIR/nonjsii.txt)) --concurrency=$concurrency --stream package
 
 # Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do

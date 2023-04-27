@@ -27,7 +27,7 @@ child_process.exec(`${lerna} ls --toposort --json`, { shell: true }, (error, std
   for (const module of modules) {
     const pkgJson = require(path.join(module.location, 'package.json'));
     if (pkgJson.jsii) {
-      jsiiDirectories.push(module.location);
+      jsiiDirectories.push(pkgJson.name);
     } else {
       nonJsiiNames.push(pkgJson.name);
     }
