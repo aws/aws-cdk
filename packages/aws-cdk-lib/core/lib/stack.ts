@@ -21,6 +21,7 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from 'aws-cdk-lib/cx-api';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -1433,7 +1434,12 @@ export class Stack extends Construct implements ITaggable {
   private generateStackName() {
     const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
-    return `${this.generateStackId(assembly, prefix)}`;
+    if (FeatureFlags.of(this).isEnabled(INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION)) {
+      return `${this.generateStackId(assembly, prefix)}`;
+    }
+    else {
+      return `${prefix}-${this.generateStackId(assembly)}`
+    }
   }
 
   /**
