@@ -67,7 +67,7 @@ async function main(tempDir: string) {
   }
 }
 
-const tempDir = fs.mkdtempSync(os.tmpdir());
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-stripped'));
 
 main(tempDir).then(
   () => {

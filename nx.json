@@ -1,6 +1,6 @@
 {
   "extends": "@nrwl/workspace/presets/npm.json",
-  "workspaceLayout": { },
+  "workspaceLayout": {},
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
@@ -10,23 +10,35 @@
           "test",
           "lint",
           "package",
-          "prepare"
+          "prepare",
+          "rosetta-extract",
+          "rosetta:synthetic",
+          "rosetta:infuse"
         ]
       }
     }
   },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/!(*.d|*.generated).ts",
+      "!{workspaceRoot}/**/tsconfig.json",
+      "!{workspaceRoot}/**/tsconfig.json",
+      "!{workspaceRoot}/tsconfig.base.json",
+      "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
+    ],
+    "jsii": [
+      "{projectRoot}/.jsii"
+    ]
+  },
   "targetDefaults": {
     "build": {
-      "implicitDependencies": ["aws-cdk-lib"],
-      "dependsOn": ["^build"],
-      "inputs": [
-        "{projectRoot}/**/lib/!(*.d|*.generated).ts",
-        "{projectRoot}/**/test/!(*.d).ts",
-        "!{workspaceRoot}/**/tsconfig.json",
-        "!{workspaceRoot}/**/tsconfig.json",
-        "!{workspaceRoot}/tsconfig.base.json",
-        "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
+      "implicitDependencies": [
+        "aws-cdk-lib"
       ],
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": ["default", "^default", "^jsii"],
       "outputs": [
         "!{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
@@ -35,7 +47,6 @@
         "{projectRoot}/**/*.js",
         "{projectRoot}/**/*.js.map",
         "{projectRoot}/**/*.d.ts",
-        "{projectRoot}/**/lib/layer.zip",
         "{projectRoot}/**/*.generated.ts",
         "{projectRoot}/**/built-ins.generated/*",
         "{projectRoot}/**/schema/*.json",
@@ -46,7 +57,65 @@
       ]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": ["{projectRoot}/**/*.js"],
+      "outputs": [
+        "{projectRoot}/coverage/*"
+      ]
+    },
+    "rosetta-extract": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "jsii",
+        "{projectRoot}/.jsii.gz"
+      ],
+      "outputs": [
+        "{projectRoot}/.jsii.tabl.json.gz",
+        "{projectRoot}/.jsii.tabl.json",
+        "{projectRoot}/.jsii",
+        "{projectRoot}/.jsii.gz"
+      ]
+    },
+    "rosetta:synthetic": {
+      "dependsOn": [
+        "rosetta-extract"
+      ],
+      "inputs": [
+        "{projectRoot}/.jsii.tabl.json.gz",
+        "{projectRoot}/.jsii.tabl.json",
+        "{projectRoot}/.jsii",
+        "{projectRoot}/.jsii.gz"
+      ],
+      "outputs": [
+        "{projectRoot}/.jsii",
+        "{projectRoot}/.jsii.gz",
+        "{projectRoot}/rosetta/_generated.ts-fixture"
+      ]
+    },
+    "rosetta:infuse": {
+      "dependsOn": [
+        "rosetta:synthetic"
+      ],
+      "inputs": [
+        "{projectRoot}/.jsii",
+        "{projectRoot}/.jsii.gz",
+        "{projectRoot}/rosetta/_generated.ts-fixture"
+      ],
+      "outputs": [
+        "{projectRoot}/.jsii.tabl.json",
+        "{projectRoot}/.jsii.tabl.json.gz"
+      ]
+    },
+    "package": {
+      "implicitDependencies": [
+        "@aws-cdk/cdk-build-tools"
+      ],
+      "dependsOn": ["rosetta:infuse", "build"],
+      "outputs": ["{projectRoot}/dist"]
     }
   },
   "affected": {

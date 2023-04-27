@@ -42,6 +42,11 @@ async function main() {
     });
   }
 
+  if (options.pre) {
+    const commands = options.pre.join(' && ');
+    await shell([commands], { timers });
+  }
+
   // if this is a jsii package, use jsii-packmak
   if (isJsii()) {
     const command = [args['jsii-pacmak'],
@@ -65,7 +70,8 @@ async function main() {
   }
 
   if (options.post) {
-    await shell(options.post, { timers });
+    const commands = options.post.join(' && ');
+    await shell([commands], { timers });
   }
 }
 

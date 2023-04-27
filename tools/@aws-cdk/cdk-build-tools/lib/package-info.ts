@@ -195,6 +195,11 @@ export interface CDKPackageOptions {
   */
   post?: string[];
 
+  /*
+   * An optional command (formatted as a list of strings) to run before packaging
+  */
+  pre?: string[];
+
   /**
    * Should this package be bundled. (and if so, how)
    */

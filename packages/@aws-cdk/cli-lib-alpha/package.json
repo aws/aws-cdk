@@ -58,7 +58,10 @@
     "pkglint": "pkglint -f",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "test": "cdk-test",
-    "watch": "cdk-watch"
+    "watch": "cdk-watch",
+    "rosetta-extract": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./ --infuse --cache $HOME/.s3buildcache/rosetta-cache.tabl.json",
+    "rosetta:synthetic": "npx cdk-generate-synthetic-examples@^0.1.14",
+    "rosetta:infuse": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./  --cache $HOME/.s3buildcache/rosetta-cache.tabl.json"
   },
   "awslint": {
     "exclude": [

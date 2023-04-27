@@ -67,7 +67,10 @@
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "rosetta-extract": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./ --infuse --cache $HOME/.s3buildcache/rosetta-cache.tabl.json",
+    "rosetta:synthetic": "npx cdk-generate-synthetic-examples@^0.1.14",
+    "rosetta:infuse": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./  --cache $HOME/.s3buildcache/rosetta-cache.tabl.json"
   },
   "cdk-build": {
     "env": {
