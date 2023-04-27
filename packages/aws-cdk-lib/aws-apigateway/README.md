@@ -612,6 +612,10 @@ If you want to use `requestValidatorOptions` in multiple `addMethod()` calls
 then you need to set the `@aws-cdk/aws-apigateway:requestValidatorUniqueId`
 feature flag. When this feature flag is set, each `RequestValidator` will have a unique generated id.
 
+> **Note** if you enable this feature flag when you have already used
+> `addMethod()` with `requestValidatorOptions` the Logical Id of the resource
+> will change causing the resource to be replaced.
+
 ```ts
 declare const integration: apigateway.LambdaIntegration;
 declare const resource: apigateway.Resource;
