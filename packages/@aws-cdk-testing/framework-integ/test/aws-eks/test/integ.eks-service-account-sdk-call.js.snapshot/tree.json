@@ -2860,22 +2860,6 @@
                   "version": "10.1.270"
                 }
               },
-              "ConditionalPolicyArn": {
-                "id": "ConditionalPolicyArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "conditionalPolicy": {
-                "id": "conditionalPolicy",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "Provider": {
                 "id": "Provider",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider",
@@ -3177,7 +3161,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/ff876724e43ab568cfd48fd29e89cf2ee9190c8b1feaa846fddbde4a5c9ef7c2.json"
+                          "/eef6b93ead7abe8bea2d61fed95fabf0f706ef49e02e5e29e6dd338ff78c009b.json"
                         ]
                       ]
                     },
@@ -3405,8 +3389,8 @@
             "id": "DefaultCrNodeVersionMap",
             "path": "aws-eks-service-account-sdk-calls-test/DefaultCrNodeVersionMap",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {
@@ -3637,7 +3621,7 @@
                         },
                         "handler": "index.handler",
                         "runtime": "python3.9",
-                        "timeout": 60
+                        "timeout": 180
                       }
                     },
                     "constructInfo": {

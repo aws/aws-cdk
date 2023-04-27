@@ -2691,22 +2691,6 @@
                   "version": "10.1.270"
                 }
               },
-              "ConditionalPolicyArn": {
-                "id": "ConditionalPolicyArn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "conditionalPolicy": {
-                "id": "conditionalPolicy",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "Provider": {
                 "id": "Provider",
                 "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider",
@@ -3016,7 +3000,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/8c066effd2e8c995993afea39d21bc686b6bf03bb5ba81901c31d4d227e6fe92.json"
+                          "/a53debd36ddb920c91f38d6ab90672cb57fbe9ce9ee3399b063f9b3a3bc7c53f.json"
                         ]
                       ]
                     },
@@ -3607,8 +3591,8 @@
             "id": "DefaultCrNodeVersionMap",
             "path": "aws-cdk-eks-cluster-alb-controller-test/DefaultCrNodeVersionMap",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {

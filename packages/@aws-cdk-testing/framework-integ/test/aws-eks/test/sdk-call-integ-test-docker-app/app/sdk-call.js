@@ -1,5 +1,5 @@
 const sdk = require('aws-sdk');
-sdk.config.update({region: 'us-east-1'});
+sdk.config.update({region: process.env.REGION});
 
 var s3 = new sdk.S3();
 const bucketName = process.env.BUCKET_NAME;

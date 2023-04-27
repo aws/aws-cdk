@@ -3148,22 +3148,6 @@
                   "version": "10.1.270"
                 }
               },
-              "ConditionalPolicyArn": {
-                "id": "ConditionalPolicyArn",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "conditionalPolicy": {
-                "id": "conditionalPolicy",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "Provider": {
                 "id": "Provider",
                 "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider",
@@ -3473,7 +3457,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1cb593ff9d4369a3a7f7b64edd0b94ec71dfed58cf7dd75a61e16cc84a724059.json"
+                          "/45d0bf34b27b241d51b1b7b73bd9fd2adfa5a0059bf7c5bef02f5ab49e57bc89.json"
                         ]
                       ]
                     },
@@ -4064,8 +4048,8 @@
             "id": "DefaultCrNodeVersionMap",
             "path": "aws-cdk-eks-cluster-inference-test/DefaultCrNodeVersionMap",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {
