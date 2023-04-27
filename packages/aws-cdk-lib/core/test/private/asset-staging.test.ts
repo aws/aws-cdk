@@ -24,7 +24,7 @@ describe('bundling', () => {
     const options = {
       sourcePath: '/tmp/source',
       bundleDir: '/tmp/output',
-      image: DockerImage.fromRegistry('alpine'),
+      image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
     };
     const helper = new AssetBundlingVolumeCopy(options);
@@ -54,7 +54,7 @@ describe('bundling', () => {
       '--name', sinon.match(/copyContainer.*/g),
       '-v', sinon.match(/assetInput.*/g),
       '-v', sinon.match(/assetOutput.*/g),
-      'alpine',
+      'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
       `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
@@ -79,7 +79,7 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
       '--volumes-from', helper.copyContainerName,
-      'alpine',
+      'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
   });
@@ -98,7 +98,7 @@ describe('bundling', () => {
     const options = {
       sourcePath: '/tmp/source',
       bundleDir: '/tmp/output',
-      image: DockerImage.fromRegistry('alpine'),
+      image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
     };
     const helper = new AssetBundlingBindMount(options);
@@ -108,7 +108,7 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
       '-v',
-      'alpine',
+      'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 });

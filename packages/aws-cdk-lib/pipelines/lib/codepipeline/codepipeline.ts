@@ -326,6 +326,13 @@ export interface CodeBuildOptions {
    * @default - no file system locations
    */
   readonly fileSystemLocations?: cb.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: cb.LoggingOptions;
 }
 
 

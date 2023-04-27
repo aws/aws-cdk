@@ -284,7 +284,7 @@ export interface BuildStackAssetsOptions {
   readonly roleArn?: string;
 
   /**
-   * Options to pass on to `buildAsests()` function
+   * Options to pass on to `buildAssets()` function
    */
   readonly buildOptions?: BuildAssetsOptions;
 }

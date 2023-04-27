@@ -45,6 +45,13 @@ rule.addTarget(new targets.EcsTask({
     ],
   }],
   deadLetterQueue,
+  propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  tags: [
+    {
+      key: 'my-tag',
+      value: 'my-tag-value',
+    },
+  ],
 }));
 
 new integ.IntegTest(app, 'EcsTest', {

@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "testCases": {
     "EcsFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-fargate"
       ],
-      "assertionStack": "EcsFargateTest/DefaultTest/DeployAssert"
+      "assertionStack": "EcsFargateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsFargateTestDefaultTestDeployAssert36341BFB"
     }
   }
 }

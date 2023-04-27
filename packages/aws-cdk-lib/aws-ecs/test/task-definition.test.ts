@@ -303,6 +303,9 @@ describe('task definition', () => {
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
+      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
       // WHEN
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionAttributes(stack, 'TD_ID', {
@@ -310,12 +313,13 @@ describe('task definition', () => {
         compatibility: expectCompatibility,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
+        executionRole: expectExecutionRole,
       });
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(expectCompatibility);
-      expect(taskDefinition.executionRole).toEqual(undefined);
+      expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
 
