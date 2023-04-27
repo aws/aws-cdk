@@ -585,6 +585,12 @@
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
           }
         ],
+        "/aws-cdk-eks-cluster-inference-test/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-cdk-eks-cluster-inference-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",

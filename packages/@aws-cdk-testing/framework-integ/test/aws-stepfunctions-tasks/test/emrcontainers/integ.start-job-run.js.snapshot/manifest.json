@@ -531,6 +531,12 @@
             "data": "StartaJobRunCustomResource3BD90664"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

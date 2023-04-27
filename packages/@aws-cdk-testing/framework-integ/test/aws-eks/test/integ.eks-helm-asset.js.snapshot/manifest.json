@@ -261,6 +261,12 @@
             "data": "ClustercharttestskipcrdinstallationB8323954"
           }
         ],
+        "/aws-cdk-eks-helm-test/Cluster/chart-test-non-ecr-oci-chart/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clustercharttestnonecrocichart7A9190B5"
+          }
+        ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",

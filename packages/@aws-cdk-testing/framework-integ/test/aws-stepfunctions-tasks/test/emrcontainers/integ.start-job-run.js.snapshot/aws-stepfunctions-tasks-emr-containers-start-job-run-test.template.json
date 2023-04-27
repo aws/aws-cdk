@@ -1477,7 +1477,15 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 120
    },
    "DependsOn": [

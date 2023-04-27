@@ -1009,6 +1009,37 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Clustercharttestnonecrocichart7A9190B5": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "grafana-operator-release",
+    "Chart": "grafana-operator",
+    "Version": "v5.0.0-rc1",
+    "Namespace": "ack-system",
+    "Repository": "oci://ghcr.io/grafana-operator/helm-charts/grafana-operator",
+    "CreateNamespace": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
