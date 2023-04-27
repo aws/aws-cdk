@@ -433,6 +433,6 @@ describe('lambda api', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow('Validation failed with the following errors: \n[Default/RestApi] Stage variables value must match regex: $$$ does not match /[A-Za-z0-9-._~:/?#&amp;=,]+/.');
+    expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/RestApi] Stage variable value $$$ does not match the regex.');
   });
 });

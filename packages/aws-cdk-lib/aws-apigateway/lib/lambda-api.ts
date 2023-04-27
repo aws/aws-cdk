@@ -78,7 +78,7 @@ export class LambdaRestApi extends RestApi {
             const regexp = /[A-Za-z0-9-._~:/?#&amp;=,]+/;
             const value = props.deployOptions.variables[key];
             if (value.match(regexp) === null) {
-              return ['Stage variables value must match regex: ' + value + ' does not match ' + regexp + '.'];
+              return ['Stage variable value ' + value + ' does not match the regex.'];
             }
           }
         }
