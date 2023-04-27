@@ -35,7 +35,7 @@ phases:
   build:
     commands:
       - export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
-      - export CONCURRENCY=$(node -p \'Math.max(1, require("os").cpus().length - 1)\')
+      - export CONCURRENCY=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
       - FORCE_COLOR=false npx lerna run build,test,rosetta-extract,rosetta:infuse,rosetta:synthetic,package --concurrency=$CONCURRENCY --verbose
   post_build:
     commands:
