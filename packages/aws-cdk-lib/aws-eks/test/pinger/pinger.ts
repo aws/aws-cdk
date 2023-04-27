@@ -20,7 +20,7 @@ export class Pinger extends Construct {
     const func = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(`${__dirname}/function`),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_10,
       vpc: props.vpc,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,

@@ -18,7 +18,7 @@ export class BucketPinger extends Construct {
     const func = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(`${__dirname}/function`),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_10,
       timeout: props.timeout ?? Duration.minutes(1),
       environment: {
         BUCKET_NAME: props.bucketName,
