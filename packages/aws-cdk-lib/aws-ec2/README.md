@@ -1863,3 +1863,28 @@ new ec2.Instance(this, 'Instance1', {
   ssmSessionPermissions: true,
 });
 ```
+
+## Managed Prefix Lists
+
+Create and manage customer-managed prefix lists. If you don't specify anything in this construct, it will manage IPv4 addresses.
+
+You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
+
+```ts
+new ec2.PrefixList(this, 'EmptyPrefixList', {
+  maxEntries: 100,
+});
+```
+
+`maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
+
+```ts
+new ec2.PrefixList(this, 'PrefixList', {
+  entries: [
+    { cidr: '10.0.0.1/32' },
+    { cidr: '10.0.0.2/32', description: 'sample1' },
+  ],
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
