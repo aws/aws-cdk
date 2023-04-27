@@ -1,5 +1,5 @@
 {
-  "$version": "117.0.0",
+  "$version": "119.2.0",
   "PropertyTypes": {
     "AWS::ApiGatewayV2::Api.BodyS3Location": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-api-bodys3location.html",
@@ -344,17 +344,6 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html#cfn-apigatewayv2-integration-tlsconfig-servernametoverify",
           "PrimitiveType": "String",
           "Required": false,
-          "UpdateType": "Mutable"
-        }
-      }
-    },
-    "AWS::ApiGatewayV2::Route.ParameterConstraints": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-route-parameterconstraints.html",
-      "Properties": {
-        "Required": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-route-parameterconstraints.html#cfn-apigatewayv2-route-parameterconstraints-required",
-          "PrimitiveType": "Boolean",
-          "Required": true,
           "UpdateType": "Mutable"
         }
       }
@@ -943,6 +932,11 @@
       }
     },
     "AWS::ApiGatewayV2::Route": {
+      "Attributes": {
+        "RouteId": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-route.html",
       "Properties": {
         "ApiId": {
@@ -959,6 +953,7 @@
         },
         "AuthorizationScopes": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-route.html#cfn-apigatewayv2-route-authorizationscopes",
+          "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
           "Required": false,
           "Type": "List",
