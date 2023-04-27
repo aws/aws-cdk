@@ -66,14 +66,14 @@ export interface TriggerOptions {
  */
 export enum InvocationType {
   /**
-   * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
-   * The API response includes the function response and additional data.
+   * Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if one is configured).
+   * The API response only includes a status code.
    */
   EVENT = 'Event',
 
   /**
-   * Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if one is configured).
-   * The API response only includes a status code.
+   * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
+   * The API response includes the function response and additional data.
    */
   REQUEST_RESPONSE = 'RequestResponse',
 
