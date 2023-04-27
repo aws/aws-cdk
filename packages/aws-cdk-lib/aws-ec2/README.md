@@ -1871,7 +1871,7 @@ Create and manage customer-managed prefix lists. If you don't specify anything i
 You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
 
 ```ts
-new ec2.PrefixList(stack, 'EmptyPrefixList', {
+new ec2.PrefixList(this, 'EmptyPrefixList', {
   maxEntries: 100,
 });
 ```
@@ -1879,7 +1879,7 @@ new ec2.PrefixList(stack, 'EmptyPrefixList', {
 `maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
 
 ```ts
-new ec2.PrefixList(stack, 'PrefixList', {
+new ec2.PrefixList(this, 'PrefixList', {
   entries: [
     { cidr: '10.0.0.1/32' },
     { cidr: '10.0.0.2/32', description: 'sample1' },
