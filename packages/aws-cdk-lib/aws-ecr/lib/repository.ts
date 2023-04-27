@@ -19,7 +19,7 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { Fact } from '../../region-info';
 import { getAllPartitions } from '../../region-info/lib/aws-entities';
@@ -798,7 +798,7 @@ export class Repository extends RepositoryBase {
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [
         {

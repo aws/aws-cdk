@@ -11,6 +11,13 @@
        }
       }
      ]
+    },
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "ObjectWriter"
+      }
+     ]
     }
    },
    "UpdateReplacePolicy": "Retain",

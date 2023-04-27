@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "integ-https-redirect.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/a319b5b28789d829846f7567b897cb5b94bbe2fc82080acaa6448f7ceab8c046.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/938d4ad6c1bf4830e1a8e0000c61670a27b00c077d4bf3dab3773861c694d451.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,42 +93,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "redirectRedirectCertificateCertificateRequestorFunctionServiceRole9E01E94F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionServiceRole9E01E94F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy7AC24A96": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy7AC24A96",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorFunctionBBD1548C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionBBD1548C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorResourceBB4D62C1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorResourceBB4D62C1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-https-redirect"
@@ -149,7 +113,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/151fa1442d357caf21d6defe3b499266d5fbe2b66340d5f26f0b397618e6bb3e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/22e8055b0ee7ad190d6f9ee83b660a60f354f43946fccc628b94643dc619e13a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

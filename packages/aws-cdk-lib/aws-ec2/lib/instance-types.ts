@@ -1300,4 +1300,15 @@ export class InstanceType {
 
     return InstanceArchitecture.X86_64;
   }
+
+  public sameInstanceClassAs(other: InstanceType): boolean {
+    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z]*)\.([a-z0-9]+)$/;
+    const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
+    const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
+    if (instanceClassId == null || otherInstanceClassId == null) {
+      throw new Error('Malformed instance type identifier');
+    }
+    return instanceClassId[1] === otherInstanceClassId[1];
+  }
+
 }
