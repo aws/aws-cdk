@@ -47,9 +47,6 @@
     },
     "test": {
       "dependsOn": ["build"]
-    },
-    "package": {
-      "dependsOn": ["^package"]
     }
   },
   "affected": {
