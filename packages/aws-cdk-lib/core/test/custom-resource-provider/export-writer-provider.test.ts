@@ -32,6 +32,109 @@ describe('export writer provider', () => {
       ],
     });
     expect(cfn).toEqual({
+      Mappings: {
+        DefaultCrNodeVersionMap: {
+          "af-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-east-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ca-central-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-north-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-northwest-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-north-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-3": {
+            "value": "nodejs16.x",
+          },
+          "me-central-1": {
+            "value": "nodejs16.x",
+          },
+          "me-south-1": {
+            "value": "nodejs16.x",
+          },
+          "sa-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-2": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-iso-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-iso-west-1": {
+            "value": "nodejs14.x",
+          },
+          "us-isob-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-west-2": {
+            "value": "nodejs16.x",
+          },
+        },
+      },
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -135,7 +238,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -144,6 +247,109 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: {
+        DefaultCrNodeVersionMap: {
+          "af-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-east-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ca-central-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-north-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-northwest-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-north-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-3": {
+            "value": "nodejs16.x",
+          },
+          "me-central-1": {
+            "value": "nodejs16.x",
+          },
+          "me-south-1": {
+            "value": "nodejs16.x",
+          },
+          "sa-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-2": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-iso-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-iso-west-1": {
+            "value": "nodejs14.x",
+          },
+          "us-isob-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-west-2": {
+            "value": "nodejs16.x",
+          },
+        },
+      },
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -164,7 +370,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',
@@ -401,6 +607,109 @@ describe('export writer provider', () => {
       'Fn::GetAtt': ['ExportsReader8B249524', '/cdk/exports/MyResourceName'],
     });
     expect(cfn).toEqual({
+      Mappings: {
+        DefaultCrNodeVersionMap: {
+          "af-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-east-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ca-central-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-north-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-northwest-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-north-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-3": {
+            "value": "nodejs16.x",
+          },
+          "me-central-1": {
+            "value": "nodejs16.x",
+          },
+          "me-south-1": {
+            "value": "nodejs16.x",
+          },
+          "sa-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-2": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-iso-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-iso-west-1": {
+            "value": "nodejs14.x",
+          },
+          "us-isob-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-west-2": {
+            "value": "nodejs16.x",
+          },
+        },
+      },
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -505,7 +814,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -514,6 +823,109 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: {
+        DefaultCrNodeVersionMap: {
+          "af-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-east-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-northeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-south-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-1": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-2": {
+            "value": "nodejs16.x",
+          },
+          "ap-southeast-3": {
+            "value": "nodejs16.x",
+          },
+          "ca-central-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-north-1": {
+            "value": "nodejs16.x",
+          },
+          "cn-northwest-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-central-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-north-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-south-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-1": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-2": {
+            "value": "nodejs16.x",
+          },
+          "eu-west-3": {
+            "value": "nodejs16.x",
+          },
+          "me-central-1": {
+            "value": "nodejs16.x",
+          },
+          "me-south-1": {
+            "value": "nodejs16.x",
+          },
+          "sa-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-east-2": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-east-1": {
+            "value": "nodejs16.x",
+          },
+          "us-gov-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-iso-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-iso-west-1": {
+            "value": "nodejs14.x",
+          },
+          "us-isob-east-1": {
+            "value": "nodejs14.x",
+          },
+          "us-west-1": {
+            "value": "nodejs16.x",
+          },
+          "us-west-2": {
+            "value": "nodejs16.x",
+          },
+        },
+      },
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -534,7 +946,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs14.x',
+            Runtime: 'nodejs16.x',
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',

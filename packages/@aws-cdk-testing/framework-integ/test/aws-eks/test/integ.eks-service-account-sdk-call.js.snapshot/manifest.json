@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2a491dee22a3343da412a71a01f33a97d68944e134548eee90cc9aaa6f7d4e6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22d56ef42db1a63930178c7f819c88ecd7150c6d7750ad58cfdc29ac96a02b7c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -285,6 +285,12 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
+          }
+        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -295,6 +301,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
@@ -375,28 +387,34 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn"
           }
         ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
+          }
+        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerServiceRoleFCDC14AE"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerServiceRoleDefaultPolicyCBD0CC91"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -415,6 +433,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "KubectlLayer600207B5"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HasEcrPublic"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -441,10 +465,16 @@
             "data": "awseksserviceaccountsdkcallstestawscdkawseksKubectlProviderframeworkonEvent905838A2Arn"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestKubectlHandlerRole199E71B1Arn": [
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawseksserviceaccountsdkcallstestKubectlHandlerRole199E71B1Arn"
+            "data": "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": [
@@ -471,24 +501,6 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -499,6 +511,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [

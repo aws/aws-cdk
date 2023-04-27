@@ -485,26 +485,22 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": [
-         {
-          "Fn::GetAtt": [
-           "KubectlHandlerRoleD25EBD08",
-           "Arn"
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
           ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusterinferencetestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole9EF4846EArn"
-          ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusterinferencetestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleACA8EEC3Arn"
-          ]
-         }
-        ]
+         ]
+        }
        }
       }
      ],
@@ -1302,9 +1298,17 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d5f947e91374f192449a79a3ec1b775aaa048702ef07c983861074278aa16967.json"
+       "/33ed18f371121f45de87e6c69f1d62df5cfbfcfc8317f5e8d6e05735e02b0bcc.json"
       ]
      ]
+    },
+    "Parameters": {
+     "referencetoawscdkeksclusterinferencetestClusterCreationRoleE75B6E1BArn": {
+      "Fn::GetAtt": [
+       "ClusterCreationRole360249B6",
+       "Arn"
+      ]
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -1329,14 +1333,20 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1cb593ff9d4369a3a7f7b64edd0b94ec71dfed58cf7dd75a61e16cc84a724059.json"
+       "/86b36ba83bd02e3273873dc9098af135dfff7751d6303395e1bacf73a069750c.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetoawscdkeksclusterinferencetestKubectlHandlerRoleC36F9110Arn": {
+     "referencetoawscdkeksclusterinferencetestClusterF6AC11E0Arn": {
       "Fn::GetAtt": [
-       "KubectlHandlerRoleD25EBD08",
+       "Cluster9EE0221C",
+       "Arn"
+      ]
+     },
+     "referencetoawscdkeksclusterinferencetestClusterCreationRoleE75B6E1BArn": {
+      "Fn::GetAtt": [
+       "ClusterCreationRole360249B6",
        "Arn"
       ]
      },
@@ -1358,8 +1368,6 @@
     }
    },
    "DependsOn": [
-    "KubectlHandlerRoleDefaultPolicyA09B4223",
-    "KubectlHandlerRoleD25EBD08",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1367,107 +1375,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "KubectlHandlerRoleD25EBD08": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     },
-     {
-      "Fn::If": [
-       "HasEcrPublic",
-       {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-         ]
-        ]
-       },
-       {
-        "Ref": "AWS::NoValue"
-       }
-      ]
-     }
-    ]
-   }
-  },
-  "KubectlHandlerRoleDefaultPolicyA09B4223": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "eks:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Cluster9EE0221C",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "KubectlHandlerRoleDefaultPolicyA09B4223",
-    "Roles": [
-     {
-      "Ref": "KubectlHandlerRoleD25EBD08"
-     }
-    ]
-   }
   },
   "awscdkeksclusterinferencetestClusterEBBBA1ACAlbControlleralbsaConditionJson1B3BEA47": {
    "Type": "Custom::AWSCDKCfnJson",
@@ -2003,7 +1910,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
@@ -2060,14 +1967,107 @@
    }
   }
  },
- "Conditions": {
-  "HasEcrPublic": {
-   "Fn::Equals": [
-    {
-     "Ref": "AWS::Partition"
-    },
-    "aws"
-   ]
+ "Mappings": {
+  "DefaultCrNodeVersionMap": {
+   "af-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs16.x"
+   },
+   "me-central-1": {
+    "value": "nodejs16.x"
+   },
+   "me-south-1": {
+    "value": "nodejs16.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-2": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs14.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-west-2": {
+    "value": "nodejs16.x"
+   }
   }
  },
  "Parameters": {

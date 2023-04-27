@@ -485,7 +485,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
+        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -663,7 +663,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
  * Determine which version of bootstrapping
  * (legacy, or "new") should be used.
  */
-function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
   const isV1 = version.DISPLAY_VERSION.startsWith('1.');
   return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
 }
