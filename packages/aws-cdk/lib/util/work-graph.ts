@@ -28,8 +28,11 @@ export class WorkGraph {
         // ignore tree artifacts
         continue;
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
-        // TODO: this
-        continue;
+        console.log(artifact.directoryName);
+        const assembly = new cxapi.CloudAssembly(artifact.directoryName);
+        console.log(assembly.directory);
+        const nestedGraph = WorkGraph.fromCloudArtifacts(assembly.artifacts, prebuildAssets);
+        graph.addNodes(...Object.values(nestedGraph.nodes));
       }
     }
 
@@ -106,7 +109,7 @@ export class WorkGraph {
   private readonly readyPool: Array<WorkNode> = [];
   public error?: Error;
 
-  private constructor(nodes: Record<string, WorkNode> = {}) {
+  public constructor(nodes: Record<string, WorkNode> = {}) {
     this.nodes = nodes;
   }
 

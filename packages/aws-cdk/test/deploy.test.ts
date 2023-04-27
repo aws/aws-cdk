@@ -1,13 +1,18 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { deployArtifacts } from '../lib/deploy';
 import { AssetBuildNode, AssetPublishNode, StackNode } from '../lib/util/work-graph-types';
+import path = require('path');
 
 const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
+const TREE_CLOUD_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.TreeCloudArtifact');
+const NESTED_ASSEMBLY_ARTIFACT = Symbol.for('@aws-cdk/cx-api.NestedCloudAssemblyArtifact');
 
 type Artifact = cxapi.CloudArtifact;
 type Stack = cxapi.CloudFormationStackArtifact;
 type Asset = cxapi.AssetManifestArtifact;
+type Tree = cxapi.TreeCloudArtifact;
+type Nested = cxapi.NestedCloudAssemblyArtifact;
 
 const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
@@ -29,7 +34,8 @@ describe('DeployAssets', () => {
 
       await sleep(timeout);
 
-      if (errorMessage) {
+      // Special case for testing NestedCloudAssemblyArtifacts
+      if (errorMessage && !errorMessage.startsWith('Nested')) {
         throw Error(errorMessage);
       }
 
@@ -305,7 +311,7 @@ describe('DeployAssets', () => {
     expect(actionedAssets).toStrictEqual(expectedStacks);
   });
 
-  test('Can disable prebuild assets', async () => {
+  test('can disable prebuild assets', async () => {
     const toDeploy = createArtifacts([
       { id: 'A', type: 'stack', name: SLOW },
       { id: 'B', type: 'stack', stackDependencies: ['A'], assetDependencies: ['b'] },
@@ -316,13 +322,31 @@ describe('DeployAssets', () => {
     // asset build waits for slow stack A deployment
     expect(actionedAssets).toStrictEqual(['A', 'b-build', 'b-publish', 'B']);
   });
+
+  test('tree metadata is ignored', async () => {
+    const toDeploy = createArtifacts([
+      { id: '$', type: 'tree' },
+    ]);
+    await expect(deployArtifacts(toDeploy, { concurrency: 1, callbacks })).resolves.toBeUndefined();
+
+    expect(actionedAssets).toStrictEqual([]);
+  });
+
+  test('nested assembly is accepted', async () => {
+    const toDeploy = createArtifacts([
+      { id: 'Stage', type: 'nested' },
+    ]);
+    await expect(deployArtifacts(toDeploy, { concurrency: 1, callbacks })).resolves.toBeUndefined();
+
+    expect(actionedAssets).toStrictEqual(['StageA.assets-build', 'StageA.assets-publish', 'NestedStageA']);
+  });
 });
 
 interface TestArtifact {
   stackDependencies?: string[];
   assetDependencies?: string[];
   id: string;
-  type: 'stack' | 'asset';
+  type: 'stack' | 'asset' | 'tree'| 'nested';
   name?: number;
   displayName?: string;
 }
@@ -337,16 +361,31 @@ function createArtifact(artifact: TestArtifact): Artifact {
     name: artifact.name,
     displayName: artifact.displayName,
   };
-  if (artifact.type === 'stack') {
-    return {
-      ...art,
-      [CLOUDFORMATION_STACK_ARTIFACT_SYM]: true,
-    } as unknown as Stack;
-  } else {
-    return {
-      ...art,
-      [ASSET_MANIFEST_ARTIFACT_SYM]: true,
-    } as unknown as Asset;
+  switch (artifact.type) {
+    case 'stack':
+      return {
+        ...art,
+        [CLOUDFORMATION_STACK_ARTIFACT_SYM]: true,
+      } as unknown as Stack;
+    case 'asset':
+      return {
+        ...art,
+        [ASSET_MANIFEST_ARTIFACT_SYM]: true,
+      } as unknown as Asset;
+    case 'tree':
+      return {
+        type: 'cdk:tree',
+        properties: {
+          file: 'tree.json',
+        },
+        [TREE_CLOUD_ARTIFACT_SYM]: true,
+      } as unknown as Tree;
+    case 'nested':
+      return {
+        type: 'cdk:cloud-assembly',
+        directoryName: path.join(__dirname, 'stage-manifest'),
+        [NESTED_ASSEMBLY_ARTIFACT]: true,
+      } as unknown as Nested;
   }
 }
 
