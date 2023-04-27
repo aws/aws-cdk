@@ -423,18 +423,16 @@ describe('lambda api', () => {
       version: '${stageVariables.lambdaAlias}',
     });
 
-    // const api: RestApi =
     new LambdaRestApi(stack, 'RestApi', {
       restApiName: 'my-test-api',
       handler: versionAlias,
       deployOptions: {
         variables: {
-          functionName: handler.functionName,
-          // lambdaAlias: handler.latestVersion, // == '$LATEST'
+          functionName: '$$$',
         },
       },
     });
 
-    expect(() => app.synth()).toThrow(/Stage variables value must match regex: handler does not match [A-Za-z0-9-._~:/?#&amp;=,]+./);
+    expect(() => app.synth()).toThrow('Validation failed with the following errors: \n[Default/RestApi] Stage variables value must match regex: $$$ does not match /[A-Za-z0-9-._~:/?#&amp;=,]+/.');
   });
 });
