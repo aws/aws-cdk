@@ -542,10 +542,6 @@ export enum PerformanceInsightRetention {
    * Default retention period of 7 days.
    */
   DEFAULT = 7,
-  /**
-   * The default retention period is also the free tier.
-   */
-  FREE_TIER = 7,
 
   MONTHS_1 = 31,
   MONTHS_2 = 31 * 2,
@@ -559,7 +555,6 @@ export enum PerformanceInsightRetention {
   MONTHS_10 = 31 * 10,
   MONTHS_11 = 31 * 11,
   MONTHS_12 = 31 * 12,
-  ONE_YEAR = 31 * 12, // Yup.
   MONTHS_13 = 31 * 13,
   MONTHS_14 = 31 * 14,
   MONTHS_15 = 31 * 15,
@@ -576,6 +571,4 @@ export enum PerformanceInsightRetention {
    * Long term retention period of 2 years.
    */
   LONG_TERM = 731,
-  MONTHS_24 = 731,
-  TWO_YEARS = 731,
 }

@@ -1351,7 +1351,6 @@ describe('instance', () => {
 
     test.each<keyof typeof rds.PerformanceInsightRetention>([
       'DEFAULT',
-      'FREE_TIER',
       'MONTHS_1',
       'MONTHS_2',
       'MONTHS_3',
@@ -1364,7 +1363,6 @@ describe('instance', () => {
       'MONTHS_10',
       'MONTHS_11',
       'MONTHS_12',
-      'ONE_YEAR',
       'MONTHS_13',
       'MONTHS_14',
       'MONTHS_15',
@@ -1376,7 +1374,6 @@ describe('instance', () => {
       'MONTHS_21',
       'MONTHS_22',
       'MONTHS_23',
-      'TWO_YEARS',
       'LONG_TERM',
     ])('performance insights retention of %s', (performanceInsightRetentionKey) => {
       new rds.DatabaseInstance(stack, 'Instance', {
