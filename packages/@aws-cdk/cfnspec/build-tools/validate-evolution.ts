@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
+
+const SKIP_FILE = 'skip-evolution-check.txt';
 
 /**
  * Run validations on the spec evolution, on the pull request.
@@ -10,11 +13,24 @@ import * as child_process from 'child_process';
  * Expects and uses git.
  */
 export async function validateSpecificationEvolution(specProducer: () => Promise<any>) {
+  const prNumber = (process.env.CODEBUILD_WEBHOOK_TRIGGER ?? '').replace(/^pr\//, '');
+  const skips = (await fs.readFile(SKIP_FILE, { encoding: 'utf-8' })).split('\n');
+  if (prNumber && skips.includes(prNumber)) {
+    console.log(`Skipping evo check of PR ${prNumber} (${SKIP_FILE})`);
+    await specProducer();
+    return;
+  }
+
   const targetBranch = process.env.CODEBUILD_WEBHOOK_BASE_REF ?? 'main';
   console.log(`Comparing differences with ${targetBranch}`);
   const mergeBase = child_process.execSync(`git merge-base ${targetBranch} HEAD`).toString().trim();
   console.log(`Base commit ${mergeBase}`);
-  const currentCommit = child_process.execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  // Find branch name if we have one
+  let currentCommit = child_process.execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  if (currentCommit === 'HEAD') {
+    // No branch, just spec use commit
+    currentCommit = child_process.execSync('git rev-parse HEAD').toString().trim();
+  }
   console.log(`Current commit ${currentCommit}`);
 
   const specs = new Array<any>();
