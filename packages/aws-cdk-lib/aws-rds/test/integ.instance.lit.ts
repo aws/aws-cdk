@@ -67,7 +67,6 @@ class DatabaseInstanceStack extends cdk.Stack {
       optionGroup,
       parameterGroup,
       removalPolicy: RemovalPolicy.DESTROY,
-      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_10,
     });
 
     // Allow connections on default port from any IPV4
