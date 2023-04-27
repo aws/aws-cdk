@@ -4,30 +4,29 @@ import { PolicyValidationPluginReportBeta1 } from './report';
  * Represents a validation plugin that will be executed during synthesis
  *
  * @example
- * class MyCustomValidatorPlugin implements IValidationPlugin {
- *    public readonly name = 'my-custom-plugin';
+ * /// fixture=validation-plugin
+ * class MyPlugin implements IPolicyValidationPluginBeta1 {
+ *   public readonly name = 'MyPlugin';
  *
- *    public isReady(): boolean {
- *      // check if the plugin tool is installed
- *      return true;
- *    }
+ *   public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+ *     // First read the templates using context.templatePaths...
  *
- *    public validate(context: IValidationContext): ValidationPluginReport {
- *      const templatePaths = context.templatePaths;
- *      // perform validation on the template
- *      // if there are any failures report them
- *      return {
- *        pluginName: this.name,
- *        success: false,
- *        violations: [{
- *          ruleName: 'rule-name',
- *          description: 'description of the rule',
- *          violatingResources: [{
- *            resourceName: 'FailingResource',
- *            templatePath: '/path/to/stack.template.json',
- *          }],
- *      });
- *    }
+ *     // ...then perform the validation, and then compose and return the report.
+ *     // Using hard-coded values here for better clarity:
+ *     return {
+ *       success: false,
+ *       violations: [{
+ *         ruleName: 'CKV_AWS_117',
+ *         description: 'Ensure that AWS Lambda function is configured inside a VPC',
+ *         fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+ *         violatingResources: [{
+ *           resourceLogicalId: 'MyFunction3BAA72D1',
+ *           templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+ *           locations: ['Properties/VpcConfig'],
+ *         }],
+ *       }],
+ *     };
+ *   }
  * }
  */
 export interface IPolicyValidationPluginBeta1 {
@@ -46,6 +45,14 @@ export interface IPolicyValidationPluginBeta1 {
    * version, it will be reported as `0.0.0`.
    */
   readonly version?: string;
+
+  /**
+   * The list of rule IDs that the plugin will evaluate. Used for analytics
+   * purposes.
+   *
+   * @default - No rule is reported
+   */
+  readonly ruleIds?: string[];
 
   /**
    * The method that will be called by the CDK framework to perform

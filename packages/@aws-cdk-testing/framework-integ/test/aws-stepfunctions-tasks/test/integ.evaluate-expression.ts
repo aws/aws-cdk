@@ -1,6 +1,10 @@
+import { App, Stack, StackProps } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { Construct } from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 /*
  * Stack verification steps:
@@ -9,37 +13,48 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * * The output here should contain `status: "SUCCEEDED"` and `output: "{ a: 3, b: 4, c: 7, d: 14, now: <current date> }"
  */
 
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
+class TestStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-const sum = new tasks.EvaluateExpression(stack, 'Sum', {
-  expression: '$.a + $.b',
-  resultPath: '$.c',
-});
+    const sum = new tasks.EvaluateExpression(this, 'Sum', {
+      expression: '$.a + $.b',
+      resultPath: '$.c',
+    });
 
-const multiply = new tasks.EvaluateExpression(stack, 'Multiply', {
-  expression: '$.c * 2',
-  resultPath: '$.d',
-});
+    const multiply = new tasks.EvaluateExpression(this, 'Multiply', {
+      expression: '$.c * 2',
+      resultPath: '$.d',
+      runtime: lambda.Runtime.NODEJS_16_X,
+    });
 
-const now = new tasks.EvaluateExpression(stack, 'Now', {
-  expression: '(new Date()).toUTCString()',
-  resultPath: '$.now',
-});
+    const now = new tasks.EvaluateExpression(this, 'Now', {
+      expression: '(new Date()).toUTCString()',
+      resultPath: '$.now',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
 
-const statemachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: sum
-    .next(multiply)
-    .next(
-      new sfn.Wait(stack, 'Wait', {
-        time: sfn.WaitTime.secondsPath('$.d'),
-      }),
-    )
-    .next(now),
-});
+    const statemachine = new sfn.StateMachine(this, 'StateMachine', {
+      definition: sum
+        .next(multiply)
+        .next(
+          new sfn.Wait(this, 'Wait', {
+            time: sfn.WaitTime.secondsPath('$.d'),
+          }),
+        )
+        .next(now),
+    });
 
-new cdk.CfnOutput(stack, 'StateMachineARN', {
-  value: statemachine.stateMachineArn,
+    new cdk.CfnOutput(this, 'StateMachineARN', {
+      value: statemachine.stateMachineArn,
+    });
+  }
+}
+
+const app = new App();
+
+new integ.IntegTest(app, 'EvaluateExpressionInteg', {
+  testCases: [new TestStack(app, 'cdk-sfn-evaluate-expression-integ')],
 });
 
 app.synth();

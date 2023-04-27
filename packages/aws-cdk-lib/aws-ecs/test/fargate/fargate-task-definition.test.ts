@@ -190,12 +190,16 @@ describe('fargate task definition', () => {
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
+      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
       // WHEN
       const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
+        executionRole: expectExecutionRole,
       });
 
       // THEN
@@ -205,6 +209,7 @@ describe('fargate task definition', () => {
       expect(taskDefinition.isEc2Compatible).toEqual(false);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
+      expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
 
 
     });

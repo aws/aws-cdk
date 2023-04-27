@@ -24,7 +24,7 @@ phases:
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
-      - /bin/bash ./build.sh
+      - /bin/bash ./build.sh --ci
       # After compilation, run Rosetta (using the cache if available).
       # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
       - /bin/bash ./scripts/run-rosetta.sh

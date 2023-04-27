@@ -162,6 +162,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         subnetSelection: step.subnetSelection,
         cache: step.cache,
         timeout: step.timeout,
+        fileSystemLocations: step.fileSystemLocations,
+        logging: step.logging,
       }),
     });
 
@@ -195,6 +197,11 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
   public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
+
+    if ((!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
+      (projectOptions.fileSystemLocations !== undefined && projectOptions.fileSystemLocations.length != 0)) {
+      throw new Error('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
+    }
 
     const inputs = this.props.inputs ?? [];
     const outputs = this.props.outputs ?? [];
@@ -302,6 +309,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
+      fileSystemLocations: projectOptions.fileSystemLocations,
+      logging: projectOptions.logging,
     });
 
     if (this.props.additionalDependable) {
@@ -430,6 +439,8 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
       cache: b.cache ?? a.cache,
+      fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
+      logging: b.logging ?? a.logging,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
@@ -347,7 +347,6 @@ describe('repository', () => {
 
     // WHEN
     repo.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
       principals: [new iam.ArnPrincipal('arn')],
     }));
 
@@ -363,12 +362,44 @@ describe('repository', () => {
 
     // WHEN
     repo.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
       actions: ['ecr:*'],
     }));
 
     // THEN
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
+
+  test('warns if repository policy has resources', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['ecr:*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
+  });
+
+  test('does not warn if repository policy does not have resources', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['ecr:*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements.');
   });
 
   test('default encryption configuration', () => {

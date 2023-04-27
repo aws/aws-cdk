@@ -1,11 +1,10 @@
 {
-  "version": "29.0.0",
+  "version": "31.0.0",
   "testCases": {
     "TriggerTest/DefaultTest": {
       "stacks": [
         "MyStack"
       ],
-      "stackUpdateWorkflow": false,
       "assertionStack": "TriggerTest/DefaultTest/DeployAssert",
       "assertionStackName": "TriggerTestDefaultTestDeployAssert61636546"
     }

@@ -9,10 +9,13 @@ class SqsEventSourceTest extends cdk.Stack {
 
     const fn = new TestFunction(this, 'F');
     const queue = new sqs.Queue(this, 'Q');
-
-    fn.addEventSource(new SqsEventSource(queue, {
+    const eventSource = new SqsEventSource(queue, {
       batchSize: 5,
-    }));
+    });
+
+    fn.addEventSource(eventSource);
+
+    new cdk.CfnOutput(this, 'OutputEventSourceMappingArn', { value: eventSource.eventSourceMappingArn });
   }
 }
 

@@ -6,10 +6,11 @@ const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 
-main()
-  .then(() => process.exit(0))
+main().catch(e => {
   // eslint-ignore-next-line no-console
-  .catch(console.error)
+  console.error(e);
+  process.exitCode = 1;
+});
 
 async function main() {
   // Generate all L1s based on config in scope-map.json
@@ -23,7 +24,7 @@ async function main() {
 
   // Add any new cfn modules to exports in package.json and index.ts
   await updatePackageJsonAndIndexFiles(generated);
-  
+
   // Update scope-map config with any changes
   const newScopeMap = Object.entries(generated)
     .reduce((accum, [moduleName, { scopes }]) => {

@@ -108,7 +108,7 @@ describe('tests', () => {
 
   test('Chaining OIDC authentication action', () => {
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 80,
       defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
@@ -117,6 +117,21 @@ describe('tests', () => {
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
+        sessionTimeout: cdk.Duration.days(1),
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+    listener.addAction('AdditionalOidcAuthenticationAction', {
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/page*'])],
+      action: elbv2.ListenerAction.authenticateOidc({
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        sessionTimeout: cdk.Duration.days(1),
         next: elbv2.ListenerAction.forward([group1]),
       }),
     });
@@ -132,6 +147,31 @@ describe('tests', () => {
             Issuer: 'D',
             TokenEndpoint: 'E',
             UserInfoEndpoint: 'F',
+            // SessionTimeout in DefaultActions is string
+            SessionTimeout: '86400',
+          },
+          Order: 1,
+          Type: 'authenticate-oidc',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          AuthenticateOidcConfig: {
+            AuthorizationEndpoint: 'A',
+            ClientId: 'B',
+            ClientSecret: 'C',
+            Issuer: 'D',
+            TokenEndpoint: 'E',
+            UserInfoEndpoint: 'F',
+            // SessionTimeout in Actions is number
+            SessionTimeout: 86400,
           },
           Order: 1,
           Type: 'authenticate-oidc',

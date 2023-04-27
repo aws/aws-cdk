@@ -1112,7 +1112,86 @@ describe('instance', () => {
           Effect: 'Allow',
           Action: 'rds-db:connect',
           Resource: {
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':rds:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':db:', { Ref: 'InstanceC1063A87' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                {
+                  Ref: 'InstanceSecretAttachment83BEE581',
+                },
+                ':SecretString:username::}}',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth for a specific user', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role, 'my-user');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/my-user',
+              ],
+            ],
           },
         }],
         Version: '2012-10-17',

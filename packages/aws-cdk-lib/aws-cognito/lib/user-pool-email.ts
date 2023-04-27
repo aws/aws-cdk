@@ -27,7 +27,7 @@ export interface UserPoolSESOptions {
   readonly fromName?: string;
 
   /**
-   * The destination to which the receiver of the email should reploy to.
+   * The destination to which the receiver of the email should reply to.
    *
    * @default - same as the fromEmail
    */
