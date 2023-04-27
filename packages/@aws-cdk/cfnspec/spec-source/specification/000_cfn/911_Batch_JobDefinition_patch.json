@@ -1,7 +1,7 @@
 {
   "PropertyTypes": {
     "patch": {
-      "description": "Undoing upstream property type renames of Batch.",
+      "description": "Property types have been renamed in upstream. This is a legal change in CloudFormation, however in CDK it is breaking.",
       "operations": [
         {
           "op": "move",
