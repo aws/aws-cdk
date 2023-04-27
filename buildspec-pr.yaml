@@ -27,7 +27,6 @@ phases:
   pre_build:
     commands:
       - /bin/bash ./scripts/cache-load.sh
-      - ./scripts/ecr-proxy/start.sh
       - ./git-secrets-scan.sh
       - ./scripts/check-build-prerequisites.sh
       - node ./scripts/check-yarn-lock.js
