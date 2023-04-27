@@ -5,6 +5,7 @@ import * as cp from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as s3 from '../../../aws-s3';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
@@ -237,6 +238,13 @@ export interface CodePipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * An existing S3 Bucket to use for storing the pipeline's artifact.
+   *
+   * @default - A new S3 bucket will be created.
+   */
+  readonly artifactBucket?: s3.IBucket;
 }
 
 /**
@@ -318,6 +326,13 @@ export interface CodeBuildOptions {
    * @default - no file system locations
    */
   readonly fileSystemLocations?: cb.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: cb.LoggingOptions;
 }
 
 
@@ -434,6 +449,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.role !== undefined) {
         throw new Error('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.artifactBucket !== undefined) {
+        throw new Error('Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
@@ -446,6 +464,7 @@ export class CodePipeline extends PipelineBase {
         restartExecutionOnUpdate: true,
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
+        artifactBucket: this.props.artifactBucket,
       });
     }
 

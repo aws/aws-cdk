@@ -16,7 +16,7 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
@@ -669,7 +669,7 @@ export class Repository extends RepositoryBase {
    * It will fail if a resource section is present at all.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (statement.resources) {
+    if (statement.resources.length) {
       Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
@@ -794,7 +794,7 @@ export class Repository extends RepositoryBase {
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [
         {

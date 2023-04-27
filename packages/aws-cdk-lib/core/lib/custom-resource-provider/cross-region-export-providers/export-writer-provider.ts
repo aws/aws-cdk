@@ -9,7 +9,8 @@ import { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
-import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
+import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider } from '../custom-resource-provider';
+import { Token } from '../../token';
 
 /**
  * Properties for an ExportReader
@@ -54,22 +55,24 @@ export class ExportWriter extends Construct {
       });
   }
   private readonly _references: CrossRegionExports = {};
+  private readonly provider: CustomResourceProvider;
+  private readonly resourceArns = new Set<string>;
   constructor(scope: Construct, id: string, props: ExportWriterProps) {
     super(scope, id);
     const stack = Stack.of(this);
     const region = props.region ?? stack.region;
+    this.addRegionToPolicy(region);
 
     const resourceType = 'Custom::CrossRegionExportWriter';
-    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
+    this.provider = CustomResourceProvider.getOrCreateProvider(this, resourceType, {
       codeDirectory: path.join(__dirname, 'cross-region-ssm-writer-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       policyStatements: [{
         Effect: 'Allow',
-        Resource: stack.formatArn({
-          service: 'ssm',
-          resource: 'parameter',
-          region,
-          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
+        Resource: Lazy.list({
+          produce: () => [
+            ...Array.from(this.resourceArns),
+          ],
         }),
         Action: [
           'ssm:DeleteParameters',
@@ -86,7 +89,7 @@ export class ExportWriter extends Construct {
     };
     new CustomResource(this, 'Resource', {
       resourceType: resourceType,
-      serviceToken,
+      serviceToken: this.provider.serviceToken,
       properties: {
         WriterProps: properties,
       },
@@ -115,11 +118,32 @@ export class ExportWriter extends Construct {
   }
 
   /**
+   * Add a resource arn for the consuming stack region
+   * Each writer could be writing to multiple regions and needs
+   * permissions to each region.
+   *
+   * If the region is not resolved then do not add anything.
+   */
+  private addRegionToPolicy(region: string): void {
+    if (!Token.isUnresolved(region)) {
+      this.resourceArns.add(
+        Stack.of(this).formatArn({
+          service: 'ssm',
+          resource: 'parameter',
+          region,
+          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
+        }),
+      );
+    }
+  }
+
+  /**
    * Add the export to the export reader which is created in the importing stack
    */
   private addToExportReader(exportName: string, exportValueRef: Intrinsic, importStack: Stack): Intrinsic {
     const readerConstructName = makeUniqueId(['ExportsReader']);
     const exportReader = ExportReader.getOrCreate(importStack.nestedStackParent ?? importStack, readerConstructName);
+    this.addRegionToPolicy(importStack.region);
 
     return exportReader.importValue(exportName, exportValueRef);
   }

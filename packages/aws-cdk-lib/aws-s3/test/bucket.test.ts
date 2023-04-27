@@ -1,8 +1,8 @@
 import { EOL } from 'os';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -37,7 +37,7 @@ describe('bucket', () => {
     }).toThrow(/bucketName: 5 should be a string/);
   });
 
-  test('bucket without encryption', () => {
+  testDeprecated('bucket with UNENCRYPTED encryption', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
@@ -54,7 +54,24 @@ describe('bucket', () => {
     });
   });
 
-  test('bucket with managed encryption', () => {
+  test('bucket with S3_MANAGED encryption', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with KMS_MANAGED encryption', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
@@ -209,12 +226,22 @@ describe('bucket', () => {
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
 
-  test('fails if encryption key is used with encryption set to unencrypted', () => {
+  testDeprecated('fails if encryption key is used with encryption set to UNENCRYPTED', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
+      encryptionKey: myKey,
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+  });
+
+  test('fails if encryption key is used with encryption set to S3_MANAGED', () => {
+    const stack = new cdk.Stack();
+    const myKey = new kms.Key(stack, 'MyKey');
+
+    expect(() => new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
       encryptionKey: myKey,
     })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
   });
@@ -338,14 +365,14 @@ describe('bucket', () => {
 
   });
 
-  test('logs to self, no encryption does not throw error', () => {
+  testDeprecated('logs to self, UNENCRYPTED does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
     }).not.toThrowError();
   });
 
-  test('logs to self, S3 encryption does not throw error', () => {
+  test('logs to self, S3_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
@@ -382,7 +409,7 @@ describe('bucket', () => {
     }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
-  test('logs to separate bucket, no encryption does not throw error', () => {
+  testDeprecated('logs to separate bucket, UNENCRYPTED does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
     expect(() => {
@@ -390,7 +417,7 @@ describe('bucket', () => {
     }).not.toThrowError();
   });
 
-  test('logs to separate bucket, S3 encryption does not throw error', () => {
+  test('logs to separate bucket, S3_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
     expect(() => {
@@ -652,8 +679,7 @@ describe('bucket', () => {
   });
 
   describe('permissions', () => {
-
-    test('addPermission creates a bucket policy', () => {
+    testDeprecated('addPermission creates a bucket policy for an UNENCRYPTED bucket', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
@@ -693,7 +719,58 @@ describe('bucket', () => {
       });
     });
 
-    test('forBucket returns a permission statement associated with the bucket\'s ARN', () => {
+    test('addPermission creates a bucket policy for an S3_MANAGED bucket', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['foo'],
+        actions: ['bar:baz'],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+            'Properties': {
+              'BucketEncryption': {
+                'ServerSideEncryptionConfiguration': [
+                  {
+                    'ServerSideEncryptionByDefault': {
+                      'SSEAlgorithm': 'AES256',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          'MyBucketPolicyE7FBAC7B': {
+            'Type': 'AWS::S3::BucketPolicy',
+            'Properties': {
+              'Bucket': {
+                'Ref': 'MyBucketF68F3FF0',
+              },
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': 'bar:baz',
+                    'Effect': 'Allow',
+                    'Principal': { AWS: '*' },
+                    'Resource': 'foo',
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    testDeprecated('forBucket returns a permission statement associated with an UNENCRYPTED bucket\'s ARN', () => {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
@@ -712,7 +789,26 @@ describe('bucket', () => {
       });
     });
 
-    test('arnForObjects returns a permission statement associated with objects in the bucket', () => {
+    test('forBucket returns a permission statement associated with an S3_MANAGED bucket\'s ARN', () => {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+
+      const x = new iam.PolicyStatement({
+        resources: [bucket.bucketArn],
+        actions: ['s3:ListBucket'],
+        principals: [new iam.AnyPrincipal()],
+      });
+
+      expect(stack.resolve(x.toStatementJson())).toEqual({
+        Action: 's3:ListBucket',
+        Effect: 'Allow',
+        Principal: { AWS: '*' },
+        Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+      });
+    });
+
+    testDeprecated('arnForObjects returns a permission statement associated with objects in an UNENCRYPTED bucket', () => {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
@@ -736,7 +832,31 @@ describe('bucket', () => {
       });
     });
 
-    test('arnForObjects accepts multiple arguments and FnConcats them', () => {
+    test('arnForObjects returns a permission statement associated with objects in an S3_MANAGED bucket', () => {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+
+      const p = new iam.PolicyStatement({
+        resources: [bucket.arnForObjects('hello/world')],
+        actions: ['s3:GetObject'],
+        principals: [new iam.AnyPrincipal()],
+      });
+
+      expect(stack.resolve(p.toStatementJson())).toEqual({
+        Action: 's3:GetObject',
+        Effect: 'Allow',
+        Principal: { AWS: '*' },
+        Resource: {
+          'Fn::Join': [
+            '',
+            [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world'],
+          ],
+        },
+      });
+    });
+
+    testDeprecated('arnForObjects accepts multiple arguments and FnConcats them for an UNENCRYPTED bucket', () => {
 
       const stack = new cdk.Stack();
 
@@ -771,13 +891,67 @@ describe('bucket', () => {
         },
       });
     });
+
+    test('arnForObjects accepts multiple arguments and FnConcats them an S3_MANAGED bucket', () => {
+
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
+
+      const user = new iam.User(stack, 'MyUser');
+      const team = new iam.Group(stack, 'MyTeam');
+
+      const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
+      const p = new iam.PolicyStatement({
+        resources: [resource],
+        actions: ['s3:GetObject'],
+        principals: [new iam.AnyPrincipal()],
+      });
+
+      expect(stack.resolve(p.toStatementJson())).toEqual({
+        Action: 's3:GetObject',
+        Effect: 'Allow',
+        Principal: { AWS: '*' },
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+              '/home/',
+              { Ref: 'MyTeam01DD6685' },
+              '/',
+              { Ref: 'MyUserDC45028B' },
+              '/*',
+            ],
+          ],
+        },
+      });
+    });
   });
 
-  test('removal policy can be used to specify behavior upon delete', () => {
+  testDeprecated('removal policy can be used to specify behavior upon delete for an UNENCRYPTED bucket', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       encryption: s3.BucketEncryption.UNENCRYPTED,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('removal policy can be used to specify behavior upon delete for an S3_MANAGED bucket', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     Template.fromStack(stack).templateMatches({
@@ -2562,6 +2736,84 @@ describe('bucket', () => {
         })]),
       }),
     });
+  });
+
+  test('Log bucket has ACL enabled when feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+    });
+
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is configured when AccessControl is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'LogDeliveryWrite',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is not configured when AccessControl="Private"', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.PRIVATE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'Private',
+      OwnershipControls: Match.absent(),
+    });
+  });
+
+  test('Throws if ObjectOwnership and AccessControl do not match', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/objectOwnership must be set to \"ObjectWriter\" when accessControl is \"LogDeliveryWrite\"/);
   });
 
   test('Defaults for an inventory bucket', () => {

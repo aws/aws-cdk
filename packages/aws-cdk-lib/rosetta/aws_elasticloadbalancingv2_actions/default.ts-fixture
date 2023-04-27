@@ -1,0 +1,17 @@
+// Fixture with packages imported, but nothing else
+import { Construct, Node } from 'constructs';
+import { CfnOutput, Stack, Duration, Resource, SecretValue, Fn } from 'aws-cdk-lib';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as actions from 'aws-cdk-lib/aws-elasticloadbalancingv2-actions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { aws_cognito as cognito } from 'aws-cdk-lib';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

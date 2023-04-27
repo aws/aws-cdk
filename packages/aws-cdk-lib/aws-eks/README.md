@@ -38,9 +38,11 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-// provisiong a cluster
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+
+// provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_25,
+  version: eks.KubernetesVersion.V1_26,
   kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 
@@ -134,7 +136,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -142,7 +144,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -166,7 +168,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -178,7 +180,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   defaultCapacity: 0,
 });
 
@@ -569,7 +571,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
@@ -616,7 +618,7 @@ You can configure the environment of the Cluster Handler functions by specifying
 ```ts
 declare const proxyInstanceSecurityGroup: ec2.SecurityGroup;
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   clusterHandlerEnvironment: {
     https_proxy: 'http://proxy.myproxy.com',
   },
@@ -654,7 +656,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com',
   },
@@ -674,10 +676,10 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV25Layer } from 'aws-cdk-lib/lambda-layer-kubectl-v25';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_25,
+  version: eks.KubernetesVersion.V1_26,
   kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 ```
@@ -713,7 +715,7 @@ const cluster1 = new eks.Cluster(this, 'MyCluster', {
   kubectlLayer: layer,
   vpc,
   clusterName: 'cluster-name',
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 
 // or
@@ -731,7 +733,7 @@ By default, the kubectl provider is configured with 1024MiB of memory. You can u
 ```ts
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 
 // or
@@ -770,7 +772,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   mastersRole: role,
 });
 ```
@@ -798,7 +800,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -808,7 +810,7 @@ You can also use a similar configuration for running a cluster built using the F
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -1098,7 +1100,7 @@ when a cluster is defined:
 
 ```ts
 new eks.Cluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   prune: false,
 });
 ```
@@ -1169,6 +1171,8 @@ cluster.addHelmChart('test-chart', {
 Nested values passed to the `values` parameter should be provided as a nested dictionary:
 
 ```ts
+declare const cluster: eks.Cluster;
+
 cluster.addHelmChart('ExternalSecretsOperator', {
   chart: 'external-secrets',
   release: 'external-secrets',
@@ -1257,12 +1261,12 @@ To get started, add the following dependencies to your `package.json` file:
 ```json
 "dependencies": {
   "cdk8s": "^2.0.0",
-  "cdk8s-plus-22": "^2.0.0-rc.30",
+  "cdk8s-plus-25": "^2.0.0",
   "constructs": "^10.0.0"
 }
 ```
 
-Note that here we are using `cdk8s-plus-22` as we are targeting Kubernetes version 1.22.0. If you operate a different kubernetes version, you should
+Note that here we are using `cdk8s-plus-25` as we are targeting Kubernetes version 1.25.0. If you operate a different kubernetes version, you should
 use the corresponding `cdk8s-plus-XX` library.
 See [Select the appropriate cdk8s+ library](https://cdk8s.io/docs/latest/plus/#i-operate-kubernetes-version-1xx-which-cdk8s-library-should-i-be-using)
 for more details.
@@ -1278,7 +1282,7 @@ In this example we create a chart that accepts an `s3.Bucket` and passes its nam
 import { aws_s3 as s3 } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-22';
+import * as kplus from 'cdk8s-plus-25';
 
 export interface MyChartProps {
   readonly bucket: s3.Bucket;
@@ -1292,7 +1296,7 @@ export class MyChart extends cdk8s.Chart {
       containers: [
         {
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }
@@ -1320,13 +1324,13 @@ cluster.addCdk8sChart('my-chart', myChart);
 #### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
-you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
+you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `aws-cdk-lib` like you normally would.
 This is why we used `new cdk8s.App()` as the scope of the chart above.
 
 ```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-25';
 
 export interface LoadBalancedWebService {
   readonly port: number;
@@ -1347,7 +1351,9 @@ export class LoadBalancedWebService extends constructs.Construct {
     });
 
     deployment.exposeViaService({
-      port: props.port,
+      ports: [
+        { port: props.port },
+      ],
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }
@@ -1481,7 +1487,7 @@ property. For example:
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
     eks.ClusterLoggingTypes.AUTHENTICATOR,

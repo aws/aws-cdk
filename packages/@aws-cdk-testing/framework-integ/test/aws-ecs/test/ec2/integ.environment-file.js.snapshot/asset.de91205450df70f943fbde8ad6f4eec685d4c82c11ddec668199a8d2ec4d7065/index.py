@@ -22,7 +22,10 @@ CFN_FAILED = "FAILED"
 ENV_KEY_MOUNT_PATH = "MOUNT_PATH"
 ENV_KEY_SKIP_CLEANUP = "SKIP_CLEANUP"
 
+AWS_CLI_CONFIG_FILE = "/tmp/aws_cli_config"
 CUSTOM_RESOURCE_OWNER_TAG = "aws-cdk:cr-owned"
+
+os.putenv('AWS_CONFIG_FILE', AWS_CLI_CONFIG_FILE)
 
 def handler(event, context):
 
@@ -58,6 +61,7 @@ def handler(event, context):
             prune               = props.get('Prune', 'true').lower() == 'true'
             exclude             = props.get('Exclude', [])
             include             = props.get('Include', [])
+            sign_content        = props.get('SignContent', 'false').lower() == 'true'
 
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
@@ -75,6 +79,12 @@ def handler(event, context):
         except KeyError as e:
             cfn_error("missing request resource property %s. props: %s" % (str(e), props))
             return
+
+        # configure aws cli options after resetting back to the defaults for each request
+        if os.path.exists(AWS_CLI_CONFIG_FILE):
+                os.remove(AWS_CLI_CONFIG_FILE)
+        if sign_content:
+                aws_command("configure", "set", "default.s3.payload_signing_enabled", "true")
 
         # treat "/" as if no prefix was specified
         if dest_bucket_prefix == "/":
