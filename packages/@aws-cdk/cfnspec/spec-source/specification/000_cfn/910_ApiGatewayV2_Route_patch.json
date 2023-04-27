@@ -1,0 +1,22 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Undoing upstream property type removal in ApiGatewayV2.",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::ApiGatewayV2::Route.ParameterConstraints",
+          "value": {
+            "Properties": {
+              "Required": {
+                "PrimitiveType": "Boolean",
+                "Required": true,
+                "UpdateType": "Mutable"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
