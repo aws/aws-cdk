@@ -52,7 +52,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
@@ -99,7 +99,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                   "version": "0.0.0"
                 }
               }
@@ -132,7 +132,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -180,7 +180,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -214,7 +214,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -233,7 +233,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -253,7 +253,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -277,7 +277,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -309,7 +309,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
@@ -363,7 +363,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -397,7 +397,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -416,7 +416,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -436,7 +436,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
@@ -490,7 +490,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -524,7 +524,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -543,7 +543,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -563,7 +563,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
@@ -617,7 +617,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -651,7 +651,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -670,7 +670,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -690,7 +690,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
@@ -715,7 +715,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -734,7 +734,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
@@ -791,7 +791,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                   "version": "0.0.0"
                 }
               }
@@ -852,7 +852,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
@@ -886,7 +886,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -915,7 +915,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -944,7 +944,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -973,7 +973,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -1002,7 +1002,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
@@ -1060,7 +1060,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -1160,7 +1160,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
@@ -1237,7 +1237,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -1266,7 +1266,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -1295,7 +1295,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   },
@@ -1324,7 +1324,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
@@ -1447,7 +1447,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1493,7 +1493,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -1570,7 +1570,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1638,7 +1638,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -1665,7 +1665,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -1694,7 +1694,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -1723,7 +1723,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -1752,7 +1752,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -1781,7 +1781,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       }
@@ -1882,7 +1882,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -1906,7 +1906,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
@@ -1968,7 +1968,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                       "version": "0.0.0"
                     }
                   },
@@ -2016,7 +2016,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   }
@@ -2060,7 +2060,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2087,7 +2087,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2116,7 +2116,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2145,7 +2145,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2174,7 +2174,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2203,7 +2203,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       }
@@ -2304,7 +2304,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -2328,7 +2328,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
@@ -2390,7 +2390,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                       "version": "0.0.0"
                     }
                   },
@@ -2438,7 +2438,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   }
@@ -2482,7 +2482,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2509,7 +2509,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2538,7 +2538,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2567,7 +2567,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2596,7 +2596,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2625,7 +2625,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       }
@@ -2726,7 +2726,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -2750,7 +2750,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
@@ -2812,7 +2812,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                       "version": "0.0.0"
                     }
                   },
@@ -2860,7 +2860,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   }
@@ -2904,7 +2904,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2931,7 +2931,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2960,7 +2960,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -2989,7 +2989,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -3018,7 +3018,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       },
@@ -3047,7 +3047,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
                       }
@@ -3148,7 +3148,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -3172,7 +3172,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
@@ -3235,7 +3235,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                       "version": "0.0.0"
                     }
                   },
@@ -3283,7 +3283,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   }
@@ -3318,6 +3318,134 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_eks.HelmChart",
+                  "version": "0.0.0"
+                }
+              },
+              "Nodegroupnodegroup-name": {
+                "id": "Nodegroupnodegroup-name",
+                "path": "aws-cdk-eks-cluster-test/Cluster/Nodegroupnodegroup-name",
+                "children": {
+                  "NodeGroupRole": {
+                    "id": "NodeGroupRole",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/Nodegroupnodegroup-name/NodeGroupRole",
+                    "children": {
+                      "ImportNodeGroupRole": {
+                        "id": "ImportNodeGroupRole",
+                        "path": "aws-cdk-eks-cluster-test/Cluster/Nodegroupnodegroup-name/NodeGroupRole/ImportNodeGroupRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-cluster-test/Cluster/Nodegroupnodegroup-name/NodeGroupRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "ec2.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonEKS_CNI_Policy"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/Nodegroupnodegroup-name/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
+                      "aws:cdk:cloudformation:props": {
+                        "clusterName": {
+                          "Ref": "Cluster9EE0221C"
+                        },
+                        "nodeRole": {
+                          "Fn::GetAtt": [
+                            "ClusterNodegroupnodegroupnameNodeGroupRoleF72A0D7C",
+                            "Arn"
+                          ]
+                        },
+                        "subnets": [
+                          {
+                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                          },
+                          {
+                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                          }
+                        ],
+                        "forceUpdateEnabled": true,
+                        "nodegroupName": "nodegroup-name",
+                        "scalingConfig": {
+                          "desiredSize": 2,
+                          "maxSize": 2,
+                          "minSize": 1
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -3396,7 +3524,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -3442,7 +3570,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -3527,7 +3655,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -3576,7 +3704,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -3661,7 +3789,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -3707,7 +3835,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -3792,7 +3920,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -3838,7 +3966,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -3895,7 +4023,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
@@ -4148,7 +4276,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -4295,7 +4423,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
@@ -4395,7 +4523,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
@@ -4456,7 +4584,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -4491,7 +4619,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
@@ -4568,7 +4696,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -4629,7 +4757,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -4664,7 +4792,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
@@ -4741,7 +4869,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -4806,7 +4934,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -4887,7 +5015,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -4939,7 +5067,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -4973,7 +5101,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -5034,7 +5162,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -5108,7 +5236,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -5160,7 +5288,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -5191,7 +5319,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -5252,7 +5380,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -5326,7 +5454,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -5378,7 +5506,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -5409,7 +5537,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -5456,7 +5584,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -5530,7 +5658,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -5610,7 +5738,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/c54d90519a72050a5016ca97954d491adc1f38c0bdab034770f4b37eb110bd0a.json"
+                          "/52ddec39798dbce4df5b8250380eae68fe7c9052ae545130a2b4a7282a1e6d7b.json"
                         ]
                       ]
                     },
@@ -5625,7 +5753,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
@@ -5709,12 +5837,32 @@
                                     ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
                                   ]
                                 ]
+                              },
+                              {
+                                "Fn::If": [
+                                  "HasEcrPublic",
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "Ref": "AWS::NoValue"
+                                  }
+                                ]
                               }
                             ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -5789,7 +5937,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
@@ -5841,7 +5989,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "2427a81588377445b76031dc4adb9190776c951949a535cb32fde3ba6db8ee92.zip"
+                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -5880,7 +6028,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
@@ -5936,7 +6084,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
@@ -5951,6 +6099,22 @@
                 "path": "aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
+              "ConditionalPolicyArn": {
+                "id": "ConditionalPolicyArn",
+                "path": "aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "conditionalPolicy": {
+                "id": "conditionalPolicy",
+                "path": "aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -6021,7 +6185,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -6075,7 +6239,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
@@ -6127,7 +6291,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -6167,7 +6331,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
@@ -6267,7 +6431,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/740451b679a2242df0e88e9181b39615df3318dac37debfc9cba3a69e9c30cb5.json"
+                          "/890506c6ab125c4b38e96581e45fe7ba2f307326f6d398745fbe2f2e769e6752.json"
                         ]
                       ]
                     },
@@ -6303,7 +6467,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
@@ -6405,7 +6569,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnResource",
+              "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
               "version": "0.0.0"
             }
           },

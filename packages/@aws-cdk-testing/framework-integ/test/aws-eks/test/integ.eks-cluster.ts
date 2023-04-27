@@ -66,6 +66,8 @@ class EksClusterStack extends Stack {
 
     this.assertSpotCapacity();
 
+    this.assertNodeGroupName();
+
     this.assertNodeGroupX86();
 
     this.assertNodeGroupSpot();
@@ -306,7 +308,14 @@ class EksClusterStack extends Stack {
     this.cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
+  }
 
+  private assertNodeGroupName() {
+    this.cluster.addNodegroupCapacity('nodegroup-name', {
+      nodegroupName: 'nodegroup-name',
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
   }
 
 }

@@ -1040,6 +1040,13 @@
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
+         "ClusterNodegroupnodegroupnameNodeGroupRoleF72A0D7C",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
          "ClusterNodegroupextrangNodeGroupRole23AE23D0",
          "Arn"
         ]
@@ -2528,6 +2535,90 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClusterNodegroupnodegroupnameNodeGroupRoleF72A0D7C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ClusterNodegroupnodegroupname6BD0BF9B": {
+   "Type": "AWS::EKS::Nodegroup",
+   "Properties": {
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "NodeRole": {
+     "Fn::GetAtt": [
+      "ClusterNodegroupnodegroupnameNodeGroupRoleF72A0D7C",
+      "Arn"
+     ]
+    },
+    "Subnets": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     }
+    ],
+    "ForceUpdateEnabled": true,
+    "NodegroupName": "nodegroup-name",
+    "ScalingConfig": {
+     "DesiredSize": 2,
+     "MaxSize": 2,
+     "MinSize": 1
+    }
+   }
+  },
   "ClusterNodegroupextrangNodeGroupRole23AE23D0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -3375,7 +3466,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/c54d90519a72050a5016ca97954d491adc1f38c0bdab034770f4b37eb110bd0a.json"
+       "/52ddec39798dbce4df5b8250380eae68fe7c9052ae545130a2b4a7282a1e6d7b.json"
       ]
      ]
     },
@@ -3406,7 +3497,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/740451b679a2242df0e88e9181b39615df3318dac37debfc9cba3a69e9c30cb5.json"
+       "/890506c6ab125c4b38e96581e45fe7ba2f307326f6d398745fbe2f2e769e6752.json"
       ]
      ]
     },
