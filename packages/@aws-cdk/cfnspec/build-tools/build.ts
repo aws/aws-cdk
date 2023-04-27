@@ -20,7 +20,7 @@ async function main() {
 
   // If this is a PR build check the spec for evolution (this is set in buildspec-pr.yaml)
   const outputFile = path.join(outDir, 'specification.json');
-  if (process.env.PR_BUILD) {
+  if (process.env.CODEBUILD_WEBHOOK_TRIGGER?.startsWith('pr/')) {
     await validateSpecificationEvolution(async () => {
       await generateResourceSpecification(inputDir, outputFile);
       return fs.readJson(outputFile);
