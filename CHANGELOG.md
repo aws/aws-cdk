@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.200.0](https://github.com/aws/aws-cdk/compare/v1.199.0...v1.200.0) (2023-04-26)
+
+
+### Bug Fixes
+
+* **pipelines:** CodeBuild Action role can be assumed by too many identities ([#25318](https://github.com/aws/aws-cdk/issues/25318)) ([8ceae2e](https://github.com/aws/aws-cdk/commit/8ceae2e6baae9041f24b9ea347366701715aa80f))
+
 ## [1.199.0](https://github.com/aws/aws-cdk/compare/v1.198.1...v1.199.0) (2023-04-19)
 
 
