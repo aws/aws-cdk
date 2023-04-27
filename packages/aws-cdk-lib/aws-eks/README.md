@@ -1403,7 +1403,7 @@ const myServiceAddress = new eks.KubernetesObjectValue(this, 'LoadBalancerAttrib
 const proxyFunction = new lambda.Function(this, 'ProxyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('my-code'),
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
     myServiceAddress: myServiceAddress.value,
   },

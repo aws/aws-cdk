@@ -8,7 +8,7 @@ import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 
 const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
-const HANDLER_RUNTIME = lambda.Runtime.NODEJS_14_X;
+const HANDLER_RUNTIME = lambda.Runtime.NODEJS_18_X;
 
 export interface ClusterResourceProviderProps {
   /**

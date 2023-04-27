@@ -596,7 +596,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
    * });
    * ```
    *
