@@ -65,7 +65,7 @@ test('Task with only the required parameters', () => {
       JobName: 'JobName',
       JobQueue: {
         'Fn::GetAtt': [
-          'JobQueueC5644E0D',
+          'JobQueueEE3AD499',
           'JobQueueArn',
         ],
       },
@@ -118,7 +118,7 @@ test('Task with all the parameters', () => {
       JobName: 'JobName',
       JobQueue: {
         'Fn::GetAtt': [
-          'JobQueueC5644E0D',
+          'JobQueueEE3AD499',
           'JobQueueArn',
         ],
       },
@@ -169,7 +169,7 @@ test('supports tokens', () => {
       'JobName.$': '$.jobName',
       'JobQueue': {
         'Fn::GetAtt': [
-          'JobQueueC5644E0D',
+          'JobQueueEE3AD499',
           'JobQueueArn',
         ],
       },
@@ -207,7 +207,7 @@ test('container overrides are tokens', () => {
       JobName: 'JobName',
       JobQueue: {
         'Fn::GetAtt': [
-          'JobQueueC5644E0D',
+          'JobQueueEE3AD499',
           'JobQueueArn',
         ],
       },
@@ -248,7 +248,7 @@ test('supports passing task input into payload', () => {
       'JobName.$': '$.jobName',
       'JobQueue': {
         'Fn::GetAtt': [
-          'JobQueueC5644E0D',
+          'JobQueueEE3AD499',
           'JobQueueArn',
         ],
       },
