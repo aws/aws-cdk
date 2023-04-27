@@ -14,7 +14,7 @@ export interface UserGroupProps extends DatabaseOptions {
   /**
    * The name of the user group.
    *
-   * For valid values, see: https://docs.aws.amazon.com/redshift/latest/dg/r_names.html
+   * For valid values, see: https://docs.aws.amazon.com/redshift/latest/dg/r_names.html. In addition, group names beginning with two underscores are reserved for Amazon Redshift internal use.
    *
    * @default - a name is generated
    */
