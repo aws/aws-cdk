@@ -232,6 +232,14 @@
               "version": "0.0.0"
             }
           },
+          "OutputEventSourceMappingArn": {
+            "id": "OutputEventSourceMappingArn",
+            "path": "lambda-event-source-kinesis/OutputEventSourceMappingArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "lambda-event-source-kinesis/BootstrapVersion",

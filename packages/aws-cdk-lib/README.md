@@ -17,9 +17,37 @@ dependencies.
 
 According to the kind of project you are developing:
 
-- For projects that are CDK libraries, declare them both under the `devDependencies`
-  **and** `peerDependencies` sections.
-- For CDK apps, declare them under the `dependencies` section only.
+For projects that are CDK libraries in NPM, declare them both under the `devDependencies` **and** `peerDependencies` sections.
+To make sure your library is compatible with the widest range of CDK versions: pick the minimum `aws-cdk-lib` version
+that your library requires; declare a range dependency with a caret on that version in peerDependencies, and declare a
+point version dependency on that version in devDependencies.
+
+For example, let's say the minimum version your library needs is `2.38.0`. Your `package.json` should look like this:
+
+```javascript
+{
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.38.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
+    "aws-cdk-lib": "2.38.0"
+  }
+}
+```
+
+For CDK apps, declare them under the `dependencies` section. Use a caret so you always get the latest version:
+
+```json
+{
+  "dependencies": {
+    "aws-cdk-lib": "^2.38.0",
+    "constructs": "^10.0.0"
+  }
+}
+```
+
 
 ### Use in your code
 
@@ -108,7 +136,7 @@ The following synthesizers are available:
   controlling who can assume the deploy role. This is the default stack
   synthesizer in CDKv2.
 - `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
-  asset locations, and the CLI's current permissions to deploy stacks. The
+  asset locations, and the CLI's current permissions to deploy stacks. This
   is the default stack synthesizer in CDKv1.
 - `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
   CLI's current permissions.

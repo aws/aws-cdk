@@ -62,15 +62,12 @@ fi
 
 #----------------------------------------------------------------------
 
-# Compile examples with respect to "aws-cdk-lib" directory, as all packages will
-# be symlinked there so they can all be included.
 echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
     --compile \
     --verbose \
     --compress-tablet \
     --cache ${rosetta_cache_file} \
-    --directory packages/aws-cdk-lib \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
@@ -84,7 +81,6 @@ if $infuse; then
         --verbose \
         --compress-tablet \
         --cache ${rosetta_cache_file} \
-        --directory packages/aws-cdk-lib \
         $(cat $jsii_pkgs_file)
 fi
 
