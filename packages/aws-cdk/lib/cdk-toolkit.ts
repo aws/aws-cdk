@@ -194,6 +194,7 @@ export class CdkToolkit {
 
     const buildAsset = async (assetNode: AssetBuildNode) => {
       print('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
+      console.log('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
       await this.props.cloudFormation.buildAssets(assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
@@ -203,10 +204,12 @@ export class CdkToolkit {
         },
       });
       print('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
+      console.log('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
     const publishAsset = async (assetNode: AssetPublishNode) => {
       print('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
+      console.log('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
       await this.props.cloudFormation.publishAssets(assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
@@ -216,6 +219,7 @@ export class CdkToolkit {
         },
       });
       print('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
+      console.log('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
     const deployStack = async (assetNode: StackNode) => {
@@ -297,7 +301,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
+          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY, // TODO: remove this
           assetParallelism: options.assetParallelism,
         });
 
@@ -359,6 +363,7 @@ export class CdkToolkit {
           buildAsset,
           publishAsset,
         },
+        prebuildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
       });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);

@@ -3,11 +3,10 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { WorkNode, DeploymentState, AssetBuildNode, AssetPublishNode, PartialAssetNodeOptions, StackNode } from './work-graph-types';
 
 export class WorkGraph {
-  public static fromCloudArtifacts(artifacts: cxapi.CloudArtifact[]) {
+  public static fromCloudArtifacts(artifacts: cxapi.CloudArtifact[], prebuildAssets: boolean) {
     const graph = new WorkGraph();
 
     // Associated stack will be lazily added for Assets
-    const graphNodes: WorkNode[] = [];
     const partialAssetNodes: PartialAssetNodeOptions[] = [];
     const parentStacks: Record<string, cxapi.CloudFormationStackArtifact> = {};
 
@@ -19,7 +18,7 @@ export class WorkGraph {
           asset: artifact,
         });
       } else if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
-        graphNodes.push(new StackNode({
+        graph.addNodes(new StackNode({
           id: artifact.id,
           dependencies: getDepIds(artifact.dependencies),
           stack: artifact,
@@ -36,28 +35,27 @@ export class WorkGraph {
 
     // post-process parent stacks of each asset because we only know
     // this information after all artifacts have been processed.
-    for (const node of partialAssetNodes) {
-      const stack = parentStacks[node.id];
+    for (const assetNode of partialAssetNodes) {
+      const stack = parentStacks[assetNode.id];
       if (!stack) {
-        throw new Error(`No stack associated with ${node.id} artifact. Something in the source code or asset manifest is wrong.`);
+        throw new Error(`No stack associated with ${assetNode.id} artifact. Something in the source code or asset manifest is wrong.`);
       }
-      graphNodes.push(...[
+      graph.addNodes(...[
         new AssetBuildNode({
-          id: `${node.id}-build`,
-          dependencies: node.dependencies,
-          asset: node.asset,
+          id: `${assetNode.id}-build`,
+          // If we disable prebuild, then assets inherit dependencies from their parent stack
+          dependencies: assetNode.dependencies.concat(!prebuildAssets ? onlyStackDeps(graph.getNode(stack.id).dependencies) : []),
+          asset: assetNode.asset,
           parentStack: stack,
         }),
         new AssetPublishNode({
-          id: `${node.id}-publish`,
-          dependencies: [`${node.id}-build`], // only depend on the build asset step
-          asset: node.asset,
+          id: `${assetNode.id}-publish`,
+          dependencies: [`${assetNode.id}-build`], // only depend on the build asset step
+          asset: assetNode.asset,
           parentStack: stack,
         }),
       ]);
     }
-
-    graph.addNodes(...graphNodes);
 
     // Ensure all dependencies actually exist. This protects against scenarios such as the following:
     // StackA depends on StackB, but StackB is not selected to deploy. The dependency is redundant
@@ -97,6 +95,10 @@ export class WorkGraph {
         }
       }
       return ids;
+    }
+
+    function onlyStackDeps(ids: string[]): string[] {
+      return ids.filter((i) => !i.endsWith('publish'));
     }
   }
 
@@ -181,6 +183,9 @@ export class WorkGraph {
       }
     }
   }
+
+  private getNode(id: string) {
+    return this.nodes[id];
+  }
 }
-export { WorkNode };
 

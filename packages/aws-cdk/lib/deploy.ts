@@ -12,13 +12,15 @@ interface CallbackActions {
 type Options = {
   concurrency: number;
   callbacks: CallbackActions;
+  prebuildAssets?: boolean;
 };
 
 export const deployArtifacts = async (artifacts: cxapi.CloudArtifact[], {
   concurrency,
   callbacks,
+  prebuildAssets = true,
 }: Options): Promise<void> => {
-  const graph = WorkGraph.fromCloudArtifacts(artifacts);
+  const graph = WorkGraph.fromCloudArtifacts(artifacts, prebuildAssets);
   console.log(graph.toString());
 
   await forAllArtifacts(concurrency, async (x: WorkNode) => {

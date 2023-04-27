@@ -42,7 +42,9 @@ export abstract class ToolkitInfo {
 
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo> {
     const cfn = sdk.cloudFormation();
+    console.log('here1');
     const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+    console.log('here2');
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
         environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));

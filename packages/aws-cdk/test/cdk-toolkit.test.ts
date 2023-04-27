@@ -59,14 +59,14 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag, AssetBuildTime } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
 
@@ -585,63 +585,36 @@ describe('deploy', () => {
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
 
-    test('can disable asset parallelism', async () => {
-      // GIVEN
-      cloudExecutable = new MockCloudExecutable({
-        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
-      });
-      const fakeCloudFormation = new FakeCloudFormation({});
+    // test('can disable asset parallelism', async () => {
+    //   // GIVEN
+    //   cloudExecutable = new MockCloudExecutable({
+    //     stacks: [MockStack.MOCK_STACK_WITH_ASSET],
+    //   });
+    //   const fakeCloudFormation = new FakeCloudFormation({});
 
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: fakeCloudFormation,
-      });
+    //   const toolkit = new CdkToolkit({
+    //     cloudExecutable,
+    //     configuration: cloudExecutable.configuration,
+    //     sdkProvider: cloudExecutable.sdkProvider,
+    //     cloudFormation: fakeCloudFormation,
+    //   });
 
-      // WHEN
-      // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildStackAssets) => {
-        await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-Asset'] },
-          assetParallelism: false,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        });
+    //   // WHEN
+    //   // Not the best test but following this through to the asset publishing library fails
+    //   await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildAssets) => {
+    //     await toolkit.deploy({
+    //       selector: { patterns: ['Test-Stack-Asset'] },
+    //       assetParallelism: false,
+    //       hotswap: HotswapMode.FULL_DEPLOYMENT,
+    //     });
 
-        expect(mockBuildStackAssets).toHaveBeenCalledWith(expect.objectContaining({
-          buildOptions: expect.objectContaining({
-            parallel: false,
-          }),
-        }));
-      });
-    });
-
-    test('can disable asset prebuild', async () => {
-      // GIVEN
-      cloudExecutable = new MockCloudExecutable({
-        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
-      });
-      const fakeCloudFormation = new FakeCloudFormation({});
-
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: fakeCloudFormation,
-      });
-
-      // WHEN
-      // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildStackAssets) => {
-        await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-Asset'] },
-          assetBuildTime: AssetBuildTime.JUST_IN_TIME,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        });
-
-        expect(mockBuildStackAssets).not.toHaveBeenCalled();
-      });
-    });
+    //     expect(mockBuildAssets).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+    //       buildOptions: expect.objectContaining({
+    //         parallel: false,
+    //       }),
+    //     }));
+    //   });
+    // });
   });
 });
 

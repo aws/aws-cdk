@@ -519,11 +519,13 @@ export class CloudFormationDeployments {
   }
 
   private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
+    console.log('prepareandvalidateassets');
     const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
+    console.log('stacksdk');
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
-
+    console.log(toolkitInfo);
     const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
-
+    console.log(stackEnv);
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
       asset.requiresBootstrapStackVersion,
@@ -536,11 +538,14 @@ export class CloudFormationDeployments {
   }
 
   public async buildAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
+    console.log('build assets');
+    console.log('build parallelism', options.buildOptions?.parallel);
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
   }
 
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
+    console.log('publish parallelism', options.publishOptions?.parallel);
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
   }

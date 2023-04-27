@@ -230,7 +230,7 @@ describe('DeployAssets', () => {
       expected: ['c-build', 'c-publish', 'A', 'b-build', 'b-publish', 'B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
-    await expect(deployArtifacts(toDeploy, { concurrency, callbacks })).resolves.toBeUndefined();
+    await expect(deployArtifacts(toDeploy, { concurrency, callbacks, prebuildAssets: true })).resolves.toBeUndefined();
 
     expect(actionedAssets).toStrictEqual(expected);
   });
@@ -300,9 +300,21 @@ describe('DeployAssets', () => {
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
     // eslint-disable-next-line max-len
-    await expect(deployArtifacts(toDeploy, { concurrency, callbacks })).rejects.toThrowError(expectedError);
+    await expect(deployArtifacts(toDeploy, { concurrency, callbacks, prebuildAssets: true })).rejects.toThrowError(expectedError);
 
     expect(actionedAssets).toStrictEqual(expectedStacks);
+  });
+
+  test('Can disable prebuild assets', async () => {
+    const toDeploy = createArtifacts([
+      { id: 'A', type: 'stack', name: SLOW },
+      { id: 'B', type: 'stack', stackDependencies: ['A'], assetDependencies: ['b'] },
+      { id: 'b', type: 'asset' },
+    ]);
+    await expect(deployArtifacts(toDeploy, { concurrency: 2, callbacks, prebuildAssets: false })).resolves.toBeUndefined();
+
+    // asset build waits for slow stack A deployment
+    expect(actionedAssets).toStrictEqual(['A', 'b-build', 'b-publish', 'B']);
   });
 });
 
