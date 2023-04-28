@@ -436,7 +436,7 @@ describe('bucket', () => {
     }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
   });
 
-  test('logs to separate bucket, KMS encryption without key does not throws error', () => {
+  test('logs to separate bucket, KMS encryption without key does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
     expect(() => {
