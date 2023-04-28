@@ -1,6 +1,6 @@
 import * as path from 'path';
+import { DeployOptions, DestroyOptions } from '@aws-cdk/cdk-cli-wrapper';
 import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
-import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 import * as logger from '../logger';
