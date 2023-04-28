@@ -64,6 +64,7 @@ export interface SqsEventSourceProps {
  */
 export class SqsEventSource implements lambda.IEventSource {
   private _eventSourceMappingId?: string = undefined;
+  private _eventSourceMappingArn?: string = undefined;
 
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.maxBatchingWindow !== undefined) {
@@ -95,6 +96,7 @@ export class SqsEventSource implements lambda.IEventSource {
       filters: this.props.filters,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+    this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
     // only grant access if the lambda function has an IAM role
     // otherwise the IAM module will throw an error
@@ -114,5 +116,15 @@ export class SqsEventSource implements lambda.IEventSource {
       throw new Error('SqsEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
+  }
+
+  /**
+   * The ARN for this EventSourceMapping
+   */
+  public get eventSourceMappingArn(): string {
+    if (!this._eventSourceMappingArn) {
+      throw new Error('SqsEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingArn;
   }
 }
