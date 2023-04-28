@@ -1531,7 +1531,7 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1704,7 +1704,7 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -2582,7 +2582,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0012f419a9393c17c5a86ff17556cefc404351bbe6c99ec49dd44be4b48d2577.json"
+                          "/e45d4a7d4d9a5341e48fc07ad36be775bc1689e8865790746b16c101046a1d05.json"
                         ]
                       ]
                     },
@@ -2819,7 +2819,7 @@
                           }
                         ],
                         "memorySize": 1024,
-                        "runtime": "python3.7",
+                        "runtime": "python3.10",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
@@ -3246,7 +3246,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0a2759e578a7d944a84ce155939e8c0bc2647c51c13817054669640c0acc1565.json"
+                          "/6080a9963815d8825b7242de38a4d9b9aba816340ace1ab2c328f4ae90a20ae7.json"
                         ]
                       ]
                     },
