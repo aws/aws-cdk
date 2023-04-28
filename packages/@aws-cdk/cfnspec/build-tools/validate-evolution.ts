@@ -134,7 +134,6 @@ function findTypeUsages(spec: any, cfnResource: string, typeName: string): strin
 
       for (const [propName, propDef] of Object.entries(propType?.[innerKey] ?? {})) {
         for (const [fieldName, fieldType] of Object.entries(propDef as any)) {
-          console.log(`/${topKey}/${typeKey}/${innerKey}/${propName}`, propDef, typeName);
           if (fieldType === typeName) {
             ret.push(`/${topKey}/${typeKey}/${innerKey}/${propName}/${fieldName}`);
           }
