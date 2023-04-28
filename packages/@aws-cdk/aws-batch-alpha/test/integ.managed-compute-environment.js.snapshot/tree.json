@@ -689,9 +689,9 @@
                   "version": "0.0.0"
                 }
               },
-              "minimalPropsFargate": {
-                "id": "minimalPropsFargate",
-                "path": "batch-stack/minimalPropsFargate/minimalPropsFargate",
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/minimalPropsFargate/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
@@ -771,9 +771,9 @@
                   "version": "0.0.0"
                 }
               },
-              "maximalPropsFargate": {
-                "id": "maximalPropsFargate",
-                "path": "batch-stack/maximalPropsFargate/maximalPropsFargate",
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/maximalPropsFargate/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {

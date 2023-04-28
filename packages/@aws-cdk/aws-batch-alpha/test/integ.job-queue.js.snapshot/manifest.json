@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b718fda165bd93d59ce14ada5b007f59d0153c2d9efdc8c1622c45fef4dface4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a0a98d3e8629d563b0464b76023b8dc9615456348101d364437f8ae463676cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,10 +171,10 @@
             "data": "vpcVPCGW7984C166"
           }
         ],
-        "/stack/fairshare/fairshare": [
+        "/stack/fairshare/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "fairshareA0BDD877"
+            "data": "fairshare8585948E"
           }
         ],
         "/stack/managedEc2CE/SecurityGroup/Resource": [
@@ -201,10 +201,10 @@
             "data": "managedEc2CE195A935F"
           }
         ],
-        "/stack/joBBQ/joBBQ": [
+        "/stack/joBBQ/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "joBBQ74605869"
+            "data": "joBBQ9FD52DAF"
           }
         ],
         "/stack/newManagedEc2CE/SecurityGroup/Resource": [
@@ -241,6 +241,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "fairshareA0BDD877": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fairshareA0BDD877",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "joBBQ74605869": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "joBBQ74605869",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

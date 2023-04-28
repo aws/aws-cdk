@@ -655,9 +655,9 @@
             "id": "fairshare",
             "path": "stack/fairshare",
             "children": {
-              "fairshare": {
-                "id": "fairshare",
-                "path": "stack/fairshare/fairshare",
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/fairshare/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::SchedulingPolicy",
                   "aws:cdk:cloudformation:props": {
@@ -861,9 +861,9 @@
             "id": "joBBQ",
             "path": "stack/joBBQ",
             "children": {
-              "joBBQ": {
-                "id": "joBBQ",
-                "path": "stack/joBBQ/joBBQ",
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/joBBQ/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
                   "aws:cdk:cloudformation:props": {
@@ -890,7 +890,7 @@
                     "priority": 10,
                     "schedulingPolicyArn": {
                       "Fn::GetAtt": [
-                        "fairshareA0BDD877",
+                        "fairshare8585948E",
                         "Arn"
                       ]
                     },

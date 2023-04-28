@@ -391,7 +391,7 @@
     }
    }
   },
-  "fairshareA0BDD877": {
+  "fairshare8585948E": {
    "Type": "AWS::Batch::SchedulingPolicy",
    "Properties": {
     "FairsharePolicy": {
@@ -509,7 +509,7 @@
     "UpdatePolicy": {}
    }
   },
-  "joBBQ74605869": {
+  "joBBQ9FD52DAF": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
@@ -535,7 +535,7 @@
     "Priority": 10,
     "SchedulingPolicyArn": {
      "Fn::GetAtt": [
-      "fairshareA0BDD877",
+      "fairshare8585948E",
       "Arn"
      ]
     },

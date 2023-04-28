@@ -489,7 +489,7 @@
     "UpdatePolicy": {}
    }
   },
-  "JobQueueC5644E0D": {
+  "JobQueueEE3AD499": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
@@ -638,7 +638,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "JobQueueC5644E0D",
+          "JobQueueEE3AD499",
           "JobQueueArn"
          ]
         },
@@ -727,7 +727,7 @@
        "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
        {
         "Fn::GetAtt": [
-         "JobQueueC5644E0D",
+         "JobQueueEE3AD499",
          "JobQueueArn"
         ]
        },
@@ -748,7 +748,7 @@
   "JobQueueArn": {
    "Value": {
     "Fn::GetAtt": [
-     "JobQueueC5644E0D",
+     "JobQueueEE3AD499",
      "JobQueueArn"
     ]
    }

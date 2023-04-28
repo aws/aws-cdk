@@ -823,9 +823,9 @@
             "id": "JobQueue",
             "path": "aws-stepfunctions-integ/JobQueue",
             "children": {
-              "JobQueue": {
-                "id": "JobQueue",
-                "path": "aws-stepfunctions-integ/JobQueue/JobQueue",
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/JobQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
                   "aws:cdk:cloudformation:props": {
@@ -1131,7 +1131,7 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "JobQueueC5644E0D",
+                                        "JobQueueEE3AD499",
                                         "JobQueueArn"
                                       ]
                                     },
@@ -1240,7 +1240,7 @@
                           "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
                           {
                             "Fn::GetAtt": [
-                              "JobQueueC5644E0D",
+                              "JobQueueEE3AD499",
                               "JobQueueArn"
                             ]
                           },
