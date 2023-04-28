@@ -51,7 +51,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
@@ -162,7 +162,7 @@ Please follow the [setup instructions](https://code.visualstudio.com/docs/remote
 
 With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choos "Dev Containers: Reopen in Container" from the VS Code command palette.
 
-### Gitpod (Alternative)
+### Gitpod
 
 You may also set up your local development environment using [Gitpod](http://gitpod.io) -
 a service that allows you to spin up an in-browser Visual Studio Code-compatible editor,
@@ -202,6 +202,26 @@ eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
 eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
 eval $(gp env -e)
 ```
+
+### Amazon CodeCatalyst Dev Environments
+
+Dev Environments are cloud-based development environments. 
+[Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked Github
+repository in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
+
+Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
+
+```shell
+$ yarn install
+$ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ
+```
+
+You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
+
+Read the links below for more details: 
+- [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
+- [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
+- [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
 
 ## Pull Requests
 
