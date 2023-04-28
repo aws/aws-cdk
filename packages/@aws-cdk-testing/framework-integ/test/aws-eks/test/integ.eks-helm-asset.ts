@@ -88,6 +88,17 @@ class EksClusterStack extends Stack {
       skipCrds: true,
     });
 
+    // testing the atomic feature flag
+    this.cluster.addHelmChart('test-atomic-flag', {
+      chart: 'lambda-chart',
+      release: 'lambda-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
+      version: 'v0.1.4',
+      namespace: 'ack-system',
+      createNamespace: true,
+      atomic: true,
+    });
+
     this.cluster.addHelmChart('test-non-ecr-oci-chart', {
       chart: 'grafana-operator',
       release: 'grafana-operator-release',
