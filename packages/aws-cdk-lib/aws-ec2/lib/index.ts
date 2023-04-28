@@ -11,6 +11,7 @@ export * from './nat';
 export * from './network-acl';
 export * from './network-acl-types';
 export * from './port';
+export * from './prefix-list';
 export * from './security-group';
 export * from './subnet';
 export * from './peer';
