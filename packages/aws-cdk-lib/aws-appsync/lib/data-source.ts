@@ -11,6 +11,7 @@ import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+import {IEventBus} from "../../aws-events";
 
 /**
  * Base properties for an AppSync datasource
@@ -79,6 +80,14 @@ export interface ExtendedDataSourceProps {
    * @default - No config
    */
   readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
+
+  /**
+   * configuration for EventBridge Datasource
+   *
+   * @default - No config
+   */
+  readonly eventBridgeConfig?: | CfnDataSource.EventBridgeConfigProperty | IResolvable
+
   /**
    * configuration for Lambda Datasource
    *
@@ -277,6 +286,31 @@ export class HttpDataSource extends BackedDataSource {
         authorizationConfig,
       },
     });
+  }
+}
+
+/**
+ * Properties for an AppSync EventBridge datasource
+ */
+export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The EventBridge EventBus
+   */
+  readonly eventBus: IEventBus
+}
+
+/**
+ * An AppSync datasource backed by a EventBridge function
+ */
+export class EventBridgeDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: EventBridgeDataSourceProps) {
+    super(scope, id, props, {
+      type: 'AWS_EVENTBRIDGE',
+      eventBridgeConfig: {
+        eventBusArn: props.eventBus.eventBusArn,
+      },
+    });
+    props.eventBus.grantPutEventsTo(this);
   }
 }
 
