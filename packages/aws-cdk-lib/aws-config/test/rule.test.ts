@@ -41,7 +41,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     // WHEN
@@ -197,7 +197,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     // THEN
@@ -214,7 +214,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     // THEN
@@ -233,7 +233,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     // WHEN
@@ -461,7 +461,7 @@ describe('rule', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
     });
 
     // WHEN
