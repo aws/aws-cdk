@@ -14,6 +14,7 @@ export interface UserHandlerProps {
 
 export interface UserGroupHandlerProps {
   readonly groupName: string;
+  readonly users?: string[];
 }
 
 export interface TableHandlerProps {

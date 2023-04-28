@@ -102,7 +102,10 @@ export class UserGroup extends UserGroupBase {
     this.resource = new DatabaseQuery(this, 'Resource', {
       ...this.databaseProps,
       handler: HandlerName.UserGroup,
-      properties: { groupName },
+      properties: {
+        groupName,
+        users: props.users?.map(user => user.username),
+      },
     });
 
     this.groupName = this.resource.getAttString('groupName');

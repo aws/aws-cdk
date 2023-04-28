@@ -51,17 +51,22 @@ describe('cluster user group', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', { groupName });
   });
 
-  it('uses userNames when provided', () => {
-    const userNames = [
+  it('adds users when provided', () => {
+    const users = [
       new redshift.User(stack, 'User1', databaseOptions),
       new redshift.User(stack, 'User2', databaseOptions),
     ];
     new redshift.UserGroup(stack, 'UserGroup', {
       ...databaseOptions,
-      users: userNames,
+      users,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', { userNames });
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      users: [
+        { 'Fn::GetAtt': ['User1A2F34FC8', 'username'] },
+        { 'Fn::GetAtt': ['User2AD6D675B', 'username'] },
+      ],
+    });
   });
 
   it('destroys user group on deletion by default', () => {
