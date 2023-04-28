@@ -546,26 +546,7 @@ export class Repository extends RepositoryBase {
       throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
-    const arnRegex = /^arn:(\w+):ecr:([a-z]+-[a-z]+-\d{1}):(\d{12}):repository\/([A-Za-z]+.*)$/;
-    const arnInfo = arnRegex.exec(repositoryArn);
-
-    if (arnInfo === null) {
-      throw new Error(`The regex validation failed for repository arn: ${repositoryArn}.`);
-    }
-
-    const partition = arnInfo[1];
-    const allPartitions = getAllPartitions();
-
-    if (!allPartitions.includes(partition)) {
-      throw new Error(`The mentioned aws partition: ${partition} in the repository arn: ${repositoryArn} is invalid.`);
-    }
-
-    const region = arnInfo[2];
-    const allRegions = Fact.regions;
-
-    if (!allRegions.includes(region)) {
-      throw new Error(`The mentioned region: ${region} in the repository arn: ${repositoryArn} does not exist.`);
-    }
+    validateRepositoryArn();
 
     const repositoryName = repositoryArn.split('/').slice(1).join('/');
 
@@ -582,6 +563,29 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id, {
       environmentFromArn: repositoryArn,
     });
+
+    function validateRepositoryArn() {
+      const arnRegex = /^arn:(\w+):ecr:([a-z]+-[a-z]+-\d{1}):(\d{12}):repository\/([A-Za-z]+.*)$/;
+      const arnInfo = arnRegex.exec(repositoryArn);
+
+      if (arnInfo === null) {
+        throw new Error(`The regex validation failed for repository arn: ${repositoryArn}.`);
+      }
+
+      const partition = arnInfo[1];
+      const allPartitions = getAllPartitions();
+
+      if (!allPartitions.includes(partition)) {
+        throw new Error(`The mentioned aws partition: ${partition} in the repository arn: ${repositoryArn} is invalid.`);
+      }
+
+      const region = arnInfo[2];
+      const allRegions = Fact.regions;
+
+      if (!allRegions.includes(region)) {
+        throw new Error(`The mentioned region: ${region} in the repository arn: ${repositoryArn} does not exist.`);
+      }
+    }
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
