@@ -207,7 +207,7 @@ eval $(gp env -e)
 
 Dev Environments are cloud-based development environments. 
 [Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked Github
-repository in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
+repositories in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
 
 Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
 
