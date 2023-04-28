@@ -119,7 +119,7 @@ export class UserGroup extends UserGroupBase {
    * The resource can be destroyed (`RemovalPolicy.DESTROY`), or left in your AWS
    * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    *
-   * This resource is retained by default.
+   * This resource is destroyed by default.
    */
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this.resource.applyRemovalPolicy(policy);
