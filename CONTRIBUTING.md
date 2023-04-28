@@ -92,7 +92,7 @@ CDK can be found at the location `packages/aws-cdk-lib/aws-iam`.
 The repo also contains the `tools/` directory that holds custom build tooling (modeled as private npm packages)
 specific to the CDK.
 
-### Build
+### Building aws-cdk-lib
 
 The full build of all of the packages within the repository can take a few minutes, about 20  when all tests are run.
 Most contributions only require working on a single package, usually `aws-cdk-lib`. To build this package for the first
@@ -279,6 +279,14 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
+**Build framework-integ**
+
+You need to build the `framework-integ` before running the `yarn integ`
+
+```console
+$ npx lerna run build --scope=@aws-cdk-testing/framework-integ
+```
+
 **When are integration tests required?**
 
 The following list contains common scenarios where we _know_ that integration tests are required.
@@ -308,7 +316,7 @@ Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
 
-**What do do if you cannot run integration tests**
+**What if you cannot run integration tests**
 
 If you are working on a PR that requires an update to an integration test and you are unable
 to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
@@ -429,7 +437,7 @@ $ yarn integ --directory test/aws-eks/test
 Or run a specific integ test:
 
 ```console
-$ yarn integ --directory test/aws-eks/test/integ.name.js
+$ yarn integ test/aws-eks/test/integ.name.js
 ```
 
 See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
