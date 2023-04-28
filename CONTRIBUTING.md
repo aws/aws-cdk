@@ -177,7 +177,22 @@ You can now work on your CDK repository, as described in the [Getting Started](#
 Gitpod is free for 50 hours per month - make sure to stop your workspace when you're done
 (you can always resume it later, and it won't need to run the build again).
 
-For Gitpod users only! The best way to supply CDK with your AWS credentials is to add them as
+For Gitpod users only! The best way to authenticate AWS in Gitpod is to use AWS IAM Identity Center(successor to AWS Single Sign-On). [Install AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and configure it as follows:
+
+```shell
+# make sure AWS CLI v2 is in your $PATH
+$ aws --version
+# configure the AWS profile with SSO
+$ aws configure sso
+# login and authenticate
+$ aws sso login
+# verify your current identity
+$ aws sts get-caller-identity
+```
+
+Check out [this document](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html) for the details.
+
+Alternatively, supply CDK with your AWS credentials as
 [persisting environment variables](https://www.gitpod.io/docs/environment-variables).
 Adding them works as follows via terminal:
 
