@@ -114,7 +114,7 @@
       "implicitDependencies": [
         "@aws-cdk/cdk-build-tools"
       ],
-      "dependsOn": ["rosetta:infuse", "build"],
+      "dependsOn": ["rosetta:infuse", "build", "test", "^package"],
       "outputs": ["{projectRoot}/dist"]
     }
   },

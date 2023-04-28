@@ -34,7 +34,10 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
-    "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report"
+    "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report",
+    "rosetta-extract": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./ --infuse --cache $HOME/.s3buildcache/rosetta-cache.tabl.json",
+    "rosetta:synthetic": "npx cdk-generate-synthetic-examples@^0.1.14",
+    "rosetta:infuse": "yarn --silent jsii-rosetta extract --compile --verbose --compress-tablet --directory ./  --cache $HOME/.s3buildcache/rosetta-cache.tabl.json"
   },
   "cdk-build": {
     "eslint": {
@@ -56,8 +59,12 @@
     ]
   },
   "cdk-package": {
-    "pre": ["/bin/bash ./scripts/minify-sources.sh"],
-    "post": ["ts-node ./scripts/verify-stripped-exp.ts"]
+    "pre": [
+      "/bin/bash ./scripts/minify-sources.sh"
+    ],
+    "post": [
+      "ts-node ./scripts/verify-stripped-exp.ts"
+    ]
   },
   "pkglint": {
     "exclude": [
