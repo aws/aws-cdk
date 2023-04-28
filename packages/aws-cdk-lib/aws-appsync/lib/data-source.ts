@@ -11,7 +11,7 @@ import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
-import {IEventBus} from "../../aws-events";
+import { IEventBus } from "../../aws-events";
 
 /**
  * Base properties for an AppSync datasource

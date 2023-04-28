@@ -17,7 +17,7 @@ import {
   EventBridgeDataSource
 } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
-import {IEventBus} from "../../aws-events";
+import { IEventBus } from "../../aws-events";
 
 /**
  * Optional configuration for data sources
