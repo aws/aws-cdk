@@ -35,7 +35,10 @@ describe('cluster user group', () => {
     const userGroup = new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     expect(stack.resolve(userGroup.groupName)).toStrictEqual({
-      Ref: 'UserGroup7ABB320E',
+      'Fn::GetAtt': [
+        'UserGroup18C57AC1',
+        'groupName',
+      ],
     });
   });
 
@@ -65,9 +68,7 @@ describe('cluster user group', () => {
     new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
-      Properties: {
-        DeletionPolicy: 'Delete'
-      }
+      DeletionPolicy: 'Delete',
     });
   });
 
@@ -77,9 +78,7 @@ describe('cluster user group', () => {
     userGroup.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
-      Properties: {
-        DeletionPolicy: 'Retain'
-      }
+      DeletionPolicy: 'Retain',
     });
   });
 
