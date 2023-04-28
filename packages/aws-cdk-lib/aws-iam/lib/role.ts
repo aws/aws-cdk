@@ -211,7 +211,7 @@ export interface CustomizeRolesOptions {
    *
    * iam.Role.customizeRoles(stack, {
    *   usePrecreatedRoles: {
-   *      // absolute path
+   *     // absolute path
    *     'MyStack/MyRole': 'my-precreated-role-name',
    *     // or relative path from `stack`
    *     'MyRole': 'my-precreated-role',

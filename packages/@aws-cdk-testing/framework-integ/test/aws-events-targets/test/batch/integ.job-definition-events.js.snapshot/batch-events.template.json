@@ -44,7 +44,7 @@
     "State": "ENABLED"
    }
   },
-  "MyQueue4F9177CF": {
+  "MyQueueE6CA6235": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
@@ -139,7 +139,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "MyQueue4F9177CF",
+          "MyQueueE6CA6235",
           "JobQueueArn"
          ]
         },
@@ -168,7 +168,7 @@
      {
       "Arn": {
        "Fn::GetAtt": [
-        "MyQueue4F9177CF",
+        "MyQueueE6CA6235",
         "JobQueueArn"
        ]
       },
@@ -198,7 +198,7 @@
      {
       "Arn": {
        "Fn::GetAtt": [
-        "MyQueue4F9177CF",
+        "MyQueueE6CA6235",
         "JobQueueArn"
        ]
       },

@@ -48,7 +48,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -79,7 +79,7 @@ describe('Batch job event target', () => {
               { Ref: 'MyJob8719E923' },
               {
                 'Fn::GetAtt': [
-                  'MyQueue4F9177CF',
+                  'MyQueueE6CA6235',
                   'JobQueueArn',
                 ],
               },
@@ -123,7 +123,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -221,7 +221,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -285,7 +285,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },

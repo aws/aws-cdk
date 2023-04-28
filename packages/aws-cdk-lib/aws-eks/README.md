@@ -43,7 +43,7 @@ import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -676,11 +676,11 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
+import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
 });
 ```
 
@@ -1299,7 +1299,7 @@ export class MyChart extends cdk8s.Chart {
       containers: [
         {
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }
@@ -1354,7 +1354,9 @@ export class LoadBalancedWebService extends constructs.Construct {
     });
 
     deployment.exposeViaService({
-      port: props.port,
+      ports: [
+        { port: props.port },
+      ],
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }
