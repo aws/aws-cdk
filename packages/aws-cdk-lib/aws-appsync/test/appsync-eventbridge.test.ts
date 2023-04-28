@@ -48,7 +48,7 @@ describe('EventBus Data Source Configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       EventBridgeConfig: {
         EventBusArn: {
-          'Fn::GetAtt': ['targetEventBus07F5DAC9', 'arn'],
+          'Fn::GetAtt': ['targetEventBus07F5DAC9', 'Arn'],
         },
       },
     });
