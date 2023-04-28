@@ -538,7 +538,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * @default 7 this is the free tier
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
