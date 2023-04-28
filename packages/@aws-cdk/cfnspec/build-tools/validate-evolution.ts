@@ -69,13 +69,19 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
 
   for (const key of disappearedKeys) {
     const [cfnResource, typeName] = key.split('.');
+    const usages = findTypeUsages(oldSpec, cfnResource, typeName);
+    if (usages.length === 0) {
+      // Might have disappeared, but no one should have been using this
+      continue;
+    }
+
     operations.push({
       op: 'move',
       from: `/PropertyTypes/${cfnResource}.<NEW_TYPE_NAME_HERE>`,
       path: `/PropertyTypes/${cfnResource}.${typeName}`,
     });
 
-    operations.push(...findTypeUsages(oldSpec, cfnResource, typeName).map((path) => ({
+    operations.push(...usages.map((path) => ({
       op: 'replace',
       path,
       value: typeName,
