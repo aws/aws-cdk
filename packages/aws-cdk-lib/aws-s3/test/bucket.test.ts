@@ -1,8 +1,8 @@
 import { EOL } from 'os';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -2736,6 +2736,84 @@ describe('bucket', () => {
         })]),
       }),
     });
+  });
+
+  test('Log bucket has ACL enabled when feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+    });
+
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is configured when AccessControl is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'LogDeliveryWrite',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is not configured when AccessControl="Private"', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.PRIVATE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'Private',
+      OwnershipControls: Match.absent(),
+    });
+  });
+
+  test('Throws if ObjectOwnership and AccessControl do not match', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/objectOwnership must be set to \"ObjectWriter\" when accessControl is \"LogDeliveryWrite\"/);
   });
 
   test('Defaults for an inventory bucket', () => {

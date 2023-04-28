@@ -276,6 +276,18 @@ test('import from arn', () => {
   expect(vault.backupVaultArn).toEqual(vaultArn);
 });
 
+test('import from arn should throw if arn format is incorrect', () => {
+  // WHEN
+  const vaultArn = stack.formatArn({
+    service: 'backup',
+    resource: 'backup-vault',
+    resourceName: 'myVaultName',
+    arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+  });
+
+  expect(() => BackupVault.fromBackupVaultArn(stack, 'Vault', vaultArn)).toThrow(/has the wrong format, expected arn:aws:service:region:account:resource:resourceName/);
+});
+
 test('import from name', () => {
   // WHEN
   const vaultName = 'myVaultName';
