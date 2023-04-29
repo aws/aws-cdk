@@ -20,8 +20,8 @@ beforeEach(() => {
   });
 });
 
-describe('EventBus Data Source Configuration', () => {
-  test('Datasource put events policy configure properly', () => {
+describe('EventBridge Data Source Configuration', () => {
+  test('The Datasource policy is configured to put events to the event bus', () => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus);
 
@@ -40,7 +40,7 @@ describe('EventBus Data Source Configuration', () => {
     });
   });
 
-  test('OpenSearch configuration contains the event bus arn', () => {
+  test('The EventBridge configuration contains the event bus arn', () => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus);
 
@@ -54,7 +54,7 @@ describe('EventBus Data Source Configuration', () => {
     });
   });
 
-  test('default configuration produces name identical to the id', () => {
+  test('The default configuration produces a name identical to the id', () => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus);
 
@@ -65,7 +65,7 @@ describe('EventBus Data Source Configuration', () => {
     });
   });
 
-  test('appsync configures name correctly', () => {
+  test('A custom name is used when provided', () => {
     // WHEN
     api.addEventBridgeDataSource('id', eventBus, { name: 'custom' });
 
@@ -76,7 +76,7 @@ describe('EventBus Data Source Configuration', () => {
     });
   });
 
-  test('appsync configures name and description correctly', () => {
+  test('A custom description is used when provided', () => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus, { name: 'custom', description: 'custom description' });
 
@@ -88,7 +88,7 @@ describe('EventBus Data Source Configuration', () => {
     });
   });
 
-  test('appsync errors when creating multiple openSearch data sources with no configuration', () => {
+  test('An error occurs when creating multiple EventBridge data sources with the same name', () => {
     // WHEN
     const when = () => {
       api.addEventBridgeDataSource('ds', eventBus);
