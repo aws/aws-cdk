@@ -11,6 +11,7 @@ import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 import { RuntimePlatform } from '../runtime-platform';
 import { measureMemory } from 'node:vm';
+import { aws_memorydb } from '../../..';
 
 /**
  * The interface for all task definitions.
@@ -737,12 +738,12 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations
 
-      if (!this.containers[0].memoryLimitSpecified) {
-        // Container sizes
-        for (const container of this.containers) {
-          if (!container.memoryLimitSpecified) {
-            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
-          }
+      // Container sizes
+      for (const container of this.containers) {
+        if (container.memoryLimitSpecified && container === this.containers[0]) {
+          break;
+        } else if (!container.memoryLimitSpecified) {
+          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
         }
       }
 
