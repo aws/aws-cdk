@@ -10,6 +10,7 @@ import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 import { RuntimePlatform } from '../runtime-platform';
+import { measureMemory } from 'node:vm';
 
 /**
  * The interface for all task definitions.
@@ -736,12 +737,15 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations
 
-      // Container sizes
-      for (const container of this.containers) {
-        if (container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+      if (!this.containers[0].memoryLimitSpecified) {
+        // Container sizes
+        for (const container of this.containers) {
+          if (!container.memoryLimitSpecified) {
+            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          }
         }
       }
+
     }
 
     // Validate that there are no named port mapping conflicts for Service Connect.
