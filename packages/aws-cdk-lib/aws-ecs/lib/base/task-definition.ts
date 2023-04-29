@@ -738,7 +738,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
       // Container sizes
       for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
+        if (container.memoryLimitSpecified) {
           ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
         }
       }
