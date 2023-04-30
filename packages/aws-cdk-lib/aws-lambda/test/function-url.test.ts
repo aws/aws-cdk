@@ -177,4 +177,52 @@ describe('FunctionUrl', () => {
       },
     });
   });
+
+  test('function url Invoke Mode', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    // WHEN
+    new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: fn,
+      invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      Properties: {
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        InvokeMode: 'RESPONSE_STREAM',
+      },
+    });
+  });
+  test('Invoke Mode add url', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    // WHEN
+    fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      invokeMode: lambda.InvokeMode.BUFFERED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      Properties: {
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        InvokeMode: 'BUFFERED',
+      },
+    });
+  });
+
 });
