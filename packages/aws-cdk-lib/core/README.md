@@ -101,7 +101,7 @@ The following synthesizers are available:
   controlling who can assume the deploy role. This is the default stack
   synthesizer in CDKv2.
 - `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
-  asset locations, and the CLI's current permissions to deploy stacks. The
+  asset locations, and the CLI's current permissions to deploy stacks. This
   is the default stack synthesizer in CDKv1.
 - `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
   CLI's current permissions.
