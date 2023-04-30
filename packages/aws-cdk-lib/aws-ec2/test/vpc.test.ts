@@ -1,10 +1,11 @@
-import { Annotations, Match, Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
 import {
   AclCidr,
   AclTraffic,
   BastionHostLinux,
+  CfnRouteTable,
   CfnSubnet,
   CfnVPC,
   SubnetFilter,
@@ -21,14 +22,17 @@ import {
   Port,
   PrivateSubnet,
   PublicSubnet,
+  RouteTableProvider,
   RouterType,
   Subnet,
+  SubnetRouteTable,
   SubnetType,
   TrafficDirection,
   Vpc,
   IpAddresses,
   InterfaceVpcEndpointAwsService,
 } from '../lib';
+import { subnetGroupNameFromConstructId } from '../lib/util';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
@@ -1630,6 +1634,120 @@ describe('vpc', () => {
       Tags.of(vpc).add(tag.Key, tag.Value);
       Template.fromStack(stack).hasResource('AWS::EC2::VPC', hasTags([tag]));
 
+    });
+  });
+
+  describe('When using custom RouteTableProvider', () => {
+
+    class CustomRouteTableProvider extends RouteTableProvider {
+      table: { [name: string]: CfnRouteTable } = {};
+
+      create(subnet: Subnet, subnetType: SubnetType): SubnetRouteTable {
+        if (subnetType === SubnetType.PRIVATE_WITH_EGRESS) {
+          return super.create(subnet, subnetType);
+        } else {
+          const name = subnetGroupNameFromConstructId(subnet);
+
+          const routeTable = this.table[name] = this.table[name] || new CfnRouteTable(this.vpc, `${name}RouteTable`, {
+            vpcId: this.vpc.vpcId,
+          });
+
+          return { routeTable, routeScope: routeTable };
+        }
+      }
+    }
+
+    test('allow creating only one RouteTable for non egress subnets', () => {
+
+      // GIVEN
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 3,
+        reservedAzs: 1,
+        routeTableProvider: CustomRouteTableProvider,
+      });
+
+      // WHEN
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.resourceCountIs('AWS::EC2::Subnet', 6);
+      template.resourceCountIs('AWS::EC2::RouteTable', 4);
+      template.resourceCountIs('AWS::EC2::SubnetRouteTableAssociation', 6);
+      template.resourceCountIs('AWS::EC2::Route', 4);
+
+      template.resourcePropertiesCountIs('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'VPCPublicRouteTable41C1CF24' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        GatewayId: { Ref: 'VPCIGWB7E252D3' },
+      }, 1);
+    });
+
+    test('allow creating one RouteTable per subnet group', () => {
+
+      // GIVEN
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 3,
+        reservedAzs: 1,
+        natGateways: 0,
+        routeTableProvider: CustomRouteTableProvider,
+      });
+
+      // WHEN
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.resourceCountIs('AWS::EC2::Subnet', 6);
+      template.resourceCountIs('AWS::EC2::RouteTable', 2);
+      template.resourceCountIs('AWS::EC2::SubnetRouteTableAssociation', 6);
+      template.resourceCountIs('AWS::EC2::Route', 1);
+
+      template.resourcePropertiesCountIs('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'VPCPublicRouteTable41C1CF24' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        GatewayId: { Ref: 'VPCIGWB7E252D3' },
+      }, 1);
+    });
+
+    test('allow creating only one route table when NAT gateways are disabled', () => {
+
+      class SingleRouteTableProvider extends RouteTableProvider {
+        table?: CfnRouteTable;
+
+        // @ts-ignore TS6133
+        create(subnet: Subnet, subnetType: SubnetType): SubnetRouteTable {
+          const routeTable = this.table = this.table || new CfnRouteTable(this.vpc, 'RouteTable', {
+            vpcId: this.vpc.vpcId,
+          });
+
+          return { routeTable, routeScope: routeTable };
+        }
+      }
+
+      // GIVEN
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 3,
+        reservedAzs: 1,
+        natGateways: 0,
+        routeTableProvider: SingleRouteTableProvider,
+      });
+
+      // WHEN
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.resourceCountIs('AWS::EC2::Subnet', 6);
+      template.resourceCountIs('AWS::EC2::RouteTable', 1);
+      template.resourceCountIs('AWS::EC2::SubnetRouteTableAssociation', 6);
+      template.resourceCountIs('AWS::EC2::Route', 1);
+
+      template.resourcePropertiesCountIs('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'VPCRouteTableC6A6F14D' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        GatewayId: { Ref: 'VPCIGWB7E252D3' },
+      }, 1);
     });
   });
 

@@ -1027,6 +1027,15 @@ export interface VpcProps {
   readonly subnetConfiguration?: SubnetConfiguration[];
 
   /**
+   * RouteTable provier for for this VPC
+   *
+   * This feature is currently experimental
+   *
+   * @default - One RouteTable per subnet
+   */
+  readonly routeTableProvider?: typeof RouteTableProvider;
+
+  /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
    * @default - true when vpnGatewayAsn or vpnConnections is specified
@@ -1145,6 +1154,36 @@ export interface SubnetConfiguration {
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
   readonly mapPublicIpOnLaunch?: boolean;
+}
+
+/**
+ * Provided Route Table for Subnet with RouteTableProvider
+ */
+export interface SubnetRouteTable {
+  /**
+   * Provided route table
+   */
+  readonly routeTable: CfnRouteTable;
+  /**
+   * Scope where to place routes with subnet addRoute
+   */
+  readonly routeScope: Construct;
+}
+
+/**
+ * RouteTable provier that can be overriden for custom implementation
+ */
+export class RouteTableProvider {
+  constructor(readonly vpc: Vpc) { }
+
+  // @ts-ignore TS6133
+  create(subnet: Subnet, subnetType: SubnetType): SubnetRouteTable {
+    const routeTable = new CfnRouteTable(subnet, 'RouteTable', {
+      vpcId: this.vpc.vpcId,
+    });
+
+    return { routeTable, routeScope: subnet };
+  }
 }
 
 /**
@@ -1381,6 +1420,11 @@ export class Vpc extends VpcBase {
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
 
+  /**
+   * RouteTable provider for for this VPC
+   */
+  private readonly routeTableProvider: RouteTableProvider;
+
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
@@ -1471,6 +1515,8 @@ export class Vpc extends VpcBase {
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+
+    this.routeTableProvider = new (props.routeTableProvider || RouteTableProvider)(this);
 
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
@@ -1669,6 +1715,9 @@ export class Vpc extends VpcBase {
           throw new Error(`Unrecognized subnet type: ${subnetConfig.subnetType}`);
       }
 
+      const { routeTable, routeScope } = this.routeTableProvider.create(subnet, subnetConfig.subnetType);
+      subnet.associateToRouteTable(routeTable, routeScope);
+
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
       Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
@@ -1790,10 +1839,14 @@ export class Subnet extends Resource implements ISubnet {
    */
   public readonly dependencyElements: IDependable[] = [];
 
+  private _routeTable?: CfnRouteTable;
+
   /**
    * The routeTableId attached to this subnet.
    */
   public readonly routeTable: IRouteTable;
+
+  private _routeScope: Construct = this;
 
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -1828,19 +1881,43 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetNetworkAclAssociationId = Lazy.string({ produce: () => this._networkAcl.networkAclId });
     this.node.defaultChild = subnet;
 
-    const table = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpcId,
-    });
-    this.routeTable = { routeTableId: table.ref };
+    this.routeTable = {
+      routeTableId: Lazy.string({
+        produce: () => {
+          if (!this._routeTable) {
+            const table = new CfnRouteTable(this, 'RouteTable', {
+              vpcId: props.vpcId,
+            });
 
-    // Associate the public route table for this subnet, to this subnet
-    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
-      subnetId: this.subnetId,
-      routeTableId: table.ref,
-    });
-    this._internetConnectivityEstablished.add(routeAssoc);
+            this._routeTable = table;
+            this.associateToRouteTable(table);
+          }
+
+          return this._routeTable.ref;
+        },
+      }),
+    };
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+  }
+
+  /**
+   * Adds route association to route table, VPC is calling this automatically for Subnets that it is creating
+   *
+   * @param routeTable route table to be associated with this subnet
+   * @param routeScope scope for added routes
+   */
+  public associateToRouteTable(routeTable: CfnRouteTable, routeScope?: IConstruct) {
+    this._routeTable = routeTable;
+    if (routeScope) {
+      this._routeScope = routeScope;
+    }
+
+    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
+      subnetId: this.subnetId,
+      routeTableId: routeTable.ref,
+    });
+    this._internetConnectivityEstablished.add(routeAssoc);
   }
 
   /**
@@ -1851,16 +1928,12 @@ export class Subnet extends Resource implements ISubnet {
    * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
   public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: IDependable) {
-    const route = new CfnRoute(this, 'DefaultRoute', {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: '0.0.0.0/0',
-      gatewayId,
+    this.addRoute('DefaultRoute', {
+      routerType: RouterType.GATEWAY,
+      routerId: gatewayId,
+      enablesInternetConnectivity: true,
+      attachment: gatewayAttachment,
     });
-    route.node.addDependency(gatewayAttachment);
-
-    // Since the 'route' depends on the gateway attachment, just
-    // depending on the route is enough.
-    this._internetConnectivityEstablished.add(route);
   }
 
   /**
@@ -1893,16 +1966,29 @@ export class Subnet extends Resource implements ISubnet {
    * Adds an entry to this subnets route table
    */
   public addRoute(id: string, options: AddRouteOptions) {
+    if ('DefaultRoute' === id) {
+      const route = (this._routeScope.node.tryFindChild(id) as CfnRoute | undefined);
+
+      // Do not try to add duplicate IGW routes to same route table (avoiding scope confict)
+      if (route?.gatewayId === options.routerId) {
+        return;
+      }
+    }
+
     if (options.destinationCidrBlock && options.destinationIpv6CidrBlock) {
       throw new Error('Cannot specify both \'destinationCidrBlock\' and \'destinationIpv6CidrBlock\'');
     }
 
-    const route = new CfnRoute(this, id, {
+    const route = new CfnRoute(this._routeScope, id, {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: options.destinationCidrBlock || (options.destinationIpv6CidrBlock === undefined ? '0.0.0.0/0' : undefined),
       destinationIpv6CidrBlock: options.destinationIpv6CidrBlock,
       [routerTypeToPropName(options.routerType)]: options.routerId,
     });
+
+    if (options.attachment) {
+      route.node.addDependency(options.attachment);
+    }
 
     if (options.enablesInternetConnectivity) {
       this._internetConnectivityEstablished.add(route);
@@ -1950,6 +2036,8 @@ export interface AddRouteOptions {
    * Can be an instance ID, gateway ID, etc, depending on the router type.
    */
   readonly routerId: string;
+
+  readonly attachment?: IDependable
 
   /**
    * Whether this route will enable internet connectivity
