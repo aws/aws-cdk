@@ -135,7 +135,7 @@ class CognitoStack extends Stack {
     const userPoolDomain = new cognito.UserPoolDomain(this, 'Domain', {
       userPool: this.userPool,
       cognitoDomain: {
-        domainPrefix: 'test-cdk-prefix',
+        domainPrefix: props.hostedZoneId.toLowerCase(),
       },
     });
     const action = new actions.AuthenticateCognitoAction({
