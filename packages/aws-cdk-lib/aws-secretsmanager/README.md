@@ -25,7 +25,7 @@ const instance1 = new rds.DatabaseInstance(this, "PostgresInstance1", {
 // Templated secret with username and password fields
 const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   generateSecretString: {
-    secretStringTemplate: JSON.stringify({ username: 'postgres' }),
+    secretStringTemplate: JSON.dumps({ username: 'postgres' }),
     generateStringKey: 'password',
   },
 });
