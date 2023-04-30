@@ -523,7 +523,7 @@ new cr.AwsCustomResource(this, 'Customized', {
   timeout: Duration.minutes(10), // defaults to 2 minutes
   logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs
   functionName: 'my-custom-name', // defaults to a CloudFormation generated name
-  removalPolicy: cdk.RemovalPolicy.RETAIN, // defaults to `cdk.RemovalPolicy.DESTROY`
+  removalPolicy: RemovalPolicy.RETAIN, // defaults to `RemovalPolicy.DESTROY`
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
   }),

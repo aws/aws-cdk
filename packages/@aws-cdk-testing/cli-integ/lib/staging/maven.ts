@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import * as path from 'path';
+import { pathExists } from 'fs-extra';
 import { LoginInformation } from './codeartifact';
 import { parallelShell } from './parallel-shell';
 import { UsageDir } from './usage-dir';
@@ -29,6 +30,9 @@ export async function uploadJavaPackages(packages: string[], login: LoginInforma
   await parallelShell(packages, async (pkg, output) => {
     console.log(`⏳ ${pkg}`);
 
+    const sourcesFile = pkg.replace(/.pom$/, '-sources.jar');
+    const javadocFile = pkg.replace(/.pom$/, '-javadoc.jar');
+
     await shell(['mvn',
       `--settings=${settingsFile(usageDir)}`,
       'org.apache.maven.plugins:maven-deploy-plugin:3.0.0:deploy-file',
@@ -36,8 +40,8 @@ export async function uploadJavaPackages(packages: string[], login: LoginInforma
       '-DrepositoryId=codeartifact',
       `-DpomFile=${pkg}`,
       `-Dfile=${pkg.replace(/.pom$/, '.jar')}`,
-      `-Dsources=${pkg.replace(/.pom$/, '-sources.jar')}`,
-      `-Djavadoc=${pkg.replace(/.pom$/, '-javadoc.jar')}`], {
+      ...await pathExists(sourcesFile) ? [`-Dsources=${sourcesFile}`] : [],
+      ...await pathExists(javadocFile) ? [`-Djavadoc=${javadocFile}`] : []], {
       output,
       modEnv: {
         // Do not try to JIT the Maven binary

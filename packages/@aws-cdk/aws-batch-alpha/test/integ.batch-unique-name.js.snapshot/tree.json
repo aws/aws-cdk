@@ -100,9 +100,9 @@
             "id": "MyQueue",
             "path": "stack/MyQueue",
             "children": {
-              "MyQueue": {
-                "id": "MyQueue",
-                "path": "stack/MyQueue/MyQueue",
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/MyQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
                   "aws:cdk:cloudformation:props": {
@@ -284,7 +284,7 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "MyQueue4F9177CF",
+                                        "MyQueueE6CA6235",
                                         "JobQueueArn"
                                       ]
                                     },
@@ -344,7 +344,7 @@
                         "id": "Target0",
                         "arn": {
                           "Fn::GetAtt": [
-                            "MyQueue4F9177CF",
+                            "MyQueueE6CA6235",
                             "JobQueueArn"
                           ]
                         },

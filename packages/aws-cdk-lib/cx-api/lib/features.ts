@@ -85,6 +85,7 @@ export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTem
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
+export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -733,6 +734,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
   [ENABLE_EMR_SERVICE_POLICY_V2]: {
     type: FlagType.BugFix,
     summary: 'Enable AmazonEMRServicePolicy_v2 managed policies',
@@ -747,6 +749,21 @@ export const FLAGS: Record<string, FlagInfo> = {
       intervention since they might not have the appropriate tags propagated automatically.
       `,
     introducedIn: { v2: '2.72.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Generate a unique id for each RequestValidator added to a method',
+    detailsMd: `
+      This flag allows multiple RequestValidators to be added to a RestApi when
+      providing the \`RequestValidatorOptions\` in the \`addMethod()\` method.
+
+      If the flag is not set then only a single RequestValidator can be added in this way.
+      Any additional RequestValidators have to be created directly with \`new RequestValidator\`.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
     recommendedValue: true,
   },
 };
