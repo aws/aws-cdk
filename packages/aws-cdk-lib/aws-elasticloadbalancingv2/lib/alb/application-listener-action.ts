@@ -139,11 +139,6 @@ export class ListenerAction implements IListenerAction {
   }
 
   /**
-   * Optional hook for binding.
-   * @internal
-   */
-  protected _bindHook?: (scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) => void;
-  /**
    * If set, it is preferred as Action for the `ListenerRule`.
    * This is necessary if `CfnListener.ActionProperty` and `CfnListenerRule.ActionProperty`
    * have different structures.
@@ -179,7 +174,6 @@ export class ListenerAction implements IListenerAction {
    * Called when the action is being used in a listener
    */
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
-    this._bindHook?.(scope, listener, associatingConstruct);
     this.next?.bind(scope, listener, associatingConstruct);
   }
 
