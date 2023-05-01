@@ -86,7 +86,7 @@ export interface ExtendedDataSourceProps {
    *
    * @default - No config
    */
-  readonly eventBridgeConfig?: | CfnDataSource.EventBridgeConfigProperty | IResolvable
+  readonly eventBridgeConfig?: CfnDataSource.EventBridgeConfigProperty | IResolvable
 
   /**
    * configuration for Lambda Datasource
