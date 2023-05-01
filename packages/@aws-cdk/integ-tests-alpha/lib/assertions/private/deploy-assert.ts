@@ -59,7 +59,12 @@ export class DeployAssert extends Construct implements IDeployAssert {
   }
 
   public awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall {
-    return new AwsApiCall(this.scope, `AwsApiCall${service}${api}`, {
+    let hash = '';
+    try {
+      hash = md5hash(this.scope.resolve(parameters));
+    } catch {}
+
+    return new AwsApiCall(this.scope, `AwsApiCall${service}${api}${hash}`, {
       api,
       service,
       parameters,
