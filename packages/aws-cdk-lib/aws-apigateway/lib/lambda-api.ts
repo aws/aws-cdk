@@ -72,14 +72,11 @@ export class LambdaRestApi extends RestApi {
 
     this.node.addValidation({
       validate() {
-        if (props.deployOptions?.variables) {
-          for (let key in props.deployOptions.variables) {
-            // Checks that variable Stage values match regex
-            const regexp = /[A-Za-z0-9-._~:/?#&amp;=,]+/;
-            const value = props.deployOptions.variables[key];
-            if (value.match(regexp) === null) {
-              return ['Stage variable value ' + value + ' does not match the regex.'];
-            }
+        for (const value of Object.values(props.deployOptions?.variables ?? {})) {
+          // Checks that variable Stage values match regex
+          const regexp = /[A-Za-z0-9-._~:/?#&=,]+/;
+          if (value.match(regexp) === null) {
+            return ['Stage variable value ' + value + ' does not match the regex.'];
           }
         }
         return [];
