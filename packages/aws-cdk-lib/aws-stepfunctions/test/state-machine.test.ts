@@ -55,6 +55,18 @@ describe('State Machine', () => {
     }).toThrowError('Cannot specify definition and definitionBody at the same time');
   }),
 
+  test('Instantiate fails with no definition specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // FAIL
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+      });
+    }).toThrowError('You need to specify either definition or definitionBody');
+  }),
+
   test('Instantiate Default State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();

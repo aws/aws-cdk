@@ -417,6 +417,9 @@ export class StateMachine extends StateMachineBase {
     if (props.definition && props.definitionBody) {
       throw new Error('Cannot specify definition and definitionBody at the same time');
     }
+    if (!props.definition && !props.definitionBody) {
+      throw new Error('You need to specify either definition or definitionBody');
+    }
 
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
