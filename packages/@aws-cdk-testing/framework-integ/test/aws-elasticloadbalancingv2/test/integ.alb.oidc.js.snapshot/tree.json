@@ -1116,6 +1116,14 @@
               "version": "0.0.0"
             }
           },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "IntegAlbOidc/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287",
@@ -1222,7 +1230,15 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },
