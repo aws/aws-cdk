@@ -1,10 +1,7 @@
+import { minimatch } from 'minimatch';
 import * as cxapi from '@aws-cdk/cx-api';
 import { StackCollection } from './cloud-assembly';
 import { SdkProvider } from '../aws-auth';
-
-// namespace object imports won't work in the bundle for function exports
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
 
 export function looksLikeGlob(environment: string) {
   return environment.indexOf('*') > -1;
