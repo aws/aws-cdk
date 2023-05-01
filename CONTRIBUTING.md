@@ -99,12 +99,12 @@ Most contributions only require working on a single package, usually `aws-cdk-li
 time, you can execute the following to build it and it's dependencies.
 
 ```console
-$ cd packages/aws-cdk-lib
-$ ../../../scripts/buildup
+$ npx lerna run build --scope=aws-cdk-lib
 ```
 
-Note: The `buildup` command is resumable. If your build fails, you can fix the issue and run `buildup --resume` to
-resume.
+Note: `lerna` uses a local cache by default. If your build fails, you can fix
+the issue and run the command again and it will not rerun any previously
+successful steps.
 
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
@@ -121,12 +121,18 @@ However, if you wish to build the entire repository, the following command will 
 
 ```console
 cd <root of the CDK repo>
-scripts/foreach.sh yarn build
+npx lerna run build
 ```
-Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
+
+If you want to run a build without using the local cache, provide the
+`--skip-nx-cache` flag.
+
+```console
+$ npx lerna run build --skip-nx-cache
+```
 
 ### Pack
 
@@ -143,7 +149,7 @@ To package a specific module, say the `aws-cdk-lib` module:
 $ cd <root-of-cdk-repo>
 $ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
 docker$ cd packages/aws-cdk-lib
-docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ ../../scripts/foreach.sh --up yarn run package
 docker$ exit
 ```
 
@@ -325,6 +331,110 @@ $ yarn watch & # runs in the background
 $ cd packages/aws-cdk
 $ yarn watch & # runs in the background
 ```
+
+#### Verify your fix by deployment
+
+If your PR updates a specific library, you might want to write a simple CDK application and make sure it synthesizes and
+deploys correctly. For example, if you modify files under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
+
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
+```
+
+Create a `sample.ts` like this:
+
+```ts
+import {
+  App, Stack,
+  aws_eks as eks,
+  aws_ec2 as ec2,
+} from 'aws-cdk-lib';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+
+const app = new App();
+const env = { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT };
+const stack = new Stack(app, 'my-test-stack', { env });
+
+const cluster = new eks.Cluster(stack, 'Cluster', {
+  vpc,
+  ...getClusterVersionConfig(stack),
+  defaultCapacity: 0,
+});
+```
+
+Run `yarn watch` or `npx tsc --watch` in a separate terminal to compile `sample.ts` to `sample.js`:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn watch
+or
+$ npx tsc --watch
+```
+
+Make sure you have configured [AWS CLI with AWS Authentication](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth) as we will deploy it in our AWS account.
+
+Deploy the sample app:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ npx cdk -a test/aws-eks/test/sample.js diff
+$ npx cdk -a test/aws-eks/test/sample.js deploy
+```
+
+This allows you to iterate your development and ensure a minimal sample app would successfully deploy as you expect.
+You have the freedom to interact with it just as a common CDK app such as viewing differences with `npx cdk diff`
+or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments 
+by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true });
+```
+
+As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
+
+Alternatively, you can write this test as a new integration test like `integ.my-test.ts` and deploy it
+using `yarn integ --no-clean`. This may be useful when you need to publish a new 
+integration test:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ test/aws-eks/test/integ.my-test.js --no-clean --update-on-failed
+```
+
+After verifying your work with a simple deployment as above, you need to ensure your change can pass all existing
+unit tests and integ tests and fix them if necessary.
+
+Run all the unit tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/aws-cdk-lib
+$ yarn test aws-eks
+```
+
+Or run a specific unit test
+
+```console
+$ cd packages/aws-cdk-lib
+$ npx jest aws-eks/test/name.test.js
+```
+
+Run all integ tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ --directory test/aws-eks/test
+```
+
+Or run a specific integ test:
+
+```console
+$ yarn integ --directory test/aws-eks/test/integ.name.js
+```
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
+
 
 ### Step 4: Pull Request
 

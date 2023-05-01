@@ -77,7 +77,7 @@ export class PackageJson {
     this.excludeRules = _forceArray(this.json.pkglint && this.json.pkglint.exclude) || (disabled ? [/^.*$/] : []);
 
     function _forceArray(arg: string | string[] | undefined): RegExp[] | undefined {
-      if (arg == null) { return arg; }
+      if (arg == null) { return undefined; }
       if (Array.isArray(arg)) { return arg.map(_toRegExp); }
       return [_toRegExp(arg)];
     }

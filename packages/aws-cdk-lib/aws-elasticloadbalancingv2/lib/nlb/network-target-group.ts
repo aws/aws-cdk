@@ -15,7 +15,7 @@ import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkPro
  */
 export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
-   * The port on which the listener listens for requests.
+   * The port on which the target receives traffic.
    */
   readonly port: number;
 

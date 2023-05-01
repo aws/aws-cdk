@@ -3,7 +3,7 @@
 
 [AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html) provides a detailed view of the configuration of AWS resources in your AWS account.
 This includes how the resources are related to one another and how they were configured in the
-past so that you can see how the configurations and relationships change over time. 
+past so that you can see how the configurations and relationships change over time.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -66,7 +66,7 @@ new config.AccessKeysRotated(this, 'AccessKeyRotated');
 #### CloudFormation Stack drift detection
 
 Checks whether your CloudFormation stack's actual configuration differs, or has drifted,
-from it's expected configuration. 
+from it's expected configuration.
 
 ```ts
 // compliant if stack's status is 'IN_SYNC'
@@ -107,7 +107,7 @@ const evalComplianceFn = new lambda.Function(this, "CustomFunction", {
     "exports.handler = (event) => console.log(event);"
   ),
   handler: "index.handler",
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
 });
 
 // A custom rule that runs on configuration changes of EC2 instances
@@ -140,7 +140,7 @@ rule checkcompliance when
 }
 `;
 
-new config.CustomPolicy(stack, "Custom", {
+new config.CustomPolicy(this, "Custom", {
   policyText: samplePolicyText,
   enableDebugLog: true,
   ruleScope: config.RuleScope.fromResources([
@@ -173,7 +173,7 @@ new config.CustomRule(this, 'CustomRule', {
 ```
 
 When the trigger for a rule occurs, the Lambda function is invoked by publishing an event.
-See [example events for AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_example-events.html)  
+See [example events for AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_example-events.html)
 
 The AWS documentation has examples of Lambda functions for evaluations that are
 [triggered by configuration changes](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#event-based-example-rule) and [triggered periodically](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#periodic-example-rule)
@@ -247,7 +247,7 @@ Compliance events are published to an SNS topic.
 const evalComplianceFn = new lambda.Function(this, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
 });
 
 // A custom rule that runs on configuration changes of EC2 instances

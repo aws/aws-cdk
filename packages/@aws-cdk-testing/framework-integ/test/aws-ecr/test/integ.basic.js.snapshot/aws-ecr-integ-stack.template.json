@@ -5,7 +5,19 @@
    "Properties": {
     "LifecyclePolicy": {
      "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
-    }
+    },
+    "RepositoryPolicyText": {
+      "Statement": [
+       {
+        "Action": "ecr:GetDownloadUrlForLayer",
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": "*"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

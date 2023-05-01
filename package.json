@@ -12,8 +12,7 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b",
-    "postinstall": "patch-package --error-on-fail"
+    "build-all": "tsc -b"
   },
   "devDependencies": {
     "@types/node": "18.11.19",
@@ -27,11 +26,14 @@
     "jsii-diff": "1.78.1",
     "jsii-pacmak": "1.78.1",
     "jsii-reflect": "1.78.1",
-    "jsii-rosetta": "~5.0.0",
-    "lerna": "^4.0.0",
+    "jsii-rosetta": "~5.0.7",
+    "lerna": "^6.6.1",
     "patch-package": "^6.5.1",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",
+    "@nrwl/cli": "^15.9.1",
+    "@nrwl/workspace": "^15.9.1",
+    "nx": "^15.9.1",
     "typescript": "~4.9.5"
   },
   "resolutions": {
@@ -66,15 +68,26 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*",
+      "packages/aws-cdk-lib",
+      "packages/cdk-cli-wrapper",
+      "packages/aws-cdk",
+      "packages/cdk",
+      "packages/cdk-assets",
       "packages/@aws-cdk/*",
+      "packages/awslint",
       "packages/@aws-cdk-containers/*",
       "packages/@aws-cdk-testing/*",
       "packages/@aws-cdk/*/lambda-packages/*",
-      "tools/*",
-      "tools/@aws-cdk/*",
-      "scripts/@aws-cdk/script-tests",
-      "packages/individual-packages/*"
+      "tools/@aws-cdk/cdk-build-tools",
+      "tools/@aws-cdk/cdk-release",
+      "tools/@aws-cdk/cfn2ts",
+      "tools/@aws-cdk/eslint-plugin",
+      "tools/@aws-cdk/node-bundle",
+      "tools/@aws-cdk/pkglint",
+      "tools/@aws-cdk/pkgtools",
+      "tools/@aws-cdk/prlint",
+      "tools/@aws-cdk/yarn-cling",
+      "scripts/@aws-cdk/script-tests"
     ],
     "nohoist": [
       "**/jszip",

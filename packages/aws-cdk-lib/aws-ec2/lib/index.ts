@@ -11,6 +11,7 @@ export * from './nat';
 export * from './network-acl';
 export * from './network-acl-types';
 export * from './port';
+export * from './prefix-list';
 export * from './security-group';
 export * from './subnet';
 export * from './peer';
@@ -28,6 +29,8 @@ export * from './client-vpn-endpoint';
 export * from './client-vpn-authorization-rule';
 export * from './client-vpn-route';
 export * from './ip-addresses';
+export * from './machine-image';
+export * from './placement-group';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';

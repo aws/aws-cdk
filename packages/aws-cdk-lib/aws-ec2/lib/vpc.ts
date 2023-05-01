@@ -1157,7 +1157,7 @@ export interface SubnetConfiguration {
  *
  * ```ts
  * const vpc = new ec2.Vpc(this, 'TheVPC', {
- *   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+ *   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
  * })
  *
  * // Iterate the private subnets
@@ -1257,6 +1257,7 @@ export class Vpc extends VpcBase {
     // We give special treatment to some tags
     if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
     if (options.vpcName) { filter['tag:Name'] = options.vpcName; }
+    if (options.ownerAccountId) { filter['owner-id'] = options.ownerAccountId; }
     if (options.isDefault !== undefined) {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
@@ -2161,6 +2162,7 @@ class LookedUpVpc extends VpcBase {
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
     super(scope, id, {
       region: props.region,
+      account: props.ownerAccountId,
     });
 
     this.vpcId = props.vpcId;
@@ -2168,6 +2170,8 @@ class LookedUpVpc extends VpcBase {
       service: 'ec2',
       resource: 'vpc',
       resourceName: this.vpcId,
+      region: this.env.region,
+      account: this.env.account,
     }, Stack.of(this));
     this.cidr = props.vpcCidrBlock;
     this._vpnGatewayId = props.vpnGatewayId;

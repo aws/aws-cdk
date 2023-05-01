@@ -3,6 +3,7 @@ import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
+import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import { Construct } from 'constructs';
@@ -184,12 +185,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
         {
           Action: 'sts:AssumeRole',
           Principal: {
-            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123pipeline:root']] },
-          },
-          Condition: {
-            Bool: {
-              'aws:ViaAWSService': 'codepipeline.amazonaws.com',
-            },
+            AWS: { 'Fn::GetAtt': ['CdkPipelineRoleC09C4D44', 'Arn'] },
           },
         },
       ],
@@ -452,6 +448,20 @@ test('selfMutationProject is undefined if switched off', () => {
 
   // THEN
   expect(() => pipeline.selfMutationProject).toThrow(/No selfMutationProject/);
+});
+
+test('artifactBucket can be overridden', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+      bucketName: 'my-custom-artifact-bucket',
+    }),
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    BucketName: 'my-custom-artifact-bucket',
+  });
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {

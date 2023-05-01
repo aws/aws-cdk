@@ -60,30 +60,34 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
     return undefined;
   }
 
-  let r: RegExpExecArray | null = null;
+  // A decimal positive number regex (1, 1.2, 99.999, etc)
+  const reDecimal = '\\d+(?:\\.\\d+)?';
 
   // p99.99
-  // /^p(\d{1,2}(?:\.\d+)?)$/
-  r = new RegExp(`^${prefixLower}(\\d{1,2}(?:\\.\\d+)?)$`).exec(statistic);
-  if (r) {
-    return {
-      type: 'single',
-      rawStatistic: statistic,
-      statPrefix: prefixLower,
-      value: parseFloat(r[1]),
-    };
+  // /^p(\d+(?:\.\d+)?)$/
+  const r = new RegExp(`^${prefixLower}(${reDecimal})$`).exec(statistic);
+  if (!r) {
+    return undefined;
   }
 
-  return undefined;
+  const value = parseFloat(r[1]);
+  if (value < 0 || value > 100) {
+    return undefined;
+  }
+  return {
+    type: 'single',
+    rawStatistic: statistic,
+    statPrefix: prefixLower,
+    value,
+  };
 }
 
+/**
+ * Parse a statistic that looks like `tm( LOWER : UPPER )`.
+ */
 function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatistic, 'statName'> | undefined {
-  const prefixUpper = prefix.toUpperCase();
-
-  // Allow `tm(10%:90%)` lowercase
-  statistic = statistic.toUpperCase();
-
-  if (!statistic.startsWith(prefixUpper)) {
+  const r = new RegExp(`^${prefix}\\(([^)]+)\\)$`, 'i').exec(statistic);
+  if (!r) {
     return undefined;
   }
 
@@ -91,87 +95,44 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
     type: 'pair',
     canBeSingleStat: false,
     rawStatistic: statistic,
-    statPrefix: prefixUpper,
+    statPrefix: prefix.toUpperCase(),
   };
 
-  let r: RegExpExecArray | null = null;
-
-  // TM(99.999:)
-  // /TM\((\d{1,2}(?:\.\d+)?):\)/
-  r = new RegExp(`^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      lower: parseFloat(r[1]),
-      upper: undefined,
-      isPercent: false,
-    };
+  const [lhs, rhs] = r[1].split(':');
+  if (rhs === undefined) {
+    // Doesn't have 2 parts
+    return undefined;
   }
 
-  // TM(99.999%:)
-  // /TM\((\d{1,2}(?:\.\d+)?)%:\)/
-  r = new RegExp(`^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      lower: parseFloat(r[1]),
-      upper: undefined,
-      isPercent: true,
-    };
+  const parseNumberAndPercent = (x: string): [number | undefined | 'fail', boolean] => {
+    x = x.trim();
+    if (!x) {
+      return [undefined, false];
+    }
+    const value = parseFloat(x.replace(/%$/, ''));
+    const percent = x.endsWith('%');
+    if (isNaN(value) || value < 0 || (percent && value > 100)) {
+      return ['fail', false];
+    }
+    return [value, percent];
+  };
+
+  const [lower, lhsPercent] = parseNumberAndPercent(lhs);
+  const [upper, rhsPercent] = parseNumberAndPercent(rhs);
+  if (lower === 'fail' || upper === 'fail' || (lower === undefined && upper === undefined)) {
+    return undefined;
   }
 
-  // TM(:99.999)
-  // /TM\(:(\d{1,2}(?:\.\d+)?)\)/
-  r = new RegExp(`^${prefixUpper}\\(\\:(\\d+(?:\\.\\d+)?)\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      lower: undefined,
-      upper: parseFloat(r[1]),
-      isPercent: false,
-    };
+  if (lower !== undefined && upper !== undefined && lhsPercent !== rhsPercent) {
+    // If one value is a percentage, the other one must be too
+    return undefined;
   }
 
-  // TM(:99.999%)
-  // /TM\(:(\d{1,2}(?:\.\d+)?)%\)/
-  // Note: this can be represented as a single stat! TM(:90%) = tm90
-  r = new RegExp(`^${prefixUpper}\\(\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      canBeSingleStat: true,
-      asSingleStatStr: `${prefix.toLowerCase()}${r[1]}`,
-      lower: undefined,
-      upper: parseFloat(r[1]),
-      isPercent: true,
-    };
-  }
+  const isPercent = lhsPercent || rhsPercent;
+  const canBeSingleStat = lower === undefined && isPercent;
+  const asSingleStatStr = canBeSingleStat ? `${prefix.toLowerCase()}${upper}` : undefined;
 
-  // TM(99.999:99.999)
-  // /TM\((\d{1,2}(?:\.\d+)?):(\d{1,2}(?:\.\d+)?)\)/
-  r = new RegExp(`^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:(\\d+(?:\\.\\d+)?)\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      lower: parseFloat(r[1]),
-      upper: parseFloat(r[2]),
-      isPercent: false,
-    };
-  }
-
-  // TM(99.999%:99.999%)
-  // /TM\((\d{1,2}(?:\.\d+)?)%:(\d{1,2}(?:\.\d+)?)%\)/
-  r = new RegExp(`^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$`).exec(statistic);
-  if (r) {
-    return {
-      ...common,
-      lower: parseFloat(r[1]),
-      upper: parseFloat(r[2]),
-      isPercent: true,
-    };
-  }
-
-  return undefined;
+  return { ...common, lower, upper, isPercent, canBeSingleStat, asSingleStatStr };
 }
 
 export function singleStatisticToString(parsed: SingleStatistic): string {

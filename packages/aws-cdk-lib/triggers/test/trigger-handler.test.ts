@@ -1,6 +1,14 @@
 import * as AWS from 'aws-sdk';
 import * as lambda from '../lib/lambda';
 
+beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -29,6 +37,8 @@ const mockRequest = {
   ResourceProperties: {
     ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
     HandlerArn: handlerArn,
+    Timeout: '600',
+    InvocationType: 'Event',
   },
   RequestId: 'MyRequestId',
   ResourceType: 'Custom::Trigger',
@@ -39,14 +49,14 @@ test('Create', async () => {
   await lambda.handler({ RequestType: 'Create', ...mockRequest });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('Update', async () => {
   await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ...mockRequest });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('Delete - handler not called', async () => {
@@ -64,7 +74,18 @@ test('non-200 status code throws an error', async () => {
     .toMatchObject({ message: 'Trigger handler failed with status code 500' });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
+});
+
+test('202 status code success', async () => {
+  promiseMock.mockResolvedValueOnce({
+    StatusCode: 202,
+  });
+
+  await lambda.handler(({ RequestType: 'Create', ...mockRequest }));
+
+  expect(invokeMock).toBeCalledTimes(1);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('retry with access denied exception', async () => {
@@ -81,7 +102,7 @@ test('retry with access denied exception', async () => {
   await response;
 
   expect(invokeMock).toBeCalledTimes(2);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 test('throws an error for other exceptions', async () => {
@@ -94,7 +115,7 @@ test('throws an error for other exceptions', async () => {
     .toThrow();
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
 });
 
 describe('function error', () => {
@@ -111,7 +132,7 @@ describe('function error', () => {
         .toMatchObject({ message: expectedError });
 
       expect(invokeMock).toBeCalledTimes(1);
-      expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+      expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn, InvocationType: 'Event' });
     };
   };
 
