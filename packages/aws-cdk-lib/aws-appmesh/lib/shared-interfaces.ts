@@ -198,16 +198,11 @@ export abstract class LoggingFormat {
    * Generate logging format from json key pairs
    */
   public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
-    const json: JsonFormatRef[] = [];
     if (Object.keys(jsonLoggingFormat).length == 0) {
       throw new Error('Json key pairs cannot be empty.');
     }
 
-    for (const key in jsonLoggingFormat) {
-      json.push(new JsonFormatRef(key, jsonLoggingFormat[key]));
-    };
-
-    return new JsonLoggingFormat(json);
+    return new JsonLoggingFormat(jsonLoggingFormat);
   };
 
   /**
@@ -227,9 +222,9 @@ class JsonLoggingFormat extends LoggingFormat {
   * @default - no json format specified
   */
   private readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
-  constructor(json: Array<CfnVirtualNode.JsonFormatRefProperty>) {
+  constructor(json: {[key:string]: string}) {
     super();
-    this.json = json;
+    this.json = Object.entries(json).map(([key, value]) => ({ key, value }));
   }
 
   bind(): LoggingFormatConfig {
@@ -259,19 +254,6 @@ class TextLoggingFormat extends LoggingFormat {
         text: this.text,
       },
     };
-  }
-}
-
-/**
-  * Key Value pair json reference for json Format
-  */
-class JsonFormatRef {
-  public readonly key: string;
-  public readonly value: string;
-
-  constructor(key: string, value:string) {
-    this.key = key;
-    this.value = value;
   }
 }
 
