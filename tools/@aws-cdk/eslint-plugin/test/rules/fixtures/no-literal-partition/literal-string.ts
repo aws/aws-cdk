@@ -1,0 +1,1 @@
+const x = 'arn:aws:something';
