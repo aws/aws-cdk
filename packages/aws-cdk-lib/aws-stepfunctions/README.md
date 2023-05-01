@@ -95,6 +95,18 @@ existing one as well.
 Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
 history when CloudFormation deletes your state machine.
 
+ALternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
+
+```ts
+new sfn.StateMachine(stack, 'StateMachineFromString', {
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+});
+
+new sfn.StateMachine(stack, 'StateMachineFromFile', {
+  definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
+});
+```
+
 ## State Machine Data
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine
