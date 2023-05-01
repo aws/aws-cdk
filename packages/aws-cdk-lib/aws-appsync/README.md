@@ -232,6 +232,83 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 });
 ```
 
+### EventBridge
+
+GraphQL schema file `schema.graphql`:
+
+```gql
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    event(id:ID!): Event
+}
+
+type Mutation {
+    emitEvent(id: ID!, name: String): PutEventsResult!
+}
+
+type Event {
+    id: ID!
+    name: String!
+}
+
+type Entry {
+    ErrorCode: String
+    ErrorMessage: String
+    EventId: String
+}
+
+type PutEventsResult {
+    Entries: [Entry!]
+    FailedEntry: Int
+}
+```
+
+GraphQL request mapping template `request.vtl`:
+
+```
+{
+    "version" : "2018-05-29",
+    "operation": "PutEvents",
+    "events" : [
+        {
+            "source": "integ.appsync.eventbridge",
+            "detailType": "Mutation.emitEvent",
+            "detail": $util.toJson($context.arguments)
+        }
+    ]
+}
+```
+
+GraphQL response mapping template `response.vtl`:
+
+```
+$util.toJson($ctx.result)'
+```
+
+CDK stack file `app-stack.ts`:
+
+```ts
+const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {
+  name: 'EventBridgeApi',
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.eventbridge.graphql')),
+});
+
+const bus = new events.EventBus(stack, 'DestinationEventBus', {});
+
+const dataSource = api.addEventBridgeDataSource('NoneDS', bus);
+
+dataSource.createResolver('EventResolver', {
+  typeName: 'Mutation',
+  fieldName: 'emitEvent',
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('response.vtl'),
+});
+```
+
 ### Amazon OpenSearch Service
 
 AppSync has builtin support for Amazon OpenSearch Service (successor to Amazon
