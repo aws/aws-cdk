@@ -295,11 +295,23 @@ export class Rule extends Resource implements IRule {
   }
 
   protected validateRule() {
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
+    const errors: string[] = [];
+
+    const name = this.physicalName;
+    if (name !== undefined && !Token.isUnresolved(name)) {
+      if (name.length < 1 || name.length > 64) {
+        errors.push(`Event rule name must be between 1 and 64 characters. Received: ${name}`);
+      }
+      if (!/^[\.\-_A-Za-z0-9]+$/.test(name)) {
+        errors.push(`Event rule name ${name} can contain only letters, numbers, periods, hyphens, or underscores with no spaces.`);
+      }
     }
 
-    return [];
+    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+      errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
+    }
+
+    return errors;
   }
 
   private renderTargets() {
