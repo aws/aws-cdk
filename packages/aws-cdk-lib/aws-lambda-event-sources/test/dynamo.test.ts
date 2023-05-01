@@ -1,9 +1,9 @@
+import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 /* eslint-disable quote-props */
@@ -375,6 +375,29 @@ describe('DynamoEventSource', () => {
 
   });
 
+  test('contains eventSourceMappingArn after lambda binding', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(eventSource.eventSourceMappingArn).toBeDefined();
+
+  });
+
   test('eventSourceMappingId throws error before binding to lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -391,6 +414,25 @@ describe('DynamoEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/DynamoEventSource is not yet bound to an event source mapping/);
+
+  });
+
+  test('eventSourceMappingArn throws error before binding to lambda', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+    const eventSource = new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN/THEN
+    expect(() => eventSource.eventSourceMappingArn).toThrow(/DynamoEventSource is not yet bound to an event source mapping/);
 
   });
 

@@ -87,6 +87,15 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       skipCrds: true,
     });
+
+    this.cluster.addHelmChart('test-non-ecr-oci-chart', {
+      chart: 'grafana-operator',
+      release: 'grafana-operator-release',
+      repository: 'oci://ghcr.io/grafana-operator/helm-charts/grafana-operator',
+      version: 'v5.0.0-rc1',
+      namespace: 'ack-system',
+      createNamespace: true,
+    });
   }
 }
 

@@ -121,7 +121,7 @@ template.hasResource('Foo::Bar', {
 });
 ```
 
-You can also assert the definitions of all resources of a type using the 
+You can also assert the definitions of all resources of a type using the
 `allResources()` API.
 
 ```ts
@@ -146,9 +146,9 @@ that matches specific properties. The following code asserts that a template con
 an Output with a `logicalId` of `Foo` and the specified properties -
 
 ```ts
-const expected = { 
+const expected = {
   Value: 'Bar',
-  Export: { Name: 'ExportBaz' }, 
+  Export: { Name: 'ExportBaz' },
 };
 template.hasOutput('Foo', expected);
 ```
@@ -177,7 +177,7 @@ The APIs `hasMapping()`, `findMappings()`, `hasCondition()`, and `hasCondtions()
 
 The expectation provided to the `hasXxx()`, `findXxx()` and `templateMatches()`
 APIs, besides carrying literal values, as seen in the above examples, also accept
-special matchers. 
+special matchers.
 
 They are available as part of the `Match` class.
 
@@ -454,7 +454,7 @@ const fredCapture = new Capture();
 const waldoCapture = new Capture();
 template.hasResourceProperties('Foo::Bar', {
   Fred: fredCapture,
-  Waldo: ["Qix", waldoCapture],
+  Waldo: ["Qix", waldoCapture] as any[],
 });
 
 fredCapture.asArray(); // returns ["Flob", "Cat"]

@@ -85,7 +85,7 @@ _integ.lambda.ts_
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
-import * as integ from '@aws-cdk/integ-tests';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 

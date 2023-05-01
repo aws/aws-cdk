@@ -86,6 +86,7 @@ export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-s
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
+export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -771,6 +772,21 @@ export const FLAGS: Record<string, FlagInfo> = {
       To allow all ingress/egress traffic to the VPC default security group you
       can set the \`restrictDefaultSecurityGroup: false\`.
     `,
+   },
+   
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Generate a unique id for each RequestValidator added to a method',
+    detailsMd: `
+      This flag allows multiple RequestValidators to be added to a RestApi when
+      providing the \`RequestValidatorOptions\` in the \`addMethod()\` method.
+
+      If the flag is not set then only a single RequestValidator can be added in this way.
+      Any additional RequestValidators have to be created directly with \`new RequestValidator\`.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
   },
 };
 
