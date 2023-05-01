@@ -300,7 +300,7 @@ export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
 }
 
 /**
- * An AppSync datasource backed by a EventBridge function
+ * An AppSync datasource backed by EventBridge
  */
 export class EventBridgeDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: EventBridgeDataSourceProps) {

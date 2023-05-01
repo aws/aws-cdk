@@ -99,7 +99,7 @@ export interface IGraphqlApi extends IResource {
 
 
   /**
-   * Add a EventBridge data source to this api
+   * Add an EventBridge data source to this api
    * @param id The data source's id
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
@@ -287,7 +287,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   }
 
   /**
-   * Add a EventBridge data source to this api
+   * Add an EventBridge data source to this api
    * @param id The data source's id
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source

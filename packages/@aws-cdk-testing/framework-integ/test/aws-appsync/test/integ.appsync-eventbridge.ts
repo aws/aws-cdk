@@ -14,7 +14,7 @@ const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {
 
 const bus = new events.EventBus(stack, 'DestinationEventBus', {});
 
-const dataSource = api.addEventBridgeDataSource('NoneDS', bus);
+const dataSource = api.addEventBridgeDataSource('EventBridgeDs', bus);
 
 dataSource.createResolver('EventResolver', {
   typeName: 'Mutation',
