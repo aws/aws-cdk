@@ -60,7 +60,7 @@ describe('EventBridge Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AWS_EVENTBRIDGE',
+      Type: 'AMAZON_EVENTBRIDGE',
       Name: 'ds',
     });
   });
@@ -71,7 +71,7 @@ describe('EventBridge Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AWS_EVENTBRIDGE',
+      Type: 'AMAZON_EVENTBRIDGE',
       Name: 'custom',
     });
   });
@@ -82,7 +82,7 @@ describe('EventBridge Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AWS_EVENTBRIDGE',
+      Type: 'AMAZON_EVENTBRIDGE',
       Name: 'custom',
       Description: 'custom description',
     });

@@ -305,7 +305,7 @@ export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
 export class EventBridgeDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: EventBridgeDataSourceProps) {
     super(scope, id, props, {
-      type: 'AWS_EVENTBRIDGE',
+      type: 'AMAZON_EVENTBRIDGE',
       eventBridgeConfig: {
         eventBusArn: props.eventBus.eventBusArn,
       },
