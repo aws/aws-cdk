@@ -252,7 +252,15 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute('access_logs.s3.prefix', prefix);
 
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.grantPut(this.resourcePolicyPrincipal(), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [this.resourcePolicyPrincipal()],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        ],
+      }),
+    );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
