@@ -59,7 +59,6 @@ export enum HttpMethod {
   ALL = '*',
 }
 
-
 /**
  * The invoke modes for a function url
  */
@@ -73,7 +72,7 @@ export enum FunctionUrlInvokeMode {
   /**
    * Your function streams payload results as they become available.
    */
-  STREAMED = 'STREAMED',
+  STREAMED = 'RESPONSE_STREAM',
 }
 
 /**

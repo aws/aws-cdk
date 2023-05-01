@@ -483,6 +483,19 @@ fn.addFunctionUrl({
 });
 ```
 
+### Response Streaming for Function URLs
+
+You can use Lambda response payload streaming to send response data to callers as it becomes available. This can improve performance for web and mobile applications. Response streaming also allows you to build functions that return larger payloads and perform long-running operations while reporting incremental progress.
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  invokeMode: lambda.FunctionUrlInvokeMode.STREAMED,
+});
+```
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
