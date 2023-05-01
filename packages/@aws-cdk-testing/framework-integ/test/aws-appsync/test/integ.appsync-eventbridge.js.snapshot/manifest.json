@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17be1e113768732e5c73479d7e5f3198eb066bc91a8fd45775cfe279f30e2fd0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48b6d0709cf46b7d6a28cd05baf38e498017a3fc758be4af72c8dd16419baa5f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,22 +51,22 @@
             "data": "EventBridgeApiDefaultApiKeyC757E0EA"
           }
         ],
-        "/stack/EventBridgeApi/NoneDS/ServiceRole/Resource": [
+        "/stack/EventBridgeApi/EventBridgeDs/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBridgeApiNoneDSServiceRoleD3D07867"
+            "data": "EventBridgeApiEventBridgeDsServiceRoleF433388F"
           }
         ],
-        "/stack/EventBridgeApi/NoneDS/ServiceRole/DefaultPolicy/Resource": [
+        "/stack/EventBridgeApi/EventBridgeDs/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBridgeApiNoneDSServiceRoleDefaultPolicyE86EF22E"
+            "data": "EventBridgeApiEventBridgeDsServiceRoleDefaultPolicyF1047C06"
           }
         ],
-        "/stack/EventBridgeApi/NoneDS/Resource": [
+        "/stack/EventBridgeApi/EventBridgeDs/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBridgeApiNoneDSED5B157C"
+            "data": "EventBridgeApiEventBridgeDs3E3BC289"
           }
         ],
         "/stack/EventBridgeApi/EventResolver/Resource": [

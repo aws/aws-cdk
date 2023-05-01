@@ -74,17 +74,17 @@
                   "version": "0.0.0"
                 }
               },
-              "NoneDS": {
-                "id": "NoneDS",
-                "path": "stack/EventBridgeApi/NoneDS",
+              "EventBridgeDs": {
+                "id": "EventBridgeDs",
+                "path": "stack/EventBridgeApi/EventBridgeDs",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "stack/EventBridgeApi/NoneDS/ServiceRole",
+                    "path": "stack/EventBridgeApi/EventBridgeDs/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "stack/EventBridgeApi/NoneDS/ServiceRole/ImportServiceRole",
+                        "path": "stack/EventBridgeApi/EventBridgeDs/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -92,7 +92,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "stack/EventBridgeApi/NoneDS/ServiceRole/Resource",
+                        "path": "stack/EventBridgeApi/EventBridgeDs/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -117,11 +117,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "stack/EventBridgeApi/NoneDS/ServiceRole/DefaultPolicy",
+                        "path": "stack/EventBridgeApi/EventBridgeDs/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "stack/EventBridgeApi/NoneDS/ServiceRole/DefaultPolicy/Resource",
+                            "path": "stack/EventBridgeApi/EventBridgeDs/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -140,10 +140,10 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "EventBridgeApiNoneDSServiceRoleDefaultPolicyE86EF22E",
+                                "policyName": "EventBridgeApiEventBridgeDsServiceRoleDefaultPolicyF1047C06",
                                 "roles": [
                                   {
-                                    "Ref": "EventBridgeApiNoneDSServiceRoleD3D07867"
+                                    "Ref": "EventBridgeApiEventBridgeDsServiceRoleF433388F"
                                   }
                                 ]
                               }
@@ -167,7 +167,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "stack/EventBridgeApi/NoneDS/Resource",
+                    "path": "stack/EventBridgeApi/EventBridgeDs/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
                       "aws:cdk:cloudformation:props": {
@@ -177,7 +177,7 @@
                             "ApiId"
                           ]
                         },
-                        "name": "NoneDS",
+                        "name": "EventBridgeDs",
                         "type": "AMAZON_EVENTBRIDGE",
                         "eventBridgeConfig": {
                           "eventBusArn": {
@@ -189,7 +189,7 @@
                         },
                         "serviceRoleArn": {
                           "Fn::GetAtt": [
-                            "EventBridgeApiNoneDSServiceRoleD3D07867",
+                            "EventBridgeApiEventBridgeDsServiceRoleF433388F",
                             "Arn"
                           ]
                         }
@@ -224,7 +224,7 @@
                         },
                         "fieldName": "emitEvent",
                         "typeName": "Mutation",
-                        "dataSourceName": "NoneDS",
+                        "dataSourceName": "EventBridgeDs",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2018-05-29\", \"operation\": \"PutEvents\", \"events\" : [{ \"source\": \"integ.appsync.eventbridge\", \"detailType\": \"Mutation.emitEvent\", \"detail\": $util.toJson($context.arguments) }]}",
                         "responseMappingTemplate": "$util.toJson($ctx.result)"
