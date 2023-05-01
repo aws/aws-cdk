@@ -59,6 +59,23 @@ export enum HttpMethod {
   ALL = '*',
 }
 
+
+/**
+ * The invoke modes for a function url
+ */
+export enum FunctionUrlInvokeMode {
+
+  /**
+   *  Invocation results are available when the payload is complete.
+   */
+  BUFFERED = 'BUFFERED',
+
+  /**
+   * Your function streams payload results as they become available.
+   */
+  STREAMED = 'STREAMED',
+}
+
 /**
  * Specifies a cross-origin access property for a function URL
  */
@@ -147,6 +164,13 @@ export interface FunctionUrlOptions {
    * @default - No CORS configuration.
    */
   readonly cors?: FunctionUrlCorsOptions;
+
+  /**
+   * The mode use for invoking the function, buffered or streamed.
+   *
+   * @default FunctionUrlInvokeMode.BUFFERED
+   */
+  readonly invokeMode?: FunctionUrlInvokeMode;
 }
 
 /**

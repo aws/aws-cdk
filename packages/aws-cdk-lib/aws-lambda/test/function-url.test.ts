@@ -50,6 +50,7 @@ describe('FunctionUrl', () => {
         allowedHeaders: ['X-Custom-Header'],
         maxAge: cdk.Duration.seconds(300),
       },
+      invokeMode: lambda.FunctionUrlInvokeMode.BUFFERED,
     });
 
     // THEN
@@ -74,6 +75,7 @@ describe('FunctionUrl', () => {
         ],
         MaxAge: 300,
       },
+      invokeMode: 'BUFFERED',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunctionUrl',
