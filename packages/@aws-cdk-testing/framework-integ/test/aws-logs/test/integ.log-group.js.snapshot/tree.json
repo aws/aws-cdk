@@ -22,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
               "version": "0.0.0"
             }
           },
@@ -44,13 +44,13 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -84,7 +84,18 @@
                                 ]
                               ]
                             },
-                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":dataprotection::aws:data-identifier/EmailAddress"
+                                ]
+                              ]
+                            }
                           ],
                           "operation": {
                             "audit": {
@@ -118,7 +129,18 @@
                                 ]
                               ]
                             },
-                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":dataprotection::aws:data-identifier/EmailAddress"
+                                ]
+                              ]
+                            }
                           ],
                           "operation": {
                             "deidentify": {
@@ -132,13 +154,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
               "version": "0.0.0"
             }
           },
@@ -146,7 +168,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-log-group-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -154,13 +176,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-log-group-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -177,7 +199,7 @@
                 "path": "LogGroupInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -188,7 +210,7 @@
                     "id": "BootstrapVersion",
                     "path": "LogGroupInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -196,25 +218,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "LogGroupInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -223,12 +245,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

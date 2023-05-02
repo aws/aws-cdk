@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { Bucket } from '../../aws-s3';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
 import { LogGroup, RetentionDays , DataProtectionPolicy, DataIdentifier} from '../lib';
 
@@ -532,7 +533,7 @@ describe('log group', () => {
     const dataProtectionPolicy = new DataProtectionPolicy(stack, {
       name: 'test-policy-name',
       description: 'test description',
-      identifierArnStrings: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
+      identifiers: [new DataIdentifier('NewIdentifier')],
     });
 
     // WHEN
@@ -553,7 +554,16 @@ describe('log group', () => {
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/NewIdentifier',
+                  ],
+                ],
+              },
             ],
             operation: {
               audit: {
@@ -564,7 +574,16 @@ describe('log group', () => {
           {
             sid: 'redact-statement-cdk',
             dataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/NewIdentifier',
+                  ],
+                ],
+              },
             ],
             operation: {
               deidentify: {
@@ -581,14 +600,14 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    const auditLogGroupName = 'audit-log-group';
-    const auditS3BucketName = 'audit-bucket';
+    const auditLogGroup = new LogGroup(stack, 'LogGroupAudit', {logGroupName: 'audit-log-group'});
+    const auditS3Bucket = new Bucket(stack, 'BucketAudit', {bucketName: 'audit-bucket'});
     const auditDeliveryStreamName = 'delivery-stream-name';
 
     const dataProtectionPolicy = new DataProtectionPolicy(stack, {
       identifiers: [DataIdentifier.EMAILADDRESS],
-      logGroupNameAuditDestination: auditLogGroupName,
-      s3BucketNameAuditDestination: auditS3BucketName,
+      logGroupAuditDestination: auditLogGroup,
+      s3BucketAuditDestination: auditS3Bucket,
       deliveryStreamNameAuditDestination: auditDeliveryStreamName,
     });
 
@@ -625,13 +644,17 @@ describe('log group', () => {
               audit: {
                 findingsDestination: {
                   cloudWatchLogs: {
-                    logGroup: auditLogGroupName,
+                    logGroup: {
+                      Ref: "LogGroupAudit2C8B7F73"
+                    }
                   },
                   firehose: {
                     deliveryStream: auditDeliveryStreamName,
                   },
                   s3: {
-                    bucket: auditS3BucketName,
+                    bucket: {
+                      Ref: "BucketAudit1DED3529"
+                    }
                   },
                 },
               },

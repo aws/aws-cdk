@@ -36,7 +36,18 @@
           ]
          ]
         },
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dataprotection::aws:data-identifier/EmailAddress"
+          ]
+         ]
+        }
        ],
        "operation": {
         "audit": {
@@ -70,7 +81,18 @@
           ]
          ]
         },
-        "arn:aws:dataprotection::aws:data-identifier/EmailAddress"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dataprotection::aws:data-identifier/EmailAddress"
+          ]
+         ]
+        }
        ],
        "operation": {
         "deidentify": {

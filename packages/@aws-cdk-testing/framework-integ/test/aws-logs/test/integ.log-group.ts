@@ -14,10 +14,9 @@ class LogGroupIntegStack extends Stack {
     const dataProtectionPolicy = new DataProtectionPolicy(this, {
       name: 'policy-name',
       description: 'policy description',
-      identifiers: [DataIdentifier.DRIVERSLICENSE_US],
-      identifierArnStrings: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
-      logGroupNameAuditDestination: audit.logGroupName,
-      s3BucketNameAuditDestination: bucket.bucketName,
+      identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],
+      logGroupAuditDestination: audit,
+      s3BucketAuditDestination: bucket,
     });
 
     new LogGroup(this, 'LogGroupLambda', {

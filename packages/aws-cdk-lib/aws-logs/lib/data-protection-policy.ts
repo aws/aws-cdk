@@ -1,5 +1,7 @@
 import { Stack } from '../../core';
 import { Construct } from 'constructs';
+import { ILogGroup } from './log-group';
+import { IBucket } from '../../aws-s3';
 /**
  * Represents a data protection policy in a log group.
  */
@@ -27,7 +29,7 @@ export class DataProtectionPolicy {
   /**
    * Statements within the data protection policy. Must contain one Audit and one Redact statement
    */
-  public statement: object;
+  public statement: any;
 
   constructor(scope: Construct, props: DataProtectionPolicyProps) {
     this.name = props.name || 'data-protection-policy-cdk';
@@ -36,15 +38,15 @@ export class DataProtectionPolicy {
 
     var findingsDestination: FindingsDestination = {};
 
-    if (props.logGroupNameAuditDestination) {
+    if (props.logGroupAuditDestination) {
       findingsDestination.cloudWatchLogs = {
-        logGroup: props.logGroupNameAuditDestination,
+        logGroup: props.logGroupAuditDestination.logGroupName,
       };
     }
 
-    if (props.s3BucketNameAuditDestination) {
+    if (props.s3BucketAuditDestination) {
       findingsDestination.s3 = {
-        bucket: props.s3BucketNameAuditDestination,
+        bucket: props.s3BucketAuditDestination.bucketName,
       };
     }
 
@@ -66,12 +68,6 @@ export class DataProtectionPolicy {
         });
         identifierArns.push(identifierArn);
       };
-    }
-
-    if (props.identifierArnStrings != null) {
-      for (let identifierArnString of props.identifierArnStrings) {
-        identifierArns.push(identifierArnString);
-      }
     }
 
     this.statement = [
@@ -141,25 +137,18 @@ export interface DataProtectionPolicyProps {
   readonly identifiers?: DataIdentifier[];
 
   /**
-   * For futureproofing; if an identifier is not part of DataIdentifier, but still supported by data protection, a string (full ARN) can be supplied instead.
-   *
-   * @default - no string identifiers
-   */
-  readonly identifierArnStrings?: string[];
-
-  /**
-   * CloudWatch Logs log group name to send audit findings to. The log group must already exist prior to creating the data protection policy.
+   * CloudWatch Logs log group to send audit findings to. The log group must already exist prior to creating the data protection policy.
    *
    * @default - no CloudWatch Logs audit destination
    */
-  readonly logGroupNameAuditDestination?: string;
+  readonly logGroupAuditDestination?: ILogGroup;
 
   /**
-   * S3 bucket name to send audit findings to. The bucket must already exist.
+   * S3 bucket to send audit findings to. The bucket must already exist.
    *
    * @default - no S3 bucket audit destination
    */
-  readonly s3BucketNameAuditDestination?: string;
+  readonly s3BucketAuditDestination?: IBucket;
 
   /**
    * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
@@ -171,205 +160,112 @@ export interface DataProtectionPolicyProps {
 
 
 /**
- * A data protection identifier. If an identifier is supported but not in this enum, it can be passed as a string instead.
+ * A data protection identifier. If an identifier is supported but not in this class, it can be passed in the constructor instead.
  */
-export enum DataIdentifier {
-  /** Address */
-  ADDRESS = 'Address',
-  /** AwsSecretKey */
-  AWSSECRETKEY = 'AwsSecretKey',
-  /** BankAccountNumber-DE */
-  BANKACCOUNTNUMBER_DE = 'BankAccountNumber-DE',
-  /** BankAccountNumber-ES */
-  BANKACCOUNTNUMBER_ES = 'BankAccountNumber-ES',
-  /** BankAccountNumber-FR */
-  BANKACCOUNTNUMBER_FR = 'BankAccountNumber-FR',
-  /** BankAccountNumber-GB */
-  BANKACCOUNTNUMBER_GB = 'BankAccountNumber-GB',
-  /** BankAccountNumber-IT */
-  BANKACCOUNTNUMBER_IT = 'BankAccountNumber-IT',
-  /** BankAccountNumber-US */
-  BANKACCOUNTNUMBER_US = 'BankAccountNumber-US',
-  /** CepCode-BR */
-  CEPCODE_BR = 'CepCode-BR',
-  /** Cnpj-BR */
-  CNPJ_BR = 'Cnpj-BR',
-  /** CpfCode-BR */
-  CPFCODE_BR = 'CpfCode-BR',
-  /** CreditCardExpiration */
-  CREDITCARDEXPIRATION = 'CreditCardExpiration',
-  /** CreditCardNumber */
-  CREDITCARDNUMBER = 'CreditCardNumber',
-  /** CreditCardSecurityCode */
-  CREDITCARDSECURITYCODE = 'CreditCardSecurityCode',
-  /** DriversLicense-AT */
-  DRIVERSLICENSE_AT = 'DriversLicense-AT',
-  /** DriversLicense-AU */
-  DRIVERSLICENSE_AU = 'DriversLicense-AU',
-  /** DriversLicense-BE */
-  DRIVERSLICENSE_BE = 'DriversLicense-BE',
-  /** DriversLicense-BG */
-  DRIVERSLICENSE_BG = 'DriversLicense-BG',
-  /** DriversLicense-CA */
-  DRIVERSLICENSE_CA = 'DriversLicense-CA',
-  /** DriversLicense-CY */
-  DRIVERSLICENSE_CY = 'DriversLicense-CY',
-  /** DriversLicense-CZ */
-  DRIVERSLICENSE_CZ = 'DriversLicense-CZ',
-  /** DriversLicense-DE */
-  DRIVERSLICENSE_DE = 'DriversLicense-DE',
-  /** DriversLicense-DK */
-  DRIVERSLICENSE_DK = 'DriversLicense-DK',
-  /** DriversLicense-EE */
-  DRIVERSLICENSE_EE = 'DriversLicense-EE',
-  /** DriversLicense-ES */
-  DRIVERSLICENSE_ES = 'DriversLicense-ES',
-  /** DriversLicense-FI */
-  DRIVERSLICENSE_FI = 'DriversLicense-FI',
-  /** DriversLicense-FR */
-  DRIVERSLICENSE_FR = 'DriversLicense-FR',
-  /** DriversLicense-GB */
-  DRIVERSLICENSE_GB = 'DriversLicense-GB',
-  /** DriversLicense-GR */
-  DRIVERSLICENSE_GR = 'DriversLicense-GR',
-  /** DriversLicense-HR */
-  DRIVERSLICENSE_HR = 'DriversLicense-HR',
-  /** DriversLicense-HU */
-  DRIVERSLICENSE_HU = 'DriversLicense-HU',
-  /** DriversLicense-IE */
-  DRIVERSLICENSE_IE = 'DriversLicense-IE',
-  /** DriversLicense-IT */
-  DRIVERSLICENSE_IT = 'DriversLicense-IT',
-  /** DriversLicense-LT */
-  DRIVERSLICENSE_LT = 'DriversLicense-LT',
-  /** DriversLicense-LU */
-  DRIVERSLICENSE_LU = 'DriversLicense-LU',
-  /** DriversLicense-LV */
-  DRIVERSLICENSE_LV = 'DriversLicense-LV',
-  /** DriversLicense-MT */
-  DRIVERSLICENSE_MT = 'DriversLicense-MT',
-  /** DriversLicense-NL */
-  DRIVERSLICENSE_NL = 'DriversLicense-NL',
-  /** DriversLicense-PL */
-  DRIVERSLICENSE_PL = 'DriversLicense-PL',
-  /** DriversLicense-PT */
-  DRIVERSLICENSE_PT = 'DriversLicense-PT',
-  /** DriversLicense-RO */
-  DRIVERSLICENSE_RO = 'DriversLicense-RO',
-  /** DriversLicense-SE */
-  DRIVERSLICENSE_SE = 'DriversLicense-SE',
-  /** DriversLicense-SI */
-  DRIVERSLICENSE_SI = 'DriversLicense-SI',
-  /** DriversLicense-SK */
-  DRIVERSLICENSE_SK = 'DriversLicense-SK',
-  /** DriversLicense-US */
-  DRIVERSLICENSE_US = 'DriversLicense-US',
-  /** DrugEnforcementAgencyNumber-US */
-  DRUGENFORCEMENTAGENCYNUMBER_US = 'DrugEnforcementAgencyNumber-US',
-  /** ElectoralRollNumber-GB */
-  ELECTORALROLLNUMBER_GB = 'ElectoralRollNumber-GB',
-  /** EmailAddress */
-  EMAILADDRESS = 'EmailAddress',
-  /** HealthInsuranceCardNumber-EU */
-  HEALTHINSURANCECARDNUMBER_EU = 'HealthInsuranceCardNumber-EU',
-  /** HealthInsuranceClaimNumber-US */
-  HEALTHINSURANCECLAIMNUMBER_US = 'HealthInsuranceClaimNumber-US',
-  /** HealthInsuranceNumber-FR */
-  HEALTHINSURANCENUMBER_FR = 'HealthInsuranceNumber-FR',
-  /** HealthcareProcedureCode-US */
-  HEALTHCAREPROCEDURECODE_US = 'HealthcareProcedureCode-US',
-  /** IndividualTaxIdentificationNumber-US */
-  INDIVIDUALTAXIDENTIFICATIONNUMBER_US = 'IndividualTaxIdentificationNumber-US',
-  /** InseeCode-FR */
-  INSEECODE_FR = 'InseeCode-FR',
-  /** IpAddress */
-  IPADDRESS = 'IpAddress',
-  /** LatLong */
-  LATLONG = 'LatLong',
-  /** MedicareBeneficiaryNumber-US */
-  MEDICAREBENEFICIARYNUMBER_US = 'MedicareBeneficiaryNumber-US',
-  /** Name */
-  NAME = 'Name',
-  /** NationalDrugCode-US */
-  NATIONALDRUGCODE_US = 'NationalDrugCode-US',
-  /** NationalIdentificationNumber-DE */
-  NATIONALIDENTIFICATIONNUMBER_DE = 'NationalIdentificationNumber-DE',
-  /** NationalIdentificationNumber-ES */
-  NATIONALIDENTIFICATIONNUMBER_ES = 'NationalIdentificationNumber-ES',
-  /** NationalIdentificationNumber-IT */
-  NATIONALIDENTIFICATIONNUMBER_IT = 'NationalIdentificationNumber-IT',
-  /** NationalInsuranceNumber-GB */
-  NATIONALINSURANCENUMBER_GB = 'NationalInsuranceNumber-GB',
-  /** NationalProviderId-US */
-  NATIONALPROVIDERID_US = 'NationalProviderId-US',
-  /** NhsNumber-GB */
-  NHSNUMBER_GB = 'NhsNumber-GB',
-  /** NieNumber-ES */
-  NIENUMBER_ES = 'NieNumber-ES',
-  /** NifNumber-ES */
-  NIFNUMBER_ES = 'NifNumber-ES',
-  /** OpenSshPrivateKey */
-  OPENSSHPRIVATEKEY = 'OpenSshPrivateKey',
-  /** PassportNumber-CA */
-  PASSPORTNUMBER_CA = 'PassportNumber-CA',
-  /** PassportNumber-DE */
-  PASSPORTNUMBER_DE = 'PassportNumber-DE',
-  /** PassportNumber-ES */
-  PASSPORTNUMBER_ES = 'PassportNumber-ES',
-  /** PassportNumber-FR */
-  PASSPORTNUMBER_FR = 'PassportNumber-FR',
-  /** PassportNumber-GB */
-  PASSPORTNUMBER_GB = 'PassportNumber-GB',
-  /** PassportNumber-IT */
-  PASSPORTNUMBER_IT = 'PassportNumber-IT',
-  /** PassportNumber-US */
-  PASSPORTNUMBER_US = 'PassportNumber-US',
-  /** PermanentResidenceNumber-CA */
-  PERMANENTRESIDENCENUMBER_CA = 'PermanentResidenceNumber-CA',
-  /** PersonalHealthNumber-CA */
-  PERSONALHEALTHNUMBER_CA = 'PersonalHealthNumber-CA',
-  /** PgpPrivateKey */
-  PGPPRIVATEKEY = 'PgpPrivateKey',
-  /** PhoneNumber */
-  PHONENUMBER = 'PhoneNumber',
-  /** PhoneNumber-BR */
-  PHONENUMBER_BR = 'PhoneNumber-BR',
-  /** PhoneNumber-DE */
-  PHONENUMBER_DE = 'PhoneNumber-DE',
-  /** PhoneNumber-ES */
-  PHONENUMBER_ES = 'PhoneNumber-ES',
-  /** PhoneNumber-FR */
-  PHONENUMBER_FR = 'PhoneNumber-FR',
-  /** PhoneNumber-GB */
-  PHONENUMBER_GB = 'PhoneNumber-GB',
-  /** PhoneNumber-IT */
-  PHONENUMBER_IT = 'PhoneNumber-IT',
-  /** PhoneNumber-US */
-  PHONENUMBER_US = 'PhoneNumber-US',
-  /** PkcsPrivateKey */
-  PKCSPRIVATEKEY = 'PkcsPrivateKey',
-  /** PostalCode-CA */
-  POSTALCODE_CA = 'PostalCode-CA',
-  /** PuttyPrivateKey */
-  PUTTYPRIVATEKEY = 'PuttyPrivateKey',
-  /** RgNumber-BR */
-  RGNUMBER_BR = 'RgNumber-BR',
-  /** SocialInsuranceNumber-CA */
-  SOCIALINSURANCENUMBER_CA = 'SocialInsuranceNumber-CA',
-  /** Ssn-ES */
-  SSN_ES = 'Ssn-ES',
-  /** Ssn-US */
-  SSN_US = 'Ssn-US',
-  /** TaxId-DE */
-  TAXID_DE = 'TaxId-DE',
-  /** TaxId-ES */
-  TAXID_ES = 'TaxId-ES',
-  /** TaxId-FR */
-  TAXID_FR = 'TaxId-FR',
-  /** TaxId-GB */
-  TAXID_GB = 'TaxId-GB',
-  /** VehicleIdentificationNumber */
-  VEHICLEIDENTIFICATIONNUMBER = 'VehicleIdentificationNumber',
-  /** ZipCode-US */
-  ZIPCODE_US = 'ZipCode-US',
+export class DataIdentifier {
+  public static readonly ADDRESS = new DataIdentifier('Address');
+  public static readonly AWSSECRETKEY = new DataIdentifier('AwsSecretKey');
+  public static readonly BANKACCOUNTNUMBER_DE = new DataIdentifier('BankAccountNumber-DE');
+  public static readonly BANKACCOUNTNUMBER_ES = new DataIdentifier('BankAccountNumber-ES');
+  public static readonly BANKACCOUNTNUMBER_FR = new DataIdentifier('BankAccountNumber-FR');
+  public static readonly BANKACCOUNTNUMBER_GB = new DataIdentifier('BankAccountNumber-GB');
+  public static readonly BANKACCOUNTNUMBER_IT = new DataIdentifier('BankAccountNumber-IT');
+  public static readonly BANKACCOUNTNUMBER_US = new DataIdentifier('BankAccountNumber-US');
+  public static readonly CEPCODE_BR = new DataIdentifier('CepCode-BR');
+  public static readonly CNPJ_BR = new DataIdentifier('Cnpj-BR');
+  public static readonly CPFCODE_BR = new DataIdentifier('CpfCode-BR');
+  public static readonly CREDITCARDEXPIRATION = new DataIdentifier('CreditCardExpiration');
+  public static readonly CREDITCARDNUMBER = new DataIdentifier('CreditCardNumber');
+  public static readonly CREDITCARDSECURITYCODE = new DataIdentifier('CreditCardSecurityCode');
+  public static readonly DRIVERSLICENSE_AT = new DataIdentifier('DriversLicense-AT');
+  public static readonly DRIVERSLICENSE_AU = new DataIdentifier('DriversLicense-AU');
+  public static readonly DRIVERSLICENSE_BE = new DataIdentifier('DriversLicense-BE');
+  public static readonly DRIVERSLICENSE_BG = new DataIdentifier('DriversLicense-BG');
+  public static readonly DRIVERSLICENSE_CA = new DataIdentifier('DriversLicense-CA');
+  public static readonly DRIVERSLICENSE_CY = new DataIdentifier('DriversLicense-CY');
+  public static readonly DRIVERSLICENSE_CZ = new DataIdentifier('DriversLicense-CZ');
+  public static readonly DRIVERSLICENSE_DE = new DataIdentifier('DriversLicense-DE');
+  public static readonly DRIVERSLICENSE_DK = new DataIdentifier('DriversLicense-DK');
+  public static readonly DRIVERSLICENSE_EE = new DataIdentifier('DriversLicense-EE');
+  public static readonly DRIVERSLICENSE_ES = new DataIdentifier('DriversLicense-ES');
+  public static readonly DRIVERSLICENSE_FI = new DataIdentifier('DriversLicense-FI');
+  public static readonly DRIVERSLICENSE_FR = new DataIdentifier('DriversLicense-FR');
+  public static readonly DRIVERSLICENSE_GB = new DataIdentifier('DriversLicense-GB');
+  public static readonly DRIVERSLICENSE_GR = new DataIdentifier('DriversLicense-GR');
+  public static readonly DRIVERSLICENSE_HR = new DataIdentifier('DriversLicense-HR');
+  public static readonly DRIVERSLICENSE_HU = new DataIdentifier('DriversLicense-HU');
+  public static readonly DRIVERSLICENSE_IE = new DataIdentifier('DriversLicense-IE');
+  public static readonly DRIVERSLICENSE_IT = new DataIdentifier('DriversLicense-IT');
+  public static readonly DRIVERSLICENSE_LT = new DataIdentifier('DriversLicense-LT');
+  public static readonly DRIVERSLICENSE_LU = new DataIdentifier('DriversLicense-LU');
+  public static readonly DRIVERSLICENSE_LV = new DataIdentifier('DriversLicense-LV');
+  public static readonly DRIVERSLICENSE_MT = new DataIdentifier('DriversLicense-MT');
+  public static readonly DRIVERSLICENSE_NL = new DataIdentifier('DriversLicense-NL');
+  public static readonly DRIVERSLICENSE_PL = new DataIdentifier('DriversLicense-PL');
+  public static readonly DRIVERSLICENSE_PT = new DataIdentifier('DriversLicense-PT');
+  public static readonly DRIVERSLICENSE_RO = new DataIdentifier('DriversLicense-RO');
+  public static readonly DRIVERSLICENSE_SE = new DataIdentifier('DriversLicense-SE');
+  public static readonly DRIVERSLICENSE_SI = new DataIdentifier('DriversLicense-SI');
+  public static readonly DRIVERSLICENSE_SK = new DataIdentifier('DriversLicense-SK');
+  public static readonly DRIVERSLICENSE_US = new DataIdentifier('DriversLicense-US');
+  public static readonly DRUGENFORCEMENTAGENCYNUMBER_US = new DataIdentifier('DrugEnforcementAgencyNumber-US');
+  public static readonly ELECTORALROLLNUMBER_GB = new DataIdentifier('ElectoralRollNumber-GB');
+  public static readonly EMAILADDRESS = new DataIdentifier('EmailAddress');
+  public static readonly HEALTHINSURANCECARDNUMBER_EU = new DataIdentifier('HealthInsuranceCardNumber-EU');
+  public static readonly HEALTHINSURANCECLAIMNUMBER_US = new DataIdentifier('HealthInsuranceClaimNumber-US');
+  public static readonly HEALTHINSURANCENUMBER_FR = new DataIdentifier('HealthInsuranceNumber-FR');
+  public static readonly HEALTHCAREPROCEDURECODE_US = new DataIdentifier('HealthcareProcedureCode-US');
+  public static readonly INDIVIDUALTAXIDENTIFICATIONNUMBER_US = new DataIdentifier('IndividualTaxIdentificationNumber-US');
+  public static readonly INSEECODE_FR = new DataIdentifier('InseeCode-FR');
+  public static readonly IPADDRESS = new DataIdentifier('IpAddress');
+  public static readonly LATLONG = new DataIdentifier('LatLong');
+  public static readonly MEDICAREBENEFICIARYNUMBER_US = new DataIdentifier('MedicareBeneficiaryNumber-US');
+  public static readonly NAME = new DataIdentifier('Name');
+  public static readonly NATIONALDRUGCODE_US = new DataIdentifier('NationalDrugCode-US');
+  public static readonly NATIONALIDENTIFICATIONNUMBER_DE = new DataIdentifier('NationalIdentificationNumber-DE');
+  public static readonly NATIONALIDENTIFICATIONNUMBER_ES = new DataIdentifier('NationalIdentificationNumber-ES');
+  public static readonly NATIONALIDENTIFICATIONNUMBER_IT = new DataIdentifier('NationalIdentificationNumber-IT');
+  public static readonly NATIONALINSURANCENUMBER_GB = new DataIdentifier('NationalInsuranceNumber-GB');
+  public static readonly NATIONALPROVIDERID_US = new DataIdentifier('NationalProviderId-US');
+  public static readonly NHSNUMBER_GB = new DataIdentifier('NhsNumber-GB');
+  public static readonly NIENUMBER_ES = new DataIdentifier('NieNumber-ES');
+  public static readonly NIFNUMBER_ES = new DataIdentifier('NifNumber-ES');
+  public static readonly OPENSSHPRIVATEKEY = new DataIdentifier('OpenSshPrivateKey');
+  public static readonly PASSPORTNUMBER_CA = new DataIdentifier('PassportNumber-CA');
+  public static readonly PASSPORTNUMBER_DE = new DataIdentifier('PassportNumber-DE');
+  public static readonly PASSPORTNUMBER_ES = new DataIdentifier('PassportNumber-ES');
+  public static readonly PASSPORTNUMBER_FR = new DataIdentifier('PassportNumber-FR');
+  public static readonly PASSPORTNUMBER_GB = new DataIdentifier('PassportNumber-GB');
+  public static readonly PASSPORTNUMBER_IT = new DataIdentifier('PassportNumber-IT');
+  public static readonly PASSPORTNUMBER_US = new DataIdentifier('PassportNumber-US');
+  public static readonly PERMANENTRESIDENCENUMBER_CA = new DataIdentifier('PermanentResidenceNumber-CA');
+  public static readonly PERSONALHEALTHNUMBER_CA = new DataIdentifier('PersonalHealthNumber-CA');
+  public static readonly PGPPRIVATEKEY = new DataIdentifier('PgpPrivateKey');
+  public static readonly PHONENUMBER = new DataIdentifier('PhoneNumber');
+  public static readonly PHONENUMBER_BR = new DataIdentifier('PhoneNumber-BR');
+  public static readonly PHONENUMBER_DE = new DataIdentifier('PhoneNumber-DE');
+  public static readonly PHONENUMBER_ES = new DataIdentifier('PhoneNumber-ES');
+  public static readonly PHONENUMBER_FR = new DataIdentifier('PhoneNumber-FR');
+  public static readonly PHONENUMBER_GB = new DataIdentifier('PhoneNumber-GB');
+  public static readonly PHONENUMBER_IT = new DataIdentifier('PhoneNumber-IT');
+  public static readonly PHONENUMBER_US = new DataIdentifier('PhoneNumber-US');
+  public static readonly PKCSPRIVATEKEY = new DataIdentifier('PkcsPrivateKey');
+  public static readonly POSTALCODE_CA = new DataIdentifier('PostalCode-CA');
+  public static readonly PUTTYPRIVATEKEY = new DataIdentifier('PuttyPrivateKey');
+  public static readonly RGNUMBER_BR = new DataIdentifier('RgNumber-BR');
+  public static readonly SOCIALINSURANCENUMBER_CA = new DataIdentifier('SocialInsuranceNumber-CA');
+  public static readonly SSN_ES = new DataIdentifier('Ssn-ES');
+  public static readonly SSN_US = new DataIdentifier('Ssn-US');
+  public static readonly TAXID_DE = new DataIdentifier('TaxId-DE');
+  public static readonly TAXID_ES = new DataIdentifier('TaxId-ES');
+  public static readonly TAXID_FR = new DataIdentifier('TaxId-FR');
+  public static readonly TAXID_GB = new DataIdentifier('TaxId-GB');
+  public static readonly VEHICLEIDENTIFICATIONNUMBER = new DataIdentifier('VehicleIdentificationNumber');
+  public static readonly ZIPCODE_US = new DataIdentifier('ZipCode-US');
+
+  constructor(private readonly identifier: string) { }
+
+  public toString(): string {
+    return this.identifier;
+  }
 }
