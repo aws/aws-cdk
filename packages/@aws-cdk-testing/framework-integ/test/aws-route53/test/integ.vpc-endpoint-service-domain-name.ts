@@ -31,7 +31,7 @@ class DummyEndpointLoadBalancer implements ec2.IVpcEndpointServiceLoadBalancer {
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpc-endpoint-dns-integ');
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const nlb = new DummyEndpointLoadBalancer(stack, 'mylb', vpc);
 const vpces = new ec2.VpcEndpointService(stack, 'VPCES', {
   vpcEndpointServiceLoadBalancers: [nlb],

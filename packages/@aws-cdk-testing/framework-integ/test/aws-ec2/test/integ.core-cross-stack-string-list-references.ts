@@ -3,6 +3,7 @@ import { App, CfnParameter, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 // GIVEN
 const app = new App({
@@ -16,6 +17,7 @@ class ProducerStack extends Stack {
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
     const vpc = new Vpc(this, 'vpc');
     this.stringListGetAtt = new InterfaceVpcEndpoint(this, 'endpoint', {
@@ -43,6 +45,7 @@ export interface consumerDeployProps extends StackProps {
 class ConsumerStack extends Stack {
   constructor(scope: Construct, id: string, props: consumerDeployProps) {
     super(scope, id, props);
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
     new ssm.StringListParameter(this, 'GetAtt', {
       stringListValue: props.stringListGetAtt,

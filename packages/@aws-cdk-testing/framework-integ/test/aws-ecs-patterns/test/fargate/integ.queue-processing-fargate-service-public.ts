@@ -7,7 +7,7 @@ import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-queue-public');
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 new QueueProcessingFargateService(stack, 'PublicQueueService', {
   vpc,

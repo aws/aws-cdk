@@ -8,7 +8,7 @@ import { AccessPoint, FileSystem } from 'aws-cdk-lib/aws-efs';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
 const myFileSystemPolicy = new PolicyDocument({
   statements: [new PolicyStatement({

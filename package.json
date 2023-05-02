@@ -69,7 +69,6 @@
   "workspaces": {
     "packages": [
       "packages/aws-cdk-lib",
-      "packages/cdk-cli-wrapper",
       "packages/aws-cdk",
       "packages/cdk",
       "packages/cdk-assets",

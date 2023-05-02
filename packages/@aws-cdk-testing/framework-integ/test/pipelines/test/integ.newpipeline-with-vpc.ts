@@ -12,7 +12,7 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc');
+    const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       codeBuildDefaults: { vpc },

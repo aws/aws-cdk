@@ -7,7 +7,7 @@ import { Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-s3-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
 

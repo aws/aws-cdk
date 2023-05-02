@@ -30,7 +30,7 @@ class TestBucketDeployment extends cdk.Stack {
       destinationBucket,
       destinationKeyPrefix: 'efs/',
       useEfs: true,
-      vpc: new ec2.Vpc(this, 'InlineVpc'),
+      vpc: new ec2.Vpc(this, 'InlineVpc', { restrictDefaultSecurityGroup: false }),
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 

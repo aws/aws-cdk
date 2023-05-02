@@ -10,6 +10,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elb-instance-target-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 1,
 });
 

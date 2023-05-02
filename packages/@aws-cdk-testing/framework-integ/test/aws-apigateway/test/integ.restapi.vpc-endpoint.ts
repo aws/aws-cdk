@@ -13,7 +13,7 @@ class Test extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'MyVpc', {});
+    const vpc = new ec2.Vpc(this, 'MyVpc', { restrictDefaultSecurityGroup: false });
 
     const vpcEndpoint = vpc.addInterfaceEndpoint('MyVpcEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,

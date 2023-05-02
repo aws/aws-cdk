@@ -9,7 +9,7 @@ class RedshiftEnv extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC');
+    const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
     const role = new iam.Role(this, 'RoleA', {
       assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
     });

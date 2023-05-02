@@ -7,7 +7,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy');
 
-const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({

@@ -10,7 +10,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create default VPC
-    const vpc = new ec2.Vpc(this, 'Vpc');
+    const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     //Create default launch template
     const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {

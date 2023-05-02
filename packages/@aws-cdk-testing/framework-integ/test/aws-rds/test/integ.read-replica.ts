@@ -8,6 +8,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const vpc = new Vpc(this, 'Vpc', {
+      restrictDefaultSecurityGroup: false,
       maxAzs: 2,
       subnetConfiguration: [
         {

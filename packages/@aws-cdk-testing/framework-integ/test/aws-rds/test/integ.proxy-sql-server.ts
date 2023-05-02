@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy-sql-server', {
   terminationProtection: false,
 });
 
-const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const dbInstance = new rds.DatabaseInstance(stack, 'SqlServerDbInstance', {
   engine: rds.DatabaseInstanceEngine.sqlServerEx({

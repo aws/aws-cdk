@@ -2,9 +2,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ-l3-autocreate');
+stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 // No VPC or Cluster specified
 

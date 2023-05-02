@@ -20,7 +20,7 @@ const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docke
 });
 
 // just need one nat gateway to simplify the test
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,

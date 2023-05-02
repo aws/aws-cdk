@@ -9,7 +9,7 @@ class GaStack extends Stack {
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
     const accelerator = new ga.Accelerator(this, 'Accelerator');
     const listener = new ga.Listener(this, 'Listener', {
       accelerator,

@@ -73,7 +73,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-ecs-dg');
 
 // Network infrastructure
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 // ECS service
 const cluster = new ecs.Cluster(stack, 'EcsCluster', {

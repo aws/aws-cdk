@@ -9,7 +9,7 @@ class VpcEndpointServiceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC');
+    const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
     const nlbNoPrincipals = new elbv2.NetworkLoadBalancer(this, 'NLBNoPrincipals', {
       vpc,
     });
