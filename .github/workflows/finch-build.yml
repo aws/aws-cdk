@@ -42,10 +42,8 @@ jobs:
           finch vm init
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: build
-        run: ./build.sh --ci --no-bail --skip-test
-      - name: test
-        run: npx lerna run test --stream --no-progress --skip-nx-cache --no-sort --no-bail --concurrency=6
+      - name: build+test
+        run: ./build.sh --ci --no-bail
       - name: Test Report
         uses: phoenix-actions/test-reporting@v8
         if: success() || failure()    # always run, especially if the tests failed
