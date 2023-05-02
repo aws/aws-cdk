@@ -233,6 +233,9 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
+Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQl mutations
+that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
+as a part of a GraphQl schema.
 
 GraphQL schema file `schema.graphql`:
 
@@ -288,6 +291,13 @@ GraphQL response mapping template `response.vtl`:
 ```
 $util.toJson($ctx.result)'
 ```
+
+This response mapping template simply converts the EventBridge PutEvents result to JSON.
+For details about the response see the
+[documentation](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html).
+Additional logic can be added to the response template to map the response type, or to error in the event of failed
+events. More information can be found
+[here](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-eventbridge.html).
 
 CDK stack file `app-stack.ts`:
 
