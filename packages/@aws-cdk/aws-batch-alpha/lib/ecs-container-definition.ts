@@ -463,6 +463,11 @@ export interface EcsContainerDefinitionProps {
    * @default - no volumes
    */
   readonly volumes?: EcsVolume[];
+
+  /**
+   * The size for ephemeral storage.
+   */
+  readonly ephemeralStorage?: Size;
 }
 
 /**
@@ -481,6 +486,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly secrets?: secretsmanager.ISecret[];
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
+  public readonly ephemeralStorage?: Size;
 
   public abstract readonly executionRole?: iam.IRole;
 
@@ -496,6 +502,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
+    this.ephemeralStorage = props.ephemeralStorage;
 
     // Lazy so this.executionRole can be filled by subclasses
     this.logDriverConfig = Lazy.any({

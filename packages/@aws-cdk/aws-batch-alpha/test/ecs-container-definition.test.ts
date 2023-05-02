@@ -672,6 +672,27 @@ describe('EC2 containers', () => {
       },
     });
   });
+
+  test('can add ephemeralStorage', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        privileged: true,
+        ephemeralStorage: Size.gibibytes(100),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Privileged: true,
+        EphemeralStorage: Size.gibibytes(100),
+      },
+    });
+  });
 });
 
 describe('Fargate containers', () => {
