@@ -585,6 +585,7 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
       'echo',
       'Ref::echoParam',
     ],
+    ephemeralStorage: cdk.Size.gibibytes(100),
   }),
 });
 ```
