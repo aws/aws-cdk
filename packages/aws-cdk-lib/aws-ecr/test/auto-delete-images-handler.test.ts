@@ -306,7 +306,8 @@ test('delete event where repo has many images does recurse appropriately', async
       ],
       nextToken: 'token1',
     })
-    .mockResolvedValueOnce(undefined) // batchDeleteImage() call
+    .mockResolvedValueOnce(undefined) // batchDeleteImage() call for tagged images
+    .mockResolvedValueOnce(undefined) // batchDeleteImage() call for all images
     .mockResolvedValueOnce({ // listedImages() call
       imageIds: [
         {
@@ -334,7 +335,7 @@ test('delete event where repo has many images does recurse appropriately', async
   expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(2);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(4);
   expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
     repositoryName: 'MyRepo',
     imageIds: [
@@ -349,6 +350,32 @@ test('delete event where repo has many images does recurse appropriately', async
     ],
   });
   expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      {
+        imageTag: 'tag1',
+        imageDigest: 'sha256-1',
+      },
+      {
+        imageTag: 'tag2',
+        imageDigest: 'sha256-2',
+      },
+    ],
+  });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(3, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      {
+        imageTag: 'tag3',
+        imageDigest: 'sha256-3',
+      },
+      {
+        imageTag: 'tag4',
+        imageDigest: 'sha256-4',
+      },
+    ],
+  });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(4, {
     repositoryName: 'MyRepo',
     imageIds: [
       {
