@@ -77,6 +77,10 @@ We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) t
 We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
+We don't recommend using Windows to build your development environment due to some known performance
+and compatibility issues. Consider to use [Gitpod](#gitpod) or
+[Amazon CodeCatalyst DevEnv](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/codecatalyst-service.html) instead.
+
 ### Repo Layout
 
 The AWS CDK is a [NPM](https://www.npmjs.com/about) project written in [typescript](https://www.typescriptlang.org/).
