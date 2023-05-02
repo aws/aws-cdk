@@ -13,6 +13,7 @@ class ElbV2AsgStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC', {
       maxAzs: 2,
+      restrictDefaultSecurityGroup: false,
     });
 
     const asg = new autoscaling.AutoScalingGroup(this, 'Fleet', {
@@ -50,6 +51,7 @@ class ElbV2AsgAtgStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'VPC', {
+      restrictDefaultSecurityGroup: false,
       maxAzs: 2,
     });
     const alb = new elbv2.ApplicationLoadBalancer(this, 'alb', {
