@@ -2,6 +2,67 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+
+# CloudFormation Resource Specification v120.0.0
+
+## New Resource Types
+
 * AWS::AppConfig::Extension
 * AWS::AppConfig::ExtensionAssociation
 * AWS::DataSync::StorageSystem
