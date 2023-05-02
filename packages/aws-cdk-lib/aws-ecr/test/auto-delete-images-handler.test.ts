@@ -159,8 +159,15 @@ test('deletes all objects when the name changes on update event', async () => {
   // THEN
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(1);
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledWith({
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
+      { imageDigest: 'ImageDigest2', imageTag: 'ImageTag2' },
+    ],
+  });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
     repositoryName: 'MyRepo',
     imageIds: [
       { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
@@ -218,8 +225,21 @@ test('deletes all images on delete event', async () => {
   // THEN
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(1);
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledWith({
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      {
+        imageTag: 'tag1',
+        imageDigest: 'sha256-1',
+      },
+      {
+        imageTag: 'tag2',
+        imageDigest: 'sha256-2',
+      },
+    ],
+  });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
     repositoryName: 'MyRepo',
     imageIds: [
       {
