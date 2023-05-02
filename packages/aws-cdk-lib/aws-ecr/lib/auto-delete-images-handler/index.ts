@@ -40,14 +40,23 @@ async function emptyRepository(params: ECR.ListImagesRequest) {
   const listedImages = await ecr.listImages(params).promise();
 
   const imageIds = listedImages?.imageIds ?? [];
+  const imageIdsTagged = imageIds.filter((imageId) => 'imageTag' in imageId) ?? [];
+
   const nextToken = listedImages.nextToken ?? null;
   if (imageIds.length === 0) {
     return;
   }
 
+  if (imageIdsTagged.length !== 0) {
+    await ecr.batchDeleteImage({
+      repositoryName: params.repositoryName,
+      imageIds: imageIdsTagged,
+    }).promise();
+  }
+
   await ecr.batchDeleteImage({
     repositoryName: params.repositoryName,
-    imageIds,
+    imageIds: imageIds,
   }).promise();
 
   if (nextToken) {
