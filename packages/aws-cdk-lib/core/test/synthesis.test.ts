@@ -272,6 +272,17 @@ describe('synthesis', () => {
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
   });
+
+  test('output folder checksum is not computed by default', () => {
+    const fingerprint = jest.spyOn(cdk.FileSystem, 'fingerprint');
+    const app = new cdk.App(); // <-- no validation plugins
+    const stack = new cdk.Stack(app, 'one-stack');
+    synthesize(stack);
+
+    expect(fingerprint).not.toHaveBeenCalled();
+
+    jest.restoreAllMocks();
+  });
 });
 
 function list(outdir: string) {

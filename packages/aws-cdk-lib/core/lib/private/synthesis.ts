@@ -1,4 +1,3 @@
-import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '../../../cx-api';
@@ -16,6 +15,7 @@ import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+import { FileSystem } from '../fs';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
@@ -90,7 +90,7 @@ function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, Clou
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
   if (!App.isApp(root)) return;
-  const hash = computeChecksumOfFolder(outdir);
+  let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
@@ -111,6 +111,11 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
     // eslint-disable-next-line no-console
     console.log('Performing Policy Validations\n');
   }
+
+  if (templatePathsByPlugin.size > 0) {
+    hash = FileSystem.fingerprint(outdir);
+  }
+
   for (const [plugin, paths] of templatePathsByPlugin.entries()) {
     try {
       const report = plugin.validate({ templatePaths: paths });
@@ -126,7 +131,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
         },
       });
     }
-    if (computeChecksumOfFolder(outdir) !== hash) {
+    if (FileSystem.fingerprint(outdir) !== hash) {
       throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
@@ -160,21 +165,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       console.log('Policy Validation Successful!');
     }
   }
-}
-
-function computeChecksumOfFolder(folder: string): string {
-  const hash = createHash('sha256');
-  const files = fs.readdirSync(folder, { withFileTypes: true });
-
-  for (const file of files) {
-    const fullPath = path.join(folder, file.name);
-    if (file.isDirectory()) {
-      hash.update(computeChecksumOfFolder(fullPath));
-    } else if (file.isFile()) {
-      hash.update(fs.readFileSync(fullPath));
-    }
-  }
-  return hash.digest().toString('hex');
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
