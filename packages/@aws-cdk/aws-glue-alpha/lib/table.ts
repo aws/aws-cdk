@@ -81,7 +81,7 @@ export interface StorageParameter {
   readonly key: StorageParameters;
 
   /**
-   * The value of the property. If you want to use a custom value, use `StorageParameter.custom()`.
+   * The value of the property. If you want to use a custom value, use `StorageParameterValue.custom()`.
    */
   readonly value: StorageParameterValue;
 }
