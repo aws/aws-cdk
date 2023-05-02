@@ -218,10 +218,8 @@ export abstract class LoggingFormat {
 class JsonLoggingFormat extends LoggingFormat {
   /**
   * Json pattern for the output logs
-  *
-  * @default - no json format specified
   */
-  private readonly json?: Array<CfnVirtualNode.JsonFormatRefProperty>;
+  private readonly json: Array<CfnVirtualNode.JsonFormatRefProperty>;
   constructor(json: {[key:string]: string}) {
     super();
     this.json = Object.entries(json).map(([key, value]) => ({ key, value }));
@@ -239,10 +237,8 @@ class JsonLoggingFormat extends LoggingFormat {
 class TextLoggingFormat extends LoggingFormat {
   /**
   * Json pattern for the output logs
-  *
-  * @default - no text format specified
   */
-  private readonly text?: string;
+  private readonly text: string;
   constructor(text: string) {
     super();
     this.text = text;
