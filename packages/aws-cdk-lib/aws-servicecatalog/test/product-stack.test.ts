@@ -145,6 +145,45 @@ describe('ProductStack', () => {
     }).toThrow('A bucketName must be provided to use Assets');
   });
 
+  test('can be deployed with multiple assets bucket', () => {
+    // GIVEN
+    const app = new cdk.App(
+      { outdir: 'cdk.out' },
+    );
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    const productStack2 = new servicecatalog.ProductStack(mainStack, 'MyProductStack2', {
+      assetBucket: testAssetBucket,
+    });
+
+    new lambda.Function(productStack2, 'HelloHandler2', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assetsv2')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const whenAction = () => {
+      app.synth();
+    };
+
+    // THEN
+    expect(whenAction).not.toThrow(/There is already a Construct with name/);
+    Template.fromStack(mainStack).resourcePropertiesCountIs('Custom::CDKBucketDeployment', {}, 2);
+  });
+
   test('fails if Asset bucket is not defined in product stack with assets', () => {
     // GIVEN
     const app = new cdk.App();

@@ -83,7 +83,7 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
   messageLanguage: servicecatalog.MessageLanguage.EN,
 });
 
-class TestAssetProductStack extends servicecatalog.ProductStack {
+class TestAssetProductOneStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string, props?: ProductStackProps) {
     super(scope, id, props);
 
@@ -101,7 +101,25 @@ class TestAssetProductStack extends servicecatalog.ProductStack {
   }
 }
 
-const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory', {
+class TestAssetProductTwoStack extends servicecatalog.ProductStack {
+  constructor(scope: any, id: string, props?: ProductStackProps) {
+    super(scope, id, props);
+
+    new lambda.Function(this, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset('./assets'),
+      handler: 'index.handler',
+    });
+
+    new lambda.Function(this, 'HelloHandler2', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset('./assetsv2'),
+      handler: 'index.handler',
+    });
+  }
+}
+
+const productStackHistory = new ProductStackHistory(stack, 'ProductStackOneHistory', {
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
   currentVersionLocked: false,
@@ -135,9 +153,16 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
     },
     {
-      productVersionName: 'testAssetProduct',
+      productVersionName: 'testAssetProductOne',
       validateTemplate: false,
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductStack(stack, 'S3AssetProduct', {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductOneStack(stack, 'S3AssetProductOne', {
+        assetBucket: testAssetBucket,
+      })),
+    },
+    {
+      productVersionName: 'testAssetProductTwo',
+      validateTemplate: false,
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductTwoStack(stack, 'S3AssetProductTwo', {
         assetBucket: testAssetBucket,
       })),
     },
