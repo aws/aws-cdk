@@ -36,7 +36,7 @@ export class DataProtectionPolicy {
     this.description = props.description || 'cdk generated data protection policy';
     this.version = '2021-06-01';
 
-    var findingsDestination: FindingsDestination = {};
+    const findingsDestination: FindingsDestination = {};
 
     if (props.logGroupAuditDestination) {
       findingsDestination.cloudWatchLogs = {
@@ -93,21 +93,21 @@ export class DataProtectionPolicy {
   }
 }
 
-type FindingsDestination = {
+interface FindingsDestination {
   cloudWatchLogs?: CloudWatchLogsDestination;
   firehose?: FirehoseDestination;
   s3?: S3Destination;
 }
 
-type CloudWatchLogsDestination = {
+interface CloudWatchLogsDestination {
   logGroup: string;
 }
 
-type FirehoseDestination = {
+interface FirehoseDestination {
   deliveryStream: string;
 }
 
-type S3Destination = {
+interface S3Destination {
   bucket: string;
 }
 
