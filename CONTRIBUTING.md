@@ -78,7 +78,7 @@ We use `eslint` to keep our code consistent in terms of style and reducing defec
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 We don't recommend using Windows to build your development environment due to some known performance
-and compatibility issues. Consider to use [Gitpod](#gitpod) or
+and compatibility issues. If you have to develop in Windows, consider to use [Gitpod](#gitpod) or
 [Amazon CodeCatalyst DevEnv](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/codecatalyst-service.html) instead.
 
 ### Repo Layout
