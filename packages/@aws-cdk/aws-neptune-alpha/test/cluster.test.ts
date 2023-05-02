@@ -242,6 +242,26 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('create a cluster from a snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const snapshotName = 'testSnapshotArn';
+
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      snapshotIdentifier: snapshotName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      snapshotIdentifier: snapshotName,
+    });
+  });
+
   test('create an encrypted cluster with custom KMS key', () => {
     // GIVEN
     const stack = testStack();

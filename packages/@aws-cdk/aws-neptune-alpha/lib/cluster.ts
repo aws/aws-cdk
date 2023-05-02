@@ -260,6 +260,14 @@ export interface DatabaseClusterProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
+   * If a snapshot is specified, a target DB cluster is created from the source
+   * DB snapshot with a default configuration and default security group.
+   *
+   * @default a snapshot ARN to restore from
+   */
+  readonly snapshotIdentifier?: string;
+
+  /**
    * The removal policy to apply when the cluster and its instances are removed
    * or replaced during a stack update, or when the stack is deleted. This
    * removal policy also applies to the implicit security group created for the
@@ -588,6 +596,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // Restoration
+      snapshotIdentifier: props?.snapshotIdentifier,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       // CloudWatch Logs exports
