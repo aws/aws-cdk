@@ -928,6 +928,15 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default - a Role will be created
    */
   readonly executionRole?: iam.IRole;
+
+
+  /**
+   * The ephemeral storage settings for this container.
+   * The maximum size of the ephemeral storage volume is 200 GiB. The minimum size is 21 GiB.
+   *
+   * @default - default ephemeral storage for ecs container instances
+   */
+  readonly ephemeralStorage?: CfnJobDefinition.EphemeralStorageProperty;
 }
 
 /**
@@ -936,6 +945,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
+  public readonly ephemeralStorage?: CfnJobDefinition.EphemeralStorageProperty;
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -951,6 +961,14 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
     this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
+
+    this.ephemeralStorage = props.ephemeralStorage;
+
+    if (this.ephemeralStorage && this.ephemeralStorage.sizeInGiB && this.ephemeralStorage.sizeInGiB < 21) {
+      throw new Error('Ephemeral storage size must be at least 21 GiB');
+    } else if(this.ephemeralStorage && this.ephemeralStorage.sizeInGiB && this.ephemeralStorage.sizeInGiB > 200) {
+      throw new Error('Ephemeral storage size must be at most 200 GiB');
+    }
   }
 
   /**
@@ -965,6 +983,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       networkConfiguration: {
         assignPublicIp: this.assignPublicIp ? 'ENABLED' : 'DISABLED',
       },
+      ephemeralStorage: this.ephemeralStorage,
     };
   };
 }
