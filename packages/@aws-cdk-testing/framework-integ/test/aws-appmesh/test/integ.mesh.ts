@@ -8,6 +8,7 @@ export const app = new cdk.App();
 const stack = new cdk.Stack(app, 'mesh-stack', {});
 
 const vpc = new ec2.Vpc(stack, 'vpc', {
+  restrictDefaultSecurityGroup: false,
   natGateways: 1,
 });
 

@@ -28,7 +28,7 @@ class TestStack extends Stack {
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: Runtime.NODEJS_14_X,
-      vpc: new Vpc(this, 'Vpc'),
+      vpc: new Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false }),
     });
 
     new lambda.NodejsFunction(this, 'ts-handler-custom-handler-no-dots', {
