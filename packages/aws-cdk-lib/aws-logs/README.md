@@ -367,10 +367,9 @@ const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
 const dataProtectionPolicy = new DataProtectionPolicy(this, {
   name: 'data protection policy',
   description: 'policy description',
-  identifiers: [DataIdentifier.DRIVERSLICENSE_US],
-  identifierArnStrings: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
-  logGroupNameAuditDestination: logGroupDestination.logGroupName,
-  s3BucketNameAuditDestination: s3Destination.bucketName,
+  identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],
+  logGroupAuditDestination: logGroupDestination,
+  s3BucketAuditDestination: s3Destination,
   deliveryStreamAuditDestination: deliveryStream.deliveryStreamName,
 });
 
