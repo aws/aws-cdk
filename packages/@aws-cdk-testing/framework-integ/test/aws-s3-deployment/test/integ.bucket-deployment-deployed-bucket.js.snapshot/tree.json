@@ -513,6 +513,11 @@
                         "Arn"
                       ]
                     },
+                    "environment": {
+                      "variables": {
+                        "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+                      }
+                    },
                     "handler": "index.handler",
                     "layers": [
                       {
