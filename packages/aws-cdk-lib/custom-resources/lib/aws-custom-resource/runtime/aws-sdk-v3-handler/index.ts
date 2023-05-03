@@ -101,18 +101,17 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
         const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers' as string);
         credentials = fromTemporaryCredentials({
-          params: params,
+          params,
         });
       }
 
       awsSdk = await awsSdk;
-      const ServiceClient = Object.entries(awsSdk).find(
-        // @ts-ignore
-        ([name]) => name.toLowerCase() === `${packageName.replace('@aws-sdk/client-', '').replaceAll('-', '')}Client`.toLowerCase(),
-      )?.[1] as { new (config: any): {
-        send: (command: any) => Promise<any>
-        config: any
-      } };
+      const ServiceClient = Object.entries(awsSdk).find( ([name]) => name.endsWith('Client') )?.[1] as {
+        new (config: any): {
+          send: (command: any) => Promise<any>
+          config: any
+        }
+      };
       const client = new ServiceClient({
         apiVersion: call.apiVersion,
         credentials: credentials,
