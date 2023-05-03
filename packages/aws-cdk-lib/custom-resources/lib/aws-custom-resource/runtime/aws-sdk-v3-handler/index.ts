@@ -125,10 +125,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       let flatData: { [key: string]: string } = {};
       try {
+        // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
         const response = await client.send(
           new Command(
-            call.parameters &&
-            decodeSpecialValues(call.parameters, physicalResourceId),
+            (call.parameters &&
+            decodeSpecialValues(call.parameters, physicalResourceId)) ?? {},
           ),
         );
         flatData = {
