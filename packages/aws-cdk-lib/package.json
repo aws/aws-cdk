@@ -4,14 +4,6 @@
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
-  "typesVersions": {
-    "<=3.9": {
-      "*": [
-        ".types-compat/ts3.9/*",
-        ".types-compat/ts3.9/*/index.d.ts"
-      ]
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -130,35 +122,35 @@
     "yaml"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "^2.2.97",
-    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.77",
+    "@aws-cdk/asset-awscli-v1": "^2.2.160",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.134",
     "@aws-cdk/asset-kubectl-v20": "^2.1.1",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^11.1.1",
     "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
-    "minimatch": "^3.1.2",
+    "minimatch": "^9.0.0",
     "punycode": "^2.3.0",
-    "semver": "^7.3.8",
+    "semver": "^7.5.0",
     "table": "^6.8.1",
-    "yaml": "1.10.2"
+    "yaml": "2.2.2"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "constructs": "^10.0.0",
-    "esbuild": "^0.17.11",
-    "fs-extra": "^9.1.0",
+    "constructs": "^10.2.14",
+    "esbuild": "^0.17.18",
+    "fs-extra": "^11.1.1",
     "ts-node": "^10.9.1",
-    "typescript": "~4.9.5",
+    "typescript": "~5.0.4",
     "@aws-cdk/cfn2ts": "0.0.0",
-    "lambda-tester": "^3.6.0",
-    "@types/aws-lambda": "^8.10.111",
-    "@types/jest": "^29.5.0",
-    "@types/lodash": "^4.14.191",
+    "lambda-tester": "^4.0.1",
+    "@types/aws-lambda": "^8.10.115",
+    "@types/jest": "^29.5.1",
+    "@types/lodash": "^4.14.194",
     "@types/punycode": "^2.1.0",
-    "typescript-json-schema": "^0.55.0"
+    "typescript-json-schema": "^0.56.0"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"

@@ -30,9 +30,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^5.3.1",
+    "@types/archiver": "^5.3.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.1",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
     "@types/yargs": "^15.0.15",
@@ -46,7 +46,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^5.3.1",
-    "aws-sdk": "^2.1329.0",
+    "aws-sdk": "^2.1370.0",
     "glob": "^7.2.3",
     "mime": "^2.6.0",
     "yargs": "^16.2.0"
