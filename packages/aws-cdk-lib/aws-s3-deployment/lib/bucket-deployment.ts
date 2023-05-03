@@ -320,9 +320,12 @@ export class BucketDeployment extends Construct {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_9,
-      environment: props.useEfs ? {
-        MOUNT_PATH: mountPath,
-      } : undefined,
+      environment: {
+        ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
+        // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
+        // This is necessary to make the CLI work in ADC regions.
+        AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+      },
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
