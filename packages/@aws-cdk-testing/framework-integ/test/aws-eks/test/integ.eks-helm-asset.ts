@@ -21,7 +21,7 @@ class EksClusterStack extends Stack {
     });
 
     // just need one nat gateway to simplify the test
-    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
+    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1, restrictDefaultSecurityGroup: false });
 
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
