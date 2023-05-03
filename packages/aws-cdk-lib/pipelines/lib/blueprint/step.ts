@@ -1,7 +1,7 @@
 import { Stack, Token } from '../../../core';
+import { StepOutput } from '../helpers-internal/step-output';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackOutputReference } from './shell-step';
-import { StepOutput } from '../helpers-internal/step-output';
 
 /**
  * A generic Step which can be added to a Pipeline
@@ -141,6 +141,13 @@ export interface StackSteps {
    * @default - no additional steps
    */
   readonly pre?: Step[];
+
+  /**
+   * Additional steps to run after all of the prepare-nodes in the stage. If this property is set allPrepareNodesFirst has to be set to true also. This is the case, because dependency cycle will occour otherwise.
+   *
+   * @default - No additional steps
+   */
+  readonly postPrepare?: Step[];
 
   /**
    * Steps that execute after stack is prepared but before stack is deployed
