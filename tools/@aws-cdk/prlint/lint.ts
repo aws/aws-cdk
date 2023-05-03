@@ -337,9 +337,6 @@ export class PullRequestLinter {
   private async assessNeedsReview(
     pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
   ): Promise<void> {
-    // only care about the codebuild build job
-    // the other info we will get from the PR itself
-
     const reviews = await this.client.pulls.listReviews(this.prParams);
     const maintainerRequestedChanges = reviews.data.some(review => review.author_association === 'MEMBER' && review.state === 'CHANGES_REQUESTED');
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
