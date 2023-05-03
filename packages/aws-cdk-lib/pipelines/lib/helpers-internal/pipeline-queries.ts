@@ -1,4 +1,4 @@
-import { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
+import { StackAsset, StackDeployment, StackOutputReference, StageDeployment, Step } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
 /**
@@ -14,11 +14,11 @@ export class PipelineQueries {
   public stackOutputsReferenced(stack: StackDeployment): string[] {
     const steps = new Array<Step>();
     for (const wave of this.pipeline.waves) {
-      steps.push(...wave.pre, ...wave.post);
+      steps.push(...wave.pre, ...wave.post, ...wave.postPrepare);
       for (const stage of wave.stages) {
-        steps.push(...stage.pre, ...stage.post);
+        steps.push(...stage.pre, ...stage.post, ...stage.postPrepare);
         for (const stackDeployment of stage.stacks) {
-          steps.push(...stackDeployment.pre, ...stackDeployment.changeSet, ...stackDeployment.post);
+          steps.push(...stackDeployment.pre, ...stackDeployment.changeSet, ...stackDeployment.post, ...stackDeployment.postPrepare);
         }
       }
     }

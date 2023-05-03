@@ -3,7 +3,7 @@ import * as cdkp from '../../../lib';
 import { ManualApprovalStep, Step } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
+import { AppWithExposedStacks, AppWithOutput, OneStackApp, TestApp } from '../../testhelpers/test-app';
 
 let app: TestApp;
 
@@ -111,6 +111,44 @@ describe('blueprint with wave and stage', () => {
     expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
       'Gogogo',
       'Stack',
+    ]);
+  });
+
+  test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
+    // GIVEN
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
+
+    blueprint.waves[0].addStage(appWithExposedStacks, {
+      postPrepare: [
+        new cdkp.ManualApprovalStep('Step1'),
+        // new cdkp.ManualApprovalStep('Step2'),
+        // new cdkp.ManualApprovalStep('Step3'),
+      ],
+      // stackSteps: [
+      //   {
+      //     stack,
+      //     pre: [
+      //       new cdkp.ManualApprovalStep('Step1'),
+      //       new cdkp.ManualApprovalStep('Step2'),
+      //       new cdkp.ManualApprovalStep('Step3'),
+      //     ],
+      //     changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
+      //     post: [new cdkp.ManualApprovalStep('Post Approval')],
+      //   },
+      // ],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+    console.log(graph);
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+      'Prepare-Gamma-Stack1',
+      'Step1',
+      'Step2',
+      'Step3',
+      'Deploy',
+
     ]);
   });
 
