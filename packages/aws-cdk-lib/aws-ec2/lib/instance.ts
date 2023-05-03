@@ -271,6 +271,13 @@ export interface InstanceProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * Whether to associate a public IP address to the primary network interface attached to this instance
+   *
+   * @default true
+   */
+  readonly associatePublicIpAddress?: boolean;
 }
 
 /**
