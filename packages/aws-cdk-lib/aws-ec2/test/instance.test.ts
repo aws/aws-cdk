@@ -19,6 +19,7 @@ import {
   LaunchTemplate,
   UserData,
   Vpc,
+  SubnetType,
 } from '../lib';
 
 let stack: Stack;
@@ -657,6 +658,7 @@ test('associate public IP address with primary network interface', () => {
   // WHEN
   new Instance(stack, 'Instance', {
     vpc,
+    vpcSubnets: { subnetType: SubnetType.PUBLIC },
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
     sourceDestCheck: false,
