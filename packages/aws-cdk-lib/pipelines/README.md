@@ -593,8 +593,50 @@ class PipelineStack extends Stack {
 }
 ```
 
-It is further possible to add Steps in between the change sets and the deploy nodes (e.g. a manual approval step). This allows inspecting all change sets before deploying the stacks
-in the desired order.
+It is further possible to add Steps in between the change sets and the deploy nodes (e.g. a manual approval step). This allows inspecting all change sets before deploying the stacks in the desired order.
+```ts
+declare const synth: pipelines.ShellStep;
+
+class PipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synth,
+
+      allPrepareNodesFirst: true,
+    });
+    //example for a stage
+    pipeline.addStage(new AppStage(this, 'Beta'), {
+      postPrepare: [new pipelines.ManualApprovalStep('Approval0')],
+    });
+
+    // example for a wave
+    const group = pipeline.addWave('Wave1', {
+
+      postPrepare: [new pipelines.ManualApprovalStep('Approval1')],
+    });
+    group.addStage(new AppStage(this, 'Prod1'));
+    group.addStage(new AppStage(this, 'Prod2'));
+  }
+}
+class AppStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    const stack1 = new Stack(this, 'Stack1');
+    const queue1 = new sqs.Queue(stack1, 'Queue');
+
+    const stack2 = new Stack(this, 'Stack2');
+    new sqs.Queue(stack2, 'OtherQueue', {
+      deadLetterQueue: {
+        queue: queue1,
+        maxReceiveCount: 5,
+      },
+    });
+  }
+}
+```
 
 ### Validation
 
