@@ -46,8 +46,8 @@ export interface UserTablePrivilegesProps extends DatabaseOptions {
  * Privileges granted to a Redshift user on Redshift tables.
  *
  * This construct is located in the `private` directory to ensure that it is not exported for direct public use. This
- * means that user privileges must be managed through the `Table.grant` method or the `User.addTablePrivileges`
- * method. Thus, each `User` will have at most one `UserTablePrivileges` construct to manage its privileges. For details
+ * means that user privileges must be managed through the `Table.grant` method or the `<Construct>.addTablePrivileges`
+ * method. Thus, each `<Construct>` will have at most one `UserTablePrivileges` construct to manage its privileges. For details
  * on why this is a Good Thing, see the README, under "Granting Privileges".
  */
 export class UserTablePrivileges extends Construct {
