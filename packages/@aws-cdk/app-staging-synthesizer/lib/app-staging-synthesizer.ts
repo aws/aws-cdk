@@ -338,7 +338,6 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const { bucketName, assumeRoleArn, prefix, dependencyStack } = this.stagingStack.addFile(asset);
-    console.log('hereeee', assumeRoleArn);
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,

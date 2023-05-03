@@ -118,6 +118,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
           },
           appId: options.appId,
           qualifier: context.qualifier,
+          deployRoleArn: context.deployRoleArn,
         });
       },
     };

@@ -250,6 +250,36 @@ describe(AppStagingSynthesizer, () => {
     });
   });
 
+  test('bucket has policy referring to deploymentrolearn', () => {
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const stagingStackArtifact = asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-east-1`);
+
+    Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'role',
+            },
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
   // test('add docker image asset', () => {
   //   // WHEN
   //   const location = stack.synthesizer.addDockerImageAsset({
