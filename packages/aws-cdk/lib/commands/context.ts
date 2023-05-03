@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import * as minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
 import { print, error, warning } from '../logging';
