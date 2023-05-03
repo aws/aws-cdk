@@ -1254,20 +1254,6 @@ describe('cluster', () => {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
-                'Arn',
-              ],
-            },
-            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
                 'ClusterdefaultInstanceRoleF20A29CD',
                 'Arn',
               ],
@@ -1287,6 +1273,9 @@ describe('cluster', () => {
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
       prune: false,
+      mastersRole: new iam.Role(stack, 'MastersRole', {
+        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+      }),
     });
 
     // WHEN
@@ -1304,14 +1293,14 @@ describe('cluster', () => {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },
             '\\",\\"username\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },
@@ -1323,7 +1312,7 @@ describe('cluster', () => {
   });
 
   describe('outputs', () => {
-    test('aws eks update-kubeconfig is the only output synthesized by default', () => {
+    test('no outputs are synthesized by default', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1333,10 +1322,7 @@ describe('cluster', () => {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      expect(template.Outputs).toEqual({
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['ClusterMastersRole9AA35625', 'Arn'] }]] } },
-      });
+      expect(template.Outputs).toBeUndefined(); // no outputs
     });
 
     test('if masters role is defined, it should be included in the config command', () => {
@@ -1829,12 +1815,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root'],
-                  ],
-                },
+                Service: 'lambda.amazonaws.com',
               },
             },
           ],

@@ -1587,21 +1587,19 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
-    // if an explicit role is not configured, define a masters role that can
-    // be assumed by anyone in the account (with sts:AssumeRole permissions of
-    // course)
-    const mastersRole = props.mastersRole ?? new iam.Role(this, 'MastersRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
+    // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
+    if (props.mastersRole) {
+      const mastersRole = props.mastersRole;
 
-    // map the IAM role to the `system:masters` group.
-    this.awsAuth.addMastersRole(mastersRole);
+      // map the IAM role to the `system:masters` group.
+      this.awsAuth.addMastersRole(mastersRole);
 
-    if (props.outputMastersRoleArn) {
-      new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      }
+
+      commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
     }
-
-    commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     if (props.albController) {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
@@ -1618,7 +1616,7 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = props.outputConfigCommand ?? true;
+    const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -1626,7 +1624,6 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
-
   }
 
   /**
