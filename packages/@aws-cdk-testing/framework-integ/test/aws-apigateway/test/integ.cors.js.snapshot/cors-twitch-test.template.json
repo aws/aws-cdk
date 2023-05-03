@@ -546,7 +546,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "handlerServiceRole187D5A5A"
