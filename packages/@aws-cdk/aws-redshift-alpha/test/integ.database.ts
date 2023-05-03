@@ -1,10 +1,9 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
@@ -45,6 +44,11 @@ const databaseOptions = {
   databaseName: databaseName,
 };
 const user = new redshift.User(stack, 'User', databaseOptions);
+const userGroup = new redshift.UserGroup(stack, 'UserGroup', {
+  ...databaseOptions,
+  groupName: 'my_group',
+  users: [user],
+});
 const table = new redshift.Table(stack, 'Table', {
   ...databaseOptions,
   tableColumns: [
@@ -56,7 +60,8 @@ const table = new redshift.Table(stack, 'Table', {
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
   tableComment: 'A test table',
 });
-table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
+table.grant(redshift.Accessor.user(user), redshift.TableAction.INSERT, redshift.TableAction.DELETE);
+table.grant(redshift.Accessor.userGroup(userGroup), redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
   testCases: [stack],

@@ -176,4 +176,23 @@ describe('update', () => {
       Sql: `GRANT DROP ON ${newTableName} TO ${accessor.name}`,
     }));
   });
+
+  test('replaces when upgrading from username to accessor', async () => {
+    const oldUsername = 'oldUsername';
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...resourceProperties,
+        accessor: undefined,
+        username: oldUsername,
+      },
+    };
+
+    await expect(managePrivileges(resourceProperties, newEvent)).resolves.not.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`GRANT .* TO ${accessor.name}`)),
+    }));
+  });
 });

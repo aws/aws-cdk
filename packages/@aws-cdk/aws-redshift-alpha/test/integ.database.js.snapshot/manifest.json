@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e28708175c4a76361ed412355d5146352c7997058a5488719e8b4b9eeaf92c51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d55125d263f1569bb02a6a32e79d91905dc421c6bc2eb460311b58b8462dc18.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -295,6 +295,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupProviderframeworkonEventServiceRole83DC40C8"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupProviderframeworkonEventServiceRoleDefaultPolicy30BDA9B9"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupProviderframeworkonEvent25ECAA83"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroup18C57AC1"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupTablePrivilegesProviderframeworkonEventServiceRole773DB053"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicyAEB26FA7"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupTablePrivilegesProviderframeworkonEventE9C14874"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserGroupTablePrivileges130A28C6"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [

@@ -1647,7 +1647,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1c86c854dd7bf4e9476b013497c1b08c57bf296dbc4200f2a251f79ad102d15e.zip"
+                      "s3Key": "a7787587d4e6c4cd5259028bad5292403de3e60e5925a20f7e36d747be6aa817.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1676,6 +1676,502 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "UserGroup": {
+            "id": "UserGroup",
+            "path": "aws-cdk-redshift-cluster-database/UserGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource",
+                "children": {
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Handler",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider",
+                    "children": {
+                      "framework-onEvent": {
+                        "id": "framework-onEvent",
+                        "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent",
+                        "children": {
+                          "ServiceRole": {
+                            "id": "ServiceRole",
+                            "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole",
+                            "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "lambda.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "managedPolicyArns": [
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": "lambda:InvokeFunction",
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                          "Arn"
+                                                        ]
+                                                      },
+                                                      ":*"
+                                                    ]
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "UserGroupProviderframeworkonEventServiceRoleDefaultPolicy30BDA9B9",
+                                        "roles": [
+                                          {
+                                            "Ref": "UserGroupProviderframeworkonEventServiceRole83DC40C8"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Code": {
+                            "id": "Code",
+                            "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider/framework-onEvent/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                                },
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "UserGroupProviderframeworkonEventServiceRole83DC40C8",
+                                    "Arn"
+                                  ]
+                                },
+                                "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/UserGroup/Resource/Provider)",
+                                "environment": {
+                                  "variables": {
+                                    "USER_ON_EVENT_FUNCTION_ARN": {
+                                      "Fn::GetAtt": [
+                                        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                        "Arn"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "handler": "framework.onEvent",
+                                "runtime": "nodejs14.x",
+                                "timeout": 900
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.custom_resources.Provider",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-redshift-cluster-database/UserGroup/Resource/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "TablePrivileges": {
+                "id": "TablePrivileges",
+                "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource",
+                    "children": {
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Provider": {
+                        "id": "Provider",
+                        "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider",
+                        "children": {
+                          "framework-onEvent": {
+                            "id": "framework-onEvent",
+                            "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent",
+                            "children": {
+                              "ServiceRole": {
+                                "id": "ServiceRole",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole",
+                                "children": {
+                                  "ImportServiceRole": {
+                                    "id": "ImportServiceRole",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.Resource",
+                                      "version": "0.0.0"
+                                    }
+                                  },
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                      "aws:cdk:cloudformation:props": {
+                                        "assumeRolePolicyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": "sts:AssumeRole",
+                                              "Effect": "Allow",
+                                              "Principal": {
+                                                "Service": "lambda.amazonaws.com"
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "managedPolicyArns": [
+                                          {
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                              ]
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                      "version": "0.0.0"
+                                    }
+                                  },
+                                  "DefaultPolicy": {
+                                    "id": "DefaultPolicy",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                                    "children": {
+                                      "Resource": {
+                                        "id": "Resource",
+                                        "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                          "aws:cdk:cloudformation:props": {
+                                            "policyDocument": {
+                                              "Statement": [
+                                                {
+                                                  "Action": "lambda:InvokeFunction",
+                                                  "Effect": "Allow",
+                                                  "Resource": [
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                        "Arn"
+                                                      ]
+                                                    },
+                                                    {
+                                                      "Fn::Join": [
+                                                        "",
+                                                        [
+                                                          {
+                                                            "Fn::GetAtt": [
+                                                              "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                              "Arn"
+                                                            ]
+                                                          },
+                                                          ":*"
+                                                        ]
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ],
+                                              "Version": "2012-10-17"
+                                            },
+                                            "policyName": "UserGroupTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicyAEB26FA7",
+                                            "roles": [
+                                              {
+                                                "Ref": "UserGroupTablePrivilegesProviderframeworkonEventServiceRole773DB053"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                          "version": "0.0.0"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Code": {
+                                "id": "Code",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/Code",
+                                "children": {
+                                  "Stage": {
+                                    "id": "Stage",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/Code/Stage",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.AssetStaging",
+                                      "version": "0.0.0"
+                                    }
+                                  },
+                                  "AssetBucket": {
+                                    "id": "AssetBucket",
+                                    "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/Code/AssetBucket",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider/framework-onEvent/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                                  "aws:cdk:cloudformation:props": {
+                                    "code": {
+                                      "s3Bucket": {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      },
+                                      "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                                    },
+                                    "role": {
+                                      "Fn::GetAtt": [
+                                        "UserGroupTablePrivilegesProviderframeworkonEventServiceRole773DB053",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Provider)",
+                                    "environment": {
+                                      "variables": {
+                                        "USER_ON_EVENT_FUNCTION_ARN": {
+                                          "Fn::GetAtt": [
+                                            "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                            "Arn"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "handler": "framework.onEvent",
+                                    "runtime": "nodejs14.x",
+                                    "timeout": 900
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.Function",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.custom_resources.Provider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "aws-cdk-redshift-cluster-database/UserGroup/TablePrivileges/Resource/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-redshift-alpha.UserGroup",
               "version": "0.0.0"
             }
           },

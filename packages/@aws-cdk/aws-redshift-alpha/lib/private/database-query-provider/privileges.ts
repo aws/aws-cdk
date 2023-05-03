@@ -57,7 +57,7 @@ async function updatePrivileges(
 
   const oldAccessor = oldResourceProperties.accessor;
   const oldUsername = oldResourceProperties.username;
-  if (oldAccessor?.name ?? oldUsername !== accessor.name) {
+  if ((oldAccessor?.name ?? oldUsername) !== accessor.name) {
     await grantPrivileges(accessor, tablePrivileges, clusterProps);
     return { replace: true };
   }
