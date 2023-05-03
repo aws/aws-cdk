@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.78.0](https://github.com/aws/aws-cdk/compare/v2.77.0...v2.78.0) (2023-05-03)
+
+
+### Features
+
+* **appsync:** L2 construct for EventBridge DataSource. ([#25369](https://github.com/aws/aws-cdk/issues/25369)) ([a0ad49d](https://github.com/aws/aws-cdk/commit/a0ad49df7b2536d800b4890ae0116e6ce26e6c55)), closes [#24809](https://github.com/aws/aws-cdk/issues/24809)
+* **cfnspec:** cloudformation spec v120.0.0 ([#25354](https://github.com/aws/aws-cdk/issues/25354)) ([9096602](https://github.com/aws/aws-cdk/commit/9096602385ef9ed84b27b54aab7b0b5a448706ce))
+* **codebuild:** add support for `aws/codebuild/amazonlinux2-aarch64-standard:3.0` ([#25351](https://github.com/aws/aws-cdk/issues/25351)) ([0d187c1](https://github.com/aws/aws-cdk/commit/0d187c1ef337d5a46c47c018dc85e43de897f095)), closes [#25334](https://github.com/aws/aws-cdk/issues/25334)
+* **ec2:** Prefixlist Constructs ([#25252](https://github.com/aws/aws-cdk/issues/25252)) ([b2dfac0](https://github.com/aws/aws-cdk/commit/b2dfac09ebbd1302ec0236e4710ca9fef6b34274)), closes [#24714](https://github.com/aws/aws-cdk/issues/24714)
+* **ec2:** restrict access to default security group (under feature flag) ([#25297](https://github.com/aws/aws-cdk/issues/25297)) ([d8272ef](https://github.com/aws/aws-cdk/commit/d8272ef30d64777f54a7a283caf49b1dc67be927)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html/issues/ec2-2) [#19394](https://github.com/aws/aws-cdk/issues/19394)
+* **events:** Validate events rule name ([#25366](https://github.com/aws/aws-cdk/issues/25366)) ([5bdb012](https://github.com/aws/aws-cdk/commit/5bdb0128e8181cd3a33a118a1f121f67b0f78b20)), closes [#25352](https://github.com/aws/aws-cdk/issues/25352)
+* **rds:** add missing PerformanceInsightRetention options ([#25347](https://github.com/aws/aws-cdk/issues/25347)) ([1dbae20](https://github.com/aws/aws-cdk/commit/1dbae20bdc633ce580cab8f758a43bfba763c4f6))
+
+
+### Bug Fixes
+
+* **api-gateway:** add validation to `variables` property on `Stage` resource ([#25267](https://github.com/aws/aws-cdk/issues/25267)) ([04427e3](https://github.com/aws/aws-cdk/commit/04427e37b8da8c6cc9d360edd66093c2a63e19fe)), closes [#3635](https://github.com/aws/aws-cdk/issues/3635)
+* **apigateway:** cannot use requestValidatorOptions multiple times (under feature flag) ([#25324](https://github.com/aws/aws-cdk/issues/25324)) ([2a49fd1](https://github.com/aws/aws-cdk/commit/2a49fd1703c4eda9497cc5d5061372a1466d1ab0)), closes [#7613](https://github.com/aws/aws-cdk/issues/7613)
+* **batch:** `ManagedEc2EcsComputeEnvironment` instance role missing managed policy ([#25279](https://github.com/aws/aws-cdk/issues/25279)) ([c81d115](https://github.com/aws/aws-cdk/commit/c81d115955dbb27ce873ed7c9d71cc0dc8eacf99)), closes [#25256](https://github.com/aws/aws-cdk/issues/25256)
+* **batch:** JobQueue uses wrong id for underlying CfnJobQueue ([#25269](https://github.com/aws/aws-cdk/issues/25269)) ([4cbb790](https://github.com/aws/aws-cdk/commit/4cbb7905d0419eb763e25b1d6de574b35ab60bc9)), closes [#25248](https://github.com/aws/aws-cdk/issues/25248)
+* **core:** output folder checksum is computed unnecessarily ([#25392](https://github.com/aws/aws-cdk/issues/25392)) ([f2294ba](https://github.com/aws/aws-cdk/commit/f2294ba5d17b31895267a672dcc7ec457cc779c7))
+* **ecs:** Allow scheduling DAEMON services even if no EC2 capacity attached to cluster ([#25306](https://github.com/aws/aws-cdk/issues/25306)) ([#25328](https://github.com/aws/aws-cdk/issues/25328)) ([96bb8ce](https://github.com/aws/aws-cdk/commit/96bb8ce6b3a45daf47d4d4dbf91fd6b69988bb7b))
+* **elasticloadbalancingv2:** the bucket policy for ELB access logging is too permissive ([#25345](https://github.com/aws/aws-cdk/issues/25345)) ([748e685](https://github.com/aws/aws-cdk/commit/748e6859ccab999e66768d40d34fef93884453ea)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-6](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html/issues/s3-6)
+* **iam:** Role.fromRoleName fails on AWS created roles ([#25389](https://github.com/aws/aws-cdk/issues/25389)) ([4c9ce9b](https://github.com/aws/aws-cdk/commit/4c9ce9b6aa88306feeac6ffb71c1342d8acf4349))
+* **integ-tests:** allow multiple AwsApiCalls with the same action and different parameters ([#25241](https://github.com/aws/aws-cdk/issues/25241)) ([75967e1](https://github.com/aws/aws-cdk/commit/75967e17b8ce3a9d1e0068a3aa210abb247191e6)), closes [#25014](https://github.com/aws/aws-cdk/issues/25014)
+* **s3-deployment:** doesn't work in ADC regions ([#25363](https://github.com/aws/aws-cdk/issues/25363)) ([432af34](https://github.com/aws/aws-cdk/commit/432af347772fb3bf0f51aae07f4deb0aeec55d81))
+* dns-validated-cert cr doesn't use node16 ([#25348](https://github.com/aws/aws-cdk/issues/25348)) ([ad71026](https://github.com/aws/aws-cdk/commit/ad7102683be92ab8d5ab985d34b2203921ab061b)), closes [#25335](https://github.com/aws/aws-cdk/issues/25335)
+
 ## [2.77.0](https://github.com/aws/aws-cdk/compare/v2.76.0...v2.77.0) (2023-04-26)
 
 
