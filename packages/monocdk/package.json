@@ -109,7 +109,7 @@
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.3.0",
-    "semver": "^7.3.8",
+    "semver": "^7.5.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
