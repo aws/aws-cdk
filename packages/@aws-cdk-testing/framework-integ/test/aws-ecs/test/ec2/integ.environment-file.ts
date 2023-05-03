@@ -15,7 +15,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 // ECS cluster to host EC2 task
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
