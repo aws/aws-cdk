@@ -1,7 +1,15 @@
 import * as path from 'path';
 import { Octokit } from '@octokit/rest';
+import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
+import { Endpoints } from "@octokit/types";
+
+export type GitHubPr =
+  Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+
+
+export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
 /**
  * Types of exemption labels in aws-cdk project.
@@ -12,17 +20,25 @@ enum Exemption {
   INTEG_TEST = 'pr-linter/exempt-integ-test',
   BREAKING_CHANGE = 'pr-linter/exempt-breaking-change',
   CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
+  REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
+  REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
 }
 
-export interface GitHubPr {
-  readonly number: number;
-  readonly title: string;
-  readonly body: string | null;
-  readonly labels: GitHubLabel[];
-  readonly user?: {
-    login: string;
-  }
+export interface GithubStatusEvent {
+  readonly sha: string;
+  readonly state?: StatusEvent['state'];
+  readonly context?: string;
 }
+
+// export interface GitHubPr {
+//   readonly number: number;
+//   readonly title: string;
+//   readonly body: string | null;
+//   readonly labels: GitHubLabel[];
+//   readonly user?: {
+//     login: string;
+//   }
+// }
 
 export interface GitHubLabel {
   readonly name: string;
@@ -172,6 +188,32 @@ export interface PullRequestLinterProps {
  * in the body of the review, and dismiss any previous reviews upon changes to the pull request.
  */
 export class PullRequestLinter {
+  /**
+   * Find an open PR for the given commit.
+   * @param sha the commit sha to find the PR of
+   */
+  public static async getPRFromCommit(client: Octokit, owner: string, repo: string, sha: string): Promise<GitHubPr | undefined> {
+    const prs = await client.search.issuesAndPullRequests({
+      q: sha,
+    });
+    const foundPr = prs.data.items.find(pr => pr.state === 'open');
+    if (foundPr) {
+      // need to do this because the list PR response does not have
+      // all the necessary information
+      const pr = (await client.pulls.get({
+        owner,
+        repo,
+        pull_number: foundPr.number,
+      })).data;
+      const latestCommit = pr.statuses_url.split('/').pop();
+      // only process latest commit
+      if (latestCommit === sha) {
+        return pr;
+      }
+    }
+    return;
+  }
+
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
   private readonly issueParams: { owner: string, repo: string, issue_number: number };
@@ -273,10 +315,91 @@ export class PullRequestLinter {
   }
 
   /**
+   * Whether or not the codebuild job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
+  private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
+    const statuses = await this.client.rest.repos.listCommitStatusesForRef({
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      ref: sha,
+    });
+    return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
+  }
+
+  public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
+    if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
+      await this.assessNeedsReview(pr);
+    }
+  }
+
+  /**
+   * Assess whether or not a PR is ready for review from a core team member.
+   * This is needed because some things that we need to evaluate are not filterable on
+   * the builtin issue search. A PR is ready for review when:
+   *
+   *   1. Not a draft
+   *   2. Does not have any merge conflicts
+   *   3. PR linter is not failing OR the user has requested an exemption
+   *   4. A maintainer has not requested changes
+   */
+  private async assessNeedsReview(
+    pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
+  ): Promise<void> {
+    // only care about the codebuild build job
+    // the other info we will get from the PR itself
+
+    const reviews = await this.client.pulls.listReviews(this.prParams);
+    const maintainerRequestedChanges = reviews.data.some(review => review.author_association === 'MEMBER' && review.state === 'CHANGES_REQUESTED');
+    const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
+    console.log('evaluation: ', JSON.stringify({
+      draft: pr.draft,
+      mergeable_state: pr.mergeable_state,
+      prLinterFailed,
+      maintainerRequestedChanges,
+      userRequestsExemption,
+    }, undefined, 2));
+
+    if (
+      // we don't need to review drafts
+      pr.draft
+        // or PRs with conflicts
+        || pr.mergeable_state === 'dirty'
+        // or PRs that already have changes requested by a maintainer
+        || maintainerRequestedChanges
+        // or the PR linter failed and the user didn't request an exemption
+        || (prLinterFailed && !userRequestsExemption)
+    ) {
+      console.log(`removing labels from pr ${pr.number}`);
+      this.client.issues.removeLabel({
+        owner: this.prParams.owner,
+        repo: this.prParams.repo,
+        issue_number: pr.number,
+        name: 'pr/needs-review',
+      });
+      return;
+    } else {
+      console.log(`adding labels to pr ${pr.number}`);
+      // add needs-review label
+      this.client.issues.addLabels({
+        issue_number: pr.number,
+        owner: this.prParams.owner,
+        repo: this.prParams.repo,
+        labels: [
+          'pr/needs-review',
+        ],
+      });
+      return;
+    }
+  }
+
+  /**
    * Performs validations and communicates results via pull request comments, upon failure.
    * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
-  public async validate(): Promise<void> {
+  public async validatePullRequestTarget(sha: string): Promise<void> {
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
@@ -331,6 +454,12 @@ export class PullRequestLinter {
 
     await this.deletePRLinterComment();
     await this.communicateResult(validationCollector);
+
+    // also assess whether the PR needs review or not
+    const state = await this.codeBuildJobSucceeded(sha);
+    if (state) {
+      await this.assessNeedsReview(pr);
+    }
   }
 
   private formatErrors(errors: string[]) {

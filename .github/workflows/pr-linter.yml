@@ -12,6 +12,7 @@ on:
       - opened
       - synchronize
       - reopened
+  status:
 
 jobs:
   validate-pr:
