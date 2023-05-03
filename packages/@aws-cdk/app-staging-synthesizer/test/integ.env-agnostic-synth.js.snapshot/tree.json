@@ -4,29 +4,29 @@
     "id": "App",
     "path": "",
     "children": {
-      "app-scoped-staging-test": {
-        "id": "app-scoped-staging-test",
-        "path": "app-scoped-staging-test",
+      "env-agnostic-test": {
+        "id": "env-agnostic-test",
+        "path": "env-agnostic-test",
         "children": {
           "lambda": {
             "id": "lambda",
-            "path": "app-scoped-staging-test/lambda",
+            "path": "env-agnostic-test/lambda",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "app-scoped-staging-test/lambda/ServiceRole",
+                "path": "env-agnostic-test/lambda/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "app-scoped-staging-test/lambda/ServiceRole/ImportServiceRole",
+                    "path": "env-agnostic-test/lambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "app-scoped-staging-test/lambda/ServiceRole/Resource",
+                    "path": "env-agnostic-test/lambda/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -59,53 +59,53 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Code": {
                 "id": "Code",
-                "path": "app-scoped-staging-test/lambda/Code",
+                "path": "env-agnostic-test/lambda/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "app-scoped-staging-test/lambda/Code/Stage",
+                    "path": "env-agnostic-test/lambda/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "app-scoped-staging-test/lambda/Code/AssetBucket",
+                    "path": "env-agnostic-test/lambda/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "app-scoped-staging-test/lambda/Resource",
+                "path": "env-agnostic-test/lambda/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Fn::Sub": "cdk-${AWS::AccountId}-${AWS::Region}-envagnostic"
+                        "Fn::Sub": "cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "eph-47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53.zip"
+                      "s3Key": "handoff/0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -118,41 +118,67 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "ecr-asset": {
+            "id": "ecr-asset",
+            "path": "env-agnostic-test/ecr-asset",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "env-agnostic-test/ecr-asset/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "env-agnostic-test/ecr-asset/Repository",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
-      "StagingStack": {
-        "id": "StagingStack",
-        "path": "StagingStack",
+      "StagingStack-envAgnostic-ACCOUNT-REGION": {
+        "id": "StagingStack-envAgnostic-ACCOUNT-REGION",
+        "path": "StagingStack-envAgnostic-ACCOUNT-REGION",
         "children": {
           "CdkFilePublishingRole": {
             "id": "CdkFilePublishingRole",
-            "path": "StagingStack/CdkFilePublishingRole",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole",
             "children": {
               "ImportCdkFilePublishingRole": {
                 "id": "ImportCdkFilePublishingRole",
-                "path": "StagingStack/CdkFilePublishingRole/ImportCdkFilePublishingRole",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/ImportCdkFilePublishingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack/CdkFilePublishingRole/Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -187,28 +213,27 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-file-publishing-role-",
+                          "cdk-envagnostic-file-publishing-role-",
                           {
                             "Ref": "AWS::Region"
-                          },
-                          "-envAgnostic"
+                          }
                         ]
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "StagingStack/CdkFilePublishingRole/DefaultPolicy",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack/CdkFilePublishingRole/DefaultPolicy/Resource",
+                    "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -279,29 +304,29 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "BucketKey": {
             "id": "BucketKey",
-            "path": "StagingStack/BucketKey",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack/BucketKey/Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -374,36 +399,21 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Alias": {
                 "id": "Alias",
-                "path": "StagingStack/BucketKey/Alias",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey/Alias",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack/BucketKey/Alias/Resource",
+                    "path": "StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey/Alias/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "alias/cdkstagingkey/",
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              "-",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              "-envAgnostic"
-                            ]
-                          ]
-                        },
+                        "aliasName": "alias/cdk-envagnostic-staging",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "BucketKey7092080A",
@@ -413,29 +423,29 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.Alias",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "CdkStagingBucket": {
             "id": "CdkStagingBucket",
-            "path": "StagingStack/CdkStagingBucket",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack/CdkStagingBucket/Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -458,41 +468,49 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-",
+                          "cdk-envagnostic-staging-",
                           {
                             "Ref": "AWS::AccountId"
                           },
                           "-",
                           {
                             "Ref": "AWS::Region"
-                          },
-                          "-envagnostic"
+                          }
                         ]
                       ]
                     },
                     "lifecycleConfiguration": {
                       "rules": [
                         {
-                          "expirationInDays": 10,
-                          "prefix": "eph-",
+                          "noncurrentVersionExpiration": {
+                            "noncurrentDays": 365
+                          },
+                          "status": "Enabled"
+                        },
+                        {
+                          "expirationInDays": 30,
+                          "prefix": "handoff/",
                           "status": "Enabled"
                         }
                       ]
+                    },
+                    "versioningConfiguration": {
+                      "status": "Enabled"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Policy": {
                 "id": "Policy",
-                "path": "StagingStack/CdkStagingBucket/Policy",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack/CdkStagingBucket/Policy/Resource",
+                    "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -501,6 +519,40 @@
                         },
                         "policyDocument": {
                           "Statement": [
+                            {
+                              "Action": "s3:*",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:SecureTransport": "false"
+                                }
+                              },
+                              "Effect": "Deny",
+                              "Principal": {
+                                "AWS": "*"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "CdkStagingBucket1636058C",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "CdkStagingBucket1636058C",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
                             {
                               "Action": [
                                 "s3:GetBucket*",
@@ -562,26 +614,178 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "CdkImagePublishingRole": {
+            "id": "CdkImagePublishingRole",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole",
+            "children": {
+              "ImportCdkImagePublishingRole": {
+                "id": "ImportCdkImagePublishingRole",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/ImportCdkImagePublishingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cdk-envagnostic-asset-publishing-role-",
+                          {
+                            "Ref": "AWS::Region"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:BatchGetImage",
+                                "ecr:CompleteLayerUpload",
+                                "ecr:DescribeImages",
+                                "ecr:DescribeRepositories",
+                                "ecr:GetDownloadUrlForLayer",
+                                "ecr:InitiateLayerUpload",
+                                "ecr:PutImage",
+                                "ecr:UploadLayerPart"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "ecrasset9899265E",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "ecr:GetAuthorizationToken",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "CdkImagePublishingRoleDefaultPolicy7638FA58",
+                        "roles": [
+                          {
+                            "Ref": "CdkImagePublishingRole87E59CEF"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "ecr-asset": {
+            "id": "ecr-asset",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "ecr-asset"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "integ-tests": {
@@ -608,34 +812,34 @@
                     "id": "BootstrapVersion",
                     "path": "integ-tests/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -648,8 +852,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
     }
   }
 }

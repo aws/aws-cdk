@@ -1,97 +1,115 @@
 {
   "version": "31.0.0",
   "artifacts": {
-    "app-scoped-staging-test.assets": {
+    "synth-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "app-scoped-staging-test.assets.json"
+        "file": "synth-test.assets.json"
       }
     },
-    "app-scoped-staging-test": {
+    "synth-test": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://489318732371/us-east-2",
+      "environment": "aws://489318732371/us-east-1",
       "properties": {
-        "templateFile": "app-scoped-staging-test.template.json",
+        "templateFile": "synth-test.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-1",
         "additionalDependencies": [
-          "app-scoped-staging-test.assets"
+          "synth-test.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-489318732371-us-east-2-newid3/3721bf9337687fef9ff88a4b3d490d60c51c3261d2c060cea7ce7d33780fd99a.json",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-synthassets-staging-489318732371-us-east-1/2a29d40e386de7d4837131194a3dbdc589477e83c31080a93901474e06d389fa.json",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-1",
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-lookup-role-489318732371-us-east-2"
+          "arn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-lookup-role-489318732371-us-east-1"
         }
       },
       "dependencies": [
-        "StagingStack489318732371us-east-2",
-        "app-scoped-staging-test.assets"
+        "StagingStack-synthassets-489318732371-us-east-1",
+        "synth-test.assets"
       ],
       "metadata": {
-        "/app-scoped-staging-test/lambda/ServiceRole/Resource": [
+        "/synth-test/lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdaServiceRole494E4CA6"
           }
         ],
-        "/app-scoped-staging-test/lambda/Resource": [
+        "/synth-test/lambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambda8B5974B5"
           }
         ]
       },
-      "displayName": "app-scoped-staging-test"
+      "displayName": "synth-test"
     },
-    "StagingStack489318732371us-east-2": {
+    "StagingStack-synthassets-489318732371-us-east-1": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://489318732371/us-east-2",
+      "environment": "aws://489318732371/us-east-1",
       "properties": {
-        "templateFile": "StagingStack489318732371us-east-2.template.json",
+        "templateFile": "StagingStack-synthassets-489318732371-us-east-1.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2",
-        "stackName": "StagingStacknewId3"
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-1",
+        "stackName": "StagingStack-synthassets"
       },
       "metadata": {
-        "/StagingStack489318732371us-east-2/CdkFilePublishingRole/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkFilePublishingRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFilePublishingRole119E2944"
           }
         ],
-        "/StagingStack489318732371us-east-2/CdkFilePublishingRole/DefaultPolicy/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkFilePublishingRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFilePublishingRoleDefaultPolicyE914275E"
           }
         ],
-        "/StagingStack489318732371us-east-2/BucketKey/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/BucketKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKey7092080A"
           }
         ],
-        "/StagingStack489318732371us-east-2/BucketKey/Alias/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/BucketKey/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKeyAlias69A0886F"
           }
         ],
-        "/StagingStack489318732371us-east-2/CdkStagingBucket/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucket1636058C"
           }
         ],
-        "/StagingStack489318732371us-east-2/CdkStagingBucket/Policy/Resource": [
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkStagingBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucketPolicy42BD1F92"
           }
+        ],
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkImagePublishingRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImagePublishingRole87E59CEF"
+          }
+        ],
+        "/StagingStack-synthassets-489318732371-us-east-1/CdkImagePublishingRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImagePublishingRoleDefaultPolicy7638FA58"
+          }
+        ],
+        "/StagingStack-synthassets-489318732371-us-east-1/ecr-asset/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecrasset9899265E"
+          }
         ]
       },
-      "displayName": "StagingStack489318732371us-east-2"
+      "displayName": "StagingStack-synthassets-489318732371-us-east-1"
     },
     "integtestsDefaultTestDeployAssert44C8D370.assets": {
       "type": "cdk:asset-manifest",

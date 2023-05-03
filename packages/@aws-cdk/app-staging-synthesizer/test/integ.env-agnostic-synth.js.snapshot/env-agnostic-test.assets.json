@@ -16,7 +16,7 @@
     },
     "7e5e10cdde60d065b7d36115e2aaaf9b1341fccdc7abef3db56fbf2aff9491c1": {
       "source": {
-        "path": "app-scoped-staging-test.template.json",
+        "path": "env-agnostic-test.template.json",
         "packaging": "file"
       },
       "destinations": {

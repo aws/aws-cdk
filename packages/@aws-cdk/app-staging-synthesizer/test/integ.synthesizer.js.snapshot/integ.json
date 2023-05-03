@@ -3,7 +3,7 @@
   "testCases": {
     "integ-tests/DefaultTest": {
       "stacks": [
-        "app-scoped-staging-test"
+        "synth-test"
       ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"

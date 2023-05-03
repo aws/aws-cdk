@@ -1,97 +1,115 @@
 {
   "version": "31.0.0",
   "artifacts": {
-    "app-scoped-staging-test.assets": {
+    "env-agnostic-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "app-scoped-staging-test.assets.json"
+        "file": "env-agnostic-test.assets.json"
       }
     },
-    "app-scoped-staging-test": {
+    "env-agnostic-test": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "app-scoped-staging-test.template.json",
+        "templateFile": "env-agnostic-test.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "additionalDependencies": [
-          "app-scoped-staging-test.assets"
+          "env-agnostic-test.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-${AWS::AccountId}-${AWS::Region}-envagnostic/c4ae2b1e3d91cf74a8a9afe9c8fdf04a9d878a81be39798ff35dc15b5e8c9cce.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}/7e5e10cdde60d065b7d36115e2aaaf9b1341fccdc7abef3db56fbf2aff9491c1.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
         }
       },
       "dependencies": [
-        "StagingStack",
-        "app-scoped-staging-test.assets"
+        "StagingStack-envAgnostic-ACCOUNT-REGION",
+        "env-agnostic-test.assets"
       ],
       "metadata": {
-        "/app-scoped-staging-test/lambda/ServiceRole/Resource": [
+        "/env-agnostic-test/lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdaServiceRole494E4CA6"
           }
         ],
-        "/app-scoped-staging-test/lambda/Resource": [
+        "/env-agnostic-test/lambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lambda8B5974B5"
           }
         ]
       },
-      "displayName": "app-scoped-staging-test"
+      "displayName": "env-agnostic-test"
     },
-    "StagingStack": {
+    "StagingStack-envAgnostic-ACCOUNT-REGION": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "StagingStack.template.json",
+        "templateFile": "StagingStack-envAgnostic-ACCOUNT-REGION.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackName": "StagingStackenvAgnostic"
+        "stackName": "StagingStack-envAgnostic"
       },
       "metadata": {
-        "/StagingStack/CdkFilePublishingRole/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFilePublishingRole119E2944"
           }
         ],
-        "/StagingStack/CdkFilePublishingRole/DefaultPolicy/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkFilePublishingRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFilePublishingRoleDefaultPolicyE914275E"
           }
         ],
-        "/StagingStack/BucketKey/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKey7092080A"
           }
         ],
-        "/StagingStack/BucketKey/Alias/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/BucketKey/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKeyAlias69A0886F"
           }
         ],
-        "/StagingStack/CdkStagingBucket/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucket1636058C"
           }
         ],
-        "/StagingStack/CdkStagingBucket/Policy/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucketPolicy42BD1F92"
           }
+        ],
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImagePublishingRole87E59CEF"
+          }
+        ],
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/CdkImagePublishingRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkImagePublishingRoleDefaultPolicy7638FA58"
+          }
+        ],
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecrasset9899265E"
+          }
         ]
       },
-      "displayName": "StagingStack"
+      "displayName": "StagingStack-envAgnostic-ACCOUNT-REGION"
     },
     "integtestsDefaultTestDeployAssert44C8D370.assets": {
       "type": "cdk:asset-manifest",

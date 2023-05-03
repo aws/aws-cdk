@@ -34,11 +34,10 @@
      "Fn::Join": [
       "",
       [
-       "cdk-file-publishing-role-",
+       "cdk-envagnostic-file-publishing-role-",
        {
         "Ref": "AWS::Region"
-       },
-       "-envAgnostic"
+       }
       ]
      ]
     }
@@ -189,22 +188,7 @@
   "BucketKeyAlias69A0886F": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": {
-     "Fn::Join": [
-      "",
-      [
-       "alias/cdkstagingkey/",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       "-",
-       {
-        "Ref": "AWS::Region"
-       },
-       "-envAgnostic"
-      ]
-     ]
-    },
+    "AliasName": "alias/cdk-envagnostic-staging",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "BucketKey7092080A",
@@ -235,26 +219,34 @@
      "Fn::Join": [
       "",
       [
-       "cdk-",
+       "cdk-envagnostic-staging-",
        {
         "Ref": "AWS::AccountId"
        },
        "-",
        {
         "Ref": "AWS::Region"
-       },
-       "-envagnostic"
+       }
       ]
      ]
     },
     "LifecycleConfiguration": {
      "Rules": [
       {
-       "ExpirationInDays": 10,
-       "Prefix": "eph-",
+       "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 365
+       },
+       "Status": "Enabled"
+      },
+      {
+       "ExpirationInDays": 30,
+       "Prefix": "handoff/",
        "Status": "Enabled"
       }
      ]
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
     }
    },
    "UpdateReplacePolicy": "Retain",
@@ -268,6 +260,40 @@
     },
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
       {
        "Action": [
         "s3:GetBucket*",
@@ -327,6 +353,98 @@
      "Version": "2012-10-17"
     }
    }
+  },
+  "CdkImagePublishingRole87E59CEF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Fn::Join": [
+      "",
+      [
+       "cdk-envagnostic-asset-publishing-role-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "CdkImagePublishingRoleDefaultPolicy7638FA58": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ecrasset9899265E",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CdkImagePublishingRoleDefaultPolicy7638FA58",
+    "Roles": [
+     {
+      "Ref": "CdkImagePublishingRole87E59CEF"
+     }
+    ]
+   }
+  },
+  "ecrasset9899265E": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "RepositoryName": "ecr-asset"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  }
 }

@@ -341,7 +341,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,
-      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined, // TODO: check if this is necessary
     });
 
     if (dependencyStack) {
@@ -354,16 +354,18 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   /**
    * Add a docker image asset to the manifest.
    */
-  public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    // TODO: implement
-    throw new Error('Support for Docker Image Assets in AppStagingSynthesizer is not yet implemented. This construct is being actively worked on.');
-    // const { repoName, assumeRoleArn } = this.stagingStack.addDockerImage(asset);
+  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    const { repoName, assumeRoleArn, dependencyStack } = this.stagingStack.addDockerImage(asset);
+    const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
+      repositoryName: translateCfnTokenToAssetToken(repoName),
+      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined, // TODO: check if this is necessary
+      // TODO: more props
+    });
 
-    // const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
-    //   repositoryName: repoName,
-    //   role: { assumeRoleArn },
-    //   // TODO: more props
-    // });
-    // return this.cloudFormationLocationFromDockerImageAsset(location);
+    if (dependencyStack) {
+      this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+    }
+
+    return this.cloudFormationLocationFromDockerImageAsset(location);
   }
 }

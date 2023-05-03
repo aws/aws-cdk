@@ -342,6 +342,10 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       });
       if (this.imageRole) {
         this.stagingRepos[asset.assetName].grantPullPush(this.imageRole);
+        this.stagingRepos[asset.assetName].grant(this.imageRole, ...[
+          'ecr:DescribeRepositories',
+          'ecr:DescribeImages',
+        ]);
       }
     }
     return repoName;

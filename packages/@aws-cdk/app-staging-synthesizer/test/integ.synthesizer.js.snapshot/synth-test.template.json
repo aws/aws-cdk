@@ -35,8 +35,8 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-489318732371-us-east-2-newid3",
-     "S3Key": "47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53.zip"
+     "S3Bucket": "cdk-synthassets-staging-489318732371-us-east-1",
+     "S3Key": "0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip"
     },
     "Role": {
      "Fn::GetAtt": [
