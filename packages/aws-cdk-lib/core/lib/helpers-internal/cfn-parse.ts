@@ -466,6 +466,10 @@ export class CfnParser {
   }
 
   private parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
+    if (typeof policy === 'object') {
+      return this.parseValue(policy);
+    }
+
     switch (policy) {
       case null: return undefined;
       case undefined: return undefined;

@@ -616,6 +616,16 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly handles the DeletionPolicy resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-deletion-policy.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.deletionPolicy).toBeDefined();
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('resource-attribute-deletion-policy.json'),
+    );
+  });
+
   test('preserves unknown resource attributes', () => {
     includeTestTemplate(stack, 'non-existent-resource-attribute.json');
 

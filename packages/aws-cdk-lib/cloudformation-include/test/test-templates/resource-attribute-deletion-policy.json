@@ -1,0 +1,40 @@
+{
+  "Parameters": {
+    "WaitOnResourceSignals": {
+      "Type": "String",
+      "Default": "true"
+    }
+  },
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Resources": {
+    "CodeDeployApp": {
+      "Type": "AWS::CodeDeploy::Application"
+    },
+    "CodeDeployDg": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "Properties": {
+        "ApplicationName": { "Ref":  "CodeDeployApp" },
+        "ServiceRoleArn": "my-role-arn"
+      }
+    },
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy" : {
+        "Fn::If": [
+          "AlwaysFalseCond",
+          "Retain",
+          "Delete"
+        ]
+      }
+    }
+  }
+}
