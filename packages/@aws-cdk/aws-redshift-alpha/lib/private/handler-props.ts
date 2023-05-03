@@ -46,5 +46,9 @@ export interface Accessor {
 
 export interface UserTablePrivilegesHandlerProps {
   readonly accessor: Accessor;
+  /**
+   * @deprecated use `accessor` instead
+   */
+  readonly username?: string;
   readonly tablePrivileges: TablePrivilege[];
 }

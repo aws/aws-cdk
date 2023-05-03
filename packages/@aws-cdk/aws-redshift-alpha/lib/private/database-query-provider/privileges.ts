@@ -1,6 +1,6 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Accessor, AccessorType, TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { Accessor, TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
@@ -55,8 +55,9 @@ async function updatePrivileges(
     return { replace: true };
   }
 
-  const oldaccessor = oldResourceProperties.accessor;
-  if (oldaccessor !== accessor) {
+  const oldAccessor = oldResourceProperties.accessor;
+  const oldUsername = oldResourceProperties.username;
+  if (oldAccessor?.name ?? oldUsername !== accessor.name) {
     await grantPrivileges(accessor, tablePrivileges, clusterProps);
     return { replace: true };
   }
@@ -73,7 +74,7 @@ async function updatePrivileges(
 
 function getAccessorString(accessor: Accessor) {
   const res = accessor.name;
-  if (accessor.accessorType === AccessorType.USER) {
+  if (accessor.accessorType === 'USER') {
     return res;
   }
   return `${accessor.accessorType} ${res}`;
