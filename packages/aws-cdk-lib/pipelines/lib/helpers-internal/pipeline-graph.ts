@@ -169,7 +169,6 @@ export class PipelineGraph {
         );
 
     this.addPrePost(wave.pre, wave.post, retGraph);
-    // this.addPostPrepare(wave.postPrepare, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
     this.graph.add(retGraph);
 
@@ -181,7 +180,6 @@ export class PipelineGraph {
     wavePostPrepareSteps: Step[],
   ): AGraph {
     const retGraph: AGraph = Graph.of(stage.stageName, { type: 'group' });
-    const prepareNodes = new GraphNodeCollection(new Array<AGraphNode>());
     const stackGraphs = new Map<StackDeployment, AGraph>();
 
     if (stage.postPrepare.length > 0 && this.allPrepareNodesFirst === false) {
@@ -211,15 +209,10 @@ export class PipelineGraph {
       // node or node collection that represents first point of contact in each stack
       let firstDeployNode;
       if (prepareNode) {
-        prepareNodes.nodes.push(prepareNode);
-        // retGraph.add(prepareNode);
-
         if (this.allPrepareNodesFirst) {
           retGraph.add(prepareNode);
         } else {
           stackGraph.add(prepareNode);
-
-          // this.addPostPrepare(stage.postPrepare, stackGraph);
         }
 
         const postPrepareNodesWave = this.addPostPrepare(
@@ -323,8 +316,6 @@ export class PipelineGraph {
     }
 
     this.addPrePost(stage.pre, stage.post, retGraph);
-    // this.addPostPrepare(stage.addPostPrepare,)
-    // this.addPostPrepare(stage.postPrepare, retGraph);
     return retGraph;
   }
 
