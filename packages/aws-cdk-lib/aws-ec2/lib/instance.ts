@@ -419,6 +419,7 @@ export class Instance extends Resource implements IInstance {
       privateIpAddress: props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
+      networkInterfaces: props.associatePublicIpAddress ? [{ deviceIndex: '0', associatePublicIpAddress: true }] : undefined,
     });
     this.instance.node.addDependency(this.role);
 
