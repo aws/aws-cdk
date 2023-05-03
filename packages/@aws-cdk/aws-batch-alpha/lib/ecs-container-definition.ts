@@ -358,6 +358,13 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly volumes: EcsVolume[];
 
   /**
+   * The size for ephemeral storage.
+   *
+   * @default - no storage
+   */
+  readonly ephemeralStorage?: Size;
+
+  /**
    * Renders this container to CloudFormation
    *
    * @internal
@@ -466,6 +473,8 @@ export interface EcsContainerDefinitionProps {
 
   /**
    * The size for ephemeral storage.
+   *
+   * @default - no storage
    */
   readonly ephemeralStorage?: Size;
 }
