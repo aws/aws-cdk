@@ -48,7 +48,7 @@ const modelData = sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artif
 
 const modelWithArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithArtifactAndVpc', {
   containers: [{ image, modelData }],
-  vpc: new ec2.Vpc(stack, 'VPC'),
+  vpc: new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false }),
 });
 const modelWithoutArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithoutArtifactAndVpc', {
   containers: [{ image }],

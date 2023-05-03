@@ -8,7 +8,7 @@ const app = new App();
 
 const stack = new Stack(app, 'AwsCdkFsxLustre');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 const bucket = new s3.Bucket(stack, 'ImportBucket', {
   removalPolicy: RemovalPolicy.DESTROY,

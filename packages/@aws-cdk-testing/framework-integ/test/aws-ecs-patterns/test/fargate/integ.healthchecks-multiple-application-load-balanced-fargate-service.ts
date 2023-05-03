@@ -8,7 +8,7 @@ import { ApplicationMultipleTargetGroupsFargateService } from 'aws-cdk-lib/aws-e
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-fargate-multi-alb-health');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 // Two load balancers with two listeners and two target groups.
