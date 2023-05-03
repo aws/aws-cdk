@@ -13,6 +13,7 @@ const stackWithLb = new cdk.Stack(app, 'aws-cdk-elbv2-StackWithLb', {
 });
 
 const vpc = new ec2.Vpc(stackWithLb, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
   vpcName: 'my-vpc-name',
 });

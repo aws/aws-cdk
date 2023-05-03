@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-interface-vpc-endpoint', {
   },
 });
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
   vpc,

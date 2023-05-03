@@ -11,7 +11,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-ecs-integ-fargate');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 

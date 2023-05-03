@@ -6,7 +6,7 @@ import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
   name: 'boobar.com',

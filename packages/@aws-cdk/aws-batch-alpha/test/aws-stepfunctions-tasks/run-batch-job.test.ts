@@ -69,7 +69,7 @@ describeDeprecated('RunBatchJob', () => {
         JobName: 'JobName',
         JobQueue: {
           'Fn::GetAtt': [
-            'JobQueueC5644E0D',
+            'JobQueueEE3AD499',
             'JobQueueArn',
           ],
         },
@@ -124,7 +124,7 @@ describeDeprecated('RunBatchJob', () => {
         JobName: 'JobName',
         JobQueue: {
           'Fn::GetAtt': [
-            'JobQueueC5644E0D',
+            'JobQueueEE3AD499',
             'JobQueueArn',
           ],
         },
@@ -179,7 +179,7 @@ describeDeprecated('RunBatchJob', () => {
         'JobName.$': '$.jobName',
         'JobQueue': {
           'Fn::GetAtt': [
-            'JobQueueC5644E0D',
+            'JobQueueEE3AD499',
             'JobQueueArn',
           ],
         },

@@ -19,7 +19,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-neptune-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const kmsKey = new kms.Key(stack, 'DbSecurity', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,

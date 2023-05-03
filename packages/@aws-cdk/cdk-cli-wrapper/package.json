@@ -1,5 +1,5 @@
 {
-  "name": "cdk-cli-wrapper",
+  "name": "@aws-cdk/cdk-cli-wrapper",
   "description": "CDK CLI Wrapper Library",
   "private": true,
   "version": "0.0.0",
@@ -17,42 +17,8 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract",
-    "build+extract": "yarn build && yarn rosetta:extract",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract"
-  },
-  "jsii": {
-    "outdir": "dist",
-    "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.cdkcliwrapper",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-cli-wrapper"
-        }
-      },
-      "dotnet": {
-        "namespace": "Amazon.CDK.CdkCliWrapper",
-        "packageId": "Amazon.CDK.CdkCliWrapper",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
-      },
-      "python": {
-        "distName": "aws-cdk.cdk-cli-wrapper",
-        "module": "aws_cdk.cdk_cli_wrapper",
-        "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
-        ]
-      }
-    },
-    "projectReferences": true,
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
-    }
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -69,7 +35,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/cdk-cli-wrapper"
+    "directory": "packages/@aws-cdk/cdk-cli-wrapper"
   },
   "keywords": [
     "aws",

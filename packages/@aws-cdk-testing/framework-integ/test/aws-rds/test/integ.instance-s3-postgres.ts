@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-s3-postgres-integ');
 
 new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
-  vpc: new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1 }),
+  vpc: new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false }),
   multiAz: false,
   publiclyAccessible: true,
   iamAuthentication: true,

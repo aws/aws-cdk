@@ -6,7 +6,7 @@ import { NetworkMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patte
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-nlb-healthchecks');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 // Two load balancers with two listeners and two target groups.

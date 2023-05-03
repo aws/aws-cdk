@@ -3,6 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
 
@@ -12,6 +13,7 @@ class FeatureFlagStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
 
     const flowLog = vpc.addFlowLog('FlowLogsS3', {
@@ -40,6 +42,7 @@ class DependencyTestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
 
     const bucket = new s3.Bucket(this, 'Bucket', {
@@ -57,6 +60,7 @@ class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const vpc = new Vpc(this, 'VPC', { natGateways: 1 });
 
     new FlowLog(this, 'FlowLogsCW', {

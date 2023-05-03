@@ -17,7 +17,7 @@ class FeatureFlagStack extends cdk.Stack {
   public readonly bucket: s3.IBucket;
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     this.bucket = new s3.Bucket(this, 'LoggingBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,

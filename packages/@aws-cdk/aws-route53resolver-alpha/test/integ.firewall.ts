@@ -8,7 +8,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'Vpc', { maxAzs: 1 });
+    const vpc = new Vpc(this, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
 
     const blockList = new route53resolver.FirewallDomainList(this, 'BlockList', {
       domains: route53resolver.FirewallDomains.fromList(['bad-domain.com', 'bot-domain.net']),

@@ -573,6 +573,32 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
   });
 
+  test('attach necessary managed policy to instance role', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
   test('throws when no instance types are provided', () => {
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,

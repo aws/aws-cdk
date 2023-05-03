@@ -9,6 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 3,
+  restrictDefaultSecurityGroup: false,
 });
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {

@@ -608,6 +608,41 @@ resource.addMethod('GET', integration, {
 Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
 However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
 
+If you want to use `requestValidatorOptions` in multiple `addMethod()` calls
+then you need to set the `@aws-cdk/aws-apigateway:requestValidatorUniqueId`
+feature flag. When this feature flag is set, each `RequestValidator` will have a unique generated id.
+
+> **Note** if you enable this feature flag when you have already used
+> `addMethod()` with `requestValidatorOptions` the Logical Id of the resource
+> will change causing the resource to be replaced.
+
+```ts
+declare const integration: apigateway.LambdaIntegration;
+declare const resource: apigateway.Resource;
+declare const responseModel: apigateway.Model;
+declare const errorResponseModel: apigateway.Model;
+
+resource.node.setContext('@aws-cdk/aws-apigateway:requestValidatorUniqueId', true);
+
+resource.addMethod('GET', integration, {
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  },
+});
+
+resource.addMethod('POST', integration, {
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator2',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  },
+});
+```
+
 ## Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to

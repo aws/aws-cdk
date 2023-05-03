@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc5aee66236b7c22643f298a9dbade30928a43ce59854880e447781626009ffe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b7ced7357affd7e042169b0e624c985927080c1c2782ecab4a60b7b323cf14c4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,10 +45,10 @@
             "data": "ComputeEnvironmentC570994D"
           }
         ],
-        "/stack/MyQueue/MyQueue": [
+        "/stack/MyQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyQueue4F9177CF"
+            "data": "MyQueueE6CA6235"
           }
         ],
         "/stack/container/ExecutionRole/Resource": [
@@ -91,6 +91,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyQueue4F9177CF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue4F9177CF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

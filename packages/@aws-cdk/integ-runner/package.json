@@ -41,7 +41,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
+      "dontAttribute": "^@aws-cdk/|^cdk-assets$",
       "test": "bin/integ-runner --version"
     }
   },
@@ -70,7 +70,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "cdk-assets": "0.0.0",
-    "cdk-cli-wrapper": "0.0.0",
+    "@aws-cdk/cdk-cli-wrapper": "0.0.0",
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",

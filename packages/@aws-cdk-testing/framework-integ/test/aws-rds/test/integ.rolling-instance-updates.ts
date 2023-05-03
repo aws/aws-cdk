@@ -12,6 +12,7 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props: RollingInstanceUpdateTestStackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc', {
+      restrictDefaultSecurityGroup: false,
       maxAzs: 2,
     });
 

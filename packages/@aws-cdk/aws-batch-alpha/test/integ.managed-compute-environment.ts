@@ -7,7 +7,7 @@ import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvi
 
 const app = new App();
 const stack = new Stack(app, 'batch-stack');
-const vpc = new ec2.Vpc(stack, 'vpc');
+const vpc = new ec2.Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
 new FargateComputeEnvironment(stack, 'minimalPropsFargate', {
   vpc,
