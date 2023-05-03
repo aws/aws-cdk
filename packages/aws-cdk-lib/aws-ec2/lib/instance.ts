@@ -273,9 +273,7 @@ export interface InstanceProps {
   readonly ssmSessionPermissions?: boolean;
 
   /**
-   * Whether to associate a public IP address to the primary network interface attached to this instance
-   *
-   * @default true
+   * Whether to associate a public IP address to the primary network interface attached to this instance.
    */
   readonly associatePublicIpAddress?: boolean;
 }
@@ -380,7 +378,7 @@ export class Instance extends Resource implements IInstance {
     const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
-    const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnets, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
     if (props.availabilityZone) {
       const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
@@ -422,6 +420,10 @@ export class Instance extends Resource implements IInstance {
       networkInterfaces: props.associatePublicIpAddress ? [{ deviceIndex: '0', associatePublicIpAddress: true }] : undefined,
     });
     this.instance.node.addDependency(this.role);
+
+    if (!hasPublic && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+    }
 
     this.osType = imageConfig.osType;
     this.node.defaultChild = this.instance;
