@@ -85,6 +85,7 @@ export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTem
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
+export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 
@@ -753,6 +754,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [EC2_RESTRICT_DEFAULT_SECURITY_GROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'Restrict access to the VPC default security group',
+    detailsMd: `
+      Enable this feature flag to remove the default ingress/egress rules from the
+      VPC default security group.
+
+      When a VPC is created, a default security group is created as well and this cannot
+      be deleted. The default security group is created with ingress/egress rules that allow
+      _all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
+      removing these ingress/egress rules in order to restrict access to the default security group.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: `
+      To allow all ingress/egress traffic to the VPC default security group you
+      can set the \`restrictDefaultSecurityGroup: false\`.
+    `,
+   },
+   
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {
     type: FlagType.BugFix,
