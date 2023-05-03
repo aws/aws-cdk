@@ -52,7 +52,7 @@ async function loadAwsSdk(
       awsSdk = await import(packageName);
     }
   } catch (error) {
-    throw Error(`Service ${packageName} does not exist in AWS SDK.`);
+    throw Error(`Package ${packageName} does not exist.`);
   }
   return awsSdk;
 }
