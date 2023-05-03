@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as redshift from '../lib';
 
 describe('table privileges', () => {
@@ -46,16 +46,34 @@ describe('table privileges', () => {
 
   it('adding table privilege creates custom resource', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
+    const userGroup = new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.INSERT);
     user.addTablePrivileges(table2, redshift.TableAction.SELECT, redshift.TableAction.DROP);
+    userGroup.addTablePrivileges(table, redshift.TableAction.INSERT);
+    userGroup.addTablePrivileges(table2, redshift.TableAction.SELECT, redshift.TableAction.DROP);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+      accessor: {
+        accessorType: 'USER',
+        name: {
+          'Fn::GetAtt': [
+            'UserFDDCDD17',
+            'username',
+          ],
+        },
+      },
+      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }, { tableName: 'tableName2', actions: ['SELECT', 'DROP'] }],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      accessor: {
+        accessorType: 'GROUP',
+        name: {
+          'Fn::GetAtt': [
+            'UserGroup18C57AC1',
+            'groupName',
+          ],
+        },
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }, { tableName: 'tableName2', actions: ['SELECT', 'DROP'] }],
     });
@@ -63,16 +81,34 @@ describe('table privileges', () => {
 
   it('table privileges are deduplicated', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
+    const userGroup = new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
     user.addTablePrivileges(table, redshift.TableAction.SELECT, redshift.TableAction.DELETE);
+    userGroup.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
+    userGroup.addTablePrivileges(table, redshift.TableAction.SELECT, redshift.TableAction.DELETE);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+      accessor: {
+        accessorType: 'USER',
+        name: {
+          'Fn::GetAtt': [
+            'UserFDDCDD17',
+            'username',
+          ],
+        },
+      },
+      tablePrivileges: [{ tableName: 'tableName', actions: ['SELECT', 'DELETE', 'INSERT'] }],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      accessor: {
+        accessorType: 'GROUP',
+        name: {
+          'Fn::GetAtt': [
+            'UserGroup18C57AC1',
+            'groupName',
+          ],
+        },
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['SELECT', 'DELETE', 'INSERT'] }],
     });
@@ -80,15 +116,32 @@ describe('table privileges', () => {
 
   it('table privileges are removed when ALL specified', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
+    const userGroup = new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.ALL, redshift.TableAction.INSERT);
+    userGroup.addTablePrivileges(table, redshift.TableAction.ALL, redshift.TableAction.INSERT);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+      accessor: {
+        accessorType: 'USER',
+        name: {
+          'Fn::GetAtt': [
+            'UserFDDCDD17',
+            'username',
+          ],
+        },
+      },
+      tablePrivileges: [{ tableName: 'tableName', actions: ['ALL'] }],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      accessor: {
+        accessorType: 'GROUP',
+        name: {
+          'Fn::GetAtt': [
+            'UserGroup18C57AC1',
+            'groupName',
+          ],
+        },
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['ALL'] }],
     });
@@ -96,16 +149,34 @@ describe('table privileges', () => {
 
   it('SELECT table privilege is added when UPDATE or DELETE is specified', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
+    const userGroup = new redshift.UserGroup(stack, 'UserGroup', databaseOptions);
 
     user.addTablePrivileges(table, redshift.TableAction.UPDATE);
     user.addTablePrivileges(table2, redshift.TableAction.DELETE);
+    userGroup.addTablePrivileges(table, redshift.TableAction.UPDATE);
+    userGroup.addTablePrivileges(table2, redshift.TableAction.DELETE);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
-      username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+      accessor: {
+        accessorType: 'USER',
+        name: {
+          'Fn::GetAtt': [
+            'UserFDDCDD17',
+            'username',
+          ],
+        },
+      },
+      tablePrivileges: [{ tableName: 'tableName', actions: ['UPDATE', 'SELECT'] }, { tableName: 'tableName2', actions: ['DELETE', 'SELECT'] }],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      accessor: {
+        accessorType: 'GROUP',
+        name: {
+          'Fn::GetAtt': [
+            'UserGroup18C57AC1',
+            'groupName',
+          ],
+        },
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['UPDATE', 'SELECT'] }, { tableName: 'tableName2', actions: ['DELETE', 'SELECT'] }],
     });

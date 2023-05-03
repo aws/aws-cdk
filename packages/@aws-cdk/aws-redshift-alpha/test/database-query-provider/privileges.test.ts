@@ -1,7 +1,8 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
+import { AccessorType } from '../../lib/private/handler-props';
 
-const username = 'username';
+const accessor = { accessorType: AccessorType.USER, name: 'username' };
 const tableName = 'tableName';
 const tablePrivileges = [{ tableName, actions: ['INSERT', 'SELECT'] }];
 const clusterName = 'clusterName';
@@ -9,7 +10,7 @@ const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
 const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
-  username,
+  accessor,
   tablePrivileges,
   clusterName,
   adminUserArn,
@@ -51,7 +52,7 @@ describe('create', () => {
       PhysicalResourceId: 'clusterName:databaseName:username:requestId',
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${accessor.name}`,
     }));
   });
 });
@@ -69,7 +70,7 @@ describe('delete', () => {
     await managePrivileges(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${accessor.name}`,
     }));
   });
 });
@@ -127,18 +128,33 @@ describe('update', () => {
     }));
   });
 
-  test('replaces if user name changes', async () => {
-    const newUsername = 'newUsername';
+  test('replaces if accessor changes', async () => {
+    const newAccessor = { accessorType: AccessorType.USER, name: 'newUsername' };
     const newResourceProperties = {
       ...resourceProperties,
-      username: newUsername,
+      accessor: newAccessor,
     };
 
     await expect(managePrivileges(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`GRANT .* TO ${newUsername}`)),
+      Sql: expect.stringMatching(new RegExp(`GRANT .* TO ${newAccessor.name}`)),
+    }));
+  });
+
+  test('replaces if accessor type changes', async () => {
+    const newAccessor = { accessorType: AccessorType.USER_GROUP, name: 'newGroupName' };
+    const newResourceProperties = {
+      ...resourceProperties,
+      accessor: newAccessor,
+    };
+
+    await expect(managePrivileges(newResourceProperties, event)).resolves.not.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`GRANT .* TO GROUP ${newAccessor.name}`)),
     }));
   });
 
@@ -154,10 +170,10 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${accessor.name}`,
     }));
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT DROP ON ${newTableName} TO ${username}`,
+      Sql: `GRANT DROP ON ${newTableName} TO ${accessor.name}`,
     }));
   });
 });

@@ -1,11 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { DatabaseQuery } from './database-query';
-import { HandlerName } from './database-query-provider/handler-name';
-import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 import { DatabaseOptions } from '../database-options';
 import { ITable, TableAction } from '../table';
 import { IUser } from '../user';
+import { IUserGroup } from '../user-group';
+import { DatabaseQuery } from './database-query';
+import { HandlerName } from './database-query-provider/handler-name';
+import { AccessorType, Accessor as SerializedAccessor, TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 
 /**
  * The Redshift table and action that make up a privilege that can be granted to a Redshift user.
@@ -22,14 +23,16 @@ export interface TablePrivilege {
   readonly actions: TableAction[];
 }
 
+type Accessor = IUser | IUserGroup;
+
 /**
  * Properties for specifying privileges granted to a Redshift user on Redshift tables.
  */
 export interface UserTablePrivilegesProps extends DatabaseOptions {
   /**
-   * The user to which privileges will be granted.
+   * The entity to which privileges will be granted. This is not public facing, therefore union types are allowed.
    */
-  readonly user: IUser;
+  readonly accessor: Accessor;
 
   /**
    * The privileges to be granted.
@@ -59,7 +62,7 @@ export class UserTablePrivileges extends Construct {
       ...props,
       handler: HandlerName.UserTablePrivileges,
       properties: {
-        username: props.user.username,
+        accessor: this.resolveAccessor(props.accessor),
         tablePrivileges: cdk.Lazy.any({
           produce: () => {
             const reducedPrivileges = this.privileges.reduce((privileges, { table, actions }) => {
@@ -93,5 +96,21 @@ export class UserTablePrivileges extends Construct {
    */
   addPrivileges(table: ITable, ...actions: TableAction[]): void {
     this.privileges.push({ table, actions });
+  }
+
+  private resolveAccessor(accessor: Accessor): SerializedAccessor {
+    if ('username' in accessor) {
+      return {
+        accessorType: AccessorType.USER,
+        name: accessor.username,
+      };
+    } else if ('groupName' in accessor) {
+      return {
+        accessorType: AccessorType.USER_GROUP,
+        name: accessor.groupName,
+      };
+    } else {
+      throw new Error('Accessor must be a user or group');
+    }
   }
 }

@@ -5,6 +5,8 @@ import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
 import { HandlerName } from './private/database-query-provider/handler-name';
 import { UserGroupHandlerProps } from './private/handler-props';
+import { UserTablePrivileges } from './private/privileges';
+import { ITable, TableAction } from './table';
 import { IUser } from './user';
 
 /**
@@ -53,6 +55,11 @@ export interface IUserGroup extends IConstruct {
    * The name of the database where the user group is located.
    */
   readonly databaseName: string;
+
+  /**
+   * Grant this user group privilege to access a table.
+   */
+  addTablePrivileges(table: ITable, ...actions: TableAction[]): void;
 }
 
 /**
@@ -69,6 +76,24 @@ abstract class UserGroupBase extends Construct implements IUserGroup {
   abstract readonly groupName: string;
   abstract readonly cluster: ICluster;
   abstract readonly databaseName: string;
+
+  /**
+   * The tables that user group will have access to
+   */
+  private privileges?: UserTablePrivileges;
+
+  protected abstract readonly databaseProps: DatabaseOptions;
+
+  addTablePrivileges(table: ITable, ...actions: TableAction[]): void {
+    if (!this.privileges) {
+      this.privileges = new UserTablePrivileges(this, 'TablePrivileges', {
+        ...this.databaseProps,
+        accessor: this,
+      });
+    }
+
+    this.privileges.addPrivileges(table, ...actions);
+  }
 }
 
 export class UserGroup extends UserGroupBase {
@@ -80,6 +105,7 @@ export class UserGroup extends UserGroupBase {
       readonly groupName = attrs.groupName;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
+      protected readonly databaseProps = attrs;
     }(scope, id);
   }
 

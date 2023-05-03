@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import * as redshift from '../lib';
@@ -104,7 +104,7 @@ describe('cluster table', () => {
       databaseName: 'databaseName',
     });
 
-    table.grant(user, redshift.TableAction.INSERT);
+    table.grant(redshift.Accessor.user(user), redshift.TableAction.INSERT);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       handler: 'user-table-privileges',

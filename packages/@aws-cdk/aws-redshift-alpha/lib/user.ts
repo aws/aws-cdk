@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as cdk from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
@@ -103,7 +103,7 @@ abstract class UserBase extends Construct implements IUser {
     if (!this.privileges) {
       this.privileges = new UserTablePrivileges(this, 'TablePrivileges', {
         ...this.databaseProps,
-        user: this,
+        accessor: this,
       });
     }
 

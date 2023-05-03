@@ -9,6 +9,7 @@ import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
+import { IUserGroup } from './user-group';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
@@ -50,6 +51,28 @@ export enum TableAction {
    * Grants all available privileges at once to the specified user or user group.
    */
   ALL
+}
+
+/**
+ * The different Redshift entities that can be granted privileges on a table.
+ */
+export class Accessor {
+
+  /**
+   * A Redshift User.
+   */
+  public static user(user: IUser): Accessor {
+    return new Accessor(user);
+  }
+
+  /**
+   * A Redshift User Group.
+   */
+  public static userGroup(userGroup: IUserGroup): Accessor {
+    return new Accessor(userGroup);
+  }
+
+  private constructor(readonly accessorEntity: IUser | IUserGroup) {}
 }
 
 /**
@@ -176,9 +199,9 @@ export interface ITable extends IConstruct {
   readonly databaseName: string;
 
   /**
-   * Grant a user privilege to access this table.
+   * Grant an entity privilege to access this table.
    */
-  grant(user: IUser, ...actions: TableAction[]): void;
+  grant(accessor: Accessor, ...actions: TableAction[]): void;
 }
 
 /**
@@ -211,8 +234,9 @@ abstract class TableBase extends Construct implements ITable {
   abstract readonly tableColumns: Column[];
   abstract readonly cluster: ICluster;
   abstract readonly databaseName: string;
-  grant(user: IUser, ...actions: TableAction[]) {
-    user.addTablePrivileges(this, ...actions);
+  grant(accessor: Accessor, ...actions: TableAction[]) {
+    const accessEntity = accessor.accessorEntity;
+    accessEntity.addTablePrivileges(this, ...actions);
   }
 }
 

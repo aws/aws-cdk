@@ -1,5 +1,10 @@
 import { Column, TableDistStyle, TableSortStyle } from '../table';
 
+export enum AccessorType {
+  USER = 'USER',
+  USER_GROUP = 'GROUP',
+}
+
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
   readonly clusterName: string;
@@ -34,7 +39,12 @@ export interface TablePrivilege {
   readonly actions: string[];
 }
 
+export interface Accessor {
+  readonly accessorType: AccessorType;
+  readonly name: string;
+}
+
 export interface UserTablePrivilegesHandlerProps {
-  readonly username: string;
+  readonly accessor: Accessor;
   readonly tablePrivileges: TablePrivilege[];
 }
