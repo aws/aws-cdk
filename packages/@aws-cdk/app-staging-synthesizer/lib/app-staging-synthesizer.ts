@@ -320,7 +320,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const templateAssetSource = this.synthesizeTemplate(session, this.props.lookupRole?._arnForCloudAssembly());
     const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {}, [this.stagingStack.dependencyStack.artifactId]);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {} /*[this.stagingStack.dependencyStack.artifactId]*/);
 
     const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
 
@@ -338,6 +338,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const { bucketName, assumeRoleArn, prefix, dependencyStack } = this.stagingStack.addFile(asset);
+    console.log('hereeee', assumeRoleArn);
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,

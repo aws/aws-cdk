@@ -8,7 +8,7 @@ import { IStagingStack, IStagingStackFactory, ObtainStagingResourcesContext } fr
  * This is a global because we might have multiple instances of this class
  * in the app, but we want to cache across all of them.
  */
-const ENVIRONMENT_CACHE = new AppScopedGlobal(() => new Map<string, IStagingStack>);
+const ENVIRONMENT_CACHE = new AppScopedGlobal(() => new Map<string, IStagingStack>());
 
 /**
  * Wraps another IStagingStack factory, and caches the result on a per-environment basis

@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { isAssetManifest } from 'aws-cdk-lib/pipelines/lib/private/cloud-assembly-internals';
-import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
+import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE, isAssetManifest } from './util';
 import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 describe('Boostrap Roles', () => {

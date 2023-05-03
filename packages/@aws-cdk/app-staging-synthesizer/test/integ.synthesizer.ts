@@ -6,13 +6,13 @@ import { AppStagingSynthesizer } from '../lib';
 
 const app = new App();
 
-const stack = new Stack(app, 'app-scoped-staging-test', {
+const stack = new Stack(app, 'kaizentest3', {
   synthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'newId3',
+    appId: 'kaikai',
   }),
   env: {
     account: '489318732371',
-    region: 'us-east-2',
+    region: 'us-east-1',
   },
 });
 
