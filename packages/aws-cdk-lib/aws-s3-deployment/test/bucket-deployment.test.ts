@@ -222,6 +222,27 @@ test('deploy from a local .zip file', () => {
 
 });
 
+test('AWS_CA_BUNDLE is set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('test', 'test')],
+    destinationBucket: bucket,
+  });
+
+  //THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+      },
+    },
+  });
+});
+
 test('deploy from a local .zip file when efs is enabled', () => {
   // GIVEN
   const stack = new cdk.Stack();
