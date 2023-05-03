@@ -30,16 +30,6 @@ export interface GithubStatusEvent {
   readonly context?: string;
 }
 
-// export interface GitHubPr {
-//   readonly number: number;
-//   readonly title: string;
-//   readonly body: string | null;
-//   readonly labels: GitHubLabel[];
-//   readonly user?: {
-//     login: string;
-//   }
-// }
-
 export interface GitHubLabel {
   readonly name: string;
 }
