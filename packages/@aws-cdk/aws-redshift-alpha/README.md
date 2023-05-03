@@ -152,6 +152,68 @@ plaintext for the password will never be present in the CDK application; instead
 Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html)
 will be used wherever the password value is required.
 
+### Creating User Groups
+
+Create a user group within a Redshift cluster database by instantiating a `UserGroup` construct. This
+will make a query to the Redshift cluster to create a new database user group.
+
+```ts fixture=cluster
+new UserGroup(this, 'UserGroup', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+By default, a group name is automatically generated from the user group construct ID and its path
+in the construct tree. You can specify a particular group name by providing a value for the `groupName`
+property. Group names must be valid identifiers; see: [Names and identifiers](https://docs.aws.amazon.com/redshift/latest/dg/r_names.html) in the *Amazon
+Redshift Database Developer Guide*.
+In addition, group names with two underscores '__' are reserved for Amazon Redshift internal use.
+
+```ts fixture=cluster
+new UserGroup(this, 'UserGroup', {
+  groupName: 'mygroup',
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+User Groups can be configured to contain users:
+
+```ts fixture=cluster
+const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+new UserGroup(this, 'UserGroup', {
+  users: [user],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
+Granting privileges to a user group will grant privileges to all users in the group.
+
+```ts fixture=cluster
+const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+const userGroup = new UserGroup(this, 'UserGroup', {
+  users: [user],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+const table = new Table(this, 'Table', {
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+userGroup.addTablePrivileges(table, TableAction.INSERT);
+```
+
+Please read further below regarding the delicate nature of granting table privileges.
+
 ### Creating Tables
 
 Create a table within a Redshift cluster database by instantiating a `Table`
@@ -240,11 +302,16 @@ new Table(this, 'Table', {
 
 ### Granting Privileges
 
-You can give a user privileges to perform certain actions on a table by using the
+You can give users and user groups privileges to perform certain actions on a table by using the
 `Table.grant()` method.
 
 ```ts fixture=cluster
 const user = new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+const userGroup = new UserGroup(this, 'UserGroup', {
+  users: [user],
   cluster: cluster,
   databaseName: 'databaseName',
 });
@@ -254,10 +321,11 @@ const table = new Table(this, 'Table', {
   databaseName: 'databaseName',
 });
 
-table.grant(user, TableAction.DROP, TableAction.SELECT);
+table.grant(Accessor.user(user), TableAction.DROP, TableAction.SELECT);
+table.grant(Accessor.userGroup(userGroup), TableAction.INSERT);
 ```
 
-Take care when managing privileges via the CDK, as attempting to manage a user's
+Take care when managing privileges via the CDK, as attempting to manage a entities
 privileges on the same table in multiple CDK applications could lead to accidentally
 overriding these permissions. Consider the following two CDK applications which both refer
 to the same user and table. In application 1, the resources are created and the user is
@@ -278,7 +346,7 @@ const table = new Table(this, 'Table', {
   cluster: cluster,
   databaseName: databaseName,
 });
-table.grant(user, TableAction.INSERT);
+table.grant(Accessor.user(user), TableAction.INSERT);
 ```
 
 In application 2, the resources are imported and the user is given `INSERT` permissions on
@@ -301,7 +369,7 @@ const table = Table.fromTableAttributes(this, 'Table', {
   cluster: cluster,
   databaseName: 'databaseName',
 });
-table.grant(user, TableAction.INSERT);
+table.grant(Accessor.user(user), TableAction.INSERT);
 ```
 
 Both applications attempt to grant the user the appropriate privilege on the table by
