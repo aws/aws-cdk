@@ -267,6 +267,14 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   readonly outputs?: string[];
 
   /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using AppScopedStagingSynthesizer.
+   *
+   * @default - no asset name
+   */
+  readonly assetName?: string;
+
+  /**
    * Cache from options to pass to the `docker build` command.
    *
    * @default - no cache from options are passed to the build command
@@ -360,6 +368,14 @@ export class DockerImageAsset extends Construct implements IAsset {
    * Outputs to pass to the `docker build` command.
    */
   private readonly dockerOutputs?: string[];
+
+  /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using AppScopedStagingSynthesizer.
+   *
+   * @default - no asset name
+   */
+  private readonly assetName?: string;
 
   /**
    * Cache from options to pass to the `docker build` command.
@@ -458,6 +474,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
+    this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildSecrets = props.buildSecrets;
     this.dockerBuildTarget = props.target;
@@ -467,6 +484,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
+      assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
       dockerBuildSecrets: this.dockerBuildSecrets,
       dockerBuildTarget: this.dockerBuildTarget,
