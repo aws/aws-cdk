@@ -89,9 +89,11 @@ class AwsCdkSdkJsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ParameterValue', { value: getParameter.getResponseField('Parameter.Value') });
     new cdk.CfnOutput(this, 'ParameterValueNoPolicy', { value: getParameterNoPolicy.getResponseField('Parameter.Value') });
 
-    const awsCustomResourceProviderId ='AWS679f53fac002430cb0da5b7982bd2287';
-    const provider = this.node.findChild(awsCustomResourceProviderId).node.defaultChild as lambda.CfnFunction;
-    provider.runtime = props?.runtime?.name ?? provider.runtime;
+    if (props?.runtime) {
+      const awsCustomResourceProviderId ='AWS679f53fac002430cb0da5b7982bd2287';
+      const provider = this.node.findChild(awsCustomResourceProviderId).node.defaultChild as lambda.CfnFunction;
+      provider.runtime = props.runtime.name;
+    }
   }
 }
 
