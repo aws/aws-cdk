@@ -653,3 +653,21 @@ test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
 });
 
+test('associate public IP address with primary network interface', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    sourceDestCheck: false,
+    associatePublicIpAddress: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    NetworkInterfaces: [{
+      AssociatePublicIpAddress: true,
+      DeviceIndex: '0',
+    }],
+  });
+});
