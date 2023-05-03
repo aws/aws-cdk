@@ -13,7 +13,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     const params = new ClusterParameterGroup(this, 'Params', {
       family: 'docdb3.6',
