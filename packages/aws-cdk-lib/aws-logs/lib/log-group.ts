@@ -389,7 +389,7 @@ export interface LogGroupProps {
   /**
    * Data Protection Policy for this log group.
    *
-   * @default null
+   * @default - no data protection policy
    */
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
@@ -481,7 +481,7 @@ export class LogGroup extends LogGroupBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
-      dataProtectionPolicy: props.dataProtectionPolicy,
+      dataProtectionPolicy: props.dataProtectionPolicy?.bind(this),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

@@ -364,7 +364,7 @@ const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
 });
 
-const dataProtectionPolicy = new DataProtectionPolicy(this, {
+const dataProtectionPolicy = new DataProtectionPolicy({
   name: 'data protection policy',
   description: 'policy description',
   identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],

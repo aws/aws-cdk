@@ -11,7 +11,7 @@ class LogGroupIntegStack extends Stack {
 
     var bucket = new Bucket(this, 'audit-bucket-id');
 
-    const dataProtectionPolicy = new DataProtectionPolicy(this, {
+    const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'policy-name',
       description: 'policy description',
       identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],

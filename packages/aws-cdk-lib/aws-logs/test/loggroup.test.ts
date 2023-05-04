@@ -460,7 +460,7 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
+    const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'test-policy-name',
       description: 'test description',
       identifiers: [DataIdentifier.EMAILADDRESS],
@@ -530,7 +530,7 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
+    const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'test-policy-name',
       description: 'test description',
       identifiers: [new DataIdentifier('NewIdentifier')],
@@ -604,7 +604,7 @@ describe('log group', () => {
     const auditS3Bucket = new Bucket(stack, 'BucketAudit', {bucketName: 'audit-bucket'});
     const auditDeliveryStreamName = 'delivery-stream-name';
 
-    const dataProtectionPolicy = new DataProtectionPolicy(stack, {
+    const dataProtectionPolicy = new DataProtectionPolicy({
       identifiers: [DataIdentifier.EMAILADDRESS],
       logGroupAuditDestination: auditLogGroup,
       s3BucketAuditDestination: auditS3Bucket,

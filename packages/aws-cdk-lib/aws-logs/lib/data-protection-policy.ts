@@ -3,74 +3,60 @@ import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { IBucket } from '../../aws-s3';
 /**
- * Represents a data protection policy in a log group.
+ * Creates a data protection policy for CloudWatch Logs log groups.
  */
 export class DataProtectionPolicy {
 
-  /**
-   * Name of the data protection policy
-   *
-   * @default - 'data-protection-policy-cdk'
-   */
-  public readonly name: string;
+  private readonly dataProtectionPolicyProps: DataProtectionPolicyProps;
+
+  constructor(props: DataProtectionPolicyProps) {
+    if (props.identifiers.length == 0) {
+      throw new Error("DataIdentifier cannot be empty");
+    }
+    this.dataProtectionPolicyProps = props;
+  }
 
   /**
-   * Description of the data protection policy
-   *
-   * @default - 'cdk generated data protection policy'
+   * Builds the data protection policy
+   * @param scope the Construct scope
+   * @returns the data protection policy
    */
-  public readonly description: string;
-
-  /**
-   * Version of the data protection policy
-   */
-  public readonly version: string;
-
-  /**
-   * Statements within the data protection policy. Must contain one Audit and one Redact statement
-   */
-  public statement: any;
-
-  constructor(scope: Construct, props: DataProtectionPolicyProps) {
-    this.name = props.name || 'data-protection-policy-cdk';
-    this.description = props.description || 'cdk generated data protection policy';
-    this.version = '2021-06-01';
+  public bind(scope: Construct): DataProtectionPolicyConfig {
+    const name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
+    const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
+    const version = '2021-06-01';
 
     const findingsDestination: FindingsDestination = {};
-
-    if (props.logGroupAuditDestination) {
+    if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
       findingsDestination.cloudWatchLogs = {
-        logGroup: props.logGroupAuditDestination.logGroupName,
+        logGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
       };
     }
 
-    if (props.s3BucketAuditDestination) {
+    if (this.dataProtectionPolicyProps.s3BucketAuditDestination) {
       findingsDestination.s3 = {
-        bucket: props.s3BucketAuditDestination.bucketName,
+        bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
       };
     }
 
-    if (props.deliveryStreamNameAuditDestination) {
+    if (this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination) {
       findingsDestination.firehose = {
-        deliveryStream: props.deliveryStreamNameAuditDestination,
+        deliveryStream: this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination,
       };
     }
 
     var identifierArns: string[] = [];
-    if (props.identifiers != null) {
-      for (let identifier of props.identifiers) {
-        let identifierArn = Stack.of(scope).formatArn({
-          resource: 'data-identifier',
-          region: '',
-          account: 'aws',
-          service: 'dataprotection',
-          resourceName: identifier.toString(),
-        });
-        identifierArns.push(identifierArn);
-      };
-    }
+    for (let identifier of this.dataProtectionPolicyProps.identifiers) {
+      identifierArns.push(Stack.of(scope).formatArn({
+        resource: 'data-identifier',
+        region: '',
+        account: 'aws',
+        service: 'dataprotection',
+        resourceName: identifier.toString(),
+      }));
+    };
 
-    this.statement = [
+    const statement = [
       {
         sid: 'audit-statement-cdk',
         dataIdentifier: identifierArns,
@@ -90,6 +76,7 @@ export class DataProtectionPolicy {
         },
       },
     ];
+    return {name, description, version, statement};
   }
 }
 
@@ -112,7 +99,36 @@ interface S3Destination {
 }
 
 /**
- * Interface for creating a data protection policy
+ * Interface representing a data protection policy
+ */
+export interface DataProtectionPolicyConfig {
+  /**
+   * Name of the data protection policy
+   *
+   * @default - 'data-protection-policy-cdk'
+   */
+  readonly name: string;
+
+  /**
+   * Description of the data protection policy
+   *
+   * @default - 'cdk generated data protection policy'
+   */
+  readonly description: string;
+
+  /**
+   * Version of the data protection policy
+   */
+  readonly version: string;
+
+  /**
+   * Statements within the data protection policy. Must contain one Audit and one Redact statement
+   */
+  readonly statement: any;
+}
+
+/**
+ * Properties for creating a data protection policy
  */
 export interface DataProtectionPolicyProps {
   /**
@@ -132,9 +148,8 @@ export interface DataProtectionPolicyProps {
   /**
    * List of data protection identifiers. Must be in the following list: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html
    *
-   * @default - no identifiers
    */
-  readonly identifiers?: DataIdentifier[];
+  readonly identifiers: DataIdentifier[];
 
   /**
    * CloudWatch Logs log group to send audit findings to. The log group must already exist prior to creating the data protection policy.
