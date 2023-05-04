@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de5111445787493cd3b1c26d2c29037318b0e6a52ebffbf616d04c6590ae9b5f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02f57d4a4fe6e856437076797ed3037dbed370ebb26574bc4a5d570ab0b0b478.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "ComputeEnv2C40ACC2"
           }
         ],
-        "/aws-stepfunctions-integ/JobQueue/JobQueue": [
+        "/aws-stepfunctions-integ/JobQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "JobQueueC5644E0D"
+            "data": "JobQueueEE3AD499"
           }
         ],
         "/aws-stepfunctions-integ/Container/ExecutionRole/Resource": [
@@ -259,6 +259,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "JobQueueC5644E0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobQueueC5644E0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

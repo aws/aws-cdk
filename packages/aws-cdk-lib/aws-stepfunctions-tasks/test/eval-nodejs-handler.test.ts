@@ -1,6 +1,14 @@
 import { Event } from '../lib';
 import { handler } from '../lib/eval-nodejs-handler';
 
+beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+
 test('with numbers', async () => {
   // GIVEN
   const event: Event = {

@@ -12,6 +12,14 @@
             "id": "UserRole",
             "path": "integ-kinesis-stream/UserRole",
             "children": {
+              "ImportUserRole": {
+                "id": "ImportUserRole",
+                "path": "integ-kinesis-stream/UserRole/ImportUserRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-kinesis-stream/UserRole/Resource",
@@ -48,7 +56,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               },
@@ -97,19 +105,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -136,20 +144,17 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    },
-                    "streamModeDetails": {
-                      "streamMode": "PROVISIONED"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
               "version": "0.0.0"
             }
           },
@@ -157,7 +162,7 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "integ-kinesis-stream/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnCondition",
+              "fqn": "aws-cdk-lib.CfnCondition",
               "version": "0.0.0"
             }
           },
@@ -165,7 +170,7 @@
             "id": "BootstrapVersion",
             "path": "integ-kinesis-stream/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -173,13 +178,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-kinesis-stream/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -188,12 +193,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.78.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.77.0-alpha.0...v2.78.0-alpha.0) (2023-05-03)
+
+## [2.77.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.76.0-alpha.0...v2.77.0-alpha.0) (2023-04-26)
+
+## [2.76.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.76.0-alpha.0...v2.76.1-alpha.0) (2023-04-21)
+
+## [2.76.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.75.1-alpha.0...v2.76.0-alpha.0) (2023-04-19)
+
+## [2.75.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.75.0-alpha.0...v2.75.1-alpha.0) (2023-04-18)
+
+## [2.75.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.74.0-alpha.0...v2.75.0-alpha.0) (2023-04-17)
+
+## [2.74.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.73.0-alpha.0...v2.74.0-alpha.0) (2023-04-13)
+
 ## [2.73.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.72.1-alpha.0...v2.73.0-alpha.0) (2023-04-05)
 
 ## [2.72.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.72.0-alpha.0...v2.72.1-alpha.0) (2023-03-30)

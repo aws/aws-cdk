@@ -1,7 +1,7 @@
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as actions from 'aws-cdk-lib/aws-elasticloadbalancingv2-actions';
@@ -13,7 +13,7 @@ class CognitoStack extends Stack {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Stack', {
-      maxAzs: 2,
+      maxAzs: 2, restrictDefaultSecurityGroup: false,
     });
 
     const certificate: elbv2.IListenerCertificate = {
@@ -54,19 +54,25 @@ class CognitoStack extends Stack {
         domainPrefix: 'test-cdk-prefix',
       },
     });
-
-    lb.addListener('Listener', {
+    const action = new actions.AuthenticateCognitoAction({
+      userPool,
+      userPoolClient,
+      userPoolDomain,
+      sessionTimeout: Duration.days(1),
+      next: elbv2.ListenerAction.fixedResponse(200, {
+        contentType: 'text/plain',
+        messageBody: 'Authenticated',
+      }),
+    });
+    const listener = lb.addListener('Listener', {
       port: 443,
       certificates: [certificate],
-      defaultAction: new actions.AuthenticateCognitoAction({
-        userPool,
-        userPoolClient,
-        userPoolDomain,
-        next: elbv2.ListenerAction.fixedResponse(200, {
-          contentType: 'text/plain',
-          messageBody: 'Authenticated',
-        }),
-      }),
+      defaultAction: action,
+    });
+    listener.addAction('Action2', {
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['action2*'])],
+      action,
     });
 
     new CfnOutput(this, 'DNS', {

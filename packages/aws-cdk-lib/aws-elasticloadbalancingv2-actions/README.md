@@ -12,6 +12,11 @@ Cognito](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lis
 Here's an example:
 
 ```ts
+import { aws_certificatemanager as acm } from 'aws-cdk-lib';
+
+declare const vpc: ec2.Vpc;
+declare const certificate: acm.Certificate;
+
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,

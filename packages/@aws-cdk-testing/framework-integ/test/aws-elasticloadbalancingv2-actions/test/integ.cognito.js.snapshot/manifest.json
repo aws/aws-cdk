@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "30.1.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-cognito.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c2d0def6db3389453a3efadab8db4804f46dd1e84431da6a970923085b33a51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,6 +189,12 @@
             "data": "LBListener49E825B4"
           }
         ],
+        "/integ-cognito/LB/Listener/Action2Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBListenerAction2RuleDEE172B4"
+          }
+        ],
         "/integ-cognito/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -280,6 +280,12 @@
         ]
       },
       "displayName": "integ-test-cognito/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

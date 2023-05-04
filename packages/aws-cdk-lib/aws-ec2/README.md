@@ -225,8 +225,8 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 ```ts
 import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
-new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
+new ec2.Vpc(this, 'TheVPC', {
+  ipAddresses: IpAddresses.cidr('10.0.1.0/20')
 });
 ```
 
@@ -246,8 +246,8 @@ import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
 declare const pool: ec2.CfnIPAMPool;
 
-new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: ec2.IpAddresses.awsIpamAllocation({
+new ec2.Vpc(this, 'TheVPC', {
+  ipAddresses: IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
@@ -300,7 +300,7 @@ subnet configuration could look like this:
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   // 'IpAddresses' configures the IP range and size of the entire VPC.
   // The IP space will be divided based on configuration for the subnets.
-  ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/21'),
 
   // 'maxAzs' configures the maximum number of availability zones to use.
   // If you want to specify the exact availability zones you want the VPC
@@ -542,6 +542,25 @@ The above example will create an `IVpc` instance with three public subnets:
 | s-12345   | us-east-1a        | Subnet A    | rt-12345       | 10.0.0.0/24 |
 | s-34567   | us-east-1b        | Subnet B    | rt-34567       | 10.0.1.0/24 |
 | s-56789   | us-east-1c        | Subnet B    | rt-56789       | 10.0.2.0/24 |
+
+### Restricting access to the VPC default security group
+
+AWS Security best practices recommend that the [VPC default security group should
+not allow inbound and outbound
+traffic](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2).
+When the `@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` feature flag is set to
+`true` (default for new projects) this will be enabled by default. If you do not
+have this feature flag set you can either set the feature flag _or_ you can set
+the `restrictDefaultSecurityGroup` property to `true`.
+
+```ts
+new ec2.Vpc(this, 'VPC', {
+  restrictDefaultSecurityGroup: true,
+});
+```
+
+If you set this property to `true` and then later remove it or set it to `false`
+the default ingress/egress will be restored on the default security group.
 
 ## Allowing Connections
 
@@ -1040,7 +1059,7 @@ new ec2.Instance(this, 'Instance2', {
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinux2Image({
+  machineImage: ec2.MachineImage.latestAmazonLinux2({
     kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
   }),
 });
@@ -1072,7 +1091,10 @@ particular image parameter, the CDK provides a couple of constructs `AmazonLinux
 to use the latest `al2023` image:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 });
@@ -1089,7 +1111,10 @@ the value in CDK context. This way the value will not change on future
 deployments unless you manually refresh the context.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023({
     cachedInContext: true, // default is false
@@ -1098,6 +1123,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 
 // or
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
@@ -1128,7 +1154,10 @@ either specify the specific latest kernel version or opt-in to using the CDK
 latest kernel version.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1139,7 +1168,10 @@ new ec2.Instance(this, 'LatestAl2023', {
 _CDK managed latest_
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1150,6 +1182,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 // or
 
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(), // always uses latest kernel version
 });
@@ -1248,7 +1281,7 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2022(),
 
-  init: ec2.CloudFormationInit.fromElements([
+  init: ec2.CloudFormationInit.fromElements(
     // Create a simple config file that runs a Python web server
     ec2.InitService.systemdConfigFile('simpleserver', {
       command: '/usr/bin/python3 -m http.server 8080',
@@ -1260,7 +1293,7 @@ new ec2.Instance(this, 'Instance', {
     }),
     // Drop an example file to show the web server working
     ec2.InitFile.fromString('/var/www/html/index.html', 'Hello! It\'s working!'),
-  ]),
+  ),
 });
 ```
 
@@ -1472,8 +1505,8 @@ You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
 ```ts
 new ec2.Volume(this, 'Volume', {
   availabilityZone: 'us-east-1a',
-  size: cdk.Size.gibibytes(125),
-  volumeType: EbsDeviceVolumeType.GP3,
+  size: Size.gibibytes(125),
+  volumeType: ec2.EbsDeviceVolumeType.GP3,
   throughput: 125,
 });
 ```
@@ -1550,7 +1583,7 @@ vpc.addFlowLog('FlowLogS3', {
 // Only reject traffic and interval every minute.
 vpc.addFlowLog('FlowLogCloudWatch', {
   trafficType: ec2.FlowLogTrafficType.REJECT,
-  maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
+  maxAggregationInterval: ec2.FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
 
@@ -1678,7 +1711,7 @@ When creating a Windows UserData you can use the `persist` option to set whether
 `<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
 
 ```ts
-const windowsUserData = UserData.forWindows({ persist: true });
+const windowsUserData = ec2.UserData.forWindows({ persist: true });
 ```
 
 For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
@@ -1849,3 +1882,28 @@ new ec2.Instance(this, 'Instance1', {
   ssmSessionPermissions: true,
 });
 ```
+
+## Managed Prefix Lists
+
+Create and manage customer-managed prefix lists. If you don't specify anything in this construct, it will manage IPv4 addresses.
+
+You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
+
+```ts
+new ec2.PrefixList(this, 'EmptyPrefixList', {
+  maxEntries: 100,
+});
+```
+
+`maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
+
+```ts
+new ec2.PrefixList(this, 'PrefixList', {
+  entries: [
+    { cidr: '10.0.0.1/32' },
+    { cidr: '10.0.0.2/32', description: 'sample1' },
+  ],
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)

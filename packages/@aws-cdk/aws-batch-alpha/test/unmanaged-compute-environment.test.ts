@@ -1,7 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib/core';
-import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
+import { capitalizePropertyNames } from './utils';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
 import { UnmanagedComputeEnvironment } from '../lib/unmanaged-compute-environment';
 

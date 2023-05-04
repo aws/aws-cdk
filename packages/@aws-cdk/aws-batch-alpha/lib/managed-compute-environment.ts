@@ -1083,7 +1083,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     super(scope, id, props);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-    const resource = new CfnComputeEnvironment(this, id, {
+    const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
@@ -1120,6 +1120,7 @@ function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole
 
   result.instanceRole = instanceRole ?? new iam.Role(scope, 'InstanceProfileRole', {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')],
   });
 
   result.instanceProfile = new iam.CfnInstanceProfile(scope, 'InstanceProfile', {

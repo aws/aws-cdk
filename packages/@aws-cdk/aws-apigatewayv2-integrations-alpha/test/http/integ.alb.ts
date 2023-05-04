@@ -14,7 +14,7 @@ const app = new App();
 
 const stack = new Stack(app, 'integ-alb-integration');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
 const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', { port: 80 });

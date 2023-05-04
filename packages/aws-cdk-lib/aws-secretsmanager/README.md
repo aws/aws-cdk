@@ -267,11 +267,11 @@ For example:
 In order to create this type of secret, use the `secretObjectValue` input prop.
 
 ```ts
-const user = new iam.User(stack, 'User');
-const accessKey = new iam.AccessKey(stack, 'AccessKey', { user });
+const user = new iam.User(this, 'User');
+const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
 declare const stack: Stack;
 
-new secretsmanager.Secret(stack, 'Secret', {
+new secretsmanager.Secret(this, 'Secret', {
   secretObjectValue: {
     username: SecretValue.unsafePlainText(user.userName),
     database: SecretValue.unsafePlainText('foo'),

@@ -16,7 +16,7 @@ const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
 
 By default, this will create a new S3 Bucket that CloudTrail will write to, and choose a few other reasonable defaults
-such as turning on multi-region and global service events. 
+such as turning on multi-region and global service events.
 The defaults for each property and how to override them are all documented on the `TrailProps` interface.
 
 ## Log File Validation
@@ -62,7 +62,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true,
-  cloudWatchLogsRetention: logs.RetentionDays.FOUR_MONTHS, 
+  cloudWatchLogsRetention: logs.RetentionDays.FOUR_MONTHS,
 });
 ```
 
@@ -126,7 +126,7 @@ account. These are also known as control plane operations. Learn more about [Man
 Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-events).
 
 By default, a `Trail` logs all management events. However, they can be configured to either be turned off, or to only
-log 'Read' or 'Write' events. 
+log 'Read' or 'Write' events.
 
 The following code configures the `Trail` to only track management events that are of type 'Read'.
 
@@ -194,10 +194,10 @@ Set `InsightSelector` to enable Insight.
 Insights selector values can be `ApiCallRateInsight`, `ApiErrorRateInsight`, or both.
 
 ```ts
-new Trail(stack, 'Insights', {
+new cloudtrail.Trail(this, 'Insights', {
     insightTypes: [
-      InsightType.API_CALL_RATE,
-      InsightType.API_ERROR_RATE,
+      cloudtrail.InsightType.API_CALL_RATE,
+      cloudtrail.InsightType.API_ERROR_RATE,
     ],
 });
 ```

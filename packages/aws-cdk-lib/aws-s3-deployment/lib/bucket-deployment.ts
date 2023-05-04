@@ -243,6 +243,14 @@ export interface BucketDeploymentProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * If set to true, uploads will precompute the value of `x-amz-content-sha256`
+   * and include it in the signed S3 request headers.
+   *
+   * @default - `x-amz-content-sha256` will not be computed
+   */
+  readonly signContent?: boolean;
 }
 
 /**
@@ -312,9 +320,12 @@ export class BucketDeployment extends Construct {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_9,
-      environment: props.useEfs ? {
-        MOUNT_PATH: mountPath,
-      } : undefined,
+      environment: {
+        ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
+        // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
+        // This is necessary to make the CLI work in ADC regions.
+        AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+      },
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
@@ -392,6 +403,7 @@ export class BucketDeployment extends Construct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
+        SignContent: props.signContent,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
