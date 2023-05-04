@@ -90,7 +90,7 @@ class CognitoStack extends Stack {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Stack', {
-      maxAzs: 2,
+      maxAzs: 2, restrictDefaultSecurityGroup: false,
     });
 
     const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
@@ -215,4 +215,5 @@ const invoke = test.assertions.invokeFunction({
 invoke.expect(integ.ExpectedResult.objectLike({
   Payload: '"Authenticated"',
 }));
+
 app.synth();
