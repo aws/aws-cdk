@@ -276,7 +276,7 @@ export interface InstanceProps {
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
    * NOTE: If you set this value to true to associate a public IP address with the EC2 instance and there
-   * if a VPC defined in the same stack, you must make sure the EC2 instance has a dependency on the VPC
+   * is a VPC defined in the same stack, you must make sure the EC2 instance has a dependency on the VPC
    * to declare a dependency on the VPC-gateway attachment.
    */
   readonly associatePublicIpAddress?: boolean;
