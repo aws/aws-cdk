@@ -1,6 +1,5 @@
 process.env.AWS_REGION = 'us-east-1';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
