@@ -5,6 +5,7 @@
       "operations": [
         {
           "op": "add",
+          "path": "/AWS::IoT::TopicRule.IotTimestamp",
           "value": {
             "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-timestamp.html",
             "Properties": {
