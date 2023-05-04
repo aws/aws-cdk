@@ -600,6 +600,11 @@
                         "Arn"
                       ]
                     },
+                    "environment": {
+                      "variables": {
+                        "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+                      }
+                    },
                     "handler": "index.handler",
                     "layers": [
                       {
@@ -1903,7 +1908,8 @@
                     },
                     "environment": {
                       "variables": {
-                        "MOUNT_PATH": "/mnt/lambda"
+                        "MOUNT_PATH": "/mnt/lambda",
+                        "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
                       }
                     },
                     "fileSystemConfigs": [
@@ -3247,17 +3253,17 @@
                 "id": "DeployAssert",
                 "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallS3listObjects": {
-                    "id": "AwsApiCallS3listObjects",
-                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects",
+                  "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
+                    "id": "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
+                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/SdkProvider",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/SdkProvider/AssertionsProvider",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.1.270"
@@ -3271,11 +3277,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/Default",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/Default/Default",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -3289,7 +3295,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjects/AssertionResults",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
