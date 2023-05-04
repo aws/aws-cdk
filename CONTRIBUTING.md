@@ -552,7 +552,7 @@ mergeable state. This means that the pull request:
 2. Does not have any merge conflicts
 3. Has a passing build
 4. Does not have any requested changes by a maintainer
-5. Has a passing `PR Linter` workflow **AND** the contributor has not requested
+5. Has a passing `PR Linter` workflow **OR** the contributor has requested
    an exemption/clarification.
 
 To make this easier we have a `pr/needs-review` label that we can add to each
