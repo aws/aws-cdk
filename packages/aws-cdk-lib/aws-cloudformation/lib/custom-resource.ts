@@ -75,7 +75,7 @@ export class CustomResourceProvider implements ICustomResourceProvider {
    */
   private constructor(public readonly serviceToken: string) { }
 
-  public bind(_: Construct): CustomResourceProviderConfig {
+  public bind(_scope: Construct): CustomResourceProviderConfig {
     return { serviceToken: this.serviceToken };
   }
 }
