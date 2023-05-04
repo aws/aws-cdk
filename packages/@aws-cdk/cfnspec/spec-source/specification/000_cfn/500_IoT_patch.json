@@ -27,25 +27,13 @@
               }
             }
           }
+        },
+        {
+          "op": "replace",
+          "path": "/AWS::IoT::TopicRule.LocationAction/Properties/Timestamp/Type",
+          "value": "IotTimestamp"
         }
       ]
-    },
-    "AWS::IoT::TopicRule.LocationAction": {
-      "patch": {
-        "description": "use IotTimestamp instead of Timestamp in LocationAction type. See issue #22732",
-        "operations": [
-          {
-            "op": "replace",
-            "path": "/AWS::IoT::TopicRule.LocationAction/Properties/Timestamp",
-            "value": {
-              "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-locationaction.html#cfn-iot-topicrule-locationaction-timestamp",
-              "Required": false,
-              "Type": "IotTimestamp",
-              "UpdateType": "Mutable"
-            }
-          }
-        ]
-      }
     }
   }
 }
