@@ -119,7 +119,11 @@ If you are currently using auto scaling with provisioned instances, you should
 instead switch to instance scaling with serverless v2. This allows for a larger
 pool of serverless readers with the appropriate cluster capacity range. Vertical
 scaling at the serverless instance level is much faster compared to launching
-new instances.
+new instances. For example, using the case above, using a single `db.r6g.4xlarge`
+reader instance with auto scaling configured would add new `db.r6g.4xlarge` instances
+when the cluster auto scaled. Alternatively you could provision a couple serverless reader instances
+with min=6.5/max=64. These serverless instances would scale up faster (with the read load split between them)
+than adding new provisioned instances.
 
 ## Constraints
 
@@ -189,18 +193,22 @@ class ClusterInstance implements IClusterInstance {
 }
 ```
 
-_user configuration_
+_user configuration_ (properties are not shown to focus on the API)
 ```ts
 new rds.DatabaseCluster(this, 'Cluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_03_0 }),
-  clusterInstances: {
-    writer: ClusterInstance.provisioned('writer'),
-    readers: [
-      // puts it in promition tier 0-1
-      ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
-      ClusterInstance.serverlessV2('reader2'),
-      ClusterInstance.serverlessV2('reader3'),
-    ],
+  // capacity applies to all serverless instances in the cluster
+  serverlessV2Capacity: 1,
+  serverlessV2MinCapacity: 0.5,
+  writer: ClusterInstance.provisioned('writer', { ...props }),
+  readers: [
+    // puts it in promition tier 0-1
+    ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true, ...additionalProps }),
+    ClusterInstance.serverlessV2('reader2'),
+    ClusterInstance.serverlessV2('reader3'),
+    // illustrating how it might be possible to add support for groups in the future.
+    // currently not supported by CFN
+    ClusterInstance.fromReaderGroup('analytics', { ...readerProps }),
   },
 });
 ```
