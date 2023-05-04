@@ -98,6 +98,18 @@
              ":parameter/cdk/exports/*"
             ]
            ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-west-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
+           ]
           }
          ],
          "Action": [
