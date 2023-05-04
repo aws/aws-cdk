@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 // We need to mock the chokidar library, used by 'cdk watch'
 const mockChokidarWatcherOn = jest.fn();
 const fakeChokidarWatcher = {
@@ -585,6 +584,7 @@ describe('deploy', () => {
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // test('can disable asset parallelism', async () => {
     //   // GIVEN
     //   cloudExecutable = new MockCloudExecutable({

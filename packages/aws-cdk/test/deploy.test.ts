@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { deployArtifacts } from '../lib/deploy';
 import { AssetBuildNode, AssetPublishNode, StackNode } from '../lib/util/work-graph-types';
-import path = require('path');
 
 const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');

@@ -17,7 +17,7 @@
         "additionalDependencies": [
           "synth-test.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-synthassets-staging-489318732371-us-east-1/2a29d40e386de7d4837131194a3dbdc589477e83c31080a93901474e06d389fa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-synthassets-staging-489318732371-us-east-1/cfc9d13f0af5f1be9708022bc174c46ec539fe35b16b31cf5b337f70ddb47bc6.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-1",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-lookup-role-489318732371-us-east-1"
@@ -28,16 +28,46 @@
         "synth-test.assets"
       ],
       "metadata": {
-        "/synth-test/lambda/ServiceRole/Resource": [
+        "/synth-test/lambda-s3/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdaServiceRole494E4CA6"
+            "data": "lambdas3ServiceRoleC9EDE33A"
           }
         ],
-        "/synth-test/lambda/Resource": [
+        "/synth-test/lambda-s3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambda8B5974B5"
+            "data": "lambdas342CE2BBD"
+          }
+        ],
+        "/synth-test/lambda-ecr/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecrServiceRoleFC667F6F"
+          }
+        ],
+        "/synth-test/lambda-ecr/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr8D55A032"
+          }
+        ],
+        "lambdaServiceRole494E4CA6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaServiceRole494E4CA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambda8B5974B5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambda8B5974B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

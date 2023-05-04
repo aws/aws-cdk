@@ -28,9 +28,8 @@ export class WorkGraph {
         // ignore tree artifacts
         continue;
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
-        console.log(artifact.directoryName);
-        const assembly = new cxapi.CloudAssembly(artifact.directoryName);
-        console.log(assembly.directory);
+        console.log('NESTED!!!');
+        const assembly = new cxapi.CloudAssembly(artifact.fullPath);
         const nestedGraph = WorkGraph.fromCloudArtifacts(assembly.artifacts, prebuildAssets);
         graph.addNodes(...Object.values(nestedGraph.nodes));
       }

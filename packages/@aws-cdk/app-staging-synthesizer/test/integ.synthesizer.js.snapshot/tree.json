@@ -8,17 +8,17 @@
         "id": "synth-test",
         "path": "synth-test",
         "children": {
-          "lambda": {
-            "id": "lambda",
-            "path": "synth-test/lambda",
+          "lambda-s3": {
+            "id": "lambda-s3",
+            "path": "synth-test/lambda-s3",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "synth-test/lambda/ServiceRole",
+                "path": "synth-test/lambda-s3/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "synth-test/lambda/ServiceRole/ImportServiceRole",
+                    "path": "synth-test/lambda-s3/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "synth-test/lambda/ServiceRole/Resource",
+                    "path": "synth-test/lambda-s3/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "synth-test/lambda/Code",
+                "path": "synth-test/lambda-s3/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "synth-test/lambda/Code/Stage",
+                    "path": "synth-test/lambda-s3/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -83,7 +83,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "synth-test/lambda/Code/AssetBucket",
+                    "path": "synth-test/lambda-s3/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -97,22 +97,22 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "synth-test/lambda/Resource",
+                "path": "synth-test/lambda-s3/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-synthassets-staging-489318732371-us-east-1",
-                      "s3Key": "0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip"
+                      "s3Key": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "lambdaServiceRole494E4CA6",
+                        "lambdas3ServiceRoleC9EDE33A",
                         "Arn"
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "python3.9"
+                    "runtime": "python3.10"
                   }
                 },
                 "constructInfo": {
@@ -126,21 +126,113 @@
               "version": "10.1.270"
             }
           },
-          "ecr-asset": {
-            "id": "ecr-asset",
-            "path": "synth-test/ecr-asset",
+          "lambda-ecr": {
+            "id": "lambda-ecr",
+            "path": "synth-test/lambda-ecr",
             "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "synth-test/ecr-asset/Staging",
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "synth-test/lambda-ecr/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "synth-test/lambda-ecr/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "synth-test/lambda-ecr/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.270"
                 }
               },
-              "Repository": {
-                "id": "Repository",
-                "path": "synth-test/ecr-asset/Repository",
+              "AssetImage": {
+                "id": "AssetImage",
+                "path": "synth-test/lambda-ecr/AssetImage",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "synth-test/lambda-ecr/AssetImage/Staging",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "synth-test/lambda-ecr/AssetImage/Repository",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "synth-test/lambda-ecr/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "imageUri": {
+                        "Fn::Sub": "489318732371.dkr.ecr.us-east-1.${AWS::URLSuffix}/ecr-asset:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "lambdaecrServiceRoleFC667F6F",
+                        "Arn"
+                      ]
+                    },
+                    "packageType": "Image"
+                  }
+                },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.270"

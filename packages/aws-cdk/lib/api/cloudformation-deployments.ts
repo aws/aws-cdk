@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';

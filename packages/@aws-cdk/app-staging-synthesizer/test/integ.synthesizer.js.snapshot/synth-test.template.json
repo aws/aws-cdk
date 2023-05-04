@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "lambdaServiceRole494E4CA6": {
+  "lambdas3ServiceRoleC9EDE33A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,24 +31,75 @@
     ]
    }
   },
-  "lambda8B5974B5": {
+  "lambdas342CE2BBD": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-synthassets-staging-489318732371-us-east-1",
-     "S3Key": "0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip"
+     "S3Key": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
     },
     "Role": {
      "Fn::GetAtt": [
-      "lambdaServiceRole494E4CA6",
+      "lambdas3ServiceRoleC9EDE33A",
       "Arn"
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "python3.9"
+    "Runtime": "python3.10"
    },
    "DependsOn": [
-    "lambdaServiceRole494E4CA6"
+    "lambdas3ServiceRoleC9EDE33A"
+   ]
+  },
+  "lambdaecrServiceRoleFC667F6F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "lambdaecr8D55A032": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ImageUri": {
+      "Fn::Sub": "489318732371.dkr.ecr.us-east-1.${AWS::URLSuffix}/ecr-asset:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "lambdaecrServiceRoleFC667F6F",
+      "Arn"
+     ]
+    },
+    "PackageType": "Image"
+   },
+   "DependsOn": [
+    "lambdaecrServiceRoleFC667F6F"
    ]
   }
  }
