@@ -673,26 +673,24 @@ describe('EC2 containers', () => {
     });
   });
 
-  test('can add ephemeralStorage', () => {
-    // WHEN
-    new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
-        ...defaultContainerProps,
-        privileged: true,
-        ephemeralStorage: Size.gibibytes(100),
-      }),
-    });
+  // test('can add ephemeralStorage', () => {
+  //   // WHEN
+  //   new EcsJobDefinition(stack, 'ECSJobDefn', {
+  //     container: new EcsFargateContainerDefinition(stack, 'EcsEc2Container', {
+  //       ...defaultContainerProps,
+  //       ephemeralStorage: Size.gibibytes(100),
+  //     }),
+  //   });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-      ...pascalCaseExpectedProps,
-      ContainerProperties: {
-        ...pascalCaseExpectedProps.ContainerProperties,
-        Privileged: true,
-        EphemeralStorage: Size.gibibytes(100),
-      },
-    });
-  });
+  //   // THEN
+  //   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+  //     ...pascalCaseExpectedProps,
+  //     ContainerProperties: {
+  //       ...pascalCaseExpectedProps.ContainerProperties,
+  //       EphemeralStorage: Size.gibibytes(100),
+  //     },
+  //   });
+  // });
 });
 
 describe('Fargate containers', () => {
@@ -731,5 +729,38 @@ describe('Fargate containers', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('can set ephemeralStorage', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        ephemeralStorage: Size.gibibytes(100),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: Size.gibibytes(100),
+      },
+    });
+
+    // Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    //   AssumeRolePolicyDocument: {
+    //     Statement: [{
+    //       Action: 'sts:AssumeRole',
+    //       Effect: 'Allow',
+    //       Principal: { Service: 'ecs-tasks.amazonaws.com' },
+    //     }],
+    //     Version: '2012-10-17',
+    //   },
+    // });
   });
 });

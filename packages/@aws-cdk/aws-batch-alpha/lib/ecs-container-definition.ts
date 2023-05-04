@@ -358,13 +358,6 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly volumes: EcsVolume[];
 
   /**
-   * The size for ephemeral storage.
-   *
-   * @default - no storage
-   */
-  readonly ephemeralStorage?: Size;
-
-  /**
    * Renders this container to CloudFormation
    *
    * @internal
@@ -470,13 +463,6 @@ export interface EcsContainerDefinitionProps {
    * @default - no volumes
    */
   readonly volumes?: EcsVolume[];
-
-  /**
-   * The size for ephemeral storage.
-   *
-   * @default - no storage
-   */
-  readonly ephemeralStorage?: Size;
 }
 
 /**
@@ -495,7 +481,6 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly secrets?: secretsmanager.ISecret[];
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
-  public readonly ephemeralStorage?: Size;
 
   public abstract readonly executionRole?: iam.IRole;
 
@@ -511,7 +496,6 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
-    this.ephemeralStorage = props.ephemeralStorage;
 
     // Lazy so this.executionRole can be filled by subclasses
     this.logDriverConfig = Lazy.any({
@@ -912,6 +896,13 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - no storage
+   */
+  readonly ephemeralStorage?: Size;
 }
 
 /**
@@ -944,6 +935,13 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default - a Role will be created
    */
   readonly executionRole?: iam.IRole;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - no storage
+   */
+  readonly ephemeralStorage?: Size;
 }
 
 /**
@@ -952,6 +950,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
+  public readonly ephemeralStorage?: Size;
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -966,6 +965,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
+    this.ephemeralStorage = props.ephemeralStorage;
     this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
   }
 
