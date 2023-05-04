@@ -407,25 +407,28 @@ export class Instance extends Resource implements IInstance {
       });
     }
 
-    // if 'associatePublicIpAddress' is true then subnetId and securityGroupIds needs to be specified
-    // on the network interface level instead of the instance level
+    // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
+    const networkInterfaces = props.associatePublicIpAddress !== undefined
+      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
+      : undefined;
+
+    // if network interfaces array is configured then subnetId and securityGroupIds are configured on the network interface
+    // level and there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroupIds: props.associatePublicIpAddress ? undefined : securityGroupsToken,
+      subnetId: networkInterfaces ? undefined : subnet.subnetId,
+      securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
+      networkInterfaces,
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
-      subnetId: props.associatePublicIpAddress ? undefined : subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
-      networkInterfaces: props.associatePublicIpAddress
-        ? [{ deviceIndex: '0', associatePublicIpAddress: true, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
-        : undefined,
     });
     this.instance.node.addDependency(this.role);
 

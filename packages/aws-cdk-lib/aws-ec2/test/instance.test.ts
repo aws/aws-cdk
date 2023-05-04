@@ -690,6 +690,41 @@ test('associate public IP address with instance', () => {
   });
 });
 
+test('do not associate public IP address with instance', () => {
+  // GIVEN
+  const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    vpcSubnets: { subnetType: SubnetType.PUBLIC },
+    securityGroup,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    sourceDestCheck: false,
+    associatePublicIpAddress: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    NetworkInterfaces: [{
+      AssociatePublicIpAddress: false,
+      DeviceIndex: '0',
+      GroupSet: [
+        {
+          'Fn::GetAtt': [
+            'SecurityGroupDD263621',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetId: {
+        Ref: 'VPCPublicSubnet1SubnetB4246D30',
+      },
+    }],
+  });
+});
+
 test('associate public IP address with instance and no public subnet', () => {
   // WHEN/THEN
   expect(() => {
