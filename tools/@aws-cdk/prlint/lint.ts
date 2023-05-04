@@ -447,9 +447,13 @@ export class PullRequestLinter {
     await this.communicateResult(validationCollector);
 
     // also assess whether the PR needs review or not
-    const state = await this.codeBuildJobSucceeded(sha);
-    if (state) {
-      await this.assessNeedsReview(pr);
+    try {
+      const state = await this.codeBuildJobSucceeded(sha);
+      if (state) {
+        await this.assessNeedsReview(pr);
+      }
+    } catch (e) {
+      console.log('assessing review failed: ', e);
     }
   }
 
