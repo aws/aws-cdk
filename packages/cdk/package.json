@@ -29,18 +29,26 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
-    "build": "echo Nothing to build",
+    "build": "cdk-build",
     "test": "echo OK",
-    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
-    "build+test": "npm run build",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test+extract": "npm run build+test",
-    "build+extract": "npm run build"
+    "package": "cdk-package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test+extract": "yarn build+test",
+    "build+extract": "yarn build",
+    "watch": "cdk-watch",
+    "pkglint": "pkglint -f"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 14.15.0"
   },
+  "stability": "stable",
+  "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
+  },
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0"
   }
 }
