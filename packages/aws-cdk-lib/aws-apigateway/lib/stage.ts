@@ -102,7 +102,7 @@ export interface StageOptions extends MethodDeploymentOptions {
   /**
    * A map that defines the stage variables. Variable names must consist of
    * alphanumeric characters, and the values must match the following regular
-   * expression: [A-Za-z0-9-._~:/?#&amp;=,]+.
+   * expression: [A-Za-z0-9-._~:/?#&=,]+.
    *
    * @default - No stage variables.
    */
