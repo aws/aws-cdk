@@ -736,6 +736,7 @@ describe('Fargate containers', () => {
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
         ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorage: Size.gibibytes(100),
       }),
     });
@@ -748,19 +749,10 @@ describe('Fargate containers', () => {
         ExecutionRoleArn: {
           'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
         },
-        EphemeralStorage: Size.gibibytes(100),
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(100).toGibibytes(),
+        },
       },
     });
-
-    // Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    //   AssumeRolePolicyDocument: {
-    //     Statement: [{
-    //       Action: 'sts:AssumeRole',
-    //       Effect: 'Allow',
-    //       Principal: { Service: 'ecs-tasks.amazonaws.com' },
-    //     }],
-    //     Version: '2012-10-17',
-    //   },
-    // });
   });
 });

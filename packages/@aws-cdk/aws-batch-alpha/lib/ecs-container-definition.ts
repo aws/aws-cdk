@@ -975,6 +975,9 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
+      ephemeralStorage: this.ephemeralStorage? {
+        sizeInGiB: this.ephemeralStorage?.toGibibytes(),
+      } : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },
