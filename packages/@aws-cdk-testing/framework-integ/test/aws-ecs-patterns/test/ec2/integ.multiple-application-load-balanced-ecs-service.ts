@@ -6,7 +6,7 @@ import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-p
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-multiple-alb');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
