@@ -670,9 +670,6 @@ test('associate public IP address with instance', () => {
     associatePublicIpAddress: true,
   });
 
-  /* eslint-disable no-console */
-  console.log(JSON.stringify(Template.fromStack(stack), null, 4));
-
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
     NetworkInterfaces: [{
