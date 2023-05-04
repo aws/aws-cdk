@@ -300,7 +300,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
 should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
 
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
 You can set additional Docker options to configure the build environment:

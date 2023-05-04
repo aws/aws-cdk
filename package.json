@@ -15,6 +15,8 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
+    "@nrwl/cli": "^15.9.1",
+    "@nrwl/workspace": "^15.9.1",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -28,12 +30,10 @@
     "jsii-reflect": "1.78.1",
     "jsii-rosetta": "~5.0.7",
     "lerna": "^6.6.1",
+    "nx": "^15.9.1",
     "patch-package": "^6.5.1",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",
-    "@nrwl/cli": "^15.9.1",
-    "@nrwl/workspace": "^15.9.1",
-    "nx": "^15.9.1",
     "typescript": "~4.9.5"
   },
   "resolutions": {
@@ -69,7 +69,6 @@
   "workspaces": {
     "packages": [
       "packages/aws-cdk-lib",
-      "packages/cdk-cli-wrapper",
       "packages/aws-cdk",
       "packages/cdk",
       "packages/cdk-assets",

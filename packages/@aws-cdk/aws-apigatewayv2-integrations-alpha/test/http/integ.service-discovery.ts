@@ -8,7 +8,7 @@ const app = new App();
 
 const stack = new Stack(app, 'integ-service-discovery-integration');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
   name: 'foobar.com',
