@@ -6,10 +6,12 @@ const repoRoot = path.join(__dirname, '..', '..', '..', '..');
 describe('findModulePath', () => {
   beforeAll(() => {
     process.env.REPO_ROOT = repoRoot;
+    jest.spyOn(console, 'log').mockImplementation();
   });
 
   afterAll(() => {
     process.env.REPO_ROOT = undefined;
+    jest.resetAllMocks();
   });
 
   test('single fuzzy match', () => {
