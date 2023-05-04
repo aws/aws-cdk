@@ -127,7 +127,7 @@ def get_oci_cmd(repository, version):
             cmnd = [f"helm pull {repository} --version {version} --untar"]   
     else:
         logger.error("OCI repository format not recognized, falling back to helm pull")
-        cmnd = ['helm', 'pull', repository, '--version', version, '--untar']
+        cmnd = [f"helm pull {repository} --version {version} --untar"]
 
     return cmnd
 
