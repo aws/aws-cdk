@@ -585,6 +585,55 @@ describe('IAM policy document', () => {
         },
       });
     });
+
+    test('wip', () => {
+      const stack = new Stack();
+
+      // WHEN
+      new Role(stack, 'Role', {
+        assumedBy: new CompositePrincipal(
+          new ArnPrincipal('arn:aws:iam::123456789012:root'),
+          new ArnPrincipal('arn:aws:iam::234567890123:root'),
+          new ArnPrincipal('arn:aws:iam::345678901234:root')),
+        inlinePolicies: {
+          readOnlyAccess: new PolicyDocument({
+            assignSids: true,
+            statements: [
+              new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: [
+                  's3:Get*',
+                  's3:List*',
+                ],
+                resources: [
+                  'arn:aws:s3:::test',
+                  'arn:aws:s3:::test/*',
+                ],
+              }),
+            ],
+          }),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                AWS: [
+                  'arn:aws:iam::123456789012:root',
+                  'arn:aws:iam::234567890123:root',
+                  'arn:aws:iam::345678901234:root',
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
   });
 
   describe('PrincipalWithConditions can be used to add a principal with conditions', () => {
