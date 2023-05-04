@@ -111,7 +111,7 @@ consistent), provisioned should be preferred for the consistent pattern. With
 mixed use cluster you may have writers/readers that follow different patters.
 For example, you may have a writer that follows the `consistent` pattern, but a
 reader that follows the `outliers` pattern. In this case you may want to have a
-provisioned instance as the writer along with a provisioned writer in tier 0-1
+provisioned instance as the writer along with a provisioned reader in tier 0-1
 (for failover) and then a serverless v2 reader in tier 2-15 (so it doesn't scale with the
 writer).
 
