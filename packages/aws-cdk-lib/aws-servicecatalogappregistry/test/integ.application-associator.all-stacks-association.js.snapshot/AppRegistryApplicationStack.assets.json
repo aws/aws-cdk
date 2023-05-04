@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "096a2ebc1093f405e713a82ffa6755ace9d5244a06f746653f025546795d3a0a": {
+      "source": {
+        "path": "AppRegistryApplicationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "096a2ebc1093f405e713a82ffa6755ace9d5244a06f746653f025546795d3a0a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
