@@ -17,7 +17,7 @@
         "additionalDependencies": [
           "env-agnostic-test.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}/7e5e10cdde60d065b7d36115e2aaaf9b1341fccdc7abef3db56fbf2aff9491c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}/d1e269d7a168aa54c7ccfb772c9004bc0ff1fee705c66cfb6592a07ef81cdf6e.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
@@ -28,16 +28,46 @@
         "env-agnostic-test.assets"
       ],
       "metadata": {
-        "/env-agnostic-test/lambda/ServiceRole/Resource": [
+        "/env-agnostic-test/lambda-s3/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdaServiceRole494E4CA6"
+            "data": "lambdas3ServiceRoleC9EDE33A"
           }
         ],
-        "/env-agnostic-test/lambda/Resource": [
+        "/env-agnostic-test/lambda-s3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambda8B5974B5"
+            "data": "lambdas342CE2BBD"
+          }
+        ],
+        "/env-agnostic-test/lambda-ecr/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecrServiceRoleFC667F6F"
+          }
+        ],
+        "/env-agnostic-test/lambda-ecr/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr8D55A032"
+          }
+        ],
+        "lambdaServiceRole494E4CA6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaServiceRole494E4CA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambda8B5974B5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambda8B5974B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -102,10 +132,10 @@
             "data": "CdkImagePublishingRoleDefaultPolicy7638FA58"
           }
         ],
-        "/StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset/Resource": [
+        "/StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ecrasset9899265E"
+            "data": "ecrasset155BFF0C3"
           }
         ]
       },

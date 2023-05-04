@@ -8,17 +8,17 @@
         "id": "env-agnostic-test",
         "path": "env-agnostic-test",
         "children": {
-          "lambda": {
-            "id": "lambda",
-            "path": "env-agnostic-test/lambda",
+          "lambda-s3": {
+            "id": "lambda-s3",
+            "path": "env-agnostic-test/lambda-s3",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "env-agnostic-test/lambda/ServiceRole",
+                "path": "env-agnostic-test/lambda-s3/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "env-agnostic-test/lambda/ServiceRole/ImportServiceRole",
+                    "path": "env-agnostic-test/lambda-s3/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "env-agnostic-test/lambda/ServiceRole/Resource",
+                    "path": "env-agnostic-test/lambda-s3/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "env-agnostic-test/lambda/Code",
+                "path": "env-agnostic-test/lambda-s3/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "env-agnostic-test/lambda/Code/Stage",
+                    "path": "env-agnostic-test/lambda-s3/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -83,7 +83,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "env-agnostic-test/lambda/Code/AssetBucket",
+                    "path": "env-agnostic-test/lambda-s3/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.1.270"
@@ -97,7 +97,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "env-agnostic-test/lambda/Resource",
+                "path": "env-agnostic-test/lambda-s3/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -105,16 +105,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "handoff/0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip"
+                      "s3Key": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "lambdaServiceRole494E4CA6",
+                        "lambdas3ServiceRoleC9EDE33A",
                         "Arn"
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "python3.9"
+                    "runtime": "python3.10"
                   }
                 },
                 "constructInfo": {
@@ -128,21 +128,113 @@
               "version": "10.1.270"
             }
           },
-          "ecr-asset": {
-            "id": "ecr-asset",
-            "path": "env-agnostic-test/ecr-asset",
+          "lambda-ecr": {
+            "id": "lambda-ecr",
+            "path": "env-agnostic-test/lambda-ecr",
             "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "env-agnostic-test/ecr-asset/Staging",
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "env-agnostic-test/lambda-ecr/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "env-agnostic-test/lambda-ecr/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "env-agnostic-test/lambda-ecr/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.270"
                 }
               },
-              "Repository": {
-                "id": "Repository",
-                "path": "env-agnostic-test/ecr-asset/Repository",
+              "AssetImage": {
+                "id": "AssetImage",
+                "path": "env-agnostic-test/lambda-ecr/AssetImage",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "env-agnostic-test/lambda-ecr/AssetImage/Staging",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "env-agnostic-test/lambda-ecr/AssetImage/Repository",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "env-agnostic-test/lambda-ecr/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "imageUri": {
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/ecr-asset-1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "lambdaecrServiceRoleFC667F6F",
+                        "Arn"
+                      ]
+                    },
+                    "packageType": "Image"
+                  }
+                },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.270"
@@ -720,7 +812,7 @@
                               "Effect": "Allow",
                               "Resource": {
                                 "Fn::GetAtt": [
-                                  "ecrasset9899265E",
+                                  "ecrasset155BFF0C3",
                                   "Arn"
                                 ]
                               }
@@ -758,17 +850,17 @@
               "version": "10.1.270"
             }
           },
-          "ecr-asset": {
-            "id": "ecr-asset",
-            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset",
+          "ecr-asset-1": {
+            "id": "ecr-asset-1",
+            "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset-1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset/Resource",
+                "path": "StagingStack-envAgnostic-ACCOUNT-REGION/ecr-asset-1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
-                    "repositoryName": "ecr-asset"
+                    "repositoryName": "ecr-asset-1"
                   }
                 },
                 "constructInfo": {

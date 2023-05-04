@@ -1,20 +1,20 @@
 {
   "version": "31.0.0",
   "files": {
-    "0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20": {
+    "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650": {
       "source": {
-        "path": "asset.0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20",
+        "path": "asset.68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "handoff/0e2299f428e1920c62a5ab9919dbd4f89f38d8d13cf7187abeadd047bd83ce20.zip",
+          "objectKey": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-envagnostic-file-publishing-role-${AWS::Region}"
         }
       }
     },
-    "7e5e10cdde60d065b7d36115e2aaaf9b1341fccdc7abef3db56fbf2aff9491c1": {
+    "d1e269d7a168aa54c7ccfb772c9004bc0ff1fee705c66cfb6592a07ef81cdf6e": {
       "source": {
         "path": "env-agnostic-test.template.json",
         "packaging": "file"
@@ -22,21 +22,21 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-envagnostic-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7e5e10cdde60d065b7d36115e2aaaf9b1341fccdc7abef3db56fbf2aff9491c1.json",
+          "objectKey": "d1e269d7a168aa54c7ccfb772c9004bc0ff1fee705c66cfb6592a07ef81cdf6e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-envagnostic-file-publishing-role-${AWS::Region}"
         }
       }
     }
   },
   "dockerImages": {
-    "ad56d32734340e2f3b34d68669d4911e694b2a8e122ba55eee21ebae5e0a7b4c": {
+    "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622": {
       "source": {
-        "directory": "asset.ad56d32734340e2f3b34d68669d4911e694b2a8e122ba55eee21ebae5e0a7b4c"
+        "directory": "asset.16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
       },
       "destinations": {
         "current_account-current_region": {
-          "repositoryName": "ecr-asset",
-          "imageTag": "ad56d32734340e2f3b34d68669d4911e694b2a8e122ba55eee21ebae5e0a7b4c",
+          "repositoryName": "ecr-asset-1",
+          "imageTag": "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-envagnostic-asset-publishing-role-${AWS::Region}"
         }
       }
