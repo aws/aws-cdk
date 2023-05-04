@@ -338,6 +338,8 @@ export class PullRequestLinter {
     pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
   ): Promise<void> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
+    // NOTE: MEMBER = a member of the organization that owns the repository
+    // COLLABORATOR = has been invited to collaborate on the repository
     const maintainerRequestedChanges = reviews.data.some(review => review.author_association === 'MEMBER' && review.state === 'CHANGES_REQUESTED');
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
