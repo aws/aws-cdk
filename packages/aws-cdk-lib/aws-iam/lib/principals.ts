@@ -830,11 +830,30 @@ export class CompositePrincipal extends PrincipalBase {
   /**
    * Adds IAM principals to the composite principal. Composite principals cannot have
    * conditions.
+   * Principals with same role action will be merged into a single principal to generate more compact Policy.
    *
    * @param principals IAM principals that will be added to the composite principal
    */
   public addPrincipals(...principals: IPrincipal[]): this {
-    this.principals.push(...principals);
+    const buffer = [...this.principals, ...principals];
+    this.principals.length = 0;
+
+    const groupByAction: { [key: string]: { [key: string]: string[] } } = {};
+    for (const p of buffer) {
+      let noConditions = Object.keys(p.policyFragment.conditions).length === 0;
+      if (noConditions) {
+        groupByAction[p.assumeRoleAction] = groupByAction[p.assumeRoleAction] ?? {};
+        mergePrincipal(groupByAction[p.assumeRoleAction], p.policyFragment.principalJson);
+      } else {
+        // Keep a principal with condition as-is. See `policyFragment` for detail.
+        this.principals.push(p);
+      }
+    }
+    // Creates a policy-merged principal and push it back
+    Object.entries(groupByAction).forEach(([action, fragmentJson]) => {
+      const policyFragment = new PrincipalPolicyFragment(fragmentJson);
+      this.principals.push(new PrincipalFromFragment(action, policyFragment));
+    });
     return this;
   }
 
@@ -873,6 +892,21 @@ export class CompositePrincipal extends PrincipalBase {
     const inner = this.principals.map(ComparablePrincipal.dedupeStringFor);
     if (inner.some(x => x === undefined)) { return undefined; }
     return `CompositePrincipal[${inner.join(',')}]`;
+  }
+}
+
+class PrincipalFromFragment extends PrincipalBase {
+  public readonly assumeRoleAction: string;
+  readonly policyFragment: PrincipalPolicyFragment;
+
+  constructor(assumeRoleAction: string, policyFragment: PrincipalPolicyFragment) {
+    super();
+    this.assumeRoleAction = assumeRoleAction;
+    this.policyFragment = policyFragment;
+  }
+
+  dedupeString(): string | undefined {
+    return undefined;
   }
 }
 

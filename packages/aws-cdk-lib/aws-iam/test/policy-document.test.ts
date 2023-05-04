@@ -497,16 +497,16 @@ describe('IAM policy document', () => {
           Statement: [
             {
               Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { AWS: 'i:am' },
-            },
-            {
-              Action: 'sts:AssumeRole',
               Condition: {
                 StringEquals: { 'aws:some-key': 'some-value' },
               },
               Effect: 'Allow',
               Principal: { Federated: 'federated' },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { AWS: 'i:am' },
             },
           ],
         },
@@ -555,6 +555,25 @@ describe('IAM policy document', () => {
           Service: ['amazon.com', 'another.service'],
         },
       });
+
+      new Role(stack, 'Role', {
+        assumedBy: p,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                AWS: ['i:am:an:arn', '*'],
+                Service: ['amazon.com', 'another.service'],
+              },
+            },
+          ],
+        },
+      });
     });
 
     test('can mix types of assumeRoleAction in a single composite', () => {
@@ -575,6 +594,62 @@ describe('IAM policy document', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { AWS: 'arn' },
+            },
+            {
+              Action: 'sts:Boom',
+              Effect: 'Allow',
+              Principal: { Federated: 'fed' },
+            },
+          ],
+        },
+      });
+    });
+
+    test('can merge principals with same action into a single principal', () => {
+      const stack = new Stack();
+
+      // WHEN
+      const compositePrincipal = new CompositePrincipal(
+        new ArnPrincipal('arn:aws:iam::123456789012:root'),
+        new ArnPrincipal('arn:aws:iam::234567890123:root'),
+        new ArnPrincipal('arn:aws:iam::345678901234:root'),
+        new FederatedPrincipal('fed', {}, 'sts:Boom'));
+      new Role(stack, 'Role', {
+        assumedBy: compositePrincipal,
+        inlinePolicies: {
+          readOnlyAccess: new PolicyDocument({
+            assignSids: true,
+            statements: [
+              new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: [
+                  's3:Get*',
+                  's3:List*',
+                ],
+                resources: [
+                  'arn:aws:s3:::test',
+                  'arn:aws:s3:::test/*',
+                ],
+              }),
+            ],
+          }),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                AWS: [
+                  'arn:aws:iam::123456789012:root',
+                  'arn:aws:iam::234567890123:root',
+                  'arn:aws:iam::345678901234:root',
+                ],
+              },
             },
             {
               Action: 'sts:Boom',
