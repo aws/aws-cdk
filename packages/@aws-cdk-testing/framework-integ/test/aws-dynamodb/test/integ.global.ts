@@ -1,6 +1,7 @@
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -29,5 +30,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-dynamodb-global-20191121', { env: { region: 'eu-west-1' } });
+const stack = new TestStack(app, 'cdk-dynamodb-global-20191121', { env: { region: 'eu-west-1' } });
+
+new IntegTest(app, 'cdk-dynamodb-global-20191121-test', {
+  testCases: [stack],
+});
+
 app.synth();
