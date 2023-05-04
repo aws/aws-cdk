@@ -4,9 +4,24 @@
       "description": "Remove AWS::IoT::TopicRule.Timestamp, replace back with AWS::IoT::TopicRule.IotTimestamp",
       "operations": [
         {
-          "op": "move",
-          "from": "/AWS::IoT::TopicRule.Timestamp",
-          "path": "/AWS::IoT::TopicRule.IotTimestamp"
+          "op": "add",
+          "value": {
+            "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-timestamp.html",
+            "Properties": {
+              "Unit": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-timestamp.html#cfn-iot-topicrule-timestamp-unit",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "Value": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-timestamp.html#cfn-iot-topicrule-timestamp-value",
+                "PrimitiveType": "String",
+                "Required": true,
+                "UpdateType": "Mutable"
+              }
+            }
+          }
         },
         {
           "op": "replace",
