@@ -38,7 +38,7 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 
-  public resolve(_: cdk.IResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 
