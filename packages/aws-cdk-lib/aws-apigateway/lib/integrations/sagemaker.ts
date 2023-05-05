@@ -9,6 +9,16 @@ import { Method } from '../method'
 export interface SagemakerIntegrationOptions extends IntegrationOptions {
 }
 
+/**
+ * Integrates an AWS Sagemaker Endpoint to an API Gateway method
+ *
+ * @example
+ *
+ *    declare const resource: apiagateway.Resource;
+ *    declare const endpoint: sagemaker.Endpoint;
+ *    resource.addMethod("POST", new apigateway.SagemakerIntegration(endpoint));
+ *
+ */
 export class SagemakerIntegration extends AwsIntegration {
   private readonly endpoint: IEndpoint;
 
