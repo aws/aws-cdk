@@ -941,7 +941,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    *
    * @default - no storage
    */
-  readonly ephemeralStorage?: Size;
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
