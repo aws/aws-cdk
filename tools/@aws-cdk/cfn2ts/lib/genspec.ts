@@ -282,13 +282,13 @@ export function isPrimitive(type: CodeName): boolean {
     || type.className === 'Date';
 }
 
-function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
+function specTypeToCodeType(resourceContext: CodeName, type: string, primitiveType: boolean): CodeName {
   if (type.endsWith('[]')) {
-    const itemType = specTypeToCodeType(resourceContext, type.slice(0, -2));
+    const itemType = specTypeToCodeType(resourceContext, type.slice(0, -2), primitiveType);
     return CodeName.forPrimitive(`${itemType.className}[]`);
   }
-  if (schema.isPrimitiveType(type)) {
-    return specPrimitiveToCodePrimitive(type);
+  if (primitiveType) {
+    return specPrimitiveToCodePrimitive(type as schema.PrimitiveType);
   } else if (type === 'Tag') {
     // Tags are not considered primitive by the CloudFormation spec (even though they are intrinsic)
     // so we won't consider them primitive either.
@@ -302,8 +302,8 @@ function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
 /**
  * Translate a list of type references in a resource context to a list of code names
  */
-export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
-  return types.map(type => specTypeToCodeType(resourceContext, type));
+export function specTypesToCodeTypes(resourceContext: CodeName, types: { [name: string]: boolean }): CodeName[] {
+  return Object.entries(types).map(([name, primitive]) => specTypeToCodeType(resourceContext, name, primitive));
 }
 
 export interface PropertyVisitor<T> {
