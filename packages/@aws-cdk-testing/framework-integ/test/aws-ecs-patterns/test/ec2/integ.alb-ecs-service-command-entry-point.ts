@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ-alb-ec2-cmd-entrypoint');
 
 // Create VPC and ECS Cluster
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
 const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
   autoScalingGroup: new autoscaling.AutoScalingGroup(
