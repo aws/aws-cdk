@@ -75,17 +75,14 @@ export class PropertyAttributeName extends SpecName {
  * types because sometimes a complex type can have the same name as a primitive type.
  * If we only return the names in this case then the primitive type will always override
  * the complex type (not what we want).
+ *
+ * @returns type name and whether the type is a complex type (true) or primitive type (false)
  */
 export function itemTypeNames(spec: schema.CollectionProperty): { [name: string]: boolean } {
-  const types = complexItemTypeNames(spec).map(type => { return { [type]: false }; })
-    .concat(primitiveItemTypeNames(spec).map(type => { return { [type]: true }; }));
-  return types.reduce((prev, acc) => {
-    acc = {
-      ...prev,
-      ...acc,
-    };
-    return acc;
-  }, {} as { [name: string]: boolean });
+  const types = complexItemTypeNames(spec).map(type => [type, true])
+    .concat(primitiveItemTypeNames(spec).map(type => [type, false]));
+
+  return Object.fromEntries(types);
 }
 
 function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
@@ -113,17 +110,14 @@ function primitiveItemTypeNames(spec: schema.CollectionProperty): string[] {
  * types because sometimes a complex type can have the same name as a primitive type.
  * If we only return the names in this case then the primitive type will always override
  * the complex type (not what we want).
+ *
+ * @returns type name and whether the type is a complex type (true) or primitive type (false)
  */
 export function scalarTypeNames(spec: schema.ScalarProperty): { [name: string]: boolean } {
-  const types = complexScalarTypeNames(spec).map(type => { return { [type]: false }; })
-    .concat(primitiveScalarTypeNames(spec).map(type => { return { [type]: true }; }));
-  return types.reduce((prev, acc) => {
-    acc = {
-      ...prev,
-      ...acc,
-    };
-    return acc;
-  }, {} as { [name: string]: boolean });
+  const types = complexScalarTypeNames(spec).map(type => [type, true] )
+    .concat(primitiveScalarTypeNames(spec).map(type => [type, false]));
+
+  return Object.fromEntries(types);
 }
 
 function complexScalarTypeNames(spec: schema.ScalarProperty): string[] {
