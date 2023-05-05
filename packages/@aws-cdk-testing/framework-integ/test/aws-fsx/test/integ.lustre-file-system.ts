@@ -6,7 +6,7 @@ const app = new App();
 
 const stack = new Stack(app, 'AwsCdkFsxLustre');
 
-const vpc = new Vpc(stack, 'VPC');
+const vpc = new Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 const storageCapacity = 1200;
 const lustreConfiguration = {
