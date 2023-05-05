@@ -1,7 +1,6 @@
 import { Duration, Stack, Lazy, TimeZone } from '../../core';
 import { ScheduleExpression } from '../lib';
 
-
 describe('schedule expression', () => {
   test('cron expressions day and dow are mutex: given weekday', () => {
     // Run every 10 minutes Monday through Friday

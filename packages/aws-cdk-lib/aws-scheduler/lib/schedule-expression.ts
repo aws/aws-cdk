@@ -13,8 +13,6 @@ import { Duration, TimeZone } from '../../core';
  * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html
  */
 export abstract class ScheduleExpression {
-
-
   /**
    * Construct a one-time schedule from a date.
    *

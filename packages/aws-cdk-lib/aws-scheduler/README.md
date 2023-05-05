@@ -13,8 +13,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ```ts
 const target = new targets.LambdaInvoke(props.func, {
     input: ScheduleTargetInput.fromObject({
-        "payload": "useful"
-    })
+        payload: 'useful',
+    }),
 });
     
 const schedule = new Schedule(this, 'Schedule', {
@@ -43,7 +43,7 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
         hour: '23',
         day: '20',
         month: '11',
-        timeZone: TimeZone.AMERICA_NEW_YORK 
+        timeZone: TimeZone.AMERICA_NEW_YORK,
     }),
     target,
     description: 'This is a test cron-based schedule that will run at 11:00 PM, on day 20 of the month, only in November in New York timezone',
@@ -55,9 +55,9 @@ A one-time schedule is a schedule that invokes a target only once. You configure
 ```ts
 const oneTimeSchedule = new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.at(
-        new Date(2022, 10, 20, 19, 20, 23)
-        TimeZone.AMERICA_NEW_YORK
-    )
+        new Date(2022, 10, 20, 19, 20, 23),
+        TimeZone.AMERICA_NEW_YORK,
+    ),
     target,
     description: 'This is a one-time schedule in New York timezone',
 });
