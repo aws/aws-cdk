@@ -555,6 +555,11 @@ describe('integration tests required on features', () => {
           data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }]
         }
       });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
 
       // WHEN
       const prLinter = configureMock(pr);
@@ -618,6 +623,9 @@ describe('integration tests required on features', () => {
       (pr as any).labels = [
         {
           name: 'pr-linter/exemption-requested',
+        },
+        {
+          name: 'pr/needs-review',
         }
       ];
 
