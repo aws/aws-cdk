@@ -17,11 +17,9 @@ export class DataProtectionPolicy {
   }
 
   /**
-   * Builds the data protection policy
-   * @param scope the Construct scope
-   * @returns the data protection policy
+   * @internal
    */
-  public bind(scope: Construct): DataProtectionPolicyConfig {
+  public _bind(_scope: Construct): DataProtectionPolicyConfig {
     const name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
     const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
     const version = '2021-06-01';
@@ -47,7 +45,7 @@ export class DataProtectionPolicy {
 
     var identifierArns: string[] = [];
     for (let identifier of this.dataProtectionPolicyProps.identifiers) {
-      identifierArns.push(Stack.of(scope).formatArn({
+      identifierArns.push(Stack.of(_scope).formatArn({
         resource: 'data-identifier',
         region: '',
         account: 'aws',

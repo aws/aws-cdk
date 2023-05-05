@@ -481,7 +481,7 @@ export class LogGroup extends LogGroupBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
-      dataProtectionPolicy: props.dataProtectionPolicy?.bind(this),
+      dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
