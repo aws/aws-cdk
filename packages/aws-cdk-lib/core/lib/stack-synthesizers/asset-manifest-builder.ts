@@ -61,7 +61,8 @@ export class AssetManifestBuilder {
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
     // Add to manifest
-    return this.addDockerImageAsset(stack, asset.sourceHash, {
+    const sourceHash = asset.assetName ? `${asset.assetName}-${asset.sourceHash}` : asset.sourceHash;
+    return this.addDockerImageAsset(stack, sourceHash, {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,

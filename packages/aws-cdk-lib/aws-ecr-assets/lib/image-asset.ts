@@ -469,8 +469,8 @@ export class DockerImageAsset extends Construct implements IAsset {
         : JSON.stringify(extraHash),
     });
 
-    this.sourceHash = staging.assetHash;
     this.assetHash = staging.assetHash;
+    this.sourceHash = this.assetHash;
 
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);

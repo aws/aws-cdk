@@ -8,7 +8,7 @@ const app = new App();
 
 const stack = new Stack(app, 'synth-test', {
   synthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'synthassets',
+    appId: 'szynthassets',
   }),
   env: {
     account: '489318732371',
@@ -24,7 +24,7 @@ new lambda.Function(stack, 'lambda-s3', {
 
 new lambda.Function(stack, 'lambda-ecr', {
   code: lambda.EcrImageCode.fromAssetImage(path.join(__dirname, 'assets'), {
-    assetName: 'ecr-asset',
+    assetName: 'ecr-assets',
   }),
   handler: lambda.Handler.FROM_IMAGE,
   runtime: lambda.Runtime.FROM_IMAGE,

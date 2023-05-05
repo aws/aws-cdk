@@ -334,7 +334,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     // Create image publishing role if it doesn't exist
     this.ensureImagePublishingRole();
 
-    const repoName = `${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
+    const repoName = `${this.appId}/${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
     if (this.stagingRepos[asset.assetName] === undefined) {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,

@@ -295,7 +295,6 @@ interface BoundAppStagingSynthesizerProps {
   readonly lookupRole: BootstrapRole;
 }
 
-
 class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppStagingSynthesizer {
   private readonly stagingStack: IStagingStack;
   private readonly assetManifest = new AssetManifestBuilder();
@@ -320,7 +319,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const templateAssetSource = this.synthesizeTemplate(session, this.props.lookupRole?._arnForCloudAssembly());
     const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {} /*[this.stagingStack.dependencyStack.artifactId]*/);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
 
     const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
 
