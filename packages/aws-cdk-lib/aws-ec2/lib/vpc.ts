@@ -1457,7 +1457,7 @@ export class Vpc extends VpcBase {
       // if no context is provided then resolvedStackAzs will be undefined and no validation is possible - move on without throwing an error
       const areGivenAzsSubsetOfStack = resolvedStackAzs === undefined || props.availabilityZones.every(az => resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
-        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`);
       }
       this.availabilityZones = props.availabilityZones;
     } else {
@@ -1467,7 +1467,6 @@ export class Vpc extends VpcBase {
     for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
       this.availabilityZones.push(FAKE_AZ_NAME);
     }
-
 
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
