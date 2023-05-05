@@ -2608,7 +2608,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2741c4398e5f911443c6efa6c196853fe9ba23f1dfa207f84428858e6ce702e1.json"
+                          "/b82030ee989b84de16db00014777f072606fb6a11b16e6f6cb1c880a54dfb4ae.json"
                         ]
                       ]
                     }
@@ -2768,14 +2768,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "HasEcrPublic": {
-                "id": "HasEcrPublic",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -3104,7 +3096,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/eef6b93ead7abe8bea2d61fed95fabf0f706ef49e02e5e29e6dd338ff78c009b.json"
+                          "/83802e609fcce6d5e0f883e0aa9a9111af240b1e206f6868dfd5bb25eb82ed9c.json"
                         ]
                       ]
                     },

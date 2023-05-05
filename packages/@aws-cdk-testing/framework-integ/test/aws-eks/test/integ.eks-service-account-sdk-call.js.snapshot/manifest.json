@@ -17,11 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33022d0002892a24ed1189070a900ad14b8b9fdb5d24a5818e099233e38f8578.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5408ddbe258fee031198d823393255c06b4e03f92d5396890fb8cfa34577b79b.json",
->>>>>>> df3ae95b1ea6e4160b877b92993d93b9fbf45226
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7953bea93be3b330708b8596a70803375f704c9f6ad3b910b7651da10e1db62e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -397,19 +393,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-<<<<<<< HEAD
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-=======
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
->>>>>>> df3ae95b1ea6e4160b877b92993d93b9fbf45226
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -576,15 +559,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterMastersRole9AA35625": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterMastersRole9AA35625",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
