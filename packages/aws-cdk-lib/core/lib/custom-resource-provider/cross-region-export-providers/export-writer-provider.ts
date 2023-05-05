@@ -9,8 +9,8 @@ import { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
-import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider } from '../custom-resource-provider';
 import { Token } from '../../token';
+import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
 
 /**
  * Properties for an ExportReader
@@ -22,6 +22,43 @@ export interface ExportWriterProps {
    * @default - the stack region
    */
   readonly region?: string;
+}
+
+/**
+ * Create our own CustomResourceProvider so that we can add a single policy
+ * with a list of ARNs instead of having to create a separate policy statement per ARN.
+ */
+class CRProvider extends CustomResourceProvider {
+  public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps): CRProvider {
+    const id = `${uniqueid}CustomResourceProvider`;
+    const stack = Stack.of(scope);
+    const provider = stack.node.tryFindChild(id) as CRProvider
+      ?? new CRProvider(stack, id, props);
+
+    return provider;
+  }
+
+  private readonly resourceArns = new Set<string>();
+  constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
+    super(scope, id, props);
+    this.addToRolePolicy({
+      Effect: 'Allow',
+      Resource: Lazy.list({ produce: () => Array.from(this.resourceArns) }),
+      Action: [
+        'ssm:DeleteParameters',
+        'ssm:ListTagsForResource',
+        'ssm:GetParameters',
+        'ssm:PutParameter',
+      ],
+    });
+  }
+
+  /**
+   * Add a resource ARN to the existing policy statement
+   */
+  public addResourceArn(arn: string): void {
+    this.resourceArns.add(arn);
+  }
 }
 
 /**
@@ -55,33 +92,19 @@ export class ExportWriter extends Construct {
       });
   }
   private readonly _references: CrossRegionExports = {};
-  private readonly provider: CustomResourceProvider;
-  private readonly resourceArns = new Set<string>;
+  private readonly provider: CRProvider;
   constructor(scope: Construct, id: string, props: ExportWriterProps) {
     super(scope, id);
     const stack = Stack.of(this);
     const region = props.region ?? stack.region;
-    this.addRegionToPolicy(region);
 
     const resourceType = 'Custom::CrossRegionExportWriter';
-    this.provider = CustomResourceProvider.getOrCreateProvider(this, resourceType, {
+    this.provider = CRProvider.getOrCreateProvider(this, resourceType, {
       codeDirectory: path.join(__dirname, 'cross-region-ssm-writer-handler'),
       runtime: builtInCustomResourceProviderNodeRuntime(this),
-      policyStatements: [{
-        Effect: 'Allow',
-        Resource: Lazy.list({
-          produce: () => [
-            ...Array.from(this.resourceArns),
-          ],
-        }),
-        Action: [
-          'ssm:DeleteParameters',
-          'ssm:ListTagsForResource',
-          'ssm:GetParameters',
-          'ssm:PutParameter',
-        ],
-      }],
     });
+
+    this.addRegionToPolicy(region);
 
     const properties: ExportWriterCRProps = {
       region: region,
@@ -126,14 +149,12 @@ export class ExportWriter extends Construct {
    */
   private addRegionToPolicy(region: string): void {
     if (!Token.isUnresolved(region)) {
-      this.resourceArns.add(
-        Stack.of(this).formatArn({
-          service: 'ssm',
-          resource: 'parameter',
-          region,
-          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
-        }),
-      );
+      this.provider.addResourceArn(Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        region,
+        resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
+      }));
     }
   }
 
