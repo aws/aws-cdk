@@ -310,7 +310,7 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
-    const statuses = await this.client.rest.repos.listCommitStatusesForRef({
+    const statuses = await this.client.repos.listCommitStatusesForRef({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
       ref: sha,
@@ -340,7 +340,11 @@ export class PullRequestLinter {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     // NOTE: MEMBER = a member of the organization that owns the repository
     // COLLABORATOR = has been invited to collaborate on the repository
-    const maintainerRequestedChanges = reviews.data.some(review => review.author_association === 'MEMBER' && review.state === 'CHANGES_REQUESTED');
+    const maintainerRequestedChanges = reviews.data.some(
+      review => review.author_association === 'MEMBER'
+        && review.user?.login !== 'aws-cdk-automation'
+        && review.state === 'CHANGES_REQUESTED'
+    );
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
@@ -444,16 +448,19 @@ export class PullRequestLinter {
     });
 
     await this.deletePRLinterComment();
-    await this.communicateResult(validationCollector);
-
-    // also assess whether the PR needs review or not
     try {
-      const state = await this.codeBuildJobSucceeded(sha);
-      if (state) {
-        await this.assessNeedsReview(pr);
+      await this.communicateResult(validationCollector);
+      // always assess the review, even if the linter fails
+    } finally {
+      // also assess whether the PR needs review or not
+      try {
+        const state = await this.codeBuildJobSucceeded(sha);
+        if (state) {
+          await this.assessNeedsReview(pr);
+        }
+      } catch (e) {
+        console.log(`assessing review failed for sha ${sha}: `, e);
       }
-    } catch (e) {
-      console.log(`assessing review failed for sha ${sha}: `, e);
     }
   }
 
