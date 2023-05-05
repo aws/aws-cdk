@@ -453,7 +453,7 @@ export class PullRequestLinter {
         await this.assessNeedsReview(pr);
       }
     } catch (e) {
-      console.log('assessing review failed: ', e);
+      console.log(`assessing review failed for sha ${sha}: `, e);
     }
   }
 
