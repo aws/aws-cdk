@@ -646,6 +646,40 @@ describe('integration tests required on features', () => {
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
+
+    test('review happens even if linter fails', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
+          ]
+        }
+      });
+      (pr as any).title = 'blah';
+      (pr as any).labels = [
+        {
+          name: 'pr-linter/exemption-requested',
+        },
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
   });
 });
 
@@ -689,7 +723,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
       return {
         data: [{
           context: linter.CODE_BUILD_CONTEXT,
-          state: 'succeeded',
+          state: 'success',
         }],
       }
     },
@@ -708,9 +742,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
       pulls: pullsClient as any,
       issues: issuesClient as any,
       search: searchClient as any,
-      rest: {
-        repos: reposClient,
-      },
+      repos: reposClient as any,
       paginate: (method: any, args: any) => { return method(args).data },
     } as any,
   })
