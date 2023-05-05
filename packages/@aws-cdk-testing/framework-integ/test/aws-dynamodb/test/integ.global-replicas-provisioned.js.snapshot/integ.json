@@ -1,14 +1,12 @@
 {
   "version": "31.0.0",
   "testCases": {
-    "integ.global-replicas-provisioned": {
+    "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest": {
       "stacks": [
         "aws-cdk-dynamodb-global-replicas-provisioned"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

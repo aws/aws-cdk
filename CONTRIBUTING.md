@@ -542,6 +542,23 @@ CDK integration tests.
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
+#### Getting a review from a maintainer
+
+We get A LOT of pull requests, which is a great thing! To help us prioritize
+which pull requests to review we first make sure that the pull request is in a
+mergeable state. This means that the pull request:
+
+1. Is ready for review (not a draft)
+2. Does not have any merge conflicts
+3. Has a passing build
+4. Does not have any requested changes by a maintainer
+5. Has a passing `PR Linter` workflow **OR** the contributor has requested
+   an exemption/clarification.
+
+To make this easier we have a `pr/needs-review` label that we can add to each
+PR. If you do not see this label on your PR then it means that something needs
+to be fixed before it can be reviewed.
+
 #### Adding construct runtime dependencies
 
 Any tool that is not part of the CDK, and needs to be used by a construct during
