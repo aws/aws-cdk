@@ -29,7 +29,7 @@ async function run() {
           repo: github.context.repo.repo,
           number: github.context.issue.number,
         });
-        await prLinter.validatePullRequestTarget(github.context.payload.sha);
+        await prLinter.validatePullRequestTarget(github.context.sha);
     }
   } catch (error: any) {
     core.setFailed(error.message);
