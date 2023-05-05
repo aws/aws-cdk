@@ -3,6 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -525,6 +526,63 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           ContainerPath: '/container/path/new',
           SourceVolume: 'hostName',
         }],
+      },
+    });
+  });
+
+  test('correctly renders images from repositories', () => {
+    // GIVEN
+    //const repo = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-central-1:123456789012:repository/name');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromEcrRepository(repo, 'my-tag'),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::Select': [
+                  4,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.dkr.ecr.',
+              {
+                'Fn::Select': [
+                  3,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { Ref: 'Repo02AC86CF' },
+              ':my-tag',
+            ],
+          ],
+        },
       },
     });
   });

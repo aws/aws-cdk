@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { DefaultTokenResolver, Lazy, PhysicalName, Size, StringConcat, Tokenization } from 'aws-cdk-lib';
+import { Lazy, PhysicalName, Size, Stack } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
@@ -237,6 +237,7 @@ export interface HostVolumeOptions extends EcsVolumeOptions {
    */
   readonly hostPath?: string;
 }
+
 /**
  * Creates a Host volume. This volume will persist on the host at the specified `hostPath`.
  * If the `hostPath` is not specified, Docker will choose the host path. In this case,
@@ -476,15 +477,47 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly environment?: { [key:string]: string };
   public readonly jobRole?: iam.IRole;
   public readonly linuxParameters?: LinuxParameters;
-  public readonly logDriverConfig?: ecs.LogDriverConfig;
+  public get logDriverConfig(): ecs.LogDriverConfig | undefined {
+    return this._logDriverConfig;
+  }
+  public get imageConfig(): ecs.ContainerImageConfig {
+    return this._imageConfig;
+  }
   public readonly readonlyRootFilesystem?: boolean;
   public readonly secrets?: secretsmanager.ISecret[];
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
-  public abstract readonly executionRole?: iam.IRole;
+  //public abstract readonly executionRole?: iam.IRole;
 
-  private readonly imageConfig: ecs.ContainerImageConfig;
+  private _executionRole?: iam.IRole;
+  private _logDriverConfig?: ecs.LogDriverConfig;
+  private _imageConfig: ecs.ContainerImageConfig;
+
+  // stores
+  private readonly logging?: ecs.LogDriver;
+
+  protected set executionRole(role: iam.IRole | undefined) {
+    this._executionRole = role;
+
+    if (this.logging) {
+      this._logDriverConfig = this.logging.bind(this, {
+        ...this as any,
+        // TS!
+        taskDefinition: {
+          obtainExecutionRole: () => this._executionRole,
+        },
+      });
+    }
+
+    this._imageConfig = this.image.bind(this, {
+      ...this as any,
+      // TS!
+      taskDefinition: {
+        obtainExecutionRole: () => this._executionRole,
+      },
+    });
+  }
 
   constructor(scope: Construct, id: string, props: EcsContainerDefinitionProps) {
     super(scope, id);
@@ -496,9 +529,13 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
+    this.logging = props.logging;
 
     // Lazy so this.executionRole can be filled by subclasses
-    this.logDriverConfig = Lazy.any({
+    // instead of doing this, create a private setter that the subclasses call
+    // private setter will call bind()
+    // the execution role is not abstract, it is private
+    /*this.logDriverConfig = Lazy.any({
       produce: () => {
         if (props.logging) {
           return props.logging.bind(this, {
@@ -512,7 +549,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
 
         return undefined;
       },
-    }) as any;
+    }) as any;*/
 
     this.readonlyRootFilesystem = props.readonlyRootFilesystem ?? false;
     this.secrets = props.secrets;
@@ -520,7 +557,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.volumes = props.volumes ?? [];
 
     // Lazy so this.executionRole can be filled by subclasses
-    this.imageConfig = Lazy.any({
+    /*this.imageConfig = Lazy.any({
       produce: () => props.image.bind(this, {
         ...this as any,
         taskDefinition: {
@@ -528,6 +565,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         },
       }),
     }) as any;
+    */
   }
 
   /**
@@ -535,10 +573,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
-      image: Tokenization.resolve(this.imageConfig, {
-        scope: this,
-        resolver: new DefaultTokenResolver(new StringConcat()),
-      }).imageName,
+      image: this.imageConfig.imageName,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,
@@ -818,7 +853,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
    *
    * @default - a Role will be created if logging is specified, no role otherwise
    */
-  public readonly executionRole?: iam.IRole;
+  //public readonly executionRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
@@ -944,7 +979,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
    *
    * @default - a Role will be created
    */
-  public readonly executionRole: iam.IRole;
+  //public readonly executionRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
