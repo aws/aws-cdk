@@ -531,7 +531,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('can use docker image assets w/out execution role', () => {
+  test('correctly renders docker images', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
@@ -556,7 +556,6 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
 
   test('correctly renders images from repositories', () => {
     // GIVEN
-    //const repo = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-central-1:123456789012:repository/name');
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
