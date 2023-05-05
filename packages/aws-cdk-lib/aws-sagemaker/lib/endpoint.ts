@@ -1,4 +1,3 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 
 /**
@@ -18,10 +17,4 @@ export interface IEndpoint extends cdk.IResource {
    * @attribute
    */
   readonly endpointName: string;
-
-  /**
-   * Permits an IAM principal to invoke this endpoint
-   * @param grantee The principal to grant access to
-   */
-  grantInvoke(grantee: iam.IGrantable): iam.Grant;
 }
