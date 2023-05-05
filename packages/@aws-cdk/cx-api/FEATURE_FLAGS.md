@@ -42,8 +42,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
-| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
+| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
@@ -780,6 +780,23 @@ This flag disables use of that exceptions database and always uses the global se
 | 2.51.0 | `false` | `true` |
 
 
+### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
+
+*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
+
+Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+of a role using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.60.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy
 
 *Use S3 Bucket Policy instead of ACLs for Server Access Logging* (fix)
@@ -792,23 +809,6 @@ This flag uses a Bucket Policy statement to allow Server Access Log delivery, fo
 practices for S3.
 
 @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.59.0 | `false` | `true` |
-
-
-### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
-
-*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
-
-Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
-to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
-of a role using the same default policy name.
-
-This new implementation creates default policy names based on the constructs node path in their stack.
 
 
 | Since | Default | Recommended |
@@ -907,7 +907,7 @@ according to the OS of the machine image.
 *SecretTargetAttachments uses the ResourcePolicy of the attached Secret.* (fix)
 
 Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
-SecretTargetAttachments are created to connect a Secret to a target resource. 
+SecretTargetAttachments are created to connect a Secret to a target resource.
 In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
 Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
 However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
