@@ -250,6 +250,15 @@ export interface CommonTaskDefinitionAttributes {
    * @default Permissions cannot be granted to the imported task.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The IAM role that grants containers and Fargate agents permission to make AWS API calls on your behalf.
+   *
+   * Some tasks do not have an execution role.
+   *
+   * @default - undefined
+   */
+  readonly executionRole?: iam.IRole;
 }
 
 /**
@@ -317,6 +326,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       compatibility: attrs.compatibility,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 

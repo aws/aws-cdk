@@ -201,15 +201,17 @@ export interface CustomizeRolesOptions {
    * The constructPath can be either a relative or absolute path
    * from the scope that `customizeRoles` is used on to the role being created.
    *
-   * For example, if you were creating a role
-   *
    * @example
-   * const stack = new Stack(app, 'MyStack');
-   * new Role(stack, 'MyRole');
+   * declare const app: App;
    *
-   * Role.customizeRoles(stack, {
+   * const stack = new Stack(app, 'MyStack');
+   * new iam.Role(stack, 'MyRole', {
+   *  assumedBy: new iam.AccountPrincipal('1111111111'),
+   * });
+   *
+   * iam.Role.customizeRoles(stack, {
    *   usePrecreatedRoles: {
-   *      // absolute path
+   *     // absolute path
    *     'MyStack/MyRole': 'my-precreated-role-name',
    *     // or relative path from `stack`
    *     'MyRole': 'my-precreated-role',
@@ -318,10 +320,6 @@ export class Role extends Resource implements IRole {
    * @param options allow customizing the behavior of the returned role
    */
   public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
-    // Validate the role name only if not a token
-    if (!Token.isUnresolved(roleName)) {
-      this.validateRoleName(roleName);
-    }
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
@@ -347,7 +345,7 @@ export class Role extends Resource implements IRole {
    *
    * @example
    * declare const app: App;
-   * Role.customizeRoles(app, {
+   * iam.Role.customizeRoles(app, {
    *   usePrecreatedRoles: {
    *     'ConstructPath/To/Role': 'my-precreated-role-name',
    *   },
@@ -369,15 +367,6 @@ export class Role extends Resource implements IRole {
       preventSynthesis,
       usePrecreatedRoles: useRoles,
     });
-  }
-
-  private static validateRoleName(roleName: string) {
-    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateRole.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
-    const matches = regexp.exec(roleName);
-    if (!(matches && matches.length === 1 && matches[0] === roleName)) {
-      throw new Error(`The role name ${roleName} does not match the IAM conventions.`);
-    }
   }
 
   public readonly grantPrincipal: IPrincipal = this;
