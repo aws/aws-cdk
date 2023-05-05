@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-cognito": {
-        "id": "integ-cognito",
-        "path": "integ-cognito",
+      "IntegAlbOidc": {
+        "id": "IntegAlbOidc",
+        "path": "IntegAlbOidc",
         "children": {
-          "Stack": {
-            "id": "Stack",
-            "path": "integ-cognito/Stack",
+          "Vpc": {
+            "id": "Vpc",
+            "path": "IntegAlbOidc/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/Stack/Resource",
+                "path": "IntegAlbOidc/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-cognito/Stack"
+                        "value": "IntegAlbOidc/Vpc"
                       }
                     ]
                   }
@@ -37,16 +37,16 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-cognito/Stack/PublicSubnet1",
+                "path": "IntegAlbOidc/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-cognito/Stack/PublicSubnet1/Subnet",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -69,7 +69,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-cognito/Stack/PublicSubnet1/Acl",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,17 +89,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-cognito/Stack/PublicSubnet1/RouteTable",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -111,15 +111,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-cognito/Stack/PublicSubnet1/RouteTableAssociation",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPublicSubnet1RouteTable5057189D"
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         },
                         "subnetId": {
-                          "Ref": "StackPublicSubnet1Subnet0AD81D22"
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         }
                       }
                     },
@@ -130,16 +130,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-cognito/Stack/PublicSubnet1/DefaultRoute",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPublicSubnet1RouteTable5057189D"
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "StackIGW2F0A1126"
+                          "Ref": "VpcIGWD7BA715C"
                         }
                       }
                     },
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-cognito/Stack/PublicSubnet1/EIP",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,23 +170,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-cognito/Stack/PublicSubnet1/NATGateway",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "subnetId": {
-                          "Ref": "StackPublicSubnet1Subnet0AD81D22"
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "StackPublicSubnet1EIPBDAAB2A5",
+                            "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,16 +204,16 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-cognito/Stack/PublicSubnet2",
+                "path": "IntegAlbOidc/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-cognito/Stack/PublicSubnet2/Subnet",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -236,7 +236,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-cognito/Stack/PublicSubnet2/Acl",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,17 +256,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-cognito/Stack/PublicSubnet2/RouteTable",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -278,15 +278,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-cognito/Stack/PublicSubnet2/RouteTableAssociation",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPublicSubnet2RouteTableCD306445"
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         },
                         "subnetId": {
-                          "Ref": "StackPublicSubnet2Subnet3C7D2288"
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         }
                       }
                     },
@@ -297,16 +297,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-cognito/Stack/PublicSubnet2/DefaultRoute",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPublicSubnet2RouteTableCD306445"
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "StackIGW2F0A1126"
+                          "Ref": "VpcIGWD7BA715C"
                         }
                       }
                     },
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-cognito/Stack/PublicSubnet2/EIP",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,23 +337,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-cognito/Stack/PublicSubnet2/NATGateway",
+                    "path": "IntegAlbOidc/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "subnetId": {
-                          "Ref": "StackPublicSubnet2Subnet3C7D2288"
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         },
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "StackPublicSubnet2EIP8CDBC8C2",
+                            "VpcPublicSubnet2EIP3C605A87",
                             "AllocationId"
                           ]
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PublicSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,16 +371,16 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-cognito/Stack/PrivateSubnet1",
+                "path": "IntegAlbOidc/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-cognito/Stack/PrivateSubnet1/Subnet",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -403,7 +403,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PrivateSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-cognito/Stack/PrivateSubnet1/Acl",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,17 +423,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-cognito/Stack/PrivateSubnet1/RouteTable",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PrivateSubnet1"
+                            "value": "IntegAlbOidc/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
@@ -445,15 +445,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-cognito/Stack/PrivateSubnet1/RouteTableAssociation",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         },
                         "subnetId": {
-                          "Ref": "StackPrivateSubnet1Subnet47AC2BC7"
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
                         }
                       }
                     },
@@ -464,16 +464,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-cognito/Stack/PrivateSubnet1/DefaultRoute",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "StackPublicSubnet1NATGatewayD2E1ABF7"
+                          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
                         }
                       }
                     },
@@ -490,16 +490,16 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-cognito/Stack/PrivateSubnet2",
+                "path": "IntegAlbOidc/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-cognito/Stack/PrivateSubnet2/Subnet",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -522,7 +522,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PrivateSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-cognito/Stack/PrivateSubnet2/Acl",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,17 +542,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-cognito/Stack/PrivateSubnet2/RouteTable",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-cognito/Stack/PrivateSubnet2"
+                            "value": "IntegAlbOidc/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
@@ -564,15 +564,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-cognito/Stack/PrivateSubnet2/RouteTableAssociation",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPrivateSubnet2RouteTableA5546697"
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         },
                         "subnetId": {
-                          "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                         }
                       }
                     },
@@ -583,16 +583,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-cognito/Stack/PrivateSubnet2/DefaultRoute",
+                    "path": "IntegAlbOidc/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "StackPrivateSubnet2RouteTableA5546697"
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "StackPublicSubnet2NATGatewayA8E03AB3"
+                          "Ref": "VpcPublicSubnet2NATGateway9182C01D"
                         }
                       }
                     },
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-cognito/Stack/IGW",
+                "path": "IntegAlbOidc/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-cognito/Stack"
+                        "value": "IntegAlbOidc/Vpc"
                       }
                     ]
                   }
@@ -628,20 +628,38 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-cognito/Stack/VPCGW",
+                "path": "IntegAlbOidc/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
                     "vpcId": {
-                      "Ref": "Stack8A423254"
+                      "Ref": "Vpc8378EB38"
                     },
                     "internetGatewayId": {
-                      "Ref": "StackIGW2F0A1126"
+                      "Ref": "VpcIGWD7BA715C"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "IntegAlbOidc/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "IntegAlbOidc/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
@@ -651,9 +669,43 @@
               "version": "0.0.0"
             }
           },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
           "HostedZone": {
             "id": "HostedZone",
-            "path": "integ-cognito/HostedZone",
+            "path": "IntegAlbOidc/HostedZone",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -661,11 +713,11 @@
           },
           "Certificate": {
             "id": "Certificate",
-            "path": "integ-cognito/Certificate",
+            "path": "IntegAlbOidc/Certificate",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/Certificate/Resource",
+                "path": "IntegAlbOidc/Certificate/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
@@ -679,7 +731,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-cognito/Certificate"
+                        "value": "IntegAlbOidc/Certificate"
                       }
                     ],
                     "validationMethod": "DNS"
@@ -696,13 +748,217 @@
               "version": "0.0.0"
             }
           },
-          "LB": {
-            "id": "LB",
-            "path": "integ-cognito/LB",
+          "UserPool": {
+            "id": "UserPool",
+            "path": "IntegAlbOidc/UserPool",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/LB/Resource",
+                "path": "IntegAlbOidc/UserPool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "autoVerifiedAttributes": [
+                      "email"
+                    ],
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "usernameAttributes": [
+                      "email"
+                    ],
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "Domain": {
+                "id": "Domain",
+                "path": "IntegAlbOidc/UserPool/Domain",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegAlbOidc/UserPool/Domain/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "z23abc4xyzl05b",
+                        "userPoolId": {
+                          "Ref": "UserPool6BA7E5F2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolClient": {
+                "id": "UserPoolClient",
+                "path": "IntegAlbOidc/UserPool/UserPoolClient",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegAlbOidc/UserPool/UserPoolClient/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "UserPool6BA7E5F2"
+                        },
+                        "allowedOAuthFlows": [
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://*.example.com/oauth2/idpresponse"
+                        ],
+                        "generateSecret": true,
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DescribeCognitoUserPoolClient": {
+                    "id": "DescribeCognitoUserPoolClient",
+                    "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient",
+                    "children": {
+                      "Provider": {
+                        "id": "Provider",
+                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Provider",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "CustomResourcePolicy": {
+                        "id": "CustomResourcePolicy",
+                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/CustomResourcePolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "cognito-idp:DescribeUserPoolClient",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "UserPool6BA7E5F2",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "UserPoolUserPoolClientDescribeCognitoUserPoolClientCustomResourcePolicyFFF2174F",
+                                "roles": [
+                                  {
+                                    "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "LoadBalancer": {
+            "id": "LoadBalancer",
+            "path": "IntegAlbOidc/LoadBalancer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegAlbOidc/LoadBalancer/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
@@ -716,17 +972,17 @@
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "LBSecurityGroup8A41EA2B",
+                          "LoadBalancerSecurityGroupA28D6DD7",
                           "GroupId"
                         ]
                       }
                     ],
                     "subnets": [
                       {
-                        "Ref": "StackPublicSubnet1Subnet0AD81D22"
+                        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                       },
                       {
-                        "Ref": "StackPublicSubnet2Subnet3C7D2288"
+                        "Ref": "VpcPublicSubnet2Subnet691E08A3"
                       }
                     ],
                     "type": "application"
@@ -739,15 +995,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "integ-cognito/LB/SecurityGroup",
+                "path": "IntegAlbOidc/LoadBalancer/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-cognito/LB/SecurityGroup/Resource",
+                    "path": "IntegAlbOidc/LoadBalancer/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatically created Security Group for ELB integcognitoLBFBBBA626",
+                        "groupDescription": "Automatically created Security Group for ELB IntegAlbOidcLoadBalancer3609D530",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -767,7 +1023,7 @@
                           }
                         ],
                         "vpcId": {
-                          "Ref": "Stack8A423254"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -784,31 +1040,90 @@
               },
               "Listener": {
                 "id": "Listener",
-                "path": "integ-cognito/LB/Listener",
+                "path": "IntegAlbOidc/LoadBalancer/Listener",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-cognito/LB/Listener/Resource",
+                    "path": "IntegAlbOidc/LoadBalancer/Listener/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                       "aws:cdk:cloudformation:props": {
                         "defaultActions": [
                           {
-                            "type": "authenticate-cognito",
-                            "authenticateCognitoConfig": {
-                              "userPoolArn": {
-                                "Fn::GetAtt": [
-                                  "UserPool6BA7E5F2",
-                                  "Arn"
+                            "type": "authenticate-oidc",
+                            "authenticateOidcConfig": {
+                              "authorizationEndpoint": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "https://",
+                                    {
+                                      "Ref": "UserPoolDomainD0EA232A"
+                                    },
+                                    ".auth.",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ".amazoncognito.com/oauth2/authorize"
+                                  ]
                                 ]
                               },
-                              "userPoolClientId": {
-                                "Ref": "Client4A7F64DF"
+                              "clientId": {
+                                "Ref": "UserPoolUserPoolClient40176907"
                               },
-                              "userPoolDomain": {
-                                "Ref": "Domain66AC69E0"
+                              "clientSecret": {
+                                "Fn::GetAtt": [
+                                  "UserPoolUserPoolClientDescribeCognitoUserPoolClientA6EA22D2",
+                                  "UserPoolClient.ClientSecret"
+                                ]
                               },
-                              "sessionTimeout": "86400"
+                              "issuer": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "https://cognito-idp.",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ".amazonaws.com/",
+                                    {
+                                      "Ref": "UserPool6BA7E5F2"
+                                    }
+                                  ]
+                                ]
+                              },
+                              "tokenEndpoint": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "https://",
+                                    {
+                                      "Ref": "UserPoolDomainD0EA232A"
+                                    },
+                                    ".auth.",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ".amazoncognito.com/oauth2/token"
+                                  ]
+                                ]
+                              },
+                              "userInfoEndpoint": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "https://",
+                                    {
+                                      "Ref": "UserPoolDomainD0EA232A"
+                                    },
+                                    ".auth.",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ".amazoncognito.com/oauth2/userInfo"
+                                  ]
+                                ]
+                              }
                             },
                             "order": 1
                           },
@@ -823,7 +1138,7 @@
                           }
                         ],
                         "loadBalancerArn": {
-                          "Ref": "LB8A12904C"
+                          "Ref": "LoadBalancerBE9EEC3A"
                         },
                         "certificates": [
                           {
@@ -840,73 +1155,6 @@
                       "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
                       "version": "0.0.0"
                     }
-                  },
-                  "Action2Rule": {
-                    "id": "Action2Rule",
-                    "path": "integ-cognito/LB/Listener/Action2Rule",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-cognito/LB/Listener/Action2Rule/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-                          "aws:cdk:cloudformation:props": {
-                            "actions": [
-                              {
-                                "type": "authenticate-cognito",
-                                "authenticateCognitoConfig": {
-                                  "userPoolArn": {
-                                    "Fn::GetAtt": [
-                                      "UserPool6BA7E5F2",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "userPoolClientId": {
-                                    "Ref": "Client4A7F64DF"
-                                  },
-                                  "userPoolDomain": {
-                                    "Ref": "Domain66AC69E0"
-                                  },
-                                  "sessionTimeout": 86400
-                                },
-                                "order": 1
-                              },
-                              {
-                                "type": "fixed-response",
-                                "fixedResponseConfig": {
-                                  "statusCode": "200",
-                                  "contentType": "text/plain",
-                                  "messageBody": "Authenticated"
-                                },
-                                "order": 2
-                              }
-                            ],
-                            "conditions": [
-                              {
-                                "field": "path-pattern",
-                                "pathPatternConfig": {
-                                  "values": [
-                                    "action2*"
-                                  ]
-                                }
-                              }
-                            ],
-                            "priority": 1,
-                            "listenerArn": {
-                              "Ref": "LBListener49E825B4"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListenerRule",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerRule",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -920,132 +1168,150 @@
               "version": "0.0.0"
             }
           },
-          "UserPool": {
-            "id": "UserPool",
-            "path": "integ-cognito/UserPool",
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "IntegAlbOidc/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/UserPool/Resource",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
-                    "accountRecoverySetting": {
-                      "recoveryMechanisms": [
-                        {
-                          "name": "verified_phone_number",
-                          "priority": 1
-                        },
-                        {
-                          "name": "verified_email",
-                          "priority": 2
-                        }
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
                       ]
                     },
-                    "adminCreateUserConfig": {
-                      "allowAdminCreateUserOnly": true
+                    "handler": "index.handler",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
                     },
-                    "emailVerificationMessage": "The verification code to your new account is {####}",
-                    "emailVerificationSubject": "Verify your new account",
-                    "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "verificationMessageTemplate": {
-                      "defaultEmailOption": "CONFIRM_WITH_CODE",
-                      "emailMessage": "The verification code to your new account is {####}",
-                      "emailSubject": "Verify your new account",
-                      "smsMessage": "The verification code to your new account is {####}"
-                    }
+                    "timeout": 120
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
-            }
-          },
-          "Client": {
-            "id": "Client",
-            "path": "integ-cognito/Client",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-cognito/Client/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
-                  "aws:cdk:cloudformation:props": {
-                    "userPoolId": {
-                      "Ref": "UserPool6BA7E5F2"
-                    },
-                    "allowedOAuthFlows": [
-                      "code"
-                    ],
-                    "allowedOAuthFlowsUserPoolClient": true,
-                    "allowedOAuthScopes": [
-                      "email",
-                      "openid"
-                    ],
-                    "callbackUrLs": [
-                      "https://*.example.com/oauth2/idpresponse"
-                    ],
-                    "explicitAuthFlows": [
-                      "ALLOW_USER_PASSWORD_AUTH",
-                      "ALLOW_REFRESH_TOKEN_AUTH"
-                    ],
-                    "generateSecret": true,
-                    "supportedIdentityProviders": [
-                      "COGNITO"
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-              "version": "0.0.0"
-            }
-          },
-          "Domain": {
-            "id": "Domain",
-            "path": "integ-cognito/Domain",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-cognito/Domain/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
-                  "aws:cdk:cloudformation:props": {
-                    "domain": "z23abc4xyzl05b",
-                    "userPoolId": {
-                      "Ref": "UserPool6BA7E5F2"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
           "ARecord": {
             "id": "ARecord",
-            "path": "integ-cognito/ARecord",
+            "path": "IntegAlbOidc/ARecord",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/ARecord/Resource",
+                "path": "IntegAlbOidc/ARecord/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -1054,7 +1320,7 @@
                     "aliasTarget": {
                       "hostedZoneId": {
                         "Fn::GetAtt": [
-                          "LB8A12904C",
+                          "LoadBalancerBE9EEC3A",
                           "CanonicalHostedZoneID"
                         ]
                       },
@@ -1065,7 +1331,7 @@
                             "dualstack.",
                             {
                               "Fn::GetAtt": [
-                                "LB8A12904C",
+                                "LoadBalancerBE9EEC3A",
                                 "DNSName"
                               ]
                             }
@@ -1087,25 +1353,17 @@
               "version": "0.0.0"
             }
           },
-          "DNS": {
-            "id": "DNS",
-            "path": "integ-cognito/DNS",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
           "User": {
             "id": "User",
-            "path": "integ-cognito/User",
+            "path": "IntegAlbOidc/User",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/User/Resource",
+                "path": "IntegAlbOidc/User/Resource",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "integ-cognito/User/Resource/Provider",
+                    "path": "IntegAlbOidc/User/Resource/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1113,11 +1371,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-cognito/User/Resource/Resource",
+                    "path": "IntegAlbOidc/User/Resource/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "integ-cognito/User/Resource/Resource/Default",
+                        "path": "IntegAlbOidc/User/Resource/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1131,11 +1389,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "integ-cognito/User/Resource/CustomResourcePolicy",
+                    "path": "IntegAlbOidc/User/Resource/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-cognito/User/Resource/CustomResourcePolicy/Resource",
+                        "path": "IntegAlbOidc/User/Resource/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1181,11 +1439,11 @@
               },
               "SetUserPassword": {
                 "id": "SetUserPassword",
-                "path": "integ-cognito/User/SetUserPassword",
+                "path": "IntegAlbOidc/User/SetUserPassword",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "integ-cognito/User/SetUserPassword/Provider",
+                    "path": "IntegAlbOidc/User/SetUserPassword/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1193,11 +1451,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-cognito/User/SetUserPassword/Resource",
+                    "path": "IntegAlbOidc/User/SetUserPassword/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "integ-cognito/User/SetUserPassword/Resource/Default",
+                        "path": "IntegAlbOidc/User/SetUserPassword/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1211,11 +1469,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "integ-cognito/User/SetUserPassword/CustomResourcePolicy",
+                    "path": "IntegAlbOidc/User/SetUserPassword/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-cognito/User/SetUserPassword/CustomResourcePolicy/Resource",
+                        "path": "IntegAlbOidc/User/SetUserPassword/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1262,157 +1520,20 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "integ-cognito/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
-          "AWS679f53fac002430cb0da5b7982bd2287": {
-            "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-                        "Arn"
-                      ]
-                    },
-                    "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    },
-                    "timeout": 120
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "10.2.9"
             }
           },
           "Signin": {
             "id": "Signin",
-            "path": "integ-cognito/Signin",
+            "path": "IntegAlbOidc/Signin",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-cognito/Signin/ServiceRole",
+                "path": "IntegAlbOidc/Signin/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-cognito/Signin/ServiceRole/ImportServiceRole",
+                    "path": "IntegAlbOidc/Signin/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1420,7 +1541,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-cognito/Signin/ServiceRole/Resource",
+                    "path": "IntegAlbOidc/Signin/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1465,11 +1586,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "integ-cognito/Signin/Code",
+                "path": "IntegAlbOidc/Signin/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-cognito/Signin/Code/Stage",
+                    "path": "IntegAlbOidc/Signin/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1477,7 +1598,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-cognito/Signin/Code/AssetBucket",
+                    "path": "IntegAlbOidc/Signin/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1491,7 +1612,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-cognito/Signin/Resource",
+                "path": "IntegAlbOidc/Signin/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -1514,7 +1635,7 @@
                         "TEST_URL": "https://*.example.com"
                       }
                     },
-                    "functionName": "cdk-integ-alb-cognito-signin-handler",
+                    "functionName": "cdk-integ-alb-oidc-signin-handler",
                     "handler": "index.handler",
                     "memorySize": 1024,
                     "runtime": "nodejs18.x",
@@ -1534,11 +1655,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "integ-cognito/Exports",
+            "path": "IntegAlbOidc/Exports",
             "children": {
               "Output{\"Ref\":\"Signin352C80E6\"}": {
                 "id": "Output{\"Ref\":\"Signin352C80E6\"}",
-                "path": "integ-cognito/Exports/Output{\"Ref\":\"Signin352C80E6\"}",
+                "path": "IntegAlbOidc/Exports/Output{\"Ref\":\"Signin352C80E6\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -1547,12 +1668,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.9"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-cognito/BootstrapVersion",
+            "path": "IntegAlbOidc/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1560,7 +1681,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-cognito/CheckBootstrapVersion",
+            "path": "IntegAlbOidc/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1572,40 +1693,40 @@
           "version": "0.0.0"
         }
       },
-      "integ-test-cognito": {
-        "id": "integ-test-cognito",
-        "path": "integ-test-cognito",
+      "IntegTestAlbOidc": {
+        "id": "IntegTestAlbOidc",
+        "path": "IntegTestAlbOidc",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "integ-test-cognito/DefaultTest",
+            "path": "IntegTestAlbOidc/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "integ-test-cognito/DefaultTest/Default",
+                "path": "IntegTestAlbOidc/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.9"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "integ-test-cognito/DefaultTest/DeployAssert",
+                "path": "IntegTestAlbOidc/DefaultTest/DeployAssert",
                 "children": {
                   "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd": {
                     "id": "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd",
-                    "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd",
+                    "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/SdkProvider",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/SdkProvider/AssertionsProvider",
+                            "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.9"
                             }
                           }
                         },
@@ -1616,11 +1737,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default/Default",
+                            "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1634,7 +1755,7 @@
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Invoke",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1642,7 +1763,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/AssertionResults",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1656,11 +1777,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1668,7 +1789,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1676,7 +1797,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1685,12 +1806,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.9"
                     }
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "integ-test-cognito/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1698,7 +1819,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "integ-test-cognito/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -1727,7 +1848,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.9"
         }
       }
     },

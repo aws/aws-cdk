@@ -1,16 +1,15 @@
-import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
-import * as actions from 'aws-cdk-lib/aws-elasticloadbalancingv2-actions';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ListenerAction } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
+import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { Construct } from 'constructs';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool
@@ -76,21 +75,19 @@ class CognitoUser extends Construct {
   }
 }
 
-interface CognitoStackProps extends StackProps {
+interface AlbOidcStackProps extends StackProps {
   hostedZoneId: string
   hostedZoneName: string
   domainName: string
 }
 
-// This test can only be run as a dry-run at this time due to requiring a certificate
-class CognitoStack extends Stack {
+class AlbOidcStack extends Stack {
   public readonly userPool: cognito.UserPool;
+  constructor(scope: Construct, id: string, props: AlbOidcStackProps) {
+    super(scope, id, props);
 
-  constructor(scope: Construct, id: string, props: CognitoStackProps) {
-    super(scope, id);
-
-    const vpc = new ec2.Vpc(this, 'Stack', {
-      maxAzs: 2, restrictDefaultSecurityGroup: false,
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      maxAzs: 2,
     });
 
     const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
@@ -102,69 +99,52 @@ class CognitoStack extends Stack {
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 
-    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      vpc,
-      internetFacing: true,
-    });
-
+    // Create Cognito UserPool as IdP
     this.userPool = new cognito.UserPool(this, 'UserPool', {
+      signInAliases: {
+        email: true,
+      },
       removalPolicy: RemovalPolicy.DESTROY,
     });
-    const userPoolClient = new cognito.UserPoolClient(this, 'Client', {
-      userPool: this.userPool,
-
-      // Required minimal configuration for use with an ELB
-      generateSecret: true,
-      authFlows: {
-        userPassword: true,
-      },
-      oAuth: {
-        flows: {
-          authorizationCodeGrant: true,
-        },
-        scopes: [cognito.OAuthScope.EMAIL],
-        callbackUrls: [
-          `https://${props.domainName}/oauth2/idpresponse`,
-        ],
-      },
-    });
-    const cfnClient = userPoolClient.node.defaultChild as cognito.CfnUserPoolClient;
-    cfnClient.addPropertyOverride('RefreshTokenValidity', 1);
-    cfnClient.addPropertyOverride('SupportedIdentityProviders', ['COGNITO']);
-
-    const userPoolDomain = new cognito.UserPoolDomain(this, 'Domain', {
-      userPool: this.userPool,
+    const userPoolDomain = this.userPool.addDomain('Domain', {
       cognitoDomain: {
         domainPrefix: props.hostedZoneId.toLowerCase(),
       },
     });
-    const action = new actions.AuthenticateCognitoAction({
-      userPool: this.userPool,
-      userPoolClient,
-      userPoolDomain,
-      sessionTimeout: Duration.days(1),
-      next: elbv2.ListenerAction.fixedResponse(200, {
-        contentType: 'text/plain',
-        messageBody: 'Authenticated',
-      }),
+    const userPoolClient = this.userPool.addClient('UserPoolClient', {
+      generateSecret: true,
+      oAuth: {
+        callbackUrls: [`https://${props.domainName}/oauth2/idpresponse`],
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
     });
-    const listener = lb.addListener('Listener', {
-      port: 443,
+
+    const lb = new ApplicationLoadBalancer(this, 'LoadBalancer', {
+      vpc,
+      internetFacing: true,
+    });
+    const userPoolDomainName = `${userPoolDomain.domainName}.auth.${this.region}.amazoncognito.com`;
+    lb.addListener('Listener', {
+      protocol: ApplicationProtocol.HTTPS,
       certificates: [certificate],
-      defaultAction: action,
-    });
-    listener.addAction('Action2', {
-      priority: 1,
-      conditions: [elbv2.ListenerCondition.pathPatterns(['action2*'])],
-      action,
+      defaultAction: ListenerAction.authenticateOidc({
+        authorizationEndpoint: `https://${userPoolDomainName}/oauth2/authorize`,
+        clientId: userPoolClient.userPoolClientId,
+        clientSecret: userPoolClient.userPoolClientSecret,
+        issuer: `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.userPoolId}`,
+        tokenEndpoint: `https://${userPoolDomainName}/oauth2/token`,
+        userInfoEndpoint: `https://${userPoolDomainName}/oauth2/userInfo`,
+        next: ListenerAction.fixedResponse(200, {
+          contentType: 'text/plain',
+          messageBody: 'Authenticated',
+        }),
+      }),
     });
     new route53.ARecord(this, 'ARecord', {
       target: route53.RecordTarget.fromAlias(new route53targets.LoadBalancerTarget(lb)),
       zone: hostedZone,
-    });
-
-    new CfnOutput(this, 'DNS', {
-      value: props.domainName,
     });
   }
 }
@@ -182,12 +162,12 @@ const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own Domain Name as an env var "DOMAIN_NAME"');
 
 const app = new App();
-const testCase = new CognitoStack(app, 'integ-cognito', {
+const testCase = new AlbOidcStack(app, 'IntegAlbOidc', {
   hostedZoneId,
   hostedZoneName,
   domainName,
 });
-const test = new integ.IntegTest(app, 'integ-test-cognito', {
+const test = new integ.IntegTest(app, 'IntegTestAlbOidc', {
   testCases: [testCase],
 });
 const testUser = new CognitoUser(testCase, 'User', {
@@ -197,8 +177,8 @@ const testUser = new CognitoUser(testCase, 'User', {
 });
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
-  functionName: 'cdk-integ-alb-cognito-signin-handler',
-  code: lambda.Code.fromAsset('alb-cognito-signin-handler'),
+  functionName: 'cdk-integ-alb-oidc-signin-handler',
+  code: lambda.Code.fromAsset('alb-oidc-signin-handler'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
@@ -215,5 +195,4 @@ const invoke = test.assertions.invokeFunction({
 invoke.expect(integ.ExpectedResult.objectLike({
   Payload: '"Authenticated"',
 }));
-
 app.synth();
