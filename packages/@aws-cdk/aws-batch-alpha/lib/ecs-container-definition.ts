@@ -902,7 +902,7 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    *
    * @default - no storage
    */
-  readonly ephemeralStorage?: Size;
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
