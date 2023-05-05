@@ -361,13 +361,15 @@ export class PullRequestLinter {
         // or the PR linter failed and the user didn't request an exemption
         || (prLinterFailed && !userRequestsExemption)
     ) {
-      console.log(`removing labels from pr ${pr.number}`);
-      this.client.issues.removeLabel({
-        owner: this.prParams.owner,
-        repo: this.prParams.repo,
-        issue_number: pr.number,
-        name: 'pr/needs-review',
-      });
+      if (pr.labels.some(label => label.name === 'pr/needs-review')) {
+        console.log(`removing labels from pr ${pr.number}`);
+        this.client.issues.removeLabel({
+          owner: this.prParams.owner,
+          repo: this.prParams.repo,
+          issue_number: pr.number,
+          name: 'pr/needs-review',
+        });
+      }
       return;
     } else {
       console.log(`adding labels to pr ${pr.number}`);
@@ -445,9 +447,13 @@ export class PullRequestLinter {
     await this.communicateResult(validationCollector);
 
     // also assess whether the PR needs review or not
-    const state = await this.codeBuildJobSucceeded(sha);
-    if (state) {
-      await this.assessNeedsReview(pr);
+    try {
+      const state = await this.codeBuildJobSucceeded(sha);
+      if (state) {
+        await this.assessNeedsReview(pr);
+      }
+    } catch (e) {
+      console.log('assessing review failed: ', e);
     }
   }
 
