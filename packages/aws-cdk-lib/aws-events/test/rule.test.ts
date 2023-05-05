@@ -203,6 +203,38 @@ describe('rule', () => {
     expect(() => app.synth()).toThrow(/Either 'eventPattern' or 'schedule' must be defined/);
   });
 
+  test('fails synthesis when rule name is less than 1 chars', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    new Rule(stack, 'Rule', {
+      ruleName: '',
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+    });
+    expect(() => app.synth()).toThrow(/Event rule name must be between 1 and 64 characters./);
+  });
+
+  test('fails synthesis when rule name is longer than 64 chars', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    new Rule(stack, 'Rule', {
+      ruleName: 'a'.repeat(65),
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+    });
+    expect(() => app.synth()).toThrow(/Event rule name must be between 1 and 64 characters./);
+  });
+
+  test('fails synthesis when rule name contains invalid characters', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+      new Rule(stack, `Rule${invalidChar}`, {
+        ruleName: `Rule${invalidChar}`,
+        schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      });
+      expect(() => app.synth()).toThrow(/can contain only letters, numbers, periods, hyphens, or underscores with no spaces./);
+    });
+  });
+
   test('addEventPattern can be used to add filters', () => {
     const stack = new cdk.Stack();
 

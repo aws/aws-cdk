@@ -185,12 +185,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
         {
           Action: 'sts:AssumeRole',
           Principal: {
-            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123pipeline:root']] },
-          },
-          Condition: {
-            Bool: {
-              'aws:ViaAWSService': 'codepipeline.amazonaws.com',
-            },
+            AWS: { 'Fn::GetAtt': ['CdkPipelineRoleC09C4D44', 'Arn'] },
           },
         },
       ],

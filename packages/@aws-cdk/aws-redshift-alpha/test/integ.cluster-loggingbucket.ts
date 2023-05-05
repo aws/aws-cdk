@@ -10,7 +10,7 @@ class RedshiftEnv extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC');
+    const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
     const loggingBucket = new s3.Bucket(this, 'S3');
 
     new redshift.Cluster(this, 'Cluster', {
