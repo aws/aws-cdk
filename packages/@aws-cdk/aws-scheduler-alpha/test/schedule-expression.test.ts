@@ -1,4 +1,4 @@
-import { Duration, Stack, Lazy, TimeZone } from '../../core';
+import { Duration, Lazy, Stack, TimeZone } from 'aws-cdk-lib';
 import { ScheduleExpression } from '../lib';
 
 describe('schedule expression', () => {

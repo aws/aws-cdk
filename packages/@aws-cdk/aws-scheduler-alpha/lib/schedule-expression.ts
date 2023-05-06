@@ -1,7 +1,5 @@
-import { Construct } from 'constructs';
-import * as events from '../../aws-events';
-import { CronOptions } from '../../aws-events';
-import { Duration, TimeZone } from '../../core';
+import { Duration, TimeZone } from 'aws-cdk-lib';
+import * as events from 'aws-cdk-lib/aws-events';
 
 
 /**
@@ -56,7 +54,7 @@ export abstract class ScheduleExpression {
   static cron(options: CronOptionsWithTimezone): ScheduleExpression {
     const { timeZone, ...cronOptions } = options;
     const schedule = events.Schedule.cron(cronOptions);
-    return new LiteralScheduleExpression(schedule.expressionString, timeZone ?? TimeZone.ETC_UTC);
+    return new LiteralScheduleExpression(schedule.expressionString, timeZone);
   }
 
   /**
@@ -69,11 +67,6 @@ export abstract class ScheduleExpression {
   public abstract readonly timeZone?: TimeZone;
 
   protected constructor() {};
-  /**
-    *
-    * @internal
-    */
-  abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -84,7 +77,7 @@ export abstract class ScheduleExpression {
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html#cron-expressions
  */
-export interface CronOptionsWithTimezone extends CronOptions {
+export interface CronOptionsWithTimezone extends events.CronOptions {
   /**
    * The timezone to run the schedule in
    *
@@ -93,11 +86,10 @@ export interface CronOptionsWithTimezone extends CronOptions {
   readonly timeZone?: TimeZone;
 }
 
-class LiteralScheduleExpression extends ScheduleExpression {
+const DEFAULT_TIMEZONE = TimeZone.ETC_UTC;
 
-  constructor(public readonly expressionString: string, public readonly timeZone?: TimeZone) {
+class LiteralScheduleExpression extends ScheduleExpression {
+  constructor(public readonly expressionString: string, public readonly timeZone: TimeZone = DEFAULT_TIMEZONE) {
     super();
   }
-
-  public _bind() {}
 }
