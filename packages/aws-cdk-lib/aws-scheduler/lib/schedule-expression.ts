@@ -69,9 +69,9 @@ export abstract class ScheduleExpression {
 
   protected constructor() {};
   /**
-      *
-      * @internal
-      */
+    *
+    * @internal
+    */
   abstract _bind(scope: Construct): void;
 }
 
