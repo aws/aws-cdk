@@ -48,7 +48,7 @@ export interface ResolveChangeContextOptions {
   /**
    * Whether to remove undefined elements from arrays and objects when resolving.
    *
-   * @default true
+   * @default - Unchanged
    */
   readonly removeEmpty?: boolean;
 }
