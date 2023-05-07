@@ -83,6 +83,7 @@ export const EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS: { [region: string]: string } = {
   'ap-south-1': 'Z18NTBI3Y7N9TZ',
   'ap-southeast-1': 'Z16FZ9L249IFLT',
   'ap-southeast-2': 'Z2PCDNR3VC2G1N',
+  'ap-southeast-3': 'Z05913172VM7EAZB40TA8',
   'ca-central-1': 'ZJFCZL7SSZB5I',
   'eu-central-1': 'Z1FRNW7UH4DEZJ',
   'eu-north-1': 'Z23GO28BZ5AETM',
