@@ -105,6 +105,24 @@ export enum TreatMissingData {
 export class Alarm extends AlarmBase {
 
   /**
+   * Import an existing CloudWatch alarm provided an Name.
+   *
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
+   * @param alarmName Alarm Name
+   */
+  public static fromAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
+    const stack = Stack.of(scope);
+
+    return this.fromAlarmArn(scope, id, stack.formatArn({
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: alarmName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    }));
+  }
+
+  /**
    * Import an existing CloudWatch alarm provided an ARN
    *
    * @param scope The parent creating construct (usually `this`).

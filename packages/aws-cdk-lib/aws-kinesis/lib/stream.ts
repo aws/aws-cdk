@@ -757,12 +757,12 @@ export class Stream extends StreamBase {
     });
 
     let shardCount = props.shardCount;
-    const streamMode = props.streamMode ?? StreamMode.PROVISIONED;
+    const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
       throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
     }
-    if (streamMode === StreamMode.PROVISIONED && shardCount === undefined) {
+    if ( (streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
     }
 
@@ -780,7 +780,11 @@ export class Stream extends StreamBase {
       retentionPeriodHours,
       shardCount,
       streamEncryption,
-      streamModeDetails: streamMode ? { streamMode } : undefined,
+      ...(props.streamMode !== undefined
+        ? {
+          streamModeDetails: { streamMode: props.streamMode },
+        }
+        : undefined),
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {

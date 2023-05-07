@@ -21,7 +21,7 @@ class EksClusterStack extends Stack {
     });
 
     // just need one nat gateway to simplify the test
-    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
+    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1, restrictDefaultSecurityGroup: false });
 
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
@@ -79,13 +79,22 @@ class EksClusterStack extends Stack {
 
     // testing the disable mechanism of the installation of CRDs
     this.cluster.addHelmChart('test-skip-crd-installation', {
-      chart: 'lambda-chart',
-      release: 'lambda-chart-release',
-      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
-      version: 'v0.1.4',
+      chart: 'rds-chart',
+      release: 'rds-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
+      version: 'v1.1.2',
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
+    });
+
+    this.cluster.addHelmChart('test-non-ecr-oci-chart', {
+      chart: 'grafana-operator',
+      release: 'grafana-operator-release',
+      repository: 'oci://ghcr.io/grafana-operator/helm-charts/grafana-operator',
+      version: 'v5.0.0-rc1',
+      namespace: 'ack-system',
+      createNamespace: true,
     });
   }
 }

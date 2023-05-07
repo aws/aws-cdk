@@ -609,6 +609,26 @@ as, most likely, a permissions boundary is maintained and has dedicated conventi
 For more information on configuring permissions, including using permissions
 boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
+Once a bootstrap template has been deployed with a set of parameters, you must
+use the `--no-previous-parameters` CLI flag to change any of these parameters on
+future deployments. 
+
+> **Note** Please note that when you use this flag, you must resupply
+>*all* previously supplied parameters.
+
+For example if you bootstrap with a custom permissions boundary
+
+```console
+cdk bootstrap --custom-permissions-boundary my-permissions-boundary
+```
+
+In order to remove that permissions boundary you have to specify the
+`--no-previous-parameters` option.
+
+```console
+cdk bootstrap --no-previous-parameters
+```
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for

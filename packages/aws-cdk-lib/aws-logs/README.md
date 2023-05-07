@@ -163,7 +163,7 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   dimensions: {
     ErrorCode: '$.errorCode',
   },
-  unit: Unit.MILLISECONDS,
+  unit: cloudwatch.Unit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter

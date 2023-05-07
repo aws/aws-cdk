@@ -991,13 +991,44 @@
       "Arn"
      ]
     },
-    "Release": "lambda-chart-release",
-    "Chart": "lambda-chart",
-    "Version": "v0.1.4",
+    "Release": "rds-chart-release",
+    "Chart": "rds-chart",
+    "Version": "v1.1.2",
     "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/lambda-chart",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
     "SkipCrds": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Clustercharttestnonecrocichart7A9190B5": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "grafana-operator-release",
+    "Chart": "grafana-operator",
+    "Version": "v5.0.0-rc1",
+    "Namespace": "ack-system",
+    "Repository": "oci://ghcr.io/grafana-operator/helm-charts/grafana-operator",
+    "CreateNamespace": true
    },
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF"
@@ -1024,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/013c608e5aa3f9b7c08666064fdbc7d257f19866887e2ea155c5b189fdfd6f0f.json"
+       "/5b02ca2b54c47e5d63d0ca0a66e23ae63d5ce9f0fd7a049c4674eece3c96073c.json"
       ]
      ]
     },
@@ -1059,7 +1090,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/228d4002689856d23e839fb690137b828253b51ab0ba4bd84b6ff0d65e1c23ca.json"
+       "/e3a4dac33dc383e61cc901caf9c2178953ede1626a8568e3c4984ccc28a61579.json"
       ]
      ]
     },

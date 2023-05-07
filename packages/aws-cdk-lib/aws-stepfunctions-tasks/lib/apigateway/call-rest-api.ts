@@ -29,7 +29,7 @@ export interface CallApiGatewayRestApiEndpointProps extends CallApiGatewayEndpoi
  * `JsonPath.array()` to wrap the token in an array:
  *
  * ```ts
- * import * as apigateway from '@aws-cdk/aws-apigateway';
+ * import * as apigateway from 'aws-cdk-lib/aws-apigateway';
  * declare const api: apigateway.RestApi;
  *
  * new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {

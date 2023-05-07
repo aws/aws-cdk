@@ -120,6 +120,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       compatibility: Compatibility.FARGATE,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 
