@@ -178,7 +178,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this.enabled = props?.enabled;
     this.schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, id, {
+    const resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {
@@ -198,7 +198,7 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
-    this.jobQueueName = this.getResourceNameAttribute(resource.ref);
+    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }
@@ -221,5 +221,5 @@ function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeE
     seenOrders.push(ce.order);
   }
 
-  return [];
+  return seenOrders.length === 0 ? ['This JobQueue does not link any ComputeEnvironments'] : [];
 }

@@ -250,7 +250,7 @@ For example, if there are two shares defined as follows:
 The weight factors share the following relationship:
 
 ```math
-AvCpus / A_weight = BvCpus / B_weight
+A_{vCpus} / A_{Weight} = B_{vCpus} / B_{Weight}
 ```
 
 where `BvCpus` is the number of vCPUs allocated to jobs with share identifier `'B'`, and `B_weight` is the weight factor of `B`.
@@ -259,18 +259,33 @@ The total number of vCpus allocated to a share is equal to the amount of jobs in
 Let's say that each A job needs 32 VCpus (`A_requirement` = 32) and each B job needs 64 vCpus (`B_requirement` = 64):
 
 ```math
-A_vCpus = A_jobs * A_requirement
-B_vCpus = B_jobs * B_requirement
+A_{vCpus} = A_{Jobs} * A_{Requirement}
+```
+
+```math
+B_{vCpus} = B_{Jobs} * B_{Requirement}
 ```
 
 We have:
 
 ```math
-A_vCpus / A_weight = B_vCpus / B_weight
-A_jobs * A_requirement / A_weight = B_jobs * B_requirement / B_weight
-A_jobs * 32 / 1 = B_jobs * 64 / 1
-A_jobs * 32 = B_jobs * 64 
-A_jobs = B_jobs * 2
+A_{vCpus} / A_{Weight} = B_{vCpus} / B_{Weight}
+```
+
+```math
+A_{Jobs} * A_{Requirement} / A_{Weight} = B_{Jobs} * B_{Requirement} / B_{Weight}
+```
+
+```math
+A_{Jobs} * 32 / 1 = B_{Jobs} * 64 / 1
+```
+
+```math
+A_{Jobs} * 32 = B_{Jobs} * 64
+```
+
+```math
+A_{Jobs} = B_{Jobs} * 2
 ```
 
 Thus the scheduler will schedule two `'A'` jobs for each `'B'` job.
@@ -301,7 +316,7 @@ For example, a `shareDecay` of 5 minutes in the above example means that at any 
 will be scheduled for each `'B'` job, but only for the past 5 minutes. If `'B'` jobs run longer than 5 minutes, then
 the scheduler is allowed to put more than two `'A'` jobs for each `'B'` job, because the usage of those long-running
 `'B'` jobs will no longer be considered after 5 minutes. `shareDecay` linearly decreases the usage of
-long running jobs for calculation purposes. eg if share decay is 60 seconds,
+long running jobs for calculation purposes. For example if share decay is 60 seconds,
 then jobs that run for 30 seconds have their usage considered to be only 50% of what it actually is,
 but after a whole minute the scheduler pretends they don't exist for fairness calculations.
 
@@ -320,14 +335,14 @@ maximum vCPU capacity that should be reserved for shares that are *not in the qu
 The actual reserved percentage is defined by Batch as:
 
 ```math
- (computeReservation/100)^ActiveFairShares
+ (\frac{computeReservation}{100}) ^ {ActiveFairShares}
 ```
 
 where `ActiveFairShares` is the number of shares for which there exists
 at least one job in the queue with a unique share identifier.
 
 This is best illustrated with an example.
-Suppose there three shares with share identifiers `A`, `B` and `C` respectively
+Suppose there are three shares with share identifiers `A`, `B` and `C` respectively
 and we specify the `computeReservation` to be 75%. The queue is currently empty,
 and no other shares exist.
 
@@ -350,7 +365,7 @@ so the percentage reserved is still 56.25%
 Now a `C` job enters the queue. The number of active fair shares is now 3,
 so (75/100)^3 = .421875 = 42.1875% of the maximum vCpus are reserved for all shares that do not have the identifier `A`, `B`, or `C`.
 
-If these are no other shares that your jobs can specify, this means that 42.1875% of your capacity will never be used!
+If there are no other shares that your jobs can specify, this means that 42.1875% of your capacity will never be used!
 
 Now, `A`, `B`, and `C` can only consume 100% - 42.1875% = 57.8125% of the maximum vCpus.
 Note that the this percentage is **not** split between `A`, `B`, and `C`.
@@ -425,8 +440,8 @@ they must all match for the action to be taken; the conditions are ANDed togethe
 
 ### Running single-container ECS workflows
 
-Batch can jobs on ECS or EKS. ECS jobs can defined as single container or multinode.
-This examples creates a `JobDefinition` that runs a single container with ECS:
+Batch can run jobs on ECS or EKS. ECS jobs can be defined as single container or multinode.
+This example creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';

@@ -52,8 +52,8 @@ app_min="1.8.0"
 check_which $app $app_min
 app_v=$(${app} -version 2>&1)
 echo -e "Checking javac version... \c"
-# 1.8
-if [ $(echo $app_v | grep -c -E "1\.8\.[0-9].*") -eq 1 ]
+# javac >= 1.8
+if [ $(echo $app_v | grep -c -E "1\.[89]\.[0-9].*") -eq 1 ] || [ $(echo $app_v | grep -c -E "[2-9]\.[0-9]+\.[0-9]+.*") -eq 1 ] || [ $(echo $app_v | grep -c -E "[1-9][0-9]+\.[0-9]+\.[0-9]+.*") -eq 1 ]
 then
     echo "Ok"
 else

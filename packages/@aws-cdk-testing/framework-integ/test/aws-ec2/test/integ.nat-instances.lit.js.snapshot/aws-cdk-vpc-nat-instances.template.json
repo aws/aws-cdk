@@ -21,7 +21,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1a",
+    "AvailabilityZone": "dummy1a",
     "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -93,7 +93,7 @@
   "MyVpcPublicSubnet1NatInstance8E94E5F7": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
+    "AvailabilityZone": "dummy1a",
     "IamInstanceProfile": {
      "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
     },
@@ -131,7 +131,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1b",
+    "AvailabilityZone": "dummy1b",
     "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -203,7 +203,7 @@
   "MyVpcPublicSubnet2NatInstance04BCE4E3": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
+    "AvailabilityZone": "dummy1b",
     "IamInstanceProfile": {
      "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
     },
@@ -241,7 +241,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1c",
+    "AvailabilityZone": "dummy1c",
     "CidrBlock": "10.0.64.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -306,7 +306,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1a",
+    "AvailabilityZone": "dummy1a",
     "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -368,7 +368,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1b",
+    "AvailabilityZone": "dummy1b",
     "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -430,7 +430,7 @@
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
     },
-    "AvailabilityZone": "test-region-1c",
+    "AvailabilityZone": "dummy1c",
     "CidrBlock": "10.0.160.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [

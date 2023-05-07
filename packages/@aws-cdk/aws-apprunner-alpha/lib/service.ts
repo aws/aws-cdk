@@ -30,6 +30,16 @@ export enum ImageRepositoryType {
  */
 export class Cpu {
   /**
+   * 0.25 vCPU
+   */
+  public static readonly QUARTER_VCPU = Cpu.of('0.25 vCPU');
+
+  /**
+   * 0.5 vCPU
+   */
+  public static readonly HALF_VCPU = Cpu.of('0.5 vCPU');
+
+  /**
    * 1 vCPU
    */
   public static readonly ONE_VCPU = Cpu.of('1 vCPU')
@@ -38,6 +48,11 @@ export class Cpu {
    * 2 vCPU
    */
   public static readonly TWO_VCPU = Cpu.of('2 vCPU')
+
+  /**
+   * 4 vCPU
+   */
+  public static readonly FOUR_VCPU = Cpu.of('4 vCPU')
 
   /**
    * Custom CPU unit
@@ -61,6 +76,16 @@ export class Cpu {
  */
 export class Memory {
   /**
+   * 0.5 GB(for 0.25 vCPU)
+   */
+  public static readonly HALF_GB = Memory.of('0.5 GB')
+
+  /**
+   * 1 GB(for 0.25 or 0.5 vCPU)
+   */
+  public static readonly ONE_GB = Memory.of('1 GB')
+
+  /**
    * 2 GB(for 1 vCPU)
    */
   public static readonly TWO_GB = Memory.of('2 GB')
@@ -74,6 +99,26 @@ export class Memory {
    * 4 GB(for 1 or 2 vCPU)
    */
   public static readonly FOUR_GB = Memory.of('4 GB')
+
+  /**
+   * 6 GB(for 2 vCPU)
+   */
+  public static readonly SIX_GB = Memory.of('6 GB')
+
+  /**
+   * 8 GB(for 4 vCPU)
+   */
+  public static readonly EIGHT_GB = Memory.of('8 GB')
+
+  /**
+   * 10 GB(for 4 vCPU)
+   */
+  public static readonly TEN_GB = Memory.of('10 GB')
+
+  /**
+   * 12 GB(for 4 vCPU)
+   */
+  public static readonly TWELVE_GB = Memory.of('12 GB')
 
   /**
    * Custom Memory unit

@@ -8,6 +8,7 @@ export const app = new cdk.App();
 const stack = new cdk.Stack(app, 'mesh-stack', {});
 
 const vpc = new ec2.Vpc(stack, 'vpc', {
+  restrictDefaultSecurityGroup: false,
   natGateways: 1,
 });
 
@@ -367,6 +368,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
       rewriteRequestHostname: true,
+      port: 8080,
     },
   }),
 });

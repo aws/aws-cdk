@@ -49,6 +49,7 @@ export class EcsAppStack extends cdk.Stack {
       taskDefinition,
       cluster: new ecs.Cluster(this, 'Cluster', {
         vpc: new ec2.Vpc(this, 'Vpc', {
+          restrictDefaultSecurityGroup: false,
           maxAzs: 1,
         }),
       }),

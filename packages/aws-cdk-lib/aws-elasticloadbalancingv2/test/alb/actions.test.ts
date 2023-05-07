@@ -108,7 +108,7 @@ describe('tests', () => {
 
   test('Chaining OIDC authentication action', () => {
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 80,
       defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
@@ -117,6 +117,21 @@ describe('tests', () => {
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
+        sessionTimeout: cdk.Duration.days(1),
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+    listener.addAction('AdditionalOidcAuthenticationAction', {
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/page*'])],
+      action: elbv2.ListenerAction.authenticateOidc({
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        sessionTimeout: cdk.Duration.days(1),
         next: elbv2.ListenerAction.forward([group1]),
       }),
     });
@@ -132,6 +147,8 @@ describe('tests', () => {
             Issuer: 'D',
             TokenEndpoint: 'E',
             UserInfoEndpoint: 'F',
+            // SessionTimeout in DefaultActions is string
+            SessionTimeout: '86400',
           },
           Order: 1,
           Type: 'authenticate-oidc',
@@ -142,6 +159,110 @@ describe('tests', () => {
           Type: 'forward',
         },
       ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          AuthenticateOidcConfig: {
+            AuthorizationEndpoint: 'A',
+            ClientId: 'B',
+            ClientSecret: 'C',
+            Issuer: 'D',
+            TokenEndpoint: 'E',
+            UserInfoEndpoint: 'F',
+            // SessionTimeout in Actions is number
+            SessionTimeout: 86400,
+          },
+          Order: 1,
+          Type: 'authenticate-oidc',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+  });
+
+  test('OIDC authentication action allows HTTPS outbound', () => {
+    // WHEN
+    lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.authenticateOidc({
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatically created Security Group for ELB LB',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow to IdP endpoint',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        },
+      ],
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+      VpcId: { Ref: 'Stack8A423254' },
+    });
+  });
+
+  test('OIDC authentication action not allows HTTPS outbound when allowHttpsOutbound is false', () => {
+    // WHEN
+    lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.authenticateOidc({
+        allowHttpsOutbound: false,
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatically created Security Group for ELB LB',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+      VpcId: { Ref: 'Stack8A423254' },
     });
   });
 

@@ -51,7 +51,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
@@ -92,19 +92,19 @@ CDK can be found at the location `packages/aws-cdk-lib/aws-iam`.
 The repo also contains the `tools/` directory that holds custom build tooling (modeled as private npm packages)
 specific to the CDK.
 
-### Build
+### Building aws-cdk-lib
 
 The full build of all of the packages within the repository can take a few minutes, about 20  when all tests are run.
 Most contributions only require working on a single package, usually `aws-cdk-lib`. To build this package for the first
 time, you can execute the following to build it and it's dependencies.
 
 ```console
-$ cd packages/aws-cdk-lib
-$ ../../scripts/buildup
+$ npx lerna run build --scope=aws-cdk-lib
 ```
 
-Note: The `buildup` command is resumable. If your build fails, you can fix the issue and run `buildup --resume` to
-resume.
+Note: `lerna` uses a local cache by default. If your build fails, you can fix
+the issue and run the command again and it will not rerun any previously
+successful steps.
 
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
@@ -121,12 +121,18 @@ However, if you wish to build the entire repository, the following command will 
 
 ```console
 cd <root of the CDK repo>
-scripts/foreach.sh yarn build
+npx lerna run build
 ```
-Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
+
+If you want to run a build without using the local cache, provide the
+`--skip-nx-cache` flag.
+
+```console
+$ npx lerna run build --skip-nx-cache
+```
 
 ### Pack
 
@@ -156,7 +162,7 @@ Please follow the [setup instructions](https://code.visualstudio.com/docs/remote
 
 With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choos "Dev Containers: Reopen in Container" from the VS Code command palette.
 
-### Gitpod (Alternative)
+### Gitpod
 
 You may also set up your local development environment using [Gitpod](http://gitpod.io) -
 a service that allows you to spin up an in-browser Visual Studio Code-compatible editor,
@@ -171,7 +177,22 @@ You can now work on your CDK repository, as described in the [Getting Started](#
 Gitpod is free for 50 hours per month - make sure to stop your workspace when you're done
 (you can always resume it later, and it won't need to run the build again).
 
-For Gitpod users only! The best way to supply CDK with your AWS credentials is to add them as
+For Gitpod users only! The best way to authenticate AWS in Gitpod is to use AWS IAM Identity Center(successor to AWS Single Sign-On). [Install AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and configure it as follows:
+
+```shell
+# make sure AWS CLI v2 is in your $PATH
+$ aws --version
+# configure the AWS profile with SSO
+$ aws configure sso
+# login and authenticate
+$ aws sso login
+# verify your current identity
+$ aws sts get-caller-identity
+```
+
+Check out [this document](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html) for the details.
+
+Alternatively, supply CDK with your AWS credentials as
 [persisting environment variables](https://www.gitpod.io/docs/environment-variables).
 Adding them works as follows via terminal:
 
@@ -181,6 +202,26 @@ eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
 eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
 eval $(gp env -e)
 ```
+
+### Amazon CodeCatalyst Dev Environments
+
+Dev Environments are cloud-based development environments. 
+[Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked Github
+repositories in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
+
+Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
+
+```shell
+$ yarn install
+$ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ
+```
+
+You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
+
+Read the links below for more details: 
+- [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
+- [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
+- [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
 
 ## Pull Requests
 
@@ -273,6 +314,14 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
+**Build framework-integ**
+
+You need to build the `framework-integ` before running the `yarn integ`
+
+```console
+$ npx lerna run build --scope=@aws-cdk-testing/framework-integ
+```
+
 **When are integration tests required?**
 
 The following list contains common scenarios where we _know_ that integration tests are required.
@@ -302,7 +351,7 @@ Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
 
-**What do do if you cannot run integration tests**
+**What if you cannot run integration tests**
 
 If you are working on a PR that requires an update to an integration test and you are unable
 to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
@@ -325,6 +374,110 @@ $ yarn watch & # runs in the background
 $ cd packages/aws-cdk
 $ yarn watch & # runs in the background
 ```
+
+#### Verify your fix by deployment
+
+If your PR updates a specific library, you might want to write a simple CDK application and make sure it synthesizes and
+deploys correctly. For example, if you modify files under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
+
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
+```
+
+Create a `sample.ts` like this:
+
+```ts
+import {
+  App, Stack,
+  aws_eks as eks,
+  aws_ec2 as ec2,
+} from 'aws-cdk-lib';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+
+const app = new App();
+const env = { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT };
+const stack = new Stack(app, 'my-test-stack', { env });
+
+const cluster = new eks.Cluster(stack, 'Cluster', {
+  vpc,
+  ...getClusterVersionConfig(stack),
+  defaultCapacity: 0,
+});
+```
+
+Run `yarn watch` or `npx tsc --watch` in a separate terminal to compile `sample.ts` to `sample.js`:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn watch
+or
+$ npx tsc --watch
+```
+
+Make sure you have configured [AWS CLI with AWS Authentication](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth) as we will deploy it in our AWS account.
+
+Deploy the sample app:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ npx cdk -a test/aws-eks/test/sample.js diff
+$ npx cdk -a test/aws-eks/test/sample.js deploy
+```
+
+This allows you to iterate your development and ensure a minimal sample app would successfully deploy as you expect.
+You have the freedom to interact with it just as a common CDK app such as viewing differences with `npx cdk diff`
+or pass context variables with `npx cdk deploy -c`. You can rapidly iterate your testing with repeated deployments 
+by importing existing resource such as existing VPC. This can save a lot of time and help you focus on the core changes.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true });
+```
+
+As this is for testing only, do not commit `sample.ts` and `sample.js` to your PR branch.
+
+Alternatively, you can write this test as a new integration test like `integ.my-test.ts` and deploy it
+using `yarn integ --no-clean`. This may be useful when you need to publish a new 
+integration test:
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ test/aws-eks/test/integ.my-test.js --no-clean --update-on-failed
+```
+
+After verifying your work with a simple deployment as above, you need to ensure your change can pass all existing
+unit tests and integ tests and fix them if necessary.
+
+Run all the unit tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/aws-cdk-lib
+$ yarn test aws-eks
+```
+
+Or run a specific unit test
+
+```console
+$ cd packages/aws-cdk-lib
+$ npx jest aws-eks/test/name.test.js
+```
+
+Run all integ tests for a specific module(e.g. aws-eks):
+
+```console
+$ cd packages/@aws-cdk-testing/framework-integ
+$ yarn integ --directory test/aws-eks/test
+```
+
+Or run a specific integ test:
+
+```console
+$ yarn integ test/aws-eks/test/integ.name.js
+```
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
+
 
 ### Step 4: Pull Request
 
@@ -388,6 +541,23 @@ $ yarn watch & # runs in the background
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+#### Getting a review from a maintainer
+
+We get A LOT of pull requests, which is a great thing! To help us prioritize
+which pull requests to review we first make sure that the pull request is in a
+mergeable state. This means that the pull request:
+
+1. Is ready for review (not a draft)
+2. Does not have any merge conflicts
+3. Has a passing build
+4. Does not have any requested changes by a maintainer
+5. Has a passing `PR Linter` workflow **OR** the contributor has requested
+   an exemption/clarification.
+
+To make this easier we have a `pr/needs-review` label that we can add to each
+PR. If you do not see this label on your PR then it means that something needs
+to be fixed before it can be reviewed.
 
 #### Adding construct runtime dependencies
 

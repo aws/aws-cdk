@@ -1,8 +1,8 @@
-import { Template } from '../../assertions';
-import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
-import * as iam from '../../aws-iam';
-import { App, CfnOutput, Stack } from '../../core';
 import { Construct } from 'constructs';
+import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
+import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
+import { App, Aws, CfnOutput, Stack } from '../../core';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
@@ -259,6 +259,101 @@ test('grants generate mac to the alias target key', () => {
         },
       ],
       Version: '2012-10-17',
+    },
+  });
+});
+
+test('adds alias prefix if its token with valid string prefix', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  new Key(stack, 'Key', {
+    alias: `MyKey${Aws.ACCOUNT_ID}`,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: {
+      'Fn::Join': [
+        '',
+        [
+          'alias/MyKey',
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      ],
+    },
+    TargetKeyId: {
+      'Fn::GetAtt': [
+        'Key961B73FD',
+        'Arn',
+      ],
+    },
+  });
+});
+
+test('does not add alias again if already set', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  new Key(stack, 'Key', {
+    alias: `alias/MyKey${Aws.ACCOUNT_ID}`,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: {
+      'Fn::Join': [
+        '',
+        [
+          'alias/MyKey',
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      ],
+    },
+    TargetKeyId: {
+      'Fn::GetAtt': [
+        'Key961B73FD',
+        'Arn',
+      ],
+    },
+  });
+});
+
+test('throws error when alias contains illegal characters', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+
+  expect(() => {
+    new Key(stack, 'Key', {
+      alias: `MyK*y${Aws.ACCOUNT_ID}`,
+    });
+  }).toThrowError();
+});
+
+test('does not add alias if starts with token', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  new Key(stack, 'Key', {
+    alias: `${Aws.ACCOUNT_ID}MyKey`,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            Ref: 'AWS::AccountId',
+          },
+          'MyKey',
+        ],
+      ],
+    },
+    TargetKeyId: {
+      'Fn::GetAtt': [
+        'Key961B73FD',
+        'Arn',
+      ],
     },
   });
 });

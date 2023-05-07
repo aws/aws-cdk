@@ -125,6 +125,11 @@ enabled it is possible to do something like creating a CloudFront distribution i
 an ACM certificate in `us-east-1`.
 
 ```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+
+declare const app: App;
+
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
@@ -549,7 +554,9 @@ new cloudfront.Distribution(this, 'myDist', {
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
   enableLogging: true, // Optional, this is implied if logBucket is specified
-  logBucket: new s3.Bucket(this, 'LogBucket'),
+  logBucket: new s3.Bucket(this, 'LogBucket', {
+    objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+  }),
   logFilePrefix: 'distribution-access-logs/',
   logIncludesCookies: true,
 });

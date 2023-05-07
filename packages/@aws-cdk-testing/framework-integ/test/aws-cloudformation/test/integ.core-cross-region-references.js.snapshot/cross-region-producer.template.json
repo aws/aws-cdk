@@ -86,18 +86,32 @@
        "Statement": [
         {
          "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-east-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
            ]
-          ]
-         },
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-west-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
+           ]
+          }
+         ],
          "Action": [
           "ssm:DeleteParameters",
           "ssm:ListTagsForResource",
@@ -118,7 +132,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "f86f86755c3b2013542fc4f9405bfe145a86c0bec508dd0b37baabe2055d33f3.zip"
+     "S3Key": "27f8287125ebe89b1cb7f97768a61c84b3f3221450e0a22c152addc630ab2430.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -129,11 +143,41 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
    ]
+  },
+  "ExportsWriteruswest209BD44F0A7CF058B": {
+   "Type": "Custom::CrossRegionExportWriter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+      "Arn"
+     ]
+    },
+    "WriterProps": {
+     "region": "us-west-2",
+     "exports": {
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
+       "Fn::GetAtt": [
+        "IntegQueue3A18718A",
+        "QueueName"
+       ]
+      },
+      "/cdk/exports/cross-region-consumer2/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
+       "Fn::GetAtt": [
+        "IntegNestedNestedStackIntegNestedNestedStackResource168C5881",
+        "Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
+       ]
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
