@@ -437,6 +437,8 @@ export class CfnResource extends CfnRefElement {
               resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
             const resolvedRawOverrides = context.resolve(this.rawOverrides, {
+              // we need to preserve the empty elements here,
+              // as that's how removing overrides are represented as
               removeEmpty: false,
             });
             return deepMerge(resourceDef, resolvedRawOverrides);
