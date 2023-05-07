@@ -44,6 +44,13 @@ export interface ResolveChangeContextOptions {
    * @default - Unchanged
    */
   readonly allowIntrinsicKeys?: boolean;
+
+  /**
+   * Whether to remove undefined elements from arrays and objects when resolving.
+   *
+   * @default true
+   */
+  readonly removeEmpty?: boolean;
 }
 
 /**
