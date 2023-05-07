@@ -6,7 +6,7 @@ import { DatabaseInstance, DatabaseInstanceEngine, LicenseModel, SqlServerEngine
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-s3-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const importBucket = new s3.Bucket(stack, 'ImportBucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const exportBucket = new s3.Bucket(stack, 'ExportBucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
