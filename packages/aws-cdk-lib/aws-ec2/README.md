@@ -75,7 +75,13 @@ and *account* of the Stack containing the VPC. If the [region and account are
 specified](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) on
 the Stack, the CLI will [look up the existing Availability
 Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#using-regions-availability-zones-describe)
-and get an accurate count. If region and account are not specified, the stack
+and get an accurate count. The result of this operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
+
+If region and account are not specified, the stack
 could be deployed anywhere and it will have to make a safe choice, limiting
 itself to 2 Availability Zones.
 
@@ -542,6 +548,25 @@ The above example will create an `IVpc` instance with three public subnets:
 | s-12345   | us-east-1a        | Subnet A    | rt-12345       | 10.0.0.0/24 |
 | s-34567   | us-east-1b        | Subnet B    | rt-34567       | 10.0.1.0/24 |
 | s-56789   | us-east-1c        | Subnet B    | rt-56789       | 10.0.2.0/24 |
+
+### Restricting access to the VPC default security group
+
+AWS Security best practices recommend that the [VPC default security group should
+not allow inbound and outbound
+traffic](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2).
+When the `@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` feature flag is set to
+`true` (default for new projects) this will be enabled by default. If you do not
+have this feature flag set you can either set the feature flag _or_ you can set
+the `restrictDefaultSecurityGroup` property to `true`.
+
+```ts
+new ec2.Vpc(this, 'VPC', {
+  restrictDefaultSecurityGroup: true,
+});
+```
+
+If you set this property to `true` and then later remove it or set it to `false`
+the default ingress/egress will be restored on the default security group.
 
 ## Allowing Connections
 
