@@ -718,7 +718,7 @@ describe('Fargate containers', () => {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
         ...defaultContainerProps,
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
-        ephemeralStorage: Size.gibibytes(100),
+        ephemeralStorageSize: Size.gibibytes(100),
       }),
     });
 

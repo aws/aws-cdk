@@ -45,7 +45,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 16,
     memory: Size.mebibytes(32768),
-    ephemeralStorage: Size.gibibytes(100),
+    ephemeralStorageSize: Size.gibibytes(100),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
   }),
   jobDefinitionName: 'foofoo',
