@@ -43,7 +43,7 @@ export class DataProtectionPolicy {
       };
     }
 
-    var identifierArns: string[] = [];
+    const identifierArns: string[] = [];
     for (let identifier of this.dataProtectionPolicyProps.identifiers) {
       identifierArns.push(Stack.of(_scope).formatArn({
         resource: 'data-identifier',
