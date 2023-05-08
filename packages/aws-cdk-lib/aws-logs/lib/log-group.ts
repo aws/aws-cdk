@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
+import { DataProtectionPolicy } from './data-protection-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -386,6 +387,13 @@ export interface LogGroupProps {
   readonly logGroupName?: string;
 
   /**
+   * Data Protection Policy for this log group.
+   *
+   * @default - no data protection policy
+   */
+  readonly dataProtectionPolicy?: DataProtectionPolicy;
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -473,6 +481,7 @@ export class LogGroup extends LogGroupBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
+      dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
