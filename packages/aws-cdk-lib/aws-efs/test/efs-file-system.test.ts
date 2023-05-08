@@ -560,3 +560,222 @@ test('imported file system can not add statements to file system policy', () => 
     statementAdded: false,
   });
 });
+
+test('Anonymous access is prohibited by default when using GrantRead', () => {
+  // WHEN
+  const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
+  fileSystem.grantReadBeta1(clientRole);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticfilesystem:ClientMount',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'EfsFileSystem37910666',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ClientRoleDefaultPolicy6F610F20',
+    Roles: [
+      {
+        Ref: 'ClientRole910E33D4',
+      },
+    ],
+  });
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Anonymous access is prohibited by default when using GrantReadWrite', () => {
+  // WHEN
+  const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
+  fileSystem.grantReadWriteBeta1(clientRole);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientWrite',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'EfsFileSystem37910666',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ClientRoleDefaultPolicy6F610F20',
+    Roles: [
+      {
+        Ref: 'ClientRole910E33D4',
+      },
+    ],
+  });
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Anonymous access is prohibited by default when using GrantRootAccess', () => {
+  // WHEN
+  const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
+  fileSystem.grantRootAccessBeta1(clientRole);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'EfsFileSystem37910666',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'ClientRoleDefaultPolicy6F610F20',
+    Roles: [
+      {
+        Ref: 'ClientRole910E33D4',
+      },
+    ],
+  });
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Anonymous access is prohibited by the allowAnonymousAccess props even when GrantXXX is not used', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    allowAnonymousAccess: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Anonymous access is allowed by allowAnonymousAccess props when using GrantXxx', () => {
+  // WHEN
+  const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
+  const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    allowAnonymousAccess: true,
+  });
+  fileSystem.grantReadBeta1(clientRole);
+  fileSystem.grantReadWriteBeta1(clientRole);
+  fileSystem.grantRootAccessBeta1(clientRole);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::EFS::FileSystem', 1);
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: Match.absent(),
+  });
+});

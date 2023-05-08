@@ -96,14 +96,38 @@ fileSystem.addToResourcePolicy(statement);
 ### Permissions
 
 If you need to grant file system permissions to another resource, you can use the `.grant()` API.
-As an example, the following code gives `elasticfilesystem:ClientWrite` permissions to an IAM role.
+As an example, the following code gives `elasticfilesystem:Backup` permissions to an IAM role.
 
 ```ts fixture=with-filesystem-instance
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.AnyPrincipal(),
 });
 
-fileSystem.grant(role, 'elasticfilesystem:ClientWrite');
+fileSystem.grant(role, 'elasticfilesystem:Backup');
+```
+
+APIs for clients also include `.grantRead()`, `.grantReadWrite()`, and `.grantRootAccess()`. Using these APIs grants access to clients. Also, by default, the file system policy is updated to only allow access to clients using IAM authentication and deny access to anonymous clients.
+
+```ts fixture=with-filesystem-instance
+const role = new iam.Role(this, 'ClientRole', {
+  assumedBy: new iam.AnyPrincipal(),
+});
+
+fileSystem.grantReadBeta1(role);
+```
+
+You can control this behavior with `allowAnonymousAccess`. The following example continues to allow anonymous client access.
+
+```ts
+const role = new iam.Role(this, 'ClientRole', {
+  assumedBy: new iam.AnyPrincipal(),
+});
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
+  allowAnonymousAccess: true,
+});
+
+fileSystem.grantReadBeta1(role);
 ```
 
 ### Access Point

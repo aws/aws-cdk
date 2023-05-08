@@ -1,11 +1,11 @@
+import { Construct, DependencyGroup, IDependable } from 'constructs';
+import { AccessPoint, AccessPointOptions } from './access-point';
+import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { AccessPoint, AccessPointOptions } from './access-point';
-import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
@@ -238,6 +238,13 @@ export interface FileSystemProps {
    * @default none
    */
   readonly fileSystemPolicy?: iam.PolicyDocument;
+
+  /**
+   * Allow access from anonymous client that doesn't use IAM authentication.
+   *
+   * @default false when using `grantRead`, `grantWrite` or `grantRootAccess`, otherwise true
+   */
+  readonly allowAnonymousAccess?: boolean;
 }
 
 /**
@@ -262,6 +269,12 @@ export interface FileSystemAttributes {
    * @default - determined based on fileSystemId
    */
   readonly fileSystemArn?: string;
+}
+
+enum ClientAction {
+  MOUNT = 'elasticfilesystem:ClientMount',
+  WRITE = 'elasticfilesystem:ClientWrite',
+  ROOT_ACCESS = 'elasticfilesystem:ClientRootAccess'
 }
 
 abstract class FileSystemBase extends Resource implements IFileSystem {
@@ -292,6 +305,10 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @internal
    */
   protected _fileSystemPolicy?: iam.PolicyDocument;
+  /**
+   * @internal
+   */
+  protected _grantedClient: boolean = false;
 
   /**
    * Grant the actions defined in actions to the given grantee
@@ -301,10 +318,75 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param actions The actions to grant
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee: grantee,
       actions: actions,
       resourceArns: [this.fileSystemArn],
+      resource: this,
+    });
+  }
+
+  /**
+   * Grant the client actions defined in actions to the given grantee on this File System resource.
+   * If this method is used and the allowAnonymousAccess props are not specified,
+   * anonymous access to this file system is prohibited.
+   *
+   * @param grantee The principal to grant right to
+   * @param actions The client actions to grant
+   * @param conditions The conditions to grant
+   * @internal
+   */
+  public _grantClient(grantee: iam.IGrantable, actions: ClientAction[], conditions?: Record<string, Record<string, unknown>>): iam.Grant {
+    this._grantedClient = true;
+    return iam.Grant.addToPrincipalOrResource({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.fileSystemArn],
+      resource: this,
+      conditions,
+    });
+  }
+
+  /**
+   * Grant read permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant read to
+   */
+  public grantReadBeta1(grantee: iam.IGrantable): iam.Grant {
+    return this._grantClient(grantee, [ClientAction.MOUNT], {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    });
+  }
+
+  /**
+   * Grant read and write permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant read and write to
+   */
+  public grantReadWriteBeta1(grantee: iam.IGrantable): iam.Grant {
+    return this._grantClient(grantee, [
+      ClientAction.MOUNT,
+      ClientAction.WRITE,
+    ], {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    });
+  }
+
+  /**
+   * As root user, grant read and write permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant root access to
+   */
+  public grantRootAccessBeta1(grantee: iam.IGrantable): iam.Grant {
+    return this._grantClient(grantee, [
+      ClientAction.MOUNT,
+      ClientAction.WRITE,
+      ClientAction.ROOT_ACCESS,
+    ], {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
     });
   }
 
@@ -409,7 +491,26 @@ export class FileSystem extends FileSystemBase {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
-      fileSystemPolicy: Lazy.any({ produce: () => this._fileSystemPolicy }),
+      fileSystemPolicy: Lazy.any({
+        produce: () => {
+          const allowAnonymousAccess = props.allowAnonymousAccess ?? !this._grantedClient;
+          if (!allowAnonymousAccess) {
+            this.addToResourcePolicy(new iam.PolicyStatement({
+              principals: [new iam.AnyPrincipal()],
+              actions: [
+                ClientAction.WRITE,
+                ClientAction.ROOT_ACCESS,
+              ],
+              conditions: {
+                Bool: {
+                  'elasticfilesystem:AccessedViaMountTarget': 'true',
+                },
+              },
+            }));
+          }
+          return this._fileSystemPolicy;
+        },
+      }),
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
