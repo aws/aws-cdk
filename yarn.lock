@@ -11637,7 +11637,7 @@ yaml@2.0.0-7:
   resolved "https://registry.npmjs.org/yaml/-/yaml-2.0.0-7.tgz#9799d9d85dfc8f01e4cc425e18e09215364beef1"
   integrity sha512-RbI2Tm3hl9AoHY4wWyWvGvJfFIbHOzuzaxum6ez1A0vve+uXgNor03Wys4t+2sgjJSVSe+B2xerd1/dnvqHlOA==
 
-yaml@2.2.2, yaml@^2.2.2:
+yaml@^2.2.2:
   version "2.2.2"
   resolved "https://registry.npmjs.org/yaml/-/yaml-2.2.2.tgz#ec551ef37326e6d42872dad1970300f8eb83a073"
   integrity sha512-CBKFWExMn46Foo4cldiChEzn7S7SRV+wqiluAb6xmueD/fGyRHIhX8m14vVGgeFWjN540nKCNVj6P21eQjgTuA==

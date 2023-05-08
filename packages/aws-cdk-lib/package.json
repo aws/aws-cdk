@@ -130,11 +130,11 @@
     "fs-extra": "^11.1.1",
     "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
-    "minimatch": "^9.0.0",
+    "minimatch": "^3.1.2",
     "punycode": "^2.3.0",
     "semver": "^7.5.0",
     "table": "^6.8.1",
-    "yaml": "2.2.2"
+    "yaml": "1.10.2"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
