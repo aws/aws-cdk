@@ -7,7 +7,7 @@ import * as efs from 'aws-cdk-lib/aws-efs';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { Size, Stack } from 'aws-cdk-lib';
+import { Size, Stack, App } from 'aws-cdk-lib';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
@@ -36,6 +36,7 @@ const defaultExpectedProps: CfnJobDefinitionProps = {
   },
 };
 
+let app: App;
 let stack: Stack;
 let pascalCaseExpectedProps: any;
 
@@ -677,7 +678,8 @@ describe('EC2 containers', () => {
 describe('Fargate containers', () => {
   // GIVEN
   beforeEach(() => {
-    stack = new Stack();
+    app = new App();
+    stack = new Stack(app);
     pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
   });
 
@@ -735,5 +737,26 @@ describe('Fargate containers', () => {
         },
       },
     });
+  });
+
+  test('ephemeralStorage validation', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(19),
+      }),
+    });
+
+    new EcsJobDefinition(stack, 'ECSJobDefn2', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(201),
+      }),
+    });
+
+    expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/EcsFargateContainer] Ephemeral Storage must be minimum 21 GiB.\n  [Default/EcsFargateContainer2] Ephemeral Storage must be at most 200 GiB.');
   });
 });

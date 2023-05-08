@@ -900,7 +900,7 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
   /**
    * The size for ephemeral storage.
    *
-   * @default - no storage
+   * @default Size.gibibytes(20);
    */
   readonly ephemeralStorageSize?: Size;
 }
@@ -939,7 +939,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
   /**
    * The size for ephemeral storage.
    *
-   * @default - no storage
+   * @default Size.gibibytes(20);
    */
   readonly ephemeralStorageSize?: Size;
 }
@@ -965,8 +965,22 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
-    this.ephemeralStorageSize = props.ephemeralStorageSize;
+    this.ephemeralStorageSize = props.ephemeralStorageSize ?? Size.gibibytes(20);
     this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
+
+    // validates ephemeralStorageSize is within limits
+    if (props.ephemeralStorageSize) {
+      this.node.addValidation({
+        validate() {
+          if (props.ephemeralStorageSize!.toGibibytes() > 200) {
+            return ['Ephemeral Storage must be at most 200 GiB.'];
+          } else if (props.ephemeralStorageSize!.toGibibytes() < 21) {
+            return ['Ephemeral Storage must be minimum 21 GiB.'];
+          }
+          return [];
+        },
+      });
+    }
   }
 
   /**
