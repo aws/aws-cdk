@@ -1455,7 +1455,8 @@ export class Vpc extends VpcBase {
       const stackAzs = stack.node.tryGetContext(`availability-zones:account=${stack.account}:region=${stack.region}`) ??
         stack.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY);
       // if no context is provided then resolvedStackAzs will be undefined and no validation is possible - move on without throwing an error
-      const areGivenAzsSubsetOfStackAzs = stackAzs === undefined || props.availabilityZones.every(az => stackAzs.includes(az));
+      const areGivenAzsSubsetOfStackAzs = stackAzs === undefined ||
+        props.availabilityZones.every(az => Token.isUnresolved(az) || stackAzs.includes(az));
       if (!areGivenAzsSubsetOfStackAzs) {
         throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stackAzs}`);
       }

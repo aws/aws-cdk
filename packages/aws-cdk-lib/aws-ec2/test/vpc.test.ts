@@ -755,7 +755,18 @@ describe('vpc', () => {
       }).toThrow(/Given VPC 'availabilityZones' us-west-2a must be a subset of the stack's availability zones us-east-1a,us-east-1b,us-east-1c/);
     });
 
-    test('agnostic stack without context does not throw with defined vpc AZs', () => {
+    test('non-agnostic stack without context with defined vpc AZs', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        availabilityZones: ['us-east-1a'],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: 'us-east-1a',
+      });
+    });
+
+    test('agnostic stack without context with defined vpc AZs', () => {
       const stack = new Stack(undefined, 'TestStack');
       new Vpc(stack, 'VPC', {
         availabilityZones: ['us-east-1a'],
