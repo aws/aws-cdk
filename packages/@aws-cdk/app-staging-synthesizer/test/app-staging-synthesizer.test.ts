@@ -354,6 +354,21 @@ describe(AppStagingSynthesizer, () => {
     })).toThrowError(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
   });
 
+  test('throws when staging resource stack is too large', () => {
+    // WHEN
+    const assetName = 'abcdef';
+    for (let i = 0; i < 100; i++) {
+      stack.synthesizer.addDockerImageAsset({
+        directoryName: '.',
+        sourceHash: 'abcdef',
+        assetName: assetName + i,
+      });
+    }
+
+    // THEN
+    expect(() => app.synth()).toThrowError(/Staging resource template cannot be greater than 51200 bytes/);
+  });
+
   /**
   * Evaluate a possibly string-containing value the same way CFN would do
   *

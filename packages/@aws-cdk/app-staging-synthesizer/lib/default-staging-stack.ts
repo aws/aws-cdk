@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   App,
   ArnFormat,
@@ -5,6 +7,7 @@ import {
   DockerImageAssetSource,
   Duration,
   FileAssetSource,
+  ISynthesisSession,
   RemovalPolicy,
   Stack,
   StackProps,
@@ -373,5 +376,16 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       assumeRoleArn: this.imageRoleManifestArn,
       dependencyStack: this,
     };
+  }
+
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string | undefined): void {
+    super._synthesizeTemplate(session, lookupRoleArn);
+
+    const builder = session.assembly;
+    const outPath = path.join(builder.outdir, this.templateFile);
+    const size = fs.statSync(outPath).size;
+    if (size > 51200) {
+      throw new Error(`Staging resource template cannot be greater than 51200 bytes, but got ${size} bytes`);
+    }
   }
 }
