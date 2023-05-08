@@ -39,7 +39,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
   });
 
-  test('can supply existing arns for bucket staging role', () => {
+  test('can supply existing arn for bucket staging role', () => {
     // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
@@ -69,7 +69,7 @@ describe('Boostrap Roles', () => {
     expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
   });
 
-  test('can provide existing arns for image staging role', () => {
+  test('can provide existing arn for image staging role', () => {
     // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
