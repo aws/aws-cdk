@@ -2131,6 +2131,11 @@ export class Bucket extends BucketBase {
       throw new Error('Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets');
     }
 
+    // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
+    if (props.serverAccessLogsBucket?.encryptionKey) {
+      props.serverAccessLogsBucket.encryptionKey.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
+    }
+
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
