@@ -3,7 +3,7 @@
   "testCases": {
     "ServerAccessLogsSseKmsTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-s3-access-logs-sse-kms"
+        "aws-cdk-s3-server-access-logs-sse-kms"
       ],
       "assertionStack": "ServerAccessLogsSseKmsTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServerAccessLogsSseKmsTestDefaultTestDeployAssertB937C102"

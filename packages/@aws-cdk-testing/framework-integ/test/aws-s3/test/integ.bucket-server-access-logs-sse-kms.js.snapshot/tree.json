@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-s3-access-logs-sse-kms": {
-        "id": "aws-cdk-s3-access-logs-sse-kms",
-        "path": "aws-cdk-s3-access-logs-sse-kms",
+      "aws-cdk-s3-server-access-logs-sse-kms": {
+        "id": "aws-cdk-s3-server-access-logs-sse-kms",
+        "path": "aws-cdk-s3-server-access-logs-sse-kms",
         "children": {
           "ServerAccessLogsBucket": {
             "id": "ServerAccessLogsBucket",
-            "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket",
             "children": {
               "Key": {
                 "id": "Key",
-                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Key",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Key/Resource",
+                    "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
@@ -63,7 +63,7 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "description": "Created by aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket"
+                        "description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket"
                       }
                     },
                     "constructInfo": {
@@ -79,7 +79,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Resource",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -113,11 +113,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Policy",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Policy/Resource",
+                    "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -218,11 +218,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -242,7 +242,7 @@
           },
           "DefaultCrNodeVersionMap": {
             "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-s3-access-logs-sse-kms/DefaultCrNodeVersionMap",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/DefaultCrNodeVersionMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
@@ -250,11 +250,11 @@
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
-            "path": "aws-cdk-s3-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-cdk-s3-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -262,7 +262,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-s3-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -270,7 +270,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-cdk-s3-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -284,11 +284,11 @@
           },
           "Bucket": {
             "id": "Bucket",
-            "path": "aws-cdk-s3-access-logs-sse-kms/Bucket",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/Bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/Bucket/Resource",
+                "path": "aws-cdk-s3-server-access-logs-sse-kms/Bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -313,7 +313,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-s3-access-logs-sse-kms/BootstrapVersion",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -321,7 +321,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-s3-access-logs-sse-kms/CheckBootstrapVersion",
+            "path": "aws-cdk-s3-server-access-logs-sse-kms/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

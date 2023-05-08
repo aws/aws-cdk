@@ -44,7 +44,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Created by aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket"
+    "Description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
