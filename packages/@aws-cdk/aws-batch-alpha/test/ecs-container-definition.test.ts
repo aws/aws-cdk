@@ -3,6 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -11,6 +12,7 @@ import { Size, Stack } from 'aws-cdk-lib';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {
@@ -525,6 +527,85 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           ContainerPath: '/container/path/new',
           SourceVolume: 'hostName',
         }],
+      },
+    });
+  });
+
+  test('correctly renders docker images', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromDockerImageAsset(new DockerImageAsset(stack, 'dockerImageAsset', {
+          directory: path.join(__dirname, 'batchjob-image'),
+        })),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
+        },
+      },
+    });
+  });
+
+  test('correctly renders images from repositories', () => {
+    // GIVEN
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromEcrRepository(repo, 'my-tag'),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::Select': [
+                  4,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.dkr.ecr.',
+              {
+                'Fn::Select': [
+                  3,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { Ref: 'Repo02AC86CF' },
+              ':my-tag',
+            ],
+          ],
+        },
       },
     });
   });
