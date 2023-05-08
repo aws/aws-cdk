@@ -950,7 +950,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
-  public readonly ephemeralStorage?: Size;
+  public readonly ephemeralStorageSize?: Size;
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -965,7 +965,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
-    this.ephemeralStorage = props.ephemeralStorage;
+    this.ephemeralStorageSize = props.ephemeralStorageSize;
     this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
   }
 
@@ -975,8 +975,8 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
-      ephemeralStorage: this.ephemeralStorage? {
-        sizeInGiB: this.ephemeralStorage?.toGibibytes(),
+      ephemeralStorage: this.ephemeralStorageSize? {
+        sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
       } : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
