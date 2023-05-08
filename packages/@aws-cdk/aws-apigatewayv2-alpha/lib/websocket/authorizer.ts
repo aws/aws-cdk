@@ -170,7 +170,7 @@ export interface IWebSocketRouteAuthorizer {
  * Explicitly configure no authorizers on specific WebSocket API routes.
  */
 export class WebSocketNoneAuthorizer implements IWebSocketRouteAuthorizer {
-  public bind(_: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
+  public bind(_options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
     return {
       authorizationType: 'NONE',
     };
