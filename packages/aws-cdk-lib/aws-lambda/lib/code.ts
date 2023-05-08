@@ -468,7 +468,7 @@ export class EcrImageCode extends Code {
     super();
   }
 
-  public bind(_: Construct): CodeConfig {
+  public bind(_scope: Construct): CodeConfig {
     this.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
 
     return {
