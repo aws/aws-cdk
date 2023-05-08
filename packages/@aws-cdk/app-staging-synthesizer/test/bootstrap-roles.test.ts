@@ -39,7 +39,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
   });
 
-  test('can supply existing arns for staging roles', () => {
+  test('can supply existing arns for bucket staging role', () => {
     // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
@@ -61,12 +61,44 @@ describe('Boostrap Roles', () => {
     const asm = app.synth();
 
     // THEN
-    // Staging roles are as advertised
+    // Staging role is as advertised
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
     expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
+  });
+
+  test('can provide existing arns for image staging role', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/ECRAccess'),
+      }),
+    });
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName: 'myDockerAsset',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    // Image role is as advertised
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+    const firstFile: any = (manifest.dockerImages ? manifest.dockerImages[Object.keys(manifest.dockerImages)[0]] : undefined) ?? {};
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/ECRAccess');
   });
 
   test('bootstrap roles can be specified as current cli credentials instead', () => {

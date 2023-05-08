@@ -22,13 +22,15 @@ new lambda.Function(stack, 'lambda-s3', {
   runtime: lambda.Runtime.PYTHON_3_10,
 });
 
-new lambda.Function(stack, 'lambda-ecr', {
-  code: lambda.EcrImageCode.fromAssetImage(path.join(__dirname, 'assets'), {
-    assetName: 'ecr-assets',
-  }),
-  handler: lambda.Handler.FROM_IMAGE,
-  runtime: lambda.Runtime.FROM_IMAGE,
-});
+for (let i = 0; i< 10; i++) {
+  new lambda.Function(stack, 'lambda-ecr'+i, {
+    code: lambda.EcrImageCode.fromAssetImage(path.join(__dirname, 'assets'), {
+      assetName: 'ecr-assets'+i,
+    }),
+    handler: lambda.Handler.FROM_IMAGE,
+    runtime: lambda.Runtime.FROM_IMAGE,
+  });
+}
 
 new integ.IntegTest(app, 'integ-tests', {
   testCases: [stack],

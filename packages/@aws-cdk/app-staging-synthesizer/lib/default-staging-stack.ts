@@ -328,13 +328,13 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    */
   private getCreateRepo(asset: DockerImageAssetSource): string {
     if (!asset.assetName) {
-      throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
+      throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
     }
 
     // Create image publishing role if it doesn't exist
     this.ensureImagePublishingRole();
 
-    const repoName = `${this.appId}/${asset.assetName}`.replace('.', '-'); // TODO: actually sanitize
+    const repoName = generateRepoName(`${this.appId}/${asset.assetName}`);
     if (this.stagingRepos[asset.assetName] === undefined) {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
@@ -346,6 +346,10 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       }
     }
     return repoName;
+
+    function generateRepoName(name: string): string {
+      return name.toLocaleLowerCase().replace('.', '-');
+    }
   }
 
   public addFile(asset: FileAssetSource): FileStagingLocation {

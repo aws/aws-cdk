@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
@@ -6,8 +5,6 @@ import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
 import { AppStagingSynthesizer } from '../lib';
-// import { Repository } from 'aws-cdk-lib/aws-ecr';
-// import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 describe(AppStagingSynthesizer, () => {
   let app: App;
@@ -280,64 +277,65 @@ describe(AppStagingSynthesizer, () => {
     });
   });
 
-  // test('add docker image asset', () => {
-  //   // WHEN
-  //   const location = stack.synthesizer.addDockerImageAsset({
-  //     directoryName: '.',
-  //     sourceHash: 'abcdef',
-  //     assetName: 'abcdef',
-  //   });
+  test('add docker image asset', () => {
+    // WHEN
+    const assetName = 'abcdef';
+    const location = stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
 
-  //   // THEN - we have a fixed asset location
-  //   const repo = 'abcdef';
-  //   expect(evalCFN(location.repositoryName)).toEqual(repo);
-  //   expect(evalCFN(location.imageUri)).toEqual(`000000000000.dkr.ecr.us-east-1.domain.aws/${repo}:abcdef`);
-  // });
+    // THEN - we have a fixed asset location
+    const repo = `${APP_ID}/${assetName}`;
+    expect(evalCFN(location.repositoryName)).toEqual(repo);
+    expect(evalCFN(location.imageUri)).toEqual(`000000000000.dkr.ecr.us-east-1.domain.aws/${repo}:abcdef`);
+  });
 
-  // test('throws with docker image asset without uniqueId', () => {
-  //   expect(() => stack.synthesizer.addDockerImageAsset({
-  //     directoryName: '.',
-  //     sourceHash: 'abcdef',
-  //   })).toThrowError('Assets synthesized with AppScopedStagingSynthesizer must include a \'uniqueId\' in the asset source definition.');
-  // });
+  test('throws with docker image asset without assetName', () => {
+    expect(() => stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+    })).toThrowError('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
+  });
 
-  // test('separate docker image assets have separate repos', () => {
-  //   // WHEN
-  //   const location1 = stack.synthesizer.addDockerImageAsset({
-  //     directoryName: '.',
-  //     sourceHash: 'abcdef',
-  //     assetName: 'abcdef',
-  //   });
+  test('docker image assets with different assetName have separate repos', () => {
+    // WHEN
+    const location1 = stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName: 'firstAsset',
+    });
 
-  //   const location2 = stack.synthesizer.addDockerImageAsset({
-  //     directoryName: './hello',
-  //     sourceHash: 'abcdefg',
-  //     assetName: 'abcdefg',
-  //   });
+    const location2 = stack.synthesizer.addDockerImageAsset({
+      directoryName: './hello',
+      sourceHash: 'abcdef',
+      assetName: 'secondAsset',
+    });
 
-  //   // THEN - images have different asset locations
-  //   expect(evalCFN(location1.repositoryName)).not.toEqual(evalCFN(location2.repositoryName));
-  // });
+    // THEN - images have different asset locations
+    expect(evalCFN(location1.repositoryName)).not.toEqual(evalCFN(location2.repositoryName));
+  });
 
-  // test('docker image assets with same unique id have same repos', () => {
-  //   // WHEN
-  //   const location1 = stack.synthesizer.addDockerImageAsset({
-  //     directoryName: '.',
-  //     sourceHash: 'abcdef',
-  //     assetName: 'abcdef',
-  //   });
+  test('docker image assets with same assetName live in same repos', () => {
+    // WHEN
+    const assetName = 'abcdef';
+    const location1 = stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
 
-  //   const location2 = stack.synthesizer.addDockerImageAsset({
-  //     directoryName: './hello',
-  //     sourceHash: 'abcdefg',
-  //     assetName: 'abcdef',
-  //   });
+    const location2 = stack.synthesizer.addDockerImageAsset({
+      directoryName: './hello',
+      sourceHash: 'abcdefg',
+      assetName,
+    });
 
-  //   // THEN - images share same ecr repo
-  //   const repo = 'abcdef';
-  //   expect(evalCFN(location1.repositoryName)).toEqual(repo);
-  //   expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
-  // });
+    // THEN - images share same ecr repo
+    expect(evalCFN(location1.repositoryName)).toEqual(`${APP_ID}/${assetName}`);
+    expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
+  });
 
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {
