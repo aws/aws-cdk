@@ -1,7 +1,7 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "files": {
-    "26df443ecb3d9a917feccf0349d0f8852c227c138904499fe5e26de6a090654c": {
+    "a047e78171779d23d25e3fc35f2b3ce7ff7313e616a588b6f8773b9360f12b26": {
       "source": {
         "path": "aws-ecr-integ-stack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "26df443ecb3d9a917feccf0349d0f8852c227c138904499fe5e26de6a090654c.json",
+          "objectKey": "a047e78171779d23d25e3fc35f2b3ce7ff7313e616a588b6f8773b9360f12b26.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

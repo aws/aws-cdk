@@ -1750,6 +1750,8 @@ export class LinuxBuildImage implements IBuildImage {
    * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0 instead.
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
+  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use `STANDARD_2_0` and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1889,7 +1891,7 @@ export class LinuxBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  public validate(_: BuildEnvironment): string[] {
+  public validate(_env: BuildEnvironment): string[] {
     return [];
   }
 

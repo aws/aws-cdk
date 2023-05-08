@@ -86,186 +86,32 @@
        "Statement": [
         {
          "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-east-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
            ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-west-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
            ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-east-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-west-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-west-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-west-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
-         "Action": [
-          "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:aws:ssm:us-west-2:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":parameter/cdk/exports/*"
-           ]
-          ]
-         },
+          }
+         ],
          "Action": [
           "ssm:DeleteParameters",
           "ssm:ListTagsForResource",
@@ -297,7 +143,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
