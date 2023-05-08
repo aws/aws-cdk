@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyAccessLogsBucketKeyBAFD8B1E": {
+  "ServerAccessLogsBucketKey95B7E326": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -44,12 +44,12 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Created by aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket"
+    "Description": "Created by aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyAccessLogsBucketF7FE6635": {
+  "ServerAccessLogsBucket05F29982": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "BucketEncryption": {
@@ -58,7 +58,7 @@
        "ServerSideEncryptionByDefault": {
         "KMSMasterKeyID": {
          "Fn::GetAtt": [
-          "MyAccessLogsBucketKeyBAFD8B1E",
+          "ServerAccessLogsBucketKey95B7E326",
           "Arn"
          ]
         },
@@ -77,11 +77,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyAccessLogsBucketPolicyEA9AB063": {
+  "ServerAccessLogsBucketPolicy947BE3EE": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "MyAccessLogsBucketF7FE6635"
+     "Ref": "ServerAccessLogsBucket05F29982"
     },
     "PolicyDocument": {
      "Statement": [
@@ -103,7 +103,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "MyAccessLogsBucketF7FE6635",
+          "ServerAccessLogsBucket05F29982",
           "Arn"
          ]
         },
@@ -113,7 +113,7 @@
           [
            {
             "Fn::GetAtt": [
-             "MyAccessLogsBucketF7FE6635",
+             "ServerAccessLogsBucket05F29982",
              "Arn"
             ]
            },
@@ -129,7 +129,7 @@
         "ArnLike": {
          "aws:SourceArn": {
           "Fn::GetAtt": [
-           "MyBucketF68F3FF0",
+           "Bucket83908E77",
            "Arn"
           ]
          }
@@ -150,7 +150,7 @@
          [
           {
            "Fn::GetAtt": [
-            "MyAccessLogsBucketF7FE6635",
+            "ServerAccessLogsBucket05F29982",
             "Arn"
            ]
           },
@@ -164,7 +164,7 @@
     }
    }
   },
-  "MyAccessLogsBucketAutoDeleteObjectsCustomResourceF7F9093E": {
+  "ServerAccessLogsBucketAutoDeleteObjectsCustomResourceDA32BBFB": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -174,11 +174,11 @@
      ]
     },
     "BucketName": {
-     "Ref": "MyAccessLogsBucketF7FE6635"
+     "Ref": "ServerAccessLogsBucket05F29982"
     }
    },
    "DependsOn": [
-    "MyAccessLogsBucketPolicyEA9AB063"
+    "ServerAccessLogsBucketPolicy947BE3EE"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -230,7 +230,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "MyAccessLogsBucketF7FE6635"
+        "Ref": "ServerAccessLogsBucket05F29982"
        },
        " S3 bucket."
       ]
@@ -241,12 +241,12 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "MyBucketF68F3FF0": {
+  "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "LoggingConfiguration": {
      "DestinationBucketName": {
-      "Ref": "MyAccessLogsBucketF7FE6635"
+      "Ref": "ServerAccessLogsBucket05F29982"
      },
      "LogFilePrefix": "example"
     }

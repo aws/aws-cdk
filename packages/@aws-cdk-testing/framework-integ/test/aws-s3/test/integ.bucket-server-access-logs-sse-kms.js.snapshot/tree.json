@@ -8,17 +8,17 @@
         "id": "aws-cdk-s3-access-logs-sse-kms",
         "path": "aws-cdk-s3-access-logs-sse-kms",
         "children": {
-          "MyAccessLogsBucket": {
-            "id": "MyAccessLogsBucket",
-            "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket",
+          "ServerAccessLogsBucket": {
+            "id": "ServerAccessLogsBucket",
+            "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket",
             "children": {
               "Key": {
                 "id": "Key",
-                "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/Key",
+                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Key",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/Key/Resource",
+                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Key/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
@@ -63,7 +63,7 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "description": "Created by aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket"
+                        "description": "Created by aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket"
                       }
                     },
                     "constructInfo": {
@@ -79,7 +79,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/Resource",
+                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -90,7 +90,7 @@
                             "sseAlgorithm": "aws:kms",
                             "kmsMasterKeyId": {
                               "Fn::GetAtt": [
-                                "MyAccessLogsBucketKeyBAFD8B1E",
+                                "ServerAccessLogsBucketKey95B7E326",
                                 "Arn"
                               ]
                             }
@@ -113,16 +113,16 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/Policy",
+                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/Policy/Resource",
+                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
                         "bucket": {
-                          "Ref": "MyAccessLogsBucketF7FE6635"
+                          "Ref": "ServerAccessLogsBucket05F29982"
                         },
                         "policyDocument": {
                           "Statement": [
@@ -144,7 +144,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "MyAccessLogsBucketF7FE6635",
+                                    "ServerAccessLogsBucket05F29982",
                                     "Arn"
                                   ]
                                 },
@@ -154,7 +154,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "MyAccessLogsBucketF7FE6635",
+                                          "ServerAccessLogsBucket05F29982",
                                           "Arn"
                                         ]
                                       },
@@ -170,7 +170,7 @@
                                 "ArnLike": {
                                   "aws:SourceArn": {
                                     "Fn::GetAtt": [
-                                      "MyBucketF68F3FF0",
+                                      "Bucket83908E77",
                                       "Arn"
                                     ]
                                   }
@@ -191,7 +191,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "MyAccessLogsBucketF7FE6635",
+                                        "ServerAccessLogsBucket05F29982",
                                         "Arn"
                                       ]
                                     },
@@ -218,11 +218,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-s3-access-logs-sse-kms/MyAccessLogsBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-s3-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -282,19 +282,19 @@
               "version": "0.0.0"
             }
           },
-          "MyBucket": {
-            "id": "MyBucket",
-            "path": "aws-cdk-s3-access-logs-sse-kms/MyBucket",
+          "Bucket": {
+            "id": "Bucket",
+            "path": "aws-cdk-s3-access-logs-sse-kms/Bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-access-logs-sse-kms/MyBucket/Resource",
+                "path": "aws-cdk-s3-access-logs-sse-kms/Bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
                     "loggingConfiguration": {
                       "destinationBucketName": {
-                        "Ref": "MyAccessLogsBucketF7FE6635"
+                        "Ref": "ServerAccessLogsBucket05F29982"
                       },
                       "logFilePrefix": "example"
                     }

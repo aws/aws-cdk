@@ -5,9 +5,9 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-s3-access-logs-sse-kms');
+const stack = new cdk.Stack(app, 'aws-cdk-s3-server-access-logs-sse-kms');
 
-const accessLogBucket = new s3.Bucket(stack, 'AccessLogsBucket', {
+const accessLogBucket = new s3.Bucket(stack, 'ServerAccessLogsBucket', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   encryption: s3.BucketEncryption.KMS,
