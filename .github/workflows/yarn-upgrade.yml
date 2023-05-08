@@ -67,7 +67,7 @@ jobs:
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
           done
           # Upgrade dependencies at an aws-eks integ test docker image
-          cd packages/aws-cdk-lib/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
+          cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn upgrade" to run)
       - name: Run "yarn install"
