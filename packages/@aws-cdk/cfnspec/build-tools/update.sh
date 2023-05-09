@@ -70,11 +70,12 @@ update-spec \
     spec-source/specification/000_cfn/000_official \
     true true
 
-update-spec \
-    "CloudFormation Resource Specification (us-west-2)" \
-    "${2:-https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
-    spec-source/specification/001_cfn_us-west-2/000_official \
-    true true AWS_DeviceFarm
+# not working
+# update-spec \
+#     "CloudFormation Resource Specification (us-west-2)" \
+#     "${2:-https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
+#     spec-source/specification/001_cfn_us-west-2/000_official \
+#     true true AWS_DeviceFarm
 
 old_version=$(cat cfn.version)
 new_version=$(node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion")
