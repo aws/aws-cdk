@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { AssetManifest, IManifestEntry } from 'cdk-assets';
 
 export enum DeploymentState {
   PENDING = 'pending',
@@ -9,72 +10,45 @@ export enum DeploymentState {
   SKIPPED = 'skipped',
 };
 
-interface WorkNodeOptions {
-  readonly id: string;
-  readonly dependencies: string[];
-}
-
 export enum WorkType {
   STACK_DEPLOY = 'stack',
   ASSET_BUILD = 'asset-build',
   ASSET_PUBLISH = 'asset-publish',
 }
 
-export abstract class WorkNode {
-  public readonly id: string;
-  public readonly dependencies: string[];
-  public deploymentState: DeploymentState;
-  abstract type: WorkType;
+export type WorkNode = StackNode | AssetBuildNode | AssetPublishNode;
 
-  constructor(options: WorkNodeOptions) {
-    this.id = options.id;
-    this.dependencies = options.dependencies;
-    this.deploymentState = DeploymentState.PENDING;
-  }
+export interface WorkNodeCommon {
+  readonly id: string;
+  readonly dependencies: string[];
+  deploymentState: DeploymentState;
 }
 
-export interface StackNodeOptions extends WorkNodeOptions {
+export interface StackNode extends WorkNodeCommon {
+  readonly type: WorkType.STACK_DEPLOY;
   readonly stack: cxapi.CloudFormationStackArtifact;
 }
 
-export class StackNode extends WorkNode {
-  public readonly stack: cxapi.CloudFormationStackArtifact;
-  public readonly type = WorkType.STACK_DEPLOY;
-
-  constructor(options: StackNodeOptions) {
-    super(options);
-    this.stack = options.stack;
-  }
-}
-
-interface AssetOptions extends WorkNodeOptions {
-  readonly asset: cxapi.AssetManifestArtifact;
+export interface AssetBuildNode extends WorkNodeCommon {
+  readonly type: WorkType.ASSET_BUILD;
+  /** The asset manifest this asset resides in (artifact) */
+  readonly assetManifestArtifact: cxapi.AssetManifestArtifact;
+  /** The asset manifest this asset resides in */
+  readonly assetManifest: AssetManifest;
+  /** The stack this asset was defined in (used for environment settings) */
   readonly parentStack: cxapi.CloudFormationStackArtifact;
-}
-export interface AssetBuildNodeOptions extends AssetOptions {}
-
-export class AssetBuildNode extends WorkNode {
-  public readonly asset: cxapi.AssetManifestArtifact;
-  public readonly parentStack: cxapi.CloudFormationStackArtifact;
-  public readonly type = WorkType.ASSET_BUILD;
-
-  constructor(options: AssetBuildNodeOptions) {
-    super(options);
-    this.asset = options.asset;
-    this.parentStack = options.parentStack;
-  }
+  /** The asset that needs to be built */
+  readonly asset: IManifestEntry;
 }
 
-export class AssetPublishNode extends WorkNode {
-  public readonly asset: cxapi.AssetManifestArtifact;
-  public readonly parentStack: cxapi.CloudFormationStackArtifact;
-  public readonly type = WorkType.ASSET_PUBLISH;
-
-  constructor(options: AssetBuildNodeOptions) {
-    super(options);
-    this.asset = options.asset;
-    this.parentStack = options.parentStack;
-  }
+export interface AssetPublishNode extends WorkNodeCommon {
+  readonly type: WorkType.ASSET_PUBLISH;
+  /** The asset manifest this asset resides in (artifact) */
+  readonly assetManifestArtifact: cxapi.AssetManifestArtifact;
+  /** The asset manifest this asset resides in */
+  readonly assetManifest: AssetManifest;
+  /** The stack this asset was defined in (used for environment settings) */
+  readonly parentStack: cxapi.CloudFormationStackArtifact;
+  /** The asset that needs to be published */
+  readonly asset: IManifestEntry;
 }
-
-export interface PartialAssetNodeOptions extends Omit<AssetOptions, 'parentStack'> {}

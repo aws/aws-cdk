@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifest } from 'cdk-assets';
+import * as cdk_assets from 'cdk-assets';
+import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
@@ -13,7 +14,7 @@ import { StackActivityProgress } from './util/cloudformation/stack-activity-moni
 import { replaceEnvPlaceholders } from './util/placeholders';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
+import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 /**
  * SDK obtained by assuming the lookup role
@@ -291,6 +292,11 @@ export interface BuildStackAssetsOptions extends AssetOptions {
    * Options to pass on to `buildAssets()` function
    */
   readonly buildOptions?: BuildAssetsOptions;
+
+  /**
+   * Reporting prefix
+   */
+  readonly prefix?: string;
 }
 
 interface PublishStackAssetsOptions extends AssetOptions {
@@ -298,6 +304,11 @@ interface PublishStackAssetsOptions extends AssetOptions {
    * Options to pass on to `publishAsests()` function
    */
   readonly publishOptions?: Omit<PublishAssetsOptions, 'buildAssets'>;
+
+  /**
+   * Reporting prefix
+   */
+  readonly prefix?: string;
 }
 
 export interface DestroyStackOptions {
@@ -316,6 +327,7 @@ export interface StackExistsOptions {
 
 export interface ProvisionerProps {
   sdkProvider: SdkProvider;
+  readonly quiet?: boolean;
 }
 
 /**
@@ -344,13 +356,14 @@ export interface PreparedSdkForEnvironment {
 /**
  * Helper class for CloudFormation deployments
  *
- * Looks us the right SDK and Bootstrap stack to deploy a given
- * stack artifact.
+ * Looks us the right SDK and Bootstrap stack to deploy a given stack artifact.
+ *
+ * Called 'CloudFormationDeployments', but it in fact manages all deployments and deployment types.
  */
 export class CloudFormationDeployments {
   private readonly sdkProvider: SdkProvider;
 
-  constructor(props: ProvisionerProps) {
+  constructor(private readonly props: ProvisionerProps) {
     this.sdkProvider = props.sdkProvider;
   }
 
@@ -498,6 +511,8 @@ export class CloudFormationDeployments {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
 
+    // FIXME: Some caching on this would be good
+
     const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
     // Substitute any placeholders with information about the current environment
@@ -539,6 +554,11 @@ export class CloudFormationDeployments {
     return { manifest, stackEnv };
   }
 
+  /**
+   * Build all assets in a manifest
+   *
+   * @deprecated Build a single asset instead
+   */
   public async buildAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
     console.log('build assets');
     console.log('build parallelism', options.buildOptions?.parallel);
@@ -546,10 +566,46 @@ export class CloudFormationDeployments {
     await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
   }
 
+  /**
+   * Publish all assets in a manifest
+   *
+   * @deprecated Publish a single asset instead
+   */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     console.log('publish parallelism', options.publishOptions?.parallel);
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+  }
+
+  // eslint-disable-next-line max-len
+  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
+    const { stackSdk, resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const toolkitInfo = await ToolkitInfo.lookup(stackEnv, stackSdk, options.toolkitStackName);
+
+    await this.validateBootstrapStackVersion(
+      options.stack.stackName,
+      assetArtifact.requiresBootstrapStackVersion,
+      assetArtifact.bootstrapStackVersionSsmParameter,
+      toolkitInfo);
+
+    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
+      aws: new PublishingAws(this.sdkProvider, stackEnv),
+      progressListener: new ParallelSafeAssetProgress(options.prefix ?? '', this.props.quiet ?? false),
+    });
+    await publisher.buildEntry(asset);
+  }
+
+  // eslint-disable-next-line max-len
+  public async publishSingleAsset(assetManifest: AssetManifest, asset: IManifestEntry, options: PublishStackAssetsOptions) {
+    const { resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn);
+
+    // No need to validate anymore, we already did that during build
+
+    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
+      aws: new PublishingAws(this.sdkProvider, stackEnv),
+      progressListener: new ParallelSafeAssetProgress(options.prefix ?? '', this.props.quiet ?? false),
+    });
+    await publisher.publishEntry(asset);
   }
 
   /**
@@ -568,5 +624,18 @@ export class CloudFormationDeployments {
     } catch (e: any) {
       throw new Error(`${stackName}: ${e.message}`);
     }
+  }
+}
+
+/**
+ * Asset progress that doesn't do anything with percentages (currently)
+ */
+class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
+  constructor(private readonly prefix: string, private readonly quiet: boolean) {
+  }
+
+  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
+    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
+    handler(`${this.prefix} ${type}: ${event.message}`);
   }
 }

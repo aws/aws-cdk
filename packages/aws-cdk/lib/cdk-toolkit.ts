@@ -16,7 +16,6 @@ import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { deployArtifacts } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -24,6 +23,7 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
@@ -194,33 +194,21 @@ export class CdkToolkit {
     const outputsFile = options.outputsFile;
 
     const buildAsset = async (assetNode: AssetBuildNode) => {
-      print('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      await this.props.cloudFormation.buildAssets(assetNode.asset, {
+      await this.props.cloudFormation.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
-        buildOptions: {
-          parallel: options.assetParallelism,
-        },
+        prefix: `${assetNode.parentStack.stackName}:`,
       });
-      print('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
     const publishAsset = async (assetNode: AssetPublishNode) => {
-      print('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      await this.props.cloudFormation.publishAssets(assetNode.asset, {
+      await this.props.cloudFormation.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
-        publishOptions: {
-          parallel: options.assetParallelism,
-        },
+        prefix: `${assetNode.parentStack.stackName}:`,
       });
-      print('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
     };
 
     const deployStack = async (assetNode: StackNode) => {
@@ -357,14 +345,13 @@ export class CdkToolkit {
     }
 
     try {
-      await deployArtifacts(cloudArtifacts, {
-        concurrency,
-        callbacks: {
-          deployStack,
-          buildAsset,
-          publishAsset,
-        },
-        prebuildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
+      const prebuildAssets = assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY;
+      const workGraph = new WorkGraphBuilder(prebuildAssets).build(cloudArtifacts);
+
+      await workGraph.doParallel(concurrency, {
+        deployStack,
+        buildAsset,
+        publishAsset,
       });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);

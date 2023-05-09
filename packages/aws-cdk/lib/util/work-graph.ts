@@ -1,110 +1,8 @@
 /* eslint-disable no-console */
-import * as cxapi from '@aws-cdk/cx-api';
-import { WorkNode, DeploymentState, AssetBuildNode, AssetPublishNode, PartialAssetNodeOptions, StackNode } from './work-graph-types';
+import { WorkNode, DeploymentState, StackNode, AssetBuildNode, AssetPublishNode, WorkType } from './work-graph-types';
 
 export class WorkGraph {
-  public static fromCloudArtifacts(artifacts: cxapi.CloudArtifact[], prebuildAssets: boolean) {
-    const graph = new WorkGraph();
-
-    // Associated stack will be lazily added for Assets
-    const partialAssetNodes: PartialAssetNodeOptions[] = [];
-    const parentStacks: Record<string, cxapi.CloudFormationStackArtifact> = {};
-
-    for (const artifact of artifacts) {
-      if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        partialAssetNodes.push({
-          id: `${artifact.id}`,
-          dependencies: getDepIds(artifact.dependencies),
-          asset: artifact,
-        });
-      } else if (cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
-        graph.addNodes(new StackNode({
-          id: artifact.id,
-          dependencies: getDepIds(artifact.dependencies),
-          stack: artifact,
-        }));
-        updateParentStacks(artifact);
-      } else if (cxapi.TreeCloudArtifact.isTreeCloudArtifact(artifact)) {
-        // ignore tree artifacts
-        continue;
-      } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
-        console.log('NESTED!!!');
-        const assembly = new cxapi.CloudAssembly(artifact.fullPath);
-        const nestedGraph = WorkGraph.fromCloudArtifacts(assembly.artifacts, prebuildAssets);
-        graph.addNodes(...Object.values(nestedGraph.nodes));
-      }
-    }
-
-    // post-process parent stacks of each asset because we only know
-    // this information after all artifacts have been processed.
-    for (const assetNode of partialAssetNodes) {
-      const stack = parentStacks[assetNode.id];
-      if (!stack) {
-        throw new Error(`No stack associated with ${assetNode.id} artifact. Something in the source code or asset manifest is wrong.`);
-      }
-      graph.addNodes(...[
-        new AssetBuildNode({
-          id: `${assetNode.id}-build`,
-          // If we disable prebuild, then assets inherit dependencies from their parent stack
-          dependencies: assetNode.dependencies.concat(!prebuildAssets ? onlyStackDeps(graph.getNode(stack.id).dependencies) : []),
-          asset: assetNode.asset,
-          parentStack: stack,
-        }),
-        new AssetPublishNode({
-          id: `${assetNode.id}-publish`,
-          dependencies: [`${assetNode.id}-build`], // only depend on the build asset step
-          asset: assetNode.asset,
-          parentStack: stack,
-        }),
-      ]);
-    }
-
-    // Ensure all dependencies actually exist. This protects against scenarios such as the following:
-    // StackA depends on StackB, but StackB is not selected to deploy. The dependency is redundant
-    // and will be dropped.
-    // This assumes the manifest comes uncorrupted so we will not fail if a dependency is not found.
-    for (const node of Object.values(graph.nodes)) {
-      if (node.type !== 'stack') { continue; }
-      const removeDeps = [];
-      for (const dep of node.dependencies) {
-        if (graph.nodes[dep] === undefined) {
-          removeDeps.push(dep);
-        }
-      }
-      removeDeps.forEach((d) => {
-        const i = node.dependencies.indexOf(d);
-        node.dependencies.splice(i, 1);
-      });
-    }
-
-    return graph;
-
-    function updateParentStacks(stack: cxapi.CloudFormationStackArtifact) {
-      const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
-      for (const art of assetArtifacts) {
-        parentStacks[art.id] = stack;
-      }
-    }
-
-    function getDepIds(deps: cxapi.CloudArtifact[]): string[] {
-      const ids = [];
-      for (const artifact of deps) {
-        if (cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-          // Depend on only the publish step. The publish step will depend on the build step on its own.
-          ids.push(`${artifact.id}-publish`);
-        } else {
-          ids.push(artifact.id);
-        }
-      }
-      return ids;
-    }
-
-    function onlyStackDeps(ids: string[]): string[] {
-      return ids.filter((i) => !i.endsWith('publish'));
-    }
-  }
-
-  private readonly nodes: Record<string, WorkNode>;
+  public readonly nodes: Record<string, WorkNode>;
   private readonly readyPool: Array<WorkNode> = [];
   public error?: Error;
 
@@ -141,6 +39,67 @@ export class WorkGraph {
       return node;
     }
     return undefined;
+  }
+
+  public doParallel(concurrency: number, actions: WorkGraphActions) {
+    return this.forAllArtifacts(concurrency, async (x: WorkNode) => {
+      switch (x.type) {
+        case WorkType.STACK_DEPLOY:
+          await actions.deployStack(x);
+          break;
+        case WorkType.ASSET_BUILD:
+          await actions.buildAsset(x);
+          break;
+        case WorkType.ASSET_PUBLISH:
+          await actions.publishAsset(x);
+          break;
+      }
+    });
+  }
+
+  private forAllArtifacts(n: number, fn: (x: WorkNode) => Promise<void>): Promise<void> {
+    const graph = this;
+
+    console.log('forallartiacts');
+    return new Promise((ok, fail) => {
+      let active = 0;
+
+      start();
+
+      function start() {
+        console.log('start');
+        while (graph.hasNext() && active < n) {
+          console.log('startingone');
+          startOne(graph.next()!);
+        }
+
+        if (graph.done() && active === 0) {
+          ok();
+        }
+
+        // wait for other active deploys to finish before failing
+        if (graph.hasFailed() && active === 0) {
+          fail(graph.error);
+        }
+      }
+
+      function startOne(x: WorkNode) {
+        console.log('startOne');
+        active++;
+        void fn(x).then(() => {
+          console.log('fn finised');
+          active--;
+          graph.deployed(x);
+          start();
+        }).catch((err) => {
+          active--;
+          // By recording the failure immediately as the queued task exits, we prevent the next
+          // queued task from starting.
+          graph.failed(x, err);
+          start();
+        });
+      }
+    });
   }
 
   public deployed(node: WorkNode) {
@@ -185,9 +144,10 @@ export class WorkGraph {
       }
     }
   }
-
-  private getNode(id: string) {
-    return this.nodes[id];
-  }
 }
 
+interface WorkGraphActions {
+  deployStack: (stackNode: StackNode) => Promise<void>;
+  buildAsset: (assetNode: AssetBuildNode) => Promise<void>;
+  publishAsset: (assetNode: AssetPublishNode) => Promise<void>;
+}

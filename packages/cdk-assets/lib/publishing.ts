@@ -26,21 +26,21 @@ export interface AssetPublishingOptions {
   readonly throwOnError?: boolean;
 
   /**
-   * Whether to publish in parallel
+   * Whether to publish in parallel, when 'publish()' is called
    *
    * @default false
    */
   readonly publishInParallel?: boolean;
 
   /**
-   * Whether to build assets
+   * Whether to build assets, when 'publish()' is called
    *
    * @default true
    */
   readonly buildAssets?: boolean;
 
   /**
-   * Whether to publish assets
+   * Whether to publish assets, when 'publish()' is called
    *
    * @default true
    */
@@ -150,7 +150,57 @@ export class AssetPublishing implements IPublishProgress {
   }
 
   /**
-   * Publish an asset.
+   * Build a single asset from the manifest
+   */
+  public async buildEntry(asset: IManifestEntry) {
+    try {
+      if (this.progressEvent(EventType.START, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
+
+      const handler = makeAssetHandler(this.manifest, asset, this.handlerHost);
+      await handler.build();
+
+      if (this.aborted) {
+        throw new Error('Aborted');
+      }
+
+      if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
+    } catch (e: any) {
+      this.failures.push({ asset, error: e });
+      this.completedOperations++;
+      if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
+    }
+
+    return true;
+  }
+
+  /**
+   * Publish a single asset from the manifest
+   */
+  public async publishEntry(asset: IManifestEntry) {
+    try {
+      if (this.progressEvent(EventType.UPLOAD, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
+
+      const handler = makeAssetHandler(this.manifest, asset, this.handlerHost);
+      await handler.publish();
+
+      if (this.aborted) {
+        throw new Error('Aborted');
+      }
+
+      this.completedOperations++;
+      if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
+    } catch (e: any) {
+      this.failures.push({ asset, error: e });
+      this.completedOperations++;
+      if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
+    }
+
+    return true;
+
+  }
+
+  /**
+   * publish an asset (used by 'publish()')
    * @param asset The asset to publish
    * @returns false when publishing should stop
    */
