@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { DefaultTokenResolver, Lazy, PhysicalName, Size, StringConcat, Tokenization } from 'aws-cdk-lib';
+import { Lazy, PhysicalName, Size } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
@@ -237,6 +237,7 @@ export interface HostVolumeOptions extends EcsVolumeOptions {
    */
   readonly hostPath?: string;
 }
+
 /**
  * Creates a Host volume. This volume will persist on the host at the specified `hostPath`.
  * If the `hostPath` is not specified, Docker will choose the host path. In this case,
@@ -305,6 +306,13 @@ export interface IEcsContainerDefinition extends IConstruct {
    * @default - no environment variables
    */
   readonly environment?: { [key:string]: string };
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   */
+  readonly executionRole: iam.IRole;
 
   /**
    * The role that the container can assume.
@@ -534,10 +542,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
-      image: Tokenization.resolve(this.imageConfig, {
-        scope: this,
-        resolver: new DefaultTokenResolver(new StringConcat()),
-      }).imageName,
+      image: this.imageConfig.imageName,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,

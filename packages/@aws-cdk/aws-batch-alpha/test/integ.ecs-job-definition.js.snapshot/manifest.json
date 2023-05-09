@@ -219,6 +219,24 @@
             "data": "ECSFargateJobDefn327BE725"
           }
         ],
+        "/stack/EcsDockerContainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDockerContainerExecutionRole7AA53A24"
+          }
+        ],
+        "/stack/EcsDockerContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDockerContainerExecutionRoleDefaultPolicyF58C2301"
+          }
+        ],
+        "/stack/ECSDockerJobDefn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSDockerJobDefnF388CFCF"
+          }
+        ],
         "/stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
