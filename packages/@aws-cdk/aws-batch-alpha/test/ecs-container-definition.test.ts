@@ -795,7 +795,7 @@ describe('Fargate containers', () => {
     });
   });
 
-  test('can set ephemeralStorage', () => {
+  test('can set ephemeralStorageSize', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
@@ -820,24 +820,21 @@ describe('Fargate containers', () => {
     });
   });
 
-  test('ephemeralStorage validation', () => {
-    // WHEN
-    new EcsJobDefinition(stack, 'ECSJobDefn', {
+  test('ephemeralStorageSize throws error when out of range', () => {
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
         ...defaultContainerProps,
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(19),
       }),
-    });
+    })).toThrow('Ephemeral Storage Size must be within 21 to 200 GiB.');
 
-    new EcsJobDefinition(stack, 'ECSJobDefn2', {
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
         ...defaultContainerProps,
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(201),
       }),
-    });
-
-    expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/EcsFargateContainer] Ephemeral Storage must be minimum 21 GiB.\n  [Default/EcsFargateContainer2] Ephemeral Storage must be at most 200 GiB.');
+    })).toThrow('Ephemeral Storage Size must be within 21 to 200 GiB.');
   });
 });
