@@ -5,6 +5,7 @@ import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
 import { AppStagingSynthesizer } from '../lib';
+import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 
 describe(AppStagingSynthesizer, () => {
   let app: App;
@@ -199,9 +200,7 @@ describe(AppStagingSynthesizer, () => {
       const asm = app.synth();
 
       // THEN
-      const stagingStackArtifact = asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-east-1`);
-
-      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
+      Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
           Rules: Match.arrayWith([{
             ExpirationInDays: 30,
@@ -337,6 +336,78 @@ describe(AppStagingSynthesizer, () => {
     expect(evalCFN(location1.repositoryName)).toEqual(evalCFN(location2.repositoryName));
   });
 
+  test('docker image repositories have lifecycle rule - default', () => {
+    // GIVEN
+    const assetName = 'abcdef';
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: Match.serializedJson({
+          rules: Match.arrayWith([
+            Match.objectLike({
+              selection: Match.objectLike({
+                countType: 'imageCountMoreThan',
+                countNumber: 3,
+              }),
+            }),
+          ]),
+        }),
+      },
+      RepositoryName: `${APP_ID}/${assetName}`,
+    });
+  });
+
+  test('docker image repositories have lifecycle rule - specified', () => {
+    // GIVEN
+    app = new App({
+      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+        imageAssetVersionCount: 1,
+      }),
+    });
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+
+    const assetName = 'abcdef';
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: Match.serializedJson({
+          rules: Match.arrayWith([
+            Match.objectLike({
+              selection: Match.objectLike({
+                countType: 'imageCountMoreThan',
+                countNumber: 1,
+              }),
+            }),
+          ]),
+        }),
+      },
+      RepositoryName: `${APP_ID}/${assetName}`,
+    });
+  });
+
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {
       // GIVEN - App with Stack with specific environment
@@ -376,5 +447,12 @@ describe(AppStagingSynthesizer, () => {
   */
   function evalCFN(value: any) {
     return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
+  }
+
+  /**
+   * Return the staging resource stack that is generated as part of the assembly
+   */
+  function getStagingResourceStack(asm: CloudAssembly) {
+    return asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-east-1`);
   }
 });

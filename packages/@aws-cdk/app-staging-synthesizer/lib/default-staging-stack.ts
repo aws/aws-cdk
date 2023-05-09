@@ -56,7 +56,7 @@ export interface DefaultStagingStackOptions {
   readonly imageAssetPublishingRole?: BootstrapRole;
 
   /**
-   * The lifetime for handoff file assets
+   * The lifetime for handoff file assets.
    *
    * Assets that are only necessary at deployment time (for instance,
    * CloudFormation templates and Lambda source code bundles) will be
@@ -71,6 +71,18 @@ export interface DefaultStagingStackOptions {
    * @default - Duration.days(30)
    */
   readonly handoffFileAssetLifetime?: Duration;
+
+  /**
+   * The maximum number of image versions to store in a repository.
+   *
+   * Previous versions of an image can be stored for rollback purposes.
+   * Once a repository has more than 3 image versions stored, the oldest
+   * version will be discarded. This allows for sensible garbage collection
+   * while maintaining a few previous versions for rollback scenarios.
+   *
+   * @default - up to 3 versions stored
+   */
+  readonly imageAssetVersionCount?: number;
 }
 
 /**
@@ -175,7 +187,6 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private imageRoleManifestArn?: string;
 
   private readonly deployRoleArn?: string;
-  // private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
     super(scope, id, {
@@ -192,23 +203,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
 
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
-
-    // this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
   }
-
-  // private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
-  //   const ruleMap: Record<string, ecr.LifecycleRule[]> = {};
-  //   for (const rule of rules) {
-  //     for (const asset of rule.assets) {
-  //       if (ruleMap[asset] === undefined) {
-  //         ruleMap[asset] = [];
-  //       }
-  //       ruleMap[asset].push(...rule.lifecycleRules);
-  //     }
-  //   }
-  //   return ruleMap;
-  // }
 
   private ensureFilePublishingRole() {
     if (this.providedFileRole) {
@@ -341,7 +337,10 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     if (this.stagingRepos[asset.assetName] === undefined) {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
-        // lifecycleRules: this.repositoryLifecycleRules[asset.assetName],
+        lifecycleRules: [{
+          description: 'Garbage collect old image versions and keep the specified number of latest versions',
+          maxImageCount: this.props.imageAssetVersionCount ?? 3,
+        }],
       });
       if (this.imageRole) {
         this.stagingRepos[asset.assetName].grantPullPush(this.imageRole);
