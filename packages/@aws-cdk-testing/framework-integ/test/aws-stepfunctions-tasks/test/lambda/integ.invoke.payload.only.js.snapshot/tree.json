@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
@@ -59,14 +59,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
@@ -89,22 +89,22 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Invoke Handler": {
             "id": "Invoke Handler",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Invoke Handler",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.LambdaInvoke",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "checkJobStateLambda": {
@@ -119,8 +119,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
@@ -158,14 +158,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
@@ -188,46 +188,46 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Check the job state": {
             "id": "Check the job state",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Check the job state",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.LambdaInvoke",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Job Complete?": {
             "id": "Job Complete?",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Job Complete?",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Choice",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Job Failed": {
             "id": "Job Failed",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Job Failed",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Fail",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Final step": {
             "id": "Final step",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/Final step",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "StateMachine": {
@@ -242,8 +242,8 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
@@ -267,8 +267,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultPolicy": {
@@ -341,20 +341,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
@@ -394,44 +394,44 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "stateMachineArn": {
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-tasks-lambda-invoke-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.9"
         }
       },
       "Tree": {
@@ -439,13 +439,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.9"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.9"
     }
   }
 }
