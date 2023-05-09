@@ -5,11 +5,13 @@ import os
 import shutil
 import subprocess
 import tempfile
+from time import sleep
 from urllib.request import Request, urlopen
 from uuid import uuid4
 from zipfile import ZipFile
 
 import boto3
+import botocore
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -203,19 +205,38 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
 def cloudfront_invalidate(distribution_id, distribution_paths):
-    invalidation_resp = cloudfront.create_invalidation(
-        DistributionId=distribution_id,
-        InvalidationBatch={
-            'Paths': {
-                'Quantity': len(distribution_paths),
-                'Items': distribution_paths
-            },
-            'CallerReference': str(uuid4()),
-        })
-    # by default, will wait up to 10 minutes
-    cloudfront.get_waiter('invalidation_completed').wait(
-        DistributionId=distribution_id,
-        Id=invalidation_resp['Invalidation']['Id'])
+    attempt = 0
+    timeout = 1
+    max_attempts = 3
+    # handle CloudFront occasional timeout/unavailability
+    while attempt < max_attempts:
+        try:
+            invalidation_resp = cloudfront.create_invalidation(
+                DistributionId=distribution_id,
+                InvalidationBatch={
+                    'Paths': {
+                        'Quantity': len(distribution_paths),
+                        'Items': distribution_paths
+                    },
+                    'CallerReference': str(uuid4()),
+                })
+        except botocore.exceptions.ClientError as error:
+            if error.response['Error']['Code'] == 'ServiceUnavailable':
+                logger.warn("| CloudFront service unavailable. Retrying in %d seconds...\n" % timeout)
+                sleep(timeout)
+                attempt = attempt + 1
+                timeout = timeout * 2
+        else:
+            # by default, will wait up to 10 minutes
+            cloudfront.get_waiter('invalidation_completed').wait(
+                DistributionId=distribution_id,
+                Id=invalidation_resp['Invalidation']['Id']
+            )
+            break
+    else:
+        logger.error("| CloudFront service unavailable. Invalidation failed.")
+        
+
 
 #---------------------------------------------------------------------------------------------------
 # set metadata
