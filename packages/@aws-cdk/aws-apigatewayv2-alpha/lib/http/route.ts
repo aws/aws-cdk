@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Aws, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
@@ -236,7 +236,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // path variable and all that follows with a wildcard.
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
-    return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
+    return this.stack.formatArn({service: 'execute-api', resource: `${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`, arnFormat: ArnFormat.NO_RESOURCE_NAME})
   }
 
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
