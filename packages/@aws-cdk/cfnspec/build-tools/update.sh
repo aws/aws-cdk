@@ -85,7 +85,6 @@ echo "$new_version" > cfn.version
 # Only report outdated specs if we made changes, otherwise we're stuck reporting changes every time.
 if [[ "$new_version" != "$old_version" ]]; then
     echo >&2 "Reporting outdated specs..."
-    node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
     ts-node --preferTsExts build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
     ts-node --preferTsExts build-tools/report-issues spec-source/specification/001_cfn_us-west-2/000_official/ outdated >> CHANGELOG.md.new
 fi
