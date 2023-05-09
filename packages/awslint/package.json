@@ -18,16 +18,16 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "1.78.1",
+    "@jsii/spec": "1.80.0",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "1.78.1",
+    "jsii-reflect": "1.80.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.1",
     "@types/yargs": "^15.0.15",
     "@aws-cdk/pkglint": "0.0.0",
     "typescript": "~4.9.5",
