@@ -185,6 +185,87 @@ describe('tests', () => {
     });
   });
 
+  test('OIDC authentication action allows HTTPS outbound', () => {
+    // WHEN
+    lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.authenticateOidc({
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatically created Security Group for ELB LB',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow to IdP endpoint',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        },
+      ],
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+      VpcId: { Ref: 'Stack8A423254' },
+    });
+  });
+
+  test('OIDC authentication action not allows HTTPS outbound when allowHttpsOutbound is false', () => {
+    // WHEN
+    lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.authenticateOidc({
+        allowHttpsOutbound: false,
+        authorizationEndpoint: 'A',
+        clientId: 'B',
+        clientSecret: cdk.SecretValue.unsafePlainText('C'),
+        issuer: 'D',
+        tokenEndpoint: 'E',
+        userInfoEndpoint: 'F',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Automatically created Security Group for ELB LB',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+      VpcId: { Ref: 'Stack8A423254' },
+    });
+  });
+
   test('Add default Action and add Action with conditions', () => {
     // GIVEN
     const listener = lb.addListener('Listener', { port: 80 });
