@@ -8,7 +8,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as md5 from 'md5';
-import { schema } from '../lib';
 import { massageSpec, normalize } from './massage-spec';;
 import { writeSorted, applyPatchSet, applyAndWrite } from './patch-set';
 import { validateSpecificationEvolution } from './validate-evolution';
