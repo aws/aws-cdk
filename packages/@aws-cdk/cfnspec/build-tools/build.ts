@@ -6,16 +6,28 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as md5 from 'md5';
-import { schema } from '../lib';
 import { massageSpec, normalize } from './massage-spec';;
 import { writeSorted, applyPatchSet, applyAndWrite } from './patch-set';
+import { validateSpecificationEvolution } from './validate-evolution';
+import { schema } from '../lib';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
   const outDir = path.join(process.cwd(), 'spec');
 
-  await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
+  // If this is a PR build check the spec for evolution (this is set in buildspec-pr.yaml)
+  const outputFile = path.join(outDir, 'specification.json');
+  if (process.env.CODEBUILD_WEBHOOK_TRIGGER?.startsWith('pr/')) {
+    await validateSpecificationEvolution(async () => {
+      await generateResourceSpecification(inputDir, outputFile);
+      return fs.readJson(outputFile);
+    });
+  } else {
+    await generateResourceSpecification(inputDir, outputFile);
+  }
+
   await applyAndWrite(path.join(outDir, 'cfn-lint.json'), path.join(inputDir, 'cfn-lint'));
   await applyAndWrite(path.join(outDir, 'cfn-docs.json'), path.join(inputDir, 'cfn-docs'));
 }
