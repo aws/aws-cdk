@@ -63,7 +63,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     });
   }
 
-  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.AWS_PROXY,
       uri: this.handler.functionArn,
