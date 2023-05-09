@@ -33,7 +33,7 @@
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "codemaker": "1.78.1",
+    "codemaker": "1.80.0",
     "fast-json-patch": "^3.1.1",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
@@ -42,7 +42,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.1",
     "@types/yargs": "^15.0.15",
     "jest": "^29.5.0"
   },
