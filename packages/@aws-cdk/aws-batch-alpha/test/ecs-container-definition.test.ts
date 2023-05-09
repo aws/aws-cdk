@@ -9,6 +9,7 @@ import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Size, Stack, App } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
@@ -815,6 +816,33 @@ describe('Fargate containers', () => {
         },
         EphemeralStorage: {
           SizeInGiB: Size.gibibytes(100).toGibibytes(),
+        },
+      },
+    });
+  });
+
+  test('can set ephemeralStorageSize as token', () => {
+    const ephemeralStorageValue: number = cdk.Token.asNumber(150);
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(ephemeralStorageValue),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(150).toGibibytes(),
         },
       },
     });
