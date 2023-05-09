@@ -883,9 +883,9 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   /**
-   * The size for ephemeral storage. Service default is 20 GiB.
+   * The size for ephemeral storage.
    *
-   * @default - undefined
+   * @default - 20 GiB
    */
   readonly ephemeralStorageSize?: Size;
 }
@@ -913,9 +913,9 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 
   /**
-   * The size for ephemeral storage. Service default is 20 GiB.
+   * The size for ephemeral storage.
    *
-   * @default - undefined
+   * @default - 20 GiB
    */
   readonly ephemeralStorageSize?: Size;
 }
