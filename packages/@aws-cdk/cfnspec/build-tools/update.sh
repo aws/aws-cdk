@@ -18,6 +18,7 @@ function update-spec() {
     local targetdir=$3
     local gunzip=$4
     local split=$5
+    local services=${@:6}
 
     local tmpdir="$(mktemp -d)"
     local newspec="${tmpdir}/new_proposed.json"
@@ -44,6 +45,7 @@ function update-spec() {
 
     # Calculate the old and new combined specs, so we can do a diff on the changes
     echo >&2 "Updating source spec..."
+    mkdir -p ${targetdir}
 
     ts-node --preferTsExts build-tools/patch-set.ts --quiet "${targetdir}" "${oldcombined}"
     if ${split}; then
@@ -67,6 +69,12 @@ update-spec \
     "${1:-https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
     spec-source/specification/000_cfn/000_official \
     true true
+
+update-spec \
+    "CloudFormation Resource Specification (us-west-2)" \
+    "${2:-https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
+    spec-source/specification/001_cfn_us-west-2/000_official \
+    true true AWS_DeviceFarm
 
 old_version=$(cat cfn.version)
 new_version=$(node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion")
