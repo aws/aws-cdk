@@ -39,7 +39,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.1",
-    "@types/semver": "^7.3.13",
+    "@types/semver": "^7.5.0",
     "@types/yargs": "^15.0.15"
   },
   "dependencies": {
