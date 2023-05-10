@@ -12,12 +12,15 @@ on:
       - opened
       - synchronize
       - reopened
+  status:
 
 jobs:
   validate-pr:
     permissions:
       contents: read
       pull-requests: write
+      statuses: read
+      issues: read
     runs-on: ubuntu-latest
     steps:
 

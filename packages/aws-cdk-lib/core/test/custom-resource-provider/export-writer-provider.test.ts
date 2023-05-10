@@ -34,104 +34,104 @@ describe('export writer provider', () => {
     expect(cfn).toEqual({
       Mappings: {
         DefaultCrNodeVersionMap: {
-          "af-south-1": {
-            "value": "nodejs16.x",
+          'af-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-east-1": {
-            "value": "nodejs16.x",
+          'ap-east-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-1": {
-            "value": "nodejs16.x",
+          'ap-northeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-2": {
-            "value": "nodejs16.x",
+          'ap-northeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-3": {
-            "value": "nodejs16.x",
+          'ap-northeast-3': {
+            value: 'nodejs16.x',
           },
-          "ap-south-1": {
-            "value": "nodejs16.x",
+          'ap-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-south-2": {
-            "value": "nodejs16.x",
+          'ap-south-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-1": {
-            "value": "nodejs16.x",
+          'ap-southeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-2": {
-            "value": "nodejs16.x",
+          'ap-southeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-3": {
-            "value": "nodejs16.x",
+          'ap-southeast-3': {
+            value: 'nodejs16.x',
           },
-          "ca-central-1": {
-            "value": "nodejs16.x",
+          'ca-central-1': {
+            value: 'nodejs16.x',
           },
-          "cn-north-1": {
-            "value": "nodejs16.x",
+          'cn-north-1': {
+            value: 'nodejs16.x',
           },
-          "cn-northwest-1": {
-            "value": "nodejs16.x",
+          'cn-northwest-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-1": {
-            "value": "nodejs16.x",
+          'eu-central-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-2": {
-            "value": "nodejs16.x",
+          'eu-central-2': {
+            value: 'nodejs16.x',
           },
-          "eu-north-1": {
-            "value": "nodejs16.x",
+          'eu-north-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-1": {
-            "value": "nodejs16.x",
+          'eu-south-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-2": {
-            "value": "nodejs16.x",
+          'eu-south-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-1": {
-            "value": "nodejs16.x",
+          'eu-west-1': {
+            value: 'nodejs16.x',
           },
-          "eu-west-2": {
-            "value": "nodejs16.x",
+          'eu-west-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-3": {
-            "value": "nodejs16.x",
+          'eu-west-3': {
+            value: 'nodejs16.x',
           },
-          "me-central-1": {
-            "value": "nodejs16.x",
+          'me-central-1': {
+            value: 'nodejs16.x',
           },
-          "me-south-1": {
-            "value": "nodejs16.x",
+          'me-south-1': {
+            value: 'nodejs16.x',
           },
-          "sa-east-1": {
-            "value": "nodejs16.x",
+          'sa-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-1": {
-            "value": "nodejs16.x",
+          'us-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-2": {
-            "value": "nodejs16.x",
+          'us-east-2': {
+            value: 'nodejs16.x',
           },
-          "us-gov-east-1": {
-            "value": "nodejs16.x",
+          'us-gov-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-gov-west-1": {
-            "value": "nodejs16.x",
+          'us-gov-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-iso-east-1": {
-            "value": "nodejs14.x",
+          'us-iso-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-iso-west-1": {
-            "value": "nodejs14.x",
+          'us-iso-west-1': {
+            value: 'nodejs14.x',
           },
-          "us-isob-east-1": {
-            "value": "nodejs14.x",
+          'us-isob-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-west-1": {
-            "value": "nodejs16.x",
+          'us-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-west-2": {
-            "value": "nodejs16.x",
+          'us-west-2': {
+            value: 'nodejs16.x',
           },
         },
       },
@@ -249,104 +249,104 @@ describe('export writer provider', () => {
     expect(stack2Cfn).toEqual({
       Mappings: {
         DefaultCrNodeVersionMap: {
-          "af-south-1": {
-            "value": "nodejs16.x",
+          'af-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-east-1": {
-            "value": "nodejs16.x",
+          'ap-east-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-1": {
-            "value": "nodejs16.x",
+          'ap-northeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-2": {
-            "value": "nodejs16.x",
+          'ap-northeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-3": {
-            "value": "nodejs16.x",
+          'ap-northeast-3': {
+            value: 'nodejs16.x',
           },
-          "ap-south-1": {
-            "value": "nodejs16.x",
+          'ap-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-south-2": {
-            "value": "nodejs16.x",
+          'ap-south-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-1": {
-            "value": "nodejs16.x",
+          'ap-southeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-2": {
-            "value": "nodejs16.x",
+          'ap-southeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-3": {
-            "value": "nodejs16.x",
+          'ap-southeast-3': {
+            value: 'nodejs16.x',
           },
-          "ca-central-1": {
-            "value": "nodejs16.x",
+          'ca-central-1': {
+            value: 'nodejs16.x',
           },
-          "cn-north-1": {
-            "value": "nodejs16.x",
+          'cn-north-1': {
+            value: 'nodejs16.x',
           },
-          "cn-northwest-1": {
-            "value": "nodejs16.x",
+          'cn-northwest-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-1": {
-            "value": "nodejs16.x",
+          'eu-central-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-2": {
-            "value": "nodejs16.x",
+          'eu-central-2': {
+            value: 'nodejs16.x',
           },
-          "eu-north-1": {
-            "value": "nodejs16.x",
+          'eu-north-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-1": {
-            "value": "nodejs16.x",
+          'eu-south-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-2": {
-            "value": "nodejs16.x",
+          'eu-south-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-1": {
-            "value": "nodejs16.x",
+          'eu-west-1': {
+            value: 'nodejs16.x',
           },
-          "eu-west-2": {
-            "value": "nodejs16.x",
+          'eu-west-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-3": {
-            "value": "nodejs16.x",
+          'eu-west-3': {
+            value: 'nodejs16.x',
           },
-          "me-central-1": {
-            "value": "nodejs16.x",
+          'me-central-1': {
+            value: 'nodejs16.x',
           },
-          "me-south-1": {
-            "value": "nodejs16.x",
+          'me-south-1': {
+            value: 'nodejs16.x',
           },
-          "sa-east-1": {
-            "value": "nodejs16.x",
+          'sa-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-1": {
-            "value": "nodejs16.x",
+          'us-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-2": {
-            "value": "nodejs16.x",
+          'us-east-2': {
+            value: 'nodejs16.x',
           },
-          "us-gov-east-1": {
-            "value": "nodejs16.x",
+          'us-gov-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-gov-west-1": {
-            "value": "nodejs16.x",
+          'us-gov-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-iso-east-1": {
-            "value": "nodejs14.x",
+          'us-iso-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-iso-west-1": {
-            "value": "nodejs14.x",
+          'us-iso-west-1': {
+            value: 'nodejs14.x',
           },
-          "us-isob-east-1": {
-            "value": "nodejs14.x",
+          'us-isob-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-west-1": {
-            "value": "nodejs16.x",
+          'us-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-west-2": {
-            "value": "nodejs16.x",
+          'us-west-2': {
+            value: 'nodejs16.x',
           },
         },
       },
@@ -465,22 +465,30 @@ describe('export writer provider', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack1', { env: { region: 'producer-region' } });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'consumer-region1' } });
-    const stack3 = new Stack(app, 'Stack3', { env: { region: 'consumer-region2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'consumer-region1' }, crossRegionReferences: true });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'consumer-region2' }, crossRegionReferences: true });
+
+    // WHEN
     const resource = new CfnResource(stack, 'MyResource', {
       type: 'Custom::MyResource',
     });
-
-    // WHEN
-    const exportWriter = new ExportWriter(stack, 'ExportWriter', {
-      region: 'us-east-1',
+    new CfnResource(stack2, 'MyResource', {
+      type: 'Custom::MyResource',
+      properties: {
+        Prop: resource.getAtt('arn'),
+      },
     });
-    exportWriter.exportValue('MyResourceName', resource.getAtt('arn'), stack2);
-    exportWriter.exportValue('MyResourceName', resource.getAtt('arn'), stack3);
+    new CfnResource(stack3, 'MyResource', {
+      type: 'Custom::MyResource',
+      properties: {
+        Prop: resource.getAtt('arn'),
+      },
+    });
+
 
     // THEN
+    app.synth();
     const cfn = toCloudFormation(stack);
-
     expect(cfn).toMatchObject({
       Resources: {
         MyResource: {
@@ -514,22 +522,6 @@ describe('export writer provider', () => {
                       ],
                       Effect: 'Allow',
                       Resource: [
-                        {
-                          'Fn::Join': [
-                            '',
-                            [
-                              'arn:',
-                              {
-                                Ref: 'AWS::Partition',
-                              },
-                              ':ssm:us-east-1:',
-                              {
-                                Ref: 'AWS::AccountId',
-                              },
-                              ':parameter/cdk/exports/*',
-                            ],
-                          ],
-                        },
                         {
                           'Fn::Join': [
                             '',
@@ -609,104 +601,104 @@ describe('export writer provider', () => {
     expect(cfn).toEqual({
       Mappings: {
         DefaultCrNodeVersionMap: {
-          "af-south-1": {
-            "value": "nodejs16.x",
+          'af-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-east-1": {
-            "value": "nodejs16.x",
+          'ap-east-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-1": {
-            "value": "nodejs16.x",
+          'ap-northeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-2": {
-            "value": "nodejs16.x",
+          'ap-northeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-3": {
-            "value": "nodejs16.x",
+          'ap-northeast-3': {
+            value: 'nodejs16.x',
           },
-          "ap-south-1": {
-            "value": "nodejs16.x",
+          'ap-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-south-2": {
-            "value": "nodejs16.x",
+          'ap-south-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-1": {
-            "value": "nodejs16.x",
+          'ap-southeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-2": {
-            "value": "nodejs16.x",
+          'ap-southeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-3": {
-            "value": "nodejs16.x",
+          'ap-southeast-3': {
+            value: 'nodejs16.x',
           },
-          "ca-central-1": {
-            "value": "nodejs16.x",
+          'ca-central-1': {
+            value: 'nodejs16.x',
           },
-          "cn-north-1": {
-            "value": "nodejs16.x",
+          'cn-north-1': {
+            value: 'nodejs16.x',
           },
-          "cn-northwest-1": {
-            "value": "nodejs16.x",
+          'cn-northwest-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-1": {
-            "value": "nodejs16.x",
+          'eu-central-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-2": {
-            "value": "nodejs16.x",
+          'eu-central-2': {
+            value: 'nodejs16.x',
           },
-          "eu-north-1": {
-            "value": "nodejs16.x",
+          'eu-north-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-1": {
-            "value": "nodejs16.x",
+          'eu-south-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-2": {
-            "value": "nodejs16.x",
+          'eu-south-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-1": {
-            "value": "nodejs16.x",
+          'eu-west-1': {
+            value: 'nodejs16.x',
           },
-          "eu-west-2": {
-            "value": "nodejs16.x",
+          'eu-west-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-3": {
-            "value": "nodejs16.x",
+          'eu-west-3': {
+            value: 'nodejs16.x',
           },
-          "me-central-1": {
-            "value": "nodejs16.x",
+          'me-central-1': {
+            value: 'nodejs16.x',
           },
-          "me-south-1": {
-            "value": "nodejs16.x",
+          'me-south-1': {
+            value: 'nodejs16.x',
           },
-          "sa-east-1": {
-            "value": "nodejs16.x",
+          'sa-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-1": {
-            "value": "nodejs16.x",
+          'us-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-2": {
-            "value": "nodejs16.x",
+          'us-east-2': {
+            value: 'nodejs16.x',
           },
-          "us-gov-east-1": {
-            "value": "nodejs16.x",
+          'us-gov-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-gov-west-1": {
-            "value": "nodejs16.x",
+          'us-gov-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-iso-east-1": {
-            "value": "nodejs14.x",
+          'us-iso-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-iso-west-1": {
-            "value": "nodejs14.x",
+          'us-iso-west-1': {
+            value: 'nodejs14.x',
           },
-          "us-isob-east-1": {
-            "value": "nodejs14.x",
+          'us-isob-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-west-1": {
-            "value": "nodejs16.x",
+          'us-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-west-2": {
-            "value": "nodejs16.x",
+          'us-west-2': {
+            value: 'nodejs16.x',
           },
         },
       },
@@ -825,104 +817,104 @@ describe('export writer provider', () => {
     expect(stack2Cfn).toEqual({
       Mappings: {
         DefaultCrNodeVersionMap: {
-          "af-south-1": {
-            "value": "nodejs16.x",
+          'af-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-east-1": {
-            "value": "nodejs16.x",
+          'ap-east-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-1": {
-            "value": "nodejs16.x",
+          'ap-northeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-2": {
-            "value": "nodejs16.x",
+          'ap-northeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-northeast-3": {
-            "value": "nodejs16.x",
+          'ap-northeast-3': {
+            value: 'nodejs16.x',
           },
-          "ap-south-1": {
-            "value": "nodejs16.x",
+          'ap-south-1': {
+            value: 'nodejs16.x',
           },
-          "ap-south-2": {
-            "value": "nodejs16.x",
+          'ap-south-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-1": {
-            "value": "nodejs16.x",
+          'ap-southeast-1': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-2": {
-            "value": "nodejs16.x",
+          'ap-southeast-2': {
+            value: 'nodejs16.x',
           },
-          "ap-southeast-3": {
-            "value": "nodejs16.x",
+          'ap-southeast-3': {
+            value: 'nodejs16.x',
           },
-          "ca-central-1": {
-            "value": "nodejs16.x",
+          'ca-central-1': {
+            value: 'nodejs16.x',
           },
-          "cn-north-1": {
-            "value": "nodejs16.x",
+          'cn-north-1': {
+            value: 'nodejs16.x',
           },
-          "cn-northwest-1": {
-            "value": "nodejs16.x",
+          'cn-northwest-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-1": {
-            "value": "nodejs16.x",
+          'eu-central-1': {
+            value: 'nodejs16.x',
           },
-          "eu-central-2": {
-            "value": "nodejs16.x",
+          'eu-central-2': {
+            value: 'nodejs16.x',
           },
-          "eu-north-1": {
-            "value": "nodejs16.x",
+          'eu-north-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-1": {
-            "value": "nodejs16.x",
+          'eu-south-1': {
+            value: 'nodejs16.x',
           },
-          "eu-south-2": {
-            "value": "nodejs16.x",
+          'eu-south-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-1": {
-            "value": "nodejs16.x",
+          'eu-west-1': {
+            value: 'nodejs16.x',
           },
-          "eu-west-2": {
-            "value": "nodejs16.x",
+          'eu-west-2': {
+            value: 'nodejs16.x',
           },
-          "eu-west-3": {
-            "value": "nodejs16.x",
+          'eu-west-3': {
+            value: 'nodejs16.x',
           },
-          "me-central-1": {
-            "value": "nodejs16.x",
+          'me-central-1': {
+            value: 'nodejs16.x',
           },
-          "me-south-1": {
-            "value": "nodejs16.x",
+          'me-south-1': {
+            value: 'nodejs16.x',
           },
-          "sa-east-1": {
-            "value": "nodejs16.x",
+          'sa-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-1": {
-            "value": "nodejs16.x",
+          'us-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-east-2": {
-            "value": "nodejs16.x",
+          'us-east-2': {
+            value: 'nodejs16.x',
           },
-          "us-gov-east-1": {
-            "value": "nodejs16.x",
+          'us-gov-east-1': {
+            value: 'nodejs16.x',
           },
-          "us-gov-west-1": {
-            "value": "nodejs16.x",
+          'us-gov-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-iso-east-1": {
-            "value": "nodejs14.x",
+          'us-iso-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-iso-west-1": {
-            "value": "nodejs14.x",
+          'us-iso-west-1': {
+            value: 'nodejs14.x',
           },
-          "us-isob-east-1": {
-            "value": "nodejs14.x",
+          'us-isob-east-1': {
+            value: 'nodejs14.x',
           },
-          "us-west-1": {
-            "value": "nodejs16.x",
+          'us-west-1': {
+            value: 'nodejs16.x',
           },
-          "us-west-2": {
-            "value": "nodejs16.x",
+          'us-west-2': {
+            value: 'nodejs16.x',
           },
         },
       },

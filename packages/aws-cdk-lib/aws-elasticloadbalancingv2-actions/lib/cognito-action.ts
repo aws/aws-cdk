@@ -1,4 +1,6 @@
+import { Construct, IConstruct } from 'constructs';
 import * as cognito from '../../aws-cognito';
+import { Port } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration } from '../../core';
 
@@ -65,6 +67,18 @@ export interface AuthenticateCognitoActionProps {
    * @default Duration.days(7)
    */
   readonly sessionTimeout?: Duration;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the IdP.
+   *
+   * Set this property to false if the IP address used for the IdP endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the IdP's IP address using the listener's `connections` property.
+   *
+   * @default true
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**
@@ -85,6 +99,8 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
     };
   }
 
+  private readonly allowHttpsOutbound: boolean;
+
   /**
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
@@ -93,6 +109,8 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
       type: 'authenticate-cognito',
       authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
     }, options.next);
+
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
     this.addRuleAction({
       type: 'authenticate-cognito',
       authenticateCognitoConfig: {
@@ -100,5 +118,11 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
         sessionTimeout: options.sessionTimeout?.toSeconds(),
       },
     });
+  }
+  public bind(scope: Construct, listener: elbv2.IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    if (!this.allowHttpsOutbound) return;
+    listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
   }
 }

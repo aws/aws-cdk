@@ -88,6 +88,8 @@ async function genCfnIncludeMap(generated: ModuleMap) {
     });
   });
 
+  const sortedClassMap = Object.fromEntries(Object.entries(classMap).sort(([resA], [resB]) => resA.localeCompare(resB)))
+
   const filePath = path.join(__dirname, '..', 'cloudformation-include', 'cfn-types-2-classes.json');
-  await fs.writeJson(filePath, classMap, { spaces: 2 });
+  await fs.writeJson(filePath, sortedClassMap, { spaces: 2 });
 }

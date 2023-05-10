@@ -2,12 +2,12 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
-import * as cxapi from '../../../cx-api';
 import { IConstruct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
+import * as cxapi from '../../../cx-api';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
@@ -233,11 +233,11 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
 
   // get or create the export writer
   const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
-  const exportReader = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
+  const exportWriter = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
     region: importStack.region,
   });
 
-  const exported = exportReader.exportValue(exportName, reference, importStack);
+  const exported = exportWriter.exportValue(exportName, reference, importStack);
   if (importStack.nestedStackParent) {
     return createNestedStackParameter(importStack, (exported as CfnReference), exported);
   }

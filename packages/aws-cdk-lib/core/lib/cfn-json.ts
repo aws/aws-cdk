@@ -70,7 +70,7 @@ export class CfnJson extends Construct implements IResolvable {
     return this.jsonString;
   }
 
-  public resolve(_: IResolveContext): any {
+  public resolve(_context: IResolveContext): any {
     return this.value;
   }
 }

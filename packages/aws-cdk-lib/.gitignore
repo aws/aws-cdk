@@ -16,6 +16,7 @@ dist
 tsconfig.json
 !.eslintrc.js
 !jest.config.js
+cloudformation-include/cfn-types-2-classes.json
 
 junit.xml
 !**/*.snapshot/**/asset.*/*.js

@@ -89,6 +89,11 @@ export interface IRepository extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
+   * Gran tthe given identity permissions to read images in this repository.
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Grant the given identity permissions to pull images in this repository.
    */
   grantPull(grantee: iam.IGrantable): iam.Grant;
@@ -343,6 +348,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   * Grant the given identity permissions to read the images in this repository
+   */
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'ecr:DescribeRepositories',
+      'ecr:DescribeImages',
+    );
+  }
+
+  /**
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
@@ -367,7 +382,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       'ecr:PutImage',
       'ecr:InitiateLayerUpload',
       'ecr:UploadLayerPart',
-      'ecr:CompleteLayerUpload');
+      'ecr:CompleteLayerUpload',
+    );
   }
 
   /**

@@ -991,11 +991,11 @@
       "Arn"
      ]
     },
-    "Release": "lambda-chart-release",
-    "Chart": "lambda-chart",
-    "Version": "v0.1.4",
+    "Release": "rds-chart-release",
+    "Chart": "rds-chart",
+    "Version": "v1.1.2",
     "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/lambda-chart",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
     "SkipCrds": true
    },
@@ -1055,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6f61015f64f5df19d0afe8f154e61f20d67d5b05deae3d6099588b1f777283dd.json"
+       "/5b02ca2b54c47e5d63d0ca0a66e23ae63d5ce9f0fd7a049c4674eece3c96073c.json"
       ]
      ]
     },
@@ -1090,7 +1090,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/8b84bcd1e0d8afe44c4d60f383eff6198959df6bd3cabb51a3e53cc82d7b1a14.json"
+       "/e3a4dac33dc383e61cc901caf9c2178953ede1626a8568e3c4984ccc28a61579.json"
       ]
      ]
     },

@@ -601,7 +601,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
     `,
-    introducedIn: { v2: '2.59.0' },
+    introducedIn: { v2: '2.60.0' },
     recommendedValue: true,
   },
 
@@ -700,7 +700,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'SecretTargetAttachments uses the ResourcePolicy of the attached Secret.',
     detailsMd: `
       Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
-      SecretTargetAttachments are created to connect a Secret to a target resource. 
+      SecretTargetAttachments are created to connect a Secret to a target resource.
       In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
       Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
       However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
@@ -773,7 +773,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       can set the \`restrictDefaultSecurityGroup: false\`.
     `,
    },
-   
+
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {
     type: FlagType.BugFix,
