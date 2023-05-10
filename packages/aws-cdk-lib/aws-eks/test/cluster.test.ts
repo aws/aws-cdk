@@ -2022,7 +2022,7 @@ describe('cluster', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasCondition('HasEcrPublic', {
+      Template.fromStack(stack).hasCondition('MyClusterHasEcrPublicC68AA246', {
         'Fn::Equals': [
           {
             Ref: 'AWS::Partition',
@@ -2041,13 +2041,20 @@ describe('cluster', () => {
                 'Fn::GetAtt': ['MyCluster8AD82BF8', 'Arn'],
               },
             },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'],
+              },
+            },
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'KubectlHandlerRoleDefaultPolicyA09B4223',
+        PolicyName: 'MyClusterKubectlHandlerRoleDefaultPolicy7FB0AE53',
         Roles: [
           {
-            Ref: 'KubectlHandlerRoleD25EBD08',
+            Ref: 'MyClusterKubectlHandlerRole42303817',
           },
         ],
       });
