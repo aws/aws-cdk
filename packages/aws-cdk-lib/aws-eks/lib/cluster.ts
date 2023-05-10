@@ -1378,7 +1378,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [{ [key: string]: any }] };
+  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
