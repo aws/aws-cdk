@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d57165383bbd1f03a2cada5ee750146a92cc7e60105312ee4ef860c2125b8f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8dcf8f6384001e24d9fcdfce710ac641dddd74a4439d081c8bcab1e8cfa751e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,6 +171,18 @@
             "data": "KubectlLayer600207B5"
           }
         ],
+        "/aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRole94549F93"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
+          }
+        ],
         "/aws-cdk-eks-helm-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -205,6 +217,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlReadyBarrier200052AF"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/AwsAuth/manifest/Resource/Default": [
@@ -429,10 +447,10 @@
             "data": "awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
           }
         ],
-        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestKubectlHandlerRole5A8A1CEFArn": [
+        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkekshelmtestKubectlHandlerRole5A8A1CEFArn"
+            "data": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
           }
         ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestKubectlLayer2638D675Ref": [
@@ -465,24 +483,6 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-helm-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-cdk-eks-helm-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-cdk-eks-helm-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
-          }
-        ],
         "/aws-cdk-eks-helm-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -493,6 +493,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "KubectlHandlerRoleD25EBD08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleD25EBD08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "KubectlHandlerRoleDefaultPolicyA09B4223": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleDefaultPolicyA09B4223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

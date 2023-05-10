@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3241820ddbf71ada5c1595262e30fa33d7f7148372bb7a0080eb0167cf9350af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d7cf3af3bdc71438f7e9b800afbd0af7d35edd35a3117e12d5c83215f37c3ca7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +177,18 @@
             "data": "integrationtesteksclusterDefaultVpcVPCGWE4DC2204"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterKubectlHandlerRole9A4C37D2"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -211,6 +223,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "integrationtesteksclusterKubectlReadyBarrier0D4A21B0"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterHasEcrPublic050389DE"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -411,10 +429,10 @@
             "data": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestKubectlHandlerRoleD068EED8Arn": [
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestKubectlHandlerRoleD068EED8Arn"
+            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet3A5831F1Ref": [
@@ -439,24 +457,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run-test/Virtual Cluster": [
@@ -591,10 +591,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "integrationtesteksclusterMastersRole63B9B0BF": [
+        "KubectlHandlerRoleD25EBD08": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterMastersRole63B9B0BF",
+            "data": "KubectlHandlerRoleD25EBD08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "KubectlHandlerRoleDefaultPolicyA09B4223": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleDefaultPolicyA09B4223",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

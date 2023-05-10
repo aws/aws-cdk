@@ -10,7 +10,7 @@
      "S3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
     },
     "Role": {
-     "Ref": "referencetoawscdkeksclusterprivateendpointtestKubectlHandlerRole2F2A0553Arn"
+     "Ref": "referencetoawscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -49,7 +49,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "c33f77e71bef2fbd8299fa87f0d89b792b981d73e22dba92b2dd13caec415dfc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -201,7 +201,7 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterprivateendpointtestKubectlHandlerRole2F2A0553Arn": {
+  "referencetoawscdkeksclusterprivateendpointtestClusterKubectlHandlerRole67774AF8Arn": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterprivateendpointtestKubectlLayer9A0EA6BCRef": {

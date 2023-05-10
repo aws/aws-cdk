@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6dcea9590b70c207cc58e4576151872f32121cb82ba9de22ec160a9ba3736b8c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/853f7a2586928fd17c0dbb06e4bbfa18220a63cea0785dd958a272d563c8aed3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +177,18 @@
             "data": "FargateClusterDefaultVpcVPCGWA7F012E1"
           }
         ],
+        "/aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterKubectlHandlerRole93DCDA21"
+          }
+        ],
+        "/aws-cdk-eks-fargate-cluster-test/FargateCluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0"
+          }
+        ],
         "/aws-cdk-eks-fargate-cluster-test/FargateCluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -211,6 +223,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterKubectlReadyBarrier93746934"
+          }
+        ],
+        "/aws-cdk-eks-fargate-cluster-test/FargateCluster/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterHasEcrPublic3641FEA6"
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test/FargateCluster/CoreDnsComputeTypePatch/Resource/Default": [
@@ -399,10 +417,10 @@
             "data": "awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestKubectlHandlerRoleF2700F7FArn": [
+        "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksfargateclustertestKubectlHandlerRoleF2700F7FArn"
+            "data": "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn"
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestKubectlLayer821D4586Ref": [
@@ -435,24 +453,6 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-cdk-eks-fargate-cluster-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-cdk-eks-fargate-cluster-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
-          }
-        ],
         "/aws-cdk-eks-fargate-cluster-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -463,6 +463,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "KubectlHandlerRoleD25EBD08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleD25EBD08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "KubectlHandlerRoleDefaultPolicyA09B4223": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleDefaultPolicyA09B4223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

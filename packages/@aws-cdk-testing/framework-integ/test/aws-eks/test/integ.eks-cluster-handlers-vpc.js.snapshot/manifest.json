@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e71861c8f282411169a6172ab70777f8d3bb67008e9c27bfbf52ae601aa4decd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3ae35d2c5503b0eb0d2febaccd676a703f2aac131748aae60ecd5614586289f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +177,18 @@
             "data": "EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"
           }
         ],
+        "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackKubectlHandlerRole8F0B14B8"
+          }
+        ],
+        "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackKubectlHandlerRoleDefaultPolicy0079A993"
+          }
+        ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -211,6 +223,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EksAllHandlersInVpcStackKubectlReadyBarrier8687350F"
+          }
+        ],
+        "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackHasEcrPublic6DA58E3B"
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -441,10 +459,10 @@
             "data": "awscdkekshandlersinvpctestawscdkawseksKubectlProviderframeworkonEventB8D0A5E7Arn"
           }
         ],
-        "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestKubectlHandlerRole4CC2E75DArn": [
+        "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkekshandlersinvpctestKubectlHandlerRole4CC2E75DArn"
+            "data": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn"
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestKubectlLayerAD42127BRef": [
@@ -477,24 +495,6 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-handlers-in-vpc-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-cdk-eks-handlers-in-vpc-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-cdk-eks-handlers-in-vpc-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
-          }
-        ],
         "/aws-cdk-eks-handlers-in-vpc-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -505,6 +505,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "KubectlHandlerRoleD25EBD08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleD25EBD08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "KubectlHandlerRoleDefaultPolicyA09B4223": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleDefaultPolicyA09B4223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

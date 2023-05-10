@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce1d01520d2e9a009b7fd5ed334797843e7ceab2f44b505befbf17d163f0d2d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dacea22e4766a2cf857c1d157ede81e54ed0d2b6a1e261c767b19486b2624bd1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +177,18 @@
             "data": "EksClusterDefaultVpcVPCGW0E4A5673"
           }
         ],
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksClusterKubectlHandlerRole4A986A70"
+          }
+        ],
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksClusterKubectlHandlerRoleDefaultPolicy88E68B8E"
+          }
+        ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -211,6 +223,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EksClusterKubectlReadyBarrier502B0E83"
+          }
+        ],
+        "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksClusterHasEcrPublicC520A45E"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -399,10 +417,10 @@
             "data": "awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProviderframeworkonEvent890A3570Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestKubectlHandlerRole40633951Arn": [
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksekscallintegtestKubectlHandlerRole40633951Arn"
+            "data": "referencetoawsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterDefaultVpcPrivateSubnet1SubnetD6666893Ref": [
@@ -427,24 +445,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
-          }
-        ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/KubectlHandlerRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleD25EBD08"
-          }
-        ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/KubectlHandlerRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlHandlerRoleDefaultPolicyA09B4223"
-          }
-        ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HasEcrPublic"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/Role/Resource": [
@@ -475,6 +475,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "KubectlHandlerRoleD25EBD08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleD25EBD08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "KubectlHandlerRoleDefaultPolicyA09B4223": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlHandlerRoleDefaultPolicyA09B4223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

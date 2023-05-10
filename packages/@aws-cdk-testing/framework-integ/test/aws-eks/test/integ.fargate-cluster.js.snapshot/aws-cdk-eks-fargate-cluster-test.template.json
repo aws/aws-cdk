@@ -452,6 +452,117 @@
     }
    }
   },
+  "FargateClusterKubectlHandlerRole93DCDA21": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     },
+     {
+      "Fn::If": [
+       "FargateClusterHasEcrPublic3641FEA6",
+       {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+         ]
+        ]
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "eks:DescribeCluster",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FargateCluster019F03E8",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FargateClusterCreationRole8C524AD8",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0",
+    "Roles": [
+     {
+      "Ref": "FargateClusterKubectlHandlerRole93DCDA21"
+     }
+    ]
+   }
+  },
   "FargateClusterRole8E36B33A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -511,7 +622,7 @@
         "AWS": [
          {
           "Fn::GetAtt": [
-           "KubectlHandlerRoleD25EBD08",
+           "FargateClusterKubectlHandlerRole93DCDA21",
            "Arn"
           ]
          },
@@ -913,7 +1024,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6b4ff557e0fbfd2b670c771ac7289c1b9af9c9f9f2b165c10e2999d32ae5c91e.json"
+       "/68455991c6cba1d1d378e8933957c0d73ee4d755206669310d98f500c0ebd6f0.json"
       ]
      ]
     }
@@ -940,14 +1051,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f88479994370000c3427444de6f97d71c1c674e2909c05585efb3d17e32193a5.json"
+       "/e21d89db772192fabf12c7a48e9d491e41badab985ab624f0e175a2dee3bb77c.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetoawscdkeksfargateclustertestKubectlHandlerRoleF2700F7FArn": {
+     "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
       "Fn::GetAtt": [
-       "KubectlHandlerRoleD25EBD08",
+       "FargateClusterKubectlHandlerRole93DCDA21",
        "Arn"
       ]
      },
@@ -973,116 +1084,15 @@
     "FargateClusterDefaultVpcPrivateSubnet1RouteTableAssociationDC34627F",
     "FargateClusterDefaultVpcPrivateSubnet2DefaultRouteABCE20FF",
     "FargateClusterDefaultVpcPrivateSubnet2RouteTableAssociation6C0234FE",
-    "KubectlHandlerRoleDefaultPolicyA09B4223",
-    "KubectlHandlerRoleD25EBD08"
+    "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0",
+    "FargateClusterKubectlHandlerRole93DCDA21"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "KubectlHandlerRoleD25EBD08": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     },
-     {
-      "Fn::If": [
-       "HasEcrPublic",
-       {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-         ]
-        ]
-       },
-       {
-        "Ref": "AWS::NoValue"
-       }
-      ]
-     }
-    ]
-   }
-  },
-  "KubectlHandlerRoleDefaultPolicyA09B4223": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "eks:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FargateCluster019F03E8",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "KubectlHandlerRoleDefaultPolicyA09B4223",
-    "Roles": [
-     {
-      "Ref": "KubectlHandlerRoleD25EBD08"
-     }
-    ]
-   }
   }
  },
  "Conditions": {
-  "HasEcrPublic": {
+  "FargateClusterHasEcrPublic3641FEA6": {
    "Fn::Equals": [
     {
      "Ref": "AWS::Partition"
