@@ -1,12 +1,12 @@
-import { Construct } from 'constructs';
-import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
-import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnCluster } from './eks.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnComponents, CustomResource, Token, Stack, Lazy } from '../../core';
+import { Construct } from 'constructs';
+import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
+import { ClusterResourceProvider } from './cluster-resource-provider';
+import { CfnCluster } from './eks.generated';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -25,7 +25,7 @@ export interface ClusterResourceProps {
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
-  readonly logging?: { [key: string]: [{ [key: string]: any }] };
+  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 }
 
 /**

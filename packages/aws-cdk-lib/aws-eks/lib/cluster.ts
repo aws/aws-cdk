@@ -1378,7 +1378,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [{ [key: string]: any }] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1418,7 +1418,14 @@ export class Cluster extends ClusterBase {
       Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
     };
     this.version = props.version;
-    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
+
+    // since this lambda role needs to be added to the trust policy of the creation role,
+    // we must create it in this scope (instead of the KubectlProvider nested stack) to avoid
+    // a circular dependency.
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : new iam.Role(this, 'KubectlHandlerRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
 
     this.tagSubnets();
 
@@ -1573,6 +1580,11 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
+    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      principals: [this.kubectlLambdaRole],
+    }));
+
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
@@ -1624,6 +1636,7 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
   }
 
   /**

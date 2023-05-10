@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 import { KubectlLayer } from '../../lambda-layer-kubectl';
+import { Construct, IConstruct } from 'constructs';
+import { ICluster, Cluster } from './cluster';
 
 /**
  * Properties for a KubectlProvider
@@ -123,14 +123,6 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     const cluster = props.cluster;
 
-    // note that 'scope' is used here intentionally because we have to create the role
-    // outside of the nested stack, so that it can be used in the trust policy of the
-    // creation role.
-    const handlerRole = cluster.kubectlLambdaRole ?? new iam.Role(scope, 'KubectlHandlerRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
-    });
-
     if (!cluster.kubectlRole) {
       throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
     }
@@ -149,7 +141,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
-      role: handlerRole,
+      role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
@@ -168,6 +160,8 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    // taken from the lambda default role logic.
+    // makes it easier for roles to be passed in.
     if (handler.isBoundToVpc) {
       handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
@@ -193,21 +187,8 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
-    // the handler is going to run 'aws eks update-kubeconfig' with the
-    // kubectl role, so its needs to be able to assume it.
-    // there are two options for the kubectl role.
-
-    if (iam.Role.isRole(cluster.kubectlRole)) {
-      // managed role, we can add ourselves to its trust policy
-      cluster.kubectlRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        principals: [this.handlerRole],
-      }));
-    } else {
-      // imported role, we can only hope its trust policy will allow
-      // us to assume it.
-      cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
-    }
+    // allow this handler to assume the kubectl role
+    cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
