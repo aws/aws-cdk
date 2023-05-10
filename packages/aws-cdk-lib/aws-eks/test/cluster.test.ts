@@ -28,6 +28,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       albController: {
         version: eks.AlbControllerVersion.V2_4_1,
+        helmChartVersion: eks.HelmChartVersion.V1_4_1,
       },
     });
 

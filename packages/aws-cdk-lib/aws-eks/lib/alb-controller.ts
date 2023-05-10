@@ -170,7 +170,17 @@ export enum AlbScheme {
   INTERNET_FACING = 'internet-facing'
 }
 
+/**
+ * Version of helm chart for Kubernetes for AWS ALB controller.
+ *
+ * @see https://github.com/aws/eks-charts/blob/v0.0.133/stable/aws-load-balancer-controller/Chart.yaml
+ */
 export enum HelmChartVersion {
+  /**
+   * v1.5.2
+   */
+  V1_5_2 = '1.5.2',
+
   /**
    * v1.5.1
    */
@@ -363,6 +373,11 @@ export interface AlbControllerOptions {
   readonly version: AlbControllerVersion;
 
   /**
+   * The version of the helm chart to use.
+   */
+  readonly helmChartVersion: HelmChartVersion;
+
+  /**
    * The repository to pull the controller image from.
    *
    * Note that the default repository works for most regions, but not all.
@@ -384,7 +399,6 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
-
 }
 
 /**
@@ -397,11 +411,6 @@ export interface AlbControllerProps extends AlbControllerOptions {
    * Cluster to install the controller onto.
    */
   readonly cluster: Cluster;
-
-  /**
-   * The version of the helm chart to use.
-   */
-  readonly helmChartVersion: HelmChartVersion;
 }
 
 /**
