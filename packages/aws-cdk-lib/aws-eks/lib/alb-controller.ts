@@ -453,12 +453,7 @@ export class AlbController extends Construct {
       repository: 'https://aws.github.io/eks-charts',
       namespace,
       release: 'aws-load-balancer-controller',
-
-      // latest at the time of writing. We intentionally don't
-      // want to expose this since helm here is just an implementation detail
-      // for installing a specific version of the controller itself.
-      // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.4.1',
+      version: props.helmChartVersion,
 
       wait: true,
       timeout: Duration.minutes(15),
