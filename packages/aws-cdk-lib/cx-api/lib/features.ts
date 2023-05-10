@@ -501,6 +501,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
     detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function

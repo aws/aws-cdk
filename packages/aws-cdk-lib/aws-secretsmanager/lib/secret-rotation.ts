@@ -130,7 +130,7 @@ export class SecretRotationApplication {
   private readonly applicationName: string;
 
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
-    this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
+    this.applicationId = `arn:${Aws.PARTITION}:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
     this.applicationName = applicationId;
     this.isMultiUser = options && options.isMultiUser;
