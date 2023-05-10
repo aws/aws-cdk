@@ -45,8 +45,6 @@ The Staging Stack will contain, on a per-need basis,
 - An ECR Repository _per_ image (and it's revisions).
 - IAM roles with access to the Bucket and Repositories.
 
-> The Staging Stack is being actively worked on right now and currently does not support image assets.
-
 ```mermaid
 graph TD
     A(Bootstrap Stack) --- B(CloudFormationExecutionRole <br> DeploymentActionRole <br> LookupRole)
@@ -81,41 +79,45 @@ This will ensure that a Staging Stack will be created next to the CDK App to hol
 
 ### Using the Default Staging Stack per Environment
 
-The most common use case will be to use the built-in `DefaultStagingStack` on a per-environment basis.
-That means that in each environment the CDK App is deployed to, the synthesizer will create a
-Staging Stack to store its resources. To use this kind of synthesizer, use
-`AppStagingSynthesizer.stackPerEnv()`.
+The most common use case will be to use the built-in default resources. In this scenario, the
+synthesizer will create a new Staging Stack in each environment the CDK App is deployed to store
+its staging resources. To use this kind of synthesizer, use `AppStagingSynthesizer.defaultResources()`.
 
 ```ts
-import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from '@aws-cdk/app-staging-synthesizer';
-
 const app = new App({
-  defaultSynthesizer: AppStagingSynthesizer.stackPerEnv({
+  defaultSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
   }),
 });
 ```
 
+Every CDK App that uses the `DefaultStagingStack` must include an `appId`. This should
+be an identifier unique to the app and is used to differentiate staging resources associated
+with the app.
+
 ### Using a Custom Staging Stack per Environment
 
-To use a custom stack, but still on a per-environment basis, use `AppStagingSynthesizer.customFactory()`.
+Use `AppStagingSynthesizer.customFactory()` to supply a custom staging stack on a per-environment basis.
 This has the benefit of providing a custom Staging Stack that can be created in every environment the CDK App
 is deployed to.
 
 ```ts
-import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from '@aws-cdk/app-staging-synthesizer';
+import { IStagingStack } from '@aws-cdk/app-staging-synthesizer';
+
+class CustomStagingStack implements IStagingStack {
+  // ...
+}
 
 const app = new App({
   defaultSynthesizer: AppStagingSynthesizer.customFactory({
-    stagingStackFactory: {
-      stagingStackFactory(boundStack: Stack) {
-        const app = App.of(boundStack);
+    factory: {
+      obtainStagingResources(stack, context) {
+        const app = App.of(stack);
         if (!App.isApp(app)) {
-          throw new Error(`Stack ${boundStack.stackName} must be part of an App`);
+          throw new Error(`Stack ${stack.stackName} must be part of an App`);
         }
-        return new CustomStagingStack(app, 'StagingStack', { appId: 'my-app-id' }),
+
+        return new CustomStagingStack(app, `CustomStagingStack-${appId}-${context.environmentString}`, { appId: 'my-app-id' }),
       },
     },
     oncePerEnv: true, // by default
@@ -125,40 +127,39 @@ const app = new App({
 
 ### Using an Existing Staging Stack
 
-If you need to pass in an existing stack as the Staging Stack to the CDK App, use
-`AppStagingSynthesizer.customStack()`. Make sure that the custom stack you provide implements
-`IStagingStack`.
+Use `AppStagingSynthesizer.customResources()` to supply an existing stack as the Staging Stack.
+Make sure that the custom stack you provide implements `IStagingStack`.
 
 ```ts
-import { App, Stack } from 'aws-cdk-lib';
-import { AppStagingSynthesizer, IStagingStack } from '@aws-cdk/app-staging-synthesizer';
+import { IStagingStack } from '@aws-cdk/app-staging-synthesizer';
 
 class CustomStagingStack implements IStagingStack {
   // ...
 }
 
+const resourceApp = new App();
+const resources = new CustomStagingStack(resourceApp, 'CustomStagingStack');
+
 const app = new App({
-  defaultSynthesizer: AppStagingSynthesizer.customStack(new CustomStagingStack(this, 'StagingStack')),
+  defaultSynthesizer: AppStagingSynthesizer.customResources({
+    resources,
+  }),
 });
 ```
 
 ## Default Staging Stack
 
-> The Default Staging Stack is being actively worked on right now and currently does not support image assets.
-
-The default Staging Stack includes all the staging resources necessary for CDK Assets. The below example
+The Default Staging Stack includes all the staging resources necessary for CDK Assets. The below example
 is of a CDK App using the `AppStagingSynthesizer` and creating a file asset for the Lambda Function
-source code. As part of the `DefaultStagingStack`, an s3 bucket and iam role will be created that will be
-used to upload the asset to s3.
+source code. As part of the `DefaultStagingStack`, an S3 bucket and IAM role will be created that will be
+used to upload the asset to S3.
 
 ```ts
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, Stack } from 'aws-cdk-lib';
-import { AppStagingSynthesizer } from 'aws-cdk-lib/app-staging-synthesizer';
 
 const app = new App({
-  defaultSynthesizer: new AppStagingSynthesizer.stackPerEnv({appId: 'my-app-id'}),
+  defaultSynthesizer: new AppStagingSynthesizer.defaultResources({ appId: 'my-app-id' }),
 });
 
 const stack = new Stack(app, 'my-stack');
@@ -172,38 +173,56 @@ new lambda.Function(stack, 'lambda', {
 app.synth();
 ```
 
-Every CDK App that uses the `DefaultStagingStack` must include an `appId`. This should
-be an identifier unique to the app and is used to differentiate staging resources associated
-with the app.
-
 ### Custom Roles
 
 You can customize some or all of the roles you'd like to use in the synthesizer as well,
 if all you need is to supply custom roles (and not change anything else in the `DefaultStagingStack`):
 
 ```ts
-import { App } from 'aws-cdk-lib';
-import { AppStagingSynthesizer, BootstrapRole } from 'aws-cdk-lib/app-staging-synthesizer';
-
 const app = new App({
-  defaultSynthesizer: new AppStagingSynthesizer.stackFromEnv({
+  defaultSynthesizer: new AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    roles: {
-      cloudFormationExecutionRole: BoostrapRole.fromRoleArn('arn'),
-      deploymentActionRole: BootstrapRole.fromRoleArn('arn'),
-      lookupRole: BoostrapRole.fromRoleArn('arn'),
-      fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
-      imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn'),
+    deploymentRoles: {
+      cloudFormationExecutionRole: BoostrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
+      deploymentActionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
+      lookupRole: BoostrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Lookup'),
     },
   }),
 });
 ```
 
-### Ephemeral Assets
+Or, you can ask to use the CLI credentials that exist at deploy-time:
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    deploymentRoles: {
+      cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
+      lookupRole: BootstrapRole.cliCredentials(),
+      deploymentRole: BootstrapRole.cliCredentials(),
+    },
+  }),
+});
+```
+
+You can also specify an existing IAM role for the `fileAssetPublishingRole` or `imageAssetPublishingRole`:
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'), 
+    imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/ECRAccess'),
+  }),
+});
+```
+
+### Ephemeral S3 Assets
 
 Some assets that get put into the staging S3 Bucket are ephemeral - they are only necessary
 during CloudFormation deployment and not after. As long as you know what assets are ephemeral,
-you can tag them as such and they will be marked with an `eph-` prefix when they are staged.
+you can tag them as such and they will be marked with an `handoff/` prefix when they are staged.
 This allows configuration of a lifecycle rule specifically for ephemeral assets.
 
 A good example is a Lambda Function asset. The asset is only useful in the S3 Bucket at deploy
@@ -220,18 +239,19 @@ new lambda.Function(stack, 'lambda', {
 });
 ```
 
-This means that the asset will go into the S3 Bucket with the prefix `eph-`. It will also be 
-subject to the lifecycle rule set on ephemeral assets. By default, the rule is `expiration: Duration.days(10)`.
-You can specify your own rule like this:
+This means that the asset will go into the S3 Bucket with the prefix `handoff/`. It will also be 
+subject to the lifecycle rule set on ephemeral assets. By default, we store ephemeral assets for
+30 days.
 
 ```ts
 const app = new App({
-  defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
-    ephemeralFileAssetLifecycleRule: {
-      prefix: 'eph-', // required
-      objectSizeGreaterThan: 10000,
-      expiration: Duration.days(1),
-    },
+  defaultStackSynthesizer: TestAppScopedStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    handoffFileAssetLifetime: Duration.days(100),
   }),
 });
 ```
+
+### Lifecycle Rules on ECR Repositories
+
+### Extending the Default Staging Stack

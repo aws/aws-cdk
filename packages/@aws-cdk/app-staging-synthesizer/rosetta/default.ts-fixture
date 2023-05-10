@@ -1,0 +1,11 @@
+// Fixture with packages imported, but nothing else
+import { App, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { AppStagingSynthesizer, BootstrapRole } from '@aws-cdk/app-staging-synthesizer';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

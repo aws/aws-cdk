@@ -15,7 +15,7 @@ import {
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole, BootstrapRoles } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
-import { PerEnvironmenStagingFactory } from './per-env-staging-factory';
+import { PerEnvironmenStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
 import { validateNoTokens } from './private/no-tokens';
 import { IStagingStack, IStagingStackFactory, ObtainStagingResourcesContext } from './staging-stack';
@@ -157,7 +157,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
    */
   public static customFactory(options: CustomFactoryOptions) {
     const oncePerEnv = options.oncePerEnv ?? true;
-    const factory = oncePerEnv ? new PerEnvironmenStagingFactory(options.factory) : options.factory;
+    const factory = oncePerEnv ? new PerEnvironmentStagingFactory(options.factory) : options.factory;
 
     return new AppStagingSynthesizer({
       factory,
