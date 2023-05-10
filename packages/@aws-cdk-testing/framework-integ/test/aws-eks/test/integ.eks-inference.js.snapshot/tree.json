@@ -4006,6 +4006,26 @@
                                       ]
                                     },
                                     {
+                                      "Action": "elasticloadbalancing:AddTags",
+                                      "Condition": {
+                                        "StringEquals": {
+                                          "elasticloadbalancing:CreateAction": [
+                                            "CreateTargetGroup",
+                                            "CreateLoadBalancer"
+                                          ]
+                                        },
+                                        "Null": {
+                                          "aws:RequestTag/elbv2.k8s.aws/cluster": "false"
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
+                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
+                                        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                      ]
+                                    },
+                                    {
                                       "Action": [
                                         "elasticloadbalancing:DeregisterTargets",
                                         "elasticloadbalancing:RegisterTargets"
