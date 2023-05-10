@@ -38,12 +38,12 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -676,11 +676,11 @@ Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a differ
 version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
 });
 ```
 
