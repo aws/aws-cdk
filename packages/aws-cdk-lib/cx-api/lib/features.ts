@@ -772,7 +772,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       To allow all ingress/egress traffic to the VPC default security group you
       can set the \`restrictDefaultSecurityGroup: false\`.
     `,
-   },
+  },
 
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {

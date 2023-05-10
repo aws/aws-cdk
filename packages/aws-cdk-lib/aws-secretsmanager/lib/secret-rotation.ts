@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { ISecret } from './secret';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
 import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy } from '../../core';
-import { Construct } from 'constructs';
-import { ISecret } from './secret';
 
 /**
  * Options for a SecretRotationApplication

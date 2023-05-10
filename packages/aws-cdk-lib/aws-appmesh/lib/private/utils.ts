@@ -1,5 +1,5 @@
-import { Token, TokenComparison } from '../../../core';
 import { Construct } from 'constructs';
+import { Token, TokenComparison } from '../../../core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { HeaderMatch } from '../header-match';

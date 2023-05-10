@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
+import * as iam from '../../aws-iam';
+import * as sns from '../../aws-sns';
+import { IResource, Resource } from '../../core';
 
 /**
  * A configuration set event destination

@@ -1,3 +1,8 @@
+import { Construct } from 'constructs';
+import { Alias } from './alias';
+import { KeyLookupOptions } from './key-lookup';
+import { CfnKey } from './kms.generated';
+import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
@@ -15,11 +20,6 @@ import {
   Token,
 } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { Alias } from './alias';
-import { KeyLookupOptions } from './key-lookup';
-import { CfnKey } from './kms.generated';
-import * as perms from './private/perms';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.

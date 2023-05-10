@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as kms from '../lib';
 import { KeySpec, KeyUsage } from '../lib';

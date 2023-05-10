@@ -1,5 +1,5 @@
-import * as codepipeline from '../../../aws-codepipeline';
 import { Construct } from 'constructs';
+import * as codepipeline from '../../../aws-codepipeline';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 

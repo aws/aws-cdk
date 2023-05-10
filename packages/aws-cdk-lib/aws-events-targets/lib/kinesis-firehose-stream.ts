@@ -1,7 +1,7 @@
+import { singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
-import { singletonEventRole } from './util';
 
 /**
  * Customize the Firehose Stream Event Target

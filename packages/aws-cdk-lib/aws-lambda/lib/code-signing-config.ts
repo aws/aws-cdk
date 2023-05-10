@@ -1,7 +1,7 @@
-import { ISigningProfile } from '../../aws-signer';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnCodeSigningConfig } from './lambda.generated';
+import { ISigningProfile } from '../../aws-signer';
+import { ArnFormat, IResource, Resource, Stack } from '../../core';
 
 /**
  * Code signing configuration policy for deployment validation failure.

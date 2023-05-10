@@ -1,9 +1,9 @@
-import * as cxschema from '../../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { IListenerAction } from './listener-action';
 import { mapTagMapToCxschema } from './util';
+import * as cxschema from '../../../cloud-assembly-schema';
+import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 
 /**

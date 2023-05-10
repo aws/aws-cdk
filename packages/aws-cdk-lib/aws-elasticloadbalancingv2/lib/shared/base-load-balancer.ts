@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
@@ -6,8 +8,6 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
-import { Construct } from 'constructs';
-import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
 /**
