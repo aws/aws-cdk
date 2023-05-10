@@ -2,10 +2,10 @@ import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
 import { AppStagingSynthesizer } from '../lib';
-import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 
 describe(AppStagingSynthesizer, () => {
   let app: App;

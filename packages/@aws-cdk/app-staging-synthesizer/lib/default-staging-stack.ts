@@ -377,6 +377,10 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     };
   }
 
+  /**
+   * Synthesizes the cloudformation template into a cloud assembly.
+   * @internal
+   */
   public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string | undefined): void {
     super._synthesizeTemplate(session, lookupRoleArn);
 

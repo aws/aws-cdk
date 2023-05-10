@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, LOOKUP_ROLE, DEPLOY_ACTION_ROLE } from './util';
+import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 describe('per environment cache', () => {
   test('same app, same env', () => {
