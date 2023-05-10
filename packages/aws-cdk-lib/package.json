@@ -29,9 +29,6 @@
     "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report"
   },
   "cdk-build": {
-    "eslint": {
-      "disable": true
-    },
     "stripDeprecated": true,
     "compressAssembly": true,
     "post": [
