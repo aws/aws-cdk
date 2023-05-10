@@ -54,8 +54,7 @@ export interface AppStagingSynthesizerOptions {
 /**
  * Properties for stackPerEnv static method
  */
-export interface DefaultResourcesOptions extends AppStagingSynthesizerOptions, DefaultStagingStackOptions {
-}
+export interface DefaultResourcesOptions extends AppStagingSynthesizerOptions, DefaultStagingStackOptions {}
 
 /**
  * Properties for customFactory static method

@@ -3,7 +3,7 @@
   "testCases": {
     "integ-tests/DefaultTest": {
       "stacks": [
-        "env-agnostic-test"
+        "synthesize-default-resources"
       ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"

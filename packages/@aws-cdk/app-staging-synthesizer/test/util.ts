@@ -1,5 +1,4 @@
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { DefaultResourcesOptions, AppStagingSynthesizer, BootstrapRole } from '../lib';
 
 export const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -7,9 +6,6 @@ export const CFN_CONTEXT = {
   'AWS::URLSuffix': 'domain.aws',
 };
 export const APP_ID = 'appid';
-export const CLOUDFORMATION_EXECUTION_ROLE = 'role';
-export const DEPLOY_ACTION_ROLE = 'role';
-export const LOOKUP_ROLE = 'role';
 
 export function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
   return x instanceof cxapi.AssetManifestArtifact;
@@ -17,18 +13,4 @@ export function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifes
 
 export function last<A>(xs?: A[]): A | undefined {
   return xs ? xs[xs.length - 1] : undefined;
-}
-
-export class TestAppScopedStagingSynthesizer {
-  public static stackPerEnv(props: Partial<DefaultResourcesOptions> = {}): AppStagingSynthesizer {
-    return AppStagingSynthesizer.defaultResources({
-      appId: props.appId ?? APP_ID,
-      deploymentRoles: {
-        cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-        deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-      },
-      ...props,
-    });
-  }
 }

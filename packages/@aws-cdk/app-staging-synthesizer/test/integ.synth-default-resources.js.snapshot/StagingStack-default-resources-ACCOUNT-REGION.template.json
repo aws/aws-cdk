@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "CdkFilePublishingRole119E2944": {
+  "CdkFileRoleE26CEABA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -34,7 +34,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-envagnostic-file-publishing-role-",
+       "cdk-default-resources-file-role-",
        {
         "Ref": "AWS::Region"
        }
@@ -43,7 +43,7 @@
     }
    }
   },
-  "CdkFilePublishingRoleDefaultPolicyE914275E": {
+  "CdkFileRoleDefaultPolicy621C7E5B": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -104,10 +104,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "CdkFilePublishingRoleDefaultPolicyE914275E",
+    "PolicyName": "CdkFileRoleDefaultPolicy621C7E5B",
     "Roles": [
      {
-      "Ref": "CdkFilePublishingRole119E2944"
+      "Ref": "CdkFileRoleE26CEABA"
      }
     ]
    }
@@ -188,7 +188,7 @@
   "BucketKeyAlias69A0886F": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/cdk-envagnostic-staging",
+    "AliasName": "alias/cdk-default-resources-staging",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "BucketKey7092080A",
@@ -219,7 +219,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-envagnostic-staging-",
+       "cdk-default-resources-staging-",
        {
         "Ref": "AWS::AccountId"
        },
@@ -354,7 +354,7 @@
     }
    }
   },
-  "CdkImagePublishingRole87E59CEF": {
+  "CdkImageRoleF1394AC3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -388,7 +388,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-envagnostic-asset-publishing-role-",
+       "cdk-default-resources-asset-role-",
        {
         "Ref": "AWS::Region"
        }
@@ -397,7 +397,7 @@
     }
    }
   },
-  "CdkImagePublishingRoleDefaultPolicy7638FA58": {
+  "CdkImageRoleDefaultPolicy4A1572DE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -415,12 +415,20 @@
         "ecr:UploadLayerPart"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ecrasset155BFF0C3",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "defaultresourcesecrasset2FBE6B8A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "defaultresourcesecrasset9191BD6E",
+          "Arn"
+         ]
+        }
+       ]
       },
       {
        "Action": "ecr:GetAuthorizationToken",
@@ -430,18 +438,32 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "CdkImagePublishingRoleDefaultPolicy7638FA58",
+    "PolicyName": "CdkImageRoleDefaultPolicy4A1572DE",
     "Roles": [
      {
-      "Ref": "CdkImagePublishingRole87E59CEF"
+      "Ref": "CdkImageRoleF1394AC3"
      }
     ]
    }
   },
-  "ecrasset155BFF0C3": {
+  "defaultresourcesecrasset9191BD6E": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
-    "RepositoryName": "ecr-asset-1"
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "default-resources/ecr-asset"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "defaultresourcesecrasset2FBE6B8A9": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "default-resources/ecr-asset-2"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

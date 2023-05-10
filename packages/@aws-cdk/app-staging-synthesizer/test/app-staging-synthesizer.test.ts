@@ -4,7 +4,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
-import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
+import { APP_ID, CFN_CONTEXT, isAssetManifest, last } from './util';
 import { AppStagingSynthesizer } from '../lib';
 
 describe(AppStagingSynthesizer, () => {
@@ -13,7 +13,7 @@ describe(AppStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv(),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -52,7 +52,7 @@ describe(AppStagingSynthesizer, () => {
           bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
-          assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-publishing-role-us-east-1`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-role-us-east-1`,
         },
       },
     });
@@ -60,7 +60,7 @@ describe(AppStagingSynthesizer, () => {
 
   test('stack template is in the asset manifest - environment tokens', () => {
     const app2 = new App({
-      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv(),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
     });
     const accountToken = Token.asString('111111111111');
     const regionToken = Token.asString('us-east-2');
@@ -99,7 +99,7 @@ describe(AppStagingSynthesizer, () => {
           bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
-          assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-${APP_ID}-file-publishing-role-us-east-2`,
+          assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-${APP_ID}-file-role-us-east-2`,
         },
       },
     });
@@ -169,7 +169,7 @@ describe(AppStagingSynthesizer, () => {
     test('ephemeral assets do not get specified bucketPrefix', () => {
       // GIVEN
       app = new App({
-        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({}),
+        defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
       });
       stack = new Stack(app, 'Stack', {
         env: {
@@ -214,7 +214,8 @@ describe(AppStagingSynthesizer, () => {
     test('lifecycle rule on ephemeral assets can be customized', () => {
       // GIVEN
       app = new App({
-        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+        defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+          appId: APP_ID,
           handoffFileAssetLifetime: Duration.days(1),
         }),
       });
@@ -263,7 +264,7 @@ describe(AppStagingSynthesizer, () => {
           Match.objectLike({
             Effect: 'Allow',
             Principal: {
-              AWS: 'role',
+              AWS: Match.anyValue(),
             },
             Action: [
               's3:GetObject*',
@@ -369,7 +370,8 @@ describe(AppStagingSynthesizer, () => {
   test('docker image repositories have lifecycle rule - specified', () => {
     // GIVEN
     app = new App({
-      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
         imageAssetVersionCount: 1,
       }),
     });
@@ -419,7 +421,7 @@ describe(AppStagingSynthesizer, () => {
 
   test('throws if synthesizer props have tokens', () => {
     expect(() => new App({
-      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: Lazy.string({ produce: () => 'appId' }),
       }),
     })).toThrowError(/AppStagingSynthesizer property 'appId' may not contain tokens;/);

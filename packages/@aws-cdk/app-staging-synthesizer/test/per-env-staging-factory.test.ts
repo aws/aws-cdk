@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, LOOKUP_ROLE, DEPLOY_ACTION_ROLE } from './util';
-import { AppStagingSynthesizer, BootstrapRole } from '../lib';
+import { APP_ID } from './util';
+import { AppStagingSynthesizer } from '../lib';
 
 describe('per environment cache', () => {
   test('same app, same env', () => {
@@ -8,11 +8,6 @@ describe('per environment cache', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: {
-          cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-          lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-          deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        },
       }),
     });
     new Stack(app, 'Stack1', {
@@ -41,11 +36,6 @@ describe('per environment cache', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: {
-          cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-          lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-          deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        },
       }),
     });
     new Stack(app, 'Stack1', {
@@ -74,11 +64,6 @@ describe('per environment cache', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: {
-          cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-          lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-          deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        },
       }),
     });
     new Stack(app, 'Stack1', {

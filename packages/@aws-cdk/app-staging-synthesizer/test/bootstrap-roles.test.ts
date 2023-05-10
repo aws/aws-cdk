@@ -1,11 +1,43 @@
 import * as fs from 'fs';
 import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { APP_ID, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE, isAssetManifest } from './util';
+import { APP_ID, isAssetManifest } from './util';
 import { AppStagingSynthesizer, BootstrapRole } from '../lib';
 
+const CLOUDFORMATION_EXECUTION_ROLE = 'cloudformation-execution-role';
+const DEPLOY_ACTION_ROLE = 'deploy-action-role';
+const LOOKUP_ROLE = 'lookup-role';
+
 describe('Boostrap Roles', () => {
-  test('Can supply existing arns for bootstrapped roles', () => {
+  test('default bootstrap role name is always under 64 characters', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: 'super long app id that needs to be cut',
+      }),
+    });
+    const stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+    const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-super-long-app-id-th-file-role-us-east-1');
+  });
+
+  test('can supply existing arns for bootstrapped roles', () => {
     // GIVEN
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({

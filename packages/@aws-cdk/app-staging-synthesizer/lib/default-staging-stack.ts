@@ -27,10 +27,13 @@ const EPHEMERAL_PREFIX = 'handoff/';
  */
 export interface DefaultStagingStackOptions {
   /**
-   * A unique identifier for the application that the staging stack belongs to
+   * A unique identifier for the application that the staging stack belongs to.
    *
    * This identifier will be used in the name of staging resources
    * created for this application, and should be unique across CDK apps.
+   *
+   * The identifier should include lowercase characters and dashes ('-') only
+   * and have a maximum of 20 characters.
    */
   readonly appId: string;
 
@@ -114,6 +117,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Return a factory that will create DefaultStagingStacks
    */
   public static factory(options: DefaultStagingStackOptions): IStagingStackFactory {
+    const appId = options.appId.toLocaleLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 20);
     return {
       obtainStagingResources(stack, context) {
         const app = App.of(stack);
@@ -121,17 +125,17 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
           throw new Error(`Stack ${stack.stackName} must be part of an App`);
         }
 
-        const stackId = `StagingStack-${options.appId}-${context.environmentString}`;
+        const stackId = `StagingStack-${appId}-${context.environmentString}`;
         return new DefaultStagingStack(app, stackId, {
           ...options,
 
           // Does not need to contain environment because stack names are unique inside an env anyway
-          stackName: `StagingStack-${options.appId}`,
+          stackName: `StagingStack-${appId}`,
           env: {
             account: stack.account,
             region: stack.region,
           },
-          appId: options.appId,
+          appId,
           qualifier: context.qualifier,
           deployRoleArn: context.deployRoleArn,
         });
@@ -143,14 +147,20 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
    * Default asset publishing role name for file (S3) assets.
    */
   private get fileRoleName() {
-    return `cdk-${this.appId}-file-publishing-role-${this.region}`.slice(0, 63);
+    // This role name can be a maximum of 64 letters. The reason why
+    // we slice the appId and not the entire name is because this.region
+    // can be a token and we don't want to accidentally cut it off.
+    return `cdk-${this.appId}-file-role-${this.region}`;
   }
 
   /**
    * Default asset publishing role name for docker (ECR) assets.
    */
   private get imageRoleName() {
-    return `cdk-${this.appId}-asset-publishing-role-${this.region}`.slice(0, 63);
+    // This role name can be a maximum of 64 letters. The reason why
+    // we slice the appId and not the entire name is because this.region
+    // can be a token and we don't want to accidentally cut it off.
+    return `cdk-${this.appId}-asset-role-${this.region}`;
   }
 
   /**
@@ -194,7 +204,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       synthesizer: new BootstraplessSynthesizer(),
     });
 
-    this.appId = props.appId.toLocaleLowerCase();
+    this.appId = this.validateAppId(props.appId);
     this.dependencyStack = this;
 
     this.deployRoleArn = props.deployRoleArn;
@@ -206,17 +216,38 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.stagingRepos = {};
   }
 
-  private ensureFilePublishingRole() {
+  private validateAppId(id: string) {
+    const errors = [];
+    if (id.length > 20) {
+      errors.push(`appId expected no more than 20 characters but got ${id.length} characters.`);
+    }
+    if (id !== id.toLocaleLowerCase()) {
+      errors.push('appId only accepts lowercase characters.');
+    }
+    if (!/^[a-z0-9-]*$/.test(id)) {
+      errors.push('appId expects only letters, numbers, and dashes (\'-\')');
+    }
+
+    if (errors.length > 0) {
+      throw new Error([
+        `appId ${id} has errors:`,
+        ...errors,
+      ].join('\n'));
+    }
+    return id;
+  }
+
+  private ensureFileRole() {
     if (this.providedFileRole) {
       // Override
       this.fileRoleManifestArn = this.providedFileRole._arnForCloudAssembly();
       const cfnArn = this.providedFileRole._arnForCloudFormation();
-      this.fileRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkFilePublishingRole', cfnArn) : undefined;
+      this.fileRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkFileRole', cfnArn) : undefined;
       return;
     }
 
     const roleName = this.fileRoleName;
-    this.fileRole = new iam.Role(this, 'CdkFilePublishingRole', {
+    this.fileRole = new iam.Role(this, 'CdkFileRole', {
       roleName,
       assumedBy: new iam.AccountPrincipal(this.account),
     });
@@ -231,7 +262,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     });
   }
 
-  private ensureImagePublishingRole() {
+  private ensureImageRole() {
     // It may end up setting imageRole to undefined, but at least we tried
     if (this.didImageRole) {
       return;
@@ -242,12 +273,12 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       // Override
       this.imageRoleManifestArn = this.providedImageRole._arnForCloudAssembly();
       const cfnArn = this.providedImageRole._arnForCloudFormation();
-      this.imageRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkImagePublishingRole', cfnArn) : undefined;
+      this.imageRole = cfnArn ? iam.Role.fromRoleArn(this, 'CdkImageRole', cfnArn) : undefined;
       return;
     }
 
     const roleName = this.imageRoleName;
-    this.imageRole = new iam.Role(this, 'CdkImagePublishingRole', {
+    this.imageRole = new iam.Role(this, 'CdkImageRole', {
       roleName,
       assumedBy: new iam.AccountPrincipal(this.account),
     });
@@ -276,7 +307,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       return stagingBucketName;
     }
 
-    this.ensureFilePublishingRole();
+    this.ensureFileRole();
     const key = this.createBucketKey();
 
     // Create the bucket once the dependencies have been created
@@ -331,7 +362,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     }
 
     // Create image publishing role if it doesn't exist
-    this.ensureImagePublishingRole();
+    this.ensureImageRole();
 
     const repoName = generateRepoName(`${this.appId}/${asset.assetName}`);
     if (this.stagingRepos[asset.assetName] === undefined) {
