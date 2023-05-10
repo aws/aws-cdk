@@ -7,7 +7,7 @@ import { Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } f
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const params = new ParameterGroup(stack, 'Params', {
   engine: DatabaseClusterEngine.AURORA,
