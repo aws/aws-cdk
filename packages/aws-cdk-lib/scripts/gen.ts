@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
 import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
