@@ -492,10 +492,10 @@ Resources:
                     Fn::Split:
                       - "|"
                       - Fn::Sub:
-                        - "arn:aws:kms:*:${JoinedAccounts}:*"
+                        - "arn:${AWS::Partition}:kms:*:${JoinedAccounts}:*"
                         - JoinedAccounts:
                             Fn::Join:
-                              - ":*|arn:aws:kms:*:"
+                              - ":*|arn:${AWS::Partition}:kms:*:"
                               - { Ref: TrustedAccounts }
                   Condition:
                     StringEquals:
