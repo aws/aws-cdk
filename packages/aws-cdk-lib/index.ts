@@ -250,3 +250,5 @@ export * as lambda_layer_node_proxy_agent from './lambda-layer-node-proxy-agent'
 export * as pipelines from './pipelines';
 export * as region_info from './region-info';
 export * as triggers from './triggers';
+export * as aws_backupgateway from './aws-backupgateway';
+export * as aws_proton from './aws-proton';
