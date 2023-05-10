@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.79.0](https://github.com/aws/aws-cdk/compare/v2.78.0...v2.79.0) (2023-05-10)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v121.0 ([#25499](https://github.com/aws/aws-cdk/issues/25499)) ([c2ef657](https://github.com/aws/aws-cdk/commit/c2ef6571b7971384a60866b14371f204d30756cd))
+* **ecr:** grantRead on repositories ([#25445](https://github.com/aws/aws-cdk/issues/25445)) ([ce7bdea](https://github.com/aws/aws-cdk/commit/ce7bdea1d1b79de517b2b7ff6d4d73212f8a84c3))
+* **logs:** support DataProtectionPolicy in LogGroup construct ([#23402](https://github.com/aws/aws-cdk/issues/23402)) ([ed3962a](https://github.com/aws/aws-cdk/commit/ed3962af3a7e532d9a4d16fadb5f472dd065b43f)), closes [#23399](https://github.com/aws/aws-cdk/issues/23399)
+
+
+### Bug Fixes
+
+* **batch:** JobDefinition's ContainerDefinition's Image is synthesized with `[Object object]` ([#25466](https://github.com/aws/aws-cdk/issues/25466)) ([b3d0d57](https://github.com/aws/aws-cdk/commit/b3d0d570fe02e124f4497e35eb87c96c0eb8a1d5)), closes [#25250](https://github.com/aws/aws-cdk/issues/25250)
+* **cfn2ts:** doesn't handle property types with the same type as a primitive type ([#25460](https://github.com/aws/aws-cdk/issues/25460)) ([b76c182](https://github.com/aws/aws-cdk/commit/b76c18287ce452f5b5d27af68028e9f6b47d67b5)), closes [aws-cdk/cfnspec/spec-source/specification/000_cfn/000_official/000_AWS_IoT.json#L1437-L1442](https://github.com/aws-cdk/cfnspec/spec-source/specification/000_cfn/000_official/000_AWS_IoT.json/issues/L1437-L1442) [aws-cdk/cfnspec/spec-source/specification/000_cfn/000_official/000_AWS_IoT.json#L1727-L1742](https://github.com/aws-cdk/cfnspec/spec-source/specification/000_cfn/000_official/000_AWS_IoT.json/issues/L1727-L1742) [#22732](https://github.com/aws/aws-cdk/issues/22732)
+* **core:** crossRegionReferences don't work across multiple regions ([#25384](https://github.com/aws/aws-cdk/issues/25384)) ([65265e1](https://github.com/aws/aws-cdk/commit/65265e1297f47a5e8e85ade620095c5af1082290)), closes [#25190](https://github.com/aws/aws-cdk/issues/25190) [#25377](https://github.com/aws/aws-cdk/issues/25377)
+* **dynamodb:** fix hardcoded partition in replica-provider IAM policy ([#25428](https://github.com/aws/aws-cdk/issues/25428)) ([b5b4f66](https://github.com/aws/aws-cdk/commit/b5b4f66396cdc1fae3887f82509d30c4c4c6f6d4)), closes [#25407](https://github.com/aws/aws-cdk/issues/25407)
+* **elasticloadbalancingv2:** ALB auth return internal server error ([#24510](https://github.com/aws/aws-cdk/issues/24510)) ([75212eb](https://github.com/aws/aws-cdk/commit/75212ebc7a30d822097223ea39a0d58da6fe8d43)), closes [#21939](https://github.com/aws/aws-cdk/issues/21939) [#19035](https://github.com/aws/aws-cdk/issues/19035) [#18944](https://github.com/aws/aws-cdk/issues/18944)
+* **servicecatalogappregistry:** Revert deprecated method removing PR to keep deprecated method in alpha version ([#25454](https://github.com/aws/aws-cdk/issues/25454)) ([b20b1f2](https://github.com/aws/aws-cdk/commit/b20b1f231e12007e7d064cdc4f0c9dc7354827a3))
+
 ## [2.78.0](https://github.com/aws/aws-cdk/compare/v2.77.0...v2.78.0) (2023-05-03)
 
 
