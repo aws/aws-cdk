@@ -14,6 +14,7 @@ ${pwd}/install.sh
 # However we don't want to do a full build of `aws-cdk-lib`.
 # So we request an explicit install of `@aws-cdk/cfn2ts`.
 yarn lerna run build --stream     \
+  --skip-nx-cache                 \
   --scope=@aws-cdk/cfnspec        \
   --scope=@aws-cdk/cfn2ts         \
   --include-dependencies
