@@ -279,4 +279,13 @@ const app = new App({
 The exposed API of this synthesizer is purposefully opinionated. Should the feature set be
 too restrictive, `AppStagingSynthesizer` is built to be subclassable. For example, say we want
 to add a feature where we _do not_ apply lifecycle rules to any assets that have the prefix
-"`permanent`"
+"`permanent`". While that doesn't exist as a property of `AppStagingSynthesizer`, we can easily
+extend it to include what we want:
+
+```ts
+interface CustomStagingStackOptions extends DefaultStagingStackOptions {}
+
+class CustomStagingStack extends DefaultStagingStack {
+  
+}
+```
