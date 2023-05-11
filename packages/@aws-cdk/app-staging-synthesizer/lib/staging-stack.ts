@@ -57,9 +57,9 @@ export interface ImageStagingLocation {
 }
 
 /**
- * Information on how a Staging Stack should look.
+ * Staging Resource interface.
  */
-export interface IStagingStack extends IConstruct {
+export interface IStagingResources extends IConstruct {
   /**
    * Return staging resource information for a file asset.
    */
@@ -72,13 +72,13 @@ export interface IStagingStack extends IConstruct {
 }
 
 /**
- * Staging Stack Factory interface.
+ * Staging Resource Factory interface.
  *
  * The function included in this class will be called by the synthesizer
- * to create or reference an IStagingStack that has the necessary
- * staging resources for the Stack.
+ * to create or reference an IStagingResources construct that has the necessary
+ * staging resources for the stack.
  */
-export interface IStagingStackFactory {
+export interface IStagingResourcesFactory {
   /**
    * Return an object that will manage staging resources for the given stack
    *
@@ -90,7 +90,7 @@ export interface IStagingStackFactory {
    *
    * @param stack - stack to return an appropriate IStagingStack for
    */
-  obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext): IStagingStack;
+  obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext): IStagingResources;
 }
 
 /**

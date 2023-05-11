@@ -18,12 +18,12 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole } from './bootstrap-roles';
-import { FileStagingLocation, IStagingStack, IStagingStackFactory, ImageStagingLocation } from './staging-stack';
+import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 const EPHEMERAL_PREFIX = 'handoff/';
 
 /**
- * User configurable options to the DefaultStagingStack
+ * User configurable options to the DefaultStagingStack.
  */
 export interface DefaultStagingStackOptions {
   /**
@@ -110,13 +110,13 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
 }
 
 /**
- * A default Staging Stack
+ * A default Staging Stack that implements IStagingResources.
  */
-export class DefaultStagingStack extends Stack implements IStagingStack {
+export class DefaultStagingStack extends Stack implements IStagingResources {
   /**
    * Return a factory that will create DefaultStagingStacks
    */
-  public static factory(options: DefaultStagingStackOptions): IStagingStackFactory {
+  public static factory(options: DefaultStagingStackOptions): IStagingResourcesFactory {
     const appId = options.appId.toLocaleLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 20);
     return {
       obtainStagingResources(stack, context) {

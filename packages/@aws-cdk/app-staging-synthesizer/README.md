@@ -17,10 +17,14 @@
 
 This library includes constructs aimed at replacing the current model of bootstrapping and providing
 greater control of the bootstrap experience to the CDK user. The important constructs in this library
-are the `IStagingStack`, a framework for an app-level bootstrap stack that handles file assets and
-docker assets and the `DefaultStagingStack`, which is a works-out-of-the-box implementation of the
-interface. Additionally, there is an `AppStagingSynthesizer` that will synthesize CDK applications
-built with this new model of bootstrapping.
+are as follows:
+
+- the `IStagingResources` interface: a framework for an app-level bootstrap stack that handles
+  file assets and docker assets.
+- the `DefaultStagingStack`, which is a works-out-of-the-box implementation of the `IStagingResources`
+  interface.
+- the `AppStagingSynthesizer`, a new CDK synthesizer that will synthesize CDK applications with
+  the staging resources provided.
 
 ## Bootstrap Model
 
@@ -42,7 +46,7 @@ S3 Bucket, ECR Repositories, and associated IAM roles. It works like this:
 The Staging Stack will contain, on a per-need basis, 
 
 - 1 S3 Bucket with KMS encryption for all file assets in the CDK App.
-- An ECR Repository _per_ image (and it's revisions).
+- An ECR Repository _per_ image (and its revisions).
 - IAM roles with access to the Bucket and Repositories.
 
 ```mermaid
@@ -102,9 +106,9 @@ This has the benefit of providing a custom Staging Stack that can be created in 
 is deployed to.
 
 ```ts
-import { IStagingStack } from '@aws-cdk/app-staging-synthesizer';
+import { IStagingResources } from '@aws-cdk/app-staging-synthesizer';
 
-class CustomStagingStack implements IStagingStack {
+class CustomStagingStack extends Stack implements IStagingResources {
   // ...
 }
 
@@ -128,12 +132,12 @@ const app = new App({
 ### Using an Existing Staging Stack
 
 Use `AppStagingSynthesizer.customResources()` to supply an existing stack as the Staging Stack.
-Make sure that the custom stack you provide implements `IStagingStack`.
+Make sure that the custom stack you provide implements `IStagingResources`.
 
 ```ts
-import { IStagingStack } from '@aws-cdk/app-staging-synthesizer';
+import { IStagingResources } from '@aws-cdk/app-staging-synthesizer';
 
-class CustomStagingStack implements IStagingStack {
+class CustomStagingStack extends Stack implements IStagingResources {
   // ...
 }
 

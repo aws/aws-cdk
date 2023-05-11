@@ -15,10 +15,10 @@ import {
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole, BootstrapRoles } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
-import { PerEnvironmenStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
+import { PerEnvironmentStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
 import { validateNoTokens } from './private/no-tokens';
-import { IStagingStack, IStagingStackFactory, ObtainStagingResourcesContext } from './staging-stack';
+import { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
 
 const AGNOSTIC_STACKS = new AppScopedGlobal(() => new Set<Stack>());
 const ENV_AWARE_STACKS = new AppScopedGlobal(() => new Set<Stack>());
@@ -63,7 +63,7 @@ export interface CustomFactoryOptions extends AppStagingSynthesizerOptions {
   /**
    * The factory that will be used to return staging resources for each stack
    */
-  readonly factory: IStagingStackFactory;
+  readonly factory: IStagingResourcesFactory;
 
   /**
    * Reuse the answer from the factory for stacks in the same environment
@@ -80,7 +80,7 @@ export interface CustomResourcesOptions extends AppStagingSynthesizerOptions {
   /**
    * Use these exact staging resources for every stack that this synthesizer is used for
    */
-  readonly resources: IStagingStack;
+  readonly resources: IStagingResources;
 }
 
 /**
@@ -91,7 +91,7 @@ interface AppStagingSynthesizerProps extends AppStagingSynthesizerOptions {
    * A factory method that creates an IStagingStack when given the stack the
    * synthesizer is binding.
    */
-  readonly factory: IStagingStackFactory;
+  readonly factory: IStagingResourcesFactory;
 }
 
 /**
@@ -276,7 +276,7 @@ interface BoundAppStagingSynthesizerProps {
   /**
    * The resources we end up using for this synthesizer
    */
-  readonly stagingResources: IStagingStack;
+  readonly stagingResources: IStagingResources;
 
   /**
    * The deploy role
@@ -295,7 +295,7 @@ interface BoundAppStagingSynthesizerProps {
 }
 
 class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppStagingSynthesizer {
-  private readonly stagingStack: IStagingStack;
+  private readonly stagingStack: IStagingResources;
   private readonly assetManifest = new AssetManifestBuilder();
   private readonly qualifier: string;
 
