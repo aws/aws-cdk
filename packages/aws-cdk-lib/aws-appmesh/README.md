@@ -237,7 +237,7 @@ By using a key-value pair indexed signature, you can specify json key pairs to c
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
 ```
 
-For what values and operators you can use for these two formats, please vists the latest envoy documentation. (https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage)
+For what values and operators you can use for these two formats, please visit the latest envoy documentation. (https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage)
 Create a `VirtualNode` with the constructor and add backend virtual service.
 
 ```ts
