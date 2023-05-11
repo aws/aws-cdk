@@ -1,4 +1,3 @@
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
@@ -6,6 +5,7 @@ import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { IPolicyValidationPluginBeta1 } from './validation/validation';
+import * as cxapi from '../../cx-api';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 

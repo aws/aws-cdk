@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import { render } from './private/render-util';
+import * as cdk from '../../core';
 import { Pass, Wait, WaitTime } from '../lib';
 
 describe('Wait State', () => {

@@ -1,12 +1,12 @@
-import * as apigwv2 from '../../aws-apigatewayv2';
-import * as acm from '../../aws-certificatemanager';
-import { IBucket } from '../../aws-s3';
-import { IResource, Names, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 import { IStage } from './stage';
+import * as apigwv2 from '../../aws-apigatewayv2';
+import * as acm from '../../aws-certificatemanager';
+import { IBucket } from '../../aws-s3';
+import { IResource, Names, Resource, Token } from '../../core';
 
 /**
  * Options for creating an api mapping

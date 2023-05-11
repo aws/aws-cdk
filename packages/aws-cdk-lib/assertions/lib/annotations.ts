@@ -1,7 +1,7 @@
-import { Stack, Stage } from '../../core';
-import { SynthesisMessage } from '../../cx-api';
 import { Messages } from './private/message';
 import { findMessage, hasMessage, hasNoMessage } from './private/messages';
+import { Stack, Stage } from '../../core';
+import { SynthesisMessage } from '../../cx-api';
 
 /**
  * Suite of assertions that can be run on a CDK Stack.

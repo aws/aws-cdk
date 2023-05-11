@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct, IConstruct } from 'constructs';
+import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 import { KubectlLayer } from '../../lambda-layer-kubectl';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
 
 /**
  * Properties for a KubectlProvider
