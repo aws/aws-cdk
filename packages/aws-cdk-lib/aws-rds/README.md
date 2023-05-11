@@ -16,7 +16,7 @@ your instances will be launched privately or publicly:
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
+  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'clusteradmin' username and generated password
   instanceProps: {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
