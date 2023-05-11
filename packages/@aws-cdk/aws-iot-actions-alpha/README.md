@@ -336,9 +336,6 @@ The code snippet below creates an AWS IoT Rule that sends messages
 to an HTTPS endpoint when it is triggered:
 
 ```ts
-import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as actions from '../../lib';
-
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323(
       "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
