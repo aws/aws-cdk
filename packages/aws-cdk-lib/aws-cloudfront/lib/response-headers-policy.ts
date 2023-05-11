@@ -1,6 +1,6 @@
-import { Duration, Names, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
+import { Duration, Names, Resource, Token } from '../../core';
 
 /**
  * Represents a response headers policy.

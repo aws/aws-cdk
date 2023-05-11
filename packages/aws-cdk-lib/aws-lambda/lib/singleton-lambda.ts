@@ -1,7 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
-import * as cdk from '../../core';
 import { Construct, IConstruct, IDependable, Node } from 'constructs';
 import { Architecture } from './architecture';
 import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
@@ -10,6 +6,10 @@ import { Version } from './lambda-version';
 import { ILayerVersion } from './layers';
 import { Permission } from './permission';
 import { Runtime } from './runtime';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as logs from '../../aws-logs';
+import * as cdk from '../../core';
 
 /**
  * Properties for a newly created singleton Lambda

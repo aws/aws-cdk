@@ -1,8 +1,8 @@
-import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { Asset } from '../../aws-s3-assets';
+import { CustomResource, Duration, Names, Stack } from '../../core';
 
 /**
  * Helm Chart options.

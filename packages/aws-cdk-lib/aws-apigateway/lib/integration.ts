@@ -1,7 +1,7 @@
-import * as iam from '../../aws-iam';
-import { Lazy, Duration } from '../../core';
 import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
+import * as iam from '../../aws-iam';
+import { Lazy, Duration } from '../../core';
 
 export interface IntegrationOptions {
   /**

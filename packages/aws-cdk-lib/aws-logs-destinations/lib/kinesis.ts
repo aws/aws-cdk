@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as logs from '../../aws-logs';
-import { Construct } from 'constructs';
 
 /**
  * Customize the Kinesis Logs Destination

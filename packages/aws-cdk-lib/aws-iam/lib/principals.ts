@@ -1,6 +1,3 @@
-import * as cdk from '../../core';
-import * as cxapi from '../../cx-api';
-import { Default, FactName, RegionInfo } from '../../region-info';
 import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
@@ -8,6 +5,9 @@ import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
+import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
+import { Default, FactName, RegionInfo } from '../../region-info';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -513,16 +513,25 @@ export interface ServicePrincipalOpts {
 }
 
 /**
- * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
+ * An IAM principal that represents an AWS service (i.e. `sqs.amazonaws.com`).
  */
 export class ServicePrincipal extends PrincipalBase {
   /**
-   * Translate the given service principal name based on the region it's used in.
+   * Return the service principal name based on the region it's used in.
    *
-   * For example, for Chinese regions this may (depending on whether that's necessary
-   * for the given service principal) append `.cn` to the name.
+   * Some service principal names used to be different for different partitions,
+   * and some were not. This method would return the appropriate region-specific
+   * service principal name, getting that information from the `region-info`
+   * module.
    *
-   * The `region-info` module is used to obtain this information.
+   * These days all service principal names are standardized, and they are all
+   * of the form `<servicename>.amazonaws.com`.
+   *
+   * If the feature flag `@aws-cdk/aws-iam:standardizedServicePrincipals` is set, this
+   * method will always return its input. If this feature flag is not set, this
+   * method will perform the legacy behavior, which appends the region-specific
+   * domain suffix for some select services (for example, it would append `.cn`
+   * to some service principal names).
    *
    * @example
    * const principalName = iam.ServicePrincipal.servicePrincipalName('ec2.amazonaws.com');

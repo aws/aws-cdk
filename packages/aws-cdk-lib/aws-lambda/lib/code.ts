@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Represents the Lambda Handler Code.

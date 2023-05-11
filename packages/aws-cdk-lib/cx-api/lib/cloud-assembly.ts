@@ -6,8 +6,8 @@ import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-a
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
-import * as cxschema from '../../cloud-assembly-schema';
 import { LoadManifestOptions } from '../../cloud-assembly-schema';
+import * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * The name of the root manifest file of the assembly.

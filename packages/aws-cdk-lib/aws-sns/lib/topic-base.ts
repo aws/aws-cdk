@@ -1,11 +1,11 @@
-import * as notifications from '../../aws-codestarnotifications';
-import * as iam from '../../aws-iam';
-import { IResource, Resource, ResourceProps, Token } from '../../core';
 import * as constructs from 'constructs';
 import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
+import * as notifications from '../../aws-codestarnotifications';
+import * as iam from '../../aws-iam';
+import { IResource, Resource, ResourceProps, Token } from '../../core';
 
 /**
  * Represents an SNS topic
