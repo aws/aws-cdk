@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { ModuleMap, ModuleMapEntry } from '@aws-cdk/cfn2ts';
+import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import awsEventsTargets from './aws-events-targets';
 import cloudformationInclude from './cloudformation-include';
@@ -23,9 +24,9 @@ export default async function submodulesGen(modules: ModuleMap, outPath: string)
 async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
 
   // README.md
-  if (!fs.existsSync(path.join(modulePath, 'index.ts'))) {
-    const lines = ['export * from \'./lib\';'];
-    await fs.writeFile(path.join(modulePath, 'index.ts'), lines.join('\n') + '\n');
+  const readmePath = path.join(modulePath, 'README.md');
+  if (!fs.existsSync(readmePath)) {
+    await createLibraryReadme(submodule.scopes[0], readmePath);
   }
 
   // index.ts
