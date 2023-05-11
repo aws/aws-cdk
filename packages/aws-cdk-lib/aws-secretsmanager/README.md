@@ -25,6 +25,7 @@ const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   generateSecretString: {
     secretStringTemplate: JSON.stringify({ username: 'postgres' }),
     generateStringKey: 'password',
+    excludeCharacters: '/@"',
   },
 });
 // Using the templated secret as credentials
