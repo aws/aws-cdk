@@ -1,5 +1,5 @@
-import * as cxapi from '../../cx-api';
 import { IConstruct, Node } from 'constructs';
+import * as cxapi from '../../cx-api';
 
 /**
  * Features that are implemented behind a flag in order to preserve backwards
