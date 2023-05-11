@@ -1,5 +1,10 @@
 import { URL } from 'url';
 
+import { Construct } from 'constructs';
+import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
+import { CfnDomain } from './elasticsearch.generated';
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import * as perms from './perms';
 import * as acm from '../../aws-certificatemanager';
 import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -9,12 +14,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 
-import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
-import { CfnDomain } from './elasticsearch.generated';
-import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import * as perms from './perms';
 
 /**
  * Elasticsearch version

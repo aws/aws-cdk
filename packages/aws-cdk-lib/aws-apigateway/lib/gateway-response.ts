@@ -1,7 +1,7 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
+import { IResource, Resource } from '../../core';
 
 /**
  * Represents gateway response resource.

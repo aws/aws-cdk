@@ -1,8 +1,8 @@
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '../../aws-iam';
-import { CfnJson, Names } from '../../core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '../../aws-iam';
+import { CfnJson, Names } from '../../core';
 
 /**
  * Options for `ServiceAccount`

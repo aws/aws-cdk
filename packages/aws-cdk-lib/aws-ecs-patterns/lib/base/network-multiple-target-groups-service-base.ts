@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { IVpc } from '../../../aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
@@ -8,7 +9,6 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, Stack } from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.

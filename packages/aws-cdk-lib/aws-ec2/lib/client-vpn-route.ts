@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnRoute } from './ec2.generated';
 import { ISubnet } from './vpc';
+import { Resource } from '../../core';
 
 /**
  * Options for a ClientVpnRoute

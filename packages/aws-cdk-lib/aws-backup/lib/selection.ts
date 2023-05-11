@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects } from '../../core';
 import { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
+import * as iam from '../../aws-iam';
+import { Lazy, Resource, Aspects } from '../../core';
 
 /**
  * Options for a BackupSelection

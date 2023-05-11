@@ -1,8 +1,8 @@
 import * as path from 'path';
+import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as core from '../../core';
-import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 

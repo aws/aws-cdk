@@ -1,11 +1,11 @@
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import { TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { ArnFormat, Stack } from '../../core';
-import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Options used when creating a target input template
