@@ -3,7 +3,7 @@
   "testCases": {
     "EfsPermissionTest/DefaultTest": {
       "stacks": [
-        "test-efs-integ"
+        "TestEfsPermissionInteg"
       ],
       "assertionStack": "EfsPermissionTest/DefaultTest/DeployAssert",
       "assertionStackName": "EfsPermissionTestDefaultTestDeployAssert4DFC2F97"
