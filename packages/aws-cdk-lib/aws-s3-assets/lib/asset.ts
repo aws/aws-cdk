@@ -34,20 +34,6 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    * @deprecated see `assetHash` and `assetHashType`
    */
   readonly sourceHash?: string;
-
-  /**
-   * Whether or not the asset is ephemeral; i.e. only used during deployment
-   * and not needed afterwards. Setting this property to true has an impact
-   * on the lifecycle of the asset, because we will assume that it is safe to
-   * delete after the CloudFormation deployment succeeds.
-   *
-   * For example, Lambda Function assets are copied over to Lambda during
-   * deployment. Therefore, it is not necessary to store the asset in S3, so
-   * we consider those assets ephemeral.
-   *
-   * @default false
-   */
-  readonly ephemeral?: boolean;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -161,7 +147,6 @@ export class Asset extends Construct implements cdk.IAsset {
       packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
-      ephemeral: props.ephemeral,
     });
 
     this.s3BucketName = location.bucketName;

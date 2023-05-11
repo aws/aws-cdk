@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { resolvedOr } from '../helpers-internal/string-specializer';
+import { resolvedOr } from './_shared';
 import { ISynthesisSession } from './types';
 import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
 import { Stack } from '../stack';
@@ -61,8 +61,7 @@ export class AssetManifestBuilder {
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
     // Add to manifest
-    const sourceHash = asset.assetName ? `${asset.assetName}-${asset.sourceHash}` : asset.sourceHash;
-    return this.addDockerImageAsset(stack, sourceHash, {
+    return this.addDockerImageAsset(stack, asset.sourceHash, {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
@@ -132,7 +131,6 @@ export class AssetManifestBuilder {
     stack: Stack,
     session: ISynthesisSession,
     options: cxschema.AssetManifestOptions = {},
-    dependencies: string[] = [],
   ): string {
     const artifactId = `${stack.artifactId}.assets`;
     const manifestFile = `${artifactId}.json`;
@@ -152,7 +150,6 @@ export class AssetManifestBuilder {
         file: manifestFile,
         ...options,
       },
-      dependencies: dependencies.length > 0 ? dependencies : undefined,
     });
 
     return artifactId;

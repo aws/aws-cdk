@@ -131,20 +131,6 @@ export interface FileAssetSource {
    * @default - Required if `fileName` is specified.
    */
   readonly packaging?: FileAssetPackaging;
-
-  /**
-   * Whether or not the asset is ephemeral; i.e. only used during deployment
-   * and not needed afterwards. Setting this property to true has an impact
-   * on the lifecycle of the asset, because we will assume that it is safe to
-   * delete after the CloudFormation deployment succeeds.
-   *
-   * For example, Lambda Function assets are copied over to Lambda during
-   * deployment. Therefore, it is not necessary to store the asset in S3, so
-   * we consider those assets ephemeral.
-   *
-   * @default false
-   */
-  readonly ephemeral?: boolean;
 }
 
 export interface DockerImageAssetSource {
@@ -257,26 +243,17 @@ export interface DockerImageAssetSource {
   readonly dockerOutputs?: string[];
 
   /**
-   * Unique identifier of the docker image asset and its potential revisions.
-   * Required if using AppScopedStagingSynthesizer.
-   *
-   * @default - no asset name
-   */
-  readonly assetName?: string;
-
-  /**
    * Cache from options to pass to the `docker build` command.
-   *
    * @default - no cache from args are passed
    */
   readonly dockerCacheFrom?: DockerCacheOption[];
 
   /**
    * Cache to options to pass to the `docker build` command.
-   *
    * @default - no cache to args are passed
    */
   readonly dockerCacheTo?: DockerCacheOption;
+
 }
 
 /**

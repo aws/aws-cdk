@@ -1726,7 +1726,7 @@ import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
-import { StringSpecializer } from './helpers-internal/string-specializer';
+import { StringSpecializer } from './stack-synthesizers/_shared';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
