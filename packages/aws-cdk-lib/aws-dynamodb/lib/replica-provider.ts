@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 
 /**
  * Properties for a ReplicaProvider

@@ -1,6 +1,6 @@
-import { Duration, IResource, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
+import { Duration, IResource, Resource, Stack } from '../../core';
 
 /**
  * Platforms that are allowed with signing config.

@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack } from '../../core';
 import * as lambda from '../lib';
 

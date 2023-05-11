@@ -1,7 +1,7 @@
-import { AssetStaging } from '../../core';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 import { FingerprintOptions } from './fs/options';
+import { AssetStaging } from '../../core';
 
 /**
  * Deprecated

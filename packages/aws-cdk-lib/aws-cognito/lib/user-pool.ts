@@ -1,7 +1,3 @@
-import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -12,6 +8,10 @@ import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { UserPoolEmail } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
+import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { IKey } from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.

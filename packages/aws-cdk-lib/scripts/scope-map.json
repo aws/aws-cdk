@@ -650,5 +650,11 @@
   ],
   "core": [
     "AWS::CloudFormation"
+  ],
+  "aws-backupgateway": [
+    "AWS::BackupGateway"
+  ],
+  "aws-proton": [
+    "AWS::Proton"
   ]
 }
