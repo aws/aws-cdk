@@ -330,7 +330,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-## Send messages to HTTPS endpoints
+## Send Messages to HTTPS Endpoints
 
 The code snippet below creates an AWS IoT Rule that sends messages
 to an HTTPS endpoint when it is triggered:
