@@ -1,5 +1,5 @@
-import { SymlinkFollowMode } from '../../core';
 import { FollowMode } from './fs/follow-mode';
+import { SymlinkFollowMode } from '../../core';
 
 export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
   if (!follow) {

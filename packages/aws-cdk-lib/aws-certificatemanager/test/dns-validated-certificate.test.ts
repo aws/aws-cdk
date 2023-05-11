@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { HostedZone, PublicHostedZone } from '../../aws-route53';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack, Token, Tags, RemovalPolicy, Aws } from '../../core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
@@ -36,10 +36,10 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
     Runtime: {
-      "Fn::FindInMap": [
-        "DefaultCrNodeVersionMap",
-        { Ref: "AWS::Region" },
-        "value",
+      'Fn::FindInMap': [
+        'DefaultCrNodeVersionMap',
+        { Ref: 'AWS::Region' },
+        'value',
       ],
     },
     Timeout: 900,

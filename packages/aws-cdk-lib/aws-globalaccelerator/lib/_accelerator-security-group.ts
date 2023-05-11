@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 
 import { CfnResource } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import { Construct } from 'constructs';
 import { EndpointGroup } from '../lib';
 
 /**

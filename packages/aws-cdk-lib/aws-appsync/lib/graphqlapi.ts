@@ -1,13 +1,13 @@
+import { Construct } from 'constructs';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
+import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
+import { ISchema } from './schema';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
-import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { ISchema } from './schema';
 
 /**
  * enum with all possible values for AppSync authorization type

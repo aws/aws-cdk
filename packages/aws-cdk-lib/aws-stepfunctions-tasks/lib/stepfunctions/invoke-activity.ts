@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Construct } from 'constructs';
 
 /**
  * Properties for invoking an Activity worker

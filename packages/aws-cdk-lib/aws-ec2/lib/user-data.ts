@@ -1,6 +1,6 @@
+import { OperatingSystemType } from './machine-image';
 import { IBucket } from '../../aws-s3';
 import { Fn, Resource, Stack, CfnResource } from '../../core';
-import { OperatingSystemType } from './machine-image';
 
 /**
  * Options when constructing UserData for Linux

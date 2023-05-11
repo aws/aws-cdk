@@ -1,6 +1,6 @@
-import * as cxschema from '../../cloud-assembly-schema';
 import type { CloudAssembly } from './cloud-assembly';
 import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
+import * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * Artifact properties for CloudFormation stacks.

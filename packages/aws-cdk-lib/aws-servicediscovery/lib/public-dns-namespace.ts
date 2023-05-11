@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
+import { Resource } from '../../core';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace { }

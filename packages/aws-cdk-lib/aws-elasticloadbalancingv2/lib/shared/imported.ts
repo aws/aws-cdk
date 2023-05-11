@@ -1,6 +1,6 @@
-import * as cdk from '../../../core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
+import * as cdk from '../../../core';
 
 /**
  * Base internal class for existing target groups

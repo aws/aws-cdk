@@ -1,6 +1,6 @@
-import { Names, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
+import { Names, Resource, Token } from '../../core';
 
 /**
  * Represents a Origin Request Policy

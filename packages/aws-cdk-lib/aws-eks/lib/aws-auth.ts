@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import { Lazy, Stack } from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
+import * as iam from '../../aws-iam';
+import { Lazy, Stack } from '../../core';
 
 /**
  * Configuration props for the AwsAuth construct.

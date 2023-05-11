@@ -1,7 +1,7 @@
+import { TestFixture } from './test-fixture';
 import { Match, Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { TestFixture } from './test-fixture';
 import * as cpactions from '../../lib';
 /* eslint-disable quote-props */
 

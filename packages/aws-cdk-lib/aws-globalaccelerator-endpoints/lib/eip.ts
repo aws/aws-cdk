@@ -1,7 +1,7 @@
+import { validateWeight } from './_util';
 import * as ec2 from '../../aws-ec2';
 import * as ga from '../../aws-globalaccelerator';
 import { Stack } from '../../core';
-import { validateWeight } from './_util';
 
 /**
  * Properties for a NetworkLoadBalancerEndpoint

@@ -1,21 +1,21 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxapi from '../../../cx-api';
-import { CloudAssembly } from '../../../cx-api';
 import { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import { CloudAssembly } from '../../../cx-api';
+import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
+import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
-import { FileSystem } from '../fs';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';

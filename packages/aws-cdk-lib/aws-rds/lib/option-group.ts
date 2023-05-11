@@ -1,8 +1,8 @@
-import * as ec2 from '../../aws-ec2';
-import { IResource, Lazy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
+import * as ec2 from '../../aws-ec2';
+import { IResource, Lazy, Resource } from '../../core';
 
 /**
  * An option group

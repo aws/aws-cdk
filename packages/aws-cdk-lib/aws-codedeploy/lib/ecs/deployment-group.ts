@@ -1,12 +1,12 @@
+import { Construct } from 'constructs';
+import { IEcsApplication, EcsApplication } from './application';
+import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ecs from '../../../aws-ecs';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { Construct } from 'constructs';
-import { IEcsApplication, EcsApplication } from './application';
-import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';

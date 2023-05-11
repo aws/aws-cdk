@@ -1,8 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
-import { testFixture } from './util';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 

@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import { Grant, IGrantable, Role, ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { CfnResource, Duration, Stack } from '../../../core';
-import { Construct } from 'constructs';
 
 export interface WaiterStateMachineProps {
   /**

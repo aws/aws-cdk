@@ -1,6 +1,6 @@
-import { Stack, Token } from '../../../core';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackOutputReference } from './shell-step';
+import { Stack, Token } from '../../../core';
 import { StepOutput } from '../helpers-internal/step-output';
 
 /**

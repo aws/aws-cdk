@@ -1,6 +1,6 @@
+import { FakeTask } from './fake-task';
 import * as assert from '../../assertions';
 import * as cdk from '../../core';
-import { FakeTask } from './fake-task';
 import { JsonPath, StateMachine } from '../lib';
 
 test('JsonPath.DISCARD can be used to discard a state\'s output', () => {

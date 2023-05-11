@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Construct } from 'constructs';
 
 /**
  * The properties of a scalable attribute representing task count.

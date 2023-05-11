@@ -1,9 +1,9 @@
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
 /* eslint-disable @aws-cdk/no-core-construct */

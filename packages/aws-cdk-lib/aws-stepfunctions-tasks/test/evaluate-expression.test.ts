@@ -38,7 +38,7 @@ test('Eval with Node.js', () => {
     Runtime: {
       'Fn::FindInMap': [
         'DefaultCrNodeVersionMap',
-        { 'Ref': 'AWS::Region' },
+        { Ref: 'AWS::Region' },
         'value',
       ],
     },

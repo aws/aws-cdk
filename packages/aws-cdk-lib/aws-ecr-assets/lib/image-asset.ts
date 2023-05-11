@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 
 /**
  * networking mode on build time supported by docker

@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
@@ -6,7 +7,6 @@ import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
 import { ArnFormat, RemovalPolicy, Stack, Token, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '../../cx-api';
-import { Construct } from 'constructs';
 
 /**
  * Properties to configure an HTTPS Redirect

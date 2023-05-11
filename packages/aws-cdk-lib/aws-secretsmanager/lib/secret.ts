@@ -1,11 +1,11 @@
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
-import * as cxapi from '../../cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
+import * as cxapi from '../../cx-api';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 

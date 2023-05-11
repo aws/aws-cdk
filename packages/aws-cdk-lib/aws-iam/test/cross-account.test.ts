@@ -1,6 +1,6 @@
+import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
-import * as constructs from 'constructs';
 import * as iam from '../lib';
 
 // Test cross-account grant scenario's for principals

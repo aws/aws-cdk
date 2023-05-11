@@ -127,11 +127,17 @@ export async function generateAll(
         coreImport: isCore ? '.' : options.coreImport,
       });
 
+      // submodule index.ts
       if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
-        let lines = moduleScopes.map((s: string) => `// ${s} Cloudformation Resources`);
-        lines.push(...outputFiles.map((f) => `export * from './lib/${f.replace('.ts', '')}'`));
-
+        const lines = ['export * from \'./lib\';'];
         await fs.writeFile(path.join(packagePath, 'index.ts'), lines.join('\n') + '\n');
+      }
+
+      // lib/index.ts
+      if (!fs.existsSync(path.join(packagePath, 'lib', 'index.ts'))) {
+        const lines = moduleScopes.map((s: string) => `// ${s} Cloudformation Resources`);
+        lines.push(...outputFiles.map((f) => `export * from './${f.replace('.ts', '')}';`));
+        await fs.writeFile(path.join(packagePath, 'lib', 'index.ts'), lines.join('\n') + '\n');
       }
 
       // Create .jsiirc.json file if needed

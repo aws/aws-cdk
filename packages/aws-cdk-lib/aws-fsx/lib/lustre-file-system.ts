@@ -1,9 +1,9 @@
-import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
-import { Aws, Token } from '../../core';
 import { Construct } from 'constructs';
 import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
+import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
+import { Aws, Token } from '../../core';
 
 /**
  * The different kinds of file system deployments used by Lustre.

@@ -1,6 +1,6 @@
-import { Duration, Names, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
+import { Duration, Names, Resource, Stack, Token } from '../../core';
 
 /**
  * Represents a Cache Policy

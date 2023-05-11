@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Metric, Statistic } from '../../aws-cloudwatch';
@@ -8,7 +9,6 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
-import each from 'jest-each';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;

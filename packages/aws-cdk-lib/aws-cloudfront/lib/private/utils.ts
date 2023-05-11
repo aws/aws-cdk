@@ -1,5 +1,5 @@
-import { Stack } from '../../../core';
 import { IDistribution } from '..';
+import { Stack } from '../../../core';
 
 /**
  * Format distribution ARN from stack and distribution ID.

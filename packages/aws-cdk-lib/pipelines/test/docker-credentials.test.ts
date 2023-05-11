@@ -1,10 +1,10 @@
+import { DockerAssetApp, TestApp } from './testhelpers';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { DockerAssetApp, TestApp } from './testhelpers';
 import * as cdkp from '../lib';
 import { ShellStep } from '../lib';
 

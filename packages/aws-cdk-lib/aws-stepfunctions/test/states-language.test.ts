@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {

@@ -1,7 +1,7 @@
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { IResource, Lazy, Names, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { IResource, Lazy, Names, Resource } from '../../core';
 
 /**
  * Represents an API Gateway VpcLink

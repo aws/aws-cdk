@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as s3_assets from '../../aws-s3-assets';
 import * as sns from '../../aws-sns';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 import { NestedStack } from '../lib/nested-stack';
 
 /* eslint-disable @aws-cdk/no-core-construct */

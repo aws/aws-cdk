@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
 

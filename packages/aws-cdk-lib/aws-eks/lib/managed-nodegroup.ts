@@ -1,9 +1,9 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
 import { Construct, Node } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import { IResource, Resource, Annotations, withResolved } from '../../core';
 
 /**
  * NodeGroup interface

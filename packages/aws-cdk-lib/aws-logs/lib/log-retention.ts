@@ -1,10 +1,10 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { RetentionDays } from './log-group';
 import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { Construct } from 'constructs';
-import { RetentionDays } from './log-group';
 import { FactName } from '../../region-info';
 
 /**

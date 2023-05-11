@@ -1,8 +1,8 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import { IResource, Resource } from '../../core';
 
 /**
  * A NetworkAcl

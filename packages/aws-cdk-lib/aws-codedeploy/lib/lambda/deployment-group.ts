@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { ILambdaApplication, LambdaApplication } from './application';
+import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { Construct } from 'constructs';
-import { ILambdaApplication, LambdaApplication } from './application';
-import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';

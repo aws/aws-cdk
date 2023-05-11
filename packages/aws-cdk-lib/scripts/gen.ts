@@ -1,13 +1,13 @@
+import * as path from 'path';
 import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 
 main().catch(e => {
-  // eslint-ignore-next-line no-console
+  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });
@@ -31,12 +31,13 @@ async function main() {
       return {
         ...accum,
         [moduleName]: scopes,
-      }
+      };
     }, {});
   await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
 
   // Call build-tools within modules for other codegen
   // TODO: Move these up into aws-cdk-libs/scripts
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('../aws-events-targets/build-tools/gen.js');
   await genCfnIncludeMap(generated);
 }
@@ -62,7 +63,7 @@ async function updatePackageJsonAndIndexFiles(modules: ModuleMap) {
         moduleConfig = {
           name: moduleName,
           submodule: moduleName.replace(/-/g, '_'),
-        }
+        };
       }
 
       const exportName = `./${moduleConfig.name}`;
@@ -88,7 +89,7 @@ async function genCfnIncludeMap(generated: ModuleMap) {
     });
   });
 
-  const sortedClassMap = Object.fromEntries(Object.entries(classMap).sort(([resA], [resB]) => resA.localeCompare(resB)))
+  const sortedClassMap = Object.fromEntries(Object.entries(classMap).sort(([resA], [resB]) => resA.localeCompare(resB)));
 
   const filePath = path.join(__dirname, '..', 'cloudformation-include', 'cfn-types-2-classes.json');
   await fs.writeJson(filePath, sortedClassMap, { spaces: 2 });

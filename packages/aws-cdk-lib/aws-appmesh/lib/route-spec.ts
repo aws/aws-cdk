@@ -1,4 +1,3 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
@@ -8,6 +7,7 @@ import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatch
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
+import * as cdk from '../../core';
 
 /**
  * Properties for the Weighted Targets in the route

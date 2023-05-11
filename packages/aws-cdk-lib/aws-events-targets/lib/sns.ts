@@ -1,7 +1,7 @@
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the SNS Topic Event Target

@@ -1,6 +1,6 @@
+import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to define an ECS service

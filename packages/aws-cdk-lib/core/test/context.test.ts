@@ -1,5 +1,5 @@
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
+import * as cxapi from '../../cx-api';
 import { App, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';

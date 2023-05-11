@@ -1,9 +1,9 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Resources', () => {

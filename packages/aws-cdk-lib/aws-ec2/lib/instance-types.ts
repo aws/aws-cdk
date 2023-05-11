@@ -893,7 +893,7 @@ export enum InstanceClass {
    * Inferentia Chips based instances for machine learning inference applications, 2nd generation
    */
   INF2 = 'inf2',
-  
+
   /**
    * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
    */

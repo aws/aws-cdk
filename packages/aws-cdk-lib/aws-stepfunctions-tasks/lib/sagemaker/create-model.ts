@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { IContainerDefinition } from './base-types';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
-import { IContainerDefinition } from './base-types';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

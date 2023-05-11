@@ -1,6 +1,6 @@
-import { SynthesisMessage } from '../../../cx-api';
 import { Messages } from './message';
 import { formatAllMatches, matchSection, formatSectionMatchFailure } from './section';
+import { SynthesisMessage } from '../../../cx-api';
 
 export function findMessage(messages: Messages, constructPath: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section: { [key: string]: SynthesisMessage } = messages;

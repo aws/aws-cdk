@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 
 export class NotificationsResourceHandlerProps {
   role?: iam.IRole;

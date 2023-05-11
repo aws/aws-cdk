@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { Duration, SecretValue, Stack, Token } from '../../core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 

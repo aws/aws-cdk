@@ -1,8 +1,8 @@
-import { Duration } from '../../../core';
 import { Construct } from 'constructs';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
+import { Duration } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
 
 /**

@@ -1,6 +1,6 @@
-import * as cdk from '../../core';
 import { IConstruct } from 'constructs';
 import { BucketAttributes } from './bucket';
+import * as cdk from '../../core';
 
 export function parseBucketArn(construct: IConstruct, props: BucketAttributes): string {
 
