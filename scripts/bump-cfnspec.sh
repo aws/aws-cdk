@@ -11,8 +11,8 @@ pwd=$(pwd)
 ${pwd}/install.sh
 
 # Running the `aws-cdk-lib/scripts/gen.ts` script requires `cfn2ts`
-# However we don't want to do a full build of `aws-cdk-lib``.
-# So we request `@aws-cdk/cfn2ts` explicitly.
+# However we don't want to do a full build of `aws-cdk-lib`.
+# So we request an explicit install of `@aws-cdk/cfn2ts`.
 yarn lerna run build --stream     \
   --scope=@aws-cdk/cfnspec        \
   --scope=@aws-cdk/cfn2ts         \
@@ -26,6 +26,10 @@ version=$(cat cfn.version)
 # Generate L1s including new submodules
 cd ${pwd}/packages/aws-cdk-lib
 yarn gen
+
+# No need to further build or test `aws-cdk-lib` lib here.
+# A Pull Request will be created which will fail if something is not working.
+# We can then fixup any issue on the Pull Request itself.
 
 # Come back to root, add all files to git and commit
 cd ${pwd}
