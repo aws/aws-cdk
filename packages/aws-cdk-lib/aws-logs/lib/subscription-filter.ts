@@ -1,8 +1,8 @@
-import * as iam from '../../aws-iam';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
+import * as iam from '../../aws-iam';
+import { Resource } from '../../core';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
