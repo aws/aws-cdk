@@ -20,67 +20,67 @@ export class AlbControllerVersion {
   /**
    * v2.0.0
    */
-  public static readonly V2_0_0 = new AlbControllerVersion('v2.0.0', '1.0.6', false);
+  public static readonly V2_0_0 = new AlbControllerVersion('v2.0.0', '1.4.1', false);
 
   /**
    * v2.0.1
    */
-  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', '1.0.8', false);
+  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', '1.4.1', false);
 
   /**
    * v2.1.0
    */
-  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', '1.1.1', false);
+  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', '1.4.1', false);
 
   /**
    * v2.1.1
    */
-  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', '1.1.3', false);
+  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', '1.4.1', false);
 
   /**
    * v2.1.2
    */
-  public static readonly V2_1_2 = new AlbControllerVersion('v2.1.2', '1.1.4', false);
+  public static readonly V2_1_2 = new AlbControllerVersion('v2.1.2', '1.4.1', false);
 
   /**
    * v2.1.3
    */
-  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', '1.1.6', false);
+  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', '1.4.1', false);
 
   /**
    * v2.0.0
    */
-  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', '1.2.2', false);
+  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', '1.4.1', false);
 
   /**
    * v2.2.1
    */
-  public static readonly V2_2_1 = new AlbControllerVersion('v2.2.1', '1.2.3', false);
+  public static readonly V2_2_1 = new AlbControllerVersion('v2.2.1', '1.4.1', false);
 
   /**
    * v2.2.2
    */
-  public static readonly V2_2_2 = new AlbControllerVersion('v2.2.2', '1.2.5', false);
+  public static readonly V2_2_2 = new AlbControllerVersion('v2.2.2', '1.4.1', false);
 
   /**
    * v2.2.3
    */
-  public static readonly V2_2_3 = new AlbControllerVersion('v2.2.3', '1.2.6', false);
+  public static readonly V2_2_3 = new AlbControllerVersion('v2.2.3', '1.4.1', false);
 
   /**
    * v2.2.4
    */
-  public static readonly V2_2_4 = new AlbControllerVersion('v2.2.4', '1.2.7', false);
+  public static readonly V2_2_4 = new AlbControllerVersion('v2.2.4', '1.4.1', false);
 
   /**
    * v2.3.0
    */
-  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', '1.3.2', false);
+  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', '1.4.1', false);
 
   /**
    * v2.3.1
    */
-  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', '1.3.3', false);
+  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', '1.4.1', false);
 
   /**
    * v2.4.1
