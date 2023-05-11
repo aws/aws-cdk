@@ -21,7 +21,6 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this),
       albController: {
         version: eks.AlbControllerVersion.V2_5_1,
-        helmChartVersion: eks.HelmChartVersion.V1_5_2,
       },
     });
 
