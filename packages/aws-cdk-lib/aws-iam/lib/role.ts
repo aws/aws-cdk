@@ -551,7 +551,7 @@ export class Role extends Resource implements IRole {
     if (this._precreatedRole) {
       return this._precreatedRole.addManagedPolicy(policy);
     } else {
-      if (this.managedPolicies.find(mp => mp === policy)) { return; }
+      if (this.managedPolicies.some(mp => mp.managedPolicyArn === policy.managedPolicyArn)) { return; }
       this.managedPolicies.push(policy);
     }
   }
