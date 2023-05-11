@@ -1,6 +1,6 @@
+import { CloudFrontTarget } from './cloudfront-target';
 import { UserPoolDomain } from '../../aws-cognito';
 import { AliasRecordTargetConfig, IAliasRecordTarget, IHostedZone, IRecordSet } from '../../aws-route53';
-import { CloudFrontTarget } from './cloudfront-target';
 
 /**
  * Use a user pool domain as an alias record target

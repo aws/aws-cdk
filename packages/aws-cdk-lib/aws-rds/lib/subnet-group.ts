@@ -1,7 +1,7 @@
-import * as ec2 from '../../aws-ec2';
-import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from './rds.generated';
+import * as ec2 from '../../aws-ec2';
+import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 
 /**
  * Interface for a subnet group.

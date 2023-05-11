@@ -1,7 +1,7 @@
-import { CfnOutput, Stack } from '../../../core';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
+import { CfnOutput, Stack } from '../../../core';
 import { mapValues } from '../private/javascript';
 
 /**

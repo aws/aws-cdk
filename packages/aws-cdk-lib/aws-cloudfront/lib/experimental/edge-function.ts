@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Construct, Node } from 'constructs';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -16,7 +17,6 @@ import {
   Token,
 } from '../../../core';
 
-import { Construct, Node } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function

@@ -1,8 +1,8 @@
-import { IBucket } from '../../aws-s3';
-import * as s3_assets from '../../aws-s3-assets';
 import { Construct } from 'constructs';
 import { hashValues } from './private/util';
 import { ProductStack } from './product-stack';
+import { IBucket } from '../../aws-s3';
+import * as s3_assets from '../../aws-s3-assets';
 
 /**
  * Represents the Product Provisioning Artifact Template.
