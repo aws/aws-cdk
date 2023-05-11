@@ -1,5 +1,5 @@
-import { Annotations } from '../../core';
 import { Construct } from 'constructs';
+import { Annotations } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions

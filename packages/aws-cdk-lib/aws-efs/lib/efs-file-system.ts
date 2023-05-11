@@ -1,11 +1,11 @@
+import { Construct, DependencyGroup, IDependable } from 'constructs';
+import { AccessPoint, AccessPointOptions } from './access-point';
+import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { AccessPoint, AccessPointOptions } from './access-point';
-import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
