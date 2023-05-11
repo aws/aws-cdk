@@ -122,8 +122,8 @@
     "yaml"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "^2.2.165",
-    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.139",
+    "@aws-cdk/asset-awscli-v1": "^2.2.168",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.141",
     "@aws-cdk/asset-kubectl-v20": "^2.1.1",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
@@ -442,7 +442,9 @@
     "./aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated": "./aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated.js",
     "./aws-synthetics/lib/synthetics-canned-metrics.generated": "./aws-synthetics/lib/synthetics-canned-metrics.generated.js",
     "./aws-gamelift/lib/gamelift-canned-metrics.generated": "./aws-gamelift/lib/gamelift-canned-metrics.generated.js",
-    "./core": "./core/index.js"
+    "./core": "./core/index.js",
+    "./aws-backupgateway": "./aws-backupgateway/index.js",
+    "./aws-proton": "./aws-proton/index.js"
   },
   "preferredCdkCliVersion": "2",
   "publishConfig": {
