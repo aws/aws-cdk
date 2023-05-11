@@ -49,7 +49,7 @@ export class ListenerAction implements IListenerAction {
       });
     }
 
-    return ListenerAction.weightedForward(targetGroups.map(g => ({ targetGroup: g, weight: 1 })), options)
+    return ListenerAction.weightedForward(targetGroups.map(g => ({ targetGroup: g, weight: 1 })), options);
   }
 
   /**

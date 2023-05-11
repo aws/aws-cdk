@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as eks from '../../../aws-eks';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

@@ -1,11 +1,11 @@
-import * as iam from '../../aws-iam';
-import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
+import * as iam from '../../aws-iam';
+import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
 
 /**
  * API keys are alphanumeric string values that you distribute to

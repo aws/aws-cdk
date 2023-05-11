@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IDependable, Construct } from 'constructs';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
@@ -7,7 +8,6 @@ import * as ec2 from '../../../../aws-ec2';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
 import { ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '../../../../core';
-import { IDependable, Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { toPosixPath } from '../../private/fs';

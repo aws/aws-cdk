@@ -1,7 +1,7 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * A receipt rule set.

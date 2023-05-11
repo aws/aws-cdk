@@ -1,4 +1,3 @@
-import { CHECK_SECRET_USAGE } from '../../cx-api';
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
 import { CfnResource } from './cfn-resource';
@@ -7,6 +6,7 @@ import { CfnReference } from './private/cfn-reference';
 import { Intrinsic, IntrinsicProps } from './private/intrinsic';
 import { IResolveContext } from './resolvable';
 import { Token, Tokenization } from './token';
+import { CHECK_SECRET_USAGE } from '../../cx-api';
 
 /**
  * Work with secret values in the CDK

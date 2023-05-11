@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { stringLike } from './util';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Asset } from '../../aws-s3-assets';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '../../core';
 import * as cxapi from '../../cx-api';
-import { stringLike } from './util';
 import * as ec2 from '../lib';
 
 let app: App;

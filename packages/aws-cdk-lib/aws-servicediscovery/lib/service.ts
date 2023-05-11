@@ -1,5 +1,3 @@
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { Duration, IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps } from './cname-instance';
@@ -9,6 +7,8 @@ import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { Duration, IResource, Resource } from '../../core';
 
 export interface IService extends IResource {
   /**

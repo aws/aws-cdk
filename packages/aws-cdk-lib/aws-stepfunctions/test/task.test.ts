@@ -1,5 +1,5 @@
-import { Metric } from '../../aws-cloudwatch';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Metric } from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
 

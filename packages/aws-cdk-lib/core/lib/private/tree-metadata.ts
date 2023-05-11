@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Construct, IConstruct } from 'constructs';
 import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Annotations } from '../annotations';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers';

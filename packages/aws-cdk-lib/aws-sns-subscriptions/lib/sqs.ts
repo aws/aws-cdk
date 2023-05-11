@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, FeatureFlags, Names, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
 
 /**
  * Properties for an SQS subscription

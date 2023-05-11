@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { ProductionVariant } from './base-types';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
-import { ProductionVariant } from './base-types';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

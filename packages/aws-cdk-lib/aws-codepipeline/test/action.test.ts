@@ -1,8 +1,8 @@
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { FakeBuildAction } from './fake-build-action';
-import { FakeSourceAction } from './fake-source-action';
 import * as codepipeline from '../lib';
 import * as validations from '../lib/private/validation';
 

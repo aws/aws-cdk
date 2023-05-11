@@ -1,13 +1,13 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Common properties to create a Route 53 hosted zone

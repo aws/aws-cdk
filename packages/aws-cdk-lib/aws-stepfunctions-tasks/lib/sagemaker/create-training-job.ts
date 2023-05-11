@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
+import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Lazy, Size, Stack } from '../../../core';
-import { Construct } from 'constructs';
-import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
-import { renderEnvironment, renderTags } from './private/utils';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

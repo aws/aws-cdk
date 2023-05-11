@@ -1,3 +1,11 @@
+import { Construct } from 'constructs';
+import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
+import { CfnPipeline } from './codepipeline.generated';
+import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
+import { FullActionDescriptor } from './private/full-action-descriptor';
+import { RichAction } from './private/rich-action';
+import { Stage } from './private/stage';
+import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -19,14 +27,6 @@ import {
   Token,
 } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
-import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
-import { FullActionDescriptor } from './private/full-action-descriptor';
-import { RichAction } from './private/rich-action';
-import { Stage } from './private/stage';
-import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.

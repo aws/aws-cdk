@@ -1,7 +1,4 @@
-import * as iam from '../../aws-iam';
 
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
-import { md5hash } from '../../core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
@@ -14,6 +11,9 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
+import * as iam from '../../aws-iam';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
+import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
  * Name tag constant

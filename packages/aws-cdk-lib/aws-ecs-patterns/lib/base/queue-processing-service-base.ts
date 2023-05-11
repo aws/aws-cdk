@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { ScalingInterval } from '../../../aws-applicationautoscaling';
 import { IVpc } from '../../../aws-ec2';
 import {
@@ -7,7 +8,6 @@ import {
 import { IQueue, Queue } from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.

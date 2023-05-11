@@ -1,6 +1,6 @@
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
+import { Stack } from '../../core';
 
 /**
  * Validates a zone name is valid by Route53 specifc naming rules,

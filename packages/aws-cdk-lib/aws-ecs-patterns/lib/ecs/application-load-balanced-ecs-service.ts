@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**

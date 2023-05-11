@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as codedeploy from '../../../aws-codedeploy';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Lazy } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { forceSupportStackDependency } from '../private/stack-dependency';
 

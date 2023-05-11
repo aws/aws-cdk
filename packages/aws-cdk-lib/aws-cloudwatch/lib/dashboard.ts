@@ -1,8 +1,8 @@
-import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
 import { IWidget } from './widget';
+import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads

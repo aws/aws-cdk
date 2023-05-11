@@ -1,11 +1,11 @@
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 import { Stats } from './stats';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
 
 export type DimensionHash = { [dim: string]: any };
 

@@ -1,11 +1,11 @@
 import * as path from 'path';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import { Aws, IResource, Lazy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
+import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
+import { Aws, IResource, Lazy, Resource } from '../../core';
 
 /**
  * A receipt rule.

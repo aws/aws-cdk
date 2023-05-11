@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
-import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 
 export interface FakeBuildActionProps extends codepipeline.CommonActionProps {

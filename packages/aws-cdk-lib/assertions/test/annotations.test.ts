@@ -1,5 +1,5 @@
-import { Annotations, Aspects, CfnResource, IAspect, Stack } from '../../core';
 import { IConstruct } from 'constructs';
+import { Annotations, Aspects, CfnResource, IAspect, Stack } from '../../core';
 import { Annotations as _Annotations, Match } from '../lib';
 
 describe('Messages', () => {

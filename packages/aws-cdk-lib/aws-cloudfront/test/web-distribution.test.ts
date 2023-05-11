@@ -1,9 +1,9 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as certificatemanager from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import {
   CfnDistribution,

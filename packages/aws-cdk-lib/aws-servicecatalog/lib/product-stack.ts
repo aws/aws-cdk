@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { IBucket } from '../../aws-s3';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
+import { IBucket } from '../../aws-s3';
+import * as cdk from '../../core';
 
 /**
  * Product stack props.

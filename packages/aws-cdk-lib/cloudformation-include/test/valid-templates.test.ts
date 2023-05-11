@@ -1,10 +1,10 @@
 import * as path from 'path';
+import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as ssm from '../../aws-ssm';
 import * as core from '../../core';
-import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 

@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
-import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import { Action } from '../action';
 
 /**

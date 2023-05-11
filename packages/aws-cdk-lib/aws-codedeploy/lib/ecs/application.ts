@@ -1,5 +1,5 @@
-import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { Construct } from 'constructs';
+import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 

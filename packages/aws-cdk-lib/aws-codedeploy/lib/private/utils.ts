@@ -1,6 +1,6 @@
+import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource } from '../../../core';
-import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';

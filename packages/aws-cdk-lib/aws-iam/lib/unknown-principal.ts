@@ -1,7 +1,7 @@
-import { Annotations, Stack } from '../../core';
 import { DependencyGroup, IConstruct, Node } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { Annotations, Stack } from '../../core';
 
 /**
  * Properties for an UnknownPrincipal

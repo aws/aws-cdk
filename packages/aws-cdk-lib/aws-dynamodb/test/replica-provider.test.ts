@@ -1,6 +1,6 @@
-import { OnEventRequest } from '../../custom-resources/lib/provider-framework/types';
 import * as AWS from 'aws-sdk-mock';
 import * as sinon from 'sinon';
+import { OnEventRequest } from '../../custom-resources/lib/provider-framework/types';
 import { isCompleteHandler, onEventHandler } from '../lib/replica-handler';
 
 let oldConsoleLog: any;

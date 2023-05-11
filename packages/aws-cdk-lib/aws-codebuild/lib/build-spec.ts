@@ -1,8 +1,8 @@
-import * as s3_assets from '../../aws-s3-assets';
-import { IResolveContext, Lazy, Stack } from '../../core';
 import { Construct } from 'constructs';
 import * as yaml_cfn from './private/yaml-cfn';
 import { Project } from './project';
+import * as s3_assets from '../../aws-s3-assets';
+import { IResolveContext, Lazy, Stack } from '../../core';
 
 /**
  * BuildSpec for CodeBuild projects

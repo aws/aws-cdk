@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '../../aws-s3-assets';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
+import * as assets from '../../aws-s3-assets';
 
 /**
  * Represents the structure to pass into the underlying CfnRepository class.

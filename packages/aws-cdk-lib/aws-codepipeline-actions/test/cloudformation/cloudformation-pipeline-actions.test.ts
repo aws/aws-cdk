@@ -1,10 +1,10 @@
+import { TestFixture } from './test-fixture';
 import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { TestFixture } from './test-fixture';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */

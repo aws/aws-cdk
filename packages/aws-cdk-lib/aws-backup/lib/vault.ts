@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnBackupVault } from './backup.generated';
 
 /**
  * A backup vault

@@ -68,6 +68,9 @@
   "aws-backup": [
     "AWS::Backup"
   ],
+  "aws-backupgateway": [
+    "AWS::BackupGateway"
+  ],
   "aws-batch": [
     "AWS::Batch"
   ],
@@ -488,6 +491,9 @@
   ],
   "aws-pipes": [
     "AWS::Pipes"
+  ],
+  "aws-proton": [
+    "AWS::Proton"
   ],
   "aws-qldb": [
     "AWS::QLDB"

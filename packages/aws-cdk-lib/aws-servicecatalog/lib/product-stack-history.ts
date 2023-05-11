@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Names } from '../../core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
+import { Names } from '../../core';
 
 /**
  * Properties for a ProductStackHistory.

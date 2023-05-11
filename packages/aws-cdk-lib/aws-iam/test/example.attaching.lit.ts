@@ -1,5 +1,5 @@
-import { SecretValue } from '../../core';
 import { Construct } from 'constructs';
+import { SecretValue } from '../../core';
 import { Group, Policy, User } from '../lib';
 
 export class ExampleConstruct extends Construct {

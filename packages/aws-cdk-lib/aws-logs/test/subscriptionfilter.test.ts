@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { Construct } from 'constructs';
 import { FilterPattern, ILogGroup, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
 
 describe('subscription filter', () => {

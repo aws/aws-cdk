@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,

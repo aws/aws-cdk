@@ -1,8 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { IVpcEndpoint } from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
-import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -19,6 +14,11 @@ import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { IVpcEndpoint } from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
+import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 

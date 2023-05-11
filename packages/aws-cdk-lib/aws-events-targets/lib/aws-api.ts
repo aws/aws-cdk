@@ -1,10 +1,10 @@
 import * as path from 'path';
+import { metadata } from './sdk-api-metadata.generated';
+import { addLambdaPermission } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Annotations } from '../../core';
-import { metadata } from './sdk-api-metadata.generated';
-import { addLambdaPermission } from './util';
 
 /**
  * AWS SDK service metadata.

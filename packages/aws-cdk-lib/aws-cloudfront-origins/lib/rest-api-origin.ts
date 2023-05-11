@@ -1,7 +1,7 @@
+import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as apigateway from '../../aws-apigateway';
 import * as cloudfront from '../../aws-cloudfront';
 import * as cdk from '../../core';
-import { validateSecondsInRangeOrUndefined } from './private/utils';
 
 /**
  * Properties for an Origin for an API Gateway REST API.

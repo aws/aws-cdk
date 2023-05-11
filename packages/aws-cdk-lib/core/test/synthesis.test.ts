@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 

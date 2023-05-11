@@ -1,13 +1,13 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,

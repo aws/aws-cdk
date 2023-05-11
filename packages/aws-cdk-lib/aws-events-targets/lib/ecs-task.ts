@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { ContainerOverride } from './ecs-task-properties';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
-import { ContainerOverride } from './ecs-task-properties';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
   * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.

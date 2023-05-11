@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import { Duration } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 

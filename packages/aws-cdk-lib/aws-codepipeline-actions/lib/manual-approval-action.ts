@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { Action } from './action';
 import * as codepipeline from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
-import { Construct } from 'constructs';
-import { Action } from './action';
 
 /**
  * Construction properties of the `ManualApprovalAction`.

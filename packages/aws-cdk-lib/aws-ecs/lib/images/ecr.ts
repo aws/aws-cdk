@@ -1,5 +1,5 @@
-import * as ecr from '../../../aws-ecr';
 import { Construct } from 'constructs';
+import * as ecr from '../../../aws-ecr';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 

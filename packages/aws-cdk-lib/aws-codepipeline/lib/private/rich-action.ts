@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import { ResourceEnvironment, Stack, Token, TokenComparison } from '../../../core';
-import { Construct } from 'constructs';
 import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
 
 /**

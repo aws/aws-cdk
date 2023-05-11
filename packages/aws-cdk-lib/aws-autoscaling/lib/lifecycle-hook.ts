@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
+import * as iam from '../../aws-iam';
+import { Duration, IResource, Resource } from '../../core';
 
 /**
  * Basic properties for a lifecycle hook

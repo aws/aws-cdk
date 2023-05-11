@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
 import { Rule } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { Names } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

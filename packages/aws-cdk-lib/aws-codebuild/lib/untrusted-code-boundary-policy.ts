@@ -1,5 +1,5 @@
-import * as iam from '../../aws-iam';
 import { Construct } from 'constructs';
+import * as iam from '../../aws-iam';
 
 /**
  * Construction properties for UntrustedCodeBoundaryPolicy

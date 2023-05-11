@@ -1,7 +1,7 @@
+import { IConstruct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
 import * as route53 from '../../aws-route53';
 import { Aws, CfnMapping, Stack } from '../../core';
-import { IConstruct } from 'constructs';
 
 /**
  * Use a CloudFront Distribution as an alias record target

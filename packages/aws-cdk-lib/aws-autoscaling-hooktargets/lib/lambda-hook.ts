@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { createRole } from './common';
+import { TopicHook } from './topic-hook';
 import * as autoscaling from '../../aws-autoscaling';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
-import { Construct } from 'constructs';
-import { createRole } from './common';
-import { TopicHook } from './topic-hook';
 
 /**
  * Use a Lambda Function as a hook target

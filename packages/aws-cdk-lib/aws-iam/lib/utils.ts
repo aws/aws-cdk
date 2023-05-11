@@ -1,6 +1,6 @@
-import { Resource } from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { IPrincipal } from './principals';
+import { Resource } from '../../core';
 
 /**
  * Determines whether the given Principal is a newly created resource managed by the CDK,

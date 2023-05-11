@@ -1,9 +1,9 @@
+import { mergeBuildSpecs } from './private/buildspecs';
+import { makeCodePipelineOutput } from './private/outputs';
 import * as codebuild from '../../../aws-codebuild';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { Duration } from '../../../core';
-import { mergeBuildSpecs } from './private/buildspecs';
-import { makeCodePipelineOutput } from './private/outputs';
 import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**

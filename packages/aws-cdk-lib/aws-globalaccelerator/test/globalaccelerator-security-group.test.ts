@@ -1,6 +1,6 @@
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import { testFixture } from './util';
 import * as ga from '../lib';
 
 test('custom resource exists', () => {

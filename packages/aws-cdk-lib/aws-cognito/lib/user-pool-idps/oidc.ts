@@ -1,7 +1,7 @@
-import { Names, Token } from '../../../core';
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import { Names, Token } from '../../../core';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**

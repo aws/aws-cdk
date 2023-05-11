@@ -1,9 +1,9 @@
+import { IConstruct } from 'constructs';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { ArnFormat, IAspect, Stack } from '../../core';
-import { IConstruct } from 'constructs';
 
 export class BackupableResourcesCollector implements IAspect {
   public readonly resources: string[] = [];

@@ -1,8 +1,8 @@
+import { Function as LambdaFunction } from './function';
+import { ILayerVersion } from './layers';
 import { CfnResource, FeatureFlags, Stack, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '../../cx-api';
-import { Function as LambdaFunction } from './function';
-import { ILayerVersion } from './layers';
 
 export function calculateFunctionHash(fn: LambdaFunction, additional: string = '') {
   const stack = Stack.of(fn);

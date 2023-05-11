@@ -3,7 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays , DataProtectionPolicy, DataIdentifier} from '../lib';
+import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -600,8 +600,8 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    const auditLogGroup = new LogGroup(stack, 'LogGroupAudit', {logGroupName: 'audit-log-group'});
-    const auditS3Bucket = new Bucket(stack, 'BucketAudit', {bucketName: 'audit-bucket'});
+    const auditLogGroup = new LogGroup(stack, 'LogGroupAudit', { logGroupName: 'audit-log-group' });
+    const auditS3Bucket = new Bucket(stack, 'BucketAudit', { bucketName: 'audit-bucket' });
     const auditDeliveryStreamName = 'delivery-stream-name';
 
     const dataProtectionPolicy = new DataProtectionPolicy({
@@ -645,16 +645,16 @@ describe('log group', () => {
                 findingsDestination: {
                   cloudWatchLogs: {
                     logGroup: {
-                      Ref: "LogGroupAudit2C8B7F73"
-                    }
+                      Ref: 'LogGroupAudit2C8B7F73',
+                    },
                   },
                   firehose: {
                     deliveryStream: auditDeliveryStreamName,
                   },
                   s3: {
                     bucket: {
-                      Ref: "BucketAudit1DED3529"
-                    }
+                      Ref: 'BucketAudit1DED3529',
+                    },
                   },
                 },
               },
