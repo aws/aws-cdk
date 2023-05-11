@@ -647,6 +647,39 @@ describe('integration tests required on features', () => {
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
 
+    test('does not need a review if member has approved', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'APPROVED' },
+          ]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
     test('review happens even if linter fails', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
