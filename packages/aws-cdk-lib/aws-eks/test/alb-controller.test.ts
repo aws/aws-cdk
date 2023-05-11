@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { testFixture } from './util';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, HelmChartVersion } from '../lib';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 test('all vended policies are valid', () => {
   const addOnsDir = path.join(__dirname, '..', 'lib', 'addons');
@@ -35,11 +35,9 @@ test('can configure a custom repository', () => {
     cluster,
     version: AlbControllerVersion.V2_4_1,
     repository: 'custom',
-    helmChartVersion: HelmChartVersion.V1_5_0,
   });
 
   Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
-    Version: '1.5.0',
     Values: {
       'Fn::Join': [
         '',
@@ -69,6 +67,5 @@ test('throws when a policy is not defined for a custom version', () => {
   expect(() => AlbController.create(stack, {
     cluster,
     version: AlbControllerVersion.of('custom'),
-    helmChartVersion: HelmChartVersion.V1_4_1,
   })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
 });
