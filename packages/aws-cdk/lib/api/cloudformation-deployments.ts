@@ -4,7 +4,7 @@ import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
-import { SdkProvider } from './aws-auth/sdk-provider';
+import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload, DeploymentMethod } from './deploy-stack';
 import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
@@ -298,6 +298,7 @@ export interface PreparedSdkForEnvironment {
 export class Deployments {
   private readonly sdkProvider: SdkProvider;
   private readonly toolkitInfoCache = new Map<string, ToolkitInfo>();
+  private readonly sdkCache = new Map<string, SdkForEnvironment>();
 
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
@@ -357,7 +358,7 @@ export class Deployments {
       };
     }
 
-    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     const toolkitInfo = await this.lookupToolkit(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
@@ -396,7 +397,7 @@ export class Deployments {
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
-    const { stackSdk, cloudFormationRoleArn: roleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, cloudFormationRoleArn: roleArn } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     return destroyStack({
       sdk: stackSdk,
@@ -440,14 +441,12 @@ export class Deployments {
    */
   private async prepareSdkFor(
     stack: cxapi.CloudFormationStackArtifact,
-    roleArn?: string,
-    mode = Mode.ForWriting,
+    roleArn: string | undefined,
+    mode: Mode,
   ): Promise<PreparedSdkForEnvironment> {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
-
-    // FIXME: Some caching on this would be good
 
     const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
@@ -459,7 +458,7 @@ export class Deployments {
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
     }, resolvedEnvironment, this.sdkProvider);
 
-    const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
+    const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
     });
@@ -503,7 +502,7 @@ export class Deployments {
     const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
     const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
     try {
-      const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForReading, {
+      const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
       });
@@ -547,7 +546,7 @@ export class Deployments {
   }
 
   private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
-    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
     const toolkitInfo = await this.lookupToolkit(resolvedEnvironment, stackSdk, options.toolkitStackName);
     const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
     await this.validateBootstrapStackVersion(
@@ -586,7 +585,7 @@ export class Deployments {
    */
   // eslint-disable-next-line max-len
   public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
-    const { stackSdk, resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
     const toolkitInfo = await this.lookupToolkit(stackEnv, stackSdk, options.toolkitStackName);
 
     await this.validateBootstrapStackVersion(
@@ -607,7 +606,7 @@ export class Deployments {
    */
   // eslint-disable-next-line max-len
   public async publishSingleAsset(assetManifest: AssetManifest, asset: IManifestEntry, options: PublishStackAssetsOptions) {
-    const { resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     // No need to validate anymore, we already did that during build
 
@@ -634,6 +633,27 @@ export class Deployments {
     } catch (e: any) {
       throw new Error(`${stackName}: ${e.message}`);
     }
+  }
+
+  private async cachedSdkForEnvironment(
+    environment: cxapi.Environment,
+    mode: Mode,
+    options?: CredentialsOptions,
+  ) {
+    const cacheKey = [
+      environment.account,
+      environment.region,
+      `${mode}`,
+      options?.assumeRoleArn ?? '',
+      options?.assumeRoleExternalId ?? '',
+    ].join(':');
+    const existing = this.sdkCache.get(cacheKey);
+    if (existing) {
+      return existing;
+    }
+    const ret = await this.sdkProvider.forEnvironment(environment, mode, options);
+    this.sdkCache.set(cacheKey, ret);
+    return ret;
   }
 }
 

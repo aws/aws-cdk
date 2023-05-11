@@ -37,7 +37,7 @@ export interface CdkToolkitProps {
   /**
    * The provisioning engine used to apply changes to the cloud
    */
-  cloudFormation: Deployments;
+  deployments: Deployments;
 
   /**
    * Whether to be verbose
@@ -136,7 +136,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
+        const currentTemplate = await this.props.deployments.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
@@ -187,14 +187,13 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
-    const cloudArtifacts = stackCollection.assembly.assembly.artifacts;
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY; // TODO: deal with this
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
     const buildAsset = async (assetNode: AssetBuildNode) => {
-      await this.props.cloudFormation.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
+      await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
@@ -203,7 +202,7 @@ export class CdkToolkit {
     };
 
     const publishAsset = async (assetNode: AssetPublishNode) => {
-      await this.props.cloudFormation.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
+      await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
@@ -221,7 +220,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        if (!await this.props.cloudFormation.stackExists({ stack })) {
+        if (!await this.props.deployments.stackExists({ stack })) {
           warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
@@ -238,7 +237,7 @@ export class CdkToolkit {
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
+        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
 
           // only talk to user if STDIN is a terminal (otherwise, fail)
@@ -271,7 +270,7 @@ export class CdkToolkit {
 
       let elapsedDeployTime = 0;
       try {
-        const result = await this.props.cloudFormation.deployStack({
+        const result = await this.props.deployments.deployStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
@@ -346,7 +345,11 @@ export class CdkToolkit {
 
     try {
       const prebuildAssets = assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY;
-      const workGraph = new WorkGraphBuilder(prebuildAssets).build(cloudArtifacts);
+      const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
+        stack,
+        ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+      ]);
+      const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
 
       await workGraph.doParallel(concurrency, {
         deployStack,
@@ -465,7 +468,7 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation, {
+    const resourceImporter = new ResourceImporter(stack, this.props.deployments, {
       toolkitStackName: options.toolkitStackName,
     });
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
@@ -543,7 +546,7 @@ export class CdkToolkit {
     for (const [index, stack] of stacks.stackArtifacts.entries()) {
       success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index+1, stacks.stackCount);
       try {
-        await this.props.cloudFormation.destroyStack({
+        await this.props.deployments.destroyStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,

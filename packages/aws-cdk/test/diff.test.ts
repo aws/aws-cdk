@@ -46,7 +46,7 @@ describe('non-nested stacks', () => {
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -148,7 +148,7 @@ describe('nested stacks', () => {
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });

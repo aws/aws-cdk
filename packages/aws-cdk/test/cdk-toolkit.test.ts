@@ -100,7 +100,7 @@ function defaultToolkitSetup() {
     cloudExecutable,
     configuration: cloudExecutable.configuration,
     sdkProvider: cloudExecutable.sdkProvider,
-    cloudFormation: new FakeCloudFormation({
+    deployments: new FakeCloudFormation({
       'Test-Stack-A': { Foo: 'Bar' },
       'Test-Stack-B': { Baz: 'Zinga!' },
       'Test-Stack-C': { Baz: 'Zinga!' },
@@ -147,7 +147,9 @@ describe('readCurrentTemplate', () => {
         },
       ],
     });
-    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
+    mockForEnvironment = jest.fn().mockImplementation(() => {
+      return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };
+    });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubCloudFormation({
       getTemplate() {
@@ -191,7 +193,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -225,7 +227,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -260,7 +262,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -298,7 +300,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -330,7 +332,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
@@ -369,7 +371,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -418,7 +420,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: mockCfnDeployments,
+        deployments: mockCfnDeployments,
       });
 
       // WHEN
@@ -491,7 +493,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: new FakeCloudFormation({
+        deployments: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
           'Test-Stack-B': { Baz: 'Zinga!' },
         }, notificationArns),
@@ -512,7 +514,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: new FakeCloudFormation({
+        deployments: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
         }, notificationArns),
       });
