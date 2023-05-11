@@ -1,5 +1,5 @@
-import { App, CfnOutput, NestedStack, NestedStackProps, Stack } from '../../core';
 import { Construct } from 'constructs';
+import { App, CfnOutput, NestedStack, NestedStackProps, Stack } from '../../core';
 import { Deployment, Method, MockIntegration, PassthroughBehavior, RestApi, Stage } from '../lib';
 
 /**

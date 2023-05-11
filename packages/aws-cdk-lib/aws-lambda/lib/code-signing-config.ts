@@ -1,7 +1,7 @@
-import { ISigningProfile } from '../../aws-signer';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnCodeSigningConfig } from './lambda.generated';
+import { ISigningProfile } from '../../aws-signer';
+import { ArnFormat, IResource, Resource, Stack } from '../../core';
 
 /**
  * Code signing configuration policy for deployment validation failure.
@@ -81,7 +81,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   public static fromCodeSigningConfigArn( scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
     const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!codeSigningProfileId) {
-      throw new Error(`Code signing config ARN must be in the format 'arn:aws:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
+      throw new Error(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
     }
     const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {

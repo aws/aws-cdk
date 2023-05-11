@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnElement, CfnResource, Lazy, Size, Stack } from '../../core';
 import * as apigw from '../lib';
 

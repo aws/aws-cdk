@@ -1,9 +1,9 @@
 import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
-import * as iam from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
 import * as ec2 from '../../../aws-ec2';
+import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
+import * as s3 from '../../../aws-s3';
 import { Duration, Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { StackOutputReference } from '../../lib';

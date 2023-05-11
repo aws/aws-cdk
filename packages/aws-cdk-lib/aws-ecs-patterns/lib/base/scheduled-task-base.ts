@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import { Schedule } from '../../../aws-applicationautoscaling';
 import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '../../../aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret, TaskDefinition } from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
 import { EcsTask, Tag } from '../../../aws-events-targets';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.

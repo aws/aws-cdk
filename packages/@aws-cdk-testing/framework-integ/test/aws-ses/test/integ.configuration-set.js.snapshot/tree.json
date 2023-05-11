@@ -20,7 +20,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.CfnConfigurationSet",
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
                   "version": "0.0.0"
                 }
               },
@@ -60,13 +60,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnConfigurationSetEventDestination",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSetEventDestination",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ConfigurationSetEventDestination",
+                  "fqn": "aws-cdk-lib.aws_ses.ConfigurationSetEventDestination",
                   "version": "0.0.0"
                 }
               },
@@ -110,19 +110,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnConfigurationSetEventDestination",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSetEventDestination",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ConfigurationSetEventDestination",
+                  "fqn": "aws-cdk-lib.aws_ses.ConfigurationSetEventDestination",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ses.ConfigurationSet",
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
               "version": "0.0.0"
             }
           },
@@ -138,7 +138,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
                   "version": "0.0.0"
                 }
               },
@@ -165,7 +165,11 @@
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn:aws:ses:",
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ses:",
                                         {
                                           "Ref": "AWS::Region"
                                         },
@@ -202,19 +206,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopicPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.TopicPolicy",
+                  "fqn": "aws-cdk-lib.aws_sns.TopicPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sns.Topic",
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "0.0.0"
             }
           },
@@ -222,7 +226,7 @@
             "id": "BootstrapVersion",
             "path": "cdk-ses-configuration-set-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -230,13 +234,13 @@
             "id": "CheckBootstrapVersion",
             "path": "cdk-ses-configuration-set-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -253,7 +257,7 @@
                 "path": "ConfigurationSetInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.17"
                 }
               },
               "DeployAssert": {
@@ -264,7 +268,7 @@
                     "id": "BootstrapVersion",
                     "path": "ConfigurationSetInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -272,25 +276,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "ConfigurationSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -299,12 +303,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.17"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { toSymlinkFollow } from './compat';
 import { CopyOptions } from '../../assets';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
-import { toSymlinkFollow } from './compat';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
