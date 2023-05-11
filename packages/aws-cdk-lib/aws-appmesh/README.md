@@ -197,6 +197,47 @@ const node = new appmesh.VirtualNode(this, 'node', {
 cdk.Tags.of(node).add('Environment', 'Dev');
 ```
 
+Create a `VirtualNode` with the customized access logging format.
+
+```ts
+declare const mesh: appmesh.Mesh;
+declare const service: cloudmap.Service;
+const node = new appmesh.VirtualNode(this, 'node', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
+  listeners: [appmesh.VirtualNodeListener.http({
+    port: 8080,
+    healthCheck: appmesh.HealthCheck.http({
+      healthyThreshold: 3,
+      interval: cdk.Duration.seconds(5), 
+      path: '/ping',
+      timeout: cdk.Duration.seconds(2), 
+      unhealthyThreshold: 2,
+    }),
+    timeout: {
+      idle: cdk.Duration.seconds(5),
+    },
+  })],
+  backendDefaults: {
+    tlsClientPolicy: {
+      validation: {
+        trust: appmesh.TlsValidationTrust.file('/keys/local_cert_chain.pem'),
+      },
+    },
+  },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
+    appmesh.LoggingFormat.fromJson(
+      {testKey1: 'testValue1', testKey2: 'testValue2'})),
+});
+```
+
+By using a key-value pair indexed signature, you can specify json key pairs to customize the log entry pattern. You can also use text format as below. You can only specify one of these 2 formats.
+
+```ts
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
+```
+
+For what values and operators you can use for these two formats, please visit the latest envoy documentation. (https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage)
 Create a `VirtualNode` with the constructor and add backend virtual service.
 
 ```ts
