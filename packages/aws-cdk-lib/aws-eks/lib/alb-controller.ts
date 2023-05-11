@@ -132,8 +132,12 @@ export class AlbControllerVersion {
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
    *
+   * ALB controller version and helm chart version compatibility information can be found
+   * here: https://github.com/aws/eks-charts/blob/v0.0.133/stable/aws-load-balancer-controller/Chart.yaml
+   *
    * @param version The version number.
-   * @param helmChartVersion The version of the helm chart.
+   * @param helmChartVersion The version of the helm chart. Version 1.4.1 is the default version to support legacy
+   * users.
    */
   public static of(version: string, helmChartVersion: string = '1.4.1') {
     return new AlbControllerVersion(version, helmChartVersion, true);
