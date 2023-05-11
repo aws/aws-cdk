@@ -9,7 +9,7 @@ import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { CloudFormationDeployments } from './api/cloudformation-deployments';
+import { Deployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { HotswapMode } from './api/hotswap/common';
@@ -37,7 +37,7 @@ export interface CdkToolkitProps {
   /**
    * The provisioning engine used to apply changes to the cloud
    */
-  cloudFormation: CloudFormationDeployments;
+  cloudFormation: Deployments;
 
   /**
    * Whether to be verbose

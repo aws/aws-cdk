@@ -155,6 +155,7 @@ export class SdkProvider {
   }
 
   private readonly plugins = new CredentialPlugins();
+  private readonly sdkCache = new Map<string, SdkForEnvironment>();
 
   public constructor(
     private readonly defaultChain: AWS.CredentialProviderChain,
@@ -176,6 +177,19 @@ export class SdkProvider {
     options?: CredentialsOptions,
   ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
+
+    const cacheKey = [
+      environment.account,
+      environment.region,
+      `${mode}`,
+      options?.assumeRoleArn ?? '',
+      options?.assumeRoleExternalId ?? '',
+    ].join(':');
+    const existing = this.sdkCache.get(cacheKey);
+    if (existing) {
+      return existing;
+    }
+
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials
@@ -190,7 +204,9 @@ export class SdkProvider {
       // actual CloudFormation calls, which might take a long time to hang.
       const sdk = new SDK(baseCreds.credentials, env.region, this.sdkOptions);
       await sdk.validateCredentials();
-      return { sdk, didAssumeRole: false };
+      const ret = { sdk, didAssumeRole: false };
+      this.sdkCache.set(cacheKey, ret);
+      return ret;
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
@@ -200,7 +216,9 @@ export class SdkProvider {
     // we can determine whether the AssumeRole call succeeds or not.
     try {
       await sdk.forceCredentialRetrieval();
-      return { sdk, didAssumeRole: true };
+      const ret = { sdk, didAssumeRole: true };
+      this.sdkCache.set(cacheKey, ret);
+      return ret;
     } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;
@@ -213,7 +231,9 @@ export class SdkProvider {
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
         warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
+        const ret = { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
+        this.sdkCache.set(cacheKey, ret);
+        return ret;
       }
 
       throw e;

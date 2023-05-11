@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { WorkGraph } from './work-graph';
-import { DeploymentState, AssetBuildNode, WorkType } from './work-graph-types';
+import { DeploymentState, AssetBuildNode } from './work-graph-types';
 
 export class WorkGraphBuilder {
   private readonly graph = new WorkGraph();
@@ -11,7 +11,7 @@ export class WorkGraphBuilder {
 
   private addStack(artifact: cxapi.CloudFormationStackArtifact) {
     this.graph.addNodes({
-      type: WorkType.STACK_DEPLOY,
+      type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
       dependencies: this.getDepIds(artifact.dependencies),
       stack: artifact,
@@ -31,7 +31,7 @@ export class WorkGraphBuilder {
     const assetBuildNodeKey = JSON.stringify(asset.genericSource);
     if (!this.assetBuildNodes.has(assetBuildNodeKey)) {
       const node: AssetBuildNode = {
-        type: WorkType.ASSET_BUILD,
+        type: 'asset-build',
         id: buildId,
         dependencies: [
           ...this.getDepIds(assetArtifact.dependencies),
@@ -49,9 +49,10 @@ export class WorkGraphBuilder {
     }
 
     // Always add the publish
+    const publishNodeId = `${this.idPrefix}${asset.id}-publish`;
     this.graph.addNodes({
-      type: WorkType.ASSET_PUBLISH,
-      id: `${this.idPrefix}${asset.id}-publish`,
+      type: 'asset-publish',
+      id: publishNodeId,
       dependencies: [buildId],
       parentStack,
       assetManifestArtifact: assetArtifact,
@@ -59,6 +60,8 @@ export class WorkGraphBuilder {
       asset,
       deploymentState: DeploymentState.PENDING,
     });
+    // This will work whether the stack node has been added yet or not
+    this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishNodeId);
   }
 
   public build(artifacts: cxapi.CloudArtifact[]): WorkGraph {
@@ -81,13 +84,13 @@ export class WorkGraphBuilder {
         const assembly = new cxapi.CloudAssembly(artifact.fullPath);
         // FIXME: make artifact IDs unique
         const nestedGraph = new WorkGraphBuilder(this.prebuildAssets, `${this.idPrefix}${artifact.id}.`).build(assembly.artifacts);
-        this.graph.addNodes(...Object.values(nestedGraph.nodes));
+        this.graph.absorb(nestedGraph);
       } else {
         // Ignore whatever else
       }
     }
 
-    this.removeUnavailableDependencies();
+    this.graph.removeUnavailableDependencies();
     return this.graph;
   }
 
@@ -102,26 +105,6 @@ export class WorkGraphBuilder {
       }
     }
     return ids;
-  }
-
-  private removeUnavailableDependencies() {
-    // Ensure all dependencies actually exist. This protects against scenarios such as the following:
-    // StackA depends on StackB, but StackB is not selected to deploy. The dependency is redundant
-    // and will be dropped.
-    // This assumes the manifest comes uncorrupted so we will not fail if a dependency is not found.
-    for (const node of Object.values(this.graph.nodes)) {
-      const removeDeps = [];
-      for (const dep of node.dependencies) {
-        if (this.graph.nodes[dep] === undefined) {
-          removeDeps.push(dep);
-        }
-      }
-      removeDeps.forEach((d) => {
-        const i = node.dependencies.indexOf(d);
-        node.dependencies.splice(i, 1);
-      });
-    }
-
   }
 }
 

@@ -10,12 +10,6 @@ export enum DeploymentState {
   SKIPPED = 'skipped',
 };
 
-export enum WorkType {
-  STACK_DEPLOY = 'stack',
-  ASSET_BUILD = 'asset-build',
-  ASSET_PUBLISH = 'asset-publish',
-}
-
 export type WorkNode = StackNode | AssetBuildNode | AssetPublishNode;
 
 export interface WorkNodeCommon {
@@ -25,12 +19,12 @@ export interface WorkNodeCommon {
 }
 
 export interface StackNode extends WorkNodeCommon {
-  readonly type: WorkType.STACK_DEPLOY;
+  readonly type: 'stack';
   readonly stack: cxapi.CloudFormationStackArtifact;
 }
 
 export interface AssetBuildNode extends WorkNodeCommon {
-  readonly type: WorkType.ASSET_BUILD;
+  readonly type: 'asset-build';
   /** The asset manifest this asset resides in (artifact) */
   readonly assetManifestArtifact: cxapi.AssetManifestArtifact;
   /** The asset manifest this asset resides in */
@@ -42,7 +36,7 @@ export interface AssetBuildNode extends WorkNodeCommon {
 }
 
 export interface AssetPublishNode extends WorkNodeCommon {
-  readonly type: WorkType.ASSET_PUBLISH;
+  readonly type: 'asset-publish';
   /** The asset manifest this asset resides in (artifact) */
   readonly assetManifestArtifact: cxapi.AssetManifestArtifact;
   /** The asset manifest this asset resides in */

@@ -10,7 +10,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
 import { DEFAULT_BOOTSTRAP_VARIANT } from '../../lib';
-import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
+import { Deployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
@@ -20,14 +20,14 @@ import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
 
 let sdkProvider: MockSdkProvider;
-let deployments: CloudFormationDeployments;
+let deployments: Deployments;
 let mockToolkitInfoLookup: jest.Mock;
 let currentCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
 let numberOfTimesListStackResourcesWasCalled: number;
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
-  deployments = new CloudFormationDeployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider });
 
   numberOfTimesListStackResourcesWasCalled = 0;
   currentCfnStackResources = {};

@@ -1,18 +1,7 @@
-import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
-import { deployArtifacts } from '../lib/deploy';
-import { AssetBuildNode, AssetPublishNode, StackNode } from '../lib/util/work-graph-types';
+import { WorkGraph } from '../lib/util/work-graph';
+import { AssetBuildNode, AssetPublishNode, DeploymentState, StackNode } from '../lib/util/work-graph-types';
 
-const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
-const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
-const TREE_CLOUD_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.TreeCloudArtifact');
-const NESTED_ASSEMBLY_ARTIFACT = Symbol.for('@aws-cdk/cx-api.NestedCloudAssemblyArtifact');
-
-type Artifact = cxapi.CloudArtifact;
-type Stack = cxapi.CloudFormationStackArtifact;
-type Asset = cxapi.AssetManifestArtifact;
-type Tree = cxapi.TreeCloudArtifact;
-type Nested = cxapi.NestedCloudAssemblyArtifact;
+const DUMMY: any = 'DUMMY';
 
 const sleep = async (duration: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
@@ -30,7 +19,7 @@ describe('DeployAssets', () => {
   const callbacks = {
     deployStack: async (x: StackNode) => {
       const errorMessage = x.stack.displayName;
-      const timeout = Number(x.stack.name) || 0;
+      const timeout = Number(x.stack.stackName) || 0;
 
       await sleep(timeout);
 
@@ -236,7 +225,10 @@ describe('DeployAssets', () => {
       expected: ['c-build', 'c-publish', 'A', 'b-build', 'b-publish', 'B'],
     },
   ])('Success - Concurrency: $concurrency - $scenario', async ({ concurrency, expected, toDeploy }) => {
-    await expect(deployArtifacts(toDeploy, { concurrency, callbacks, prebuildAssets: true })).resolves.toBeUndefined();
+    const graph = new WorkGraph();
+    addTestArtifactsToGraph(toDeploy, graph);
+
+    await graph.doParallel(concurrency, callbacks);
 
     expect(actionedAssets).toStrictEqual(expected);
   });
@@ -305,41 +297,14 @@ describe('DeployAssets', () => {
       expectedStacks: ['A', 'B'],
     },
   ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
-    // eslint-disable-next-line max-len
-    await expect(deployArtifacts(toDeploy, { concurrency, callbacks, prebuildAssets: true })).rejects.toThrowError(expectedError);
+    const graph = new WorkGraph();
+    addTestArtifactsToGraph(toDeploy, graph);
+
+    await expect(graph.doParallel(concurrency, callbacks)).rejects.toThrowError(expectedError);
 
     expect(actionedAssets).toStrictEqual(expectedStacks);
   });
 
-  test('can disable prebuild assets', async () => {
-    const toDeploy = createArtifacts([
-      { id: 'A', type: 'stack', name: SLOW },
-      { id: 'B', type: 'stack', stackDependencies: ['A'], assetDependencies: ['b'] },
-      { id: 'b', type: 'asset' },
-    ]);
-    await expect(deployArtifacts(toDeploy, { concurrency: 2, callbacks, prebuildAssets: false })).resolves.toBeUndefined();
-
-    // asset build waits for slow stack A deployment
-    expect(actionedAssets).toStrictEqual(['A', 'b-build', 'b-publish', 'B']);
-  });
-
-  test('tree metadata is ignored', async () => {
-    const toDeploy = createArtifacts([
-      { id: '$', type: 'tree' },
-    ]);
-    await expect(deployArtifacts(toDeploy, { concurrency: 1, callbacks })).resolves.toBeUndefined();
-
-    expect(actionedAssets).toStrictEqual([]);
-  });
-
-  test('nested assembly is accepted', async () => {
-    const toDeploy = createArtifacts([
-      { id: 'Stage', type: 'nested' },
-    ]);
-    await expect(deployArtifacts(toDeploy, { concurrency: 1, callbacks })).resolves.toBeUndefined();
-
-    expect(actionedAssets).toStrictEqual(['StageA.assets-build', 'StageA.assets-publish', 'NestedStageA']);
-  });
 });
 
 interface TestArtifact {
@@ -351,44 +316,49 @@ interface TestArtifact {
   displayName?: string;
 }
 
-function createArtifact(artifact: TestArtifact): Artifact {
-  const stackDeps: Artifact[] = artifact.stackDependencies?.map((id) => createArtifact({ id, type: 'stack' })) ?? [];
-  const assetDeps: Artifact[] = artifact.assetDependencies?.map((id) => createArtifact({ id, type: 'asset' })) ?? [];
-
-  const art = {
-    id: artifact.id,
-    dependencies: stackDeps.concat(assetDeps),
-    name: artifact.name,
-    displayName: artifact.displayName,
-  };
-  switch (artifact.type) {
-    case 'stack':
-      return {
-        ...art,
-        [CLOUDFORMATION_STACK_ARTIFACT_SYM]: true,
-      } as unknown as Stack;
-    case 'asset':
-      return {
-        ...art,
-        [ASSET_MANIFEST_ARTIFACT_SYM]: true,
-      } as unknown as Asset;
-    case 'tree':
-      return {
-        type: 'cdk:tree',
-        properties: {
-          file: 'tree.json',
-        },
-        [TREE_CLOUD_ARTIFACT_SYM]: true,
-      } as unknown as Tree;
-    case 'nested':
-      return {
-        type: 'cdk:cloud-assembly',
-        directoryName: path.join(__dirname, 'stage-manifest'),
-        [NESTED_ASSEMBLY_ARTIFACT]: true,
-      } as unknown as Nested;
-  }
+function createArtifacts(artifacts: TestArtifact[]) {
+  return artifacts;
 }
 
-function createArtifacts(artifacts: TestArtifact[]): Artifact[] {
-  return artifacts.map((art) => createArtifact(art));
+function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
+  for (const node of toDeploy) {
+    switch (node.type) {
+      case 'stack':
+        graph.addNodes({
+          type: 'stack',
+          id: node.id,
+          deploymentState: DeploymentState.PENDING,
+          stack: {
+            // We're smuggling information here so that the set of callbacks can do some appropriate action
+            stackName: node.name, // Used to smuggle sleep duration
+            displayName: node.displayName, // Used to smuggle exception triggers
+          } as any,
+          dependencies: [...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)],
+        });
+        break;
+      case 'asset':
+        graph.addNodes({
+          type: 'asset-build',
+          id: `${node.id}-build`,
+          deploymentState: DeploymentState.PENDING,
+          asset: DUMMY,
+          assetManifest: DUMMY,
+          assetManifestArtifact: DUMMY,
+          parentStack: DUMMY,
+          dependencies: [...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)],
+        });
+        graph.addNodes({
+          type: 'asset-publish',
+          id: `${node.id}-publish`,
+          deploymentState: DeploymentState.PENDING,
+          asset: DUMMY,
+          assetManifest: DUMMY,
+          assetManifestArtifact: DUMMY,
+          parentStack: DUMMY,
+          dependencies: [`${node.id}-build`],
+        });
+        break;
+    }
+  }
+  graph.removeUnavailableDependencies();
 }

@@ -357,6 +357,13 @@ export class CloudAssemblyBuilder {
       parentBuilder: this,
     });
   }
+
+  /**
+   * Delete the cloud assembly directory
+   */
+  public delete() {
+    fs.rmSync(this.outdir, { recursive: true, force: true });
+  }
 }
 
 /**

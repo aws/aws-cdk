@@ -11,7 +11,7 @@ import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { Deployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
@@ -348,7 +348,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
+  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({

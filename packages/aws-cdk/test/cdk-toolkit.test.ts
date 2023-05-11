@@ -61,7 +61,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
+import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
@@ -191,7 +191,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -225,7 +225,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -260,7 +260,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -298,7 +298,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -330,7 +330,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
@@ -369,7 +369,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      cloudFormation: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -407,7 +407,7 @@ describe('deploy', () => {
   describe('with hotswap deployment', () => {
     test("passes through the 'hotswap' option to CloudFormationDeployments.deployStack()", async () => {
       // GIVEN
-      const mockCfnDeployments = instanceMockFrom(CloudFormationDeployments);
+      const mockCfnDeployments = instanceMockFrom(Deployments);
       mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
         noOp: false,
         outputs: {},
@@ -1069,7 +1069,7 @@ class MockStack {
   }
 }
 
-class FakeCloudFormation extends CloudFormationDeployments {
+class FakeCloudFormation extends Deployments {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
