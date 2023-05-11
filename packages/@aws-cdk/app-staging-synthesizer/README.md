@@ -249,7 +249,7 @@ subject to the lifecycle rule set on ephemeral assets. By default, we store ephe
 
 ```ts
 const app = new App({
-  defaultStackSynthesizer: TestAppScopedStagingSynthesizer.defaultResources({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
     handoffFileAssetLifetime: Duration.days(100),
   }),
@@ -258,4 +258,25 @@ const app = new App({
 
 ### Lifecycle Rules on ECR Repositories
 
-### Extending the Default Staging Stack
+By default, we store a maximum of 3 revisions of a particular docker image asset. This allows
+for smooth faciliation of rollback scenarios where we may reference previous versions of an
+image. When more than 3 revisions of an asset exist in the ECR repository, the oldest one is
+purged.
+
+To change the number of revisions stored, use `imageAssetVersionCount`:
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    imageAssetVersionCount: 10,
+  }),
+});
+```
+
+## Extending the Default Staging Stack
+
+The exposed API of this synthesizer is purposefully opinionated. Should the feature set be
+too restrictive, `AppStagingSynthesizer` is built to be subclassable. For example, say we want
+to add a feature where we _do not_ apply lifecycle rules to any assets that have the prefix
+"`permanent`"
