@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IAlias } from './alias';
 import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
+import * as iam from '../../aws-iam';
+import { Duration, IResource, Resource } from '../../core';
 
 /**
  * The auth types for a function url

@@ -1,9 +1,9 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
 

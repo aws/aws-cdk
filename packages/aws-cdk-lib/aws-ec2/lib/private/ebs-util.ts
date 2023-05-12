@@ -1,5 +1,5 @@
-import { Annotations } from '../../../core';
 import { Construct } from 'constructs';
+import { Annotations } from '../../../core';
 import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
 

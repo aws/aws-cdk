@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { testFixture } from './util';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 test('all vended policies are valid', () => {
