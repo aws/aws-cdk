@@ -463,6 +463,25 @@ If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
 
+## Private APIs
+
+By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
+For customers that want to limit access to be from their VPC, the API can be set to `PRIVATE` 
+at creation time through the `Visibility` property. The default visbility if not set, is `GLOBAL`.
+
+CDK stack file `app-stack.ts`:
+
+```ts
+const api = new appsync.GraphqlApi(stack, 'api', {
+  name: 'MyPrivateAPI',
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.schema.graphql')),
+  visbility: 'PRIVATE'
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
+for more details about Private APIs 
+
 ## Authorization
 
 There are multiple authorization types available for GraphQL API to cater to different
