@@ -1,9 +1,9 @@
-import * as s3 from '../../aws-s3';
-import * as s3_assets from '../../aws-s3-assets';
-import * as cxapi from '../../cx-api';
 import { Construct, Node } from 'constructs';
 import { CfnRestApi } from './apigateway.generated';
 import { IRestApi } from './restapi';
+import * as s3 from '../../aws-s3';
+import * as s3_assets from '../../aws-s3-assets';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents an OpenAPI definition asset.

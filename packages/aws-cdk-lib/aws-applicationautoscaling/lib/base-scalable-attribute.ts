@@ -1,8 +1,8 @@
-import * as iam from '../../aws-iam';
 import { Construct } from 'constructs';
 import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
+import * as iam from '../../aws-iam';
 
 /**
  * Properties for a ScalableTableAttribute

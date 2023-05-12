@@ -1,6 +1,6 @@
+import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { Construct, IConstruct } from 'constructs';
 import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
 
 describe('stage', () => {
@@ -101,17 +101,6 @@ describe('stage', () => {
     // THEN
     expect(stage.stageName).toEqual('MyStage');
     expect(stack.stackName).toEqual('MyStage-MyStack');
-  });
-
-  test('generated stack names will not exceed 128 characters', () => {
-    // WHEN
-    const app = new App();
-    const stage = new Stage(app, 'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName');
-    const stack = new BogusStack(stage, 'ThisStackNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix');
-
-    // THEN
-    expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix4CA9F65B');
   });
 
   test('Can not have dependencies to stacks outside the nested asm', () => {

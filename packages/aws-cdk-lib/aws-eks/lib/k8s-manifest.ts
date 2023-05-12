@@ -1,8 +1,8 @@
-import { CustomResource, Stack } from '../../core';
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Stack } from '../../core';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 

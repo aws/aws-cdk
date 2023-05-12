@@ -1,5 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cdk8s from 'cdk8s';
+import { Construct } from 'constructs';
+import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import * as asg from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
@@ -7,10 +11,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import * as cdk8s from 'cdk8s';
-import { Construct } from 'constructs';
-import * as YAML from 'yaml';
-import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
@@ -2042,6 +2042,14 @@ describe('cluster', () => {
 
       // THEN
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      Template.fromStack(providerStack).hasCondition('HasEcrPublic', {
+        'Fn::Equals': [
+          {
+            Ref: 'AWS::Partition',
+          },
+          'aws',
+        ],
+      });
       Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
@@ -2104,11 +2112,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });
@@ -2305,11 +2326,24 @@ describe('cluster', () => {
             ]],
           },
           {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
-            ]],
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });

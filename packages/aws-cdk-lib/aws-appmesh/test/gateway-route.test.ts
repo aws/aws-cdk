@@ -1216,3 +1216,116 @@ describe('gateway route', () => {
 
   });
 });
+
+test('can set match port property', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const mesh = new appmesh.Mesh(stack, 'mesh', {
+    meshName: 'test-mesh',
+  });
+
+  const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+    listeners: [appmesh.VirtualGatewayListener.http()],
+    mesh: mesh,
+  });
+
+  const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+    virtualServiceName: 'target.local',
+  });
+
+  // Add an HTTP Route
+  virtualGateway.addGatewayRoute('gateway-http-route', {
+    routeSpec: appmesh.GatewayRouteSpec.http({
+      routeTarget: virtualService,
+      match: {
+        port: 8080,
+      },
+    }),
+    gatewayRouteName: 'gateway-http-route',
+  });
+
+  virtualGateway.addGatewayRoute('gateway-http2-route', {
+    routeSpec: appmesh.GatewayRouteSpec.http2({
+      routeTarget: virtualService,
+    }),
+    gatewayRouteName: 'gateway-http2-route',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+    GatewayRouteName: 'gateway-http-route',
+    MeshOwner: Match.absent(),
+    Spec: {
+      HttpRoute: {
+        Action: {
+          Target: {
+            VirtualService: {
+              VirtualServiceName: {
+                'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+              },
+            },
+          },
+        },
+        Match: {
+          Prefix: '/',
+          Port: 8080,
+        },
+      },
+    },
+  });
+  // Test that port is not set by default when not specified
+  Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+    GatewayRouteName: 'gateway-http2-route',
+    Spec: {
+      Http2Route: {
+        Action: {
+          Target: {
+            VirtualService: {
+              VirtualServiceName: {
+                'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+              },
+            },
+          },
+        },
+        Match: {
+          Prefix: '/',
+          Port: Match.absent(),
+        },
+      },
+    },
+  });
+});
+
+test('throws error when port not included when VirtualGateway has multuple listeners', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+
+  // WHEN
+  const mesh = new appmesh.Mesh(stack, 'mesh', {
+    meshName: 'test-mesh',
+  });
+
+  const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+    listeners: [appmesh.VirtualGatewayListener.http(), appmesh.VirtualGatewayListener.http()],
+    mesh: mesh,
+  });
+
+  const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+    virtualServiceName: 'target.local',
+  });
+
+  // Add an HTTP Route
+  virtualGateway.addGatewayRoute('gateway-http-route', {
+    routeSpec: appmesh.GatewayRouteSpec.http({
+      routeTarget: virtualService,
+    }),
+    gatewayRouteName: 'gateway-http-route',
+  });
+
+  expect(() => app.synth()).toThrow(/Gateway route must define a match port if the parent Virtual Gateway has multiple listeners./);
+});

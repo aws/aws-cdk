@@ -163,7 +163,7 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   dimensions: {
     ErrorCode: '$.errorCode',
   },
-  unit: Unit.MILLISECONDS,
+  unit: cloudwatch.Unit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter
@@ -331,6 +331,51 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
     sort: '@timestamp desc',
     limit: 20,
   }),
+});
+```
+
+## Data Protection Policy
+
+Creates a data protection policy and assigns it to the log group. A data protection policy can help safeguard sensitive data that's ingested by the log group by auditing and masking the sensitive log data. When a user who does not have permission to view masked data views a log event that includes masked data, the sensitive data is replaced by asterisks.
+
+For more information, see [Protect sensitive log data with masking](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html).
+
+For a list of types of identifiers that can be audited and masked, see [Types of data that you can protect](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html)
+
+If a new identifier is supported but not yet in the `DataIdentifiers` enum, the full ARN of the identifier can be supplied in `identifierArnStrings` instead. 
+
+Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.  
+
+Example:
+
+```ts
+import { Bucket } from '@aws-cdk/aws-s3';
+import { LogGroup } from '@aws-cdk/logs';
+import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose';
+
+
+const logGroupDestination = new LogGroup(this, 'LogGroupLambdaAudit', {
+  logGroupName: 'auditDestinationForCDK',
+});
+
+const s3Destination = new Bucket(this, 'audit-bucket-id');
+
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destinations: [s3Destination],
+});
+
+const dataProtectionPolicy = new DataProtectionPolicy({
+  name: 'data protection policy',
+  description: 'policy description',
+  identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],
+  logGroupAuditDestination: logGroupDestination,
+  s3BucketAuditDestination: s3Destination,
+  deliveryStreamAuditDestination: deliveryStream.deliveryStreamName,
+});
+
+new LogGroup(this, 'LogGroupLambda', {
+  logGroupName: 'cdkIntegLogGroup',
+  dataProtectionPolicy: dataProtectionPolicy,
 });
 ```
 

@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "artifacts": {
     "aws-cdk-sdk-js.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eaaca485f9a98a657308ad4e676057416abc8024d04826b9c08aa25d37293c94.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fa9053f5d98b6f6966fb0261401f1e34d3f1e932afcd963ab41a0448b0f2e5f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,12 +39,6 @@
             "data": "TopicBFC7AF6E"
           }
         ],
-        "/aws-cdk-sdk-js/Publish": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
-          }
-        ],
         "/aws-cdk-sdk-js/Publish/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -57,6 +51,12 @@
             "data": "PublishCustomResourcePolicyDF696FCA"
           }
         ],
+        "/aws-cdk-sdk-js/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -67,12 +67,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
-        "/aws-cdk-sdk-js/ListTopics": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/ListTopics/Resource/Default": [
@@ -91,12 +85,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Utf8Parameter6C885A19"
-          }
-        ],
-        "/aws-cdk-sdk-js/GetParameter": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/GetParameter/Resource/Default": [
@@ -121,12 +109,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRoleDefaultPolicyC5C189DF"
-          }
-        ],
-        "/aws-cdk-sdk-js/GetParameterNoPolicy": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/GetParameterNoPolicy/Resource/Default": [
@@ -169,15 +151,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "DummyParameter53662B67": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DummyParameter53662B67",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

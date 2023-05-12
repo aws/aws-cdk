@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
+import { Resource } from '../../core';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace { }

@@ -1,7 +1,7 @@
+import { testFixtureNoVpc } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { testFixtureNoVpc } from './util';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 

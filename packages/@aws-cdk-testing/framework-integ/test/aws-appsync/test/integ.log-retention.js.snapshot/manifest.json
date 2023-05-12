@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "AppSyncIntegLogRetention.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b28ed67e04a46a2c905cb42f19d4eb8ae84fa4604e89814ff512d6112fdd01d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31561653caea1d2f262ce95fa36f6972d62db501dd5e9e7854b702cf4561d954.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -87,6 +81,12 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
+        "/AppSyncIntegLogRetention/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApi1B6CF24C\",\"ApiId\"]}": [
           {
             "type": "aws:cdk:logicalId",
@@ -124,7 +124,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07ab7b54df89b4069877978ceffa06afaf11939a042378cafa0943f7c03f605b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c856d5de6cebd51b571207f798390c60f1f0b805aabeb61e35e6958ca4a94d1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -147,16 +147,10 @@
             "data": "AwsApiCallCloudWatchLogsdescribeLogGroups"
           }
         ],
-        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/Default/Default": [
+        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsdescribeLogGroupsAssertEqualsCloudWatchLogsdescribeLogGroupsD2E2CD37"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsCloudWatchLogsdescribeLogGroups"
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogGroups"
           }
         ],
         "/Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -185,6 +179,12 @@
         ]
       },
       "displayName": "Integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

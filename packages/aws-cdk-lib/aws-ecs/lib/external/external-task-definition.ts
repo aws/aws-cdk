@@ -66,6 +66,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
       compatibility: Compatibility.EXTERNAL,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 

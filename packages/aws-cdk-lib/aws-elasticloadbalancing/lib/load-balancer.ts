@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 import {
   Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '../../aws-ec2';
 import { Duration, Lazy, Resource } from '../../core';
-import { Construct } from 'constructs';
-import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
  * Construction properties for a LoadBalancer

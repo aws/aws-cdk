@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as stepfunction from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**
