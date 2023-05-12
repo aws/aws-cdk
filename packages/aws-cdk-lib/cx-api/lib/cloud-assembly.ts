@@ -6,25 +6,12 @@ import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-a
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
-import { LoadManifestOptions } from '../../cloud-assembly-schema';
 import * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * The name of the root manifest file of the assembly.
  */
 const MANIFEST_FILE = 'manifest.json';
-
-/**
- * Options for CloudAssembly constructor
- */
-export interface CloudAssemblyOptions extends LoadManifestOptions {
-  /**
-   * Topologically sort all artifacts
-   *
-   * @default true
-   */
-  readonly topoSort?: boolean;
-}
 
 /**
  * Represents a deployable cloud application.
@@ -59,7 +46,7 @@ export class CloudAssembly {
    * Reads a cloud assembly from the specified directory.
    * @param directory The root directory of the assembly.
    */
-  constructor(directory: string, loadOptions?: CloudAssemblyOptions) {
+  constructor(directory: string, loadOptions?: cxschema.LoadManifestOptions) {
     this.directory = directory;
 
     this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE), loadOptions);
