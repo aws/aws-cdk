@@ -227,6 +227,26 @@ export class WorkGraph {
     }
   }
 
+  /**
+   * Remove all asset publishing steps for assets that are already published, and then build
+   * that aren't used anymore.
+   */
+  public async removeUnnecessaryAssets(isUnnecessary: (x: AssetPublishNode) => Promise<boolean>) {
+    const publishes = this.nodesOfType('asset-publish');
+    for (const assetNode of publishes) {
+      const unnecessary = await isUnnecessary(assetNode);
+      if (unnecessary) {
+        this.removeNode(assetNode);
+      }
+    }
+
+    // Now also remove any asset build steps that don't have any dependencies on them anymore
+    const unusedBuilds = this.nodesOfType('asset-build').filter(build => this.dependees(build).length === 0);
+    for (const unusedBuild of unusedBuilds) {
+      this.removeNode(unusedBuild);
+    }
+  }
+
   private updateReadyPool() {
     let activeCount = 0;
     let pendingCount = 0;

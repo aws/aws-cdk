@@ -233,6 +233,23 @@ describe('WorkGraph', () => {
     expect(actionedAssets).toStrictEqual(expected);
   });
 
+  test('can remove unnecessary assets', async () => {
+    const graph = new WorkGraph();
+    addTestArtifactsToGraph([
+      { id: 'a', type: 'asset' },
+      { id: 'b', type: 'asset' },
+      { id: 'A', type: 'stack', assetDependencies: ['a', 'b'] },
+    ], graph);
+
+    // Remove 'b' from the graph
+    await graph.removeUnnecessaryAssets(node => Promise.resolve(node.id.startsWith('b')));
+    await graph.doParallel(1, callbacks);
+
+    // We expect to only see 'a' and 'A'
+    expect(actionedAssets).toEqual(['a-build', 'a-publish', 'A']);
+  });
+
+
   // Failure
   test.each([
     // Concurrency 1
@@ -304,7 +321,6 @@ describe('WorkGraph', () => {
 
     expect(actionedAssets).toStrictEqual(expectedStacks);
   });
-
 });
 
 interface TestArtifact {

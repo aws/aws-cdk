@@ -816,25 +816,12 @@ export class CdkToolkit {
    * Remove the asset publishing and building from the work graph for assets that are already in place
    */
   private async removePublishedAssets(graph: WorkGraph, options: DeployOptions) {
-    const publishes = graph.nodesOfType('asset-publish');
-    for (const assetNode of publishes) {
-      const published = await this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
-        stack: assetNode.parentStack,
-        roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
-        stackName: assetNode.parentStack.stackName,
-      });
-
-      if (published) {
-        graph.removeNode(assetNode);
-      }
-    }
-
-    // Now also remove any asset build steps that don't have any dependencies on them anymore
-    const unusedBuilds = graph.nodesOfType('asset-build').filter(build => graph.dependees(build).length === 0);
-    for (const unusedBuild of unusedBuilds) {
-      graph.removeNode(unusedBuild);
-    }
+    await graph.removeUnnecessaryAssets(assetNode => this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
+      stack: assetNode.parentStack,
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      stackName: assetNode.parentStack.stackName,
+    }));
   }
 }
 
