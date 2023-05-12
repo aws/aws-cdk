@@ -13,6 +13,14 @@ const sortJson = require('sort-json');
 
 export interface PatchOptions {
   readonly quiet?: boolean;
+  /**
+   * Strict patching mode.
+   * Will fail if a patch can't be applied.
+   * Set to `false` to silently ignore any errors.
+   *
+   * @default true
+   */
+  readonly strict?: boolean;
 }
 
 export type PatchSet = Record<string, PatchSetElement>;
@@ -31,7 +39,9 @@ export async function loadPatchSet(sourceDirectory: string, relativeTo = process
     const fullFile = path.join(sourceDirectory, file);
     const relName = path.relative(relativeTo, fullFile);
 
-    if ((await fs.stat(fullFile)).isDirectory()) {
+    if (file.startsWith('.')) {
+      // Nothing, ignore
+    } else if ((await fs.stat(fullFile)).isDirectory()) {
       ret[relName] = {
         type: 'set',
         sources: await loadPatchSet(fullFile, sourceDirectory),
@@ -59,7 +69,7 @@ export function evaluatePatchSet(sources: PatchSet, options: PatchOptions = {}) 
         merge(targetObject, value.data, []);
         break;
       case 'patch':
-        patch(targetObject, value.data, (m) => log(`${key}: ${m}`));
+        patch(targetObject, value.data, (m) => log(`${key}: ${m}`), options.strict);
         break;
       case 'set':
         const evaluated = evaluatePatchSet(value.sources, options);
@@ -134,7 +144,7 @@ function merge(target: any, fragment: any, jsonPath: string[]) {
   }
 }
 
-function patch(target: any, fragment: any, log: (x: string) => void) {
+function patch(target: any, fragment: any, log: (x: string) => void, strict: boolean = true) {
   if (!fragment) { return; }
 
   const patches = findPatches(target, fragment);
@@ -144,7 +154,11 @@ function patch(target: any, fragment: any, log: (x: string) => void) {
     try {
       fastJsonPatch.applyPatch(target, p.operations);
     } catch (e) {
-      throw new Error(`error applying patch: ${JSON.stringify(p, undefined, 2)}: ${e.message}`);
+      const msg = `error applying patch: ${JSON.stringify(p, undefined, 2)}: ${e.message}`;
+      if (strict) {
+        throw new Error(msg);
+      }
+      log('!!!!! ' + msg);
     }
   }
 }
@@ -272,3 +286,4 @@ if (require.main === module) {
     console.error(e.message);
   });
 }
+
