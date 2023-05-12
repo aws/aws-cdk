@@ -819,7 +819,7 @@ The ts-node supports an alternate transpiler that might improve transpile times.
 To enable the SWC transpiler, install the package in the CDK app.
 
 ```sh
-npm install --save-dev @swc/core @swc/helpers regenerator-runtime
+npm i -D @swc/core @swc/helpers regenerator-runtime
 ```
 
 And, update the `tsconfig.json` file to add the `ts-node` property.
@@ -831,3 +831,5 @@ And, update the `tsconfig.json` file to add the `ts-node` property.
   }
 }
 ```
+
+The documentation may be found at <https://typestrong.org/ts-node/docs/swc/>
