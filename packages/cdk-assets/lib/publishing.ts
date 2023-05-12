@@ -162,8 +162,6 @@ export class AssetPublishing implements IPublishProgress {
       if (this.aborted) {
         throw new Error('Aborted');
       }
-
-      if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
     } catch (e: any) {
       this.failures.push({ asset, error: e });
       this.completedOperations++;
