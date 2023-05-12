@@ -14,7 +14,7 @@ const SLOW = 200;
  * - stack.name          = deployment duration
  * - stack.displayName   = error message
  */
-describe('DeployAssets', () => {
+describe('WorkGraph', () => {
   const actionedAssets: string[] = [];
   const callbacks = {
     deployStack: async (x: StackNode) => {

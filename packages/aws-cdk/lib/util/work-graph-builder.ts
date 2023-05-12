@@ -81,8 +81,7 @@ export class WorkGraphBuilder {
           this.addAsset(parentStack, artifact, manifest, entry);
         }
       } else if (cxapi.NestedCloudAssemblyArtifact.isNestedCloudAssemblyArtifact(artifact)) {
-        const assembly = new cxapi.CloudAssembly(artifact.fullPath);
-        // FIXME: make artifact IDs unique
+        const assembly = new cxapi.CloudAssembly(artifact.fullPath, { topoSort: false });
         const nestedGraph = new WorkGraphBuilder(this.prebuildAssets, `${this.idPrefix}${artifact.id}.`).build(assembly.artifacts);
         this.graph.absorb(nestedGraph);
       } else {

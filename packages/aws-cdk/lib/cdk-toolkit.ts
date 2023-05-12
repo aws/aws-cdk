@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -187,7 +186,6 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
-    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY; // TODO: deal with this
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
@@ -289,7 +287,6 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY, // TODO: remove this
           assetParallelism: options.assetParallelism,
         });
 
@@ -337,6 +334,8 @@ export class CdkToolkit {
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     };
 
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
+    const prebuildAssets = assetBuildTime === AssetBuildTime.ALL_BEFORE_DEPLOY;
     const concurrency = options.concurrency || 1;
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
@@ -344,7 +343,6 @@ export class CdkToolkit {
     }
 
     try {
-      const prebuildAssets = assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY;
       const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
         stack,
         ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
@@ -187,13 +186,6 @@ export interface DeployStackOptions {
    * @default - Use the stored template
    */
   readonly overrideTemplate?: any;
-
-  /**
-   * Whether to build assets before publishing.
-   *
-   * @default true To remain backward compatible.
-   */
-  readonly buildAssets?: boolean;
 
   /**
    * Whether to build/publish assets in parallel

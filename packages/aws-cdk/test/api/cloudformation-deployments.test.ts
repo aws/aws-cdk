@@ -846,33 +846,6 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
-// eslint-disable-next-line jest/no-commented-out-tests
-// test('building assets', async () => {
-//   // GIVEN
-//   const stack = testStackWithAssetManifest();
-
-//   // WHEN
-//   await deployments.buildStackAssets({
-//     stack,
-//   });
-
-//   // THEN
-//   const expectedAssetManifest = expect.objectContaining({
-//     directory: stack.assembly.directory,
-//     manifest: expect.objectContaining({
-//       files: expect.objectContaining({
-//         fake: expect.anything(),
-//       }),
-//     }),
-//   });
-//   const expectedEnvironment = expect.objectContaining({
-//     account: 'account',
-//     name: 'aws://account/region',
-//     region: 'region',
-//   });
-//   expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
-// });
-
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
     currentCfnStackResources[stackName] = [];
