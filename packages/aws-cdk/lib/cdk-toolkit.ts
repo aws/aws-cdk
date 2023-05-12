@@ -445,6 +445,14 @@ export class CdkToolkit {
       throw new Error('--resource-mapping is required when input is not a terminal');
     }
 
+    if (options.notificationArns) {
+      options.notificationArns.map( arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
+    }
+
     const stack = stacks.stackArtifacts[0];
 
     highlight(stack.displayName);
@@ -493,6 +501,7 @@ export class CdkToolkit {
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
+      notificationArns: options.notificationArns,
     });
 
     // Notify user of next steps
@@ -1093,6 +1102,11 @@ export interface ImportOptions extends CfnDeployOptions {
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * ARNs of SNS topics that CloudFormation will notify with stack related events
+   */
+  notificationArns?: string[];
 }
 
 export interface DestroyOptions {
