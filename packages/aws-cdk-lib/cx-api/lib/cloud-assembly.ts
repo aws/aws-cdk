@@ -1,18 +1,30 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { LoadManifestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
-import { LoadManifestOptions } from '../../cloud-assembly-schema';
-import * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * The name of the root manifest file of the assembly.
  */
 const MANIFEST_FILE = 'manifest.json';
+
+/**
+ * Options for CloudAssembly constructor
+ */
+export interface CloudAssemblyOptions extends LoadManifestOptions {
+  /**
+   * Topologically sort all artifacts
+   *
+   * @default true
+   */
+  readonly topoSort?: boolean;
+}
 
 /**
  * Represents a deployable cloud application.
@@ -47,12 +59,12 @@ export class CloudAssembly {
    * Reads a cloud assembly from the specified directory.
    * @param directory The root directory of the assembly.
    */
-  constructor(directory: string, loadOptions?: LoadManifestOptions) {
+  constructor(directory: string, loadOptions?: CloudAssemblyOptions) {
     this.directory = directory;
 
     this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE), loadOptions);
     this.version = this.manifest.version;
-    this.artifacts = this.renderArtifacts();
+    this.artifacts = this.renderArtifacts(loadOptions?.topoSort ?? true);
     this.runtime = this.manifest.runtime || { libraries: { } };
 
     // force validation of deps by accessing 'depends' on all artifacts
@@ -219,7 +231,7 @@ export class CloudAssembly {
     }
   }
 
-  private renderArtifacts() {
+  private renderArtifacts(topoSort: boolean) {
     const result = new Array<CloudArtifact>();
     for (const [name, artifact] of Object.entries(this.manifest.artifacts || { })) {
       const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
@@ -228,7 +240,7 @@ export class CloudAssembly {
       }
     }
 
-    return topologicalSort(result, x => x.id, x => x._dependencyIDs); // TODO: remove redundant toposort
+    return topoSort ? topologicalSort(result, x => x.id, x => x._dependencyIDs) : result;
   }
 }
 
