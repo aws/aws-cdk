@@ -814,7 +814,7 @@ sends most of its logs to `stderr`, but when `ci=true` it will send the logs to 
 
 ### Changing the default TypeScript transpiler
 
-The ts-node supports an alternate transpiler that might improve transpile times. The SWC transpiler is written in Rust and has no type checking. The SWC transpiler should be enabled by experienced TypeScript developers.
+The ts-node package used to synthesize and deploy CDK apps supports an alternate transpiler that might improve transpile times. The SWC transpiler is written in Rust and has no type checking. The SWC transpiler should be enabled by experienced TypeScript developers.
 
 To enable the SWC transpiler, install the package in the CDK app.
 
