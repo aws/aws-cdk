@@ -476,6 +476,99 @@ describe('gateway route', () => {
       });
     });
 
+    describe('With multiple listener port matching and routing', () => {
+      test('should have expected ports', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+          listeners: [appmesh.VirtualGatewayListener.http()],
+          mesh: mesh,
+        });
+
+        const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+          virtualServiceName: 'target.local',
+        });
+
+        // Add an HTTP Route
+        virtualGateway.addGatewayRoute('gateway-http-route', {
+          routeSpec: appmesh.GatewayRouteSpec.http({
+            routeTarget: virtualService,
+            match: {
+              matchPort: 1000,
+            },
+            targetPort: 2000,
+          }),
+          gatewayRouteName: 'gateway-http-route',
+        });
+
+        virtualGateway.addGatewayRoute('gateway-grpc-route', {
+          routeSpec: appmesh.GatewayRouteSpec.grpc({
+            routeTarget: virtualService,
+            match: {
+              serviceName: virtualService.virtualServiceName,
+              matchPort: 3000,
+            },
+            targetPort: 4000,
+          }),
+          gatewayRouteName: 'gateway-grpc-route',
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-http-route',
+          MeshOwner: Match.absent(),
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                    },
+                  },
+                  Port: 2000,
+                },
+              },
+              Match: {
+                Prefix: '/',
+                Port: 1000,
+              },
+            },
+          },
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'gateway-grpc-route',
+          Spec: {
+            GrpcRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                    },
+                  },
+                  Port: 4000,
+                },
+              },
+              Match: {
+                ServiceName: {
+                  'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                },
+                Port: 3000,
+              },
+            },
+          },
+        });
+      });
+    });
+
     describe('with host name match', () => {
       test('should match based on host name', () => {
         // GIVEN
