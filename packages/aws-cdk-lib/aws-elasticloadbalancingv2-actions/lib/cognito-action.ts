@@ -1,4 +1,6 @@
+import { Construct, IConstruct } from 'constructs';
 import * as cognito from '../../aws-cognito';
+import { Port } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration } from '../../core';
 
@@ -65,28 +67,62 @@ export interface AuthenticateCognitoActionProps {
    * @default Duration.days(7)
    */
   readonly sessionTimeout?: Duration;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the IdP.
+   *
+   * Set this property to false if the IP address used for the IdP endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the IdP's IP address using the listener's `connections` property.
+   *
+   * @default true
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**
  * A Listener Action to authenticate with Cognito
  */
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
+
+  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
+    return {
+      userPoolArn: options.userPool.userPoolArn,
+      userPoolClientId: options.userPoolClient.userPoolClientId,
+      userPoolDomain: options.userPoolDomain.domainName,
+      authenticationRequestExtraParams: options.authenticationRequestExtraParams,
+      onUnauthenticatedRequest: options.onUnauthenticatedRequest,
+      scope: options.scope,
+      sessionCookieName: options.sessionCookieName,
+      sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
+    };
+  }
+
+  private readonly allowHttpsOutbound: boolean;
+
   /**
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
   constructor(options: AuthenticateCognitoActionProps) {
     super({
       type: 'authenticate-cognito',
-      authenticateCognitoConfig: {
-        userPoolArn: options.userPool.userPoolArn,
-        userPoolClientId: options.userPoolClient.userPoolClientId,
-        userPoolDomain: options.userPoolDomain.domainName,
-        authenticationRequestExtraParams: options.authenticationRequestExtraParams,
-        onUnauthenticatedRequest: options.onUnauthenticatedRequest,
-        scope: options.scope,
-        sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
-      },
+      authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
     }, options.next);
+
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
+    this.addRuleAction({
+      type: 'authenticate-cognito',
+      authenticateCognitoConfig: {
+        ...AuthenticateCognitoAction.config(options),
+        sessionTimeout: options.sessionTimeout?.toSeconds(),
+      },
+    });
+  }
+  public bind(scope: Construct, listener: elbv2.IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    if (!this.allowHttpsOutbound) return;
+    listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
   }
 }

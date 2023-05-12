@@ -391,6 +391,25 @@
     }
    }
   },
+  "Certificate4E7ABB08": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-cognito/Certificate"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
   "LB8A12904C": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -432,11 +451,11 @@
     "GroupDescription": "Automatically created Security Group for ELB integcognitoLBFBBBA626",
     "SecurityGroupEgress": [
      {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow to IdP endpoint",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
      }
     ],
     "SecurityGroupIngress": [
@@ -459,6 +478,7 @@
     "DefaultActions": [
      {
       "AuthenticateCognitoConfig": {
+       "SessionTimeout": "86400",
        "UserPoolArn": {
         "Fn::GetAtt": [
          "UserPool6BA7E5F2",
@@ -490,11 +510,62 @@
     },
     "Certificates": [
      {
-      "CertificateArn": ""
+      "CertificateArn": {
+       "Ref": "Certificate4E7ABB08"
+      }
      }
     ],
     "Port": 443,
     "Protocol": "HTTPS"
+   }
+  },
+  "LBListenerAction2RuleDEE172B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "AuthenticateCognitoConfig": {
+       "SessionTimeout": 86400,
+       "UserPoolArn": {
+        "Fn::GetAtt": [
+         "UserPool6BA7E5F2",
+         "Arn"
+        ]
+       },
+       "UserPoolClientId": {
+        "Ref": "Client4A7F64DF"
+       },
+       "UserPoolDomain": {
+        "Ref": "Domain66AC69E0"
+       }
+      },
+      "Order": 1,
+      "Type": "authenticate-cognito"
+     },
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Authenticated",
+       "StatusCode": "200"
+      },
+      "Order": 2,
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "Values": [
+        "action2*"
+       ]
+      }
+     }
+    ],
+    "Priority": 1,
+    "ListenerArn": {
+     "Ref": "LBListener49E825B4"
+    }
    }
   },
   "UserPool6BA7E5F2": {
@@ -525,8 +596,8 @@
      "SmsMessage": "The verification code to your new account is {####}"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Client4A7F64DF": {
    "Type": "AWS::Cognito::UserPoolClient",
@@ -543,21 +614,7 @@
      "openid"
     ],
     "CallbackURLs": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "https://",
-        {
-         "Fn::GetAtt": [
-          "LB8A12904C",
-          "DNSName"
-         ]
-        },
-        "/oauth2/idpresponse"
-       ]
-      ]
-     }
+     "https://*.example.com/oauth2/idpresponse"
     ],
     "ExplicitAuthFlows": [
      "ALLOW_USER_PASSWORD_AUTH",
@@ -573,20 +630,404 @@
   "Domain66AC69E0": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "test-cdk-prefix",
+    "Domain": "z23abc4xyzl05b",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
    }
+  },
+  "ARecordE7B57761": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "example.com.",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "LB8A12904C",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "LB8A12904C",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
+  },
+  "UserFDDCDD17": {
+   "Type": "Custom::CognitoUser",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"adminCreateUser\",\"parameters\":{\"UserPoolId\":\"",
+       {
+        "Ref": "UserPool6BA7E5F2"
+       },
+       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "UserCustomResourcePolicyC2EB5139"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "UserCustomResourcePolicyC2EB5139": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cognito-idp:AdminCreateUser",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "UserPool6BA7E5F2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "UserCustomResourcePolicyC2EB5139",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
+  "UserSetUserPasswordAD2F2A64": {
+   "Type": "Custom::CognitoUserPassword",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"adminSetUserPassword\",\"parameters\":{\"UserPoolId\":\"",
+       {
+        "Ref": "UserPool6BA7E5F2"
+       },
+       "\",\"Username\":\"",
+       {
+        "Fn::GetAtt": [
+         "UserFDDCDD17",
+         "User.Username"
+        ]
+       },
+       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "UserCustomResourcePolicyC2EB5139",
+    "UserFDDCDD17",
+    "UserSetUserPasswordCustomResourcePolicy7B250C76"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "UserSetUserPasswordCustomResourcePolicy7B250C76": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cognito-idp:AdminSetUserPassword",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "UserPool6BA7E5F2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "UserSetUserPasswordCustomResourcePolicy7B250C76",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "UserCustomResourcePolicyC2EB5139",
+    "UserFDDCDD17"
+   ]
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ]
+  },
+  "SigninServiceRole24B8BB32": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Signin352C80E6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1832f4c7bb54fe8f4eb5677dc53ae4204e4b27b12077ddd397a6755206864302.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "SigninServiceRole24B8BB32",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "TEST_USERNAME": "test-user@example.com",
+      "TEST_PASSWORD": "TestUser@123",
+      "TEST_URL": "https://*.example.com"
+     }
+    },
+    "FunctionName": "cdk-integ-alb-cognito-signin-handler",
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Runtime": "nodejs18.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "SigninServiceRole24B8BB32"
+   ]
   }
  },
  "Outputs": {
   "DNS": {
+   "Value": "*.example.com"
+  },
+  "ExportsOutputRefSignin352C80E64BA58F71": {
    "Value": {
-    "Fn::GetAtt": [
-     "LB8A12904C",
-     "DNSName"
-    ]
+    "Ref": "Signin352C80E6"
+   },
+   "Export": {
+    "Name": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
+   }
+  }
+ },
+ "Mappings": {
+  "DefaultCrNodeVersionMap": {
+   "af-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs16.x"
+   },
+   "me-central-1": {
+    "value": "nodejs16.x"
+   },
+   "me-south-1": {
+    "value": "nodejs16.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-2": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs14.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-west-2": {
+    "value": "nodejs16.x"
    }
   }
  },

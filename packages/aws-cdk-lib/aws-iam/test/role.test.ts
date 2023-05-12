@@ -1,7 +1,7 @@
-import { Template, Match, Annotations } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '../../core';
 import { Construct } from 'constructs';
+import { Template, Match, Annotations } from '../../assertions';
+import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '../../core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
 describe('isRole() returns', () => {
@@ -1293,15 +1293,4 @@ test('cross-env role ARNs include path', () => {
       ],
     },
   });
-});
-
-test('fromRoleName should validate role name (only if not a token)', () => {
-  const app = new App();
-  const stack = new Stack(app, 'MyStack');
-  expect(() => {
-    Role.fromRoleName(stack, 'Invalid role name', 'arn:aws:iam::***:role/myrole');
-  }).toThrow(/does not match the IAM conventions/);
-  expect(() => {
-    Role.fromRoleName(stack, 'Token', '${Token[TOKEN.26]}');
-  }).not.toThrow();
 });

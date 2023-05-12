@@ -1,12 +1,19 @@
 import { EOL } from 'os';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { BucketPolicy } from './bucket-policy';
+import { IBucketNotificationDestination } from './destination';
+import { BucketNotifications } from './notifications-resource';
+import * as perms from './perms';
+import { LifecycleRule } from './rule';
+import { CfnBucket } from './s3.generated';
+import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Duration,
   FeatureFlags,
   Fn,
@@ -20,18 +27,11 @@ import {
   Token,
   Tokenization,
   Annotations,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
-import { Construct } from 'constructs';
-import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
-import { BucketNotifications } from './notifications-resource';
-import * as perms from './perms';
-import { LifecycleRule } from './rule';
-import { CfnBucket } from './s3.generated';
-import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -539,6 +539,8 @@ export abstract class BucketBase extends Resource implements IBucket {
   private notifications?: BucketNotifications;
 
   protected notificationsHandlerRole?: iam.IRole;
+
+  protected objectOwnership?: ObjectOwnership;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -1610,10 +1612,11 @@ export interface Tag {
  * BucketResource.
  *
  * @example
+ * import { RemovalPolicy } from 'aws-cdk-lib';
  *
- * new Bucket(scope, 'Bucket', {
- *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
- *   encryption: BucketEncryption.S3_MANAGED,
+ * new s3.Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+ *   encryption: s3.BucketEncryption.S3_MANAGED,
  *   enforceSSL: true,
  *   versioned: true,
  *   removalPolicy: RemovalPolicy.RETAIN,
@@ -1833,6 +1836,7 @@ export class Bucket extends BucketBase {
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
 
+    this.objectOwnership = props.objectOwnership;
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1845,7 +1849,7 @@ export class Bucket extends BucketBase {
       accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: this.parseOwnershipControls(props),
+      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
@@ -2189,13 +2193,26 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
-    if (!objectOwnership) {
+  private parseOwnershipControls(): CfnBucket.OwnershipControlsProperty | undefined {
+    // Enabling an ACL explicitly is required for all new buckets.
+    // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
+    const aclsThatDoNotRequireObjectOwnership = [
+      BucketAccessControl.PRIVATE,
+      BucketAccessControl.BUCKET_OWNER_READ,
+      BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+    ];
+    const accessControlRequiresObjectOwnership = (this.accessControl && !aclsThatDoNotRequireObjectOwnership.includes(this.accessControl));
+    if (!this.objectOwnership && !accessControlRequiresObjectOwnership) {
       return undefined;
     }
+
+    if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
+      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
+    }
+
     return {
       rules: [{
-        objectOwnership,
+        objectOwnership: this.objectOwnership ?? ObjectOwnership.OBJECT_WRITER,
       }],
     };
   }
@@ -2374,7 +2391,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

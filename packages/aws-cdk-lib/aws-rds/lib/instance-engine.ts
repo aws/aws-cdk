@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
+import * as iam from '../../aws-iam';
+import * as secretsmanager from '../../aws-secretsmanager';
 
 /**
  * The options passed to `IInstanceEngine.bind`.
@@ -1825,6 +1825,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
         s3Import: 'S3_INTEGRATION',
         s3Export: 'S3_INTEGRATION',
       },
+      engineFamily: 'SQLSERVER',
     });
   }
 

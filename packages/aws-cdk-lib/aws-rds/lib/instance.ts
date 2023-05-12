@@ -1,12 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -18,6 +9,15 @@ import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, Rot
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * A database instance
@@ -48,6 +48,14 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly dbInstanceEndpointPort: string;
 
   /**
+   * The AWS Region-unique, immutable identifier for the DB instance.
+   * This identifier is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB instance is accessed.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
+   */
+  readonly instanceResourceId?: string;
+
+  /**
    * The instance endpoint.
    */
   readonly instanceEndpoint: Endpoint;
@@ -66,10 +74,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
 
   /**
    * Grant the given identity connection access to the database.
-   * **Note**: this method does not currently work, see https://github.com/aws/aws-cdk/issues/11851 for details.
-   * @see https://github.com/aws/aws-cdk/issues/11851
+   *
+   * @param grantee the Principal to grant the permissions to
+   * @param dbUser the name of the database user to allow connecting as to the db instance
    */
-  grantConnect(grantee: iam.IGrantable): iam.Grant;
+  grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant;
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
@@ -96,6 +105,14 @@ export interface DatabaseInstanceAttributes {
    * The database port.
    */
   readonly port: number;
+
+  /**
+   * The AWS Region-unique, immutable identifier for the DB instance.
+   * This identifier is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB instance is accessed.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
+   */
+  readonly instanceResourceId?: string;
 
   /**
    * The security groups of the instance.
@@ -130,6 +147,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
       public readonly engine = attrs.engine;
       protected enableIamAuthentication = true;
+      public readonly instanceResourceId = attrs.instanceResourceId;
     }
 
     return new Import(scope, id);
@@ -138,6 +156,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly instanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
+  public abstract readonly instanceResourceId?: string;
   public abstract readonly instanceEndpoint: Endpoint;
   // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
   public abstract readonly engine?: IInstanceEngine;
@@ -158,16 +177,33 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     });
   }
 
-  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    if (!this.instanceResourceId) {
+      throw new Error('For imported Database Instances, instanceResourceId is required to grantConnect()');
+    }
+
+    if (!dbUser) {
+      throw new Error('For imported Database Instances, the dbUser is required to grantConnect()');
     }
 
     this.enableIamAuthentication = true;
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['rds-db:connect'],
-      resourceArns: [this.instanceArn],
+      resourceArns: [
+        // The ARN of an IAM policy for IAM database access is not the same as the instance ARN, so we cannot use `this.instanceArn`.
+        // See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html
+        Stack.of(this).formatArn({
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          service: 'rds-db',
+          resource: 'dbuser',
+          resourceName: [this.instanceResourceId, dbUser].join('/'),
+        }),
+      ],
     });
   }
 
@@ -502,7 +538,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * @default 7 this is the free tier
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -1029,6 +1065,26 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       target: this,
     });
   }
+
+  /**
+   * Grant the given identity connection access to the database.
+   *
+   * @param grantee the Principal to grant the permissions to
+   * @param dbUser the name of the database user to allow connecting as to the db instance
+   *
+   * @default the default user, obtained from the Secret
+   */
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+    if (!dbUser) {
+      if (!this.secret) {
+        throw new Error('A secret or dbUser is required to grantConnect()');
+      }
+
+      dbUser = this.secret.secretValueFromJson('username').toString();
+    }
+
+    return super.grantConnect(grantee, dbUser);
+  }
 }
 
 /**
@@ -1074,6 +1130,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -1095,6 +1152,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
+    this.instanceResourceId = instance.attrDbiResourceId;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
@@ -1141,6 +1199,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -1172,6 +1231,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
+    this.instanceResourceId = instance.attrDbiResourceId;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
@@ -1229,6 +1289,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
+  public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
@@ -1260,6 +1321,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
+    this.instanceResourceId = instance.attrDbInstanceArn;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);

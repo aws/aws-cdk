@@ -112,7 +112,7 @@ export interface FileAssetSource {
    *
    * The command should produce the location of a ZIP file on `stdout`.
    *
-   * @default - Exactly one of `directory` and `executable` is required
+   * @default - Exactly one of `fileName` and `executable` is required
    */
   readonly executable?: string[];
 
@@ -121,7 +121,7 @@ export interface FileAssetSource {
    * source resides. This can be a path to a file or a directory, depending on the
    * packaging type.
    *
-   * @default - Exactly one of `directory` and `executable` is required
+   * @default - Exactly one of `fileName` and `executable` is required
    */
   readonly fileName?: string;
 
@@ -377,7 +377,13 @@ export interface DockerCacheOption {
    * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
    * @default {} No options provided
    *
-   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   * @example
+   * declare const branch: string;
+   *
+   * const params = {
+   *   ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,
+   *   mode: "max",
+   * };
    */
   readonly params?: { [key: string]: string };
 }

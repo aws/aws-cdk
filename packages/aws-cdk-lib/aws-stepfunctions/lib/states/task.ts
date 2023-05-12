@@ -1,8 +1,8 @@
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as cdk from '../../../core';
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';

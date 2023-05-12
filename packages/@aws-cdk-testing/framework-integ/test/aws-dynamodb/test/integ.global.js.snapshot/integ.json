@@ -1,14 +1,12 @@
 {
   "version": "31.0.0",
   "testCases": {
-    "integ.global": {
+    "cdk-dynamodb-global-20191121-test/DefaultTest": {
       "stacks": [
         "cdk-dynamodb-global-20191121"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

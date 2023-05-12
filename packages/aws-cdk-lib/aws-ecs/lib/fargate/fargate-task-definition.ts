@@ -1,5 +1,5 @@
-import { Tokenization, Token } from '../../../core';
 import { Construct } from 'constructs';
+import { Tokenization, Token } from '../../../core';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -120,6 +120,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       compatibility: Compatibility.FARGATE,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 
