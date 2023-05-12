@@ -70,7 +70,14 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'asset-publish',
       id: publishNodeId,
-      dependencies: new Set([buildId]),
+      dependencies: new Set([
+        buildId,
+        // The asset publish step also depends on the stacks that the parent depends on.
+        // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
+        // is going to interfere with the progress bar of the stack deployment. We could remove this
+        // for overall faster deployments if we ever have a better method of progress displaying.
+        ...this.getDepIds(parentStack.dependencies),
+      ]),
       parentStack,
       assetManifestArtifact: assetArtifact,
       assetManifest,

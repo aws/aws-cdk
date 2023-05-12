@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { LoadManifestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
+import { LoadManifestOptions } from '../../cloud-assembly-schema';
+import * as cxschema from '../../cloud-assembly-schema';
 
 /**
  * The name of the root manifest file of the assembly.
