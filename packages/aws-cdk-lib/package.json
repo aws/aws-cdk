@@ -368,6 +368,7 @@
     "./aws-opsworks": "./aws-opsworks/index.js",
     "./aws-opsworkscm": "./aws-opsworkscm/index.js",
     "./aws-organizations": "./aws-organizations/index.js",
+    "./aws-osis": "./aws-osis/index.js",
     "./aws-panorama": "./aws-panorama/index.js",
     "./aws-personalize": "./aws-personalize/index.js",
     "./aws-pinpoint": "./aws-pinpoint/index.js",
