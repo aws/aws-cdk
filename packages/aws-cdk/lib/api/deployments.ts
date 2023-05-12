@@ -223,9 +223,9 @@ export interface BuildStackAssetsOptions extends AssetOptions {
   readonly buildOptions?: BuildAssetsOptions;
 
   /**
-   * Reporting prefix
+   * Stack name this asset is for
    */
-  readonly prefix?: string;
+  readonly stackName?: string;
 }
 
 interface PublishStackAssetsOptions extends AssetOptions {
@@ -235,9 +235,9 @@ interface PublishStackAssetsOptions extends AssetOptions {
   readonly publishOptions?: Omit<PublishAssetsOptions, 'buildAssets'>;
 
   /**
-   * Reporting prefix
+   * Stack name this asset is for
    */
-  readonly prefix?: string;
+  readonly stackName?: string;
 }
 
 export interface DestroyStackOptions {
@@ -291,6 +291,7 @@ export class Deployments {
   private readonly sdkProvider: SdkProvider;
   private readonly toolkitInfoCache = new Map<string, ToolkitInfo>();
   private readonly sdkCache = new Map<string, SdkForEnvironment>();
+  private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
 
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
@@ -586,10 +587,7 @@ export class Deployments {
       assetArtifact.bootstrapStackVersionSsmParameter,
       toolkitInfo);
 
-    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
-      aws: new PublishingAws(this.sdkProvider, stackEnv),
-      progressListener: new ParallelSafeAssetProgress(options.prefix ?? '', this.props.quiet ?? false),
-    });
+    const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     await publisher.buildEntry(asset);
   }
 
@@ -601,12 +599,17 @@ export class Deployments {
     const { resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     // No need to validate anymore, we already did that during build
-
-    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
-      aws: new PublishingAws(this.sdkProvider, stackEnv),
-      progressListener: new ParallelSafeAssetProgress(options.prefix ?? '', this.props.quiet ?? false),
-    });
+    const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     await publisher.publishEntry(asset);
+  }
+
+  /**
+   * Return whether a single asset has been published already
+   */
+  public async isSingleAssetPublished(assetManifest: AssetManifest, asset: IManifestEntry, options: PublishStackAssetsOptions) {
+    const { resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
+    const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
+    return publisher.isEntryPublished(asset);
   }
 
   /**
@@ -646,6 +649,20 @@ export class Deployments {
     const ret = await this.sdkProvider.forEnvironment(environment, mode, options);
     this.sdkCache.set(cacheKey, ret);
     return ret;
+  }
+
+  private cachedPublisher(assetManifest: cdk_assets.AssetManifest, env: cxapi.Environment, stackName?: string) {
+    const existing = this.publisherCache.get(assetManifest);
+    if (existing) {
+      return existing;
+    }
+    const prefix = stackName ? `${stackName}: ` : '';
+    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
+      aws: new PublishingAws(this.sdkProvider, env),
+      progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
+    });
+    this.publisherCache.set(assetManifest, publisher);
+    return publisher;
   }
 }
 

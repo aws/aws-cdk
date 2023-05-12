@@ -1,5 +1,6 @@
-/* eslint-disable no-console */
 import { WorkNode, DeploymentState, StackNode, AssetBuildNode, AssetPublishNode } from './work-graph-types';
+
+export type Concurrency = number | Record<WorkNode['type'], number>;
 
 export class WorkGraph {
   public readonly nodes: Record<string, WorkNode>;
@@ -15,12 +16,43 @@ export class WorkGraph {
     for (const node of nodes) {
       const ld = this.lazyDependencies.get(node.id);
       if (ld) {
-        node.dependencies.push(...ld);
+        for (const x of ld) {
+          node.dependencies.add(x);
+        }
         this.lazyDependencies.delete(node.id);
       }
 
       this.nodes[node.id] = node;
     }
+  }
+
+  public removeNode(nodeId: string | WorkNode) {
+    const id = typeof nodeId === 'string' ? nodeId : nodeId.id;
+    const removedNode = this.nodes[id];
+
+    this.lazyDependencies.delete(id);
+    delete this.nodes[id];
+
+    if (removedNode) {
+      for (const node of Object.values(this.nodes)) {
+        node.dependencies.delete(removedNode.id);
+      }
+    }
+  }
+
+  /**
+   * Return all nodes of a given type
+   */
+  public nodesOfType<T extends WorkNode['type']>(type: T): Extract<WorkNode, { type: T }>[] {
+    return Object.values(this.nodes).filter(n => n.type === type) as any;
+  }
+
+  /**
+   * Return all nodes that depend on a given node
+   */
+  public dependees(nodeId: string | WorkNode) {
+    const id = typeof nodeId === 'string' ? nodeId : nodeId.id;
+    return Object.values(this.nodes).filter(n => n.dependencies.has(id));
   }
 
   /**
@@ -29,7 +61,7 @@ export class WorkGraph {
   public addDependency(fromId: string, toId: string) {
     const node = this.nodes[fromId];
     if (node) {
-      node.dependencies.push(toId);
+      node.dependencies.add(toId);
       return;
     }
     let lazyDeps = this.lazyDependencies.get(fromId);
@@ -61,19 +93,7 @@ export class WorkGraph {
     return this.readyPool.length > 0;
   }
 
-  public next(): WorkNode | undefined {
-    this.updateReadyPool();
-    if (this.readyPool.length > 0) {
-      const node = this.readyPool.shift()!;
-      // we experienced a failed deployment elsewhere
-      if (node.deploymentState !== DeploymentState.QUEUED) { return undefined; }
-      node.deploymentState = DeploymentState.DEPLOYING;
-      return node;
-    }
-    return undefined;
-  }
-
-  public doParallel(concurrency: number, actions: WorkGraphActions) {
+  public doParallel(concurrency: Concurrency, actions: WorkGraphActions) {
     return this.forAllArtifacts(concurrency, async (x: WorkNode) => {
       switch (x.type) {
         case 'stack':
@@ -89,37 +109,74 @@ export class WorkGraph {
     });
   }
 
-  private forAllArtifacts(n: number, fn: (x: WorkNode) => Promise<void>): Promise<void> {
+  /**
+   * Return the set of unblocked nodes
+   */
+  public ready(): ReadonlyArray<WorkNode> {
+    this.updateReadyPool();
+    return this.readyPool;
+  }
+
+  private forAllArtifacts(n: Concurrency, fn: (x: WorkNode) => Promise<void>): Promise<void> {
     const graph = this;
 
+    // If 'n' is a number, we limit all concurrency equally (effectively we will be using totalMax)
+    // If 'n' is a record, we limit each job independently (effectively we will be using max)
+    const max: Record<WorkNode['type'], number> = typeof n === 'number' ?
+      {
+        'asset-build': n,
+        'asset-publish': n,
+        'stack': n,
+      } : n;
+    const totalMax = typeof n === 'number' ? n : sum(Object.values(n));
+
     return new Promise((ok, fail) => {
-      let active = 0;
+      let active: Record<WorkNode['type'], number> = {
+        'asset-build': 0,
+        'asset-publish': 0,
+        'stack': 0,
+      };
+      function totalActive() {
+        return sum(Object.values(active));
+      }
 
       start();
 
       function start() {
-        while (graph.hasNext() && active < n) {
-          startOne(graph.next()!);
+        graph.updateReadyPool();
+
+        for (let i = 0; i < graph.readyPool.length; ) {
+          const node = graph.readyPool[i];
+          // if (node.deploymentState !== DeploymentState.QUEUED) { continue; }
+
+          if (active[node.type] < max[node.type] && totalActive() < totalMax) {
+            graph.readyPool.splice(i, 1);
+            startOne(node);
+          } else {
+            i += 1;
+          }
         }
 
-        if (graph.done() && active === 0) {
-          ok();
-        }
-
-        // wait for other active deploys to finish before failing
-        if (graph.hasFailed() && active === 0) {
-          fail(graph.error);
+        if (totalActive() === 0) {
+          if (graph.done()) {
+            ok();
+          }
+          // wait for other active deploys to finish before failing
+          if (graph.hasFailed()) {
+            fail(graph.error);
+          }
         }
       }
 
       function startOne(x: WorkNode) {
-        active++;
+        x.deploymentState = DeploymentState.DEPLOYING;
+        active[x.type]++;
         void fn(x).then(() => {
-          active--;
+          active[x.type]--;
           graph.deployed(x);
           start();
         }).catch((err) => {
-          active--;
+          active[x.type]--;
           // By recording the failure immediately as the queued task exits, we prevent the next
           // queued task from starting.
           graph.failed(x, err);
@@ -130,7 +187,7 @@ export class WorkGraph {
   }
 
   private done(): boolean {
-    return Object.values(this.nodes).every((n) => [DeploymentState.COMPLETED, DeploymentState.DEPLOYING].includes(n.deploymentState));
+    return Object.values(this.nodes).every((n) => DeploymentState.COMPLETED === n.deploymentState);
   }
 
   private deployed(node: WorkNode) {
@@ -141,11 +198,12 @@ export class WorkGraph {
     this.error = error;
     node.deploymentState = DeploymentState.FAILED;
     this.skipRest();
+    this.readyPool.splice(0);
   }
 
   public toString() {
     return Object.entries(this.nodes).map(([id, node]) =>
-      `${id} -> ${node.type} ${node.deploymentState} ${node.dependencies}`,
+      `${id} := ${node.deploymentState} ${node.type} ${node.dependencies.size > 0 ? `(${Array.from(node.dependencies)})` : ''}`.trim(),
     ).join(', ');
   }
 
@@ -164,8 +222,7 @@ export class WorkGraph {
         }
       }
       removeDeps.forEach((d) => {
-        const i = node.dependencies.indexOf(d);
-        node.dependencies.splice(i, 1);
+        node.dependencies.delete(d);
       });
     }
   }
@@ -180,7 +237,7 @@ export class WorkGraph {
           break;
         case DeploymentState.PENDING:
           pendingCount += 1;
-          if (node.dependencies.every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED)) {
+          if (Array.from(node.dependencies).every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED)) {
             node.deploymentState = DeploymentState.QUEUED;
             this.readyPool.push(node);
           }
@@ -194,6 +251,9 @@ export class WorkGraph {
         this.readyPool.splice(i, 1);
       }
     }
+
+    // Sort by reverse priority
+    this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
       throw new Error(`Unable to make progress anymore among: ${this}`);
@@ -213,4 +273,12 @@ export interface WorkGraphActions {
   deployStack: (stackNode: StackNode) => Promise<void>;
   buildAsset: (assetNode: AssetBuildNode) => Promise<void>;
   publishAsset: (assetNode: AssetPublishNode) => Promise<void>;
+}
+
+function sum(xs: number[]) {
+  let ret = 0;
+  for (const x of xs) {
+    ret += x;
+  }
+  return ret;
 }

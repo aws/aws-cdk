@@ -4,7 +4,7 @@ import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
-import { Deployments } from '../lib/api/cloudformation-deployments';
+import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;

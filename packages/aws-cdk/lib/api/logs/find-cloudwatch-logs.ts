@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
-import { Deployments } from '../cloudformation-deployments';
+import { Deployments } from '../deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored

@@ -8,9 +8,9 @@ import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { Deployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
@@ -22,6 +22,7 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
@@ -195,7 +196,7 @@ export class CdkToolkit {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
-        prefix: `${assetNode.parentStack.stackName}:`,
+        stackName: assetNode.parentStack.stackName,
       });
     };
 
@@ -204,7 +205,7 @@ export class CdkToolkit {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         toolkitStackName: options.toolkitStackName,
-        prefix: `${assetNode.parentStack.stackName}:`,
+        stackName: assetNode.parentStack.stackName,
       });
     };
 
@@ -349,7 +350,18 @@ export class CdkToolkit {
       ]);
       const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
 
-      await workGraph.doParallel(concurrency, {
+      // Unless we are running with '--force', skip already published assets
+      if (!options.force) {
+        await this.removePublishedAssets(workGraph, options);
+      }
+
+      const graphConcurrency: Concurrency = {
+        'stack': concurrency,
+        'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+        'asset-publish': options.assetParallelism ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+      };
+
+      await workGraph.doParallel(graphConcurrency, {
         deployStack,
         buildAsset,
         publishAsset,
@@ -797,6 +809,31 @@ export class CdkToolkit {
       await this.deploy(deployOptions);
     } catch {
       // just continue - deploy will show the error
+    }
+  }
+
+  /**
+   * Remove the asset publishing and building from the work graph for assets that are already in place
+   */
+  private async removePublishedAssets(graph: WorkGraph, options: DeployOptions) {
+    const publishes = graph.nodesOfType('asset-publish');
+    for (const assetNode of publishes) {
+      const published = await this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
+        stack: assetNode.parentStack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+        stackName: assetNode.parentStack.stackName,
+      });
+
+      if (published) {
+        graph.removeNode(assetNode);
+      }
+    }
+
+    // Now also remove any asset build steps that don't have any dependencies on them anymore
+    const unusedBuilds = graph.nodesOfType('asset-build').filter(build => graph.dependees(build).length === 0);
+    for (const unusedBuild of unusedBuilds) {
+      graph.removeNode(unusedBuild);
     }
   }
 }

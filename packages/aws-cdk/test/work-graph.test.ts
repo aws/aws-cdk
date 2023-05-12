@@ -333,7 +333,7 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
             stackName: node.name, // Used to smuggle sleep duration
             displayName: node.displayName, // Used to smuggle exception triggers
           } as any,
-          dependencies: [...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)],
+          dependencies: new Set([...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)]),
         });
         break;
       case 'asset':
@@ -345,7 +345,7 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
           assetManifest: DUMMY,
           assetManifestArtifact: DUMMY,
           parentStack: DUMMY,
-          dependencies: [...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)],
+          dependencies: new Set([...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)]),
         });
         graph.addNodes({
           type: 'asset-publish',
@@ -355,7 +355,7 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
           assetManifest: DUMMY,
           assetManifestArtifact: DUMMY,
           parentStack: DUMMY,
-          dependencies: [`${node.id}-build`],
+          dependencies: new Set([`${node.id}-build`]),
         });
         break;
     }

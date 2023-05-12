@@ -1,9 +1,24 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { WorkGraph } from './work-graph';
-import { DeploymentState, AssetBuildNode } from './work-graph-types';
+import { DeploymentState, AssetBuildNode, WorkNode } from './work-graph-types';
+
 
 export class WorkGraphBuilder {
+  /**
+   * Default priorities for nodes
+   *
+   * Assets builds have higher priority than the other two operations, to make good on our promise that
+   * '--prebuild-assets' will actually do assets before stacks (if it can). Unfortunately it is the
+   * default :(
+   *
+   * But between stack dependencies and publish dependencies, stack dependencies go first
+   */
+  public static PRIORITIES: Record<WorkNode['type'], number> = {
+    'asset-build': 10,
+    'asset-publish': 0,
+    'stack': 5,
+  };
   private readonly graph = new WorkGraph();
   private readonly assetBuildNodes = new Map<string, AssetBuildNode>;
 
@@ -13,9 +28,10 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
-      dependencies: this.getDepIds(artifact.dependencies),
+      dependencies: new Set(this.getDepIds(artifact.dependencies)),
       stack: artifact,
       deploymentState: DeploymentState.PENDING,
+      priority: WorkGraphBuilder.PRIORITIES.stack,
     });
   }
 
@@ -33,16 +49,17 @@ export class WorkGraphBuilder {
       const node: AssetBuildNode = {
         type: 'asset-build',
         id: buildId,
-        dependencies: [
+        dependencies: new Set([
           ...this.getDepIds(assetArtifact.dependencies),
           // If we disable prebuild, then assets inherit dependencies from their parent stack
           ...!this.prebuildAssets ? this.getDepIds(parentStack.dependencies) : [],
-        ],
+        ]),
         parentStack,
         assetManifestArtifact: assetArtifact,
         assetManifest,
         asset,
         deploymentState: DeploymentState.PENDING,
+        priority: WorkGraphBuilder.PRIORITIES['asset-build'],
       };
       this.assetBuildNodes.set(assetBuildNodeKey, node);
       this.graph.addNodes(node);
@@ -53,12 +70,13 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'asset-publish',
       id: publishNodeId,
-      dependencies: [buildId],
+      dependencies: new Set([buildId]),
       parentStack,
       assetManifestArtifact: assetArtifact,
       assetManifest,
       asset,
       deploymentState: DeploymentState.PENDING,
+      priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
     });
     // This will work whether the stack node has been added yet or not
     this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishNodeId);

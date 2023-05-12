@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import { WorkGraphBuilder } from '../lib/util/work-graph-builder';
-import { AssetBuildNode, AssetPublishNode, StackNode } from '../lib/util/work-graph-types';
+import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '../lib/util/work-graph-types';
 
 let rootBuilder: CloudAssemblyBuilder;
 beforeEach(() => {
@@ -25,7 +25,7 @@ describe('with some stacks and assets', () => {
   test('stack depends on the asset publishing step', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('stack2')).toEqual(expect.objectContaining({
+    expect(assertableNode(graph.node('stack2'))).toEqual(expect.objectContaining({
       type: 'stack',
       dependencies: expect.arrayContaining(['F1:D1-publish']),
     } as StackNode));
@@ -36,8 +36,8 @@ describe('with some stacks and assets', () => {
 
     expect(graph.node('F1:D1-publish')).toEqual(expect.objectContaining({
       type: 'asset-publish',
-      dependencies: ['F1:D1-build'],
-    } as AssetPublishNode));
+      dependencies: new Set(['F1:D1-build']),
+    } as Partial<AssetPublishNode>));
   });
 
   test('with prebuild off, asset building inherits dependencies from their parent stack', () => {
@@ -45,8 +45,8 @@ describe('with some stacks and assets', () => {
 
     expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: ['stack0', 'stack1'],
-    } as AssetBuildNode));
+      dependencies: new Set(['stack0', 'stack1']),
+    } as Partial<AssetBuildNode>));
   });
 
   test('with prebuild on, assets only have their own dependencies', () => {
@@ -54,8 +54,8 @@ describe('with some stacks and assets', () => {
 
     expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: ['stack0'],
-    } as AssetBuildNode));
+      dependencies: new Set(['stack0']),
+    } as Partial<AssetBuildNode>));
   });
 });
 
@@ -103,7 +103,10 @@ test('dependencies on unselected artifacts are silently ignored', async () => {
 
   const asm = rootBuilder.buildAssembly();
   const graph = new WorkGraphBuilder(true).build([asm.getStackArtifact('stackB')]);
-  expect(graph.next()?.dependencies).toEqual([]);
+  expect(graph.ready()[0]).toEqual(expect.objectContaining({
+    id: 'stackB',
+    dependencies: new Set(),
+  }));
 });
 
 /**
@@ -173,4 +176,14 @@ function addSomeStacksAndAssets(builder: CloudAssemblyBuilder) {
     environment: 'aws://11111/us-east-1',
     dependencies: ['stack2assets', 'stack1'],
   });
+}
+
+/**
+ * We can't do arrayContaining on the set that a Node has, so convert it to an array for asserting
+ */
+function assertableNode<A extends WorkNode>(x: A) {
+  return {
+    ...x,
+    dependencies: Array.from(x.dependencies),
+  };
 }

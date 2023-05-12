@@ -4,7 +4,7 @@ jest.mock('../../lib/util/asset-publishing');
 
 import { CloudFormation } from 'aws-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { Deployments } from '../../lib/api/cloudformation-deployments';
+import { Deployments } from '../../lib/api/deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
@@ -403,7 +403,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         break;
 
       default:
-        throw new Error('unknown stack name ' + stackName + ' found in cloudformation-deployments.test.ts');
+        throw new Error('unknown stack name ' + stackName + ' found in deployments.test.ts');
     }
 
     return cfnStack;

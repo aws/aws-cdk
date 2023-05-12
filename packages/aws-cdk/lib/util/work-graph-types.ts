@@ -14,13 +14,15 @@ export type WorkNode = StackNode | AssetBuildNode | AssetPublishNode;
 
 export interface WorkNodeCommon {
   readonly id: string;
-  readonly dependencies: string[];
+  readonly dependencies: Set<string>;
   deploymentState: DeploymentState;
 }
 
 export interface StackNode extends WorkNodeCommon {
   readonly type: 'stack';
   readonly stack: cxapi.CloudFormationStackArtifact;
+  /** Sort by priority when picking up work, higher is earlier */
+  readonly priority?: number;
 }
 
 export interface AssetBuildNode extends WorkNodeCommon {
@@ -33,6 +35,8 @@ export interface AssetBuildNode extends WorkNodeCommon {
   readonly parentStack: cxapi.CloudFormationStackArtifact;
   /** The asset that needs to be built */
   readonly asset: IManifestEntry;
+  /** Sort by priority when picking up work, higher is earlier */
+  readonly priority?: number;
 }
 
 export interface AssetPublishNode extends WorkNodeCommon {
@@ -45,4 +49,6 @@ export interface AssetPublishNode extends WorkNodeCommon {
   readonly parentStack: cxapi.CloudFormationStackArtifact;
   /** The asset that needs to be published */
   readonly asset: IManifestEntry;
+  /** Sort by priority when picking up work, higher is earlier */
+  readonly priority?: number;
 }
