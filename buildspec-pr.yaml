@@ -28,6 +28,7 @@ phases:
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
+      - export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
       - /bin/bash ./build.sh
       - /bin/bash ./scripts/transform.sh
       # After compilation, run Rosetta (using the cache if available).
