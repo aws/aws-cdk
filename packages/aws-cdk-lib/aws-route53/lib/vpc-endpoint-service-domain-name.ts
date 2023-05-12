@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import { IVpcEndpointService } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import { Construct } from 'constructs';
 import { IPublicHostedZone, TxtRecord } from '../lib';
 
 /**

@@ -39,7 +39,7 @@ export class HttpUrlIntegration extends HttpRouteIntegration {
     super(id);
   }
 
-  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       method: this.props.method ?? HttpMethod.ANY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0, // 1.0 is required and is the only supported format

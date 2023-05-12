@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
-import { ArnFormat } from '../../core';
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import * as iam from '../../aws-iam';
+import { ArnFormat } from '../../core';
+import * as cdk from '../../core';
 
 /**
  * Properties for a CrossAccountDestination

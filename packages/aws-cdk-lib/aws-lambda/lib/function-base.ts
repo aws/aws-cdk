@@ -1,8 +1,4 @@
 import { createHash } from 'crypto';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token } from '../../core';
 import { Construct, Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -14,6 +10,10 @@ import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import { Annotations, ArnFormat, IResource, Resource, Token } from '../../core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 

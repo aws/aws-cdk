@@ -1,6 +1,6 @@
-import { Duration } from '../../core';
 import { Chain } from './chain';
 import { State } from './states/state';
+import { Duration } from '../../core';
 
 /**
  * Interface for states that can have 'next' states
