@@ -313,6 +313,13 @@ export interface GraphqlApiProps {
   readonly xrayEnabled?: boolean;
 
   /**
+   * A value indicating whether the API is accessible from anywhere (GLOBAL) or can only be access from a VPC (PRIVATE).
+   *
+   * @default - GLOBAL
+   */
+  readonly visibility?: string;
+
+  /**
    * The domain name configuration for the GraphQL API
    *
    * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
@@ -498,6 +505,7 @@ export class GraphqlApi extends GraphqlApiBase {
       lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
+      visibility: props.visibility,
     });
 
     this.apiId = this.api.attrApiId;
