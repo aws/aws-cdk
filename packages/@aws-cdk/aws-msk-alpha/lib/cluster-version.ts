@@ -96,6 +96,7 @@ export class KafkaVersion {
    * Kafka version 3.4.0
    */
   public static readonly V3_4_0 = KafkaVersion.of('3.4.0');
+
   /**
    * Custom cluster version
    * @param version custom version number
