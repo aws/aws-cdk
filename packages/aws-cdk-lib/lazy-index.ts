@@ -176,6 +176,7 @@ Object.defineProperty(exports, 'aws_opensearchservice', { get: function () { ret
 Object.defineProperty(exports, 'aws_opsworks', { get: function () { return require('./aws-opsworks'); } });
 Object.defineProperty(exports, 'aws_opsworkscm', { get: function () { return require('./aws-opsworkscm'); } });
 Object.defineProperty(exports, 'aws_organizations', { get: function () { return require('./aws-organizations'); } });
+Object.defineProperty(exports, 'aws_osis', { get: function () { return require('./aws-osis'); } });
 Object.defineProperty(exports, 'aws_panorama', { get: function () { return require('./aws-panorama'); } });
 Object.defineProperty(exports, 'aws_personalize', { get: function () { return require('./aws-personalize'); } });
 Object.defineProperty(exports, 'aws_pinpoint', { get: function () { return require('./aws-pinpoint'); } });
