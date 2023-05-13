@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { IsCompleteResponse } from '../../../custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
+import { IsCompleteResponse } from '../../../custom-resources/lib/provider-framework/types';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
 const ProxyAgent = require('proxy-agent');

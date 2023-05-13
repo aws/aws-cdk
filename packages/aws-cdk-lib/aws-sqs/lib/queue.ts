@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '../../core';
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '../../core';
 
 /**
  * Properties for creating a new Queue

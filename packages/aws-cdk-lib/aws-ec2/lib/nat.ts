@@ -1,5 +1,3 @@
-import * as iam from '../../aws-iam';
-import { Fn, Token } from '../../core';
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
@@ -7,6 +5,8 @@ import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
+import * as iam from '../../aws-iam';
+import { Fn, Token } from '../../core';
 
 /**
  * Direction of traffic to allow all by default.

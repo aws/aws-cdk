@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
 import { Default, RegionInfo } from '../../region-info';
-import { Construct } from 'constructs';
-import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 
 /**
  * A load balancer that can host a VPC Endpoint Service

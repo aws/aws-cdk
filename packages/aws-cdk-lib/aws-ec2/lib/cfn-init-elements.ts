@@ -1,9 +1,9 @@
 import * as fs from 'fs';
+import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Duration } from '../../core';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 
 /**
  * An object that represents reasons to restart an InitService
