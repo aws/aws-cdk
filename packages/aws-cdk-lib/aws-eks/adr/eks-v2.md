@@ -29,6 +29,8 @@ When this happens, there are two resources that aren't managed by CFN:
   ```
   
   Only after I manually deleted the security group, the VPC succesfully deletes and the stack as well.
+  
+  Note that I was able to delete the ENI's before deleting the security group, so they don't depend on the security group.
 
 ## Resources
 
