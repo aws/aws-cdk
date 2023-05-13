@@ -20,4 +20,4 @@ When this happens, there are two resources that aren't managed by CFN:
   - **Name:** eks-cluster-sg-Cluster9EE0221C-46503e2383b2404dbc30cbc52a59c844-1533687528
   - **Description:** EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.
   
-  So when the VPC is deleted, its trying to delete the subnet, which cannot be deleted because the ENIs are still using it.
+  So when the VPC is deleted, its trying to delete the subnet, which cannot be deleted because the ENIs are still using it. Also, why does the security group still exist? it should have been deleted by EKS - could it be because the kubectl provider is using it? 
