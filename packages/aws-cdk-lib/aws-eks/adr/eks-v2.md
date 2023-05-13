@@ -31,6 +31,9 @@ When this happens, there are two resources that aren't managed by CFN:
   Only after I manually deleted the security group, the VPC succesfully deletes and the stack as well.
   
   Note that I was able to delete the ENI's before deleting the security group, so they don't depend on the security group.
+  
+  A solution might be to create a custom resource that forcefully deletes the lingering ENI's, either before cluster deletion, or after lambda deletion.
+  ENI's can be filtered by interface type "Lambda". 
 
 ## Resources
 
