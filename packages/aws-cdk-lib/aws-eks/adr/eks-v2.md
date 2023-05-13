@@ -37,3 +37,4 @@ When this happens, there are two resources that aren't managed by CFN:
 - https://github.com/weaveworks/eksctl/issues/5135
 - https://github.com/hashicorp/terraform/pull/8033
 - https://stackoverflow.com/questions/41299662/aws-lambda-created-eni-not-deleting-while-deletion-of-stack
+- https://github.com/hashicorp/terraform-provider-aws/issues/829
