@@ -1891,7 +1891,7 @@ export class LinuxBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  public validate(_: BuildEnvironment): string[] {
+  public validate(_env: BuildEnvironment): string[] {
     return [];
   }
 

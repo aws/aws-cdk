@@ -1,3 +1,289 @@
+# CloudFormation Resource Specification v120.0.0
+
+## New Resource Types
+
+* AWS::AppConfig::Extension
+* AWS::AppConfig::ExtensionAssociation
+* AWS::DataSync::StorageSystem
+* AWS::DevOpsGuru::LogAnomalyDetectionIntegration
+* AWS::FraudDetector::List
+* AWS::IoTWireless::WirelessDeviceImportTask
+* AWS::MSK::ClusterPolicy
+* AWS::MSK::VpcConnection
+* AWS::QuickSight::RefreshSchedule
+* AWS::RAM::Permission
+* AWS::SSMContacts::Plan
+* AWS::SSMContacts::Rotation
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::IntegrationResponse IntegrationResponseId (__added__)
+* AWS::ApiGatewayV2::Route RouteId (__added__)
+* AWS::IoTTwinMaker::Scene GeneratedSceneMetadata (__added__)
+* AWS::Macie::FindingsFilter FindingsFilterListItems (__deleted__)
+* AWS::StepFunctions::StateMachine StateMachineRevisionId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::IntegrationResponse ApiId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ApiGatewayV2::IntegrationResponse IntegrationId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ApiGatewayV2::Route AuthorizationScopes.DuplicatesAllowed (__added__)
+* AWS::AppFlow::ConnectorProfile ConnectorLabel.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AppFlow::ConnectorProfile KMSArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Host HostMaintenance (__added__)
+* AWS::EC2::VPCEndpointServicePermissions AllowedPrincipals.DuplicatesAllowed (__added__)
+* AWS::GameLift::GameServerGroup LaunchTemplate.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Grafana::Workspace NetworkAccessControl (__added__)
+* AWS::Grafana::Workspace AccountAccessType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Grafana::Workspace AuthenticationProviders.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Grafana::Workspace PermissionType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::GroundStation::MissionProfile StreamsKmsKey (__added__)
+* AWS::GroundStation::MissionProfile StreamsKmsRole (__added__)
+* AWS::IVS::Channel InsecureIngest (__added__)
+* AWS::InternetMonitor::Monitor InternetMeasurementsLogDelivery (__added__)
+* AWS::InternetMonitor::Monitor TrafficPercentageToMonitor (__added__)
+* AWS::IoT::DomainConfiguration TlsConfig (__added__)
+* AWS::IoTTwinMaker::Scene SceneMetadata (__added__)
+* AWS::LakeFormation::DataLakeSettings AllowExternalDataFiltering (__added__)
+* AWS::LakeFormation::DataLakeSettings AuthorizedSessionTagValueList (__added__)
+* AWS::LakeFormation::DataLakeSettings CreateDatabaseDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings CreateTableDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings ExternalDataFilteringAllowList (__added__)
+* AWS::LakeFormation::DataLakeSettings Parameters (__added__)
+* AWS::Location::Tracker PricingPlan (__deleted__)
+* AWS::Location::Tracker PricingPlanDataSource (__deleted__)
+* AWS::Logs::SubscriptionFilter DestinationArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter Distribution.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter FilterPattern.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter RoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MWAA::Environment StartupScriptS3ObjectVersion (__added__)
+* AWS::MWAA::Environment StartupScriptS3Path (__added__)
+* AWS::MediaLive::Channel Maintenance (__added__)
+* AWS::MemoryDB::Cluster SubnetGroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MemoryDB::User AccessString.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MemoryDB::User AuthenticationMode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::OpenSearchServerless::AccessPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Policy.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::DBCluster RestoreToTime (__added__)
+* AWS::RDS::DBInstance SourceDBClusterIdentifier (__added__)
+* AWS::RDS::GlobalCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::ApiGatewayV2::Route.ParameterConstraints (__removed__)
+* AWS::Batch::JobDefinition.EmptyDir (__removed__)
+* AWS::Batch::JobDefinition.HostPath (__removed__)
+* AWS::Batch::JobDefinition.Resources (__removed__)
+* AWS::Batch::JobDefinition.SecurityContext (__removed__)
+* AWS::Macie::FindingsFilter.FindingsFilterListItem (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::Batch::JobDefinition.EksContainerResourceRequirements (__added__)
+* AWS::Batch::JobDefinition.EksContainerSecurityContext (__added__)
+* AWS::Batch::JobDefinition.EksEmptyDir (__added__)
+* AWS::Batch::JobDefinition.EksHostPath (__added__)
+* AWS::Batch::JobDefinition.EksSecret (__added__)
+* AWS::Batch::JobDefinition.EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.Metadata (__added__)
+* AWS::Glue::Crawler.DeltaTarget (__added__)
+* AWS::Glue::Database.FederatedDatabase (__added__)
+* AWS::Grafana::Workspace.NetworkAccessControl (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.AwsGroundStationAgentEndpoint (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.ConnectionDetails (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.IntegerRange (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.RangedConnectionDetails (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.RangedSocketAddress (__added__)
+* AWS::GroundStation::MissionProfile.StreamsKmsKey (__added__)
+* AWS::InternetMonitor::Monitor.InternetMeasurementsLogDelivery (__added__)
+* AWS::InternetMonitor::Monitor.S3Config (__added__)
+* AWS::IoT::DomainConfiguration.TlsConfig (__added__)
+* AWS::LakeFormation::DataLakeSettings.CreateDatabaseDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.CreateTableDefaultPermissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.ExternalDataFilteringAllowList (__added__)
+* AWS::LakeFormation::DataLakeSettings.Permissions (__added__)
+* AWS::LakeFormation::DataLakeSettings.PrincipalPermissions (__added__)
+* AWS::MediaLive::Channel.AudioDolbyEDecode (__added__)
+* AWS::MediaLive::Channel.DolbyVision81Settings (__added__)
+* AWS::MediaLive::Channel.Eac3AtmosSettings (__added__)
+* AWS::MediaLive::Channel.Esam (__added__)
+* AWS::MediaLive::Channel.MaintenanceCreateSettings (__added__)
+* AWS::MediaLive::Channel.MaintenanceUpdateSettings (__added__)
+* AWS::MediaLive::Channel.TimecodeBurninSettings (__added__)
+* AWS::VpcLattice::Listener.FixedResponse (__added__)
+* AWS::VpcLattice::Rule.FixedResponse (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.EksContainer Resources.Type (__changed__)
+  * Old: Resources
+  * New: EksContainerResourceRequirements
+* AWS::Batch::JobDefinition.EksContainer SecurityContext.Type (__changed__)
+  * Old: SecurityContext
+  * New: EksContainerSecurityContext
+* AWS::Batch::JobDefinition.EksVolume EmptyDir.Type (__changed__)
+  * Old: EmptyDir
+  * New: EksEmptyDir
+* AWS::Batch::JobDefinition.EksVolume HostPath.Type (__changed__)
+  * Old: HostPath
+  * New: EksHostPath
+* AWS::Batch::JobDefinition.EksVolume Secret.Type (__changed__)
+  * Old: Secret
+  * New: EksSecret
+* AWS::Batch::JobDefinition.PodProperties Metadata (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MapBooleanAsBoolean (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings MapBooleanAsBoolean (__added__)
+* AWS::Glue::Crawler.Targets DeltaTargets (__added__)
+* AWS::Glue::Database.DatabaseInput FederatedDatabase (__added__)
+* AWS::GroundStation::DataflowEndpointGroup.EndpointDetails AwsGroundStationAgentEndpoint (__added__)
+* AWS::MediaLive::Channel.AudioCodecSettings Eac3AtmosSettings (__added__)
+* AWS::MediaLive::Channel.AudioTrackSelection DolbyEDecode (__added__)
+* AWS::MediaLive::Channel.AvailSettings Esam (__added__)
+* AWS::MediaLive::Channel.CaptionDescription Accessibility (__added__)
+* AWS::MediaLive::Channel.FrameCaptureSettings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.H264Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.H265ColorSpaceSettings DolbyVision81Settings (__added__)
+* AWS::MediaLive::Channel.H265Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.M2tsSettings Scte35PrerollPullupMilliseconds (__added__)
+* AWS::MediaLive::Channel.Mpeg2Settings TimecodeBurninSettings (__added__)
+* AWS::MediaLive::Channel.NielsenNaesIiNw Timezone (__added__)
+* AWS::SSMContacts::Contact.Stage RotationIds (__added__)
+* AWS::SSMContacts::Contact.Stage DurationInMinutes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.AsyncInferenceNotificationConfig IncludeInferenceResponseIn (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig S3FailurePath (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig S3OutputPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.ProductionVariant EnableSSMAccess (__added__)
+* AWS::VpcLattice::Listener.DefaultAction FixedResponse (__added__)
+* AWS::VpcLattice::Listener.DefaultAction Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::Rule.Action FixedResponse (__added__)
+* AWS::VpcLattice::Rule.Action Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::TargetGroup.HealthCheckConfig ProtocolVersion (__added__)
+* AWS::VpcLattice::TargetGroup.TargetGroupConfig IpAddressType (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+
+# CloudFormation Resource Specification (us-west-2) v120.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.CognitoEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added CognitoEvent
+
 # CloudFormation Resource Specification v117.0.0
 
 ## New Resource Types
