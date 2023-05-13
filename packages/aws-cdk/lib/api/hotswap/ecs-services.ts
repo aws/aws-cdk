@@ -33,7 +33,8 @@ export async function isHotswappableEcsServiceChange(
     // if there are no resources referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
     reportNonHotswappableChange(ret, change, undefined, 'No ECS services reference the changed task definition', false);
-  } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
+  }
+  if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
     const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
@@ -45,14 +46,18 @@ export async function isHotswappableEcsServiceChange(
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     const taskDefinitionResource = await prepareTaskDefinitionChange(evaluateCfnTemplate, logicalId, change);
+    if (taskDefinitionResource === undefined) {
+      reportNonHotswappableChange(ret, change, undefined, 'Found unsupported changes to the task definition', false);
+      return ret;
+    }
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'ecs-service',
       resourceNames: [
-        `ECS Task Definition '${await taskDefinitionResource.Family}'`,
         ...ecsServicesReferencingTaskDef.map(ecsService => `ECS Service '${ecsService.serviceArn.split('/')[2]}'`),
+        `ECS Task Definition '${taskDefinitionResource.family}'`,
       ],
       apply: async (sdk: ISDK) => {
         // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
@@ -61,8 +66,8 @@ export async function isHotswappableEcsServiceChange(
 
         // The SDK requires more properties here than its worth doing explicit typing for
         // instead, just use all the old values in the diff to fill them in implicitly
-        const lowercasedTaskDef = transformObjectKeys(taskDefinitionResource, lowerCaseFirstCharacter, {
-          // All the properties that take arbitrary string as keys i.e. { "string" : "string" }
+        let lowercasedTaskDef = transformObjectKeys(taskDefinitionResource.taskDefinition, lowerCaseFirstCharacter, {
+          // Don't transform the properties that take arbitrary string as keys i.e. { "string" : "string" }
           // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
           ContainerDefinitions: {
             DockerLabels: true,
@@ -80,6 +85,22 @@ export async function isHotswappableEcsServiceChange(
             },
           },
         });
+
+        if (taskDefinitionResource.hotswappableWithCopy) {
+          // get the latest task definition of the family
+          const describeTaskDefinitionResponse = await sdk
+            .ecs()
+            .describeTaskDefinition({
+              taskDefinition: taskDefinitionResource.family,
+            })
+            .promise();
+          if (describeTaskDefinitionResponse.taskDefinition === undefined) {
+            throw new Error(`Could not find TaskDefinition ${taskDefinitionResource.family}`);
+          }
+          mergeTaskDefinitions(lowercasedTaskDef, describeTaskDefinitionResponse.taskDefinition);
+          lowercasedTaskDef = describeTaskDefinitionResponse.taskDefinition;
+        }
+
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
@@ -167,13 +188,39 @@ export async function isHotswappableEcsServiceChange(
   return ret;
 }
 
+function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[]}, old: AWS.ECS.TaskDefinition) {
+  const src = patch.containerDefinitions;
+  const dst = old.containerDefinitions;
+  if (dst === undefined) return;
+  // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
+  for (const i in src) {
+    for (const key of Object.keys(src[i])) {
+      (dst[i] as any)[key] = src[i][key];
+    }
+  }
+
+  // the response of describeTaskDefinition API contains several keys that must not exist as
+  // a request of registerTaskDefinition API. We remove those keys here.
+  [
+    'taskDefinitionArn',
+    'revision',
+    'status',
+    'requiresAttributes',
+    'compatibilities',
+    'registeredAt',
+    'registeredBy',
+  ].forEach(key=> delete (old as any)[key]);
+}
+
 interface EcsService {
   readonly serviceArn: string;
 }
 
 async function prepareTaskDefinitionChange(
-  evaluateCfnTemplate: EvaluateCloudFormationTemplate, logicalId: string, change: HotswappableChangeCandidate,
-) {
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+): Promise<undefined | { taskDefinition: any; family: string; hotswappableWithCopy: boolean }> {
   const taskDefinitionResource: { [name: string]: any } = {
     ...change.oldValue.Properties,
     ContainerDefinitions: change.newValue.Properties?.ContainerDefinitions,
@@ -195,11 +242,104 @@ async function prepareTaskDefinitionChange(
     // otherwise, familyNameOrArn is just the simple name evaluated from the CloudFormation template
     : familyNameOrArn;
   // then, let's evaluate the body of the remainder of the TaskDef (without the Family property)
-  return {
-    ...await evaluateCfnTemplate.evaluateCfnExpression({
+
+  let evaluated;
+  let hotswappableWithCopy = false;
+  try {
+    evaluated = await evaluateCfnTemplate.evaluateCfnExpression({
       ...(taskDefinitionResource ?? {}),
       Family: undefined,
-    }),
-    Family: family,
+    });
+  } catch (e) {
+    const deep = await deepCompareContainerDefinitions(
+      evaluateCfnTemplate,
+      change.oldValue.Properties?.ContainerDefinitions,
+      change.newValue.Properties?.ContainerDefinitions);
+    if (deep === false) {
+      throw e;
+    } else {
+      evaluated = {
+        ContainerDefinitions: deep,
+      };
+      hotswappableWithCopy = true;
+    }
+  }
+
+  return {
+    taskDefinition: {
+      ...evaluated,
+      Family: family, // override the family
+    },
+    family,
+    hotswappableWithCopy,
   };
+}
+
+// return false if container definitions can be partially updated
+// i.e. there are no changes containing unsupported tokens or we have to update the entire task definition
+// if yes, we return only values that should be updated.
+async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateCloudFormationTemplate, oldValue: any[], newValue: any[]) {
+  const res: any[] = [];
+  // we can assume both objects have the same structure, allowing to simplify the comparison logic.
+  // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
+  if (oldValue.length !== newValue.length) {
+    // one or more containers are added or removed
+    return false;
+  }
+  for (const i in oldValue) {
+    res.push({});
+    const lhs = oldValue[i];
+    const rhs = newValue[i];
+
+    if (!deepCompareObject(Object.keys(lhs), Object.keys(rhs))) {
+      // one or more fields are added or removed
+      return false;
+    }
+    for (const key of Object.keys(lhs)) {
+      // compare two objects deeply first
+      if (deepCompareObject(lhs[key], rhs[key])) {
+        // if there is no difference, skip the field
+        continue;
+      }
+      // if there is any diff found, check if it can be evaluated without raising an error
+      try {
+        res[i][key] = await evaluateCfnTemplate.evaluateCfnExpression(rhs[key]);
+      } catch (e) {
+        // the diff contains unsupported tokens
+        return false;
+      }
+    }
+  }
+
+  return res;
+}
+
+// return true when two objects are identical
+function deepCompareObject(lhs: any, rhs: any) {
+  if (typeof lhs !== 'object') {
+    return lhs === rhs;
+  }
+  if (Array.isArray(lhs)) {
+    if (!Array.isArray(rhs)) {
+      return false;
+    }
+    if (lhs.length != rhs.length) {
+      return false;
+    }
+    for (const i in lhs) {
+      if (!deepCompareObject(lhs[i], rhs[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  if (!deepCompareObject(Object.keys(lhs), Object.keys(rhs))) {
+    return false;
+  }
+  for (const key of Object.keys(lhs)) {
+    if (!deepCompareObject(lhs[key], rhs[key])) {
+      return false;
+    }
+  }
+  return true;
 }

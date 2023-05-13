@@ -5,15 +5,18 @@ import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;
+let mockDescribeTaskDef: jest.Mock<AWS.ECS.DescribeTaskDefinitionResponse, AWS.ECS.DescribeTaskDefinitionRequest[]>;
 let mockUpdateService: (params: AWS.ECS.UpdateServiceRequest) => AWS.ECS.UpdateServiceResponse;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
 
   mockRegisterTaskDef = jest.fn();
+  mockDescribeTaskDef = jest.fn();
   mockUpdateService = jest.fn();
   hotswapMockSdkProvider.stubEcs({
     registerTaskDefinition: mockRegisterTaskDef,
+    describeTaskDefinition: mockDescribeTaskDef,
     updateService: mockUpdateService,
   }, {
     // these are needed for the waiter API that the ECS service hotswap uses
@@ -517,6 +520,122 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         forceNewDeployment: true,
       });
     }
+  });
+
+  test('should call registerTaskDefinition, describeTaskDefinition, and updateService for a difference only in the container image but with environment variables of unsupported intrinsics', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        TaskDef: {
+          Type: 'AWS::ECS::TaskDefinition',
+          Properties: {
+            Family: 'my-task-def',
+            ContainerDefinitions: [
+              {
+                Image: 'image1',
+                Environment: [
+                  {
+                    Name: 'FOO',
+                    Value: { 'Fn::GetAtt': ['Bar', 'Baz'] },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            TaskDefinition: { Ref: 'TaskDef' },
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Service', 'AWS::ECS::Service',
+        'arn:aws:ecs:region:account:service/my-cluster/my-service'),
+    );
+    mockRegisterTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      },
+    });
+    mockDescribeTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:2',
+        family: 'my-task-def',
+        containerDefinitions: [
+          {
+            image: 'image1',
+            environment: [
+              {
+                name: 'FOO',
+                value: 'value',
+              },
+            ],
+          },
+        ],
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          TaskDef: {
+            Type: 'AWS::ECS::TaskDefinition',
+            Properties: {
+              Family: 'my-task-def',
+              ContainerDefinitions: [
+                {
+                  Image: 'image2',
+                  Environment: [
+                    {
+                      Name: 'FOO',
+                      Value: { 'Fn::GetAtt': ['Bar', 'Baz'] },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          Service: {
+            Type: 'AWS::ECS::Service',
+            Properties: {
+              TaskDefinition: { Ref: 'TaskDef' },
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockRegisterTaskDef).toBeCalledWith({
+      family: 'my-task-def',
+      containerDefinitions: [
+        {
+          image: 'image2',
+          environment: [
+            {
+
+              name: 'FOO',
+              value: 'value',
+            },
+          ],
+        },
+      ],
+    });
+    expect(mockUpdateService).toBeCalledWith({
+      service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
+      cluster: 'my-cluster',
+      taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      deploymentConfiguration: {
+        minimumHealthyPercent: 0,
+      },
+      forceNewDeployment: true,
+    });
   });
 
   test('should call registerTaskDefinition with certain properties not lowercased', async () => {
