@@ -674,7 +674,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
     if (!config) return undefined;
     return {
-      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
+      authorizerResultTtlInSeconds: (config.resultsCacheTtl || Duration.minutes(5)).toSeconds(),
       authorizerUri: config.handler.functionArn,
       identityValidationExpression: config.validationRegex,
     };
