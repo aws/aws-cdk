@@ -1,5 +1,5 @@
-import { Token } from '../../core';
 import { QueueProps } from './index';
+import { Token } from '../../core';
 
 export function validateProps(props: QueueProps) {
   validateRange('delivery delay', props.deliveryDelay && props.deliveryDelay.toSeconds(), 0, 900, 'seconds');

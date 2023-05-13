@@ -1,5 +1,5 @@
-import { Duration } from '../../core';
 import { ALL_METHODS } from './util';
+import { Duration } from '../../core';
 
 export interface CorsOptions {
   /**

@@ -1,13 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as sns from '../../aws-sns';
-import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, RemovalPolicy, Size, Stack, Token } from '../../core';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { AdotInstrumentationConfig } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
@@ -28,6 +18,16 @@ import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as sns from '../../aws-sns';
+import * as sqs from '../../aws-sqs';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, RemovalPolicy, Size, Stack, Token } from '../../core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)

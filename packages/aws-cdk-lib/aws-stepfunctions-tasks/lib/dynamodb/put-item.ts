@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
+import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
 import * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
-import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
 
 /**
  * Properties for DynamoPutItem Task
