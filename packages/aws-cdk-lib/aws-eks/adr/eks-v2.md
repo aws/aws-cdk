@@ -35,3 +35,4 @@ When this happens, there are two resources that aren't managed by CFN:
 ## Resources
 
 - https://github.com/weaveworks/eksctl/issues/5135
+- https://github.com/hashicorp/terraform/pull/8033
