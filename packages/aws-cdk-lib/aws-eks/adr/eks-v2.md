@@ -21,6 +21,12 @@ When this happens, there are two resources that aren't managed by CFN:
   - **Description:** EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.
   
   So when the VPC is deleted, its trying to delete the subnet, which cannot be deleted because the ENIs are still using it. Also, why does the security group still exist? it should have been deleted by EKS - could it be because the kubectl provider is using it? 
+  
+  When I delete the ENI's manually and try to delete the stack, it still fails to delete the VPC with:
+  
+  ```console
+  Resource handler returned message: "The vpc 'vpc-004d89d5bcbdbf5c5' has dependencies and cannot be deleted. (Service: Ec2, Status Code: 400, Request ID: 2911112c-20ad-475e-964c-cc004a63d5e3)" (RequestToken: cf86d8db-eccd-1503-b31d-d06daddfde9f, HandlerErrorCode: InvalidRequest)
+  ```
 
 ## Resources
 
