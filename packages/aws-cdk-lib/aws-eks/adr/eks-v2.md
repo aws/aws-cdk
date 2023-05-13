@@ -27,6 +27,8 @@ When this happens, there are two resources that aren't managed by CFN:
   ```console
   Resource handler returned message: "The vpc 'vpc-004d89d5bcbdbf5c5' has dependencies and cannot be deleted. (Service: Ec2, Status Code: 400, Request ID: 2911112c-20ad-475e-964c-cc004a63d5e3)" (RequestToken: cf86d8db-eccd-1503-b31d-d06daddfde9f, HandlerErrorCode: InvalidRequest)
   ```
+  
+  Only after I manually deleted the security group, the VPC succesfully deletes and the stack as well.
 
 ## Resources
 
