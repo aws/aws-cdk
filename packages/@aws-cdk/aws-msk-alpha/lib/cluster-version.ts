@@ -4,6 +4,7 @@
 export class KafkaVersion {
   /**
    * Kafka version 1.1.1
+   * @deprecated Kafka clusters with version 1.1.1. can no longer be created.
    */
   public static readonly V1_1_1 = KafkaVersion.of('1.1.1');
 
