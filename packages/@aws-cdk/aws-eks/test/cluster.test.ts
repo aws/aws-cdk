@@ -2280,7 +2280,6 @@ describe('cluster', () => {
       c1.addManifest('c1b', { foo: 123 });
 
       // THEN
-      fs.writeFileSync('cluster.template.test.json', JSON.stringify(Template.fromStack(stack).toJSON(), null, 2));
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
