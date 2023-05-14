@@ -81,7 +81,7 @@ export interface CronOptionsWithTimezone extends events.CronOptions {
   /**
    * The timezone to run the schedule in
    *
-   * @default - UTC
+   * @default - TimeZone.ETC_UTC
    */
   readonly timeZone?: TimeZone;
 }
