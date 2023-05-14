@@ -51,7 +51,7 @@ export abstract class ScheduleExpression {
   /**
    * Create a srecurring chedule from a set of cron fields and time zone.
    */
-  static cron(options: CronOptionsWithTimezone): ScheduleExpression {
+  public static cron(options: CronOptionsWithTimezone): ScheduleExpression {
     const { timeZone, ...cronOptions } = options;
     const schedule = events.Schedule.cron(cronOptions);
     return new LiteralScheduleExpression(schedule.expressionString, timeZone);
