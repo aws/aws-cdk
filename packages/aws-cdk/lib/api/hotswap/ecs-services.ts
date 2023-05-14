@@ -251,15 +251,15 @@ async function prepareTaskDefinitionChange(
       Family: undefined,
     });
   } catch (e) {
-    const deep = await deepCompareContainerDefinitions(
+    const result = await deepCompareContainerDefinitions(
       evaluateCfnTemplate,
-      change.oldValue.Properties?.ContainerDefinitions,
-      change.newValue.Properties?.ContainerDefinitions);
-    if (deep === false) {
+      change.oldValue.Properties?.ContainerDefinitions ?? [],
+      change.newValue.Properties?.ContainerDefinitions ?? []);
+    if (result === false) {
       throw e;
     } else {
       evaluated = {
-        ContainerDefinitions: deep,
+        ContainerDefinitions: result,
       };
       hotswappableWithCopy = true;
     }
@@ -268,35 +268,34 @@ async function prepareTaskDefinitionChange(
   return {
     taskDefinition: {
       ...evaluated,
-      Family: family, // override the family
+      Family: family,
     },
     family,
     hotswappableWithCopy,
   };
 }
 
-// return false if container definitions can be partially updated
-// i.e. there are no changes containing unsupported tokens or we have to update the entire task definition
-// if yes, we return only values that should be updated.
-async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateCloudFormationTemplate, oldValue: any[], newValue: any[]) {
+// return false if the new container definitions cannot be hotswapped
+// i.e. there are changes containing unsupported tokens, or additions or removals of properties
+// If not (i.e. hotswappable), we return the properties that should be updated (merged with the deployed task definition later)
+async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateCloudFormationTemplate, oldDefinition: any[], newDefinition: any[]) {
   const res: any[] = [];
-  // we can assume both objects have the same structure, allowing to simplify the comparison logic.
   // schema: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
-  if (oldValue.length !== newValue.length) {
+  if (oldDefinition.length !== newDefinition.length) {
     // one or more containers are added or removed
     return false;
   }
-  for (const i in oldValue) {
+  for (const i in oldDefinition) {
     res.push({});
-    const lhs = oldValue[i];
-    const rhs = newValue[i];
+    const lhs = oldDefinition[i];
+    const rhs = newDefinition[i];
 
     if (!deepCompareObject(Object.keys(lhs), Object.keys(rhs))) {
       // one or more fields are added or removed
       return false;
     }
     for (const key of Object.keys(lhs)) {
-      // compare two objects deeply first
+      // compare two properties first
       if (deepCompareObject(lhs[key], rhs[key])) {
         // if there is no difference, skip the field
         continue;
@@ -315,7 +314,7 @@ async function deepCompareContainerDefinitions(evaluateCfnTemplate: EvaluateClou
 }
 
 // return true when two objects are identical
-function deepCompareObject(lhs: any, rhs: any) {
+function deepCompareObject(lhs: object, rhs: object) {
   if (typeof lhs !== 'object') {
     return lhs === rhs;
   }
@@ -337,7 +336,7 @@ function deepCompareObject(lhs: any, rhs: any) {
     return false;
   }
   for (const key of Object.keys(lhs)) {
-    if (!deepCompareObject(lhs[key], rhs[key])) {
+    if (!deepCompareObject((lhs as any)[key], (rhs as any)[key])) {
       return false;
     }
   }
