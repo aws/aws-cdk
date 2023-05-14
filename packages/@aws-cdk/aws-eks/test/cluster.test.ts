@@ -10,11 +10,11 @@ import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
-import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
@@ -1344,7 +1344,7 @@ describe('cluster', () => {
       prune: false,
       mastersRole: new iam.Role(stack, 'MastersRole', {
         assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
-      }),            
+      }),
     });
 
     // WHEN
@@ -2280,6 +2280,7 @@ describe('cluster', () => {
       c1.addManifest('c1b', { foo: 123 });
 
       // THEN
+      fs.writeFileSync('cluster.template.test.json', JSON.stringify(Template.fromStack(stack).toJSON(), null, 2));
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
@@ -2287,14 +2288,20 @@ describe('cluster', () => {
               Action: 'eks:DescribeCluster',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackCluster18DFEAC17Arn',
+                'Fn::GetAtt': [
+                  'Cluster1B02DD5A2',
+                  'Arn',
+                ],
               },
             },
             {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
+                'Fn::GetAtt': [
+                  'Cluster1CreationRoleA231BE8D',
+                  'Arn',
+                ],
               },
             },
           ],
@@ -2398,7 +2405,7 @@ describe('cluster', () => {
 
   });
 
-  describe('kubectl provider passes iam role environment to kube ctl lambda', ()=>{
+  describe('kubectl provider passes iam role environment to kube ctl lambda', () => {
     test('new cluster', () => {
 
       const { stack } = testFixture();
@@ -2435,7 +2442,7 @@ describe('cluster', () => {
       });
 
     });
-    test('imported cluster', ()=> {
+    test('imported cluster', () => {
 
       const clusterName = 'my-cluster';
       const stack = new cdk.Stack();

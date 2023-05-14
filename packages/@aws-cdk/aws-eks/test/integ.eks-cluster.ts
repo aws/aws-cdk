@@ -8,8 +8,8 @@ import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
-import * as eks from '../lib';
 import * as hello from './hello-k8s';
+import * as eks from '../lib';
 
 
 class EksClusterStack extends Stack {

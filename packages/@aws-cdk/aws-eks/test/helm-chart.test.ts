@@ -2,8 +2,8 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Duration } from '@aws-cdk/core';
-import * as eks from '../lib';
 import { testFixtureCluster } from './util';
+import * as eks from '../lib';
 
 /* eslint-disable max-len */
 

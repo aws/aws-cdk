@@ -3,8 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
-import * as eks from '../lib';
 import { Pinger } from './pinger/pinger';
+import * as eks from '../lib';
 
 class EksClusterAlbControllerStack extends Stack {
 

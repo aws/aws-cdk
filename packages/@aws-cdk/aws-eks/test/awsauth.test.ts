@@ -1,9 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { testFixtureNoVpc } from './util';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
-import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 

@@ -6,8 +6,8 @@ import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
-import * as eks from '../lib';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
+import * as eks from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');

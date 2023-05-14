@@ -1,11 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as eks from '../lib';
-import * as iam from '@aws-cdk/aws-iam';
-import { NodegroupAmiType } from '../lib';
 import { testFixture } from './util';
+import * as eks from '../lib';
+import { NodegroupAmiType } from '../lib';
 
 /* eslint-disable max-len */
 
@@ -520,7 +520,7 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
       mastersRole: new iam.Role(stack, 'MastersRole', {
         assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
-      }),      
+      }),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 

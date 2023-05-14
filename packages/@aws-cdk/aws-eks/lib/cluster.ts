@@ -1489,7 +1489,7 @@ export class Cluster extends ClusterBase {
     this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
       principals: [this.kubectlLambdaRole],
-    }));    
+    }));
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
