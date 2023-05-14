@@ -43,7 +43,7 @@ export abstract class ScheduleExpression {
    *
    * Rates may be defined with any unit of time, but when converted into minutes, the duration must be a positive whole number of minutes.
    */
-  static rate(duration: Duration): ScheduleExpression {
+  public static rate(duration: Duration): ScheduleExpression {
     const schedule = events.Schedule.rate(duration);
     return new LiteralScheduleExpression(schedule.expressionString);
   }
