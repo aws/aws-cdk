@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.79.1](https://github.com/aws/aws-cdk/compare/v2.79.0...v2.79.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* **bootstrap:** bootstrap doesn't work in non-aws partitions anymore (revert security hub finding fix) ([#25272](https://github.com/aws/aws-cdk/issues/25272)) ([4c4014e](https://github.com/aws/aws-cdk/commit/4c4014e0bd3fa90402cfc22971f1cbe5d372642f))
+
 ## [2.79.0](https://github.com/aws/aws-cdk/compare/v2.78.0...v2.79.0) (2023-05-10)
 
 

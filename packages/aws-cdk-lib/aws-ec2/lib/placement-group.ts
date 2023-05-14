@@ -1,6 +1,6 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * Determines where your instances are placed on the underlying hardware according to the specified PlacementGroupStrategy
