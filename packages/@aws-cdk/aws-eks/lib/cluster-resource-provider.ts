@@ -15,10 +15,6 @@ const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
 const HANDLER_RUNTIME = lambda.Runtime.NODEJS_14_X;
 
 export interface ClusterResourceProviderProps {
-  /**
-   * The IAM role to assume in order to interact with the cluster.
-   */
-  readonly adminRole: iam.IRole;
 
   /**
    * The VPC to provision the functions in.
@@ -118,9 +114,6 @@ export class ClusterResourceProvider extends NestedStack {
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
     });
-
-    props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
-    props.adminRole.grant(isComplete.role!, 'sts:AssumeRole');
   }
 
   /**
