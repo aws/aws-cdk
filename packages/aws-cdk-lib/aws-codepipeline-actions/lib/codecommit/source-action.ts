@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { Names, Stack, Token, TokenComparison } from '../../../core';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
@@ -7,7 +8,6 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
@@ -220,6 +220,27 @@ test('deploy from a local .zip file', () => {
     destinationBucket: bucket,
   });
 
+});
+
+test('AWS_CA_BUNDLE is set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('test', 'test')],
+    destinationBucket: bucket,
+  });
+
+  //THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+      },
+    },
+  });
 });
 
 test('deploy from a local .zip file when efs is enabled', () => {

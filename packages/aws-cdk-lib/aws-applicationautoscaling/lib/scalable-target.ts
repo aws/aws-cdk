@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import { IResource, Lazy, Resource, withResolved } from '../../core';
 import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import * as iam from '../../aws-iam';
+import { IResource, Lazy, Resource, withResolved } from '../../core';
 
 export interface IScalableTarget extends IResource {
   /**

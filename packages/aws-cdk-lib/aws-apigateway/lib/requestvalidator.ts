@@ -1,7 +1,7 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
+import { IResource, Resource } from '../../core';
 
 export interface IRequestValidator extends IResource {
   /**

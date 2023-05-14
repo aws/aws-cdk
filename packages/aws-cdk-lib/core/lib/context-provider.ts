@@ -1,9 +1,9 @@
-import * as cxschema from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
 import { Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { Stack } from './stack';
 import { Token } from './token';
+import * as cxschema from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 
 /**
  */
