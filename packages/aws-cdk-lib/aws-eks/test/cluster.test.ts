@@ -2059,8 +2059,7 @@ describe('cluster', () => {
         ],
       });
 
-      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -2084,6 +2083,13 @@ describe('cluster', () => {
               'arn:',
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
             ]],
           },
         ],
@@ -2224,36 +2230,29 @@ describe('cluster', () => {
       c1.addManifest('c1b', { foo: 123 });
 
       // THEN
-      const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
-              Action: 'lambda:InvokeFunction',
+              Action: 'eks:DescribeCluster',
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
-                      },
-                      ':*',
-                    ],
-                  ],
-                },
-              ],
+              Resource: {
+                Ref: 'referencetoStackCluster18DFEAC17Arn',
+              },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
+              },
             },
           ],
           Version: '2012-10-17',
         },
       });
 
-      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -2278,6 +2277,33 @@ describe('cluster', () => {
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
             ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+          {
+            'Fn::If': [
+              'HasEcrPublic',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
           },
         ],
       });
