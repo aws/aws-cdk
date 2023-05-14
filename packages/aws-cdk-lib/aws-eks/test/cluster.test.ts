@@ -2092,6 +2092,26 @@ describe('cluster', () => {
               ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
             ]],
           },
+          {
+            'Fn::If': [
+              'MyClusterHasEcrPublicC68AA246',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
         ],
       });
     });
@@ -2237,14 +2257,20 @@ describe('cluster', () => {
               Action: 'eks:DescribeCluster',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackCluster18DFEAC17Arn',
+                'Fn::GetAtt': [
+                  'Cluster1B02DD5A2',
+                  'Arn',
+                ],
               },
             },
             {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                Ref: 'referencetoStackCluster1CreationRoleEF7C9BBCArn',
+                'Fn::GetAtt': [
+                  'Cluster1CreationRoleA231BE8D',
+                  'Arn',
+                ],
               },
             },
           ],
@@ -2287,7 +2313,7 @@ describe('cluster', () => {
           },
           {
             'Fn::If': [
-              'HasEcrPublic',
+              'Cluster1HasEcrPublicC08E47E3',
               {
                 'Fn::Join': [
                   '',
