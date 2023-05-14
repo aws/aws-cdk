@@ -49,7 +49,7 @@ export abstract class ScheduleExpression {
   }
 
   /**
-   * Create a srecurring chedule from a set of cron fields and time zone.
+   * Create a recurring schedule from a set of cron fields and time zone.
    */
   public static cron(options: CronOptionsWithTimezone): ScheduleExpression {
     const { timeZone, ...cronOptions } = options;
