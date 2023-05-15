@@ -35,12 +35,12 @@ graph TD
     A(Bootstrap Stack) --- B(CloudFormationExecutionRole <br> DeploymentActionRole <br> LookupRole <br> FilePublishingRole <br> ImagePublishingRole <br> StagingBucket <br> ContainerAssetsRepository <br> FileAssetsBucketEncryptionKey)
 ```
 
-Your CDK Applicaiton utilizes some of these resources when deploying. For example, if you have a file asset,
+Your CDK Application utilizes these resources when deploying. For example, if you have a file asset,
 it gets uploaded to the `StagingBucket` using the `FilePublishingRole` when you run `cdk deploy`.
 
-This library introduces an alternate model to bootstrapping, by splitting out essential CloudFormation iam roles
+This library introduces an alternate model to bootstrapping, by splitting out essential CloudFormation IAM roles
 and staging resources. There will still be a Bootstrap Stack, but this will only contain IAM roles necessary for
-CloudFormation deployment. Each CDK App will instead be in charge of it's own staging resources, including the
+CloudFormation deployment. Each CDK App will instead be in charge of its own staging resources, including the
 S3 Bucket, ECR Repositories, and associated IAM roles. It works like this:
 
 The Staging Stack will contain, on a per-need basis, 
