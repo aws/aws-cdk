@@ -2,7 +2,7 @@
 import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.of('1.22');
 
 
 class EksFargateClusterStack extends Stack {

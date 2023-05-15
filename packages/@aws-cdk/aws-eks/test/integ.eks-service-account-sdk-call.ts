@@ -24,7 +24,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.of('1.22'),
 });
 
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
