@@ -84,7 +84,7 @@ test('correct helm chart version is set for selected alb controller version', ()
   });
 
   Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
-    Version: '1.5.2',
+    Version: '1.5.2', // The helm chart version associated with AlbControllerVersion.V2_5_1
     Values: {
       'Fn::Join': [
         '',
