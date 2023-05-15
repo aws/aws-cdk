@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';
@@ -95,7 +94,6 @@ export async function prepareSdkWithLookupRoleFor(
     // only print out the warnings if the lookupRole exists AND there is a required
     // bootstrap version, otherwise the warnings will print `undefined`
     if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
-      warning('wtf');
       warning(warningMessage);
       warning(upgradeMessage);
     }
@@ -265,7 +263,7 @@ export interface DeployStackOptions {
   readonly assetParallelism?: boolean;
 }
 
-interface AssetOptions {
+export interface BuildStackAssetsOptions {
   /**
    * Stack with assets to build.
    */
@@ -284,16 +282,21 @@ interface AssetOptions {
    * @default - Current role
    */
   readonly roleArn?: string;
-}
 
-export interface BuildStackAssetsOptions extends AssetOptions {
   /**
    * Options to pass on to `buildAssets()` function
    */
   readonly buildOptions?: BuildAssetsOptions;
 }
 
-interface PublishStackAssetsOptions extends AssetOptions {
+interface PublishStackAssetsOptions {
+  /**
+   * Whether to build assets before publishing.
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly buildAssets?: boolean;
+
   /**
    * Options to pass on to `publishAsests()` function
    */
@@ -412,6 +415,16 @@ export class CloudFormationDeployments {
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
+    // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
+    if (options.resourcesToImport === undefined) {
+      await this.publishStackAssets(options.stack, toolkitInfo, {
+        buildAssets: options.buildAssets ?? true,
+        publishOptions: {
+          parallel: options.assetParallelism,
+        },
+      });
+    }
+
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
@@ -520,36 +533,48 @@ export class CloudFormationDeployments {
     };
   }
 
-  private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
-    console.log('prepareandvalidateassets');
+  /**
+   * Build a stack's assets.
+   */
+  public async buildStackAssets(options: BuildStackAssetsOptions) {
     const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn);
-    console.log('stacksdk');
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
-    console.log(toolkitInfo);
+
     const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
-    console.log(stackEnv);
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      asset.requiresBootstrapStackVersion,
-      asset.bootstrapStackVersionSsmParameter,
-      toolkitInfo);
+    const assetArtifacts = options.stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
-    const manifest = AssetManifest.fromFile(asset.file);
+    for (const assetArtifact of assetArtifacts) {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        toolkitInfo);
 
-    return { manifest, stackEnv };
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
+    }
   }
 
-  public async buildAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
-    console.log('build assets');
-    console.log('build parallelism', options.buildOptions?.parallel);
-    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
-  }
+  /**
+   * Publish all asset manifests that are referenced by the given stack
+   */
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo, options: PublishStackAssetsOptions = {}) {
+    const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
-  public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
-    console.log('publish parallelism', options.publishOptions?.parallel);
-    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    for (const assetArtifact of assetArtifacts) {
+      await this.validateBootstrapStackVersion(
+        stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        toolkitInfo);
+
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await publishAssets(manifest, this.sdkProvider, stackEnv, {
+        ...options.publishOptions,
+        buildAssets: options.buildAssets ?? true,
+      });
+    }
   }
 
   /**

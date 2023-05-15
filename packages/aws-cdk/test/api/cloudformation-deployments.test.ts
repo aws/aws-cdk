@@ -15,7 +15,7 @@ import { deployStack } from '../../lib/api/deploy-stack';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { EcrRepositoryInfo, ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { /*buildAssets,*/ publishAssets } from '../../lib/util/asset-publishing';
+import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
 
@@ -884,32 +884,31 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
-// eslint-disable-next-line jest/no-commented-out-tests
-// test('building assets', async () => {
-//   // GIVEN
-//   const stack = testStackWithAssetManifest();
+test('building assets', async () => {
+  // GIVEN
+  const stack = testStackWithAssetManifest();
 
-//   // WHEN
-//   await deployments.buildStackAssets({
-//     stack,
-//   });
+  // WHEN
+  await deployments.buildStackAssets({
+    stack,
+  });
 
-//   // THEN
-//   const expectedAssetManifest = expect.objectContaining({
-//     directory: stack.assembly.directory,
-//     manifest: expect.objectContaining({
-//       files: expect.objectContaining({
-//         fake: expect.anything(),
-//       }),
-//     }),
-//   });
-//   const expectedEnvironment = expect.objectContaining({
-//     account: 'account',
-//     name: 'aws://account/region',
-//     region: 'region',
-//   });
-//   expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
-// });
+  // THEN
+  const expectedAssetManifest = expect.objectContaining({
+    directory: stack.assembly.directory,
+    manifest: expect.objectContaining({
+      files: expect.objectContaining({
+        fake: expect.anything(),
+      }),
+    }),
+  });
+  const expectedEnvironment = expect.objectContaining({
+    account: 'account',
+    name: 'aws://account/region',
+    region: 'region',
+  });
+  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
+});
 
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {

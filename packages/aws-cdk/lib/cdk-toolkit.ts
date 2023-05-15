@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -16,7 +15,8 @@ import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { deployArtifacts } from './deploy';
+import { buildAllStackAssets } from './build';
+import { deployStacks } from './deploy';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -24,7 +24,6 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
-import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
@@ -187,44 +186,24 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
-    const cloudArtifacts = stackCollection.assembly.assembly.artifacts;
-    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY; // TODO: deal with this
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    const buildAsset = async (assetNode: AssetBuildNode) => {
-      print('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('%s: building assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      await this.props.cloudFormation.buildAssets(assetNode.asset, {
-        stack: assetNode.parentStack,
-        roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
-        buildOptions: {
-          parallel: options.assetParallelism,
-        },
-      });
-      print('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('\n%s: assets built\n', chalk.bold(assetNode.parentStack.displayName));
-    };
+    if (assetBuildTime === AssetBuildTime.ALL_BEFORE_DEPLOY) {
+      // Prebuild all assets
+      try {
+        await buildAllStackAssets(stackCollection.stackArtifacts, {
+          buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
+        });
+      } catch (e) {
+        error('\n ❌ Building assets failed: %s', e);
+        throw e;
+      }
+    }
 
-    const publishAsset = async (assetNode: AssetPublishNode) => {
-      print('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('%s: publishing assets...\n', chalk.bold(assetNode.parentStack.displayName));
-      await this.props.cloudFormation.publishAssets(assetNode.asset, {
-        stack: assetNode.parentStack,
-        roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
-        publishOptions: {
-          parallel: options.assetParallelism,
-        },
-      });
-      print('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
-      console.log('\n%s: assets published\n', chalk.bold(assetNode.parentStack.displayName));
-    };
-
-    const deployStack = async (assetNode: StackNode) => {
-      const stack = assetNode.stack;
+    const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
       if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
 
       if (!stack.environment) {
@@ -302,7 +281,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY, // TODO: remove this
+          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
           assetParallelism: options.assetParallelism,
         });
 
@@ -357,15 +336,7 @@ export class CdkToolkit {
     }
 
     try {
-      await deployArtifacts(cloudArtifacts, {
-        concurrency,
-        callbacks: {
-          deployStack,
-          buildAsset,
-          publishAsset,
-        },
-        prebuildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
-      });
+      await deployStacks(stacks, { concurrency, deployStack });
     } catch (e) {
       error('\n ❌ Deployment failed: %s', e);
       throw e;
@@ -810,6 +781,24 @@ export class CdkToolkit {
     } catch {
       // just continue - deploy will show the error
     }
+  }
+
+  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName' | 'assetParallelism'>): Promise<void> {
+    // Check whether the stack has an asset manifest before trying to build and publish.
+    if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
+      return;
+    }
+
+    print('%s: building assets...\n', chalk.bold(stack.displayName));
+    await this.props.cloudFormation.buildStackAssets({
+      stack,
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      buildOptions: {
+        parallel: options.assetParallelism,
+      },
+    });
+    print('\n%s: assets built\n', chalk.bold(stack.displayName));
   }
 }
 
