@@ -1,5 +1,5 @@
 {
-  "name": "aws-scheduler-alpha",
+  "name": "@aws-cdk/aws-scheduler-alpha",
   "version": "0.0.0",
   "description": "The CDK Construct Library for Amazon Scheduler",
   "main": "lib/index.js",
