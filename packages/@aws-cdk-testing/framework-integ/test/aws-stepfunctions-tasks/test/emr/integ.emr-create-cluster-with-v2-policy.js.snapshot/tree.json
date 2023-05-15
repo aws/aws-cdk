@@ -20,7 +20,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -64,13 +64,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -82,7 +82,7 @@
                     "id": "ImportInstanceRole",
                     "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -107,13 +107,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -134,7 +134,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
                   "version": "0.0.0"
                 }
               },
@@ -146,7 +146,7 @@
                     "id": "ImportAutoScalingRole",
                     "path": "aws-cdk-emr-create-cluster/EmrCreateCluster/AutoScalingRole/ImportAutoScalingRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -188,19 +188,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EmrCreateCluster",
+              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster",
               "version": "0.0.0"
             }
           },
@@ -208,7 +208,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-emr-create-cluster/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
+              "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -216,13 +216,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-emr-create-cluster/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
         }
       },
@@ -239,7 +239,7 @@
                 "path": "EmrCreateClusterTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -250,7 +250,7 @@
                     "id": "BootstrapVersion",
                     "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -258,25 +258,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
+                      "fqn": "@aws-cdk/core.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
+                  "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -285,12 +285,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
+      "fqn": "@aws-cdk/core.App",
       "version": "0.0.0"
     }
   }

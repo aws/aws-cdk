@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "30.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-eventbridge-put-events-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -94,7 +94,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3393dda7528dda05bec50517e841bec315d7c7d473a421d45afb8c1cefa85c01.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/822d59aebc35af020849090bf6df3523edeb1fb7a98a46e35f64a1e14bd7305a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -111,10 +111,10 @@
         "PutEventsDefaultTestDeployAssert1A6BA3F3.assets"
       ],
       "metadata": {
-        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
+            "data": "AwsApiCallStepFunctionsstartExecution"
           }
         ],
         "/PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -129,16 +129,16 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default": [
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+            "data": "AwsApiCallStepFunctionsdescribeExecution"
           }
         ],
-        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/AssertionResults": [
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution"
           }
         ],
         "/PutEvents/DefaultTest/DeployAssert/BootstrapVersion": [

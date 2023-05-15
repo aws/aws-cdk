@@ -20,13 +20,13 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "fqn": "@aws-cdk/aws-sqs.Queue",
               "version": "0.0.0"
             }
           },
@@ -34,7 +34,7 @@
             "id": "send message to sqs",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/send message to sqs",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SqsSendMessage",
+              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SqsSendMessage",
               "version": "0.0.0"
             }
           },
@@ -42,7 +42,7 @@
             "id": "Final step",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/Final step",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
               "version": "0.0.0"
             }
           },
@@ -58,7 +58,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-tasks-sqs-send-message-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -83,7 +83,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -121,19 +121,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -168,13 +168,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -182,7 +182,7 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
+              "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -190,7 +190,7 @@
             "id": "queueUrl",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/queueUrl",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
+              "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -198,7 +198,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
+              "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -206,13 +206,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-tasks-sqs-send-message-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
         }
       },
@@ -221,12 +221,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.1.237"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
+      "fqn": "@aws-cdk/core.App",
       "version": "0.0.0"
     }
   }
