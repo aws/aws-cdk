@@ -38,7 +38,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -1296,7 +1296,7 @@ export class MyChart extends cdk8s.Chart {
       containers: [
         {
           image: 'my-image',
-          env: {
+          envVariables: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
         }
@@ -1351,7 +1351,9 @@ export class LoadBalancedWebService extends constructs.Construct {
     });
 
     deployment.exposeViaService({
-      port: props.port,
+      ports: [
+        { port: props.port },
+      ],
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }

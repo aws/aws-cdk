@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as lambda from '../../aws-lambda';
-import { Architecture } from '../../aws-lambda';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
 import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
+import { Architecture } from '../../aws-lambda';
+import * as lambda from '../../aws-lambda';
+import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**
  * Properties for a NodejsFunction
@@ -95,18 +96,17 @@ export class NodejsFunction extends lambda.Function {
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
-    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
     const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
     const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
-      runtime,
+      runtime: props.runtime ?? builtInCustomResourceNodeRuntime(scope),
       code: Bundling.bundle({
         ...props.bundling ?? {},
         entry,
-        runtime,
+        runtime: props.runtime,
         architecture,
         depsLockFilePath,
         projectRoot,

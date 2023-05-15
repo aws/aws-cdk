@@ -407,7 +407,7 @@
     }
    }
   },
-  "minimalPropsFargate8E9B9556": {
+  "minimalPropsFargate58449235": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
     "Type": "managed",
@@ -453,7 +453,7 @@
     }
    }
   },
-  "maximalPropsFargateA2E688D8": {
+  "maximalPropsFargate2D7D8138": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
     "Type": "managed",
@@ -516,7 +516,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "minimalPropsEc2InstanceProfile635FB12D": {
@@ -649,7 +663,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "LaunchTemplateInstanceProfile81A7EF12": {
@@ -772,7 +800,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "SpotEc2InstanceProfileD921ABA1": {

@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ssm from '../lib';

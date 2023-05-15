@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "AppSyncIntegLogRetention": {
         "id": "AppSyncIntegLogRetention",
         "path": "AppSyncIntegLogRetention",
@@ -24,6 +16,14 @@
                 "id": "ApiLogsRole",
                 "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole",
                 "children": {
+                  "ImportApiLogsRole": {
+                    "id": "ImportApiLogsRole",
+                    "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/ImportApiLogsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/Resource",
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -89,7 +89,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
                   "version": "0.0.0"
                 }
               },
@@ -109,7 +109,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
                   "version": "0.0.0"
                 }
               },
@@ -128,7 +128,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
                   "version": "0.0.0"
                 }
               },
@@ -136,7 +136,7 @@
                 "id": "LogGroup",
                 "path": "AppSyncIntegLogRetention/GraphqlApi/LogGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -148,19 +148,19 @@
                     "id": "Resource",
                     "path": "AppSyncIntegLogRetention/GraphqlApi/LogRetention/Resource",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.LogRetention",
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
               "version": "0.0.0"
             }
           },
@@ -176,7 +176,7 @@
                     "id": "Stage",
                     "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -184,13 +184,13 @@
                     "id": "AssetBucket",
                     "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -198,6 +198,14 @@
                 "id": "ServiceRole",
                 "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
@@ -233,7 +241,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -269,19 +277,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -289,14 +297,22 @@
                 "id": "Resource",
                 "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.270"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "AppSyncIntegLogRetention/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
             }
           },
           "Exports": {
@@ -307,19 +323,35 @@
                 "id": "Output{\"Fn::GetAtt\":[\"GraphqlApi1B6CF24C\",\"ApiId\"]}",
                 "path": "AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApi1B6CF24C\",\"ApiId\"]}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "version": "10.1.270"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AppSyncIntegLogRetention/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AppSyncIntegLogRetention/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -336,7 +368,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -356,12 +388,12 @@
                             "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -373,73 +405,27 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
-                      "AssertEqualsCloudWatchLogsdescribeLogGroups": {
-                        "id": "AssertEqualsCloudWatchLogsdescribeLogGroups",
-                        "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups",
-                        "children": {
-                          "AssertionProvider": {
-                            "id": "AssertionProvider",
-                            "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/AssertionProvider",
-                            "children": {
-                              "AssertionsProvider": {
-                                "id": "AssertionsProvider",
-                                "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/AssertionProvider/AssertionsProvider",
-                                "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.1.85"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Default": {
-                            "id": "Default",
-                            "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/Default",
-                            "children": {
-                              "Default": {
-                                "id": "Default",
-                                "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/Default/Default",
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/core.CfnResource",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CustomResource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssertionResults": {
-                            "id": "AssertionResults",
-                            "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertEqualsCloudWatchLogsdescribeLogGroups/AssertionResults",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnOutput",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
                       "version": "0.0.0"
                     }
                   },
@@ -451,7 +437,7 @@
                         "id": "Staging",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -459,7 +445,7 @@
                         "id": "Role",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -467,37 +453,61 @@
                         "id": "Handler",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.270"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

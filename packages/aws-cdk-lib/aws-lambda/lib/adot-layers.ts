@@ -1,9 +1,9 @@
-import { RegionInfo } from '../../region-info';
 import { IConstruct } from 'constructs';
 import { Architecture } from './architecture';
 import { IFunction } from './function-base';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';
+import { RegionInfo } from '../../region-info';
 import { FactName } from '../../region-info/lib/fact';
 
 /**

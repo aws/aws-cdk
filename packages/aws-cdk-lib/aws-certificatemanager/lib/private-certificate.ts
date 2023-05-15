@@ -1,8 +1,8 @@
-import * as acmpca from '../../aws-acmpca';
 import { Construct } from 'constructs';
 import { ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
+import * as acmpca from '../../aws-acmpca';
 
 /**
  * Properties for your private certificate

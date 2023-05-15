@@ -1,5 +1,3 @@
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
-import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -15,6 +13,8 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -211,7 +211,7 @@ export interface CustomizeRolesOptions {
    *
    * iam.Role.customizeRoles(stack, {
    *   usePrecreatedRoles: {
-   *      // absolute path
+   *     // absolute path
    *     'MyStack/MyRole': 'my-precreated-role-name',
    *     // or relative path from `stack`
    *     'MyRole': 'my-precreated-role',
@@ -320,10 +320,6 @@ export class Role extends Resource implements IRole {
    * @param options allow customizing the behavior of the returned role
    */
   public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
-    // Validate the role name only if not a token
-    if (!Token.isUnresolved(roleName)) {
-      this.validateRoleName(roleName);
-    }
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
@@ -371,15 +367,6 @@ export class Role extends Resource implements IRole {
       preventSynthesis,
       usePrecreatedRoles: useRoles,
     });
-  }
-
-  private static validateRoleName(roleName: string) {
-    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateRole.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
-    const matches = regexp.exec(roleName);
-    if (!(matches && matches.length === 1 && matches[0] === roleName)) {
-      throw new Error(`The role name ${roleName} does not match the IAM conventions.`);
-    }
   }
 
   public readonly grantPrincipal: IPrincipal = this;

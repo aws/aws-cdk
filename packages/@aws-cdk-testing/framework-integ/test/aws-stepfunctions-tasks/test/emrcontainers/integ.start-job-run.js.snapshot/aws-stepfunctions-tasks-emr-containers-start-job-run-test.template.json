@@ -439,6 +439,117 @@
     }
    }
   },
+  "integrationtesteksclusterKubectlHandlerRole9A4C37D2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     },
+     {
+      "Fn::If": [
+       "integrationtesteksclusterHasEcrPublic050389DE",
+       {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+         ]
+        ]
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "eks:DescribeCluster",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "integrationtesteksclusterE5C0ED98",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "integrationtesteksclusterCreationRoleB98FE02A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0",
+    "Roles": [
+     {
+      "Ref": "integrationtesteksclusterKubectlHandlerRole9A4C37D2"
+     }
+    ]
+   }
+  },
   "integrationtesteksclusterRole03F70AF0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -495,22 +606,26 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole43FB9134Arn"
           ]
-         ]
-        }
+         },
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole663D4CFBArn"
+          ]
+         },
+         {
+          "Fn::GetAtt": [
+           "integrationtesteksclusterKubectlHandlerRole9A4C37D2",
+           "Arn"
+          ]
+         }
+        ]
        }
       }
      ],
@@ -643,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.21",
+     "version": "1.22",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -726,98 +841,6 @@
     "integrationtesteksclusterCreationRoleB98FE02A",
     "integrationtesteksclusterE5C0ED98"
    ]
-  },
-  "integrationtesteksclusterMastersRole63B9B0BF": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "integrationtesteksclusterAwsAuthmanifestAEF9C6DF": {
-   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn"
-     ]
-    },
-    "Manifest": {
-     "Fn::Join": [
-      "",
-      [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8f236ac7623901008fa4bb7d6445bc7da0d7a432b\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "integrationtesteksclusterMastersRole63B9B0BF",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "integrationtesteksclusterMastersRole63B9B0BF",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "integrationtesteksclusterNodegroupDefaultCapacityNodeGroupRole75D45BA7",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":role/AWSServiceRoleForAmazonEMRContainers\\\",\\\"username\\\":\\\"emr-containers\\\",\\\"groups\\\":[]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
-      ]
-     ]
-    },
-    "ClusterName": {
-     "Ref": "integrationtesteksclusterE5C0ED98"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "integrationtesteksclusterCreationRoleB98FE02A",
-      "Arn"
-     ]
-    },
-    "PruneLabel": "aws.cdk.eks/prune-c8f236ac7623901008fa4bb7d6445bc7da0d7a432b",
-    "Overwrite": true
-   },
-   "DependsOn": [
-    "integrationtesteksclusterKubectlReadyBarrier0D4A21B0"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "integrationtesteksclusterNodegroupDefaultCapacityNodeGroupRole75D45BA7": {
    "Type": "AWS::IAM::Role",
@@ -906,6 +929,52 @@
     }
    }
   },
+  "integrationtesteksclusterAwsAuthmanifestAEF9C6DF": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksKubectlProviderframeworkonEvent3B4C1982Arn"
+     ]
+    },
+    "Manifest": {
+     "Fn::Join": [
+      "",
+      [
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8f236ac7623901008fa4bb7d6445bc7da0d7a432b\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "integrationtesteksclusterNodegroupDefaultCapacityNodeGroupRole75D45BA7",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/AWSServiceRoleForAmazonEMRContainers\\\",\\\"username\\\":\\\"emr-containers\\\",\\\"groups\\\":[]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+      ]
+     ]
+    },
+    "ClusterName": {
+     "Ref": "integrationtesteksclusterE5C0ED98"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "integrationtesteksclusterCreationRoleB98FE02A",
+      "Arn"
+     ]
+    },
+    "PruneLabel": "aws.cdk.eks/prune-c8f236ac7623901008fa4bb7d6445bc7da0d7a432b",
+    "Overwrite": true
+   },
+   "DependsOn": [
+    "integrationtesteksclusterKubectlReadyBarrier0D4A21B0"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "integrationtesteksclustermanifestemrRoleCCE4E328": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
    "Properties": {
@@ -980,17 +1049,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cf6dc03ebf79ed51ed899f7065979f183779b62b680fcec5c3fcff1349e6e8d3.json"
+       "/5f1d549d447532171611ec67efa1334a292b218d21c7e9d518025f98758bc7bb.json"
       ]
      ]
-    },
-    "Parameters": {
-     "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterCreationRole8CE5CEE6Arn": {
-      "Fn::GetAtt": [
-       "integrationtesteksclusterCreationRoleB98FE02A",
-       "Arn"
-      ]
-     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -1015,20 +1076,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1fdb8baa47bfd1f12c5d41eed42d2cfcceb73a94cca787d53d7d26fc13f0ea92.json"
+       "/64714deb08eba63eb26e0c683198b37009ff32959c307c4ae514be7bb33d8799.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterA295C017Arn": {
+     "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterKubectlHandlerRole9370F2F5Arn": {
       "Fn::GetAtt": [
-       "integrationtesteksclusterE5C0ED98",
-       "Arn"
-      ]
-     },
-     "referencetoawsstepfunctionstasksemrcontainersstartjobruntestintegrationtesteksclusterCreationRole8CE5CEE6Arn": {
-      "Fn::GetAtt": [
-       "integrationtesteksclusterCreationRoleB98FE02A",
+       "integrationtesteksclusterKubectlHandlerRole9A4C37D2",
        "Arn"
       ]
      },
@@ -1050,7 +1105,9 @@
     "integrationtesteksclusterDefaultVpcPrivateSubnet1DefaultRouteCC99A72C",
     "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTableAssociation7482DD1E",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2DefaultRoute50FF167F",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5"
+    "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
+    "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0",
+    "integrationtesteksclusterKubectlHandlerRole9A4C37D2"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1196,7 +1253,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1281,7 +1338,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1384,7 +1441,15 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 120
    },
    "DependsOn": [
@@ -1662,55 +1727,120 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Conditions": {
+  "integrationtesteksclusterHasEcrPublic050389DE": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Partition"
+    },
+    "aws"
+   ]
+  }
+ },
+ "Mappings": {
+  "DefaultCrNodeVersionMap": {
+   "af-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs16.x"
+   },
+   "me-central-1": {
+    "value": "nodejs16.x"
+   },
+   "me-south-1": {
+    "value": "nodejs16.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-2": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs14.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-west-2": {
+    "value": "nodejs16.x"
+   }
+  }
+ },
  "Outputs": {
-  "integrationtesteksclusterConfigCommandFA814999": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "integrationtesteksclusterE5C0ED98"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "integrationtesteksclusterMastersRole63B9B0BF",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "integrationtesteksclusterGetTokenCommandD7B92682": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "integrationtesteksclusterE5C0ED98"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "integrationtesteksclusterMastersRole63B9B0BF",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
   "stateMachineArn": {
    "Value": {
     "Ref": "StateMachine2E01A3A5"

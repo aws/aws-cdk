@@ -1,10 +1,11 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { testFixture } from './util';
 import * as eks from '../lib';
-import { NodegroupAmiType } from '../lib';
+import { NodegroupAmiType, TaintEffect } from '../lib';
 
 /* eslint-disable max-len */
 
@@ -222,6 +223,238 @@ describe('node group', () => {
     });
   });
 
+  test('create a x86_64 Windows Core 2019 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+      taints: [
+        {
+          effect: TaintEffect.NO_SCHEDULE,
+          key: 'os',
+          value: 'windows',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'WINDOWS_CORE_2019_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'os',
+          Value: 'windows',
+        },
+      ],
+    });
+  });
+
+  test('create a x86_64 Windows Core 2022 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+      taints: [
+        {
+          effect: TaintEffect.NO_SCHEDULE,
+          key: 'os',
+          value: 'windows',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'WINDOWS_CORE_2022_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'os',
+          Value: 'windows',
+        },
+      ],
+    });
+  });
+
+  test('create a x86_64 Windows Full 2019 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+      taints: [
+        {
+          effect: TaintEffect.NO_SCHEDULE,
+          key: 'os',
+          value: 'windows',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'WINDOWS_FULL_2019_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'os',
+          Value: 'windows',
+        },
+      ],
+    });
+  });
+
+  test('create a x86_64 Windows Full 2022 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+      taints: [
+        {
+          effect: TaintEffect.NO_SCHEDULE,
+          key: 'os',
+          value: 'windows',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'WINDOWS_FULL_2022_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'os',
+          Value: 'windows',
+        },
+      ],
+    });
+  });
+
   /**
    * When LaunchTemplate and amiType are undefined and instanceTypes are x86_64 instances,
    * the amiType should be implicitly set as AL2_x86_64.
@@ -347,7 +580,24 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64,WINDOWS_CORE_2019_x86_64,WINDOWS_CORE_2022_x86_64,WINDOWS_FULL_2019_x86_64,WINDOWS_FULL_2022_x86_64 or don't specify any/);
+  });
+
+  test('throws when AmiType is Windows and forbidden instanceType is selected', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+      instanceTypes: [
+        new ec2.InstanceType('c3.large'),
+      ],
+    })).toThrow(/The specified instanceType does not support Windows workloads. Amazon EC2 instance types C3, C4, D2, I2, M4 \(excluding m4.16xlarge\), M6a.x, and R3 instances aren't supported for Windows workloads./);
   });
 
   /**
@@ -369,7 +619,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64,WINDOWS_CORE_2019_x86_64,WINDOWS_CORE_2022_x86_64,WINDOWS_FULL_2019_x86_64,WINDOWS_FULL_2022_x86_64 or don't specify any/);
   });
 
   /**
@@ -505,6 +755,98 @@ describe('node group', () => {
     });
   });
 
+  /**
+   * WINDOWS_CORE_2019_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   */
+  test('WINDOWS_CORE_2019_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    cluster.addNodegroupCapacity('windows', {
+      instanceTypes: [new ec2.InstanceType('m5a.xlarge')],
+      amiType: NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'WINDOWS_CORE_2019_x86_64',
+    });
+  });
+
+  /**
+   * WINDOWS_CORE_2022_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   */
+  test('WINDOWS_CORE_2019_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    cluster.addNodegroupCapacity('windows', {
+      instanceTypes: [new ec2.InstanceType('m5a.xlarge')],
+      amiType: NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'WINDOWS_CORE_2022_x86_64',
+    });
+  });
+
+  /**
+   * WINDOWS_FULL_2019_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   */
+  test('WINDOWS_FULL_2019_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    cluster.addNodegroupCapacity('windows', {
+      instanceTypes: [new ec2.InstanceType('m5a.xlarge')],
+      amiType: NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'WINDOWS_FULL_2019_x86_64',
+    });
+  });
+
+  /**
+   * WINDOWS_FULL_2022_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   */
+  test('WINDOWS_FULL_2022_x86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    cluster.addNodegroupCapacity('windows', {
+      instanceTypes: [new ec2.InstanceType('m5a.xlarge')],
+      amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'WINDOWS_FULL_2022_x86_64',
+    });
+  });
+
   test('aws-auth will be updated', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -514,6 +856,9 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      mastersRole: new iam.Role(stack, 'MastersRole', {
+        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+      }),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
@@ -526,14 +871,14 @@ describe('node group', () => {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },
             '\\",\\"username\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },

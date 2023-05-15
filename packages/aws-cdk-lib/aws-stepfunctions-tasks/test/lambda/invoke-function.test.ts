@@ -1,7 +1,7 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
 

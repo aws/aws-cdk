@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "integ-test/DefaultTest": {
+      "stacks": [
+        "integ-restrict-default-sg"
+      ],
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+    }
+  }
+}

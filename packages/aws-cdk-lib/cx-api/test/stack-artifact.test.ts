@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxschema from '../../cloud-assembly-schema';
 import { rimraf } from './util';
+import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../lib';
 
 const stackBase = {

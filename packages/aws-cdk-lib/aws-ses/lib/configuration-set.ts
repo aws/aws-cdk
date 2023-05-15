@@ -1,9 +1,9 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * A configuration set
