@@ -171,6 +171,7 @@ describe('changelog', () => {
 
 * super important feature
 
+
 ### Bug Fixes
 
 * **scope:** hairy bugfix
