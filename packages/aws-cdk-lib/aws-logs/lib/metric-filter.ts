@@ -45,7 +45,7 @@ export class MetricFilter extends Resource {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
     new CfnMetricFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
-      filterName: props.filterName,
+      filterName: this.physicalName,
       filterPattern: props.filterPattern.logPatternString,
       metricTransformations: [{
         metricNamespace: props.metricNamespace,
