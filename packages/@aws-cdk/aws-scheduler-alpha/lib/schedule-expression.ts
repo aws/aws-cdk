@@ -1,7 +1,6 @@
 import { Duration, TimeZone } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 
-
 /**
  * ScheduleExpression for EventBridge Schedule
  *
@@ -58,15 +57,16 @@ export abstract class ScheduleExpression {
   }
 
   /**
-     * Retrieve the expression for this schedule
-     */
+   * Retrieve the expression for this schedule
+   */
   public abstract readonly expressionString: string;
+
   /**
-      * Retrieve the expression for this schedule
-      */
+   * Retrieve the expression for this schedule
+   */
   public abstract readonly timeZone?: TimeZone;
 
-  protected constructor() {};
+  protected constructor() {}
 }
 
 /**
