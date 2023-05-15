@@ -124,6 +124,16 @@ export interface Ec2EnvironmentProps {
    *
    */
   readonly imageId: ImageId
+
+  /**
+   * The number of minutes until the running instance is shut down after the
+   * environment was last used.
+   *
+   * Setting a value of 0 means the instance will never be automatically shut down."
+   *
+   * @default - The instance will not be shut down automatically.
+   */
+  readonly automaticStopTimeMinutes?: number
 }
 
 /**
@@ -200,6 +210,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
       imageId: props.imageId,
+      automaticStopTimeMinutes: props.automaticStopTimeMinutes,
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();

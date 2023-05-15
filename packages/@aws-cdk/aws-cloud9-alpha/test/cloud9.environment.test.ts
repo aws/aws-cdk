@@ -145,6 +145,20 @@ test('environment owner can be account root', () => {
   });
 });
 
+test('can set automaticStopTimeMinutes', () => {
+  // WHEN
+  const automaticStopTimeMinutes = 30;
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    automaticStopTimeMinutes,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    AutomaticStopTimeMinutes: automaticStopTimeMinutes,
+  });
+});
+
 test.each([
   [ConnectionType.CONNECT_SSH, 'CONNECT_SSH'],
   [ConnectionType.CONNECT_SSM, 'CONNECT_SSM'],
