@@ -23,7 +23,9 @@ export class MetricFilter extends Resource {
   private readonly metricNamespace: string;
 
   constructor(scope: Construct, id: string, props: MetricFilterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.filterName,
+    });
 
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
