@@ -792,18 +792,18 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-    [INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION]: {
-      type: FlagType.BugFix,
-      summary: 'Include the stack prefix in the stack name generation process',
-      detailsMd: `
-        This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+  [INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION]: {
+    type: FlagType.BugFix,
+    summary: 'Include the stack prefix in the stack name generation process',
+    detailsMd: `
+      This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
 
-        If the flag is set, the prefix is included in the stack name generation process
-        If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
-      `,
-      introducedIn: { v2: 'V2NEXT' },
-      recommendedValue: true,
-    },
+      If the flag is set, the prefix is included in the stack name generation process
+      If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 
 };
 
