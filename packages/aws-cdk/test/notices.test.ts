@@ -404,6 +404,7 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 	More information at: https://github.com/aws/aws-cdk/issues/16603
 
+
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
     });
 
