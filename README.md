@@ -177,4 +177,3 @@ this capability, please see the [developer guide](https://docs.aws.amazon.com/cd
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
 * [License](./LICENSE)
-
