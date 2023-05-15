@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.186"
+              "version": "2.0.188"
             }
           },
           "Cluster": {
@@ -1563,7 +1563,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
+                          "s3Key": "a21fb971385f0210c6b1c88a25f1b9986bae4e4e1bca8d4aa818c442e1878ddf.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1695,7 +1695,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
+                          "s3Key": "a21fb971385f0210c6b1c88a25f1b9986bae4e4e1bca8d4aa818c442e1878ddf.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2601,7 +2601,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/98c9c6774eb739bb973566660e567a27891cac36bd47546d9c0a0816bebce538.json"
+                          "/cb351f8e9fa7b7bd9e0bb7a035015854c5d0818651994724c77b2c1a68a4b723.json"
                         ]
                       ]
                     }
@@ -2748,7 +2748,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c33f77e71bef2fbd8299fa87f0d89b792b981d73e22dba92b2dd13caec415dfc.zip"
+                          "s3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3089,7 +3089,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/3464accca5ca710ddd803fb731922cbe4f32e230a553d9079bf35e97473877d5.json"
+                          "/0a61ba4da9f8b612f45ba4397e75e2656a2db13ecc893028c349c8abcd9ce0f0.json"
                         ]
                       ]
                     },

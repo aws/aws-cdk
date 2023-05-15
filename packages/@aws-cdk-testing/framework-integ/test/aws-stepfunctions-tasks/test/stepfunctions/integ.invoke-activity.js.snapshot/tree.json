@@ -22,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnActivity",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnActivity",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Activity",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Activity",
               "version": "0.0.0"
             }
           },
@@ -46,13 +46,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnActivity",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnActivity",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Activity",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Activity",
               "version": "0.0.0"
             }
           },
@@ -60,7 +60,7 @@
             "id": "Submit Job",
             "path": "aws-stepfunctions-integ/Submit Job",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.StepFunctionsInvokeActivity",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivity",
               "version": "0.0.0"
             }
           },
@@ -68,7 +68,7 @@
             "id": "Wait X Seconds",
             "path": "aws-stepfunctions-integ/Wait X Seconds",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Wait",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Wait",
               "version": "0.0.0"
             }
           },
@@ -76,7 +76,7 @@
             "id": "Get Job Status",
             "path": "aws-stepfunctions-integ/Get Job Status",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.StepFunctionsInvokeActivity",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivity",
               "version": "0.0.0"
             }
           },
@@ -84,7 +84,7 @@
             "id": "Job Complete?",
             "path": "aws-stepfunctions-integ/Job Complete?",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Choice",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Choice",
               "version": "0.0.0"
             }
           },
@@ -92,7 +92,7 @@
             "id": "Job Failed",
             "path": "aws-stepfunctions-integ/Job Failed",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Fail",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
               "version": "0.0.0"
             }
           },
@@ -100,7 +100,7 @@
             "id": "Get Final Job Status",
             "path": "aws-stepfunctions-integ/Get Final Job Status",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.StepFunctionsInvokeActivity",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivity",
               "version": "0.0.0"
             }
           },
@@ -116,7 +116,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -141,13 +141,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -186,13 +186,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -200,7 +200,7 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -208,7 +208,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -216,13 +216,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -231,12 +231,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.17"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
