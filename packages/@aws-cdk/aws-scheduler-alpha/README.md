@@ -33,11 +33,12 @@ with EventBridge Scheduler, you apply tags to schedule groups, not to individual
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define Event Bridge Schedules.
 
-
 ## Defining a schedule 
 
 ```ts
-const target = new targets.LambdaInvoke(props.func, {
+declare const lambdaFunc: lambda.Function;
+
+const target = new targets.LambdaInvoke(lambdaFunc, {
     input: ScheduleTargetInput.fromObject({
         "payload": "useful"
     })
@@ -83,7 +84,7 @@ and time zone in which EventBridge Scheduler evaluates the schedule.
 ```ts
 const oneTimeSchedule = new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.at(
-        new Date(2022, 10, 20, 19, 20, 23)
+        new Date(2022, 10, 20, 19, 20, 23),
         TimeZone.AMERICA_NEW_YORK
     )
     target,
@@ -106,7 +107,7 @@ const group = new Group(this, "Group", {
     groupName: "MyGroup"
 });
 
-const target = new targets.LambdaInvoke(props.func, {
+const target = new targets.LambdaInvoke(func, {
     input: ScheduleTargetInput.fromObject({
         "payload": "useful"
     })
@@ -196,7 +197,7 @@ to the target. See [full list of supported context attributes](https://docs.aws.
 
 ```ts
 const text = `Attempt number: ${ContextAttribute.attemptNumber}`;
-const input = scheduler.ScheduleTargetInput.fromInput(text);
+const input = ScheduleTargetInput.fromInput(text);
 ```
 
 
@@ -210,8 +211,6 @@ will grant minimal required permissions. For example: for invoking Lambda functi
 execution IAM role permission to `lambda:InvokeFunction`.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-
 declare const fn: lambda.Function;
 
 const role = new iam.Role(this, 'Role', {
@@ -238,7 +237,7 @@ const target = new targets.Universal('sqs', 'CreateQueue', { input: input });
 
 target.role.addToPolicy(new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
-    resources: '*',
+    resources: ['*'],
     actions: ['sqs:CreateQueue']
 }));
 
@@ -263,8 +262,6 @@ to its target. Target classes will automatically add AWS KMS Decrypt permission 
 permissions policy
 
 ```ts
-import * as kms from '@aws-cdk/aws-kms';
-
 const key = new kms.Key(this, 'Key');
 
 const schedule = new Schedule(this, 'Schedule', {
@@ -291,7 +288,7 @@ If you've configured a retry policy for your schedule, EventBridge Scheduler del
 exhausting the maximum number of retries you set in the retry policy.
 
 ```ts
-const dlq = new Queue(this, "DLQ", {
+const dlq = new sqs.Queue(this, "DLQ", {
       queueName: 'MyDLQ',
 });
 
@@ -341,13 +338,11 @@ EventBridge Scheduler publishes additional metrics when your schedule exhausts i
 Class `Schedule` provides static methods for accessing all schedules metrics with default configuration, 
 such as `metricAllErrors` for viewing errors when executing targets. 
 
-```ts 
-
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-
-new Alarm(this, 'SchedulesErrorAlarm', {
+```ts
+new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
   metric: Schedule.metricAllErrors(),
-  threshold: 0
+  threshold: 0,
+  evaluationPeriods: 5
 });
 ```
 
@@ -360,9 +355,10 @@ const group = new Group(this, "Group", {
     groupName: "MyGroup"
 });
 
-new Alarm(this, 'MyGroupErrorAlarm', {
+new cloudwatch.Alarm(this, 'MyGroupErrorAlarm', {
   metric: group.metricAllErrors(),
-  threshold: 0
+  threshold: 0,
+  evaluationPeriods: 5
 });
 ```
 
