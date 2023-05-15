@@ -160,6 +160,12 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    // taken from the lambda default role logic.
+    // makes it easier for roles to be passed in.
+    if (handler.isBoundToVpc) {
+      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
@@ -169,7 +175,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
      * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
      * we conditionally attach this policy when the AWS partition is `aws`.
      */
-    const hasEcrPublicCondition = new CfnCondition(this, 'HasEcrPublic', {
+    const hasEcrPublicCondition = new CfnCondition(this.handlerRole.node.scope!, 'HasEcrPublic', {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
     });
 
