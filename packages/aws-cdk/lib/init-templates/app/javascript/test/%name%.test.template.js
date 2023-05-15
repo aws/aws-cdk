@@ -11,6 +11,10 @@ test('SQS Queue Created', () => {
 //   // THEN
 //   const template = Template.fromStack(stack);
 
+//     // Snapshot Testing
+//   expect(template.toJSON()).toMatchSnapshot();
+
+//     // Fine-grained Assertions
 //   template.hasResourceProperties('AWS::SQS::Queue', {
 //     VisibilityTimeout: 300
 //   });
