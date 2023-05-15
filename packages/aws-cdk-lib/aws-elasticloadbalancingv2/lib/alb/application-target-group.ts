@@ -1,9 +1,9 @@
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
-import { Aws, Annotations, Duration, Token } from '../../../core';
 import { IConstruct, Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import * as ec2 from '../../../aws-ec2';
+import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,

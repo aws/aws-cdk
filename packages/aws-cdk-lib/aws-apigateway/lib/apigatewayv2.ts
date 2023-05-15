@@ -3,8 +3,8 @@
 
 /* eslint-disable max-len */
 
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
+import * as cdk from '../../core';
 
 /**
  * Properties for defining a `AWS::ApiGatewayV2::Api`

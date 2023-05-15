@@ -1,11 +1,11 @@
 import * as path from 'path';
-import * as iam from '../../aws-iam';
-import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration, IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
+import * as iam from '../../aws-iam';
+import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration, IResource, RemovalPolicy, Resource, Token } from '../../core';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';

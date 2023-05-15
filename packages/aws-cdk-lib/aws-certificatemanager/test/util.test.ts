@@ -1,5 +1,5 @@
-import { PublicHostedZone } from '../../aws-route53';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { PublicHostedZone } from '../../aws-route53';
 import { App, Aws, Stack } from '../../core';
 import { Certificate, DnsValidatedCertificate } from '../lib';
 import { apexDomain, getCertificateRegion, isDnsValidatedCertificate } from '../lib/util';

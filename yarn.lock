@@ -2737,7 +2737,7 @@ aws-sdk-mock@5.6.0:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1375.0, aws-sdk@^2.928.0:
+aws-sdk@^2.1373.0, aws-sdk@^2.1375.0, aws-sdk@^2.928.0:
   version "2.1375.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1375.0.tgz#9fbc6f7e1eb8211bd39ec32fb2d4a7a6a0de2469"
   integrity sha512-4JusqLa0+TJ4a2rfxuiPiaEHZVxVWDzREN8rAI4zhL+u4QbqGq95yfMh9v5QtSDkdNCAReA5DSSVXPOHbS80pA==
@@ -3541,9 +3541,9 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-
   integrity sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==
 
 constructs@^10.0.0:
-  version "10.2.18"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-10.2.18.tgz#5ffe4d1eab5ee7c3880f6dc4c2b350404a034605"
-  integrity sha512-hRNYf416y6XyEiSAaaUC50pTeUMTNq1BJFkx2E23Gsp+4MwFPtmHqN4h5h6qeW/vNHAErePQPjMjOekvjBGUAg==
+  version "10.2.17"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-10.2.17.tgz#3d3f233ca583fc6ba18611f11232c6d2be280928"
+  integrity sha512-D3a/+iKMkBj8Elf1NIl1jBNIrK07Pg7ICBe5QEgtEKYEZOuHQvlCK9PK1f87SQ+GhtOnwSyvP+q+Pq5zBLu5kg==
 
 conventional-changelog-angular@5.0.12:
   version "5.0.12"
