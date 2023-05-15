@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.last = exports.isAssetManifest = exports.APP_ID = exports.CFN_CONTEXT = void 0;
+const cxapi = require("aws-cdk-lib/cx-api");
+exports.CFN_CONTEXT = {
+    'AWS::Region': 'the_region',
+    'AWS::AccountId': 'the_account',
+    'AWS::URLSuffix': 'domain.aws',
+};
+exports.APP_ID = 'appid';
+function isAssetManifest(x) {
+    return x instanceof cxapi.AssetManifestArtifact;
+}
+exports.isAssetManifest = isAssetManifest;
+function last(xs) {
+    return xs ? xs[xs.length - 1] : undefined;
+}
+exports.last = last;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXRpbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInV0aWwudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsNENBQTRDO0FBRS9CLFFBQUEsV0FBVyxHQUFHO0lBQ3pCLGFBQWEsRUFBRSxZQUFZO0lBQzNCLGdCQUFnQixFQUFFLGFBQWE7SUFDL0IsZ0JBQWdCLEVBQUUsWUFBWTtDQUMvQixDQUFDO0FBQ1csUUFBQSxNQUFNLEdBQUcsT0FBTyxDQUFDO0FBRTlCLFNBQWdCLGVBQWUsQ0FBQyxDQUFzQjtJQUNwRCxPQUFPLENBQUMsWUFBWSxLQUFLLENBQUMscUJBQXFCLENBQUM7QUFDbEQsQ0FBQztBQUZELDBDQUVDO0FBRUQsU0FBZ0IsSUFBSSxDQUFJLEVBQVE7SUFDOUIsT0FBTyxFQUFFLENBQUMsQ0FBQyxDQUFDLEVBQUUsQ0FBQyxFQUFFLENBQUMsTUFBTSxHQUFHLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxTQUFTLENBQUM7QUFDNUMsQ0FBQztBQUZELG9CQUVDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgY3hhcGkgZnJvbSAnYXdzLWNkay1saWIvY3gtYXBpJztcblxuZXhwb3J0IGNvbnN0IENGTl9DT05URVhUID0ge1xuICAnQVdTOjpSZWdpb24nOiAndGhlX3JlZ2lvbicsXG4gICdBV1M6OkFjY291bnRJZCc6ICd0aGVfYWNjb3VudCcsXG4gICdBV1M6OlVSTFN1ZmZpeCc6ICdkb21haW4uYXdzJyxcbn07XG5leHBvcnQgY29uc3QgQVBQX0lEID0gJ2FwcGlkJztcblxuZXhwb3J0IGZ1bmN0aW9uIGlzQXNzZXRNYW5pZmVzdCh4OiBjeGFwaS5DbG91ZEFydGlmYWN0KTogeCBpcyBjeGFwaS5Bc3NldE1hbmlmZXN0QXJ0aWZhY3Qge1xuICByZXR1cm4geCBpbnN0YW5jZW9mIGN4YXBpLkFzc2V0TWFuaWZlc3RBcnRpZmFjdDtcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIGxhc3Q8QT4oeHM/OiBBW10pOiBBIHwgdW5kZWZpbmVkIHtcbiAgcmV0dXJuIHhzID8geHNbeHMubGVuZ3RoIC0gMV0gOiB1bmRlZmluZWQ7XG59XG4iXX0=

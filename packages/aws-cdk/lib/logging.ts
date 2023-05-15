@@ -15,7 +15,6 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
     str = styles.reduce((a, style) => style(a), str);
   }
 
-
   const realStream = typeof stream === 'function' ? stream() : stream;
   realStream.write(str + '\n');
 };
@@ -37,7 +36,6 @@ export enum LogLevel {
   /** Extremely verbose */
   TRACE = 2
 }
-
 
 export let logLevel = LogLevel.DEFAULT;
 export let CI = false;

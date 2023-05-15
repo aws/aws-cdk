@@ -49,7 +49,6 @@ export class Runtime {
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0', RuntimeFamily.NODEJS);
 
-
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
    *

@@ -1008,7 +1008,6 @@ describe('Kinesis data streams', () => {
           'Fn::Or': [
             {
 
-
               'Fn::Equals': [
                 {
                   Ref: 'AWS::Region',

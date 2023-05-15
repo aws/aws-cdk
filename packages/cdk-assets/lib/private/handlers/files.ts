@@ -173,7 +173,6 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
   );
 }
 
-
 /**
  * A packaged asset which can be uploaded (either a single file or directory)
  */
@@ -190,7 +189,6 @@ interface PackagedFileAsset {
    */
   readonly contentType?: string;
 }
-
 
 /**
  * Cache for bucket information, so we don't have to keep doing the same calls again and again

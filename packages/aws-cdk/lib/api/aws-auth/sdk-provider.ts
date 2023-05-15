@@ -13,7 +13,6 @@ import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
 
-
 // Some configuration that can only be achieved by setting
 // environment variables.
 process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';

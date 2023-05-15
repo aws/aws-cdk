@@ -1098,7 +1098,6 @@ export class Stack extends Construct implements ITaggable {
     return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
 
-
   /**
    * Create a CloudFormation Export for a string value
    *

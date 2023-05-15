@@ -8,7 +8,6 @@ import { mockSpawn } from './mock-child_process';
 import { AssetManifest, AssetPublishing } from '../lib';
 import * as dockercreds from '../lib/private/docker-credentials';
 
-
 let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
