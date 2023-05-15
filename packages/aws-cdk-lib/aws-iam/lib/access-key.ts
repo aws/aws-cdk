@@ -1,7 +1,7 @@
-import { IResource, Resource, SecretValue } from '../../core';
 import { Construct } from 'constructs';
 import { CfnAccessKey } from './iam.generated';
 import { IUser } from './user';
+import { IResource, Resource, SecretValue } from '../../core';
 
 /**
  * Valid statuses for an IAM Access Key.

@@ -1,5 +1,5 @@
-import { Token } from '../../../core';
 import { IConstruct, Construct, Node } from 'constructs';
+import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';

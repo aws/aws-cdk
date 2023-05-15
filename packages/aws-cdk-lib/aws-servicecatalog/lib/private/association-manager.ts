@@ -1,8 +1,8 @@
+import { hashValues } from './util';
+import { InputValidator } from './validation';
 import * as iam from '../../../aws-iam';
 import * as sns from '../../../aws-sns';
 import * as cdk from '../../../core';
-import { hashValues } from './util';
-import { InputValidator } from './validation';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,

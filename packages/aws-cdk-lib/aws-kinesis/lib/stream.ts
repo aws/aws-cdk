@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
+import { CfnStream } from './kinesis.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '../../core';
-import { Construct } from 'constructs';
-import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
-import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',

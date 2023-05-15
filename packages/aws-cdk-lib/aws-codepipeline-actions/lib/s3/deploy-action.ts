@@ -1,8 +1,8 @@
+import { kebab as toKebabCase } from 'case';
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as s3 from '../../../aws-s3';
 import { Duration } from '../../../core';
-import { kebab as toKebabCase } from 'case';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
