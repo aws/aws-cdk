@@ -176,6 +176,7 @@ export class SdkProvider {
     options?: CredentialsOptions,
   ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
+
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials

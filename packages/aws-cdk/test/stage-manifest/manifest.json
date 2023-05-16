@@ -1,0 +1,24 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "StageA.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StageA.assets.json"
+      }
+    },
+    "NestedStageA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StageA.template.json",
+        "additionalDependencies": [
+          "StageA.assets"
+        ]
+      },
+      "dependencies": [
+        "StageA.assets"
+      ]
+    }
+  }
+}

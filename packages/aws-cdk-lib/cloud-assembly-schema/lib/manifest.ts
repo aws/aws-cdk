@@ -48,6 +48,16 @@ export interface LoadManifestOptions {
    * @default false
    */
   readonly skipEnumCheck?: boolean;
+
+  /**
+   * Topologically sort all artifacts
+   *
+   * This parameter is only respected by the constructor of `CloudAssembly`. The
+   * property lives here for backwards compatibility reasons.
+   *
+   * @default true
+   */
+  readonly topoSort?: boolean;
 }
 
 /**
