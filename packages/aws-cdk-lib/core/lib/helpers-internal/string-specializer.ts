@@ -1,7 +1,7 @@
-import { Stack } from '../stack';
 import * as cxapi from '../../../cx-api';
-import { Token } from '../token';
 import { Aws } from '../cfn-pseudo';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 /**
  * A "replace-all" function that doesn't require us escaping a literal string to a regex

@@ -34,7 +34,7 @@ To get started, update your CDK App with a new `defaultStackSynthesizer`:
 ```ts
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'my-app-id',
+    appId: 'my-app-id', // put a unique id here
   }),
 });
 ```
