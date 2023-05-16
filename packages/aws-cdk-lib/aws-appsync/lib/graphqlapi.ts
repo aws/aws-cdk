@@ -259,6 +259,21 @@ export interface LogConfig {
 }
 
 /**
+ * Visibility type for a GraphQL API
+ */
+export enum Visibility {
+
+  /**
+   * Public, open to the internet
+   */
+  GLOBAL = 'GLOBAL',
+  /**
+   * Only accessible through a VPC
+   */
+  PRIVATE = 'PRIVATE'
+}
+
+/**
  * Domain name configuration for AppSync
  */
 export interface DomainOptions {
@@ -317,7 +332,7 @@ export interface GraphqlApiProps {
    *
    * @default - GLOBAL
    */
-  readonly visibility?: string;
+  readonly visibility?: Visibility;
 
   /**
    * The domain name configuration for the GraphQL API

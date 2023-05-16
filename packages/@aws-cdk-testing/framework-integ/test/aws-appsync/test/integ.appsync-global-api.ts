@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'stack');
 const api = new appsync.GraphqlApi(stack, 'GlobalApi', {
   name: 'GlobalApi',
   schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-  visibility: 'GLOBAL',
+  visibility: appsync.Visibility.GLOBAL,
 });
 
 api.addNoneDataSource('NoneDS', {

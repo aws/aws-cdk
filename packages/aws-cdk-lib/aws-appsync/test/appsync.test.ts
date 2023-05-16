@@ -246,7 +246,7 @@ test('when visibility is set it should be used when creating the API', () => {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-    visibility: 'PRIVATE',
+    visibility: appsync.Visibility.PRIVATE,
   });
 
   // THEN
