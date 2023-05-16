@@ -853,7 +853,6 @@ cluster.awsAuth.addMastersRole(role);
 To access the Kubernetes resources from the console, you need to either include your current viewing principal in the `aws-auth`
 or create a shared IAM role that is added into the `system:masters`:
 
-
 ```ts
 // Option 1: Add your current assumed role to system:masters. Make sure you have
 // relevant eks:* policies.
