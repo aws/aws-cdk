@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggable2 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
-class TaggableResource extends CfnResource {
+class TaggableResource extends CfnResource implements ITaggable {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
@@ -14,7 +14,19 @@ class TaggableResource extends CfnResource {
   }
 }
 
-class AsgTaggableResource extends CfnResource {
+class TaggableResource2 extends CfnResource implements ITaggable2 {
+  public readonly tagManager: TagManager;
+  constructor(scope: Construct, id: string, props: CfnResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties?.tags;
+    this.tagManager = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource', tags);
+  }
+  public testProperties() {
+    return this.cfnProperties;
+  }
+}
+
+class AsgTaggableResource extends CfnResource implements ITaggable {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
@@ -26,7 +38,7 @@ class AsgTaggableResource extends CfnResource {
   }
 }
 
-class MapTaggableResource extends CfnResource {
+class MapTaggableResource extends CfnResource implements ITaggable {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
@@ -39,12 +51,12 @@ class MapTaggableResource extends CfnResource {
 }
 
 describe('tag aspect', () => {
-  test('Tag visit all children of the applied node', () => {
+  test.each([TaggableResource, TaggableResource2])('Tag visit all children of the applied node, using class %s', (taggableClass) => {
     const root = new Stack();
-    const res = new TaggableResource(root, 'FakeResource', {
+    const res = new taggableClass(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    const res2 = new TaggableResource(res, 'FakeResource', {
+    const res2 = new taggableClass(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
     const asg = new AsgTaggableResource(res, 'AsgFakeResource', {
@@ -58,8 +70,8 @@ describe('tag aspect', () => {
 
     synthesize(root);
 
-    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
-    expect(res2.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(getMgr(res).renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(getMgr(res2).renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     expect(map.tags.renderTags()).toEqual({ foo: 'bar' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
   });
@@ -276,3 +288,10 @@ describe('tag aspect', () => {
     });
   });
 });
+
+function getMgr(x: ITaggable | ITaggable2) {
+  if (TagManager.isTaggable(x)) {
+    return x.tags;
+  }
+  return x.tagManager;
+}

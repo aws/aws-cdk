@@ -239,6 +239,22 @@ export interface ITaggable {
 }
 
 /**
+ * Modernized version of ITaggable
+ *
+ * `ITaggable` was a bad idea: for many resources, 'tags' is a valid property
+ * name that should be directly available on the L1 resource. For old resources we have to
+ * keep `tags` as the `TagManager`, but for newer resources `tags` will be the L1
+ * property and `tagManager: TagManager` will have the tag manager.
+ *
+ */
+export interface ITaggable2 {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tagManager: TagManager;
+}
+
+/**
  * Options to configure TagManager behavior
  */
 export interface TagManagerOptions {
@@ -284,6 +300,13 @@ export class TagManager {
    */
   public static isTaggable(construct: any): construct is ITaggable {
     return (construct as any).tags !== undefined;
+  }
+
+  /**
+   * Check whether the given construct is ITaggable2
+   */
+  public static isTaggable2(construct: any): construct is ITaggable2 {
+    return (construct as any).tagManager !== undefined;
   }
 
   /**
