@@ -466,8 +466,9 @@ sources and resolvers, an `apiId` is sufficient.
 ## Private APIs
 
 By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
-For customers that want to limit access to be from their VPC, the API can be set to `PRIVATE` 
-at creation time through the `Visibility` property. The default visbility if not set, is `GLOBAL`.
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+If visbility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
 
@@ -475,7 +476,7 @@ CDK stack file `app-stack.ts`:
 const api = new appsync.GraphqlApi(stack, 'api', {
   name: 'MyPrivateAPI',
   schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.schema.graphql')),
-  visbility: 'PRIVATE'
+  visbility: appsync.Visibility.PRIVATE,
 });
 ```
 
