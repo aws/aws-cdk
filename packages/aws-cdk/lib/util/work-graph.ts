@@ -84,13 +84,8 @@ export class WorkGraph {
     this.addNodes(...Object.values(graph.nodes));
   }
 
-  public hasFailed(): boolean {
+  private hasFailed(): boolean {
     return Object.values(this.nodes).some((n) => n.deploymentState === DeploymentState.FAILED);
-  }
-
-  public hasNext(): boolean {
-    this.updateReadyPool();
-    return this.readyPool.length > 0;
   }
 
   public doParallel(concurrency: Concurrency, actions: WorkGraphActions) {
@@ -147,7 +142,6 @@ export class WorkGraph {
 
         for (let i = 0; i < graph.readyPool.length; ) {
           const node = graph.readyPool[i];
-          // if (node.deploymentState !== DeploymentState.QUEUED) { continue; }
 
           if (active[node.type] < max[node.type] && totalActive() < totalMax) {
             graph.readyPool.splice(i, 1);

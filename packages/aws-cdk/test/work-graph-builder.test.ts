@@ -70,7 +70,7 @@ test('tree metadata is ignored', async () => {
   const assembly = rootBuilder.buildAssembly();
 
   const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
-  expect(graph.hasNext()).toEqual(false);
+  expect(graph.ready().length).toBeGreaterThan(0);
 });
 
 test('can handle nested assemblies', async () => {

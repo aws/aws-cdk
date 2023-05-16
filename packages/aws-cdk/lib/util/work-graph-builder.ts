@@ -43,7 +43,7 @@ export class WorkGraphBuilder {
     const buildId = `${this.idPrefix}${asset.id}-build`;
 
     // Add the build node, but only one per "source"
-    // FIXME: May need to take directory into account for this key
+    // The genericSource includes a relative path we could make absolute to do more effective deduplication of build steps. Not doing that right now.
     const assetBuildNodeKey = JSON.stringify(asset.genericSource);
     if (!this.assetBuildNodes.has(assetBuildNodeKey)) {
       const node: AssetBuildNode = {

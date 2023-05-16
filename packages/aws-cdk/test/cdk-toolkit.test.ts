@@ -585,38 +585,6 @@ describe('deploy', () => {
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
-
-    // eslint-disable-next-line jest/no-commented-out-tests
-    // test('can disable asset parallelism', async () => {
-    //   // GIVEN
-    //   cloudExecutable = new MockCloudExecutable({
-    //     stacks: [MockStack.MOCK_STACK_WITH_ASSET],
-    //   });
-    //   const fakeCloudFormation = new FakeCloudFormation({});
-
-    //   const toolkit = new CdkToolkit({
-    //     cloudExecutable,
-    //     configuration: cloudExecutable.configuration,
-    //     sdkProvider: cloudExecutable.sdkProvider,
-    //     cloudFormation: fakeCloudFormation,
-    //   });
-
-    //   // WHEN
-    //   // Not the best test but following this through to the asset publishing library fails
-    //   await withMocked(fakeCloudFormation, 'buildAssets', async (mockBuildAssets) => {
-    //     await toolkit.deploy({
-    //       selector: { patterns: ['Test-Stack-Asset'] },
-    //       assetParallelism: false,
-    //       hotswap: HotswapMode.FULL_DEPLOYMENT,
-    //     });
-
-    //     expect(mockBuildAssets).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
-    //       buildOptions: expect.objectContaining({
-    //         parallel: false,
-    //       }),
-    //     }));
-    //   });
-    // });
   });
 });
 
