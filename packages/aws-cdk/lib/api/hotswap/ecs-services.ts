@@ -318,6 +318,9 @@ function deepCompareObject(lhs: object, rhs: object) {
   if (typeof lhs !== 'object') {
     return lhs === rhs;
   }
+  if (typeof rhs !== 'object') {
+    return false;
+  }
   if (Array.isArray(lhs)) {
     if (!Array.isArray(rhs)) {
       return false;
