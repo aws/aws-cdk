@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { CertificateProps, ICertificate } from './certificate';
+import { CertificateBase } from './certificate-base';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
-import { Construct } from 'constructs';
-import { CertificateProps, ICertificate } from './certificate';
-import { CertificateBase } from './certificate-base';
 import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**

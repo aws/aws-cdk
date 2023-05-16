@@ -1,3 +1,6 @@
+import { Construct } from 'constructs';
+import * as ssm from './ssm.generated';
+import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -6,9 +9,6 @@ import {
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
-import { Construct } from 'constructs';
-import * as ssm from './ssm.generated';
-import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
 /**
  * An SSM Parameter reference.

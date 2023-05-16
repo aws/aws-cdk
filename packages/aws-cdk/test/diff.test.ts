@@ -4,11 +4,11 @@ import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
+import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;
-let cloudFormation: jest.Mocked<CloudFormationDeployments>;
+let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
 describe('non-nested stacks', () => {
@@ -42,11 +42,11 @@ describe('non-nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(CloudFormationDeployments);
+    cloudFormation = instanceMockFrom(Deployments);
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -144,11 +144,11 @@ describe('nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(CloudFormationDeployments);
+    cloudFormation = instanceMockFrom(Deployments);
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });

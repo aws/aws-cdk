@@ -1,5 +1,5 @@
-import * as appscaling from '../../aws-applicationautoscaling';
 import { IConstruct } from 'constructs';
+import * as appscaling from '../../aws-applicationautoscaling';
 
 /**
  * Interface for scalable attributes
