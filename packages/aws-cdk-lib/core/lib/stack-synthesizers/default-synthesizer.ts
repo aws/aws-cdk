@@ -1,4 +1,4 @@
-import { assertBound } from './_shared';
+import { assertBound, StringSpecializer } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';

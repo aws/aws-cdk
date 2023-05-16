@@ -1,8 +1,8 @@
+import { IConstruct } from 'constructs';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { Names, Token } from '../../core';
-import { IConstruct } from 'constructs';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the Batch Job Event Target

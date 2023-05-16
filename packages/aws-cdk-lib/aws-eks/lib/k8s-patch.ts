@@ -1,7 +1,7 @@
-import { CustomResource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Stack } from '../../core';
 
 /**
  * Properties for KubernetesPatch
