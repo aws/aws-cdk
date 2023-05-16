@@ -859,6 +859,7 @@ or create a shared IAM role that is added into the `system:masters`:
 // relevant eks:* policies.
 declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role
+
 cluster.awsAuth.addMastersRole(your_current_role)
 
 // Option 2: Create a new role that allows the account root principal to assume. 
