@@ -1,4 +1,4 @@
-# App Scoped Staging Synthesizer
+# App Staging Synthesizer
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -10,7 +10,7 @@ import {
   ObtainStagingResourcesContext,
   IStagingResourcesFactory,
   IStagingResources,
-} from '@aws-cdk/app-staging-synthesizer';
+} from '@aws-cdk/app-staging-synthesizer-alpha';
 
 interface CustomStagingStackProps extends StackProps {}
 

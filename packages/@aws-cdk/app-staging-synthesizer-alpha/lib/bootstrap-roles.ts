@@ -77,7 +77,10 @@ export class DeploymentIdentities {
     return new DeploymentIdentities(roles);
   }
 
-  private constructor(public readonly roles: BootstrapRoles) {}
+  private constructor(
+    /** roles that are bootstrapped to your account. */
+    public readonly roles: BootstrapRoles,
+  ) {}
 }
 
 /**

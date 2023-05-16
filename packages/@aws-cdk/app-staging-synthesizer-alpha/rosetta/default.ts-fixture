@@ -11,7 +11,7 @@ import {
   FileStagingLocation,
   ImageStagingLocation,
   DeploymentIdentities,
-} from '@aws-cdk/app-staging-synthesizer';
+} from '@aws-cdk/app-staging-synthesizer-alpha';
 import * as path from 'path';
 
 class Fixture extends Stack {
