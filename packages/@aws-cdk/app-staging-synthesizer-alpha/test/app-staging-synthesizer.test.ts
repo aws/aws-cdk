@@ -35,7 +35,7 @@ describe(AppStagingSynthesizer, () => {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    const templateObjectKey = `handoff/${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
@@ -82,7 +82,7 @@ describe(AppStagingSynthesizer, () => {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack2');
 
-    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    const templateObjectKey = `handoff/${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
