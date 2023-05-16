@@ -148,7 +148,6 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
     super(scope, id);
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
-      adminRole: props.cluster.adminRole,
       onEventLayer: props.cluster.onEventLayer,
     });
 

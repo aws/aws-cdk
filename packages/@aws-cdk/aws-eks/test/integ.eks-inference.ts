@@ -13,7 +13,7 @@ class EksClusterInferenceStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_21,
+      version: eks.KubernetesVersion.of('1.22'),
       albController: {
         version: eks.AlbControllerVersion.V2_4_1,
       },

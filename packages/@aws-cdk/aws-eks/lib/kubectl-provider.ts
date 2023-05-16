@@ -168,6 +168,12 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    // taken from the lambda default role logic.
+    // makes it easier for roles to be passed in.
+    if (handler.isBoundToVpc) {
+      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),

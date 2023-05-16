@@ -27,7 +27,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_21,
+      version: eks.KubernetesVersion.of('1.22'),
     });
 
     this.cluster.addNodegroupCapacity('BottlerocketNG1', {

@@ -1,90 +1,5 @@
 {
  "Resources": {
-  "HandlerServiceRoleFCDC14AE": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "HandlerServiceRoleDefaultPolicyCBD0CC91": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "eks:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksclusterinferencetestClusterF6AC11E0Arn"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksclusterinferencetestClusterCreationRoleE75B6E1BArn"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "Roles": [
-     {
-      "Ref": "HandlerServiceRoleFCDC14AE"
-     }
-    ]
-   }
-  },
   "Handler886CB40B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -127,10 +42,7 @@
      }
     },
     "Role": {
-     "Fn::GetAtt": [
-      "HandlerServiceRoleFCDC14AE",
-      "Arn"
-     ]
+     "Ref": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -160,18 +72,14 @@
       }
      ]
     }
-   },
-   "DependsOn": [
-    "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "HandlerServiceRoleFCDC14AE"
-   ]
+   }
   },
   "AwsCliLayerF44AAF94": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Ref": "referencetoawscdkeksclusterinferencetestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket896018C9Ref"
+      "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3BucketF9ECF94DRef"
      },
      "S3Key": {
       "Fn::Join": [
@@ -184,7 +92,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKeyFB2538BARef"
+             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey619E52EARef"
             }
            ]
           }
@@ -197,7 +105,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "referencetoawscdkeksclusterinferencetestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKeyFB2538BARef"
+             "Ref": "referencetoawscdkeksclusterinferencetestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey619E52EARef"
             }
            ]
           }
@@ -433,16 +341,13 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterinferencetestClusterF6AC11E0Arn": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksclusterinferencetestClusterCreationRoleE75B6E1BArn": {
-   "Type": "String"
-  },
   "referencetoawscdkeksclusterinferencetestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket7F575D00Ref": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterinferencetestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKeyFE58CE3CRef": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": {
@@ -454,10 +359,10 @@
   "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket896018C9Ref": {
+  "referencetoawscdkeksclusterinferencetestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3BucketF9ECF94DRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterinferencetestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKeyFB2538BARef": {
+  "referencetoawscdkeksclusterinferencetestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey619E52EARef": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterinferencetestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket50BD0F5FRef": {

@@ -681,6 +681,133 @@
             "id": "Cluster",
             "path": "aws-eks-service-account-sdk-calls-test/Cluster",
             "children": {
+              "KubectlHandlerRole": {
+                "id": "KubectlHandlerRole",
+                "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "eks:DescribeCluster",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Cluster9EE0221C",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ClusterCreationRole360249B6",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
+                            "roles": [
+                              {
+                                "Ref": "ClusterKubectlHandlerRole94549F93"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Role": {
                 "id": "Role",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/Role",
@@ -784,22 +911,26 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ClusterKubectlHandlerRole94549F93",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn"
+                                        ]
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn"
+                                        ]
+                                      }
+                                    ]
                                   }
                                 }
                               ],
@@ -941,94 +1072,6 @@
                   "version": "0.0.0"
                 }
               },
-              "MastersRole": {
-                "id": "MastersRole",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "AwsAuth": {
-                "id": "AwsAuth",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth",
-                "children": {
-                  "manifest": {
-                    "id": "manifest",
-                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.AwsAuth",
-                  "version": "0.0.0"
-                }
-              },
               "NodegroupDefaultCapacity": {
                 "id": "NodegroupDefaultCapacity",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/NodegroupDefaultCapacity",
@@ -1152,29 +1195,51 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-eks.CfnNodegroup",
+                      "fqn": "@aws-cdk/core.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.Nodegroup",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               },
-              "ConfigCommand": {
-                "id": "ConfigCommand",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/ConfigCommand",
+              "AwsAuth": {
+                "id": "AwsAuth",
+                "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth",
+                "children": {
+                  "manifest": {
+                    "id": "manifest",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Construct",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "GetTokenCommand": {
-                "id": "GetTokenCommand",
-                "path": "aws-eks-service-account-sdk-calls-test/Cluster/GetTokenCommand",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "@aws-cdk/core.Construct",
                   "version": "0.0.0"
                 }
               },
@@ -1332,13 +1397,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
+                      "fqn": "@aws-cdk/core.Construct",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.ServiceAccount",
+                  "fqn": "@aws-cdk/core.Construct",
                   "version": "0.0.0"
                 }
               },
@@ -1366,7 +1431,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.OpenIdConnectProvider",
+                  "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
                   "version": "0.0.0"
                 }
               },
@@ -1394,13 +1459,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
+                  "fqn": "@aws-cdk/core.Construct",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-eks.Cluster",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -1542,47 +1607,6 @@
                           "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1624,7 +1648,7 @@
                       "aws:cdk:cloudformation:props": {
                         "code": {
                           "s3Bucket": {
-                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef"
+                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -1637,7 +1661,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef"
                                         }
                                       ]
                                     }
@@ -1650,7 +1674,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef"
                                         }
                                       ]
                                     }
@@ -1739,47 +1763,6 @@
                           "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-                                "roles": [
-                                  {
-                                    "Ref": "IsCompleteHandlerServiceRole5810CC58"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1821,7 +1804,7 @@
                       "aws:cdk:cloudformation:props": {
                         "code": {
                           "s3Bucket": {
-                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef"
+                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -1834,7 +1817,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef"
                                         }
                                       ]
                                     }
@@ -1847,7 +1830,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef"
                                         }
                                       ]
                                     }
@@ -2785,6 +2768,22 @@
                   "version": "0.0.0"
                 }
               },
+              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn": {
+                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn": {
+                "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
               "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": {
                 "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
@@ -2809,25 +2808,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
+              "reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref",
+              "reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -2879,7 +2870,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5S3Bucket5E523F8B"
+                            "Ref": "AssetParameters585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8fS3Bucket2EE9C06E"
                           },
                           "/",
                           {
@@ -2889,7 +2880,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5S3VersionKey586735F9"
+                                    "Ref": "AssetParameters585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8fS3VersionKeyFD5B0FD4"
                                   }
                                 ]
                               }
@@ -2902,7 +2893,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5S3VersionKey586735F9"
+                                    "Ref": "AssetParameters585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8fS3VersionKeyFD5B0FD4"
                                   }
                                 ]
                               }
@@ -2918,17 +2909,11 @@
                       "referencetoawseksserviceaccountsdkcallstestAssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey771D5BC0Ref": {
                         "Ref": "AssetParameters4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06eeS3VersionKey93D16224"
                       },
-                      "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
-                          "Arn"
-                        ]
+                      "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketBD18BA2ERef": {
+                        "Ref": "AssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3BucketB5797A29"
                       },
-                      "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket863CF36FRef": {
-                        "Ref": "AssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3Bucket60C6EC09"
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestAssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey567CCFE4Ref": {
-                        "Ref": "AssetParameters2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6S3VersionKey8076CD69"
+                      "referencetoawseksserviceaccountsdkcallstestAssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey14EF5D3CRef": {
+                        "Ref": "AssetParameters4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6S3VersionKey61C50A55"
                       },
                       "referencetoawseksserviceaccountsdkcallstestAssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket73E44A6DRef": {
                         "Ref": "AssetParameters3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671S3Bucket766250D8"
@@ -2988,13 +2973,13 @@
                   "version": "0.0.0"
                 }
               },
-              "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6": {
-                "id": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6",
-                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6",
+              "4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6": {
+                "id": "4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6",
+                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6/S3Bucket",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3002,7 +2987,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6/S3VersionKey",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3010,7 +2995,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6/ArtifactHash",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4e9c0e1b6fc1adb57b2ace75ad2bcea630c1c57462d920f7847f0383cc8a7ed6/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3090,13 +3075,13 @@
                   "version": "0.0.0"
                 }
               },
-              "c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92": {
-                "id": "c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92",
-                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92",
+              "34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17": {
+                "id": "34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17",
+                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92/S3Bucket",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3104,7 +3089,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92/S3VersionKey",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3112,7 +3097,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/c5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92/ArtifactHash",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3260,13 +3245,13 @@
                   "version": "0.0.0"
                 }
               },
-              "4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5": {
-                "id": "4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5",
-                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5",
+              "585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f": {
+                "id": "585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f",
+                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5/S3Bucket",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3274,7 +3259,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5/S3VersionKey",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3282,7 +3267,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/4113cfa8825ae7d98ac51d1ef04b2b0ef5772e7aa6edf84249b3026b3eadaac5/ArtifactHash",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/585dedc54a47e22a9f90f73e885dfc7e0259f82fb56f1bf577c6965cb2cb8b8f/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3294,13 +3279,13 @@
                   "version": "0.0.0"
                 }
               },
-              "7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac": {
-                "id": "7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac",
-                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac",
+              "7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753": {
+                "id": "7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753",
+                "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac/S3Bucket",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3308,7 +3293,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac/S3VersionKey",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3316,7 +3301,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734ac/ArtifactHash",
+                    "path": "aws-eks-service-account-sdk-calls-test/AssetParameters/7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -3342,127 +3327,6 @@
                 "id": "Handler",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "eks:DescribeCluster",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn"
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-                                "roles": [
-                                  {
-                                    "Ref": "HandlerServiceRoleFCDC14AE"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Code": {
                     "id": "Code",
                     "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
@@ -3534,10 +3398,7 @@
                           }
                         },
                         "role": {
-                          "Fn::GetAtt": [
-                            "HandlerServiceRoleFCDC14AE",
-                            "Arn"
-                          ]
+                          "Ref": "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -3618,7 +3479,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket12122408Ref"
+                            "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket89A12954Ref"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -3631,7 +3492,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref"
                                         }
                                       ]
                                     }
@@ -3644,7 +3505,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef"
+                                          "Ref": "referencetoawseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref"
                                         }
                                       ]
                                     }
@@ -4017,22 +3878,6 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
               "reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket6A2D95AFRef": {
                 "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket6A2D95AFRef",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket6A2D95AFRef",
@@ -4044,6 +3889,14 @@
               "reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKey223ABA75Ref": {
                 "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKey223ABA75Ref",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKey223ABA75Ref",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -4073,17 +3926,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket12122408Ref": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket12122408Ref",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket12122408Ref",
+              "reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket89A12954Ref": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket89A12954Ref",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket89A12954Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef": {
-                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef",
+              "reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref": {
+                "id": "reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref",
+                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnParameter",
                   "version": "0.0.0"
@@ -4123,7 +3976,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-eks.KubectlProvider",
+              "fqn": "@aws-cdk/core.NestedStack",
               "version": "0.0.0"
             }
           },
@@ -4151,7 +4004,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734acS3BucketEC8556B5"
+                            "Ref": "AssetParameters7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753S3Bucket40E1ECF3"
                           },
                           "/",
                           {
@@ -4161,7 +4014,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734acS3VersionKeyF53491B6"
+                                    "Ref": "AssetParameters7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753S3VersionKeyB71DAA25"
                                   }
                                 ]
                               }
@@ -4174,7 +4027,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters7111d952492df8967cf6ff96f2737e19ee5b97d90fb879c0252022e67a3734acS3VersionKeyF53491B6"
+                                    "Ref": "AssetParameters7e9356e5925cb474a2e8e523333fed74119a70424c5bb301959084dd085fa753S3VersionKeyB71DAA25"
                                   }
                                 ]
                               }
@@ -4184,23 +4037,17 @@
                       ]
                     },
                     "parameters": {
-                      "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn": {
-                        "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
-                          "Arn"
-                        ]
-                      },
                       "referencetoawseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket6A2D95AFRef": {
                         "Ref": "AssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3Bucket17F51109"
                       },
                       "referencetoawseksserviceaccountsdkcallstestAssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKey223ABA75Ref": {
                         "Ref": "AssetParameters5a0165b80474734eff290897da1c8d571862f020eeaac2561c839386159c7f03S3VersionKeyAFA9FFD9"
+                      },
+                      "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": {
+                        "Fn::GetAtt": [
+                          "ClusterKubectlHandlerRole94549F93",
+                          "Arn"
+                        ]
                       },
                       "referencetoawseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": {
                         "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -4214,11 +4061,11 @@
                           "ClusterSecurityGroupId"
                         ]
                       },
-                      "referencetoawseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3Bucket12122408Ref": {
-                        "Ref": "AssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3BucketF38DEEC1"
+                      "referencetoawseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket89A12954Ref": {
+                        "Ref": "AssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3Bucket65C6FAF8"
                       },
-                      "referencetoawseksserviceaccountsdkcallstestAssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey4A0DAFBBRef": {
-                        "Ref": "AssetParametersc5a03f09adbaa6b0a994d730878f7c614af123fff7b9439e7ca357dc66f72e92S3VersionKey80480163"
+                      "referencetoawseksserviceaccountsdkcallstestAssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey41BFEDF2Ref": {
+                        "Ref": "AssetParameters34abf1686b2fdb8ed33df5d1053a91141c1481fa92c7fbe10e82f8fe38e6dc17S3VersionKey43CD050D"
                       },
                       "referencetoawseksserviceaccountsdkcallstestAssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3BucketAAE5D344Ref": {
                         "Ref": "AssetParametersc6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffedS3Bucket83B8778F"

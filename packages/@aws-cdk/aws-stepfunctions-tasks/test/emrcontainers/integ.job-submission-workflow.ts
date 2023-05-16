@@ -24,7 +24,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-integ');
 
 const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.of('1.22'),
   defaultCapacity: 3,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
