@@ -3,7 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
 > They are subject to non-backward compatible changes or removal in any future version. These are
