@@ -1,7 +1,16 @@
 // Fixture with packages imported, but nothing else
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, DockerImageAssetSource, FileAssetSource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { AppStagingSynthesizer, BootstrapRole, FileStagingLocation, ImageStagingLocation } from '@aws-cdk/app-staging-synthesizer';
+import {
+  AppStagingSynthesizer,
+  DefaultStagingStack,
+  BootstrapRole,
+  FileStagingLocation,
+  ImageStagingLocation,
+  ObtainStagingResourcesContext,
+  IStagingResourcesFactory,
+  IStagingResources,
+} from '@aws-cdk/app-staging-synthesizer';
 
 interface CustomStagingStackProps extends StackProps {}
 

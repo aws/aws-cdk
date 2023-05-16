@@ -13,7 +13,7 @@ import {
   Token,
 } from 'aws-cdk-lib';
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { BootstrapRole, BootstrapRoles } from './bootstrap-roles';
+import { BootstrapRole, BootstrapRoles, DeploymentIdentities } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
 import { PerEnvironmentStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
@@ -37,7 +37,7 @@ export interface AppStagingSynthesizerOptions {
    *
    * @default - The standard bootstrapped CDK roles
    */
-  readonly deploymentRoles?: BootstrapRoles;
+  readonly deploymentRoles?: DeploymentIdentities;
 
   /**
    * Qualifier to disambiguate multiple bootstrapped environments in the same account
@@ -172,11 +172,11 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     super();
 
     this.roles = {
-      deploymentRole: props.deploymentRoles?.deploymentRole ??
+      deploymentRole: props.deploymentRoles?.roles.deploymentRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN),
-      cloudFormationExecutionRole: props.deploymentRoles?.cloudFormationExecutionRole ??
+      cloudFormationExecutionRole: props.deploymentRoles?.roles.cloudFormationExecutionRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN),
-      lookupRole: this.props.deploymentRoles?.lookupRole ??
+      lookupRole: this.props.deploymentRoles?.roles.lookupRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN),
     };
   }

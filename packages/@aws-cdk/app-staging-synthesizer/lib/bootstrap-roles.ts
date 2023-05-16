@@ -54,6 +54,33 @@ export class BootstrapRole {
 }
 
 /**
+ * Deployment identities are the class of roles to be assumed by the CDK
+ * when deploying the App.
+ */
+export class DeploymentIdentities {
+  /**
+   * Use CLI credentials for all deployment identities.
+   */
+  public static cliCredentials(): DeploymentIdentities {
+    return new DeploymentIdentities({
+      cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
+      deploymentRole: BootstrapRole.cliCredentials(),
+      lookupRole: BootstrapRole.cliCredentials(),
+    });
+  }
+
+  /**
+   * Specify your own roles for all deployment identities. These roles
+   * must already exist.
+   */
+  public static specifyRoles(roles: BootstrapRoles): DeploymentIdentities {
+    return new DeploymentIdentities(roles);
+  }
+
+  private constructor(public readonly roles: BootstrapRoles) {}
+}
+
+/**
  * Roles that are bootstrapped to your account.
  */
 export interface BootstrapRoles {

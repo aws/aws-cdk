@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { APP_ID, isAssetManifest } from './util';
-import { AppStagingSynthesizer, BootstrapRole } from '../lib';
+import { AppStagingSynthesizer, BootstrapRole, DeploymentIdentities } from '../lib';
 
 const CLOUDFORMATION_EXECUTION_ROLE = 'cloudformation-execution-role';
 const DEPLOY_ACTION_ROLE = 'deploy-action-role';
@@ -42,11 +42,11 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: {
+        deploymentRoles: DeploymentIdentities.specifyRoles({
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
           deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        },
+        }),
       }),
     });
     const stack = new Stack(app, 'Stack', {
@@ -138,11 +138,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: {
-          cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
-          lookupRole: BootstrapRole.cliCredentials(),
-          deploymentRole: BootstrapRole.cliCredentials(),
-        },
+        deploymentRoles: DeploymentIdentities.cliCredentials(),
       }),
     });
     const stack = new Stack(app, 'Stack', {
