@@ -858,11 +858,22 @@ declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role;
 declare const vpc: ec2.Vpc;
 
-// Option 1: Add your current assumed role to system:masters. Make sure you have
-// relevant eks:* policies.
+// Option 1: Add your current assumed IAM role to system:masters. Make sure to add
+// relevant policies.
 cluster.awsAuth.addMastersRole(your_current_role)
 
-// Option 2: create your custom mastersRole
+your_current_role.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+
+
+// Option 2: create your custom mastersRole as the Cluster prop.
+// Switch to this role from the AWS console.
 const mastersRole = new iam.Role(this, 'MastersRole', {
   assumedBy: new iam.AccountRootPrincipal,
 });
@@ -885,7 +896,7 @@ mastersRole.addToPolicy(new iam.PolicyStatement({
 }));
 
 // Option 3: Create a new role that allows the account root principal to assume. 
-// Add this role in the `system:masters`
+// Add this role in the `system:masters` and witch to this role from the AWS console.
 const consoleReadOnlyRole = new iam.Role(this, 'ConsoleReadOnlyRole', {
   assumedBy: new iam.AccountRootPrincipal,
 });
@@ -900,9 +911,6 @@ consoleReadOnlyRole.addToPolicy(new iam.PolicyStatement({
 
 // Add this role to system:masters RBAC group
 cluster.awsAuth.addMastersRole(consoleReadOnlyRole)
-
-// Now you can switch to this role from the AWS console to browse all
-// Kubernetes resources.
 ```
 
 ### Cluster Security Group
