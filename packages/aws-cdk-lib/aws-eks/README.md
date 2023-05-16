@@ -850,6 +850,39 @@ declare const role: iam.Role;
 cluster.awsAuth.addMastersRole(role);
 ```
 
+To access the Kubernetes resources from the console, you need to either include your current viewing principal in the `aws-auth`
+or create a shared IAM role that is added into the `system:masters`:
+
+
+```ts
+// Option 1: Add your current assumed role to system:masters. Make sure you have
+// relevant eks:* policies.
+declare const cluster: eks.Cluster;
+declare const your_current_role: iam.Role
+cluster.awsAuth.addMastersRole(your_current_role)
+
+// Option 2: Create a new role that allows the account root principal to assume. 
+// Add this role in the `system:masters`
+
+const consoleReadOnlyRole = new iam.Role(this, 'ConsoleReadOnlyRole', {
+  assumedBy: new iam.AccountRootPrincipal,
+});
+consoleReadOnlyRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+
+// Add this role to system:masters RBAC group
+cluster.awsAuth.addMastersRole(consoleReadOnlyRole)
+
+// Now you can switch to this role from the AWS console to browse all
+// Kubernetes resources.
+```
+
 ### Cluster Security Group
 
 When you create an Amazon EKS cluster, a [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
