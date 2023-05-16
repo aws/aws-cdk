@@ -850,20 +850,42 @@ declare const role: iam.Role;
 cluster.awsAuth.addMastersRole(role);
 ```
 
-To access the Kubernetes resources from the console, you need to either include your current viewing principal in the `aws-auth`
-or create a shared IAM role that is added into the `system:masters`:
+To access the Kubernetes resources from the console, make sure your viewing principal is defined
+in the `aws-auth` ConfigMap. Some options to consider:
 
 ```ts
+declare const cluster: eks.Cluster;
+declare const your_current_role: iam.Role;
+declare const vpc: ec2.Vpc;
+
 // Option 1: Add your current assumed role to system:masters. Make sure you have
 // relevant eks:* policies.
-declare const cluster: eks.Cluster;
-declare const your_current_role: iam.Role
-
 cluster.awsAuth.addMastersRole(your_current_role)
 
-// Option 2: Create a new role that allows the account root principal to assume. 
-// Add this role in the `system:masters`
+// Option 2: create your custom mastersRole
+const mastersRole = new iam.Role(this, 'MastersRole', {
+  assumedBy: new iam.AccountRootPrincipal,
+});
 
+const cluster = new eks.Cluster(this, 'EksCluster', {
+  vpc,
+  version: eks.KubernetesVersion.V1_26,
+  kubectlLayer: new KubectlLayer(this, 'KubectlLayer'),
+  mastersRole,
+  outputMastersRoleArn: true,
+});
+
+mastersRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'eks:AccessKubernetesApi',
+    'eks:Describe*',
+    'eks:List*',
+],
+  resources: [ cluster.clusterArn ],
+}));
+
+// Option 3: Create a new role that allows the account root principal to assume. 
+// Add this role in the `system:masters`
 const consoleReadOnlyRole = new iam.Role(this, 'ConsoleReadOnlyRole', {
   assumedBy: new iam.AccountRootPrincipal,
 });
