@@ -1,5 +1,5 @@
-import { DefaultStagingStack } from '../lib';
 import { App } from 'aws-cdk-lib';
+import { DefaultStagingStack } from '../lib';
 
 describe('default staging stack', () => {
   describe('appId fails', () => {

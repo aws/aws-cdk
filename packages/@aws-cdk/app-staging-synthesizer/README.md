@@ -30,13 +30,47 @@ are as follows:
 
 Our current bootstrap model looks like this, when you run `cdk bootstrap aws://<account>/<region>` :
 
-```mermaid
-graph TD
-    A(Bootstrap Stack) --- B(CloudFormationExecutionRole <br> DeploymentActionRole <br> LookupRole <br> FilePublishingRole <br> ImagePublishingRole <br> StagingBucket <br> ContainerAssetsRepository <br> FileAssetsBucketEncryptionKey)
+```text
+┌───────────────────────────────────┐┌────────────────────────┐┌────────────────────────┐
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│          ┌───────────────┐        ││    ┌──────────────┐    ││    ┌──────────────┐    │
+│          │Bootstrap Stack│        ││    │  CDK App 1   │    ││    │  CDK App 2   │    │
+│          └───────────────┘        ││    └──────────────┘    ││    └──────────────┘    │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│   ┌───────────────────────────┐   ││     ┌────────────┐     ││                        │
+│   │IAM Role for CFN execution │   ││┌────│  S3 Asset  │     ││                        │
+│   │    IAM Role for lookup    │   │││    └────────────┘     ││                        │
+│   │  IAM Role for deployment  │   │││                       ││                        │
+│   └───────────────────────────┘   │││                       ││     ┌─────────────┐    │
+│                                   │││            ┌──────────┼┼─────│  S3 Asset   │    │
+│                                   │││            │          ││     └─────────────┘    │
+│ ┌───────────────────────────────┐ │││            │          ││                        │
+│ │ IAM Role for File Publishing  │ │││            │          ││                        │
+│ │ IAM Role for Image Publishing │ │││            │          ││                        │
+│ └───────────────────────────────┘ │││            │          ││                        │
+│                                   │││            │          ││                        │
+│  ┌─────────────────────────────┐  │││            │          ││                        │
+│  │S3 Bucket for Staging Assets │  │││            │          ││                        │
+│  │     KMS Key encryption      │◀─┼┼┴────────────┘          ││      ┌────────────┐    │
+│  └─────────────────────────────┘  ││             ┌──────────┼┼───── │ ECR Asset  │    │
+│                                   ││             │          ││      └────────────┘    │
+│                                   ││             │          ││                        │
+│┌─────────────────────────────────┐││             │          ││                        │
+││ECR Repository for Staging Assets◀┼┼─────────────┘          ││                        │
+│└─────────────────────────────────┘││                        ││                        │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+│                                   ││                        ││                        │
+└───────────────────────────────────┘└────────────────────────┘└────────────────────────┘
 ```
 
 Your CDK Application utilizes these resources when deploying. For example, if you have a file asset,
-it gets uploaded to the `StagingBucket` using the `FilePublishingRole` when you run `cdk deploy`.
+it gets uploaded to the S3 Staging Bucket using the File Publishing Role when you run `cdk deploy`.
 
 This library introduces an alternate model to bootstrapping, by splitting out essential CloudFormation IAM roles
 and staging resources. There will still be a Bootstrap Stack, but this will only contain IAM roles necessary for
@@ -49,26 +83,50 @@ The Staging Stack will contain, on a per-need basis,
 - An ECR Repository _per_ image (and its revisions).
 - IAM roles with access to the Bucket and Repositories.
 
-```mermaid
-graph TD
-    A(Bootstrap Stack) --- B(CloudFormationExecutionRole <br> DeploymentActionRole <br> LookupRole)
-    C(CDK App with File Asset) --- D(Staging Stack A) 
-    C --- I(Stack A)
-    I --- J(File Asset)
-    F(CDK App with File/Image Asset) --- G(Staging Stack B)
-    F --- K(Stack B)
-    K --- L(File Asset <br> Image Asset)
-    G --- H(FilePublishingRole <br> ImagePublishingRole <br> StagingBucket <br> ContainerAssetsRepository <br> FileAssetsBucketEncryptionKey)
-    D --- E(FilePublishingRole <br> StagingBucket <br> FileAssetsBucketEncryptionKey)
-    M(CDK App with no Assets) --- N(Stack C)
-    N --- O(<br>)
+```text
+┌─────────────────────────────┐┌───────────────────────────────────────┐┌───────────────────────────────────────┐
+│                             ││                                       ││                                       │
+│      ┌───────────────┐      ││             ┌──────────────┐          ││             ┌──────────────┐          │
+│      │Bootstrap Stack│      ││             │  CDK App 1   │          ││             │  CDK App 2   │          │
+│      └───────────────┘      ││             └──────────────┘          ││             └──────────────┘          │
+│                             ││┌──────────────────┐                   ││┌──────────────────┐                   │
+│                             │││ ┌──────────────┐ │                   │││ ┌──────────────┐ │                   │
+│                             │││ │Staging Stack │ │                   │││ │Staging Stack │ │                   │
+│                             │││ └──────────────┘ │                   │││ └──────────────┘ │                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││┌────────────────┐│     ┌────────────┐│││┌────────────────┐│     ┌────────────┐│
+│                             ││││  IAM Role for  ││ ┌───│  S3 Asset  │││││  IAM Role for  ││ ┌───│  S3 Asset  ││
+│                             ││││File Publishing ││ │   └────────────┘││││File Publishing ││ │   └────────────┘│
+│                             │││└────────────────┘│ │                 ││││  IAM Role for  ││ │                 │
+│                             │││                  │ │                 ││││Image Publishing││ │                 │
+│┌───────────────────────────┐│││                  │ │                 │││└────────────────┘│ │                 │
+││IAM Role for CFN execution ││││                  │ │                 │││                  │ │                 │
+││    IAM Role for lookup    ││││                  │ │                 │││                  │ │                 │
+││  IAM Role for deployment  ││││┌────────────────┐│ │                 │││┌────────────────┐│ │                 │
+│└───────────────────────────┘││││ S3 Bucket for  ││ │                 ││││ S3 Bucket for  ││ │                 │
+│                             ││││ Staging Assets │◀─┘                 ││││ Staging Assets │◀─┘                 │
+│                             │││└────────────────┘│                   │││└────────────────┘│      ┌───────────┐│
+│                             │││                  │                   │││                  │  ┌───│ ECR Asset ││
+│                             │││                  │                   │││┌────────────────┐│  │   └───────────┘│
+│                             │││                  │                   ││││ ECR Repository ││  │                │
+│                             │││                  │                   ││││  for Staging   │◀──┘                │
+│                             │││                  │                   ││││     Assets     ││                   │
+│                             │││                  │                   │││└────────────────┘│                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││                  │                   │││                  │                   │
+│                             │││                  │                   │││                  │                   │
+│                             ││└──────────────────┘                   ││└──────────────────┘                   │
+└─────────────────────────────┘└───────────────────────────────────────┘└───────────────────────────────────────┘
 ```
 
 This allows staging resources to be created when needed next to the CDK App. It has the following
 benefits:
 
-- Bootstrapping will be faster since the heavy resource of a KMS key is no longer involved.
-- Because roles are a global resource, every account now only needs to be bootstrapped once.
+- Resources between separate CDK Apps are separated so they can be cleaned up and lifecycle
+controlled individually.
 - Users have a familiar way to customize staging resources in the CDK Application.
 
 > As this library is `experimental`, the accompanying Bootstrap Stack is not yet implemented. To use this
@@ -106,24 +164,50 @@ This has the benefit of providing a custom Staging Stack that can be created in 
 is deployed to.
 
 ```ts
-import { IStagingResources } from '@aws-cdk/app-staging-synthesizer';
+import { FileStagingLocation, ImageStagingLocation } from '@aws-cdk/app-staging-synthesizer';
+
+interface CustomStagingStackProps extends StackProps {}
 
 class CustomStagingStack extends Stack implements IStagingResources {
-  // ...
+  public constructor(scope: Construct, id: string, props: CustomStagingStackProps) {
+    super(scope, id, props);
+  }
+
+  public addFile(asset: FileAssetSource): FileStagingLocation {
+    return {
+      bucketName: 'myBucket',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+
+  public addDockerImage(asset: DockerImageAssetSource): ImageStagingLocation {
+    return {
+      repoName: 'myRepo',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+}
+```
+
+```ts fixture=with-custom-staging
+import { IStagingResources } from '@aws-cdk/app-staging-synthesizer';
+
+class CustomFactory implements IStagingResourcesFactory {
+  public obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext): IStagingResources {
+    const app = App.of(stack);
+    if (!App.isApp(app)) {
+      throw new Error(`Stack ${stack.stackName} must be part of an App`);
+    }
+
+    return new CustomStagingStack(app, `CustomStagingStack-${appId}-${context.environmentString}`, { appId: 'my-app-id' }),
+  }
 }
 
 const app = new App({
   defaultSynthesizer: AppStagingSynthesizer.customFactory({
-    factory: {
-      obtainStagingResources(stack, context) {
-        const app = App.of(stack);
-        if (!App.isApp(app)) {
-          throw new Error(`Stack ${stack.stackName} must be part of an App`);
-        }
-
-        return new CustomStagingStack(app, `CustomStagingStack-${appId}-${context.environmentString}`, { appId: 'my-app-id' }),
-      },
-    },
+    factory: new CustomFactory(),
     oncePerEnv: true, // by default
   }),
 });
@@ -136,10 +220,6 @@ Make sure that the custom stack you provide implements `IStagingResources`.
 
 ```ts
 import { IStagingResources } from '@aws-cdk/app-staging-synthesizer';
-
-class CustomStagingStack extends Stack implements IStagingResources {
-  // ...
-}
 
 const resourceApp = new App();
 const resources = new CustomStagingStack(resourceApp, 'CustomStagingStack');
@@ -188,7 +268,7 @@ const app = new App({
     appId: 'my-app-id',
     deploymentRoles: {
       cloudFormationExecutionRole: BoostrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
-      deploymentActionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
+      deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
       lookupRole: BoostrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Lookup'),
     },
   }),
@@ -210,7 +290,9 @@ const app = new App({
 });
 ```
 
-You can also specify an existing IAM role for the `fileAssetPublishingRole` or `imageAssetPublishingRole`:
+The default staging stack will create roles to publish to the S3 bucket and ECR repositories,
+assumable by the deployment role. You can also specify an existing IAM role for the
+`fileAssetPublishingRole` or `imageAssetPublishingRole`:
 
 ```ts
 const app = new App({
@@ -245,7 +327,10 @@ new lambda.Function(stack, 'lambda', {
 
 This means that the asset will go into the S3 Bucket with the prefix `handoff/`. It will also be 
 subject to the lifecycle rule set on ephemeral assets. By default, we store ephemeral assets for
-30 days.
+30 days, but you can change this number by specifying `handoffFileAssetLifetime`. The number you
+specify here is how long you will be able to roll back to a previous version of an application
+just by doing a CloudFormation deployment with the old template, without rebuilding and
+republishing assets.
 
 ```ts
 const app = new App({
@@ -276,11 +361,9 @@ const app = new App({
 
 ## Extending the Default Staging Stack
 
-The exposed API of this synthesizer is purposefully opinionated. Should the feature set be
-too restrictive, `AppStagingSynthesizer` is built to be subclassable. For example, say we want
-to add a feature where we _do not_ apply lifecycle rules to any assets that have the prefix
-"`permanent`". While that doesn't exist as a property of `AppStagingSynthesizer`, we can easily
-extend it to include what we want:
+If you want to customize some behavior that is not configurable via properties,
+you can implement your own class that implements `IStagingResources`. To get a head start,
+you can subclass `DefaultStagingStack`.
 
 ```ts
 interface CustomStagingStackOptions extends DefaultStagingStackOptions {}
