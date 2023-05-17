@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
@@ -8,7 +9,6 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cloudmap from '../../../aws-servicediscovery';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import { App } from '../../../core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
@@ -1297,7 +1297,7 @@ describe('ec2 service', () => {
             alarmNames: [myAlarm.alarmName],
           },
         });
-      }).toThrow('Deployment alarmNames requires the ECS deployment controller.');
+      }).toThrow('Deployment alarms requires the ECS deployment controller.');
     });
 
     test('add alarm config while service is constructed if deploymentAlarms config is specified with no behavior', () => {
@@ -1418,7 +1418,7 @@ describe('ec2 service', () => {
       });
     });
 
-    test('enableDeploymentAlarms should throw an error if alarmConfig alarmNames array is empty', () => {
+    test('service should fail validation if alarms are enabled but alarmNames is empty', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1439,12 +1439,47 @@ describe('ec2 service', () => {
         },
       });
 
+      service.enableDeploymentAlarms({
+        behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+      });
+
       // THEN
+      expect(service.node.validate()).toContainEqual('Specify at least one alarm using createAlarm() or enableDeploymentAlarms()');
+    });
+
+    test('throw when creating an alarm with a token in its name', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+
+      const metricCpu = service.metricCpuUtilization();
+
       expect(() => {
-        service.enableDeploymentAlarms({
-          alarmNames: [],
+        service.createAlarm({
+          alarmName: `${service.serviceName}Alarm`,
+          metric: metricCpu,
+          evaluationPeriods: 5,
+          threshold: 80,
+          alarmBehavior: AlarmBehavior.FAIL_ON_ALARM,
+          useAsDeploymentAlarm: true,
         });
-      }).toThrow('Specify at least one deployment alarm');
+      }).toThrow('Alarm names must be unique strings, not references to other constructs\' attributes');
     });
 
     test('can create an alarm with createAlarm', () => {
@@ -1472,6 +1507,7 @@ describe('ec2 service', () => {
 
       // WHEN
       service.createAlarm({
+        alarmName: 'CPUUtilizationAlarm',
         metric: metricCpu,
         threshold: 80,
         evaluationPeriods: 5,
@@ -1520,9 +1556,11 @@ describe('ec2 service', () => {
         threshold: 80,
         evaluationPeriods: 5,
         useAsDeploymentAlarm: true,
+        alarmBehavior: AlarmBehavior.FAIL_ON_ALARM,
       });
 
       service.createAlarm({
+        alarmName: 'mySecondCPUAlarm',
         metric: metricCpu,
         threshold: 90,
         evaluationPeriods: 1,
@@ -1535,7 +1573,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: false,
-            AlarmNames: ['myFirstCPUAlarm', 'ManagedDeploymentAlarm2'],
+            AlarmNames: ['myFirstCPUAlarm', 'mySecondCPUAlarm'],
           },
         },
       });
@@ -1689,6 +1727,7 @@ describe('ec2 service', () => {
       const cpuMetric = service.metricCpuUtilization();
 
       service.createAlarm({
+        alarmName: 'CPUAlarm',
         metric: cpuMetric,
         evaluationPeriods: 5,
         threshold: 80,
@@ -1702,7 +1741,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: false,
-            AlarmNames: [myAlarm.alarmName, 'ManagedDeploymentAlarm2'],
+            AlarmNames: [myAlarm.alarmName, 'CPUAlarm'],
           },
         },
       });
@@ -1730,6 +1769,7 @@ describe('ec2 service', () => {
       });
       const metric = service.metricMemoryUtilization();
       service.createAlarm({
+        alarmName: 'MemoryAlarm',
         metric,
         evaluationPeriods: 10,
         threshold: 80,
@@ -1743,7 +1783,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: true,
-            AlarmNames: ['ManagedECSDeploymentAlarm1'],
+            AlarmNames: ['MemoryAlarm'],
           },
         },
       });

@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -14,12 +16,11 @@ import {
   Resource,
   Stack,
   ArnFormat,
-  FeatureFlags, Token,
+  FeatureFlags,
+  Token,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
-import { Construct } from 'constructs';
-import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
@@ -617,7 +618,7 @@ export abstract class BaseService extends Resource
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms}, { omitEmptyArray: true }),
+        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -686,6 +687,9 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
     }
+    this.node.addValidation({
+      validate: this.validateDeploymentAlarms.bind(this),
+    });
     this.node.defaultChild = this.resource;
   }
 
@@ -723,37 +727,34 @@ export abstract class BaseService extends Resource
    */
   public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
 
-    const alarmNames: string[] = [];
-    if (alarmConfig.alarmNames !== undefined) {
-      alarmNames.concat(alarmConfig.alarmNames);
+    const newAlarmNames = alarmConfig.alarmNames || [];
 
-    }
     // If deploymentAlarms has already been configured, respect what came before by extending the list of enabled alarms
     // and using the previous setting if no behavior is specified.
     if (this.deploymentAlarms) {
       this.deploymentAlarms = {
         enable: true,
         rollback: alarmConfig.behavior ? alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM : this.deploymentAlarms.rollback,
-        alarmNames: this.deploymentAlarms.alarmNames.concat(alarmNames),
+        alarmNames: this.deploymentAlarms.alarmNames.concat(newAlarmNames),
       };
-      return;
+    } else {
+      // We're enabling deploymentAlarms for the first time.
+      this.deploymentAlarms = {
+        enable: true,
+        alarmNames: newAlarmNames,
+        rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+      };
     }
+  }
 
-    // We're enabling deploymentAlarms for the first time.
-    this.deploymentAlarms = {
-      enable: true,
-      alarmNames,
-      rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
-    };
-    this.node.addValidation({
-      validate: () => {
-        const messages: string[] = [];
-        if (this.deploymentAlarms?.enable && this.deploymentAlarms.alarmNames.length === 0) {
-          messages.push('Specify at least one alarm using createAlarm() or enableDeploymentAlarms()');
-        }
-        return messages;
-      },
-    });
+  private validateDeploymentAlarms(): string[] {
+    const messages = new Array<string>;
+    if (this.deploymentAlarms
+      && this.deploymentAlarms.enable
+      && this.deploymentAlarms.alarmNames.length === 0) {
+      messages.push('Specify at least one alarm using createAlarm() or enableDeploymentAlarms()');
+    }
+    return messages;
   }
 
   /**
@@ -793,24 +794,22 @@ export abstract class BaseService extends Resource
       throw new Error('Cannot set alarmBehavior without enabling useAsDeploymentAlarm');
     }
 
-    if (props.alarmName) {
-      // No circular references in the alarm name field!
-      if (Token.isUnresolved(props.alarmName)) {
-        throw new Error('Alarm names must be unique strings, not references to other constructs\' attributes');
-      }
+    if (!props.alarmName) {
+      throw new Error('Specify a unique name for this alarm.');
+    }
+
+    // No circular references in the alarm name field!
+    if (Token.isUnresolved(props.alarmName)) {
+      throw new Error('Alarm names must be unique strings, not references to other constructs\' attributes');
     }
 
     const numAlarms = this.deploymentAlarms?.alarmNames.length || 0;
-    const generatedAlarmName = `EcsManagedAlarm${numAlarms + 1}`;
     // If alarm name is not specified in props, use a roughly deterministic alarm name.
-    const metricAlarm = new cloudwatch.Alarm(this, generatedAlarmName, {
-      alarmName: generatedAlarmName,
-      ...props,
-    });
+    const metricAlarm = new cloudwatch.Alarm(this, `ManagedAlarm${numAlarms}`, props);
 
     if (props.useAsDeploymentAlarm) {
       this.enableDeploymentAlarms({
-        alarmNames: [props.alarmName || generatedAlarmName],
+        alarmNames: [props.alarmName],
         behavior: props.alarmBehavior,
       });
     }
