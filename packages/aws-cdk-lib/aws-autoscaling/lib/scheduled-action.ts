@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
+import { Resource } from '../../core';
 
 /**
  * Properties for a scheduled scaling action

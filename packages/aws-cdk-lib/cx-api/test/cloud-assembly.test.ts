@@ -168,6 +168,13 @@ test('can read assembly with asset manifest', () => {
   expect(assembly.artifacts).toHaveLength(2);
 });
 
+test('can toposort assembly with asset dependency', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'asset-depends'));
+  expect(assembly.stacks).toHaveLength(2);
+  expect(assembly.artifacts).toHaveLength(3);
+  expect(assembly.artifacts[0].id).toEqual('StagingStack');
+});
+
 test('getStackArtifact retrieves a stack by artifact id from a nested assembly', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'nested-assemblies'));
 

@@ -1,7 +1,7 @@
-import * as s3 from '../../aws-s3';
 import { Construct } from 'constructs';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
+import * as s3 from '../../aws-s3';
 
 /**
  * The type returned from `IArtifacts#bind`.

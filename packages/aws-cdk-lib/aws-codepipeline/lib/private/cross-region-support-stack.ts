@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 

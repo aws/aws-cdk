@@ -1,9 +1,9 @@
-import { Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnBasePathMapping } from './apigateway.generated';
 import { IDomainName } from './domain-name';
 import { IRestApi, RestApiBase } from './restapi';
 import { Stage } from './stage';
+import { Resource, Token } from '../../core';
 
 export interface BasePathMappingOptions {
   /**

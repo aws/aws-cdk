@@ -1,6 +1,6 @@
-import * as iam from '../../aws-iam';
 import { Construct } from 'constructs';
 import { FunctionUrlAuthType } from './function-url';
+import * as iam from '../../aws-iam';
 
 
 /**

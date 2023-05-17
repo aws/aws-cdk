@@ -1,7 +1,7 @@
+import { createScalableTarget } from './util';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
-import { createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('target tracking', () => {
