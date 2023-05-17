@@ -315,14 +315,17 @@ const app = new App({
 
 ### Deploy Time S3 Assets
 
-Some assets that get put into the staging S3 Bucket are only necessary during CloudFormation
-deployment and not after. As long as you know what assets are deploy time assets, you can tag
-them as such and they will be marked with a `deploy-time/` prefix when they are staged.
-This allows configuration of a lifecycle rule specifically for deploy time assets.
+There are two types of assets:
 
-A good example is a Lambda Function asset. The asset is only useful in the S3 Bucket at deploy
-time, because the source code gets copied into Lambda itself. So Lambda assets are by default
-marked with `deployTime=true`:
+* Assets used only during deployment. These are used to hand off a large piece of data to another service, that will make a private copy of that data. After deployment, the asset is only necessary for a potential future rollback. 
+* Assets accessed throughout the running life time of the application.
+
+Examples of assets that are only used at deploy time are CloudFormation Templates and Lambda Code
+bundles. Examples of assets accessed throughout the life time of the application are script files 
+downloaded to run in a CodeBuild Project, or on EC2 instance startup. ECR images are always application 
+life-time assets. S3 deploy time assets are stored with a `deploy-time/` prefix, and a lifecycle rule will collect them after a configurable number of days.
+
+Lambda assets are by default marked as deploy time assets:
 
 ```ts
 declare const stack: Stack;
@@ -345,12 +348,10 @@ const asset = new Asset(stack, 'deploy-time-asset', {
 });
 ```
 
-This means that the asset will go into the S3 Bucket with the prefix `deploy-time/`. It will also be 
-subject to the lifecycle rule set on deploy time assets. By default, we store deploy time assets for
-30 days, but you can change this number by specifying `deployTimeFileAssetLifetime`. The number you
-specify here is how long you will be able to roll back to a previous version of an application
-just by doing a CloudFormation deployment with the old template, without rebuilding and
-republishing assets.
+By default, we store deploy time assets for 30 days, but you can change this number by specifying 
+`deployTimeFileAssetLifetime`. The number you specify here is how long you will be able to roll back
+to a previous version of an application just by doing a CloudFormation deployment with the old 
+template, without rebuilding and republishing assets.
 
 ```ts
 const app = new App({
