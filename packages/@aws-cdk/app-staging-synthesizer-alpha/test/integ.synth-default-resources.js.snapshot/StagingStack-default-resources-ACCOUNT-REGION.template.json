@@ -240,7 +240,7 @@
       },
       {
        "ExpirationInDays": 30,
-       "Prefix": "handoff/",
+       "Prefix": "deploy-time/",
        "Status": "Enabled"
       }
      ]
@@ -388,7 +388,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-default-resources-asset-role-",
+       "cdk-default-resources-image-role-",
        {
         "Ref": "AWS::Region"
        }

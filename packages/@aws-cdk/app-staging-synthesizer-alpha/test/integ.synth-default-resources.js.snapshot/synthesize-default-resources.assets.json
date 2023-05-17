@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
+          "objectKey": "deploy-time/e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-file-role-${AWS::Region}"
         }
       }
@@ -37,7 +37,7 @@
         "current_account-current_region": {
           "repositoryName": "default-resources/ecr-asset",
           "imageTag": "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-asset-role-${AWS::Region}"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-image-role-${AWS::Region}"
         }
       }
     },
@@ -49,7 +49,7 @@
         "current_account-current_region": {
           "repositoryName": "default-resources/ecr-asset-2",
           "imageTag": "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-asset-role-${AWS::Region}"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-image-role-${AWS::Region}"
         }
       }
     }

@@ -5,7 +5,10 @@
       "type": "cdk:asset-manifest",
       "properties": {
         "file": "synthesize-default-resources.assets.json"
-      }
+      },
+      "dependencies": [
+        "StagingStack-default-resources-ACCOUNT-REGION"
+      ]
     },
     "synthesize-default-resources": {
       "type": "aws:cloudformation:stack",
@@ -17,7 +20,7 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"

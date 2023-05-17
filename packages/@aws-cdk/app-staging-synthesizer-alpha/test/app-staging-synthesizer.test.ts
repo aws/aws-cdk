@@ -135,6 +135,22 @@ describe(AppStagingSynthesizer, () => {
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
   });
 
+  test('file asset depends on staging stack', () => {
+    // WHEN
+    stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'abcdef',
+    });
+
+    const asm = app.synth();
+
+    // THEN - the template is in the asset manifest
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    expect(manifestArtifact.manifest.dependencies).toEqual([`StagingStack-${APP_ID}-000000000000-us-east-1`]);
+  });
+
   test('adding multiple files only creates one bucket', () => {
     // WHEN
     const location1 = stack.synthesizer.addFileAsset({
@@ -297,6 +313,23 @@ describe(AppStagingSynthesizer, () => {
       directoryName: '.',
       sourceHash: 'abcdef',
     })).toThrowError('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
+  });
+
+  test('docker image asset depends on staging stack', () => {
+    // WHEN
+    const assetName = 'abcdef';
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
+
+    const asm = app.synth();
+
+    // THEN - the template is in the asset manifest
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    expect(manifestArtifact).toBeDefined();
+    expect(manifestArtifact.manifest.dependencies).toEqual([`StagingStack-${APP_ID}-000000000000-us-east-1`]);
   });
 
   test('docker image assets with different assetName have separate repos', () => {

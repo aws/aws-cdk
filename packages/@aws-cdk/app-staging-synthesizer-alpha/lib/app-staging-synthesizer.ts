@@ -298,6 +298,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   private readonly stagingStack: IStagingResources;
   private readonly assetManifest = new AssetManifestBuilder();
   private readonly qualifier: string;
+  private readonly dependencyStacks: Set<Stack> = new Set();
 
   constructor(stack: Stack, private readonly props: BoundAppStagingSynthesizerProps) {
     super();
@@ -318,7 +319,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const templateAssetSource = this.synthesizeTemplate(session, this.props.lookupRole?._arnForCloudAssembly());
     const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
+    const dependencies = Array.from(this.dependencyStacks).flatMap((d) => d.artifactId);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {}, dependencies);
 
     const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
 
@@ -339,11 +341,12 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,
-      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined, // TODO: check if this is necessary
+      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
     });
 
     if (dependencyStack) {
       this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.dependencyStacks.add(dependencyStack);
     }
 
     return this.cloudFormationLocationFromFileAsset(location);
@@ -356,12 +359,12 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const { repoName, assumeRoleArn, dependencyStack } = this.stagingStack.addDockerImage(asset);
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: translateCfnTokenToAssetToken(repoName),
-      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined, // TODO: check if this is necessary
-      // TODO: more props
+      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
     });
 
     if (dependencyStack) {
       this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.dependencyStacks.add(dependencyStack);
     }
 
     return this.cloudFormationLocationFromDockerImageAsset(location);

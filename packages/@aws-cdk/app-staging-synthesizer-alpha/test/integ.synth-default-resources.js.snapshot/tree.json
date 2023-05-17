@@ -817,7 +817,7 @@
                         },
                         {
                           "expirationInDays": 30,
-                          "prefix": "handoff/",
+                          "prefix": "deploy-time/",
                           "status": "Enabled"
                         }
                       ]
@@ -1007,7 +1007,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-default-resources-asset-role-",
+                          "cdk-default-resources-image-role-",
                           {
                             "Ref": "AWS::Region"
                           }
@@ -1150,7 +1150,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
           "version": "0.0.0"
         }
       },
@@ -1167,7 +1167,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -1213,7 +1213,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.26"
         }
       }
     },

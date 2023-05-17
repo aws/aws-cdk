@@ -160,7 +160,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     // This role name can be a maximum of 64 letters. The reason why
     // we slice the appId and not the entire name is because this.region
     // can be a token and we don't want to accidentally cut it off.
-    return `cdk-${this.appId}-asset-role-${this.region}`;
+    return `cdk-${this.appId}-image-role-${this.region}`;
   }
 
   /**
