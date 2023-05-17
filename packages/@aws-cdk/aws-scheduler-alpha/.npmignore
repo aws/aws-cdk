@@ -1,0 +1,39 @@
+# The basics
+*.ts
+*.tgz
+*.snk
+!*.d.ts
+!*.js
+test/
+**/test/**
+
+# Coverage
+coverage
+.nyc_output
+.nycrc
+
+# Build gear
+build-tools
+dist
+scripts
+.LAST_BUILD
+.LAST_PACKAGE
+
+tsconfig.json
+*.tsbuildinfo
+
+!.jsii
+!.jsii.gz
+.eslintrc.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+
+!*.lit.ts
+
+# exclude source maps as they only work locally
+*.map
+
+# Nested node_modules
+aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules
