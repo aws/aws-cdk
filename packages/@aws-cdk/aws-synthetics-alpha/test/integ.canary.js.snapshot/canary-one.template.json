@@ -327,7 +327,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytestf2ce42",
+    "Name": "canaryoneinline66eeb2",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -516,7 +516,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+     "S3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -524,7 +524,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytest58072b",
+    "Name": "canaryonedirect63ce4e",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -750,7 +750,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytest2c790b",
+    "Name": "canaryonezipass32aaf5",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -939,7 +939,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+     "S3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -947,7 +947,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytest06534b",
+    "Name": "canaryonesynnodec5378",
     "RuntimeVersion": "syn-nodejs-puppeteer-3.9",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -1164,7 +1164,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+     "S3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1172,7 +1172,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytesta470fa",
+    "Name": "canaryonesynnodc37fe2",
     "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -1389,7 +1389,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+     "S3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -1397,7 +1397,7 @@
       "Arn"
      ]
     },
-    "Name": "integcanarytest7e643a",
+    "Name": "canaryonesynpyt659e03",
     "RuntimeVersion": "syn-python-selenium-1.3",
     "Schedule": {
      "DurationInSeconds": "0",
@@ -1570,7 +1570,7 @@
     "Ref": "InlineAsset5EAEB9B5"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
+    "Name": "canary-one:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
    }
   },
   "ExportsOutputRefDirectoryAssetB49EFE5C6067345C": {
@@ -1578,7 +1578,7 @@
     "Ref": "DirectoryAssetB49EFE5C"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
+    "Name": "canary-one:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
    }
   },
   "ExportsOutputRefZipAssetA028C65FBA619339": {
@@ -1586,7 +1586,7 @@
     "Ref": "ZipAssetA028C65F"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefZipAssetA028C65FBA619339"
+    "Name": "canary-one:ExportsOutputRefZipAssetA028C65FBA619339"
    }
   },
   "ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208": {
@@ -1594,7 +1594,7 @@
     "Ref": "SynNodejsPuppeteer3978815E0A"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
+    "Name": "canary-one:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
    }
   },
   "ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2": {
@@ -1602,7 +1602,7 @@
     "Ref": "SynNodejsPuppeteer406C46FFAF"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
+    "Name": "canary-one:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
    }
   },
   "ExportsOutputRefSynPythonSelenium13F92D8275979DE724": {
@@ -1610,7 +1610,7 @@
     "Ref": "SynPythonSelenium13F92D8275"
    },
    "Export": {
-    "Name": "IntegCanaryTestStack:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
+    "Name": "canary-one:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
    }
   }
  },

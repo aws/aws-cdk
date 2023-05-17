@@ -18,14 +18,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefInlineAsset5EAEB9B5D9353D4F"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994387"
+    "salt": "1684341783535"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -473,14 +473,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefDirectoryAssetB49EFE5C6067345C"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994390"
+    "salt": "1684341783538"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -620,14 +620,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefZipAssetA028C65FBA619339"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefZipAssetA028C65FBA619339"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994390"
+    "salt": "1684341783539"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -767,14 +767,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer3978815E0AC2F26208"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994392"
+    "salt": "1684341783540"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -914,14 +914,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994392"
+    "salt": "1684341783541"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1061,14 +1061,14 @@
     },
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "IntegCanaryTestStack:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
+      "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1683780994393"
+    "salt": "1684341783542"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

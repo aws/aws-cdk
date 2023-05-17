@@ -12,11 +12,12 @@ def verify_request(method, url, post_data=None, headers={}):
     parsed_url = urllib.parse.urlparse(url)
     user_agent = str(syn_webdriver.get_canary_user_agent_string())
     if "User-Agent" in headers:
-        headers["User-Agent"] = f"{user_agent} {headers['User-Agent']}"
+        " ".join([user_agent, headers["User-Agent"]])
     else:
-        headers["User-Agent"] = user_agent
+        headers["User-Agent"] = "{}".format(user_agent)
 
-    logger.info(f"Making request with Method: '{method}' URL: {url}: Data: {json.dumps(post_data)} Headers: {json.dumps(headers)}")
+    logger.info("Making request with Method: '%s' URL: %s: Data: %s Headers: %s" % (
+        method, url, json.dumps(post_data), json.dumps(headers)))
 
     if parsed_url.scheme == "https":
         conn = http.client.HTTPSConnection(parsed_url.hostname, parsed_url.port)
@@ -25,22 +26,22 @@ def verify_request(method, url, post_data=None, headers={}):
 
     conn.request(method, url, post_data, headers)
     response = conn.getresponse()
-    logger.info(f"Status Code: {response.status}")
-    logger.info(f"Response Headers: {json.dumps(response.headers.as_string())}")
+    logger.info("Status Code: %s " % response.status)
+    logger.info("Response Headers: %s" % json.dumps(response.headers.as_string()))
 
     if not response.status or response.status < 200 or response.status > 299:
         try:
-            logger.error(f"Response: {response.read().decode()}")
+            logger.error("Response: %s" % response.read().decode())
         finally:
             if response.reason:
                 conn.close()
-                raise Exception(f"Failed: {response.reason}")
+                raise Exception("Failed: %s" % response.reason)
             else:
                 conn.close()
-                raise Exception(f"Failed with status code: {response.status}")
+                raise Exception("Failed with status code: %s" % response.status)
 
     logger.info(f"Response: {response.read().decode()}")
-    logger.info("HTTP request successfully executed.")
+    logger.info("HTTP request successfully executed")
     conn.close()
 
 
@@ -53,9 +54,9 @@ def main():
 
     verify_request(method, url, None, headers)
 
-    logger.info("Canary successfully executed.")
+    logger.info("Canary successfully executed")
 
 
 def handler(event, context):
-    logger.info("Selenium Python API canary.")
+    logger.info("Selenium Python API canary")
     main()

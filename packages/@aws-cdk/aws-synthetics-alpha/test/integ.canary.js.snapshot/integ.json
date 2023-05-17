@@ -3,7 +3,7 @@
   "testCases": {
     "IntegCanaryTest/DefaultTest": {
       "stacks": [
-        "IntegCanaryTestStack"
+        "canary-one"
       ],
       "assertionStack": "IntegCanaryTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094"

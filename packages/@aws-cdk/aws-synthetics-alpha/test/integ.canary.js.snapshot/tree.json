@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "IntegCanaryTestStack": {
-        "id": "IntegCanaryTestStack",
-        "path": "IntegCanaryTestStack",
+      "canary-one": {
+        "id": "canary-one",
+        "path": "canary-one",
         "children": {
           "MyTestBucket": {
             "id": "MyTestBucket",
-            "path": "IntegCanaryTestStack/MyTestBucket",
+            "path": "canary-one/MyTestBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/MyTestBucket/Resource",
+                "path": "canary-one/MyTestBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -33,11 +33,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "IntegCanaryTestStack/MyTestBucket/Policy",
+                "path": "canary-one/MyTestBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/MyTestBucket/Policy/Resource",
+                    "path": "canary-one/MyTestBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -102,11 +102,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "IntegCanaryTestStack/MyTestBucket/AutoDeleteObjectsCustomResource",
+                "path": "canary-one/MyTestBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "IntegCanaryTestStack/MyTestBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "canary-one/MyTestBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -126,7 +126,7 @@
           },
           "DefaultCrNodeVersionMap": {
             "id": "DefaultCrNodeVersionMap",
-            "path": "IntegCanaryTestStack/DefaultCrNodeVersionMap",
+            "path": "canary-one/DefaultCrNodeVersionMap",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.9"
@@ -134,11 +134,11 @@
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
-            "path": "IntegCanaryTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "IntegCanaryTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "path": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -146,7 +146,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "IntegCanaryTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "path": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -154,7 +154,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "IntegCanaryTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "path": "canary-one/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -168,11 +168,11 @@
           },
           "ApiGateway": {
             "id": "ApiGateway",
-            "path": "IntegCanaryTestStack/ApiGateway",
+            "path": "canary-one/ApiGateway",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/ApiGateway/Resource",
+                "path": "canary-one/ApiGateway/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                   "aws:cdk:cloudformation:props": {
@@ -186,11 +186,11 @@
               },
               "Deployment": {
                 "id": "Deployment",
-                "path": "IntegCanaryTestStack/ApiGateway/Deployment",
+                "path": "canary-one/ApiGateway/Deployment",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/ApiGateway/Deployment/Resource",
+                    "path": "canary-one/ApiGateway/Deployment/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
@@ -213,11 +213,11 @@
               },
               "DeploymentStage.prod": {
                 "id": "DeploymentStage.prod",
-                "path": "IntegCanaryTestStack/ApiGateway/DeploymentStage.prod",
+                "path": "canary-one/ApiGateway/DeploymentStage.prod",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/ApiGateway/DeploymentStage.prod/Resource",
+                    "path": "canary-one/ApiGateway/DeploymentStage.prod/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
@@ -243,7 +243,7 @@
               },
               "Endpoint": {
                 "id": "Endpoint",
-                "path": "IntegCanaryTestStack/ApiGateway/Endpoint",
+                "path": "canary-one/ApiGateway/Endpoint",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -251,15 +251,15 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "IntegCanaryTestStack/ApiGateway/Default",
+                "path": "canary-one/ApiGateway/Default",
                 "children": {
                   "GET": {
                     "id": "GET",
-                    "path": "IntegCanaryTestStack/ApiGateway/Default/GET",
+                    "path": "canary-one/ApiGateway/Default/GET",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/ApiGateway/Default/GET/Resource",
+                        "path": "canary-one/ApiGateway/Default/GET/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
@@ -318,15 +318,15 @@
           },
           "InlineAsset": {
             "id": "InlineAsset",
-            "path": "IntegCanaryTestStack/InlineAsset",
+            "path": "canary-one/InlineAsset",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/InlineAsset/ServiceRole",
+                "path": "canary-one/InlineAsset/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/InlineAsset/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/InlineAsset/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -334,7 +334,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/InlineAsset/ServiceRole/Resource",
+                    "path": "canary-one/InlineAsset/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -446,7 +446,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/InlineAsset/Resource",
+                "path": "canary-one/InlineAsset/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -472,7 +472,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytestf2ce42",
+                    "name": "canaryoneinline66eeb2",
                     "runtimeVersion": "syn-nodejs-puppeteer-4.0",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -494,15 +494,15 @@
           },
           "DirectoryAsset": {
             "id": "DirectoryAsset",
-            "path": "IntegCanaryTestStack/DirectoryAsset",
+            "path": "canary-one/DirectoryAsset",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "IntegCanaryTestStack/DirectoryAsset/ArtifactsBucket",
+                "path": "canary-one/DirectoryAsset/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/ArtifactsBucket/Resource",
+                    "path": "canary-one/DirectoryAsset/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -524,11 +524,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/ArtifactsBucket/Policy",
+                    "path": "canary-one/DirectoryAsset/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/DirectoryAsset/ArtifactsBucket/Policy/Resource",
+                        "path": "canary-one/DirectoryAsset/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -595,11 +595,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/DirectoryAsset/ServiceRole",
+                "path": "canary-one/DirectoryAsset/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/DirectoryAsset/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -607,7 +607,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/ServiceRole/Resource",
+                    "path": "canary-one/DirectoryAsset/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -719,11 +719,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "IntegCanaryTestStack/DirectoryAsset/Code",
+                "path": "canary-one/DirectoryAsset/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/Code/Stage",
+                    "path": "canary-one/DirectoryAsset/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -731,7 +731,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "IntegCanaryTestStack/DirectoryAsset/Code/AssetBucket",
+                    "path": "canary-one/DirectoryAsset/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -745,7 +745,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/DirectoryAsset/Resource",
+                "path": "canary-one/DirectoryAsset/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -765,7 +765,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+                      "s3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -773,7 +773,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytest58072b",
+                    "name": "canaryonedirect63ce4e",
                     "runtimeVersion": "syn-nodejs-puppeteer-4.0",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -824,15 +824,15 @@
           },
           "ZipAsset": {
             "id": "ZipAsset",
-            "path": "IntegCanaryTestStack/ZipAsset",
+            "path": "canary-one/ZipAsset",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "IntegCanaryTestStack/ZipAsset/ArtifactsBucket",
+                "path": "canary-one/ZipAsset/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/ZipAsset/ArtifactsBucket/Resource",
+                    "path": "canary-one/ZipAsset/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -854,11 +854,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "IntegCanaryTestStack/ZipAsset/ArtifactsBucket/Policy",
+                    "path": "canary-one/ZipAsset/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/ZipAsset/ArtifactsBucket/Policy/Resource",
+                        "path": "canary-one/ZipAsset/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -925,11 +925,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/ZipAsset/ServiceRole",
+                "path": "canary-one/ZipAsset/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/ZipAsset/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/ZipAsset/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -937,7 +937,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/ZipAsset/ServiceRole/Resource",
+                    "path": "canary-one/ZipAsset/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1049,11 +1049,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "IntegCanaryTestStack/ZipAsset/Code",
+                "path": "canary-one/ZipAsset/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "IntegCanaryTestStack/ZipAsset/Code/Stage",
+                    "path": "canary-one/ZipAsset/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1061,7 +1061,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "IntegCanaryTestStack/ZipAsset/Code/AssetBucket",
+                    "path": "canary-one/ZipAsset/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1075,7 +1075,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/ZipAsset/Resource",
+                "path": "canary-one/ZipAsset/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -1103,7 +1103,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytest2c790b",
+                    "name": "canaryonezipass32aaf5",
                     "runtimeVersion": "syn-nodejs-puppeteer-4.0",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -1125,15 +1125,15 @@
           },
           "SynNodejsPuppeteer39": {
             "id": "SynNodejsPuppeteer39",
-            "path": "IntegCanaryTestStack/SynNodejsPuppeteer39",
+            "path": "canary-one/SynNodejsPuppeteer39",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ArtifactsBucket",
+                "path": "canary-one/SynNodejsPuppeteer39/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ArtifactsBucket/Resource",
+                    "path": "canary-one/SynNodejsPuppeteer39/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -1155,11 +1155,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ArtifactsBucket/Policy",
+                    "path": "canary-one/SynNodejsPuppeteer39/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ArtifactsBucket/Policy/Resource",
+                        "path": "canary-one/SynNodejsPuppeteer39/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -1226,11 +1226,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ServiceRole",
+                "path": "canary-one/SynNodejsPuppeteer39/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/SynNodejsPuppeteer39/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1238,7 +1238,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/ServiceRole/Resource",
+                    "path": "canary-one/SynNodejsPuppeteer39/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1350,11 +1350,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/Code",
+                "path": "canary-one/SynNodejsPuppeteer39/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/Code/Stage",
+                    "path": "canary-one/SynNodejsPuppeteer39/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1362,7 +1362,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/Code/AssetBucket",
+                    "path": "canary-one/SynNodejsPuppeteer39/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1376,7 +1376,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer39/Resource",
+                "path": "canary-one/SynNodejsPuppeteer39/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -1396,7 +1396,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+                      "s3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1404,7 +1404,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytest06534b",
+                    "name": "canaryonesynnodec5378",
                     "runtimeVersion": "syn-nodejs-puppeteer-3.9",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -1454,15 +1454,15 @@
           },
           "SynNodejsPuppeteer40": {
             "id": "SynNodejsPuppeteer40",
-            "path": "IntegCanaryTestStack/SynNodejsPuppeteer40",
+            "path": "canary-one/SynNodejsPuppeteer40",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ArtifactsBucket",
+                "path": "canary-one/SynNodejsPuppeteer40/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ArtifactsBucket/Resource",
+                    "path": "canary-one/SynNodejsPuppeteer40/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -1484,11 +1484,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ArtifactsBucket/Policy",
+                    "path": "canary-one/SynNodejsPuppeteer40/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ArtifactsBucket/Policy/Resource",
+                        "path": "canary-one/SynNodejsPuppeteer40/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -1555,11 +1555,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ServiceRole",
+                "path": "canary-one/SynNodejsPuppeteer40/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/SynNodejsPuppeteer40/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1567,7 +1567,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/ServiceRole/Resource",
+                    "path": "canary-one/SynNodejsPuppeteer40/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1679,11 +1679,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/Code",
+                "path": "canary-one/SynNodejsPuppeteer40/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/Code/Stage",
+                    "path": "canary-one/SynNodejsPuppeteer40/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1691,7 +1691,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/Code/AssetBucket",
+                    "path": "canary-one/SynNodejsPuppeteer40/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1705,7 +1705,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/SynNodejsPuppeteer40/Resource",
+                "path": "canary-one/SynNodejsPuppeteer40/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -1725,7 +1725,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+                      "s3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -1733,7 +1733,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytesta470fa",
+                    "name": "canaryonesynnodc37fe2",
                     "runtimeVersion": "syn-nodejs-puppeteer-4.0",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -1783,15 +1783,15 @@
           },
           "SynPythonSelenium13": {
             "id": "SynPythonSelenium13",
-            "path": "IntegCanaryTestStack/SynPythonSelenium13",
+            "path": "canary-one/SynPythonSelenium13",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "IntegCanaryTestStack/SynPythonSelenium13/ArtifactsBucket",
+                "path": "canary-one/SynPythonSelenium13/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/ArtifactsBucket/Resource",
+                    "path": "canary-one/SynPythonSelenium13/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -1813,11 +1813,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/ArtifactsBucket/Policy",
+                    "path": "canary-one/SynPythonSelenium13/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "IntegCanaryTestStack/SynPythonSelenium13/ArtifactsBucket/Policy/Resource",
+                        "path": "canary-one/SynPythonSelenium13/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -1884,11 +1884,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "IntegCanaryTestStack/SynPythonSelenium13/ServiceRole",
+                "path": "canary-one/SynPythonSelenium13/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/ServiceRole/ImportServiceRole",
+                    "path": "canary-one/SynPythonSelenium13/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -1896,7 +1896,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/ServiceRole/Resource",
+                    "path": "canary-one/SynPythonSelenium13/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -2008,11 +2008,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "IntegCanaryTestStack/SynPythonSelenium13/Code",
+                "path": "canary-one/SynPythonSelenium13/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/Code/Stage",
+                    "path": "canary-one/SynPythonSelenium13/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -2020,7 +2020,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "IntegCanaryTestStack/SynPythonSelenium13/Code/AssetBucket",
+                    "path": "canary-one/SynPythonSelenium13/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.2.9"
@@ -2034,7 +2034,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "IntegCanaryTestStack/SynPythonSelenium13/Resource",
+                "path": "canary-one/SynPythonSelenium13/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -2054,7 +2054,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "26375afc0896aa3b4fedfca624410419e340dc7d616403d91d9be47a631fd641.zip"
+                      "s3Key": "1c529e48c08542ff384ffd40eb88464b2e6107242a876e0603b2284a65be6766.zip"
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
@@ -2062,7 +2062,7 @@
                         "Arn"
                       ]
                     },
-                    "name": "integcanarytest7e643a",
+                    "name": "canaryonesynpyt659e03",
                     "runtimeVersion": "syn-python-selenium-1.3",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -2112,11 +2112,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "IntegCanaryTestStack/Exports",
+            "path": "canary-one/Exports",
             "children": {
               "Output{\"Ref\":\"InlineAsset5EAEB9B5\"}": {
                 "id": "Output{\"Ref\":\"InlineAsset5EAEB9B5\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"InlineAsset5EAEB9B5\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"InlineAsset5EAEB9B5\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2124,7 +2124,7 @@
               },
               "Output{\"Ref\":\"DirectoryAssetB49EFE5C\"}": {
                 "id": "Output{\"Ref\":\"DirectoryAssetB49EFE5C\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"DirectoryAssetB49EFE5C\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"DirectoryAssetB49EFE5C\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2132,7 +2132,7 @@
               },
               "Output{\"Ref\":\"ZipAssetA028C65F\"}": {
                 "id": "Output{\"Ref\":\"ZipAssetA028C65F\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"ZipAssetA028C65F\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"ZipAssetA028C65F\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2140,7 +2140,7 @@
               },
               "Output{\"Ref\":\"SynNodejsPuppeteer3978815E0A\"}": {
                 "id": "Output{\"Ref\":\"SynNodejsPuppeteer3978815E0A\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"SynNodejsPuppeteer3978815E0A\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"SynNodejsPuppeteer3978815E0A\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2148,7 +2148,7 @@
               },
               "Output{\"Ref\":\"SynNodejsPuppeteer406C46FFAF\"}": {
                 "id": "Output{\"Ref\":\"SynNodejsPuppeteer406C46FFAF\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"SynNodejsPuppeteer406C46FFAF\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"SynNodejsPuppeteer406C46FFAF\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2156,7 +2156,7 @@
               },
               "Output{\"Ref\":\"SynPythonSelenium13F92D8275\"}": {
                 "id": "Output{\"Ref\":\"SynPythonSelenium13F92D8275\"}",
-                "path": "IntegCanaryTestStack/Exports/Output{\"Ref\":\"SynPythonSelenium13F92D8275\"}",
+                "path": "canary-one/Exports/Output{\"Ref\":\"SynPythonSelenium13F92D8275\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.9"
@@ -2170,7 +2170,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "IntegCanaryTestStack/BootstrapVersion",
+            "path": "canary-one/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.9"
@@ -2178,7 +2178,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "IntegCanaryTestStack/CheckBootstrapVersion",
+            "path": "canary-one/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.9"

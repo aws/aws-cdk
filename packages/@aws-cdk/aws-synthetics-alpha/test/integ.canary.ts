@@ -9,7 +9,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'IntegCanaryTestStack');
+const stack = new cdk.Stack(app, 'canary-one');
 
 const bucket = new s3.Bucket(stack, 'MyTestBucket', {
   removalPolicy: RemovalPolicy.DESTROY,
