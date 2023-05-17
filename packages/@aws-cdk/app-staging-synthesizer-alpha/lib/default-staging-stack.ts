@@ -20,7 +20,7 @@ import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
-const EPHEMERAL_PREFIX = 'handoff/';
+export const DEPLOY_TIME_PREFIX = 'deploy-time/';
 
 /**
  * User configurable options to the DefaultStagingStack.
@@ -59,7 +59,7 @@ export interface DefaultStagingStackOptions {
   readonly imageAssetPublishingRole?: BootstrapRole;
 
   /**
-   * The lifetime for handoff file assets.
+   * The lifetime for deploy time file assets.
    *
    * Assets that are only necessary at deployment time (for instance,
    * CloudFormation templates and Lambda source code bundles) will be
@@ -73,7 +73,7 @@ export interface DefaultStagingStackOptions {
    *
    * @default - Duration.days(30)
    */
-  readonly handoffFileAssetLifetime?: Duration;
+  readonly deployTimeFileAssetLifetime?: Duration;
 
   /**
    * The maximum number of image versions to store in a repository.
@@ -346,8 +346,8 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     });
 
     bucket.addLifecycleRule({
-      prefix: EPHEMERAL_PREFIX,
-      expiration: this.props.handoffFileAssetLifetime ?? Duration.days(30),
+      prefix: DEPLOY_TIME_PREFIX,
+      expiration: this.props.deployTimeFileAssetLifetime ?? Duration.days(30),
     });
 
     return stagingBucketName;
@@ -392,7 +392,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     return {
       bucketName,
       assumeRoleArn: this.fileRoleManifestArn,
-      prefix: asset.ephemeral ? EPHEMERAL_PREFIX : undefined,
+      prefix: asset.deployTime ? DEPLOY_TIME_PREFIX : undefined,
       dependencyStack: this,
     };
   }

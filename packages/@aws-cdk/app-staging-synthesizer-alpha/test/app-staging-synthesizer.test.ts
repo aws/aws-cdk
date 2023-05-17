@@ -5,7 +5,7 @@ import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, isAssetManifest, last } from './util';
-import { AppStagingSynthesizer } from '../lib';
+import { AppStagingSynthesizer, DEPLOY_TIME_PREFIX } from '../lib';
 
 describe(AppStagingSynthesizer, () => {
   let app: App;
@@ -35,7 +35,7 @@ describe(AppStagingSynthesizer, () => {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateObjectKey = `handoff/${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
+    const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
@@ -82,7 +82,7 @@ describe(AppStagingSynthesizer, () => {
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack2');
 
-    const templateObjectKey = `handoff/${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
+    const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
@@ -152,21 +152,21 @@ describe(AppStagingSynthesizer, () => {
     expect(evalCFN(location1.bucketName)).toEqual(evalCFN(location2.bucketName));
   });
 
-  describe('ephemeral assets', () => {
-    test('ephemeral assets have the \'handoff/\' prefix', () => {
+  describe('deploy time assets', () => {
+    test('have the \'deploy-time/\' prefix', () => {
       // WHEN
       const location = stack.synthesizer.addFileAsset({
         fileName: __filename,
         packaging: FileAssetPackaging.FILE,
         sourceHash: 'abcdef',
-        ephemeral: true,
+        deployTime: true,
       });
 
       // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual('handoff/abcdef.js');
+      expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.js`);
     });
 
-    test('ephemeral assets do not get specified bucketPrefix', () => {
+    test('do not get specified bucketPrefix', () => {
       // GIVEN
       app = new App({
         defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
@@ -183,14 +183,14 @@ describe(AppStagingSynthesizer, () => {
         fileName: __filename,
         packaging: FileAssetPackaging.FILE,
         sourceHash: 'abcdef',
-        ephemeral: true,
+        deployTime: true,
       });
 
       // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual('handoff/abcdef.js');
+      expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.js`);
     });
 
-    test('s3 bucket has lifecycle rule on ephemeral assets by default', () => {
+    test('have s3 bucket has lifecycle rule by default', () => {
       // GIVEN
       new CfnResource(stack, 'Resource', {
         type: 'Some::Resource',
@@ -204,19 +204,19 @@ describe(AppStagingSynthesizer, () => {
         LifecycleConfiguration: {
           Rules: Match.arrayWith([{
             ExpirationInDays: 30,
-            Prefix: 'handoff/',
+            Prefix: DEPLOY_TIME_PREFIX,
             Status: 'Enabled',
           }]),
         },
       });
     });
 
-    test('lifecycle rule on ephemeral assets can be customized', () => {
+    test('can have customized lifecycle rules', () => {
       // GIVEN
       app = new App({
         defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
           appId: APP_ID,
-          handoffFileAssetLifetime: Duration.days(1),
+          deployTimeFileAssetLifetime: Duration.days(1),
         }),
       });
       stack = new Stack(app, 'Stack', {
@@ -239,7 +239,7 @@ describe(AppStagingSynthesizer, () => {
         LifecycleConfiguration: {
           Rules: Match.arrayWith([{
             ExpirationInDays: 1,
-            Prefix: 'handoff/',
+            Prefix: DEPLOY_TIME_PREFIX,
             Status: 'Enabled',
           }]),
         },

@@ -313,41 +313,41 @@ const app = new App({
 });
 ```
 
-### Ephemeral S3 Assets
+### Deploy Time S3 Assets
 
-Some assets that get put into the staging S3 Bucket are ephemeral - they are only necessary
-during CloudFormation deployment and not after. As long as you know what assets are ephemeral,
-you can tag them as such and they will be marked with an `handoff/` prefix when they are staged.
-This allows configuration of a lifecycle rule specifically for ephemeral assets.
+Some assets that get put into the staging S3 Bucket are only necessary during CloudFormation
+deployment and not after. As long as you know what assets are deploy time assets, you can tag
+them as such and they will be marked with a `deploy-time/` prefix when they are staged.
+This allows configuration of a lifecycle rule specifically for deploy time assets.
 
 A good example is a Lambda Function asset. The asset is only useful in the S3 Bucket at deploy
 time, because the source code gets copied into Lambda itself. So Lambda assets are by default
-marked as ephemeral:
+marked with `deployTime=true`:
 
 ```ts
 declare const stack: Stack;
 new lambda.Function(stack, 'lambda', {
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets')), // lambda marks ephemeral = true
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets')), // lambda marks deployTime = true
   handler: 'index.handler',
   runtime: lambda.Runtime.PYTHON_3_9,
 });
 ```
 
-Or, if you want to create your own ephemeral asset:
+Or, if you want to create your own deploy time asset:
 
 ```ts
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
 declare const stack: Stack;
-const asset = new Asset(stack, 'ephemeral-asset', {
-  ephemeral: true,
-  path: path.join(__dirname, './ephemeral-asset'),
+const asset = new Asset(stack, 'deploy-time-asset', {
+  deployTime: true,
+  path: path.join(__dirname, './deploy-time-asset'),
 });
 ```
 
-This means that the asset will go into the S3 Bucket with the prefix `handoff/`. It will also be 
-subject to the lifecycle rule set on ephemeral assets. By default, we store ephemeral assets for
-30 days, but you can change this number by specifying `handoffFileAssetLifetime`. The number you
+This means that the asset will go into the S3 Bucket with the prefix `deploy-time/`. It will also be 
+subject to the lifecycle rule set on deploy time assets. By default, we store deploy time assets for
+30 days, but you can change this number by specifying `deployTimeFileAssetLifetime`. The number you
 specify here is how long you will be able to roll back to a previous version of an application
 just by doing a CloudFormation deployment with the old template, without rebuilding and
 republishing assets.
@@ -356,7 +356,7 @@ republishing assets.
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    handoffFileAssetLifetime: Duration.days(100),
+    deployTimeFileAssetLifetime: Duration.days(100),
   }),
 });
 ```

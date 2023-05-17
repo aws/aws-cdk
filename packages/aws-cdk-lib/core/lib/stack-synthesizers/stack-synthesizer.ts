@@ -292,7 +292,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
     fileName: stack.templateFile,
     packaging: FileAssetPackaging.FILE,
     sourceHash,
-    ephemeral: true,
+    deployTime: true,
   };
 }
 
