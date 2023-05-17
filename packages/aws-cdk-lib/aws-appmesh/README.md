@@ -861,6 +861,112 @@ gateway.addGatewayRoute('gateway-route-grpc', {
   }),
 });
 ```
+## Configuring virtual gateways and virtual nodes with multiple listener
+
+For some use cases, we want a Virtual Node or Gateway to have different listeners listening to traffic with different protocal or prefix etc. You can achieve this by adding multiple listeners with different port number and specify the corresponding routing rules in Routes and Gateway Routes.
+
+Define a Virtual Node with multiple listener:
+
+```ts
+const multiListenerNode = mesh.addVirtualNode('multi-listener-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
+  listeners: [
+    appmesh.VirtualNodeListener.http({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+    }),
+    appmesh.VirtualNodeListener.tcp({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+      port: 443,
+    }),
+    appmesh.VirtualNodeListener.grpc({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+      port: 80,
+    }),
+  ],
+  backends: [appmesh.Backend.virtualService(multiListenerVirtualService)],
+});
+```
+
+Define multiple listeners in the Virual Router of the backend provider (`multiListenerVirtualService`) 
+
+```ts
+const multiListenerRouter = mesh.addVirtualRouter('multi-listener-router', {
+  listeners: [
+    appmesh.VirtualRouterListener.http(8080),
+    appmesh.VirtualRouterListener.tcp(443),
+    appmesh.VirtualRouterListener.grpc(80),
+  ],
+});
+```
+
+Add corresponding routes for this Virtual Router. `targetPort` is the port that you will direct your traffic to and `matchPort` is the port number of inbound traffic you want to match. 
+
+```ts
+multiListenerRouter.addRoute('multi-route-1', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 50,
+        targetPort: 8080,
+      },
+    ],
+    match: {
+      path: appmesh.HttpRoutePathMatch.startsWith('/'),
+      matchPort: 8080,
+    },
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
+    },
+  }),
+});
+multiListenerRouter.addRoute('multi-route-2', {
+  routeSpec: appmesh.RouteSpec.tcp({
+    match: {
+      matchPort: 443,
+    },
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 20,
+        targetPort: 443,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
+  }),
+});
+multiListenerRouter.addRoute('multi-route-3', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 20,
+        targetPort: 80,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
+    match: {
+      matchPort: 80,
+    },
+  }),
+});
+```
+
+For more use cases and details please see the public example: https://github.com/aws/aws-app-mesh-examples/tree/main/walkthroughs/howto-multiple-listeners
 
 ## Importing Resources
 

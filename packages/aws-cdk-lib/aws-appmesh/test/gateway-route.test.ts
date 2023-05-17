@@ -501,7 +501,7 @@ describe('gateway route', () => {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              matchPort: 1000,
+              port: 1000,
             },
             targetPort: 2000,
           }),

@@ -29,10 +29,24 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
+const multiListenerRouter = mesh.addVirtualRouter('multi-listener-router', {
+  listeners: [
+    appmesh.VirtualRouterListener.http(8080),
+    appmesh.VirtualRouterListener.tcp(443),
+    appmesh.VirtualRouterListener.grpc(80),
+  ],
+});
+
 const virtualService = new appmesh.VirtualService(stack, 'service', {
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
 });
+
+const multiListenerVirtualService = new appmesh.VirtualService(stack, 'multi-service', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(multiListenerRouter),
+  virtualServiceName: 'multi-service.domain.local',
+});
+
 
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
@@ -43,6 +57,33 @@ const node = mesh.addVirtualNode('node', {
     }),
   })],
   backends: [appmesh.Backend.virtualService(virtualService)],
+});
+
+const multiListenerNode = mesh.addVirtualNode('multi-listener-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
+  listeners: [
+    appmesh.VirtualNodeListener.http({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+    }),
+    appmesh.VirtualNodeListener.tcp({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+      port: 443,
+    }),
+    appmesh.VirtualNodeListener.grpc({
+      healthCheck: appmesh.HealthCheck.http({
+        healthyThreshold: 3,
+        path: '/check-path',
+      }),
+      port: 80,
+    }),
+  ],
+  backends: [appmesh.Backend.virtualService(multiListenerVirtualService)],
 });
 
 node.addBackend(appmesh.Backend.virtualService(
@@ -66,6 +107,62 @@ router.addRoute('route-1', {
     timeout: {
       idle: cdk.Duration.seconds(10),
       perRequest: cdk.Duration.seconds(10),
+    },
+  }),
+});
+
+multiListenerRouter.addRoute('multi-route-1', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 50,
+        targetPort: 8080,
+      },
+    ],
+    match: {
+      path: appmesh.HttpRoutePathMatch.startsWith('/'),
+      matchPort: 8080,
+    },
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
+    },
+  }),
+});
+
+multiListenerRouter.addRoute('multi-route-2', {
+  routeSpec: appmesh.RouteSpec.tcp({
+    match: {
+      matchPort: 443,
+    },
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 20,
+        targetPort: 443,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
+  }),
+});
+
+multiListenerRouter.addRoute('multi-route-3', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: multiListenerNode,
+        weight: 20,
+        targetPort: 80,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
+    match: {
+      matchPort: 80,
     },
   }),
 });
