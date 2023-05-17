@@ -14,7 +14,7 @@ import {
   Resource,
   Stack,
   ArnFormat,
-  FeatureFlags,
+  FeatureFlags, Token,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
@@ -114,10 +114,13 @@ export interface DeploymentAlarmConfig {
    * @default AlarmBehavior.ROLLBACK_ON_ALARM
    */
   readonly behavior?: AlarmBehavior;
+
   /**
-   * List of alarms
+   * List of alarm names to monitor during deployments.
+   *
+   * To monitor alarms on ECS metrics, use createAlarm().
    */
-  readonly alarms: cloudwatch.IAlarm[];
+  readonly alarmNames?: string[];
 }
 
 export interface EcsTarget {
@@ -614,7 +617,7 @@ export abstract class BaseService extends Resource
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms }),
+        alarms: Lazy.any({ produce: () => this.deploymentAlarms}, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -702,7 +705,7 @@ export abstract class BaseService extends Resource
    *
    *   svc.enableDeploymentAlarms({
    *     behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
-   *     alarms: [alarm1],
+   *     alarmNames: [alarm1],
    *   });
    *
    *   // After this call, `alarm1` and a new `cpuMetricAlarm` will trigger rollbacks.
@@ -715,16 +718,16 @@ export abstract class BaseService extends Resource
    *
    *   // After this final call, all three alarms will interrupt a deployment but the deployment will fail instead.
    *   svc.enableDeploymentAlarms({
-   *     alarms: [alarm2]
+   *     alarmNames: [alarm2]
    *   });
    */
   public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
-    if (alarmConfig.alarms.length === 0) {
-      throw new Error('Specify at least one deployment alarm');
+
+    const alarmNames: string[] = [];
+    if (alarmConfig.alarmNames !== undefined) {
+      alarmNames.concat(alarmConfig.alarmNames);
+
     }
-
-    const alarmNames = alarmConfig.alarms.map(alarm => { return alarm.alarmName; });
-
     // If deploymentAlarms has already been configured, respect what came before by extending the list of enabled alarms
     // and using the previous setting if no behavior is specified.
     if (this.deploymentAlarms) {
@@ -742,10 +745,19 @@ export abstract class BaseService extends Resource
       alarmNames,
       rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
     };
+    this.node.addValidation({
+      validate: () => {
+        const messages: string[] = [];
+        if (this.deploymentAlarms?.enable && this.deploymentAlarms.alarmNames.length === 0) {
+          messages.push('Specify at least one alarm using createAlarm() or enableDeploymentAlarms()');
+        }
+        return messages;
+      },
+    });
   }
 
   /**
-   *   Disassociate existing deployment alarms
+   *   Disassociate existing deployment alarmNames
   */
   public disableDeploymentAlarms() {
     if (this.deploymentAlarms) {
@@ -758,7 +770,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   *   Add an alarm based on a metric which will be appended to the list of deployment alarms at synthesis time
+   *   Add an alarm based on a metric which will be appended to the list of deployment alarms at synthesis time.
    *   The properties are the same as those of a cloudwatch.Alarm, with the addition of `useAsDeploymentAlarm`,
    *   an optional parameter which specifies whether ECS should interrupt a deployment when this alarm triggers,
    *   and `alarmBehavior`, an optional parameter which will set ECS' behavior when any alarm triggers during a
@@ -781,10 +793,24 @@ export abstract class BaseService extends Resource
       throw new Error('Cannot set alarmBehavior without enabling useAsDeploymentAlarm');
     }
 
-    const metricAlarm = new cloudwatch.Alarm(this, `${props.metric.toString()}Alarm`, props);
+    if (props.alarmName) {
+      // No circular references in the alarm name field!
+      if (Token.isUnresolved(props.alarmName)) {
+        throw new Error('Alarm names must be unique strings, not references to other constructs\' attributes');
+      }
+    }
+
+    const numAlarms = this.deploymentAlarms?.alarmNames.length || 0;
+    const generatedAlarmName = `EcsManagedAlarm${numAlarms + 1}`;
+    // If alarm name is not specified in props, use a roughly deterministic alarm name.
+    const metricAlarm = new cloudwatch.Alarm(this, generatedAlarmName, {
+      alarmName: generatedAlarmName,
+      ...props,
+    });
+
     if (props.useAsDeploymentAlarm) {
       this.enableDeploymentAlarms({
-        alarms: [metricAlarm],
+        alarmNames: [props.alarmName || generatedAlarmName],
         behavior: props.alarmBehavior,
       });
     }

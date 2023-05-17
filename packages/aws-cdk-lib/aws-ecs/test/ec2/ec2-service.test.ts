@@ -19,8 +19,8 @@ import {
   LaunchType,
   PropagatedTagSource,
 } from '../../lib/base/base-service';
-import {PlacementConstraint, PlacementStrategy} from '../../lib/placement';
-import {addDefaultCapacityProvider} from '../util';
+import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
+import { addDefaultCapacityProvider } from '../util';
 
 describe('ec2 service', () => {
   describe('When creating an EC2 Service', () => {
@@ -1294,10 +1294,10 @@ describe('ec2 service', () => {
             type: DeploymentControllerType.EXTERNAL,
           },
           deploymentAlarms: {
-            alarms: [myAlarm],
+            alarmNames: [myAlarm.alarmName],
           },
         });
-      }).toThrow('Deployment alarms requires the ECS deployment controller.');
+      }).toThrow('Deployment alarmNames requires the ECS deployment controller.');
     });
 
     test('add alarm config while service is constructed if deploymentAlarms config is specified with no behavior', () => {
@@ -1322,7 +1322,7 @@ describe('ec2 service', () => {
           type: DeploymentControllerType.ECS,
         },
         deploymentAlarms: {
-          alarms: [myAlarm],
+          alarmNames: [myAlarm.alarmName],
         },
       });
 
@@ -1361,7 +1361,7 @@ describe('ec2 service', () => {
           type: DeploymentControllerType.ECS,
         },
         deploymentAlarms: {
-          alarms: [myAlarm],
+          alarmNames: [myAlarm.alarmName],
           behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
         },
       });
@@ -1400,7 +1400,7 @@ describe('ec2 service', () => {
           type: DeploymentControllerType.ECS,
         },
         deploymentAlarms: {
-          alarms: [myAlarm],
+          alarmNames: [myAlarm.alarmName],
           behavior: AlarmBehavior.FAIL_ON_ALARM,
         },
       });
@@ -1418,7 +1418,7 @@ describe('ec2 service', () => {
       });
     });
 
-    test('enableDeploymentAlarms should throw an error if alarmConfig alarms array is empty', () => {
+    test('enableDeploymentAlarms should throw an error if alarmConfig alarmNames array is empty', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1442,7 +1442,7 @@ describe('ec2 service', () => {
       // THEN
       expect(() => {
         service.enableDeploymentAlarms({
-          alarms: [],
+          alarmNames: [],
         });
       }).toThrow('Specify at least one deployment alarm');
     });
@@ -1515,21 +1515,18 @@ describe('ec2 service', () => {
 
       // WHEN
       service.createAlarm({
+        alarmName: 'myFirstCPUAlarm',
         metric: metricCpu,
         threshold: 80,
         evaluationPeriods: 5,
         useAsDeploymentAlarm: true,
       });
 
-      const mySecondAlarm = new cloudwatch.Alarm(stack, 'MyOtherCPUAlarm', {
+      service.createAlarm({
         metric: metricCpu,
         threshold: 90,
         evaluationPeriods: 1,
-      });
-
-      service.enableDeploymentAlarms({
-        behavior: AlarmBehavior.FAIL_ON_ALARM,
-        alarms: [mySecondAlarm],
+        useAsDeploymentAlarm: true,
       });
 
       // THEN
@@ -1538,7 +1535,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: false,
-            AlarmNames: ['CPUUtilizationAlarm', 'MyOtherCPUAlarm'],
+            AlarmNames: ['myFirstCPUAlarm', 'ManagedDeploymentAlarm2'],
           },
         },
       });
@@ -1567,7 +1564,7 @@ describe('ec2 service', () => {
         },
       });
       service.enableDeploymentAlarms({
-        alarms: [myAlarm],
+        alarmNames: [myAlarm.alarmName],
       });
 
       // THEN
@@ -1606,7 +1603,7 @@ describe('ec2 service', () => {
         },
       });
       service.enableDeploymentAlarms({
-        alarms: [myAlarm],
+        alarmNames: [myAlarm.alarmName],
         behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
       });
 
@@ -1646,7 +1643,7 @@ describe('ec2 service', () => {
         },
       });
       service.enableDeploymentAlarms({
-        alarms: [myAlarm],
+        alarmNames: [myAlarm.alarmName],
         behavior: AlarmBehavior.FAIL_ON_ALARM,
       });
 
@@ -1685,13 +1682,13 @@ describe('ec2 service', () => {
         },
       });
       service.enableDeploymentAlarms({
-        alarms: [myAlarm],
+        alarmNames: [myAlarm.alarmName],
         behavior: AlarmBehavior.FAIL_ON_ALARM,
       });
 
       const cpuMetric = service.metricCpuUtilization();
 
-      const alarm = service.createAlarm({
+      service.createAlarm({
         metric: cpuMetric,
         evaluationPeriods: 5,
         threshold: 80,
@@ -1705,7 +1702,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: false,
-            AlarmNames: [myAlarm.alarmName, alarm.alarmName],
+            AlarmNames: [myAlarm.alarmName, 'ManagedDeploymentAlarm2'],
           },
         },
       });
@@ -1732,7 +1729,7 @@ describe('ec2 service', () => {
         },
       });
       const metric = service.metricMemoryUtilization();
-      const alarm = service.createAlarm({
+      service.createAlarm({
         metric,
         evaluationPeriods: 10,
         threshold: 80,
@@ -1746,7 +1743,7 @@ describe('ec2 service', () => {
           Alarms: {
             Enable: true,
             Rollback: true,
-            AlarmNames: [alarm.alarmName],
+            AlarmNames: ['ManagedECSDeploymentAlarm1'],
           },
         },
       });
@@ -1774,7 +1771,7 @@ describe('ec2 service', () => {
           type: DeploymentControllerType.ECS,
         },
         deploymentAlarms: {
-          alarms: [myAlarm],
+          alarmNames: [myAlarm.alarmName],
           behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
         },
       });
