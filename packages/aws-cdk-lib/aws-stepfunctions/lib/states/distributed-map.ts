@@ -5,6 +5,7 @@ import { IBucket } from '../../../aws-s3';
 import { FieldUtils } from '../fields';
 import { StateMachineType } from '../state-machine';
 import { INextable } from '../types';
+import { Aws } from '../../../core';
 
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
@@ -97,7 +98,7 @@ export class S3ObjectsItemReader implements IItemReader {
    * ARN for the `listObjectsV2` method of the S3 API
    * This API method is used to iterate all objects in the S3 bucket/prefix
    */
-  private readonly resource: string = 'arn:aws:states:::s3:listObjectsV2'
+  private readonly resource: string = `arn:${Aws.PARTITION}:states:::s3:listObjectsV2`
 
   constructor(props: S3ObjectsItemReaderProps) {
 
@@ -168,7 +169,7 @@ abstract class S3ItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
-  protected readonly resource: string = 'arn:aws:states:::s3:getObject'
+  protected readonly resource: string = `arn:${Aws.PARTITION}:states:::s3:getObject`
   protected abstract readonly inputType: string;
 
   constructor(props: S3ItemReaderProps) {
@@ -200,7 +201,7 @@ abstract class S3ItemReader implements IItemReader {
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
 
-    const resource = `arn:aws:s3:::${this.bucket.bucketName}/*`;
+    const resource = `arn:${Aws.PARTITION}:s3:::${this.bucket.bucketName}/*`;
 
     return [
       new iam.PolicyStatement({
@@ -373,7 +374,7 @@ export class ResultWriter {
    */
   public render(): any {
     return FieldUtils.renderObject({
-      Resource: 'arn:aws:states:::s3:putObject',
+      Resource: `arn:${Aws.PARTITION}:states:::s3:putObject`,
       Parameters: {
         Bucket: this.bucket.bucketName,
         ...(this.prefix && { Prefix: this.prefix }),
@@ -386,7 +387,7 @@ export class ResultWriter {
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
 
-    const resource = `arn:aws:s3:::${this.bucket.bucketName}/*`;
+    const resource = `arn:${Aws.PARTITION}:s3:::${this.bucket.bucketName}/*`;
 
     return [
       new iam.PolicyStatement({
