@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { RequestContext } from '.';
+import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
-import { RequestContext } from '.';
-import { AwsIntegration } from './aws';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { Model } from '../model';

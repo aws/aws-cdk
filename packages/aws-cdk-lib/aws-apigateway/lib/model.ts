@@ -1,9 +1,9 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
+import { Resource } from '../../core';
 
 export interface IModel {
   /**
