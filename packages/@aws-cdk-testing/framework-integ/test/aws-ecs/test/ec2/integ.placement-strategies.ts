@@ -9,7 +9,7 @@ class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC');
+    const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {

@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -7,8 +9,6 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
-import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 import { FactName } from '../../../region-info';
 
 
@@ -38,7 +38,7 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 
-  public resolve(_: cdk.IResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 

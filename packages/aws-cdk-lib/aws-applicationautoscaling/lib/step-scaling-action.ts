@@ -1,7 +1,7 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
+import * as cdk from '../../core';
 
 /**
  * Properties for a scaling policy
