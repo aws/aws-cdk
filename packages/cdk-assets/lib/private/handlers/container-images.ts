@@ -46,8 +46,13 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   }
 
   public async isPublished(): Promise<boolean> {
-    const initOnce = await this.initOnce();
-    return initOnce.destinationAlreadyExists;
+    try {
+      const initOnce = await this.initOnce();
+      return initOnce.destinationAlreadyExists;
+    } catch (e: any) {
+      this.host.emitMessage(EventType.DEBUG, `${e.message}`);
+    }
+    return false;
   }
 
   public async publish(): Promise<void> {
