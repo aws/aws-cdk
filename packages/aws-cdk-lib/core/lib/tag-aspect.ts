@@ -128,7 +128,7 @@ export class Tag extends TagBase {
   }
 
   protected applyTag2(resource: ITaggable2) {
-    this.applyManager(resource.tagManager);
+    this.applyManager(resource.cdkTagManager);
   }
 
   private applyManager(mgr: TagManager) {
@@ -188,7 +188,7 @@ export class RemoveTag extends TagBase {
   }
 
   protected applyTag2(resource: ITaggable2): void {
-    this.applyManager(resource.tagManager);
+    this.applyManager(resource.cdkTagManager);
   }
 
   private applyManager(mgr: TagManager) {

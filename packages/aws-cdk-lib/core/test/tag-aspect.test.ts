@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { toCloudFormation } from './util';
 import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggable2 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -15,11 +16,11 @@ class TaggableResource extends CfnResource implements ITaggable {
 }
 
 class TaggableResource2 extends CfnResource implements ITaggable2 {
-  public readonly tagManager: TagManager;
+  public readonly cdkTagManager: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
     const tags = props.properties?.tags;
-    this.tagManager = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource', tags);
+    this.cdkTagManager = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
     return this.cfnProperties;
@@ -51,7 +52,9 @@ class MapTaggableResource extends CfnResource implements ITaggable {
 }
 
 describe('tag aspect', () => {
-  test.each([TaggableResource, TaggableResource2])('Tag visit all children of the applied node, using class %s', (taggableClass) => {
+  test.each([
+    ['TaggableResource', TaggableResource], ['TaggableResource2', TaggableResource2],
+  ])('Tag visit all children of the applied node, using class %s', (_, taggableClass) => {
     const root = new Stack();
     const res = new taggableClass(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -70,10 +73,18 @@ describe('tag aspect', () => {
 
     synthesize(root);
 
-    expect(getMgr(res).renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
-    expect(getMgr(res2).renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(TagManager.of(res)?.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(TagManager.of(res2)?.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     expect(map.tags.renderTags()).toEqual({ foo: 'bar' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
+
+    const template = toCloudFormation(root);
+    expect(template.Resources.FakeResource).toEqual({
+      Type: 'AWS::Fake::Thing',
+      Properties: {
+        tags: [{ key: 'foo', value: 'bar' }],
+      },
+    });
   });
 
   test('The last aspect applied takes precedence', () => {
@@ -288,10 +299,3 @@ describe('tag aspect', () => {
     });
   });
 });
-
-function getMgr(x: ITaggable | ITaggable2) {
-  if (TagManager.isTaggable(x)) {
-    return x.tags;
-  }
-  return x.tagManager;
-}

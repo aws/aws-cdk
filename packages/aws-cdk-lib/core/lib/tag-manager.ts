@@ -244,14 +244,14 @@ export interface ITaggable {
  * `ITaggable` was a bad idea: for many resources, 'tags' is a valid property
  * name that should be directly available on the L1 resource. For old resources we have to
  * keep `tags` as the `TagManager`, but for newer resources `tags` will be the L1
- * property and `tagManager: TagManager` will have the tag manager.
+ * property and `cdkTagManager: TagManager` will have the tag manager.
  *
  */
 export interface ITaggable2 {
   /**
    * TagManager to set, remove and format tags
    */
-  readonly tagManager: TagManager;
+  readonly cdkTagManager: TagManager;
 }
 
 /**
@@ -306,7 +306,14 @@ export class TagManager {
    * Check whether the given construct is ITaggable2
    */
   public static isTaggable2(construct: any): construct is ITaggable2 {
-    return (construct as any).tagManager !== undefined;
+    return (construct as any).cdkTagManager !== undefined;
+  }
+
+  /**
+   * Return the TagManager associated with the given construct, if any
+   */
+  public static of(construct: any): TagManager | undefined {
+    return TagManager.isTaggable(construct) ? construct.tags : TagManager.isTaggable2(construct) ? construct.cdkTagManager : undefined;
   }
 
   /**
@@ -376,13 +383,20 @@ export class TagManager {
    * which will return a `Lazy` value that will resolve to the correct
    * tags at synthesis time.
    */
-  public renderTags(): any {
+  public renderTags(combineWithTags?: any): any {
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
-      const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
+      if (combineWithTags && !Array.isArray(combineWithTags)) {
+        throw new Error('Tags should be provided as an array');
+      }
+
+      const ret = [...formattedTags ?? [], ...this.dynamicTags ?? [], ...combineWithTags ?? []];
       return ret.length > 0 ? ret : undefined;
     } else {
-      const ret = { ...formattedTags ?? {}, ...this.dynamicTags ?? {} };
+      if (combineWithTags && (typeof combineWithTags !== 'object' || Array.isArray(combineWithTags))) {
+        throw new Error('Tags should be provided as an object');
+      }
+      const ret = { ...formattedTags ?? {}, ...this.dynamicTags ?? {}, ...combineWithTags ?? {} };
       return Object.keys(ret).length > 0 ? ret : undefined;
     }
   }

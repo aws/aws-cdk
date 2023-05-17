@@ -129,6 +129,40 @@ describe('tag manager', () => {
     ]);
   });
 
+  test('can add direct tags', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
+
+    // WHEN
+    mgr.setTag('key', 'value');
+    const rendered = expect(mgr.renderTags([
+      { key: 'key2', value: 'value2' },
+    ]));
+
+    // THEN
+    expect(rendered).toEqual([
+      { key: 'key', value: 'value' },
+      { key: 'key2', value: 'value2' },
+    ]);
+  });
+
+  test('can add direct tags', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.MAP, 'AWS::Resource::Type');
+
+    // WHEN
+    mgr.setTag('key', 'value');
+    const rendered = expect(mgr.renderTags({
+      key2: 'value2',
+    }));
+
+    // THEN
+    expect(rendered).toEqual({
+      key: 'value',
+      key2: 'value2',
+    });
+  });
+
   test('excludeResourceTypes only tags resources that do not match', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource');
 
