@@ -38,6 +38,7 @@ new kplus.Deployment(chart, 'Deployment', {
     image: dockerImage.imageUri,
     envVariables: {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
+      REGION: kplus.EnvValue.fromValue(stack.region),
     },
     securityContext: {
       user: 1000,
