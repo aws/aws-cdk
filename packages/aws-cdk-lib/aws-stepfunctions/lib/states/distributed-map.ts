@@ -2,10 +2,10 @@ import { Construct } from 'constructs';
 import { Map, MapProps, MapStateMode } from './map';
 import * as iam from '../../../aws-iam';
 import { IBucket } from '../../../aws-s3';
+import { Aws } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateMachineType } from '../state-machine';
 import { INextable } from '../types';
-import { Aws } from '../../../core';
 
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
