@@ -175,7 +175,11 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:s3:::",
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
           {
            "Ref": "Bucket83908E77"
           },
@@ -208,11 +212,19 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:aws:states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Parameters\":{\"Bucket\":\"",
+       "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Parameters\":{\"Bucket\":\"",
        {
         "Ref": "Bucket83908E77"
        },
-       "\",\"Key\":\"my-key.csv\"}},\"ResultWriter\":{\"Resource\":\"arn:aws:states:::s3:putObject\",\"Parameters\":{\"Bucket\":\"",
+       "\",\"Key\":\"my-key.csv\"}},\"ResultWriter\":{\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::s3:putObject\",\"Parameters\":{\"Bucket\":\"",
        {
         "Ref": "Bucket83908E77"
        },

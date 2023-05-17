@@ -247,7 +247,11 @@
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn:aws:s3:::",
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::",
                                         {
                                           "Ref": "Bucket83908E77"
                                         },
@@ -300,11 +304,19 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:aws:states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Parameters\":{\"Bucket\":\"",
+                          "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Parameters\":{\"Bucket\":\"",
                           {
                             "Ref": "Bucket83908E77"
                           },
-                          "\",\"Key\":\"my-key.csv\"}},\"ResultWriter\":{\"Resource\":\"arn:aws:states:::s3:putObject\",\"Parameters\":{\"Bucket\":\"",
+                          "\",\"Key\":\"my-key.csv\"}},\"ResultWriter\":{\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::s3:putObject\",\"Parameters\":{\"Bucket\":\"",
                           {
                             "Ref": "Bucket83908E77"
                           },
@@ -407,7 +419,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.9"
+              "version": "10.2.26"
             }
           },
           "BootstrapVersion": {
@@ -445,7 +457,7 @@
                 "path": "DistributedMap/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -465,7 +477,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.9"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -537,7 +549,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.9"
+                      "version": "10.2.26"
                     }
                   },
                   "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee": {
@@ -553,7 +565,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.9"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -599,7 +611,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.9"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -645,7 +657,7 @@
                             "path": "DistributedMap/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.9"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -725,7 +737,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.26"
         }
       }
     },
