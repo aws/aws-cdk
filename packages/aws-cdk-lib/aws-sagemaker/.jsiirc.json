@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.sagemaker"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Sagemaker"
+    },
+    "python": {
+      "module": "aws_cdk.aws_sagemaker"
+    }
+  }
+}

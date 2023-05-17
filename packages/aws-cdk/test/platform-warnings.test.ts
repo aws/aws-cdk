@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { isVersionBetween } from '../lib/platform-warnings';
 
 

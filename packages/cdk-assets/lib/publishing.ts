@@ -1,6 +1,6 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
-import { IHandlerHost } from './private/asset-handler';
+import { IAssetHandler, IHandlerHost } from './private/asset-handler';
 import { DockerFactory } from './private/docker';
 import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
@@ -26,21 +26,21 @@ export interface AssetPublishingOptions {
   readonly throwOnError?: boolean;
 
   /**
-   * Whether to publish in parallel
+   * Whether to publish in parallel, when 'publish()' is called
    *
    * @default false
    */
   readonly publishInParallel?: boolean;
 
   /**
-   * Whether to build assets
+   * Whether to build assets, when 'publish()' is called
    *
    * @default true
    */
   readonly buildAssets?: boolean;
 
   /**
-   * Whether to publish assets
+   * Whether to publish assets, when 'publish()' is called
    *
    * @default true
    */
@@ -85,6 +85,7 @@ export class AssetPublishing implements IPublishProgress {
   private readonly startMessagePrefix: string;
   private readonly successMessagePrefix: string;
   private readonly errorMessagePrefix: string;
+  private readonly handlerCache = new Map<IManifestEntry, IAssetHandler>();
 
   constructor(private readonly manifest: AssetManifest, private readonly options: AssetPublishingOptions) {
     this.assets = manifest.entries;
@@ -150,7 +151,62 @@ export class AssetPublishing implements IPublishProgress {
   }
 
   /**
-   * Publish an asset.
+   * Build a single asset from the manifest
+   */
+  public async buildEntry(asset: IManifestEntry) {
+    try {
+      if (this.progressEvent(EventType.START, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
+
+      const handler = this.assetHandler(asset);
+      await handler.build();
+
+      if (this.aborted) {
+        throw new Error('Aborted');
+      }
+    } catch (e: any) {
+      this.failures.push({ asset, error: e });
+      this.completedOperations++;
+      if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
+    }
+
+    return true;
+  }
+
+  /**
+   * Publish a single asset from the manifest
+   */
+  public async publishEntry(asset: IManifestEntry) {
+    try {
+      if (this.progressEvent(EventType.UPLOAD, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
+
+      const handler = this.assetHandler(asset);
+      await handler.publish();
+
+      if (this.aborted) {
+        throw new Error('Aborted');
+      }
+
+      this.completedOperations++;
+      if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
+    } catch (e: any) {
+      this.failures.push({ asset, error: e });
+      this.completedOperations++;
+      if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
+    }
+
+    return true;
+  }
+
+  /**
+   * Return whether a single asset is published
+   */
+  public isEntryPublished(asset: IManifestEntry) {
+    const handler = this.assetHandler(asset);
+    return handler.isPublished();
+  }
+
+  /**
+   * publish an asset (used by 'publish()')
    * @param asset The asset to publish
    * @returns false when publishing should stop
    */
@@ -158,7 +214,7 @@ export class AssetPublishing implements IPublishProgress {
     try {
       if (this.progressEvent(EventType.START, `${this.startMessagePrefix} ${asset.id}`)) { return false; }
 
-      const handler = makeAssetHandler(this.manifest, asset, this.handlerHost);
+      const handler = this.assetHandler(asset);
 
       if (this.buildAssets) {
         await handler.build();
@@ -174,7 +230,7 @@ export class AssetPublishing implements IPublishProgress {
 
       this.completedOperations++;
       if (this.progressEvent(EventType.SUCCESS, `${this.successMessagePrefix} ${asset.id}`)) { return false; }
-    } catch (e) {
+    } catch (e: any) {
       this.failures.push({ asset, error: e });
       this.completedOperations++;
       if (this.progressEvent(EventType.FAIL, e.message)) { return false; }
@@ -205,5 +261,15 @@ export class AssetPublishing implements IPublishProgress {
     this.message = message;
     if (this.options.progressListener) { this.options.progressListener.onPublishEvent(event, this); }
     return this.aborted;
+  }
+
+  private assetHandler(asset: IManifestEntry) {
+    const existing = this.handlerCache.get(asset);
+    if (existing) {
+      return existing;
+    }
+    const ret = makeAssetHandler(this.manifest, asset, this.handlerHost);
+    this.handlerCache.set(asset, ret);
+    return ret;
   }
 }

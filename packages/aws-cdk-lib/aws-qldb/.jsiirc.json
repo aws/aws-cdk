@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.QLDB"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.qldb"
+    },
+    "python": {
+      "module": "aws_cdk.aws_qldb"
+    }
+  }
+}

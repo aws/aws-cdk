@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lambda.destinations"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Lambda.Destinations"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lambda_destinations"
+    }
+  }
+}

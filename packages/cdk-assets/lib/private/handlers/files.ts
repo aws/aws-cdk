@@ -29,6 +29,23 @@ export class FileAssetHandler implements IAssetHandler {
 
   public async build(): Promise<void> {}
 
+  public async isPublished(): Promise<boolean> {
+    const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
+    const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
+    try {
+      const s3 = await this.host.aws.s3Client(destination);
+      this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
+
+      if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
+        this.host.emitMessage(EventType.FOUND, `Found ${s3Url}`);
+        return true;
+      }
+    } catch (e: any) {
+      this.host.emitMessage(EventType.DEBUG, `${e.message}`);
+    }
+    return false;
+  }
+
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
@@ -229,7 +246,7 @@ class BucketInformation {
     try {
       await s3.getBucketLocation({ Bucket: bucket }).promise();
       return BucketOwnership.MINE;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
       if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
       throw e;
@@ -247,7 +264,7 @@ class BucketInformation {
         if (ssealgo === 'aws:kms') return { type: 'kms', kmsKeyId: apply?.KMSMasterKeyID };
       }
       return { type: 'no_encryption' };
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'NoSuchBucket') {
         return { type: 'does_not_exist' };
       }

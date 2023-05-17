@@ -1,3 +1,4 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
@@ -252,6 +253,58 @@ integTest('can use the custom permissions boundary to bootstrap', withoutBootstr
   });
 
   expect(template).toContain('permission-boundary-name');
+}));
+
+integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+  const policyName = `${bootstrapStackName}-pb`;
+  let policyArn;
+  try {
+    const policy = await fixture.aws.iam('createPolicy', {
+      PolicyName: policyName,
+      PolicyDocument: JSON.stringify({
+        Version: '2012-10-17',
+        Statement: {
+          Action: ['*'],
+          Resource: ['*'],
+          Effect: 'Allow',
+        },
+      }),
+    });
+    policyArn = policy.Policy?.Arn;
+    await fixture.cdkBootstrapModern({
+      // toolkitStackName doesn't matter for this particular invocation
+      toolkitStackName: bootstrapStackName,
+      customPermissionsBoundary: policyName,
+    });
+
+    const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+    expect(
+      response.Stacks?.[0].Parameters?.some(
+        param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
+      )).toEqual(true);
+
+    await fixture.cdkBootstrapModern({
+      // toolkitStackName doesn't matter for this particular invocation
+      toolkitStackName: bootstrapStackName,
+      usePreviousParameters: false,
+    });
+    const response2 = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+    expect(
+      response2.Stacks?.[0].Parameters?.some(
+        param => (param.ParameterKey === 'InputPermissionsBoundary' && !param.ParameterValue),
+      )).toEqual(true);
+
+    const region = fixture.aws.region;
+    const account = await fixture.aws.account();
+    const role = await fixture.aws.iam('getRole', { RoleName: `cdk-${fixture.qualifier}-cfn-exec-role-${account}-${region}` });
+    expect(role.Role.PermissionsBoundary).toBeUndefined();
+
+  } finally {
+    if (policyArn) {
+      await fixture.aws.iam('deletePolicy', { PolicyArn: policyArn });
+    }
+  }
 }));
 
 integTest('switch on termination protection, switch is left alone on re-bootstrap', withoutBootstrap(async (fixture) => {

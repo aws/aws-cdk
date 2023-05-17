@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as path from 'path';
 import { ConstructTreeNode, loadTreeFromDir, some } from '../lib/tree';
 
@@ -10,7 +11,7 @@ describe('some', () => {
         id: 'Tree',
         path: 'Tree',
         constructInfo: {
-          fqn: '@aws-cdk/core.Construct',
+          fqn: 'aws-cdk-lib.Construct',
           version: '1.162.0',
         },
       },
@@ -48,7 +49,7 @@ describe('some', () => {
                 id: 'Default',
                 path: 'stack/CDKMetadata/Default',
                 constructInfo: {
-                  fqn: '@aws-cdk/core.CfnResource',
+                  fqn: 'aws-cdk-lib.CfnResource',
                   version: '1.162.0',
                 },
               },
@@ -56,25 +57,25 @@ describe('some', () => {
                 id: 'Condition',
                 path: 'stack/CDKMetadata/Condition',
                 constructInfo: {
-                  fqn: '@aws-cdk/core.CfnCondition',
+                  fqn: 'aws-cdk-lib.CfnCondition',
                   version: '1.162.0',
                 },
               },
             },
             constructInfo: {
-              fqn: '@aws-cdk/core.Construct',
+              fqn: 'aws-cdk-lib.Construct',
               version: '1.162.0',
             },
           },
         },
         constructInfo: {
-          fqn: '@aws-cdk/core.Stack',
+          fqn: 'aws-cdk-lib.Stack',
           version: '1.162.0',
         },
       },
     },
     constructInfo: {
-      fqn: '@aws-cdk/core.App',
+      fqn: 'aws-cdk-lib.App',
       version: '1.162.0',
     },
   };
@@ -92,7 +93,7 @@ describe('some', () => {
       id: 'App',
       path: '',
       constructInfo: {
-        fqn: '@aws-cdk/core.App',
+        fqn: 'aws-cdk-lib.App',
         version: '1.162.0',
       },
     };

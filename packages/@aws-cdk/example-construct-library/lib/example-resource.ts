@@ -6,12 +6,12 @@
  * Our linter also enforces ES6-style imports -
  * we don't use TypeScript's import a = require('a') imports.
  */
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as events from '@aws-cdk/aws-events';
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // for files that are part of this package, we do import individual classes or functions
 import { exampleResourceArnComponents } from './private/example-resource-common';

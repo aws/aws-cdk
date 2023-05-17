@@ -131,6 +131,14 @@ $ # Synthesize cloud assembly for StackName, but don't cloudFormation template o
 $ cdk synth MyStackName --quiet
 ```
 
+The `quiet` option can be set in the `cdk.json` file.
+
+```json
+{
+  "quiet": true
+}
+```
+
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
 See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
 
@@ -600,6 +608,26 @@ as, most likely, a permissions boundary is maintained and has dedicated conventi
 
 For more information on configuring permissions, including using permissions
 boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+Once a bootstrap template has been deployed with a set of parameters, you must
+use the `--no-previous-parameters` CLI flag to change any of these parameters on
+future deployments. 
+
+> **Note** Please note that when you use this flag, you must resupply
+>*all* previously supplied parameters.
+
+For example if you bootstrap with a custom permissions boundary
+
+```console
+cdk bootstrap --custom-permissions-boundary my-permissions-boundary
+```
+
+In order to remove that permissions boundary you have to specify the
+`--no-previous-parameters` option.
+
+```console
+cdk bootstrap --no-previous-parameters
+```
 
 ### `cdk doctor`
 

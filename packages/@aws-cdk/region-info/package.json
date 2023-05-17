@@ -4,6 +4,23 @@
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/**/*.js",
+          "{projectRoot}/**/*.d.ts",
+          "{projectRoot}/.jsii",
+          "{projectRoot}/.warnings.jsii.js",
+          "{projectRoot}/.gitignore",
+          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/README.md",
+          "{projectRoot}/rosetta",
+          "!{projectRoot}/node_modules/**/*"
+        ]
+      }
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -38,8 +55,8 @@
     }
   },
   "scripts": {
-    "gen": "bash build-tools/generate.sh",
-    "build": "cdk-build",
+    "build": "yarn gen && cdk-build --skip-lint",
+    "gen": "cdk-copy region-info",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
@@ -62,8 +79,9 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.1",
     "fs-extra": "^9.1.0"
   },
   "repository": {

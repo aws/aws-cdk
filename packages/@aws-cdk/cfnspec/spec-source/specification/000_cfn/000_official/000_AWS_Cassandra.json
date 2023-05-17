@@ -1,5 +1,5 @@
 {
-  "$version": "109.0.0",
+  "$version": "122.0.0",
   "PropertyTypes": {
     "AWS::Cassandra::Table.BillingMode": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-billingmode.html",
@@ -115,6 +115,12 @@
           "Required": false,
           "Type": "BillingMode",
           "UpdateType": "Mutable"
+        },
+        "ClientSideTimestampsEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-clientsidetimestampsenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Immutable"
         },
         "ClusteringKeyColumns": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-clusteringkeycolumns",

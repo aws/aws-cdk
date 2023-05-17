@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as mockery from 'mockery';
 import { realHandler } from '../lib/commands/doctor';
 

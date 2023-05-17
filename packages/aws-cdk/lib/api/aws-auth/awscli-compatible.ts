@@ -186,7 +186,7 @@ async function isEc2Instance() {
         //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
         const lines = result.stdout.toString().split('\n');
         instance = lines.some(x => matchesRegex(/^ec2/i, x));
-      } catch (e) {
+      } catch (e: any) {
         // Modern machines may not have wmic.exe installed. No reason to fail, just assume it's not an EC2 instance.
         debug(`Checking using WMIC failed, assuming NOT an EC2 instance: ${e.message} (pass --ec2creds to force)`);
         instance = false;
@@ -311,7 +311,7 @@ function readIfPossible(filename: string): string | undefined {
   try {
     if (!fs.pathExistsSync(filename)) { return undefined; }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     return undefined;
   }
@@ -343,7 +343,7 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
     });
     debug('Successfully got MFA token from user');
     cb(undefined, token);
-  } catch (err) {
+  } catch (err: any) {
     debug('Failed to get MFA token', err);
     cb(err);
   }

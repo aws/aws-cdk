@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { validateSnsTopicArn } from '../../lib/util/validate-notification-arn';
 
 describe('validate sns arns', () => {

@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "1db9045d198a45233cf79d4f87770e1d94d5efd69f70a11d40e3a6310ba3b26c": {
+      "source": {
+        "path": "TestAppRegistryApplicationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "000000000000-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-000000000000-${AWS::Region}",
+          "objectKey": "1db9045d198a45233cf79d4f87770e1d94d5efd69f70a11d40e3a6310ba3b26c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-file-publishing-role-000000000000-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

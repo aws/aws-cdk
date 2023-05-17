@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Kendra"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.kendra"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kendra"
+    }
+  }
+}

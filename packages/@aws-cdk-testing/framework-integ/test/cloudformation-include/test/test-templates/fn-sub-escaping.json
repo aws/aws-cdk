@@ -1,0 +1,10 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Sub": "some-bucket${!AWS::AccountId}7896${ ! DoesNotExist}${!Immediate}234" }
+      }
+    }
+  }
+}

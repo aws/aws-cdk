@@ -278,7 +278,7 @@ async function initializeGitRepository(workDir: string) {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
     await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
-  } catch (e) {
+  } catch {
     warning('Unable to initialize git repository for your project.');
   }
 }
@@ -311,7 +311,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   print(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
-  } catch (e) {
+  } catch (e: any) {
     warning(`${command} install failed: ` + e.message);
   }
 }
@@ -326,7 +326,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   print('Executing \'mvn package\'');
   try {
     await execute('mvn', ['package'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to package compiled code as JAR');
     warning(mvnPackageWarning);
   }
@@ -339,7 +339,7 @@ async function postInstallPython(cwd: string) {
   print(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to create virtualenv automatically');
     warning(`Please run '${python} -m venv .venv'!`);
   }

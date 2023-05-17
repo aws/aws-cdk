@@ -51,7 +51,7 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(3);
     expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
     expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
     expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
@@ -83,7 +83,6 @@ describe('IntegTest runIntegTests', () => {
       }),
       versionReporting: false,
       lookups: false,
-      rollback: false,
       stacks: ['test-stack', 'new-test-stack'],
     });
     expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
@@ -130,7 +129,6 @@ describe('IntegTest runIntegTests', () => {
       context: expect.not.objectContaining({
         [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
       }),
-      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
@@ -176,7 +174,6 @@ describe('IntegTest runIntegTests', () => {
       }),
       versionReporting: false,
       lookups: true,
-      rollback: false,
       stacks: ['test-stack'],
       output: 'cdk-integ.out.xxxxx.test-with-snapshot-assets-diff.js.snapshot',
       profile: undefined,
@@ -203,6 +200,52 @@ describe('IntegTest runIntegTests', () => {
       force: true,
       all: true,
       output: 'cdk-integ.out.xxxxx.test-with-snapshot-assets-diff.js.snapshot',
+    });
+  });
+
+  test('with an assertion stack', () => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'xxxxx.test-with-snapshot',
+    });
+
+    // THEN
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(3);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      app: 'xxxxx.test-with-snapshot.js.snapshot',
+      context: expect.any(Object),
+      stacks: ['test-stack'],
+    }));
+    expect(cdkMock.mocks.deploy).toHaveBeenNthCalledWith(2, expect.not.objectContaining({
+      rollback: false,
+    }));
+    expect(cdkMock.mocks.deploy).toHaveBeenNthCalledWith(3, expect.objectContaining({
+      app: 'node xxxxx.test-with-snapshot.js',
+      stacks: ['Bundling/DefaultTest/DeployAssert'],
+      rollback: false,
+    }));
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
+      app: 'node xxxxx.test-with-snapshot.js',
+      pathMetadata: false,
+      assetMetadata: false,
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
+      versionReporting: false,
+      force: true,
+      all: true,
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot.js.snapshot',
     });
   });
 
@@ -298,7 +341,6 @@ describe('IntegTest runIntegTests', () => {
         }),
       }),
       profile: 'test-profile',
-      rollback: false,
       lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
@@ -564,7 +606,7 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(3);
     expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
     expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
     expect(cdkMock.mocks.deploy).toHaveBeenCalledWith(expect.objectContaining({

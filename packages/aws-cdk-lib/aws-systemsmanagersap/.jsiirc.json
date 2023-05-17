@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SystemsManagerSAP"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.systemsmanagersap"
+    },
+    "python": {
+      "module": "aws_cdk.aws_systemsmanagersap"
+    }
+  }
+}

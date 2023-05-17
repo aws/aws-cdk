@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as child_process from 'child_process';
 import * as events from 'events';
 
