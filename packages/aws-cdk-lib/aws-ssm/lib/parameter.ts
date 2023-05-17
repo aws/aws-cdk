@@ -579,8 +579,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param scope Some scope within a stack
    * @param parameterName The name of the SSM parameter
    * @param version The parameter version (required for secure strings)
-   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version. [Click here for more
-   * details](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.SecretValue.html#static-ssmwbrsecureparametername-version).
+   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version. `SecretValue` lives in the core `aws-cdk-lib` module.
    */
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
