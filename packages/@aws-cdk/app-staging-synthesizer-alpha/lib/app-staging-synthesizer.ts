@@ -37,7 +37,7 @@ export interface AppStagingSynthesizerOptions {
    *
    * @default - The standard bootstrapped CDK roles
    */
-  readonly deploymentRoles?: DeploymentIdentities;
+  readonly deploymentIdentities?: DeploymentIdentities;
 
   /**
    * Qualifier to disambiguate multiple bootstrapped environments in the same account
@@ -126,7 +126,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     return AppStagingSynthesizer.customFactory({
       factory: DefaultStagingStack.factory(options),
-      deploymentRoles: options.deploymentRoles,
+      deploymentIdentities: options.deploymentIdentities,
       bootstrapQualifier: options.bootstrapQualifier,
       oncePerEnv: true,
     });
@@ -137,7 +137,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
    */
   public static customResources(options: CustomResourcesOptions) {
     return AppStagingSynthesizer.customFactory({
-      deploymentRoles: options.deploymentRoles,
+      deploymentIdentities: options.deploymentIdentities,
       bootstrapQualifier: options.bootstrapQualifier,
       oncePerEnv: false,
       factory: {
@@ -162,7 +162,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     return new AppStagingSynthesizer({
       factory,
       bootstrapQualifier: options.bootstrapQualifier,
-      deploymentRoles: options.deploymentRoles,
+      deploymentIdentities: options.deploymentIdentities,
     });
   }
 
@@ -172,11 +172,11 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     super();
 
     this.roles = {
-      deploymentRole: props.deploymentRoles?.roles.deploymentRole ??
+      deploymentRole: props.deploymentIdentities?.roles.deploymentRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN),
-      cloudFormationExecutionRole: props.deploymentRoles?.roles.cloudFormationExecutionRole ??
+      cloudFormationExecutionRole: props.deploymentIdentities?.roles.cloudFormationExecutionRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN),
-      lookupRole: this.props.deploymentRoles?.roles.lookupRole ??
+      lookupRole: this.props.deploymentIdentities?.roles.lookupRole ??
         BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN),
     };
   }

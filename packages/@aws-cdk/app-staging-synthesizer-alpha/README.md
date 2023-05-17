@@ -152,14 +152,7 @@ controlled individually.
 > As this library is `experimental`, the accompanying Bootstrap Stack is not yet implemented. To use this
 > library right now, you must reuse roles that have been traditionally bootstrapped.
 
-## Synthesizer
-
-To use this library, supply the `AppStagingSynthesizer` in as the default synthesizer to the app.
-This will ensure that a Staging Stack will be created next to the CDK App to hold the staging resources.
-
-`AppStagingSynthesizer` comes with static methods covering the use-cases for the synthesizer. 
-
-### Using the Default Staging Stack per Environment
+## Using the Default Staging Stack per Environment
 
 The most common use case will be to use the built-in default resources. In this scenario, the
 synthesizer will create a new Staging Stack in each environment the CDK App is deployed to store
@@ -177,72 +170,7 @@ Every CDK App that uses the `DefaultStagingStack` must include an `appId`. This 
 be an identifier unique to the app and is used to differentiate staging resources associated
 with the app.
 
-### Using a Custom Staging Stack per Environment
-
-Use `AppStagingSynthesizer.customFactory()` to supply a custom staging stack on a per-environment basis.
-This has the benefit of providing a custom Staging Stack that can be created in every environment the
-CDK App is deployed to.
-
-```ts
-interface CustomStagingStackProps extends StackProps {}
-
-class CustomStagingStack extends Stack implements IStagingResources {
-  public constructor(scope: Construct, id: string, props: CustomStagingStackProps) {
-    super(scope, id, props);
-  }
-
-  public addFile(asset: FileAssetSource): FileStagingLocation {
-    return {
-      bucketName: 'myBucket',
-      assumeRoleArn: 'myArn',
-      dependencyStack: this,
-    };
-  }
-
-  public addDockerImage(asset: DockerImageAssetSource): ImageStagingLocation {
-    return {
-      repoName: 'myRepo',
-      assumeRoleArn: 'myArn',
-      dependencyStack: this,
-    };
-  }
-}
-```
-
-```ts fixture=with-custom-staging
-class CustomFactory implements IStagingResourcesFactory {
-  public obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext) {
-    const myApp = App.of(stack);
-
-    return new CustomStagingStack(myApp!, `CustomStagingStack-${context.environmentString}`, {});
-  }
-}
-
-const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.customFactory({
-    factory: new CustomFactory(),
-    oncePerEnv: true, // by default
-  }),
-});
-```
-
-### Using an Existing Staging Stack
-
-Use `AppStagingSynthesizer.customResources()` to supply an existing stack as the Staging Stack.
-Make sure that the custom stack you provide implements `IStagingResources`.
-
-```ts fixture=with-custom-staging
-const resourceApp = new App();
-const resources = new CustomStagingStack(resourceApp, 'CustomStagingStack', {});
-
-const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.customResources({
-    resources,
-  }),
-});
-```
-
-## Default Staging Stack
+### Default Staging Stack
 
 The Default Staging Stack includes all the staging resources necessary for CDK Assets. The below example
 is of a CDK App using the `AppStagingSynthesizer` and creating a file asset for the Lambda Function
@@ -274,7 +202,7 @@ if all you need is to supply custom roles (and not change anything else in the `
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    deploymentRoles: DeploymentIdentities.specifyRoles({
+    deploymentIdentities: DeploymentIdentities.specifyRoles({
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
       deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
       lookupRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Lookup'),
@@ -294,7 +222,7 @@ and `CloudFormationExecutionRole` in the
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    deploymentRoles: DeploymentIdentities.cliCredentials(),
+    deploymentIdentities: DeploymentIdentities.cliCredentials(),
   }),
 });
 ```
@@ -317,8 +245,10 @@ const app = new App({
 
 There are two types of assets:
 
-* Assets used only during deployment. These are used to hand off a large piece of data to another service, that will make a private copy of that data. After deployment, the asset is only necessary for a potential future rollback. 
-* Assets accessed throughout the running life time of the application.
+- Assets used only during deployment. These are used to hand off a large piece of data to another 
+service, that will make a private copy of that data. After deployment, the asset is only necessary for 
+a potential future rollback. 
+- Assets accessed throughout the running life time of the application.
 
 Examples of assets that are only used at deploy time are CloudFormation Templates and Lambda Code
 bundles. Examples of assets accessed throughout the life time of the application are script files 
@@ -380,7 +310,7 @@ const app = new App({
 });
 ```
 
-## Extending the Default Staging Stack
+## Using a Custom Staging Stack per Environment
 
 If you want to customize some behavior that is not configurable via properties,
 you can implement your own class that implements `IStagingResources`. To get a head start,
@@ -389,7 +319,71 @@ you can subclass `DefaultStagingStack`.
 ```ts
 interface CustomStagingStackOptions extends DefaultStagingStackOptions {}
 
-class CustomStagingStack extends DefaultStagingStack {
-  
+class CustomStagingStack extends DefaultStagingStack {  
 }
+```
+
+Or you can roll your own staging resources from scratch, as long as it implements `IStagingResources`.
+
+```ts
+interface CustomStagingStackProps extends StackProps {}
+
+class CustomStagingStack extends Stack implements IStagingResources {
+  public constructor(scope: Construct, id: string, props: CustomStagingStackProps) {
+    super(scope, id, props);
+  }
+
+  public addFile(asset: FileAssetSource): FileStagingLocation {
+    return {
+      bucketName: 'myBucket',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+
+  public addDockerImage(asset: DockerImageAssetSource): ImageStagingLocation {
+    return {
+      repoName: 'myRepo',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+}
+```
+
+Using your custom staging resources means implementing a `CustomFactory` class and calling the
+`AppStagingSynthesizer.customFactory()` static method. This has the benefit of providing a
+custom Staging Stack that can be created in every environment the CDK App is deployed to.
+
+```ts fixture=with-custom-staging
+class CustomFactory implements IStagingResourcesFactory {
+  public obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext) {
+    const myApp = App.of(stack);
+
+    return new CustomStagingStack(myApp!, `CustomStagingStack-${context.environmentString}`, {});
+  }
+}
+
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.customFactory({
+    factory: new CustomFactory(),
+    oncePerEnv: true, // by default
+  }),
+});
+```
+
+## Using an Existing Staging Stack
+
+Use `AppStagingSynthesizer.customResources()` to supply an existing stack as the Staging Stack.
+Make sure that the custom stack you provide implements `IStagingResources`.
+
+```ts fixture=with-custom-staging
+const resourceApp = new App();
+const resources = new CustomStagingStack(resourceApp, 'CustomStagingStack', {});
+
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.customResources({
+    resources,
+  }),
+});
 ```

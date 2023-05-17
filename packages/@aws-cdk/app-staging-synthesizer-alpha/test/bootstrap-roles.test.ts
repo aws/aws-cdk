@@ -42,7 +42,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: DeploymentIdentities.specifyRoles({
+        deploymentIdentities: DeploymentIdentities.specifyRoles({
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
           deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
@@ -138,7 +138,7 @@ describe('Boostrap Roles', () => {
     const app = new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
-        deploymentRoles: DeploymentIdentities.cliCredentials(),
+        deploymentIdentities: DeploymentIdentities.cliCredentials(),
       }),
     });
     const stack = new Stack(app, 'Stack', {
