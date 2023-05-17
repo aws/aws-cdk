@@ -33,6 +33,8 @@ with EventBridge Scheduler, you apply tags to schedule groups, not to individual
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define Event Bridge Schedules.
 
+> This module is in active development. Some features may not be implemented yet.
+
 ## Defining a schedule 
 
 TODO: Schedule is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
@@ -46,7 +48,8 @@ cron-based schedule you can specify a time zone in which EventBridge Scheduler e
 
 
 > ScheduleExpression should be used together with class Schedule, which is not yet implemented.
-> TODO: Switch to `ts` once Schedule is implemented
+
+[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
 
 ```text
 const rateBasedSchedule = new Schedule(this, 'Schedule', {
@@ -61,7 +64,7 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
         hour: '23',
         day: '20',
         month: '11',
-        timeZone: TimeZone.AMERICA_NEW_YORK 
+        timeZone: TimeZone.AMERICA_NEW_YORK,
     }),
     target,
     description: 'This is a test cron-based schedule that will run at 11:00 PM, on day 20 of the month, only in November in New York timezone',
@@ -71,14 +74,14 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
 A one-time schedule is a schedule that invokes a target only once. You configure a one-time schedule when by specifying the time of the day, date, 
 and time zone in which EventBridge Scheduler evaluates the schedule.
 
-> TODO: Switch to `ts` once Schedule i implemented
+[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
 
 ```text
 const oneTimeSchedule = new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.at(
         new Date(2022, 10, 20, 19, 20, 23),
-        TimeZone.AMERICA_NEW_YORK
-    )
+        TimeZone.AMERICA_NEW_YORK,
+    ),
     target,
     description: 'This is a one-time schedule in New York timezone',
 });
