@@ -34,6 +34,6 @@ export class NestedStackSynthesizer extends StackSynthesizer {
   public synthesize(session: ISynthesisSession): void {
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
-    this.synthesizeTemplate(session);
+    this.synthesizeTemplate(session, this.parentDeployment.lookupRole);
   }
 }
