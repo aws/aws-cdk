@@ -210,7 +210,16 @@ describe('Distributed Map State', () => {
             },
           },
           ItemReader: {
-            Resource: 'arn:aws:states:::s3:listObjectsV2',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:listObjectsV2',
+                ],
+              ],
+            },
             ReaderConfig: {
               MaxItems: 10,
             },
@@ -271,7 +280,16 @@ describe('Distributed Map State', () => {
             },
           },
           ItemReader: {
-            Resource: 'arn:aws:states:::s3:getObject',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
             ReaderConfig: {
               InputType: 'JSON',
             },
@@ -333,7 +351,16 @@ describe('Distributed Map State', () => {
             },
           },
           ItemReader: {
-            Resource: 'arn:aws:states:::s3:getObject',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
             ReaderConfig: {
               InputType: 'CSV',
               CSVHeaderLocation: 'FIRST_ROW',
@@ -396,7 +423,16 @@ describe('Distributed Map State', () => {
             },
           },
           ItemReader: {
-            Resource: 'arn:aws:states:::s3:getObject',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
             ReaderConfig: {
               InputType: 'CSV',
               CSVHeaderLocation: 'GIVEN',
@@ -459,7 +495,16 @@ describe('Distributed Map State', () => {
             },
           },
           ItemReader: {
-            Resource: 'arn:aws:states:::s3:getObject',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
             ReaderConfig: {
               InputType: 'MANIFEST',
             },
@@ -522,7 +567,16 @@ describe('Distributed Map State', () => {
           },
           ItemsPath: '$.inputForMap',
           ResultWriter: {
-            Resource: 'arn:aws:states:::s3:putObject',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:putObject',
+                ],
+              ],
+            },
             Parameters: {
               Bucket: {
                 Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
