@@ -7,7 +7,7 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-// LOGGER_LOCKED is an array rather than a boolean because it needs to be modified by other
+// LOG_LOCK is an array rather than a boolean because it needs to be modified by other
 // parts of the CLI and imported variables are always immutable.
 export const LOG_LOCK = [false];
 const logBuffer: string[] = [];
