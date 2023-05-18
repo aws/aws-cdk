@@ -115,6 +115,20 @@ export class JsonPath {
   }
 
   /**
+   * Return the StateMachine Id field
+   */
+  public static get stateMachineId(): string {
+    return new JsonPathToken('$$.StateMachine.Id').toString();
+  }
+
+  /**
+   * Return the StateMachine Name field
+   */
+  public static get stateMachineName(): string {
+    return new JsonPathToken('$$.StateMachine.Name').toString();
+  }
+
+  /**
    * Return the Task Token field
    *
    * External actions will need this token to report step completion
