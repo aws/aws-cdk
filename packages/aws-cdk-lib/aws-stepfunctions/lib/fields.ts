@@ -66,6 +66,34 @@ export class JsonPath {
   }
 
   /**
+   * Return the Execution Id field
+   */
+  public static get executionId(): string {
+    return new JsonPathToken('$$.Execution.Id').toString();
+  }
+
+  /**
+   * Return the Execution Name field
+   */
+  public static get executionName(): string {
+    return new JsonPathToken('$$.Execution.Name').toString();
+  }
+
+  /**
+   * Return the Execution RoleArn field
+   */
+  public static get executionRoleArn(): string {
+    return new JsonPathToken('$$.Execution.RoleArn').toString();
+  }
+
+  /**
+   * Return the Execution StartTime field
+   */
+  public static get executionStartTime(): string {
+    return new JsonPathToken('$$.Execution.StartTime').toString();
+  }
+
+  /**
    * Return the Task Token field
    *
    * External actions will need this token to report step completion
