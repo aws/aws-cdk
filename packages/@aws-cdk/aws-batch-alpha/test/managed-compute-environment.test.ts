@@ -565,6 +565,28 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('respects instanceTags', () => {
+    // WHEN
+    const ce = new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      updateToLatestImageVersion: false,
+      instanceTags: {
+        boo: 'bah',
+      },
+    });
+
+    ce.addInstanceTag('key', 'value');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        UpdateToLatestImageVersion: false,
+      },
+    });
+  });
+
   test('can be imported from arn', () => {
     // WHEN
     const ce = ManagedEc2EcsComputeEnvironment.fromManagedEc2EcsComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');

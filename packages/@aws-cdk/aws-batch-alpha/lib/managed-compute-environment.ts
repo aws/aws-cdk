@@ -338,6 +338,14 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   readonly placementGroup?: ec2.IPlacementGroup;
 
   /**
+   * Key-value pair tags to be applied to EC2 resources that are launched in the compute environment.
+   * These tags aren't seen when using the AWS Batch ListTagsForResource API operation.
+   *
+   * @default - no instance tags
+   */
+  readonly instanceTags: { [key: string]: string };
+
+  /**
    * Add an instance type to this compute environment
    */
   addInstanceType(instanceType: ec2.InstanceType): void;
@@ -346,6 +354,11 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * Add an instance class to this compute environment
    */
   addInstanceClass(instanceClass: ec2.InstanceClass): void;
+
+  /**
+   * Add an instance tag to this compute environment
+   */
+  addInstanceTag(key: string, value: string): void;
 }
 
 /**
@@ -569,6 +582,14 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
+
+  /**
+   * Key-value pair tags to be applied to EC2 resources that are launched in the compute environment.
+   * These tags aren't seen when using the AWS Batch ListTagsForResource API operation.
+   *
+   * @default - no instance tags
+   */
+  readonly instanceTags?: { [key: string]: string };
 }
 
 /**
@@ -592,6 +613,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly enabled = true;
       public readonly instanceClasses = [];
       public readonly instanceTypes = [];
+      public readonly instanceTags = {};
       public readonly maxvCpus = 1;
       public readonly connections = { } as any;
       public readonly securityGroups = [];
@@ -601,6 +623,9 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       }
       public addInstanceType(_instanceType: ec2.InstanceType): void {
         throw new Error(`cannot add instance type to imported ComputeEnvironment '${id}'`);
+      }
+      public addInstanceTag(_instanceTagKey: string, _instanceTagValue: string): void {
+        throw new Error(`cannot add instance tag to imported ComputeEnvironment '${id}'`);
       }
     }
 
@@ -619,6 +644,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
   public readonly placementGroup?: ec2.IPlacementGroup;
+  public readonly instanceTags: { [key: string]: string };
 
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
@@ -645,6 +671,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
+    this.instanceTags = props.instanceTags ?? {};
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
@@ -693,6 +720,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
+  }
+
+  public addInstanceTag(key: string, value: string): void {
+    this.instanceTags[key] = value;
   }
 }
 
@@ -808,6 +839,14 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   readonly placementGroup?: ec2.IPlacementGroup;
 
   /**
+   * Key-value pair tags to be applied to EC2 resources that are launched in the compute environment.
+   * These tags aren't seen when using the AWS Batch ListTagsForResource API operation.
+   *
+   * @default - no instance tags
+   */
+  readonly instanceTags?: { [key: string]: string };
+
+  /**
    * Add an instance type to this compute environment
    */
   addInstanceType(instanceType: ec2.InstanceType): void;
@@ -816,6 +855,11 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * Add an instance class to this compute environment
    */
   addInstanceClass(instanceClass: ec2.InstanceClass): void;
+
+  /**
+   * Add an instance tag to this compute environment
+   */
+  addInstanceTag(key: string, value: string): void;
 }
 
 /**
@@ -942,6 +986,14 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
+
+  /**
+   * Key-value pair tags to be applied to EC2 resources that are launched in the compute environment.
+   * These tags aren't seen when using the AWS Batch ListTagsForResource API operation.
+   *
+   * @default - no instance tags
+   */
+  readonly instanceTags?: { [key: string]: string };
 }
 
 /**
@@ -965,6 +1017,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
   public readonly placementGroup?: ec2.IPlacementGroup;
+  public readonly instanceTags: { [key: string]: string };
 
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
@@ -990,6 +1043,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
+    this.instanceTags = props.instanceTags ?? {};
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotConfig(id, this.spot, this.spotBidPercentage);
@@ -1039,6 +1093,10 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
+  }
+
+  public addInstanceTag(key: string, value: string): void {
+    this.instanceTags[key] = value;
   }
 }
 

@@ -59,6 +59,18 @@ new ManagedEc2EcsComputeEnvironment(stack, 'SpotEc2', {
   }),
 });
 
+const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  instanceTags: {
+    key: 'value',
+  },
+});
+
+taggedEc2Ecs.addInstanceTag('foo', 'bar');
+
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],
 });
