@@ -859,12 +859,16 @@ To use an S3 Bucket as a deployment target in CodePipeline:
 ```ts
 const sourceOutput = new codepipeline.Artifact();
 const targetBucket = new s3.Bucket(this, 'MyBucket');
+const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+  description: 'sample key',
+});
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const deployAction = new codepipeline_actions.S3DeployAction({
   actionName: 'S3Deploy',
   bucket: targetBucket,
   input: sourceOutput,
+  encryptionKey: key,
 });
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
