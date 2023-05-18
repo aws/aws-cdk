@@ -210,6 +210,8 @@ You can tag any instances launched by your managed EC2 ComputeEnvironments by sp
 calling the `addInstanceTag()` method:
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTaggedInstnaces', {
   vpc,
   instanceTags: {
