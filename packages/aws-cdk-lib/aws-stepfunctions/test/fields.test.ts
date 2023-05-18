@@ -46,6 +46,8 @@ describe('Fields', () => {
         enteredTime: JsonPath.stateEnteredTime,
         stateName: JsonPath.stateName,
         retryCount: JsonPath.stateRetryCount,
+        stateMachineId: JsonPath.stateMachineId,
+        stateMachineName: JsonPath.stateMachineName,
       }),
     ).toStrictEqual({
       'str.$': '$$.Execution.StartTime',
@@ -60,6 +62,8 @@ describe('Fields', () => {
       'enteredTime.$': '$$.State.EnteredTime',
       'stateName.$': '$$.State.Name',
       'retryCount.$': '$$.State.RetryCount',
+      'stateMachineId.$': '$$.StateMachine.Id',
+      'stateMachineName.$': '$$.StateMachine.Name',
     });
   }),
   test('find all referenced paths', () => {
