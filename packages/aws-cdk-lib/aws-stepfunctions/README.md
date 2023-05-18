@@ -179,6 +179,17 @@ The following methods are available:
 | `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
 | `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
 | `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+| `JsonPath.executionId` | reference the Execution Id field of the context object. |
+| `JsonPath.executionInput` | reference the Execution Input object of the context object. |
+| `JsonPath.executionName` | reference the Execution Name field of the context object. |
+| `JsonPath.executionRoleArn` | reference the Execution RoleArn field of the context object. |
+| `JsonPath.executionStartTime` | reference the Execution StartTime field of the context object. |
+| `JsonPath.stateEnteredTime` | reference the State EnteredTime field of the context object. |
+| `JsonPath.stateName` | reference the State Name field of the context object. |
+| `JsonPath.stateRetryCount` | reference the State RetryCount field of the context object. |
+| `JsonPath.stateMachineId` | reference the StateMachine Id field of the context object. |
+| `JsonPath.stateMachineName` | reference the StateMachine Name field of the context object. |
+
 
 You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
 
