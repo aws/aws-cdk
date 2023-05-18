@@ -66,70 +66,80 @@ export class JsonPath {
   }
 
   /**
-   * Return the Execution Id field
+   * Return the Execution Id field from the context object
    */
   public static get executionId(): string {
     return new JsonPathToken('$$.Execution.Id').toString();
   }
 
   /**
-   * Return the Execution Name field
+   * Return the Execution Input field from the context object
+   *
+   * * Will be an object at invocation time, but is represented in the CDK
+   * application as a string.
+   */
+  public static get executionInput(): string {
+    return new JsonPathToken('$$.Execution.Input').toString();
+  }
+
+  /**
+   * Return the Execution Name field from the context object
    */
   public static get executionName(): string {
     return new JsonPathToken('$$.Execution.Name').toString();
   }
 
   /**
-   * Return the Execution RoleArn field
+   * Return the Execution RoleArn field from the context object
    */
   public static get executionRoleArn(): string {
     return new JsonPathToken('$$.Execution.RoleArn').toString();
   }
 
   /**
-   * Return the Execution StartTime field
+   * Return the Execution StartTime field from the context object
    */
   public static get executionStartTime(): string {
     return new JsonPathToken('$$.Execution.StartTime').toString();
   }
 
   /**
-   * Return the State EnteredTime field
+   * Return the State EnteredTime field from the context object
    */
   public static get stateEnteredTime(): string {
     return new JsonPathToken('$$.State.EnteredTime').toString();
   }
 
   /**
-   * Return the State Name field
+   * Return the State Name field from the context object
    */
   public static get stateName(): string {
     return new JsonPathToken('$$.State.Name').toString();
   }
 
   /**
-   * Return the State RetryCount field
+   * Return the State RetryCount field from the context object
    */
   public static get stateRetryCount(): string {
     return new JsonPathToken('$$.State.RetryCount').toString();
   }
 
   /**
-   * Return the StateMachine Id field
+   * Return the StateMachine Id field from the context object
    */
   public static get stateMachineId(): string {
     return new JsonPathToken('$$.StateMachine.Id').toString();
   }
 
   /**
-   * Return the StateMachine Name field
+   * Return the StateMachine Name field from the context object
    */
   public static get stateMachineName(): string {
     return new JsonPathToken('$$.StateMachine.Name').toString();
   }
 
   /**
-   * Return the Task Token field
+   * Return the Task Token field from the context object
    *
    * External actions will need this token to report step completion
    * back to StepFunctions using the `SendTaskSuccess` or `SendTaskFailure`
