@@ -94,6 +94,27 @@ export class JsonPath {
   }
 
   /**
+   * Return the State EnteredTime field
+   */
+  public static get stateEnteredTime(): string {
+    return new JsonPathToken('$$.State.EnteredTime').toString();
+  }
+
+  /**
+   * Return the State Name field
+   */
+  public static get stateName(): string {
+    return new JsonPathToken('$$.State.Name').toString();
+  }
+
+  /**
+   * Return the State RetryCount field
+   */
+  public static get stateRetryCount(): string {
+    return new JsonPathToken('$$.State.RetryCount').toString();
+  }
+
+  /**
    * Return the Task Token field
    *
    * External actions will need this token to report step completion
