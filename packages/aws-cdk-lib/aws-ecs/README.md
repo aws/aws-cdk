@@ -610,6 +610,8 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
+> Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
+
 ### Deployment alarms
 
 Amazon ECS [deployment alarms]
@@ -618,17 +620,26 @@ Amazon ECS [deployment alarms]
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const alarm: cloudwatch.Alarm;
+declare const elbAlarm: cloudwatch.Alarm; 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   deploymentAlarms: {
-    alarms: [alarm]
+    alarms: [elbAlarm.alarmName]
+    behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
   },
 });
-```
 
-> Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
+// Defining a deployment alarm on an ECS Service metric
+metricCpu = service.metricCpuUtilization();
+service.createAlarm({
+  useAsDeploymentAlarm: true,
+  evaluationPeriods: 2,
+  threshold: 80,
+  alarmName: 'MyCpuMetricAlarm',
+});
+```
+> Note: Deployment alarms are only a feature of the ECS `deploymentController`, which is the default.
 
 ### Include an application/network load balancer
 

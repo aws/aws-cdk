@@ -330,9 +330,12 @@ export interface BaseServiceOptions {
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
   /**
-   * Whether to enable the deployment alarms. If this property is defined, alarms will be implicitly
-   * enabled.
-   * @default - disabled
+   * The alarm(s) to monitor during deployment, and behavior to apply if at least one enters a state of alarm
+   * during the deployment or bake time.
+   *
+   * If this property is defined, deployment alarms will be implicitly enabled.
+   *
+   * @default - No alarms will be monitored during deployment.
    */
   readonly deploymentAlarms?: DeploymentAlarmConfig;
 
@@ -709,20 +712,21 @@ export abstract class BaseService extends Resource
    *
    *   svc.enableDeploymentAlarms({
    *     behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
-   *     alarmNames: [alarm1],
+   *     alarmNames: [alarm1.alarmName],
    *   });
    *
-   *   // After this call, `alarm1` and a new `cpuMetricAlarm` will trigger rollbacks.
+   *   // After this call, `alarm1` and a new `cpuMetricAlarm` will cause deployments to fail instead of rollback.
    *   svc.createAlarm({
+   *     alarmName: 'cpuMetricAlarm',
    *     behavior: AlarmBehavior.FAIL_ON_ALARM,
    *     useAsDeploymentAlarm: true,
    *     threshold: 80,
    *     evaluationPeriods: 5,
    *   });
    *
-   *   // After this final call, all three alarms will interrupt a deployment but the deployment will fail instead.
+   *   // After this final call, all three alarms will cause a deployment to fail if they enter the 'Alarm' state.
    *   svc.enableDeploymentAlarms({
-   *     alarmNames: [alarm2]
+   *     alarmNames: [alarm2.alarmName]
    *   });
    */
   public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
