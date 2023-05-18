@@ -7,9 +7,12 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-// LOG_LOCK is an array rather than a boolean because it needs to be modified by other
-// parts of the CLI and imported variables are always immutable.
-export const LOG_LOCK = [false];
+let LOG_LOCK = false;
+
+export function setLogLock(lock: boolean) {
+  LOG_LOCK = lock;
+}
+
 const logBuffer: string[] = [];
 
 const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: unknown[]) => {
@@ -22,7 +25,7 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
 
   // Logger is currently locked, so we store the message to be printed
   // later when we are unlocked.
-  if (LOG_LOCK[0]) {
+  if (LOG_LOCK) {
     logBuffer.push(str);
     return;
   }

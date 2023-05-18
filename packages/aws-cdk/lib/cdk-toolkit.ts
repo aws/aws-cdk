@@ -17,7 +17,7 @@ import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
-import { data, debug, error, highlight, print, success, warning, LOG_LOCK } from './logging';
+import { data, debug, error, highlight, print, success, warning, setLogLock } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -239,7 +239,7 @@ export class CdkToolkit {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           // Lock the logger from logging temporarily
-          LOG_LOCK[0] = true;
+          setLogLock(true);
 
           // only talk to user if STDIN is a terminal (otherwise, fail)
           if (!process.stdin.isTTY) {
@@ -256,10 +256,10 @@ export class CdkToolkit {
           }
 
           const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
-          
-          LOG_LOCK[0] = false;
+
+          setLogLock(false);
           // Calls the logger and prints any logs that happened during the lock
-          print(''); 
+          print('');
 
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
