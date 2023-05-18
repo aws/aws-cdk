@@ -204,6 +204,22 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+### Tagging Instances
+
+You can tag any instances launched by your managed EC2 ComputeEnvironments by specifying the `instanceTags` property or
+calling the `addInstanceTag()` method:
+
+```ts
+const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTaggedInstnaces', {
+  vpc,
+  instanceTags: {
+    key: 'value',
+  },
+});
+
+tagCE.addInstanceTag('key2', 'value2');
+```
+
 Unmanaged `ComputeEnvironment`s do not support `maxvCpus` or `minvCpus` because you must provision and manage the instances yourself;
 that is, Batch will not scale them up and down as needed.
 
