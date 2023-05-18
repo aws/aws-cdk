@@ -981,6 +981,10 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
+     "Tags": {
+      "key": "value",
+      "foo": "bar"
+     },
      "Type": "EC2",
      "UpdateToLatestImageVersion": true
     },

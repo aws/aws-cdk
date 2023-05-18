@@ -729,7 +729,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -814,7 +814,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -990,7 +990,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1274,7 +1274,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1500,7 +1500,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1662,7 +1662,11 @@
                           },
                           "imageType": "ECS_AL2"
                         }
-                      ]
+                      ],
+                      "tags": {
+                        "key": "value",
+                        "foo": "bar"
+                      }
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
@@ -1676,7 +1680,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

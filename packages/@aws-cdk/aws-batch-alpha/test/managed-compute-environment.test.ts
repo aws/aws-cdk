@@ -569,7 +569,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
-      updateToLatestImageVersion: false,
       instanceTags: {
         boo: 'bah',
       },
@@ -582,7 +581,10 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ...expectedProps,
       ComputeResources: {
         ...defaultComputeResources,
-        UpdateToLatestImageVersion: false,
+        Tags: {
+          boo: 'bah',
+          key: 'value',
+        },
       },
     });
   });

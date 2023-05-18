@@ -701,6 +701,9 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: Lazy.any({
+          produce: () => Object.keys(this.instanceTags).length === 0 ? undefined : this.instanceTags,
+        }) as any,
       },
     });
 
@@ -1074,6 +1077,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: Lazy.any({
+          produce: () => Object.keys(this.instanceTags).length === 0 ? undefined : this.instanceTags,
+        }) as any,
       },
     });
 
