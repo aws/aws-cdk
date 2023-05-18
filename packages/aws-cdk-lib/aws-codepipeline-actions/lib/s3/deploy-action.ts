@@ -93,7 +93,7 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    * The encryptionKey parameter encrypts uploaded artifacts with the provided AWS KMS key.
    * @default - none
    */
-    readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -128,6 +128,8 @@ export class S3DeployAction extends Action {
 
     // the Action Role also needs to read from the Pipeline's bucket
     options.bucket.grantRead(options.role);
+
+    this.props.encryptionKey?.grantEncrypt(options.role);
 
     const acl = this.props.accessControl;
     return {

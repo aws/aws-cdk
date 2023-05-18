@@ -81,11 +81,31 @@ const integ = new IntegTest(app, 's3-deploy-test', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('S3', 'putObject', {
+const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: deployBucket.bucketName,
+  Key: 'key',
+});
+
+getObjectCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['kms:Decrypt'],
+  Resource: ['*'],
+});
+
+
+const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: bucket.bucketName,
   Key: 'key',
   Body: 'HelloWorld',
-}).next(
+});
+
+putObjectCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['kms:GenerateDataKey'],
+  Resource: ['*'],
+});
+
+putObjectCall.next(
   integ.assertions.awsApiCall('CodePipeline', 'getPipelineState', {
     name: pipeline.pipelineName,
   }).expect(ExpectedResult.objectLike({
@@ -99,13 +119,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
     ]),
   })).waitForAssertions({
     totalTimeout: Duration.minutes(5),
-  }).next(
-    integ.assertions.awsApiCall('S3', 'getObject', {
-      Bucket: deployBucket.bucketName,
-      Key: 'key',
-      KMSEncryptionKeyARN: key?.keyArn,
-    }),
-  ),
+  }).next(getObjectCall),
 );
 
 app.synth();
