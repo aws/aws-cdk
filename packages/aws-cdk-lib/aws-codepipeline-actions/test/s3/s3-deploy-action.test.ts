@@ -1,4 +1,4 @@
-import { Match, Template } from '../../../assertions';
+import { Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
@@ -189,7 +189,7 @@ test('KMSEncryptionKeyARN value', () => {
         'Actions': [
           {
             'Configuration': {
-              'KMSEncryptionKeyARN': Match.anyValue(),
+              'KMSEncryptionKeyARN': { 'Fn::GetAtt': ['EnvVarEncryptKey1A7CABDB', 'Arn'] },
             },
           },
         ],
