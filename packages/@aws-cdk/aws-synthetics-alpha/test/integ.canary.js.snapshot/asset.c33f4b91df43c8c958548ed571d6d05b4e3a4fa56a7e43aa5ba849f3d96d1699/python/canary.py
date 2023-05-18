@@ -12,7 +12,7 @@ def verify_request(method, url, post_data=None, headers={}):
     parsed_url = urllib.parse.urlparse(url)
     user_agent = str(syn_webdriver.get_canary_user_agent_string())
     if "User-Agent" in headers:
-        " ".join([user_agent, headers["User-Agent"]])
+        headers["User-Agent"] = " ".join([user_agent, headers["User-Agent"]])
     else:
         headers["User-Agent"] = "{}".format(user_agent)
 
@@ -40,7 +40,7 @@ def verify_request(method, url, post_data=None, headers={}):
                 conn.close()
                 raise Exception("Failed with status code: %s" % response.status)
 
-    logger.info(f"Response: {response.read().decode()}")
+    logger.info("Response: %s" % response.read().decode())
     logger.info("HTTP request successfully executed")
     conn.close()
 
