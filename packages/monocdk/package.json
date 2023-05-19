@@ -343,6 +343,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
     "@aws-cdk/aws-ses-actions": "0.0.0",
+    "@aws-cdk/aws-shield": "0.0.0",
     "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-simspaceweaver": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
