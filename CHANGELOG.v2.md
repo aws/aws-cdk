@@ -26,7 +26,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * **bootstrap:** bootstrap doesn't work in non-aws partitions anymore (revert security hub finding fix) ([#25540](https://github.com/aws/aws-cdk/issues/25540)) ([8854739](https://github.com/aws/aws-cdk/commit/8854739a6b4cdd33dc0da3b76b634b5ab151437b)), closes [/github.com/aws/aws-cdk/issues/19380#issuecomment-1512009270](https://github.com/aws//github.com/aws/aws-cdk/issues/19380/issues/issuecomment-1512009270) [#25272](https://github.com/aws/aws-cdk/issues/25272) [#25273](https://github.com/aws/aws-cdk/issues/25273) [#25507](https://github.com/aws/aws-cdk/issues/25507)
-* **eks:** overly permissive trust policies ([#25473](https://github.com/aws/aws-cdk/issues/25473)) ([51f0193](https://github.com/aws/aws-cdk/commit/51f0193bf34cca8254743561a1176e3ca5d83a74))
+* **eks:** overly permissive trust policies ([#25473](https://github.com/aws/aws-cdk/issues/25473)) ([51f0193](https://github.com/aws/aws-cdk/commit/51f0193bf34cca8254743561a1176e3ca5d83a74)). We would like to thank @twelvemo and @stefreak for reporting this issue.
 
 ## [2.79.1](https://github.com/aws/aws-cdk/compare/v2.79.0...v2.79.1) (2023-05-11)
 
