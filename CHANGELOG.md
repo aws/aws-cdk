@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **eks:** overly permissive trust policies ([#25580](https://github.com/aws/aws-cdk/issues/25580)) ([0251d9a](https://github.com/aws/aws-cdk/commit/0251d9ab8ce07b55d3dc3cafedd46d2d585586ed))
+* **eks:** overly permissive trust policies ([#25580](https://github.com/aws/aws-cdk/issues/25580)) ([0251d9a](https://github.com/aws/aws-cdk/commit/0251d9ab8ce07b55d3dc3cafedd46d2d585586ed)). We would like to thank @twelvemo and @stefreak for reporting this issue.
 
 ## [1.201.0](https://github.com/aws/aws-cdk/compare/v1.200.0...v1.201.0) (2023-05-10)
 
