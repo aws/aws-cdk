@@ -8,8 +8,8 @@ import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
-import * as eks from '../lib';
 import * as hello from './hello-k8s';
+import * as eks from '../lib';
 
 
 class EksClusterStack extends Stack {
@@ -35,7 +35,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      version: eks.KubernetesVersion.of('1.22'),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -219,7 +219,7 @@ class EksClusterStack extends Stack {
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage({
-          kubernetesVersion: eks.KubernetesVersion.V1_21.version,
+          kubernetesVersion: eks.KubernetesVersion.of('1.22').version,
         }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
         userData: Fn.base64(userData.render()),

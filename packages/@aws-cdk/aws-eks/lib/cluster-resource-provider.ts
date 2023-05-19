@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
@@ -15,10 +14,6 @@ const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
 const HANDLER_RUNTIME = lambda.Runtime.NODEJS_14_X;
 
 export interface ClusterResourceProviderProps {
-  /**
-   * The IAM role to assume in order to interact with the cluster.
-   */
-  readonly adminRole: iam.IRole;
 
   /**
    * The VPC to provision the functions in.
@@ -118,9 +113,6 @@ export class ClusterResourceProvider extends NestedStack {
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
     });
-
-    props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
-    props.adminRole.grant(isComplete.role!, 'sts:AssumeRole');
   }
 
   /**

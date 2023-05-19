@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
+import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 
 /* eslint-disable max-len */
 

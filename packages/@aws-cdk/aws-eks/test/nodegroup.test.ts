@@ -1,10 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { testFixture } from './util';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
-import { testFixture } from './util';
 
 /* eslint-disable max-len */
 
@@ -517,6 +518,9 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      mastersRole: new iam.Role(stack, 'MastersRole', {
+        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
+      }),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
@@ -529,14 +533,14 @@ describe('node group', () => {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },
             '\\",\\"username\\":\\"',
             {
               'Fn::GetAtt': [
-                'ClusterMastersRole9AA35625',
+                'MastersRole0257C11B',
                 'Arn',
               ],
             },
