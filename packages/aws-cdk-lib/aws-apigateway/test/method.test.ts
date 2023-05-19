@@ -1115,10 +1115,10 @@ describe('method', () => {
               },
             },
           ],
-          Users: [{
-            Ref: 'user2C2B57AE',
-          }],
         },
+        Users: [{
+          Ref: 'user2C2B57AE',
+        }],
       });
     });
   });
