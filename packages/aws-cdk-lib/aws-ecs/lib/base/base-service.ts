@@ -333,7 +333,9 @@ export interface BaseServiceOptions {
    * The alarm(s) to monitor during deployment, and behavior to apply if at least one enters a state of alarm
    * during the deployment or bake time.
    *
-   * If this property is defined, deployment alarms will be implicitly enabled.
+   * If this property is defined, deployment alarms will be implicitly enabled. If alarms are enabled, you must
+   * specify at least one alarm to monitor via the service constructor or subsequent calls to
+   * enableDeploymentAlarms() or createAlarm().
    *
    * @default - No alarms will be monitored during deployment.
    */
@@ -697,37 +699,39 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   *   Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization.
-   *   If you have already enabled deployment alarms, this function can be used to tell ECS about additional alarms that
-   *   should interrupt a deployment.
+   * Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization.
+   * If you have already enabled deployment alarms, this function can be used to tell ECS about additional alarms that
+   * should interrupt a deployment.
    *
-   *   Subsequent calls of this function will respect the Alarm Behavior you set previously, unless you specify a new
-   *   `behavior`.
+   * New alarms specified in subsequent calls of this function will be appended to the existing list of alarms.
    *
-   *   @example
-   *   declare const svc: FargateService;
-   *   declare const alarm1: cloudwatch.Alarm;
-   *   declare const alarm2: cloudwatch.Alarm;
-   *   declare const cpuMetric: cloudwatch.Metric;
+   * Subsequent calls of this function will respect the Alarm Behavior you set previously, unless you specify a new
+   * `behavior`.
    *
-   *   svc.enableDeploymentAlarms({
-   *     behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
-   *     alarmNames: [alarm1.alarmName],
-   *   });
+   * @example
+   * declare const svc: FargateService;
+   * declare const alarm1: cloudwatch.Alarm;
+   * declare const alarm2: cloudwatch.Alarm;
+   * declare const cpuMetric: cloudwatch.Metric;
    *
-   *   // After this call, `alarm1` and a new `cpuMetricAlarm` will cause deployments to fail instead of rollback.
-   *   svc.createAlarm({
-   *     alarmName: 'cpuMetricAlarm',
-   *     behavior: AlarmBehavior.FAIL_ON_ALARM,
-   *     useAsDeploymentAlarm: true,
-   *     threshold: 80,
-   *     evaluationPeriods: 5,
-   *   });
+   * svc.enableDeploymentAlarms({
+   *   behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+   *   alarmNames: [alarm1.alarmName],
+   * });
    *
-   *   // After this final call, all three alarms will cause a deployment to fail if they enter the 'Alarm' state.
-   *   svc.enableDeploymentAlarms({
-   *     alarmNames: [alarm2.alarmName]
-   *   });
+   * // After this call, `alarm1` and a new `cpuMetricAlarm` will cause deployments to fail instead of rollback.
+   * svc.createAlarm({
+   *   alarmName: 'cpuMetricAlarm',
+   *   behavior: AlarmBehavior.FAIL_ON_ALARM,
+   *   useAsDeploymentAlarm: true,
+   *   threshold: 80,
+   *   evaluationPeriods: 5,
+   * });
+   *
+   * // After this final call, all three alarms will cause a deployment to fail if they enter the 'Alarm' state.
+   * svc.enableDeploymentAlarms({
+   *   alarmNames: [alarm2.alarmName]
+   * });
    */
   public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
     const newAlarmNames = alarmConfig.alarmNames || [];
@@ -772,7 +776,22 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   *   Disassociate existing deployment alarmNames
+   * Disassociate existing deployment alarmNames.
+   * This function may be used to remove alarms from a service where they already exist.
+   *   *
+   * Calling enableDeploymentAlarms, then disableDeploymentAlarms, will result in the deploymentAlarms
+   * property of the deploymentConfiguration being set to falsey values:
+   * ```js
+   * {
+   *   enable: false,
+   *   rollback: false,
+   *   alarmNames: [],
+   * }
+   * ```
+   * Note: this configuration is not deployable in partitions where deploymentAlarms
+   * is not available. To deploy to GovCloud, for example, leave the deploymentAlarms
+   * property of the constructor blank and do not enable any deployment alarms through
+   * createAlarm or enableDeploymentAlarms.
   */
   public disableDeploymentAlarms() {
     if (this.deploymentAlarms) {
@@ -785,23 +804,27 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   *   Add an alarm based on a metric which will be appended to the list of deployment alarms at synthesis time.
-   *   The properties are the same as those of a cloudwatch.Alarm, with the addition of `useAsDeploymentAlarm`,
-   *   an optional parameter which specifies whether ECS should interrupt a deployment when this alarm triggers,
-   *   and `alarmBehavior`, an optional parameter which will set ECS' behavior when any alarm triggers during a
-   *   deployment.
+   * Create an alarm based on a metric, and optionally set deployment alarm behavior.
    *
-   *   @example
-   *   declare const svc: FargateService;
-   *   declare const metric: cloudwatch.Metric;
+   * The properties are the same as those of a cloudwatch.Alarm, with the addition of `useAsDeploymentAlarm`,
+   * an optional parameter which specifies whether ECS should interrupt a deployment when this alarm triggers,
+   * and `alarmBehavior`, an optional parameter which will set ECS' behavior when any alarm triggers during a
+   * deployment.
    *
-   *   svc.createAlarm({
-   *     useAsDeploymentAlarm: true,
-   *     alarmBehavior: AlarmBehavior.FAIL_ON_ALARM,
-   *     metric,
-   *     threshold: 5,
-   *     evaluationPeriods: 3,
-   *   });
+   * Updating `alarmBehavior` after you have already specified an alarmBehavior in the constructor or via
+   * `enableDeploymentAlarms` will overwrite the previous behavior.
+   *
+   * @example
+   * declare const svc: FargateService;
+   * declare const metric: cloudwatch.Metric;
+   *
+   * svc.createAlarm({
+   *   useAsDeploymentAlarm: true,
+   *   alarmBehavior: AlarmBehavior.FAIL_ON_ALARM,
+   *   metric,
+   *   threshold: 5,
+   *   evaluationPeriods: 3,
+   * });
   */
   public createAlarm(props: EcsAlarmProps): cloudwatch.Alarm {
     if (props.alarmBehavior && !props.useAsDeploymentAlarm) {
@@ -830,7 +853,8 @@ export abstract class BaseService extends Resource
     return metricAlarm;
   }
 
-  /**   * Enable Service Connect
+  /**
+   * Enable Service Connect on this service.
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
