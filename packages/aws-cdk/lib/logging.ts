@@ -31,6 +31,7 @@ function uncorkLogging() {
   CORK_COUNTER -= 1;
   if (!corked()) {
     logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
+    logBuffer.splice(0);
   }
 }
 
