@@ -1,7 +1,7 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
+import { Resource } from '../../core';
 
 /**
  * Options for a ClientVpnAuthorizationRule

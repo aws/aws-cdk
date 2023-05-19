@@ -1,8 +1,8 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as cdk from '../../core';
 
 /**
  * Base interface for target tracking props

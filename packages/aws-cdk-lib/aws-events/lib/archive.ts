@@ -1,9 +1,9 @@
-import { Duration, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
+import { Duration, Resource } from '../../core';
 
 /**
  * The event archive base properties

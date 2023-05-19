@@ -1,7 +1,7 @@
-import { Token } from '../../../core';
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
+import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';

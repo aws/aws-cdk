@@ -1,9 +1,9 @@
 import * as os from 'os';
 import * as path from 'path';
-import { ContextProvider } from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import { ContextProvider } from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';

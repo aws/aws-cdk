@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Construct } from 'constructs';
 
 /**
  * Use an SNS topic as a bucket notification destination

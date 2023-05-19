@@ -1,6 +1,6 @@
-import { Duration, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
+import { Duration, Token } from '../../core';
 
 /**
  * The failover configuration used for Origin Groups,
