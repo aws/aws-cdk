@@ -23,11 +23,11 @@ function corked() {
   return CORK_COUNTER !== 0;
 }
 
-export function corkLogging() {
+function corkLogging() {
   CORK_COUNTER += 1;
 }
 
-export function uncorkLogging() {
+function uncorkLogging() {
   CORK_COUNTER -= 1;
   if (!corked()) {
     logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
