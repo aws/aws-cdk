@@ -7,13 +7,32 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-let LOG_LOCK = false;
-
-export function setLogLock(lock: boolean) {
-  LOG_LOCK = lock;
+export async function withCorkedLogging<A>(block: () => Promise<A>): Promise<A> {
+  corkLogging();
+  try {
+    return await block();
+  } finally {
+    uncorkLogging();
+  }
 }
 
-const logBuffer: string[] = [];
+let CORK_COUNTER = 0;
+const logBuffer: [Writable, string][] = [];
+
+function corked() {
+  return CORK_COUNTER !== 0;
+}
+
+export function corkLogging() {
+  CORK_COUNTER += 1;
+}
+
+export function uncorkLogging() {
+  CORK_COUNTER -= 1;
+  if (!corked()) {
+    logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
+  }
+}
 
 const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: unknown[]) => {
   const ts = timestamp ? `[${formatTime(new Date())}] ` : '';
@@ -23,20 +42,18 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
     str = styles.reduce((a, style) => style(a), str);
   }
 
-  // Logger is currently locked, so we store the message to be printed
-  // later when we are unlocked.
-  if (LOG_LOCK) {
-    logBuffer.push(str);
+  const realStream = typeof stream === 'function' ? stream() : stream;
+
+  // Logger is currently corked, so we store the message to be printed
+  // later when we are uncorked.
+  if (corked()) {
+    logBuffer.push([realStream, str]);
     return;
   }
 
-  const realStream = typeof stream === 'function' ? stream() : stream;
-  if (logBuffer.length > 0) {
-    logBuffer.forEach((l) => realStream.write(l + '\n'));
-    logBuffer.splice(0);
-  }
   realStream.write(str + '\n');
 };
+
 
 function formatTime(d: Date) {
   return `${lpad(d.getHours(), 2)}:${lpad(d.getMinutes(), 2)}:${lpad(d.getSeconds(), 2)}`;
