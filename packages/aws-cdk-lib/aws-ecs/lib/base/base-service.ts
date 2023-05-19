@@ -730,25 +730,35 @@ export abstract class BaseService extends Resource
    *   });
    */
   public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
-
     const newAlarmNames = alarmConfig.alarmNames || [];
+    const newRollback = alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM;
 
-    // If deploymentAlarms has already been configured, respect what came before by extending the list of enabled alarms
-    // and using the previous setting if no behavior is specified.
-    if (this.deploymentAlarms) {
-      this.deploymentAlarms = {
-        enable: true,
-        rollback: alarmConfig.behavior ? alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM : this.deploymentAlarms.rollback,
-        alarmNames: this.deploymentAlarms.alarmNames.concat(newAlarmNames),
-      };
-    } else {
+    if (!this.deploymentAlarms) {
       // We're enabling deploymentAlarms for the first time.
       this.deploymentAlarms = {
         enable: true,
+        rollback: newRollback,
         alarmNames: newAlarmNames,
-        rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
+      return;
     }
+
+    const oldAlarmNames = this.deploymentAlarms.alarmNames || [];
+    const alarmNames = oldAlarmNames.concat(newAlarmNames);
+
+    let rollback: boolean | IResolvable;
+    if (alarmConfig.behavior === undefined) {
+      // No new behavior was specified; fall back to what's already defined.
+      rollback = this.deploymentAlarms.rollback;
+    } else {
+      rollback = newRollback;
+    }
+
+    this.deploymentAlarms = {
+      enable: true,
+      alarmNames,
+      rollback,
+    };
   }
 
   private validateDeploymentAlarms(): string[] {
