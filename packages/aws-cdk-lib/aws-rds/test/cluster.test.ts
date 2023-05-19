@@ -9,7 +9,8 @@ import { RemovalPolicy, Stack } from '../../core';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, MultiAZDatabaseCluster,
+  MysqlEngineVersion, PostgresEngineVersion, ClusterInstance,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -3408,6 +3409,595 @@ describe('cluster', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       EngineVersion: Match.absent(),
+    });
+  });
+});
+
+describe('Mulit AZ Cluster', () => {
+  test('can create a Multi AZ Cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'mysql',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+
+    expect(stack.resolve(cluster.clusterResourceIdentifier)).toEqual({ 'Fn::GetAtt': ['DatabaseB269D8BB', 'DBClusterResourceId'] });
+  });
+
+  test('can create a Multi AZ cluster with imported vpc and security group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
+      vpcId: 'VPC12345',
+    });
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+        securityGroups: [sg],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'mysql',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
+    });
+  });
+
+  test('Multi AZ cluster with parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const group = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.MYSQL,
+      description: 'bye',
+      parameters: {
+        param: 'value',
+      },
+    });
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      parameterGroup: group,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
+    });
+  });
+
+  test("sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'", () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new MultiAZDatabaseCluster(stack, 'Cluster', {
+      credentials: { username: 'admin' },
+      engine: DatabaseClusterEngine.MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('creates a secret when master credentials are not specified', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+        excludeCharacters: '"@/\\',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUsername: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecret3B817195',
+            },
+            ':SecretString:username::}}',
+          ],
+        ],
+      },
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecret3B817195',
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeCharacters: '\"@/\\',
+        GenerateStringKey: 'password',
+        PasswordLength: 30,
+        SecretStringTemplate: '{"username":"admin"}',
+      },
+    });
+  });
+
+  test('create an encrypted cluster with custom KMS key', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      KmsKeyId: {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+    });
+  });
+
+  test('cluster with parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseClusterEngine.MYSQL,
+      parameters: {
+        key: 'value',
+      },
+    });
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      parameterGroup,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+    });
+  });
+
+  test('cluster with inline parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      parameters: {
+        locks: '100',
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'mysql8.0',
+      Parameters: {
+        locks: '100',
+      },
+    });
+  });
+
+  test('cluster with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.mysql({
+        version: MysqlEngineVersion.VER_8_0_32,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new MultiAZDatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.MYSQL,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+        instanceProps: {
+          vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with IPv4 network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'DUAL',
+    });
+  });
+
+  describe('performance insights', () => {
+    test('cluster with all performance insights properties', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new MultiAZDatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.MYSQL,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          enablePerformanceInsights: true,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: true,
+        PerformanceInsightsRetentionPeriod: 731,
+        PerformanceInsightsKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      });
+    });
+
+    test('setting performance insights fields enables performance insights', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new MultiAZDatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.MYSQL,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: true,
+        PerformanceInsightsRetentionPeriod: 731,
+      });
+    });
+
+    test('throws if performance insights fields are set but performance insights is disabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new MultiAZDatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.MYSQL,
+          credentials: {
+            username: 'admin',
+          },
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: false,
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          },
+        });
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+    });
+  });
+
+  test('cluster with disable automatic upgrade of minor version', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      instanceProps: {
+        autoMinorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      AutoMinorVersionUpgrade: false,
+    });
+  });
+
+  test('create a cluster using a specific version of MySQL', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.mysql({
+        version: MysqlEngineVersion.VER_8_0_32,
+      }),
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'mysql',
+      EngineVersion: '8.0.32',
+    });
+  });
+
+  test('create a cluster using a specific version of Postgresql', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.postgres({
+        version: PostgresEngineVersion.VER_14_7,
+      }),
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'postgresql',
+      EngineVersion: '14.7',
+    });
+  });
+
+  test('cluster supports metrics', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.mysql({ version: MysqlEngineVersion.VER_8_0_32 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricCPUUtilization())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+  test('cluster with enabled monitoring', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'monitoring.rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('create a cluster with imported monitoring role', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const monitoringRole = new Role(stack, 'MonitoringRole', {
+      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+      ],
+    });
+
+    // WHEN
+    new MultiAZDatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
+      },
     });
   });
 });

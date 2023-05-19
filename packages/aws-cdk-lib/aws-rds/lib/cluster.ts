@@ -4,7 +4,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { NetworkType } from './instance';
+import { NetworkType, StorageType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
@@ -31,58 +31,11 @@ interface DatabaseClusterBaseProps {
   readonly engine: IClusterEngine;
 
   /**
-   * How many replicas/instances to create
-   *
-   * Has to be at least 1.
-   *
-   * @default 2
-   * @deprecated - use writer and readers instead
-   */
-  readonly instances?: number;
-
-  /**
    * Settings for the individual instances that are launched
    *
    * @deprecated - use writer and readers instead
    */
   readonly instanceProps?: InstanceProps;
-
-  /**
-   * The instance to use for the cluster writer
-   *
-   * @default required if instanceProps is not provided
-   */
-  readonly writer?: IClusterInstance;
-
-  /**
-   * A list of instances to create as cluster reader instances
-   *
-   * @default - no readers are created. The cluster will have a single writer/reader
-   */
-  readonly readers?: IClusterInstance[];
-
-  /**
-   * The maximum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
-   * You can specify ACU values in half-step increments, such as 40, 40.5, 41, and so on.
-   * The largest value that you can use is 128 (256GB).
-   *
-   * The maximum capacity must be higher than 0.5 ACUs.
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
-   *
-   * @default 2
-   */
-  readonly serverlessV2MaxCapacity?: number,
-
-  /**
-   * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
-   * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on.
-   * The smallest value that you can use is 0.5.
-   *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
-   *
-   * @default 0.5
-   */
-  readonly serverlessV2MinCapacity?: number;
 
   /**
    * What subnets to run the RDS instances in.
@@ -106,23 +59,6 @@ interface DatabaseClusterBaseProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * The ordering of updates for instances
-   *
-   * @default InstanceUpdateBehaviour.BULK
-   */
-  readonly instanceUpdateBehaviour?: InstanceUpdateBehaviour;
-
-  /**
-   * The number of seconds to set a cluster's target backtrack window to.
-   * This feature is only supported by the Aurora MySQL database engine and
-   * cannot be enabled on existing clusters.
-   *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
-   * @default 0 seconds (no backtrack)
-   */
-  readonly backtrackWindow?: Duration
-
-  /**
    * Backup settings
    *
    * @default - Backup retention period for automated backups is 1 day.
@@ -133,28 +69,11 @@ interface DatabaseClusterBaseProps {
   readonly backup?: BackupProps;
 
   /**
-   * What port to listen on
-   *
-   * @default - The default for the engine is used.
-   */
-  readonly port?: number;
-
-  /**
    * An optional identifier for the cluster
    *
    * @default - A name is automatically generated.
    */
   readonly clusterIdentifier?: string;
-
-  /**
-   * Base identifier for instances
-   *
-   * Every replica is named by appending the replica number to this string, 1-based.
-   *
-   * @default - clusterIdentifier is used with the word "Instance" appended.
-   * If clusterIdentifier is not provided, the identifier is automatically generated.
-   */
-  readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
@@ -376,6 +295,95 @@ export enum DBClusterStorageType {
   AURORA_IOPT1 = 'aurora-iopt1',
 }
 
+interface AuroraDatabaseClusterBaseProps extends DatabaseClusterBaseProps {
+  /**
+   * How many replicas/instances to create
+   *
+   * Has to be at least 1.
+   *
+   * @default 2
+   */
+  readonly instances?: number;
+
+  /**
+   * Settings for the individual instances that are launched
+   *
+   * @deprecated - use writer and readers instead
+   */
+  readonly instanceProps?: InstanceProps;
+
+  /**
+   * The instance to use for the cluster writer
+   *
+   * @default required if instanceProps is not provided
+   */
+  readonly writer?: IClusterInstance;
+
+  /**
+   * A list of instances to create as cluster reader instances
+   *
+   * @default - no readers are created. The cluster will have a single writer/reader
+   */
+  readonly readers?: IClusterInstance[];
+
+  /**
+   * The maximum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
+   * You can specify ACU values in half-step increments, such as 40, 40.5, 41, and so on.
+   * The largest value that you can use is 128 (256GB).
+   *
+   * The maximum capacity must be higher than 0.5 ACUs.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
+   *
+   * @default 2
+   */
+  readonly serverlessV2MaxCapacity?: number,
+
+  /**
+   * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
+   * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on.
+   * The smallest value that you can use is 0.5.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
+   *
+   * @default 0.5
+   */
+  readonly serverlessV2MinCapacity?: number;
+
+  /**
+   * The ordering of updates for instances
+   *
+   * @default InstanceUpdateBehaviour.BULK
+   */
+  readonly instanceUpdateBehaviour?: InstanceUpdateBehaviour;
+
+  /**
+   * The number of seconds to set a cluster's target backtrack window to.
+   * This feature is only supported by the Aurora MySQL database engine and
+   * cannot be enabled on existing clusters.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
+   * @default 0 seconds (no backtrack)
+   */
+  readonly backtrackWindow?: Duration
+
+  /**
+   * Base identifier for instances
+   *
+   * Every replica is named by appending the replica number to this string, 1-based.
+   *
+   * @default - clusterIdentifier is used with the word "Instance" appended.
+   * If clusterIdentifier is not provided, the identifier is automatically generated.
+   */
+  readonly instanceIdentifierBase?: string;
+
+  /**
+   * What port to listen on
+   *
+   * @default - The default for the engine is used.
+   */
+  readonly port?: number;
+}
+
 /**
  * The orchestration of updates of multiple instances
  */
@@ -504,7 +512,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected hasServerlessInstance?: boolean;
 
-  constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
+  /**
+   * The minimum number of AZs needed for this type of cluster.
+   * Multi AZ Database Clusters require 3 where Aurora Clusters require 2.
+   */
+  protected readonly minAzs: number = 2;
+
+  constructor(scope: Construct, id: string, props: AuroraDatabaseClusterBaseProps) {
     super(scope, id);
 
     if ((props.vpc && props.instanceProps?.vpc)) {
@@ -528,8 +542,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnetIds.length < 2) {
-      Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+    if (subnetIds.length < this.minAzs) {
+      Annotations.of(this).addError(`Cluster requires at least ${this.minAzs} subnets, got ${subnetIds.length}`);
     }
 
     this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
@@ -913,7 +927,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 /**
  * Properties for a new database cluster
  */
-export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
+export interface DatabaseClusterProps extends AuroraDatabaseClusterBaseProps {
   /**
    * Credentials for the administrative user
    *
@@ -923,7 +937,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
 }
 
 /**
- * Create a clustered database with a given number of instances.
+ * Create a clustered Aurora database with a given number of instances.
  *
  * @resource AWS::RDS::DBCluster
  */
@@ -1071,6 +1085,29 @@ function instanceSizeSupportedByServerlessV2(instanceSize: string, serverlessV2M
  * Properties for ``DatabaseClusterFromSnapshot``
  */
 export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBaseProps {
+  /**
+   * How many replicas/instances to create
+   *
+   * Has to be at least 1.
+   *
+   * @default 2
+   */
+  readonly instances?: number;
+
+  /**
+   * The instance to use for the cluster writer
+   *
+   * @default required if instanceProps is not provided
+   */
+  readonly writer?: IClusterInstance;
+
+  /**
+   * A list of instances to create as cluster reader instances
+   *
+   * @default - no readers are created. The cluster will have a single writer/reader
+   */
+  readonly readers?: IClusterInstance[];
+
   /**
    * The identifier for the DB instance snapshot or DB cluster snapshot to restore from.
    * You can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot.
@@ -1220,12 +1257,24 @@ interface InstanceConfig {
   readonly instanceEndpoints: Endpoint[];
 }
 
+function getMonitoringRole(scope: Construct, monitoringInterval?: Duration, monitoringRole?: IRole): IRole | undefined {
+  if (!monitoringInterval?.toSeconds()) {
+    return undefined;
+  }
+  return monitoringRole || new Role(scope, 'MonitoringRole', {
+    assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+    managedPolicies: [
+      ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+    ],
+  });
+}
+
 /**
  * Creates the instances for the cluster.
  * A function rather than a protected method on ``DatabaseClusterNew`` to avoid exposing
  * ``DatabaseClusterNew`` and ``DatabaseClusterBaseProps`` in the API.
  */
-function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
+function legacyCreateInstances(cluster: DatabaseClusterNew, props: AuroraDatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
   const instanceUpdateBehaviour = props.instanceUpdateBehaviour ?? InstanceUpdateBehaviour.BULK;
   if (Token.isUnresolved(instanceCount)) {
@@ -1243,15 +1292,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   // Get the actual subnet objects so we can depend on internet connectivity.
   const internetConnected = instanceProps.vpc.selectSubnets(instanceProps.vpcSubnets).internetConnectivityEstablished;
 
-  let monitoringRole;
-  if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-    monitoringRole = props.monitoringRole || new Role(cluster, 'MonitoringRole', {
-      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-      ],
-    });
-  }
+  const monitoringRole = getMonitoringRole(cluster, props.monitoringInterval, props.monitoringRole);
 
   const enablePerformanceInsights = instanceProps.enablePerformanceInsights
     || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
@@ -1337,4 +1378,167 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
+}
+
+export interface MultiAZDatabaseClusterProps extends DatabaseClusterBaseProps {
+  /**
+   * What type of instance to start for the replicas.
+   *
+   * @default - t3.medium (or, more precisely, db.t3.medium)
+   */
+  readonly instanceType?: ec2.InstanceType;
+
+  /**
+   * Whether to enable Performance Insights for the DB instance.
+   *
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   */
+  readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   *
+   * @default 7
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   *
+   * @default - default master key
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to enable automatic upgrade of minor version for the DB instance.
+   *
+   * @default - true
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Indicates whether the DB instance is an internet-facing instance.
+   *
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   */
+  readonly publiclyAccessible?: boolean;
+
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
+   */
+  readonly credentials?: Credentials;
+
+  /**
+   * The allocated storage size, specified in gibibytes (GiB).
+   *
+   * @default 100
+   */
+  readonly allocatedStorage?: number;
+
+  /**
+   * The number of I/O operations per second (IOPS) that the database provisions.
+   * The value must be equal to or greater than 1000.
+   *
+   * @default 1000
+   */
+  readonly iops?: number;
+}
+
+/**
+ * Create a Multi AZ Database Cluster for MySQL or PostgreSQL
+ *
+ * @resource AWS::RDS::DBCluster
+ */
+export class MultiAZDatabaseCluster extends DatabaseClusterNew {
+  public readonly clusterIdentifier: string;
+  public readonly clusterResourceIdentifier: string;
+  public readonly clusterEndpoint: Endpoint;
+  public readonly clusterReadEndpoint: Endpoint;
+  public readonly connections: ec2.Connections;
+
+  /**
+   * Invalid for MultiAZ clusters but is required to fulfill the IDatabaseCluster interface.
+   * Instances are created automatically by RDS.
+   */
+  public readonly instanceIdentifiers: string[] = [];
+
+  /**
+   * Invalid for MultiAZ clusters but is required to fulfill the IDatabaseCluster interface.
+   * Instances are created automatically by RDS.
+   */
+  public readonly instanceEndpoints: Endpoint[] = [];
+
+  /**
+   * The secret attached to this cluster
+   */
+  public readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * Mutli AZ Database Clusters require at least 3 AZs
+   */
+  protected readonly minAzs: number = 2;
+
+  constructor(scope: Construct, id: string, props: MultiAZDatabaseClusterProps) {
+    super(scope, id, props);
+
+    const credentials = renderCredentials(this, props.engine, props.credentials);
+    const secret = credentials.secret;
+
+    const instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5D, ec2.InstanceSize.LARGE);
+
+    const enablePerformanceInsights = props.enablePerformanceInsights
+      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
+    const monitoringRole = getMonitoringRole(this, props.monitoringInterval, props.monitoringRole);
+
+    const cluster = new CfnDBCluster(this, 'Resource', {
+      ...this.newCfnProps,
+      dbClusterInstanceClass: databaseInstanceType(instanceType),
+      publiclyAccessible: props.publiclyAccessible ??
+        (props.vpcSubnets && props.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
+      performanceInsightsEnabled: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsRetentionPeriod: enablePerformanceInsights
+        ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+        : undefined,
+      monitoringInterval: props.monitoringInterval?.toSeconds(),
+      monitoringRoleArn: monitoringRole?.roleArn,
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+
+      // Storage
+      allocatedStorage: props.allocatedStorage || 100,
+      // Multi-AZ DB Clusters only support I01 storage type
+      storageType: StorageType.IO1,
+      iops: props.iops || 1000,
+
+      // Admin
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
+    });
+
+    this.clusterIdentifier = cluster.ref;
+    this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
+    this.connections = new ec2.Connections({
+      securityGroups: this.securityGroups,
+      defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
+    });
+
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
+
+    setLogRetention(this, props);
+  }
 }

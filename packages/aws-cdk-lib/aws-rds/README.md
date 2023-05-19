@@ -48,6 +48,22 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+To setup a Mutli AZ database cluster, define a `MutliAZDatabaseCluster`.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.MultiAZDatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_32 }),
+  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'clusteradmin' username and generated password
+    // optional , defaults to M5D.large
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M6GD, ec2.InstanceSize.XLARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+  },
+  vpc,
+});
+```
+
 If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 

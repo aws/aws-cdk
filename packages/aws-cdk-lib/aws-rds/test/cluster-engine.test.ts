@@ -1,4 +1,4 @@
-import { AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine } from '../lib';
+import { AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine, MysqlEngineVersion, PostgresEngineVersion } from '../lib';
 
 describe('cluster engine', () => {
   test("default parameterGroupFamily for versionless Aurora cluster engine is 'aurora5.6'", () => {
@@ -23,9 +23,31 @@ describe('cluster engine', () => {
     expect(family).toEqual('aurora-mysql5.7');
   });
 
+  test("default parameterGroupFamily for versionless MySQL cluster engine is 'mysql8.0'", () => {
+    // GIVEN
+    const engine = DatabaseClusterEngine.MYSQL;
+
+    // WHEN
+    const family = engine.parameterGroupFamily;
+
+    // THEN
+    expect(family).toEqual('mysql8.0');
+  });
+
   test('default parameterGroupFamily for versionless Aurora PostgreSQL is not defined', () => {
     // GIVEN
     const engine = DatabaseClusterEngine.AURORA_POSTGRESQL;
+
+    // WHEN
+    const family = engine.parameterGroupFamily;
+
+    // THEN
+    expect(family).toEqual(undefined);
+  });
+
+  test('default parameterGroupFamily for versionless PostgreSQL is not defined', () => {
+    // GIVEN
+    const engine = DatabaseClusterEngine.POSTGRESQL;
 
     // WHEN
     const family = engine.parameterGroupFamily;
@@ -60,6 +82,19 @@ describe('cluster engine', () => {
     expect(family).toEqual('aurora-mysql5.7');
   });
 
+  test('cluster parameter group correctly determined for MYSQL and given version', () => {
+    // GIVEN
+    const engine = DatabaseClusterEngine.mysql({
+      version: MysqlEngineVersion.VER_8_0_32,
+    });
+
+    // WHEN
+    const family = engine.parameterGroupFamily;
+
+    // THEN
+    expect(family).toEqual('mysql8.0');
+  });
+
   test('cluster parameter group correctly determined for AURORA_MYSQL and given version 3', () => {
     // GIVEN
     const engine = DatabaseClusterEngine.auroraMysql({
@@ -84,6 +119,19 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora-postgresql11');
+  });
+
+  test('cluster parameter group correctly determined for POSTGRESQL and given version', () => {
+    // GIVEN
+    const engine = DatabaseClusterEngine.postgres({
+      version: PostgresEngineVersion.VER_14_7,
+    });
+
+    // WHEN
+    const family = engine.parameterGroupFamily;
+
+    // THEN
+    expect(family).toEqual('postgresql14');
   });
 
   test('parameter group family', () => {
@@ -113,6 +161,8 @@ describe('cluster engine', () => {
     expect(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_08_1 }).supportedLogTypes).toEqual(mysqlLogTypes);
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_9_6_9 }).supportedLogTypes).toEqual(['postgresql']);
+    expect(DatabaseClusterEngine.mysql({ version: MysqlEngineVersion.VER_8_0_32 }).supportedLogTypes).toEqual(mysqlLogTypes);
+    expect(DatabaseClusterEngine.postgres({ version: PostgresEngineVersion.VER_14_7 }).supportedLogTypes).toEqual(['postgresql']);
   });
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL 14 (and other) and given version', () => {
