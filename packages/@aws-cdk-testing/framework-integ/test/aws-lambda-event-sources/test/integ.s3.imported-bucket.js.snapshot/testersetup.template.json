@@ -3,7 +3,7 @@
   "bucket43879C71": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "0df0e58a-538e-4b31-b8e6-e9542953305f"
+    "BucketName": "74c3d38c-fc54-446f-be89-37379786adee"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

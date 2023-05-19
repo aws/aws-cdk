@@ -52,7 +52,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": "0df0e58a-538e-4b31-b8e6-e9542953305f"
+                    "bucketName": "74c3d38c-fc54-446f-be89-37379786adee"
                   }
                 },
                 "constructInfo": {
@@ -101,7 +101,7 @@
                 "path": "issue-4323/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -147,7 +147,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.26"
         }
       }
     },
