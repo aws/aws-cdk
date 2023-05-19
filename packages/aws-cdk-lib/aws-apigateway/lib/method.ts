@@ -12,6 +12,7 @@ import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
 import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 
@@ -453,6 +454,19 @@ export class Method extends Resource {
    */
   public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
+  }
+
+  /**
+   * Grants an IAM principal permission to invoke this method.
+   *
+   * @param grantee the principal
+   */
+  public grantExecute(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['execute-api:Invoke'],
+      resourceArns: [this.methodArn],
+    });
   }
 
   private cannedMetric(fn: (dims: {
