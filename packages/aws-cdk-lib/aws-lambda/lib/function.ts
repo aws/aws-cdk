@@ -28,6 +28,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
+import { env } from 'node:process';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -47,6 +48,115 @@ export enum Tracing {
    * Lambda will not trace any request.
    */
   DISABLED = 'Disabled'
+}
+
+/**
+ * Logging levels for Parameters and Secrets Extension
+ */
+export enum ParametersAndSecretsLogLevel {
+  /**
+   * Debug logging level
+   */
+  DEBUG = 'debug',
+
+  /**
+   * Info logging level
+   */
+  INFO = 'info',
+
+  /**
+   * Warn logging level
+   */
+  WARN = 'warn',
+
+  /**
+   * Error logging level
+   */
+  ERROR = 'error',
+
+  /**
+   * No logging level
+   */
+  NONE = 'none',
+}
+
+export interface ParametersAndSecretsConfig {
+  /**
+   * Enables Parameters and Secrets Extension to cache parameters and secrets
+   *
+   * @default true
+   */
+  paramsAndSecretsExtensionCacheEnabled?: boolean;
+
+  /**
+   * The maximum number of secrets and parameters to cache. Must be a value from 0
+   * to 1000. A value of 0 means there is no caching.
+   *
+   * Note: This variable is ignored if both parameterStoreTtl and secretsManagerTtl
+   * are 0.
+   *
+   * @default 1000
+   */
+  paramsAndSecretsExtensionCacheSize?: number;
+
+  /**
+   * The port for the local HTTP server.
+   *
+   * @default 2773
+   */
+  paramsAndSecretsExtensionHttpPort?: number;
+
+  /**
+   * The level of logging for the Parameters and Secrets Extension to provide.
+   *
+   * @default
+   */
+  paramsAndSecretsExtensionLogLevel?: ParametersAndSecretsLogLevel,
+
+  /**
+   * The maximum number of connections for HTTP clients that the Parameters and Secrets
+   * Extension uses to make request to Parameter Store or Secrets Manager. This is a
+   * per-client configuration.
+   *
+   * @default 3
+   */
+  paramsAndSecretsExtensionMaxConnections?: number;
+
+  /**
+   * Timeout for requests to Secrets Manager in milliseconds. A value of 0 means there is no
+   * timeout.
+   *
+   * @default 0
+   */
+  secretsManagertimeout?: Duration;
+
+  /**
+   * The time to live of a secret in the cache in seconds. A value of 0 means there is no
+   * caching. The maximum is 300 seconds.
+   *
+   * Note: This variable is ignored if parametersCacheSize is 0.
+   *
+   * @default 300
+   */
+  secretsManagerTtl?: Duration;
+
+  /**
+   * Timeout for requests to Parameter Store in milliseconds. A value of 0 means there is no
+   * timeout.
+   *
+   * @default 0
+   */
+  parameterStoreTimeout?: Duration;
+
+  /**
+   * The time to live of a parameter in the cache in seconds. A value of 0 means there is no
+   * caching. The maximum is 300 seconds.
+   *
+   * Note: This variable is ignored if paramsAndSecretsCacheSize is 0.
+   *
+   * @default 300
+   */
+  parameterStoreTtl?: Duration;
 }
 
 /**
@@ -1064,6 +1174,10 @@ export class Function extends FunctionBase {
    */
   public addAlias(aliasName: string, options?: AliasOptions): Alias {
     return addAlias(this, this.currentVersion, aliasName, options);
+  }
+
+  public attachParametersAndSecretsExtension(config: ParametersAndSecretsConfig = {}): void {
+
   }
 
   /**
