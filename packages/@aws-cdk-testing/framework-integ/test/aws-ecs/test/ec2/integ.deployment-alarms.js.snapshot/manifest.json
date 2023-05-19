@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/131c179b5678907bdb6137ef7407a41f23e2fe0371bf644c39fc47ce65e9b9ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5379c9d4d59b89822098caf9ecba93840c4ce16b7aa2b9a2e422778d891b406.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -180,7 +180,10 @@
         "/integ-deployment-alarms/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-deployment-alarms/ASG/InstanceSecurityGroup/Resource": [
@@ -297,10 +300,22 @@
             "data": "EC2CPCluster4CFED4DD"
           }
         ],
+        "/integ-deployment-alarms/MyMetricAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyMetricAlarmF8571CCA"
+          }
+        ],
         "/integ-deployment-alarms/EC2Service/Service": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EC2Service5392EF94"
+          }
+        ],
+        "/integ-deployment-alarms/EC2Service/ManagedAlarm1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2ServiceManagedAlarm14D6F0E17"
           }
         ],
         "/integ-deployment-alarms/BootstrapVersion": [

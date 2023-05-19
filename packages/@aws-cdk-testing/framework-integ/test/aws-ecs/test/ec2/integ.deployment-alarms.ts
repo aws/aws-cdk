@@ -1,7 +1,6 @@
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -19,38 +18,40 @@ taskDefinition.addContainer('web', {
   portMappings: [
     {
       containerPort: 80,
+      hostPort: 8080,
+      protocol: ecs.Protocol.TCP,
     },
   ],
 });
 
-const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  vpc,
-  instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
-});
-
 const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
-  autoScalingGroup,
+  autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  }),
   // This is to allow cdk destroy to work; otherwise deletion will hang bc ASG cannot be deleted
   enableManagedTerminationProtection: false,
 });
 
 const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
   vpc,
-  enableFargateCapacityProviders: true,
 });
-
 cluster.addAsgCapacityProvider(cp);
-const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
-const listener = lb.addListener('PublicListener', { port: 80, open: true });
 
-const metric = lb.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_5XX_COUNT, {
-  period: cdk.Duration.minutes(1),
+const metric = new cloudwatch.Metric({
+  namespace: 'CustomMetricNamespace',
+  metricName: 'ErrorCount',
+  dimensionsMap: {
+    OriginService: 'Backend',
+  },
 });
-const myAlarm = new cloudwatch.Alarm(lb, 'MyMetricAlarm', {
+
+const myAlarm = new cloudwatch.Alarm(stack, 'MyMetricAlarm', {
   metric,
   evaluationPeriods: 5,
-  threshold: 100,
+  threshold: 2,
+  treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
 });
 
 const svc = new ecs.Ec2Service(stack, 'EC2Service', {
@@ -62,17 +63,12 @@ svc.enableDeploymentAlarms({
   behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
 });
 
-const tg = listener.addTargets('ECS', {
-  port: 80,
-  targets: [svc],
-});
-
 svc.createAlarm({
   useAsDeploymentAlarm: true,
-  alarmName: 'TargetResponseTime',
+  alarmName: 'CPUUtilizationAlarm',
   evaluationPeriods: 5,
   threshold: 80,
-  metric: tg.metrics.targetResponseTime(),
+  metric: svc.metricCpuUtilization(),
 });
 
 new integ.IntegTest(app, 'DeploymentAlarms', {

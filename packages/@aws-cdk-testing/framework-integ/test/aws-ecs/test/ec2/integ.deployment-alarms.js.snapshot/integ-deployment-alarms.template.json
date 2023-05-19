@@ -416,7 +416,14 @@
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "MemoryReservation": 256,
-      "Name": "web"
+      "Name": "web",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "HostPort": 8080,
+        "Protocol": "tcp"
+       }
+      ]
      }
     ],
     "Family": "integdeploymentalarmsTaskDef16B2942D",
@@ -905,8 +912,6 @@
    "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
    "Properties": {
     "CapacityProviders": [
-     "FARGATE",
-     "FARGATE_SPOT",
      {
       "Ref": "EC2CapacityProvider5A2E35CD"
      }
@@ -915,6 +920,25 @@
      "Ref": "EC2CPClusterD5F0FD32"
     },
     "DefaultCapacityProviderStrategy": []
+   }
+  },
+  "MyMetricAlarmF8571CCA": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "Dimensions": [
+     {
+      "Name": "OriginService",
+      "Value": "Backend"
+     }
+    ],
+    "MetricName": "ErrorCount",
+    "Namespace": "CustomMetricNamespace",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 2,
+    "TreatMissingData": "notBreaching"
    }
   },
   "EC2Service5392EF94": {
@@ -926,10 +950,13 @@
     "DeploymentConfiguration": {
      "Alarms": {
       "AlarmNames": [
-       "myAlarm"
+       {
+        "Ref": "MyMetricAlarmF8571CCA"
+       },
+       "CPUUtilizationAlarm"
       ],
       "Enable": true,
-      "Rollback": true
+      "Rollback": false
      },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
@@ -940,6 +967,36 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
+   }
+  },
+  "EC2ServiceManagedAlarm14D6F0E17": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "AlarmName": "CPUUtilizationAlarm",
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Ref": "EC2CPClusterD5F0FD32"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::GetAtt": [
+        "EC2Service5392EF94",
+        "Name"
+       ]
+      }
+     }
+    ],
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/ECS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 80
    }
   }
  },
