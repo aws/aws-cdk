@@ -18,6 +18,7 @@ import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
+import { PARAMS_AND_SECRETS_EXTENSION_LAMBDA_ARNS } from '../../../@aws-cdk/region-info/build-tools/fact-tables';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
@@ -1221,66 +1222,7 @@ export class Function extends FunctionBase {
   }
 
   public get paramsAndSecretsExtensionLambdaArn(): string {
-    // TODO: Where does this need to go?
-    const paramsAndSecretsExtensionLambdaArns: { [key: string]: any } = {
-      x86_64: {
-        'us-east-1': '',
-        'us-east-2': '',
-        'us-west-1': '',
-        'us-west-2': '',
-        'ca-central-1': '',
-        'eu-central-1': '',
-        'eu-central-2': '',
-        'eu-west-1': '',
-        'eu-west-2': '',
-        'eu-west-3': '',
-        'eu-north-1': '',
-        'eu-south-1': '',
-        'eu-south-2': '',
-        'cn-north-1': '',
-        'cn-northwest-1': '',
-        'ap-east-1': '',
-        'ap-south-2': '',
-        'ap-northeast-1': '',
-        'ap-northeast-2': '',
-        'ap-northeast-3': '',
-        'ap-southeast-1': '',
-        'ap-southeast-2': '',
-        'ap-southeast-3': '',
-        'ap-south-1': '',
-        'sa-east-1': '',
-        'af-south-1': '',
-        'me-central-1': '',
-        'me-south-1': '',
-        'us-gov-east-1': '',
-        'us-gov-west-1': '',
-      },
-      arm64: {
-        'us-east-1': '',
-        'us-east-2': '',
-        'us-west-1': '',
-        'us-west-2': '',
-        'ca-central-1': '',
-        'eu-central-1': '',
-        'eu-west-1': '',
-        'eu-west-2': '',
-        'eu-west-3': '',
-        'eu-north-1': '',
-        'eu-south-1': '',
-        'ap-east-1': '',
-        'ap-northeast-1': '',
-        'ap-northeast-2': '',
-        'ap-southeast-1': '',
-        'ap-southeast-2': '',
-        'ap-southeast-3': '',
-        'ap-south-1': '',
-        'sa-east-1': '',
-        'af-south-1': '',
-        'me-south-1': '',
-      },
-    };
-    // TODO: Is this the right way to get the region?
-    return paramsAndSecretsExtensionLambdaArns[this.architecture.name][this.stack.region];
+    return PARAMS_AND_SECRETS_EXTENSION_LAMBDA_ARNS[this.architecture.name][this.stack.region];
   }
 
   /** @internal */
