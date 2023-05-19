@@ -1,5 +1,5 @@
-import { Resource } from '../../../../core';
 import { Construct } from 'constructs';
+import { Resource } from '../../../../core';
 import { StandardAttributeNames } from '../../private/attr-names';
 import { IUserPoolIdentityProvider } from '../../user-pool-idp';
 import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';

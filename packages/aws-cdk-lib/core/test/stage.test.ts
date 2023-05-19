@@ -1,6 +1,6 @@
+import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { Construct, IConstruct } from 'constructs';
 import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
 
 describe('stage', () => {

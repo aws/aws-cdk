@@ -1,5 +1,5 @@
-import { IgnoreMode } from '../../../core';
 import { FollowMode } from './follow-mode';
+import { IgnoreMode } from '../../../core';
 
 /**
  * Obtains applied when copying directories into the staging location.

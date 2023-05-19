@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
+import * as cdk from '../../core';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();

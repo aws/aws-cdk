@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Fragment', () => {

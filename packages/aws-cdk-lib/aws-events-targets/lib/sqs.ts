@@ -1,9 +1,9 @@
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sqs from '../../aws-sqs';
 import { FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the SQS Queue Event Target

@@ -1,4 +1,5 @@
 
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
@@ -6,7 +7,6 @@ import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 

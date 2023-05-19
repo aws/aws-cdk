@@ -1,4 +1,3 @@
-import { IResource, Lazy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
@@ -8,6 +7,7 @@ import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFrag
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
+import { IResource, Lazy, Resource } from '../../core';
 
 /**
  * Represents an IAM Policy

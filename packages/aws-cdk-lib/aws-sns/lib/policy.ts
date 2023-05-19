@@ -1,8 +1,8 @@
-import { PolicyDocument } from '../../aws-iam';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
+import { PolicyDocument } from '../../aws-iam';
+import { Resource } from '../../core';
 
 /**
  * Properties to associate SNS topics with a policy

@@ -1,6 +1,6 @@
-import { Resource, SecretValue } from '../../core';
 import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
+import { Resource, SecretValue } from '../../core';
 
 /**
  * Creation properties for `GitHubSourceCredentials`.

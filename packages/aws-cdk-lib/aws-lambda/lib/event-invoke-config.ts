@@ -1,8 +1,8 @@
-import { Duration, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
+import { Duration, Resource } from '../../core';
 
 /**
  * Options to add an EventInvokeConfig to a function.

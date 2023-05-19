@@ -1,7 +1,7 @@
-import { Resource, ResourceProps } from '../../core';
 import { Construct } from 'constructs';
 import { AuthorizationType } from './method';
 import { IRestApi } from './restapi';
+import { Resource, ResourceProps } from '../../core';
 
 const AUTHORIZER_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.Authorizer');
 

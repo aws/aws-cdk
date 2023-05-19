@@ -1,6 +1,6 @@
+import { IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { IConstruct } from 'constructs';
 
 /**
  * Includes API for attaching annotations such as warning messages to constructs.

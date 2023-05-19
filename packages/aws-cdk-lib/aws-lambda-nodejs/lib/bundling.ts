@@ -1,11 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
-import * as cdk from '../../core';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
+import * as cdk from '../../core';
 
 const ESBUILD_MAJOR_VERSION = '0';
 

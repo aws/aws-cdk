@@ -1,9 +1,9 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
+import * as cdk from '../../core';
 
 /**
  * Interface for which all GatewayRoute based classes MUST implement

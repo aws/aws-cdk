@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import { RemovalPolicy } from '../../../core';
-import { Construct } from 'constructs';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { CommonRotationUserOptions, Credentials } from '../props';

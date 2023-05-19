@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
-import * as iam from '../../aws-iam';
-import { Aws, CfnResource } from '../../core';
 import { Construct } from 'constructs';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
 import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 import { UserData } from './user-data';
+import * as iam from '../../aws-iam';
+import { Aws, CfnResource } from '../../core';
 
 /**
  * A CloudFormation-init configuration

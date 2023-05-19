@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { Code } from './code';
+import { CfnRepository } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { Code } from './code';
-import { CfnRepository } from './codecommit.generated';
 
 /**
  * Additional options to pass to the notification rule.

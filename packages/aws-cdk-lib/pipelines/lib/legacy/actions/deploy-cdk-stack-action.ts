@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct, Node } from 'constructs';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as cpactions from '../../../../aws-codepipeline-actions';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
 import { Aws, CfnCapabilities, Stack } from '../../../../core';
 import * as cxapi from '../../../../cx-api';
-import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../../private/construct-internals';
 import { toPosixPath } from '../../private/fs';
 

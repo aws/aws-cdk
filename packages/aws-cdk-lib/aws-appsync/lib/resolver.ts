@@ -1,4 +1,3 @@
-import { Token } from '../../core';
 import { Construct } from 'constructs';
 import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
@@ -9,6 +8,7 @@ import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
+import { Token } from '../../core';
 
 /**
  * Basic properties for an AppSync resolver

@@ -1,7 +1,7 @@
-import { IResource } from '../../core';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { IPrincipal } from './principals';
+import { IResource } from '../../core';
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.

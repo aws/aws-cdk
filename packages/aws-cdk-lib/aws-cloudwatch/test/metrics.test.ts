@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import { Alarm, Metric, Stats } from '../lib';
 import { PairStatistic, parseStatistic, SingleStatistic } from '../lib/private/statistic';

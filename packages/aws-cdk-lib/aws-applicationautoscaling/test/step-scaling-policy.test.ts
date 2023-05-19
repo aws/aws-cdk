@@ -1,8 +1,8 @@
+import * as fc from 'fast-check';
+import { arbitrary_input_intervals, createScalableTarget } from './util';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
-import * as fc from 'fast-check';
-import { arbitrary_input_intervals, createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('step scaling policy', () => {

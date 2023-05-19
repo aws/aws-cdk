@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Names, Stack, Token } from '../../core';
-import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
 
 /**
  * Properties for a Lambda subscription

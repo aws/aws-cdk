@@ -1,0 +1,58 @@
+---
+name: "❗ Notice"
+description: Post a notice for a high impact issue
+title: "❗ NOTICE (module name): (short notice description)"
+labels: [p0, management/tracking]
+body:
+  - type: dropdown
+    attributes:
+      label: Status
+      description: What is the current status of this issue?
+      options:
+        - Investigating (Default)
+        - In-Progress
+        - Resolved
+    validations:
+      required: true        
+  - type: textarea
+    attributes:
+      label: What is the issue?
+      description: A clear and concise description of the issue you want customers to be aware of
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Error message
+      description: If available, paste the error message users are seeing (no need to backticks)
+      render: console
+  - type: textarea
+    attributes:
+      label: What is the impact?
+      description: |
+        What can occur if this issue isn't addressed?
+    validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: Workaround
+      description: |
+        Please provide a detailed workaround outlining all steps required for implementation. If none exist yet, leave blank
+  - type: textarea
+    attributes:
+      label: Who is affected?
+      description: |
+        What segment of customers are affected? Think about specific construct usage, version, feature toggles, etc...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How do I resolve this?
+      description: |
+        What actions should customers take to resolve the issue. Also elaborate on any code changes the customer may need to do. If unknown yet, say TBD
+    validations:
+      required: true        
+  - type: textarea
+    attributes:
+      label: Related issues
+      description: |
+        List all related issues here. If none related, leave blank

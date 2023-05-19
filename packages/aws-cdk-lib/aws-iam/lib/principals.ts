@@ -1,6 +1,3 @@
-import * as cdk from '../../core';
-import * as cxapi from '../../cx-api';
-import { Default, FactName, RegionInfo } from '../../region-info';
 import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
@@ -8,6 +5,9 @@ import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
+import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
+import { Default, FactName, RegionInfo } from '../../region-info';
 
 /**
  * Any object that has an associated principal that a permission can be granted to

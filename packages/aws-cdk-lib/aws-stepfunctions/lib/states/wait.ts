@@ -1,7 +1,7 @@
-import * as cdk from '../../../core';
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { State } from './state';
+import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
 

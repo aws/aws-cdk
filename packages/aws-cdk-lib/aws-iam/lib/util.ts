@@ -1,6 +1,6 @@
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../core';
 import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
+import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../core';
 
 const MAX_POLICY_NAME_LEN = 128;
 

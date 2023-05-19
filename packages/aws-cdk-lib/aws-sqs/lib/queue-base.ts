@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { QueuePolicy } from './policy';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, ResourceProps } from '../../core';
-import { Construct } from 'constructs';
-import { QueuePolicy } from './policy';
 
 /**
  * Represents an SQS queue

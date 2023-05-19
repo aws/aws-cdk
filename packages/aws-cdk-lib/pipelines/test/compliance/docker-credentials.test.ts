@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
 import * as cb from '../../../aws-codebuild';
 import * as secretsmanager from '../../../aws-secretsmanager';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';

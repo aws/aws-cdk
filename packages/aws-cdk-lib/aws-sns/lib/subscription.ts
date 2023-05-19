@@ -1,10 +1,10 @@
-import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
-import { IQueue } from '../../aws-sqs';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
+import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
+import { IQueue } from '../../aws-sqs';
+import { Resource } from '../../core';
 
 /**
  * Options for creating a new subscription

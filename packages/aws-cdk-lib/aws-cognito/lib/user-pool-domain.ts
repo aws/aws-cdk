@@ -1,10 +1,10 @@
-import { ICertificate } from '../../aws-certificatemanager';
-import { IResource, Resource, Stack, Token } from '../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
+import { ICertificate } from '../../aws-certificatemanager';
+import { IResource, Resource, Stack, Token } from '../../core';
+import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
  * Represents a user pool domain.

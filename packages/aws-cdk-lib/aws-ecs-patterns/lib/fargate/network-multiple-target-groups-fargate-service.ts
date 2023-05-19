@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import {
   NetworkMultipleTargetGroupsServiceBase,

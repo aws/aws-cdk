@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '../../../core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
-import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
 

@@ -1,11 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
@@ -18,6 +10,14 @@ import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, R
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import * as ec2 from '../../aws-ec2';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * Common properties for a new database cluster or cluster from snapshot.

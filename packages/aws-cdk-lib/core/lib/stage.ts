@@ -1,9 +1,9 @@
-import * as cxapi from '../../cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
+import * as cxapi from '../../cx-api';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 

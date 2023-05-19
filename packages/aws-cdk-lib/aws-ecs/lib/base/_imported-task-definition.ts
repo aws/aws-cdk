@@ -1,7 +1,7 @@
-import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
 import { Construct } from 'constructs';
 import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
+import { IRole } from '../../../aws-iam';
+import { Resource } from '../../../core';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 

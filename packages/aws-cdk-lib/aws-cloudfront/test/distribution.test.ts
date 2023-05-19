@@ -1,10 +1,10 @@
+import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
-import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import {
   CfnDistribution,
   Distribution,

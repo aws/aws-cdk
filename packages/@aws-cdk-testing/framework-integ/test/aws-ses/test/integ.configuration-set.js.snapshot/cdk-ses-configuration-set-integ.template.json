@@ -85,7 +85,11 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:ses:",
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ses:",
             {
              "Ref": "AWS::Region"
             },

@@ -1,4 +1,3 @@
-import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
@@ -8,6 +7,7 @@ import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
+import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '../../core';
 
 /**
  * Represents an IAM user

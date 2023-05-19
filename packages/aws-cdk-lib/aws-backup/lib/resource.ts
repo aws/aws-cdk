@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { Stack } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * An operation that is applied to a key-value pair

@@ -37,12 +37,12 @@
   },
   "dependencies": {
     "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.186",
+    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.195",
     "aws-cdk-lib": "0.0.0",
-    "aws-sdk": "^2.1373.0",
+    "aws-sdk": "^2.1379.0",
     "aws-sdk-mock": "5.6.0",
-    "cdk8s": "^2.7.56",
-    "cdk8s-plus-24": "2.7.22",
+    "cdk8s": "^2.7.68",
+    "cdk8s-plus-24": "2.7.31",
     "constructs": "^10.0.0"
   },
   "repository": {

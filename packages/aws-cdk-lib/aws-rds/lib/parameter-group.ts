@@ -1,7 +1,7 @@
-import { IResource, Lazy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
+import { IResource, Lazy, Resource } from '../../core';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.

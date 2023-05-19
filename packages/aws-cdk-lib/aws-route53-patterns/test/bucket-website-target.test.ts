@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { HostedZone } from '../../aws-route53';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '../../core';
 import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '../../cx-api';
 import { HttpsRedirect } from '../lib';

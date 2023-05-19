@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as lambda from '../../../aws-lambda';
 import { CustomResource, Token, Duration } from '../../../core';
 import * as cr from '../../../custom-resources';
-import { Construct } from 'constructs';
 
 export interface PingerProps {
   readonly url: string;

@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Template, Match } from '../../assertions';
 import { Stack } from '../../core';
-import { Construct } from 'constructs';
 import * as iam from '../lib';
 
 /* eslint-disable quote-props */

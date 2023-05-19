@@ -1,7 +1,7 @@
-import { Lazy, Names, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnWarmPool } from './autoscaling.generated';
+import { Lazy, Names, Resource } from '../../core';
 
 /**
  * Options for a warm pool

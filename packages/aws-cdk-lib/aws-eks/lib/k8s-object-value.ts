@@ -1,7 +1,7 @@
-import { CustomResource, Token, Duration } from '../../core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import { CustomResource, Token, Duration } from '../../core';
 
 /**
  * Properties for KubernetesObjectValue.

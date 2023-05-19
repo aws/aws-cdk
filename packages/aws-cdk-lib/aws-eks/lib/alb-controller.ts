@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as iam from '../../aws-iam';
 import { Construct, Node } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
+import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -20,82 +20,127 @@ export class AlbControllerVersion {
   /**
    * v2.0.0
    */
-  public static readonly V2_0_0 = new AlbControllerVersion('v2.0.0', false);
+  public static readonly V2_0_0 = new AlbControllerVersion('v2.0.0', '1.4.1', false);
 
   /**
    * v2.0.1
    */
-  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', false);
+  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', '1.4.1', false);
 
   /**
    * v2.1.0
    */
-  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', false);
+  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', '1.4.1', false);
 
   /**
    * v2.1.1
    */
-  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', false);
+  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', '1.4.1', false);
 
   /**
    * v2.1.2
    */
-  public static readonly V2_1_2 = new AlbControllerVersion('v2.1.2', false);
+  public static readonly V2_1_2 = new AlbControllerVersion('v2.1.2', '1.4.1', false);
 
   /**
    * v2.1.3
    */
-  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', false);
+  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', '1.4.1', false);
 
   /**
    * v2.0.0
    */
-  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', false);
+  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', '1.4.1', false);
 
   /**
    * v2.2.1
    */
-  public static readonly V2_2_1 = new AlbControllerVersion('v2.2.1', false);
+  public static readonly V2_2_1 = new AlbControllerVersion('v2.2.1', '1.4.1', false);
 
   /**
    * v2.2.2
    */
-  public static readonly V2_2_2 = new AlbControllerVersion('v2.2.2', false);
+  public static readonly V2_2_2 = new AlbControllerVersion('v2.2.2', '1.4.1', false);
 
   /**
    * v2.2.3
    */
-  public static readonly V2_2_3 = new AlbControllerVersion('v2.2.3', false);
+  public static readonly V2_2_3 = new AlbControllerVersion('v2.2.3', '1.4.1', false);
 
   /**
    * v2.2.4
    */
-  public static readonly V2_2_4 = new AlbControllerVersion('v2.2.4', false);
+  public static readonly V2_2_4 = new AlbControllerVersion('v2.2.4', '1.4.1', false);
 
   /**
    * v2.3.0
    */
-  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', false);
+  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', '1.4.1', false);
 
   /**
    * v2.3.1
    */
-  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', false);
+  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', '1.4.1', false);
 
   /**
    * v2.4.1
    */
-  public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', false);
+  public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', '1.4.1', false);
 
   /**
-   * Specify a custom version.
+   * v2.4.2
+   */
+  public static readonly V2_4_2 = new AlbControllerVersion('v2.4.2', '1.4.3', false);
+
+  /**
+   * v2.4.3
+   */
+  public static readonly V2_4_3 = new AlbControllerVersion('v2.4.3', '1.4.4', false);
+
+  /**
+   * v2.4.4
+   */
+  public static readonly V2_4_4 = new AlbControllerVersion('v2.4.4', '1.4.5', false);
+
+  /**
+   * v2.4.5
+   */
+  public static readonly V2_4_5 = new AlbControllerVersion('v2.4.5', '1.4.6', false);
+
+  /**
+   * v2.4.6
+   */
+  public static readonly V2_4_6 = new AlbControllerVersion('v2.4.6', '1.4.7', false);
+
+  /**
+   * v2.4.7
+   */
+  public static readonly V2_4_7 = new AlbControllerVersion('v2.4.7', '1.4.8', false);
+
+  /**
+   * v2.5.0
+   */
+  public static readonly V2_5_0 = new AlbControllerVersion('v2.5.0', '1.5.0', false);
+
+  /**
+   * v2.5.1
+   */
+  public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', '1.5.2', false);
+
+  /**
+   * Specify a custom version and an associated helm chart version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
    *
+   * ALB controller version and helm chart version compatibility information can be found
+   * here: https://github.com/aws/eks-charts/blob/v0.0.133/stable/aws-load-balancer-controller/Chart.yaml
+   *
    * @param version The version number.
+   * @param helmChartVersion The version of the helm chart. Version 1.4.1 is the default version to support legacy
+   * users.
    */
-  public static of(version: string) {
-    return new AlbControllerVersion(version, true);
+  public static of(version: string, helmChartVersion: string = '1.4.1') {
+    return new AlbControllerVersion(version, helmChartVersion, true);
   }
 
   private constructor(
@@ -103,6 +148,10 @@ export class AlbControllerVersion {
      * The version string.
      */
     public readonly version: string,
+    /**
+     * The version of the helm chart to use.
+     */
+    public readonly helmChartVersion: string,
     /**
      * Whether or not its a custom version.
      */
@@ -162,7 +211,6 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
-
 }
 
 /**
@@ -186,7 +234,6 @@ export interface AlbControllerProps extends AlbControllerOptions {
  *
  */
 export class AlbController extends Construct {
-
   /**
    * Create the controller construct associated with this cluster and scope.
    *
@@ -226,12 +273,7 @@ export class AlbController extends Construct {
       repository: 'https://aws.github.io/eks-charts',
       namespace,
       release: 'aws-load-balancer-controller',
-
-      // latest at the time of writing. We intentionally don't
-      // want to expose this since helm here is just an implementation detail
-      // for installing a specific version of the controller itself.
-      // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.4.1',
+      version: props.version.helmChartVersion,
 
       wait: true,
       timeout: Duration.minutes(15),

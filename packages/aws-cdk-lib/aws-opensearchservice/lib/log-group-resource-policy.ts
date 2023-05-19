@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 
 /**
  * Construction properties for LogGroupResourcePolicy

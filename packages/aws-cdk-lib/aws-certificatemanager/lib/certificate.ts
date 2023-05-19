@@ -1,10 +1,10 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as route53 from '../../aws-route53';
-import { IResource, Token, Tags } from '../../core';
 import { Construct } from 'constructs';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as route53 from '../../aws-route53';
+import { IResource, Token, Tags } from '../../core';
 
 /**
  * Name tag constant

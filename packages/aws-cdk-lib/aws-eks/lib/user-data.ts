@@ -1,6 +1,6 @@
+import { BootstrapOptions, ICluster } from './cluster';
 import * as autoscaling from '../../aws-autoscaling';
 import { Stack } from '../../core';
-import { BootstrapOptions, ICluster } from './cluster';
 
 // eslint-disable-next-line max-len
 export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
