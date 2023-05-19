@@ -1,7 +1,7 @@
-import { PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { Resource, Lazy, Names } from '../../core';
 import { Construct } from 'constructs';
 import { CfnResourcePolicy } from './logs.generated';
+import { PolicyDocument, PolicyStatement } from '../../aws-iam';
+import { Resource, Lazy, Names } from '../../core';
 
 /**
  * Properties to define Cloudwatch log group resource policy

@@ -1,7 +1,7 @@
-import * as cdk from '../../../core';
-import { CloudFormationStackArtifact } from '../../../cx-api';
 import { StackDeployment } from './stack-deployment';
 import { StackSteps, Step } from './step';
+import * as cdk from '../../../core';
+import { CloudFormationStackArtifact } from '../../../cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
 import { pipelineSynth } from '../private/construct-internals';
 

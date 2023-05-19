@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { IResource, Names, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
+import { IResource, Names, Resource, Stack } from '../../core';
 
 /**
  * Represents the function's source code

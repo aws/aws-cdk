@@ -50,7 +50,7 @@ describe('log retention', () => {
             'Ref': 'AWS::Region',
           },
           'value',
-        ]
+        ],
       },
     });
 

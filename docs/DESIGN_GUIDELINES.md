@@ -1523,6 +1523,27 @@ information that can be obtained from the stack trace.
 
 * Do not use FnSub
 
+### Lazys
+
+Do not use a `Lazy` to perform a mutation on the construct tree. For example:
+
+```ts
+constructor(scope: Scope, id: string, props: MyConstructProps) {
+  this.lazyProperty = Lazy.any({
+    produce: () => {
+      return props.logging.bind(this, this);
+    },
+  });
+}
+```
+
+`bind()` methods mutate the construct tree, and should not be called from a callback
+in a `Lazy`.
+
+* The why:
+ - `Lazy`s are called after the construct tree has already been sythesized. Mutating it
+ at this point could have not-obvious consequences.
+
 ## Documentation
 
 Documentation style (copy from official AWS docs) No need to Capitalize Resource

@@ -1,6 +1,6 @@
+import { toCloudFormation } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { toCloudFormation } from './util';
 import { App, FileAssetPackaging, Stack } from '../lib';
 
 describe('assets', () => {

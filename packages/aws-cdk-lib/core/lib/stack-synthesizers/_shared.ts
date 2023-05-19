@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
-import * as cxschema from '../../../cloud-assembly-schema';
-import * as cxapi from '../../../cx-api';
 import { Node, IConstruct } from 'constructs';
 import { ISynthesisSession } from './types';
+import * as cxschema from '../../../cloud-assembly-schema';
+import * as cxapi from '../../../cx-api';
 import { Stack } from '../stack';
 import { Token } from '../token';
 
