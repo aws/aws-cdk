@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { ISecret, Secret } from './secret';
+import { CfnRotationSchedule } from './secretsmanager.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { ISecret, Secret } from './secret';
-import { CfnRotationSchedule } from './secretsmanager.generated';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.

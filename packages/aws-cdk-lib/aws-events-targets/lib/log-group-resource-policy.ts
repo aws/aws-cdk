@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 
 /**
  * Properties to configure a log group resource policy
