@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.202.0](https://github.com/aws/aws-cdk/compare/v1.201.0...v1.202.0) (2023-05-19)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v122.0.0 ([#25567](https://github.com/aws/aws-cdk/issues/25567)) ([e3ffafd](https://github.com/aws/aws-cdk/commit/e3ffafd3947920e40a07c10482470442baaf508d))
+
+
+### Bug Fixes
+
+* **eks:** overly permissive trust policies ([#25580](https://github.com/aws/aws-cdk/issues/25580)) ([0251d9a](https://github.com/aws/aws-cdk/commit/0251d9ab8ce07b55d3dc3cafedd46d2d585586ed))
+
 ## [1.201.0](https://github.com/aws/aws-cdk/compare/v1.200.0...v1.201.0) (2023-05-10)
 
 ## [1.200.0](https://github.com/aws/aws-cdk/compare/v1.199.0...v1.200.0) (2023-04-26)
