@@ -214,7 +214,7 @@
          "Arn"
         ]
        },
-       "\",\"Payload.$\":\"$\"}},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
      ]
     }

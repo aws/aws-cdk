@@ -49,6 +49,18 @@ const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
   resultSelector: {
     status: sfn.JsonPath.stringAt('$.Payload.status'),
   },
+  payload: sfn.TaskInput.fromObject({
+    execId: sfn.JsonPath.executionId,
+    execInput: sfn.JsonPath.executionInput,
+    execName: sfn.JsonPath.executionName,
+    execRoleArn: sfn.JsonPath.executionRoleArn,
+    execStartTime: sfn.JsonPath.executionStartTime,
+    stateEnteredTime: sfn.JsonPath.stateEnteredTime,
+    stateName: sfn.JsonPath.stateName,
+    stateRetryCount: sfn.JsonPath.stateRetryCount,
+    stateMachineId: sfn.JsonPath.stateMachineId,
+    stateMachineName: sfn.JsonPath.stateMachineName,
+  }),
 });
 
 const isComplete = new sfn.Choice(stack, 'Job Complete?');
