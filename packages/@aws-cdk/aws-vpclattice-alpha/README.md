@@ -18,14 +18,15 @@ Amazon VPC Lattice is an application networking service that consistently connec
 ## Code structure
 
 The code structure is explained through inline comments in the files themselves.
-Probably [`lib/example-resource.ts`](lib/example-resource.ts) is a good place to start reading.
+Probably [`lib/servicenetwork.ts`](lib/servicenetwork.ts) is a good place to start reading.
 
 ### Tests
 
-The package contains examples of unit tests in the [`test/example-resource.test.ts`](test/example-resource.test.ts)
+The package contains examples of unit tests in the [`test/servicenetwork.test.ts`](test/servicenetwork.test.ts)
 file.
 
-It also contains an example integration test in [`test/integ.example-resource.ts`](test/integ.example-resource.ts).
+It also contains an example integration test in [`test/integ.service-network.ts`](test/integ.service-network.ts).
+
 For more information on CDK integ tests, see the
 [main `Contributing.md` file](../../../CONTRIBUTING.md#integration-tests).
 
@@ -39,3 +40,4 @@ but used from multiple programming languages.
 Its configuration lives the `jsii` key in `package.json`.
 It's mainly used as a validation tool in this package,
 as JSII places some constraints on the TypeScript code that you can write.
+
