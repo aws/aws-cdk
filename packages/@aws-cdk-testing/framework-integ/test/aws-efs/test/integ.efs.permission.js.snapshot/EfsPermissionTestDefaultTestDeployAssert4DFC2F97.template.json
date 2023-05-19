@@ -14,7 +14,7 @@
     "parameters": {
      "InstanceIds": [
       {
-       "Fn::ImportValue": "TestEfsPermissionInteg:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+       "Fn::ImportValue": "test-efs-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
       }
      ],
      "DocumentName": "AWS-RunShellScript",
@@ -26,7 +26,7 @@
          [
           "mount -t efs -o tls,iam ",
           {
-           "Fn::ImportValue": "TestEfsPermissionInteg:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
+           "Fn::ImportValue": "test-efs-integ:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
           },
           " /mnt/efs"
          ]
@@ -36,7 +36,7 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1683830571028"
+    "salt": "1683531516612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -170,11 +170,11 @@
       ]
      },
      "InstanceId": {
-      "Fn::ImportValue": "TestEfsPermissionInteg:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+      "Fn::ImportValue": "test-efs-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
      }
     },
     "flattenResponse": "false",
-    "salt": "1683830571029"
+    "salt": "1683531516614"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -422,7 +422,7 @@
     "parameters": {
      "InstanceIds": [
       {
-       "Fn::ImportValue": "TestEfsPermissionInteg:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+       "Fn::ImportValue": "test-efs-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
       }
      ],
      "DocumentName": "AWS-RunShellScript",
@@ -433,7 +433,7 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1683830571032"
+    "salt": "1683531516616"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -461,11 +461,11 @@
       ]
      },
      "InstanceId": {
-      "Fn::ImportValue": "TestEfsPermissionInteg:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+      "Fn::ImportValue": "test-efs-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
      }
     },
     "flattenResponse": "false",
-    "salt": "1683830571033"
+    "salt": "1683531516617"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

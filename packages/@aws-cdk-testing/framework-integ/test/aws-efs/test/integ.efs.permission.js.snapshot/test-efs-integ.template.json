@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc"
+      "Value": "test-efs-integ/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet1"
+      "Value": "test-efs-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet1"
+      "Value": "test-efs-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet1"
+      "Value": "test-efs-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet1"
+      "Value": "test-efs-integ/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet2"
+      "Value": "test-efs-integ/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet2"
+      "Value": "test-efs-integ/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet2"
+      "Value": "test-efs-integ/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PublicSubnet2"
+      "Value": "test-efs-integ/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PrivateSubnet1"
+      "Value": "test-efs-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PrivateSubnet1"
+      "Value": "test-efs-integ/Vpc/PrivateSubnet1"
      }
     ]
    }
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PrivateSubnet2"
+      "Value": "test-efs-integ/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc/PrivateSubnet2"
+      "Value": "test-efs-integ/Vpc/PrivateSubnet2"
      }
     ]
    }
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/Vpc"
+      "Value": "test-efs-integ/Vpc"
      }
     ]
    }
@@ -534,7 +534,7 @@
     "FileSystemTags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/FileSystem"
+      "Value": "test-efs-integ/FileSystem"
      }
     ]
    },
@@ -544,7 +544,7 @@
   "FileSystemEfsSecurityGroup212D3ACB": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "TestEfsPermissionInteg/FileSystem/EfsSecurityGroup",
+    "GroupDescription": "test-efs-integ/FileSystem/EfsSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -555,7 +555,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/FileSystem"
+      "Value": "test-efs-integ/FileSystem"
      }
     ],
     "VpcId": {
@@ -563,11 +563,11 @@
     }
    }
   },
-  "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegWriteInstanceInstanceSecurityGroup87F0F3182049FA7405C2": {
+  "FileSystemEfsSecurityGroupfromtestefsintegWriteInstanceInstanceSecurityGroupF0D2BC5120496565B31F": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from TestEfsPermissionIntegWriteInstanceInstanceSecurityGroup87F0F318:2049",
+    "Description": "from testefsintegWriteInstanceInstanceSecurityGroupF0D2BC51:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
@@ -584,11 +584,11 @@
     "ToPort": 2049
    }
   },
-  "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegReadInstanceInstanceSecurityGroup5D77ED6D2049061C2933": {
+  "FileSystemEfsSecurityGroupfromtestefsintegReadInstanceInstanceSecurityGroup9518D91B204923B5FA38": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from TestEfsPermissionIntegReadInstanceInstanceSecurityGroup5D77ED6D:2049",
+    "Description": "from testefsintegReadInstanceInstanceSecurityGroup9518D91B:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
@@ -605,11 +605,11 @@
     "ToPort": 2049
    }
   },
-  "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegAnonymousInstanceInstanceSecurityGroup193F4B1A20495777E209": {
+  "FileSystemEfsSecurityGroupfromtestefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B204919A46A82": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from TestEfsPermissionIntegAnonymousInstanceInstanceSecurityGroup193F4B1A:2049",
+    "Description": "from testefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
@@ -667,7 +667,7 @@
   "WriteInstanceInstanceSecurityGroupBB94A852": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "TestEfsPermissionInteg/WriteInstance/InstanceSecurityGroup",
+    "GroupDescription": "test-efs-integ/WriteInstance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -678,7 +678,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/WriteInstance"
+      "Value": "test-efs-integ/WriteInstance"
      }
     ],
     "VpcId": {
@@ -718,7 +718,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/WriteInstance"
+      "Value": "test-efs-integ/WriteInstance"
      }
     ]
    }
@@ -809,7 +809,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/WriteInstance"
+      "Value": "test-efs-integ/WriteInstance"
      }
     ],
     "UserData": {
@@ -842,9 +842,9 @@
    "DependsOn": [
     "FileSystemEfsMountTarget1586453F0",
     "FileSystemEfsMountTarget24B8EBB43",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegAnonymousInstanceInstanceSecurityGroup193F4B1A20495777E209",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegReadInstanceInstanceSecurityGroup5D77ED6D2049061C2933",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegWriteInstanceInstanceSecurityGroup87F0F3182049FA7405C2",
+    "FileSystemEfsSecurityGroupfromtestefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B204919A46A82",
+    "FileSystemEfsSecurityGroupfromtestefsintegReadInstanceInstanceSecurityGroup9518D91B204923B5FA38",
+    "FileSystemEfsSecurityGroupfromtestefsintegWriteInstanceInstanceSecurityGroupF0D2BC5120496565B31F",
     "FileSystemEfsSecurityGroup212D3ACB",
     "FileSystem8A8E25C0",
     "WriteInstanceInstanceRoleDefaultPolicy692CCD00",
@@ -899,7 +899,7 @@
   "ReadInstanceInstanceSecurityGroup4E6DE54D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "TestEfsPermissionInteg/ReadInstance/InstanceSecurityGroup",
+    "GroupDescription": "test-efs-integ/ReadInstance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -910,7 +910,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/ReadInstance"
+      "Value": "test-efs-integ/ReadInstance"
      }
     ],
     "VpcId": {
@@ -950,7 +950,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/ReadInstance"
+      "Value": "test-efs-integ/ReadInstance"
      }
     ]
    }
@@ -1038,7 +1038,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/ReadInstance"
+      "Value": "test-efs-integ/ReadInstance"
      }
     ],
     "UserData": {
@@ -1071,9 +1071,9 @@
    "DependsOn": [
     "FileSystemEfsMountTarget1586453F0",
     "FileSystemEfsMountTarget24B8EBB43",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegAnonymousInstanceInstanceSecurityGroup193F4B1A20495777E209",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegReadInstanceInstanceSecurityGroup5D77ED6D2049061C2933",
-    "FileSystemEfsSecurityGroupfromTestEfsPermissionIntegWriteInstanceInstanceSecurityGroup87F0F3182049FA7405C2",
+    "FileSystemEfsSecurityGroupfromtestefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B204919A46A82",
+    "FileSystemEfsSecurityGroupfromtestefsintegReadInstanceInstanceSecurityGroup9518D91B204923B5FA38",
+    "FileSystemEfsSecurityGroupfromtestefsintegWriteInstanceInstanceSecurityGroupF0D2BC5120496565B31F",
     "FileSystemEfsSecurityGroup212D3ACB",
     "FileSystem8A8E25C0",
     "ReadInstanceInstanceRoleDefaultPolicy54DA36A2",
@@ -1125,7 +1125,7 @@
   "AnonymousInstanceInstanceSecurityGroup648A5675": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "TestEfsPermissionInteg/AnonymousInstance/InstanceSecurityGroup",
+    "GroupDescription": "test-efs-integ/AnonymousInstance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1136,7 +1136,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/AnonymousInstance"
+      "Value": "test-efs-integ/AnonymousInstance"
      }
     ],
     "VpcId": {
@@ -1176,7 +1176,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/AnonymousInstance"
+      "Value": "test-efs-integ/AnonymousInstance"
      }
     ]
    }
@@ -1249,7 +1249,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "TestEfsPermissionInteg/AnonymousInstance"
+      "Value": "test-efs-integ/AnonymousInstance"
      }
     ],
     "UserData": {
@@ -1330,7 +1330,7 @@
     "Ref": "AnonymousInstance51D4C7152602e043eee6300d"
    },
    "Export": {
-    "Name": "TestEfsPermissionInteg:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+    "Name": "test-efs-integ:ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
    }
   },
   "ExportsOutputRefFileSystem8A8E25C0B454ACF3": {
@@ -1338,7 +1338,7 @@
     "Ref": "FileSystem8A8E25C0"
    },
    "Export": {
-    "Name": "TestEfsPermissionInteg:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
+    "Name": "test-efs-integ:ExportsOutputRefFileSystem8A8E25C0B454ACF3"
    }
   },
   "ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55": {
@@ -1346,7 +1346,7 @@
     "Ref": "ReadInstanceE94183C76867391ec2104698"
    },
    "Export": {
-    "Name": "TestEfsPermissionInteg:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+    "Name": "test-efs-integ:ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
    }
   }
  },
