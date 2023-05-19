@@ -1176,7 +1176,27 @@ export class Function extends FunctionBase {
   }
 
   public attachParametersAndSecretsExtension(config: ParametersAndSecretsConfig = {}): void {
+    const paramsAndSecretsLayer = LayerVersion.fromLayerVersionArn(
+      this.stack,
+      'ParamsAndSecretsExtensionLayer',
+      this.paramsAndSecretsExtensionLambdaArn,
+    );
+    this.addLayers(paramsAndSecretsLayer);
 
+    // TODO: Do I need to handle the ignored variables or will they be ignored automatically?
+    // TODO: Is there a better way to structure this?
+    const environmentVariables: { [key: string]: any } = {
+      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: config.paramsAndSecretsExtensionCacheEnabled ?? true,
+      PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: config.paramsAndSecretsExtensionCacheSize ?? 1000,
+      PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: config.paramsAndSecretsExtensionHttpPort ?? 2773,
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: config.paramsAndSecretsExtensionLogLevel ?? ParametersAndSecretsLogLevel.INFO,
+      PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: config.paramsAndSecretsExtensionMaxConnections ?? 3,
+      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagertimeout ?? 0,
+      SECRETS_MANAGER_TTL: config.secretsManagerTtl ?? Duration.seconds(300),
+      SSM_PARAMETER_STORE_TIMEOUT_MILLIS: config.parameterStoreTimeout ?? 0,
+      SSN_PARAMETER_STORE_TTL: config.parameterStoreTtl ?? Duration.seconds(300),
+    };
+    Object.entries(environmentVariables).forEach(([key, value]) => this.addEnvironment(key, value));
   }
 
   /**
@@ -1260,7 +1280,7 @@ export class Function extends FunctionBase {
       },
     };
     // TODO: Is this the right way to get the region?
-    return paramsAndSecretsExtensionLambdaArns[this.architecture.name][Stack.of(this).region];
+    return paramsAndSecretsExtensionLambdaArns[this.architecture.name][this.stack.region];
   }
 
   /** @internal */
