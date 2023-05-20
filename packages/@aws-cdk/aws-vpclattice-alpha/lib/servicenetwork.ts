@@ -1,11 +1,35 @@
 import {
   aws_vpclattice,
   aws_iam as iam,
+  aws_ec2 as ec2,
+  aws_s3 as s3,
+  aws_logs as logs,
+  aws_kinesis as kinesis,
 }
   from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as vpclattice from './index';
+
+/**
+ * Properties to share a Service Network
+ */
+export interface ShareServiceNetworkProps {
+  /**
+   * The name of the share.
+   */
+  name: string;
+  /**
+   * Are external Principals allowed
+   * @default false;
+   */
+  allowExternalPrincipals?: boolean | undefined
+  /**
+   * Principals to share the Service Network with
+   */
+  principals?: string[] | undefined
+}
+
 
 /**
  * Create a vpc lattice service network.
@@ -30,6 +54,26 @@ export interface IServiceNetwork extends core.IResource {
    * Add Lattice Service Policy
    */
   addService(service: vpclattice.Service): void;
+  /**
+   * Associate a VPC with the Service Network
+   */
+  associateVPC(vpc: ec2.Vpc, securityGroups: ec2.SecurityGroup[]): void;
+  /**
+   * Log To S3
+   */
+  logToS3(bucket: s3.Bucket | s3.IBucket ): void;
+  /**
+   * Send Events to Cloud Watch
+   */
+  sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup ): void;
+  /**
+   * Stream to Kinesis
+   */
+  streamToKinesis(stream: kinesis.Stream | kinesis.IStream ): void;
+  /**
+   * Share the ServiceNetwork
+   */
+  share(props: ShareServiceNetworkProps): void;
 
 }
 /**
