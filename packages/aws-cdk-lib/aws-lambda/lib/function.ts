@@ -922,6 +922,8 @@ export class Function extends FunctionBase {
     this.configureLambdaInsights(props);
 
     this.configureAdotInstrumentation(props);
+
+    this.configureParamsAndSecretsExtension(props);
   }
 
   /**

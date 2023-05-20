@@ -1,4 +1,16 @@
+import { Construct } from 'constructs';
+import { IFunction } from './function-base';
 import { Duration } from '../../core';
+
+/**
+ * Config returned from `ParamsAndSecretsVersion._bind`
+ */
+interface ParamsAndSecretsBindConfig {
+  /**
+   * ARN of the Parameters and Secrets Layer Version
+   */
+  readonly arn: string;
+}
 
 /**
  * Logging levels for Parameters and Secrets Extension
@@ -114,9 +126,11 @@ export class ParamsAndSecretsLayer {
     return new ParamsAndSecretsLayer(config);
   }
 
-  public static _bind(): void {
-
-  }
-
   private constructor(private readonly config: ParamsAndSecretsConfig) {}
+
+  public _bind(scope: Construct, _function: IFunction): ParamsAndSecretsBindConfig {
+    return {
+      arn: '',
+    };
+  }
 }
