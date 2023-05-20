@@ -97,6 +97,14 @@ export interface EcsTaskProps extends TargetBaseProps {
   readonly platformVersion?: ecs.FargatePlatformVersion;
 
   /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   * You can specify true only when LaunchType is set to FARGATE.
+   *
+   * @default - false
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
     * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
     *
     * @default - Tags will not be propagated
@@ -136,6 +144,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
+  private readonly assignPublicIp?: boolean;
   private readonly propagateTags?: ecs.PropagatedTagSource;
   private readonly tags?: Tag[]
 
@@ -148,6 +157,7 @@ export class EcsTask implements events.IRuleTarget {
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
+    this.assignPublicIp = props.assignPublicIp;
 
     const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
     if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
@@ -201,14 +211,19 @@ export class EcsTask implements events.IRuleTarget {
     const tagList = this.tags;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
-    const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
+
+    const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType == ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
+    const launchType = this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE';
+    if (assignPublicIp == 'ENABLED' && launchType != 'FARGATE') {
+      throw new Error('assignPublicIp is only supported for FARGATE tasks');
+    };
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList };
 
     const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
       ? {
         ...baseEcsParameters,
-        launchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
+        launchType,
         platformVersion: this.platformVersion,
         networkConfiguration: {
           awsVpcConfiguration: {
