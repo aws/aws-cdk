@@ -387,3 +387,28 @@ rule.addTarget(
     })
 );
 ```
+
+### Assign public IP addresses to tasks
+
+You can set the `assignPublicIp` flag to assign public IP addresses to tasks.
+If you want to detach the public IP address from the task, you have to set the flag `false`.
+You can specify the flag `true` only when the launch type is set to FARGATE.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    assignPublicIp: true,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  }),
+);
+```
