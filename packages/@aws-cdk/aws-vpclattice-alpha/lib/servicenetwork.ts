@@ -29,7 +29,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add Lattice Service Policy
    */
-  addService(service: vpclattice.Service): vpclattice.Service;
+  addService(service: vpclattice.Service): void;
 
 }
 /**
@@ -104,7 +104,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       }
     });
 
-    if (policyDocument.validateForResourcePolicy()) {
+    if (policyDocument.validateForResourcePolicy().length > 0) {
       throw new Error('policyDocument.validateForResourcePolicy() failed');
     }
 
@@ -116,11 +116,12 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     });
   }
 
-  public addService(service: vpclattice.Service): vpclattice.Service {
+  public addService(service: vpclattice.Service): void {
 
-    new vpclattice.CfnServiceNetworkServiceAssociation(this, 'LatticeServiceAssociation', {
+    new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, 'LatticeServiceAssociation', {
       serviceIdentifier: service.serviceId,
       serviceNetworkIdentifier: this.serviceNetworkId,
     });
+
   }
 }

@@ -40,12 +40,6 @@ export interface IService extends core.IResource {
   share(props: ShareServiceProps): void;
 
   /**
-   * Add An Authentication Policy to the Service.
-   * @param policyStatements
-   */
-  addLatticeAuthPolicy(policyStatements: iam.PolicyStatement[]): iam.PolicyDocument;
-
-  /**
   * Create a DNS entry in R53 for the service.
   */
   addDNSEntry(props: AddDNSEntryProps): void;
@@ -82,7 +76,9 @@ export interface LatticeServiceProps {
   readonly name?: string | undefined
 }
 
-
+/**
+ * Create a vpcLattice Service
+ */
 export class Service extends core.Resource implements IService {
 
   serviceId: string
@@ -109,4 +105,80 @@ export class Service extends core.Resource implements IService {
     this.serviceId = service.attrId;
     this.serviceArn = service.attrArn;
   }
+
+  /**
+   * add an IAM policy to the service network. statements should only
+   * contain a single action 'vpc-lattice-svcs:Invoke' and a single resource
+   * which is the service network ARN. The policy statements resource and action
+   * are optional. If they are not provided, the correct values will be set.
+   *
+   * @param policyStatements
+   */
+  public addLatticeAuthPolicy(policyStatements: iam.PolicyStatement[]): iam.PolicyDocument {
+
+    let policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
+
+    // create the policy document and validdate the action
+    const validAction = ['vpc-lattice-svcs:Invoke'];
+    const validResources = [this.serviceArn];
+
+    policyStatements.forEach((statement) => {
+      if (statement.actions === undefined) {
+        statement.addActions('vpc-lattice-svcs:Invoke');
+      }
+      if (statement.resources === undefined) {
+        statement.addResources(this.serviceArn);
+      }
+      policyDocument.addStatements(statement);
+
+      if (statement.actions !== validAction) {
+        throw new Error('The actions for the policy statement are invalid, They must only be [\'vpc-lattice-svcs:Invoke\']');
+      }
+      if (statement.resources !== validResources) {
+        throw new Error('The resources for the policy statement are invalid, They must only be [\'' + this.serviceNetworkArn + '\']');
+      }
+    });
+
+    if (policyDocument.validateForResourcePolicy().length > 0) {
+      throw new Error('policyDocument.validateForResourcePolicy() failed');
+    }
+
+    this.authType = vpclattice.AuthType.IAM;
+
+    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
+      policy: policyDocument.toJSON(),
+      resourceIdentifier: this.serviceId,
+    });
+
+    return policyDocument;
+  }
+
+  /**
+   * Provide an ACM certificate to the service
+   * @param certificate
+   */
+  public addCertificate(certificate: core.aws_certificatemanager.Certificate): void {
+    this.certificate = certificate;
+  }
+
+  /**
+   * Add a name to the Service
+   * @param name
+   */
+  public addName(name: string): void {
+
+    // TODO:validate the name is ok
+    this.name = name;
+  }
+
+  public addCustomDomain(domain: string): void {
+
+    // TODO:validate the domain is ok
+    this.customDomain = domain;
+  }
+
+  public addDNSEntry(props: AddDNSEntryProps): void {
+    
+  }
+
 }
