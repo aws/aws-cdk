@@ -15,6 +15,7 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
+import { ParamsAndSecretsConfig, ParamsAndSecretsLayer, ParamsAndSecretsLogLevels } from './params-and-secrets-layers';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
@@ -49,115 +50,6 @@ export enum Tracing {
    * Lambda will not trace any request.
    */
   DISABLED = 'Disabled'
-}
-
-/**
- * Logging levels for Parameters and Secrets Extension
- */
-export enum ParametersAndSecretsLogLevel {
-  /**
-   * Debug logging level
-   */
-  DEBUG = 'debug',
-
-  /**
-   * Info logging level
-   */
-  INFO = 'info',
-
-  /**
-   * Warn logging level
-   */
-  WARN = 'warn',
-
-  /**
-   * Error logging level
-   */
-  ERROR = 'error',
-
-  /**
-   * No logging level
-   */
-  NONE = 'none',
-}
-
-export interface ParametersAndSecretsConfig {
-  /**
-   * Enables Parameters and Secrets Extension to cache parameters and secrets
-   *
-   * @default true
-   */
-  readonly paramsAndSecretsExtensionCacheEnabled?: boolean;
-
-  /**
-   * The maximum number of secrets and parameters to cache. Must be a value from 0
-   * to 1000. A value of 0 means there is no caching.
-   *
-   * Note: This variable is ignored if both parameterStoreTtl and secretsManagerTtl
-   * are 0.
-   *
-   * @default 1000
-   */
-  readonly paramsAndSecretsExtensionCacheSize?: number;
-
-  /**
-   * The port for the local HTTP server.
-   *
-   * @default 2773
-   */
-  readonly paramsAndSecretsExtensionHttpPort?: number;
-
-  /**
-   * The level of logging for the Parameters and Secrets Extension to provide.
-   *
-   * @default
-   */
-  readonly paramsAndSecretsExtensionLogLevel?: ParametersAndSecretsLogLevel,
-
-  /**
-   * The maximum number of connections for HTTP clients that the Parameters and Secrets
-   * Extension uses to make request to Parameter Store or Secrets Manager. This is a
-   * per-client configuration.
-   *
-   * @default 3
-   */
-  readonly paramsAndSecretsExtensionMaxConnections?: number;
-
-  /**
-   * Timeout for requests to Secrets Manager in milliseconds. A value of 0 means there is no
-   * timeout.
-   *
-   * @default 0
-   */
-  readonly secretsManagertimeout?: Duration;
-
-  /**
-   * The time to live of a secret in the cache in seconds. A value of 0 means there is no
-   * caching. The maximum is 300 seconds.
-   *
-   * Note: This variable is ignored if parametersCacheSize is 0.
-   *
-   * @default 300
-   */
-  readonly secretsManagerTtl?: Duration;
-
-  /**
-   * Timeout for requests to Parameter Store in milliseconds. A value of 0 means there is no
-   * timeout.
-   *
-   * @default 0
-   */
-  readonly parameterStoreTimeout?: Duration;
-
-  /**
-   * The time to live of a parameter in the cache in seconds. A value of 0 means there is no
-   * caching. The maximum is 300 seconds.
-   *
-   * Note: This variable is ignored if paramsAndSecretsCacheSize is 0.
-   *
-   * @default 300
-   */
-  readonly parameterStoreTtl?: Duration;
 }
 
 /**
@@ -370,6 +262,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No ADOT instrumentation
    */
   readonly adotInstrumentation?: AdotInstrumentationConfig;
+
+  /**
+   * Specify a Parameters and Secrets Extension layer
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+   *
+   * @default - No Parameters and Secrets Extension layer
+   */
+  readonly paramsAndSecretsLayer?: ParamsAndSecretsLayer;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -1177,7 +1077,7 @@ export class Function extends FunctionBase {
     return addAlias(this, this.currentVersion, aliasName, options);
   }
 
-  public attachParametersAndSecretsExtension(secret: sm.ISecret, config: ParametersAndSecretsConfig = {}): void {
+  public attachParametersAndSecretsExtension(secret: sm.ISecret, config: ParamsAndSecretsConfig = {}): void {
     const paramsAndSecretsLayer = LayerVersion.fromLayerVersionArn(
       this.stack,
       'ParamsAndSecretsExtensionLayer',
@@ -1195,12 +1095,12 @@ export class Function extends FunctionBase {
     }
 
     const environmentVariables: { [key: string]: any } = {
-      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: config.paramsAndSecretsExtensionCacheEnabled ?? true,
-      PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: config.paramsAndSecretsExtensionCacheSize ?? 1000,
-      PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: config.paramsAndSecretsExtensionHttpPort ?? 2773,
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: config.paramsAndSecretsExtensionLogLevel ?? ParametersAndSecretsLogLevel.INFO,
-      PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: config.paramsAndSecretsExtensionMaxConnections ?? 3,
-      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagertimeout?.toMilliseconds() ?? 0,
+      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: config.paramsAndSecretsCacheEnabled ?? true,
+      PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: config.paramsAndSecretsCacheEnabled ?? 1000,
+      PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: config.paramsAndSecretsHttpPort ?? 2773,
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: config.paramsAndSecretsLogLevel ?? ParamsAndSecretsLogLevels.INFO,
+      PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: config.paramsAndSecretsMaxConnections ?? 3,
+      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagerTimeout?.toMilliseconds() ?? 0,
       SECRETS_MANAGER_TTL: config.secretsManagerTtl?.toSeconds() ?? 300,
       SSM_PARAMETER_STORE_TIMEOUT_MILLIS: config.parameterStoreTimeout?.toMilliseconds() ?? 0,
       SSN_PARAMETER_STORE_TTL: config.parameterStoreTtl?.toSeconds() ?? 300,
@@ -1296,6 +1196,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
+  }
+
+  /**
+   * Add a Parameters and Secrets Extension Lambda layer.
+   */
+  private configureParamsAndSecretsExtension(props: FunctionProps): void {
+
   }
 
   private renderLayers() {
