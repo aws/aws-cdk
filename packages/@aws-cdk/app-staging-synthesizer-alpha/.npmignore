@@ -1,0 +1,14 @@
+
+.LAST_BUILD
+*.snk
+junit.xml
+*.ts
+!*.d.ts
+!*.js
+!*.lit.ts
+coverage
+.nyc_output
+*.tgz
+.eslintrc.js
+# exclude cdk artifacts
+**/cdk.out
