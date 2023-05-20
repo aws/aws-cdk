@@ -25,6 +25,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import * as sm from '../../aws-secretsmanager';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
@@ -86,7 +87,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default true
    */
-  paramsAndSecretsExtensionCacheEnabled?: boolean;
+  readonly paramsAndSecretsExtensionCacheEnabled?: boolean;
 
   /**
    * The maximum number of secrets and parameters to cache. Must be a value from 0
@@ -97,21 +98,21 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 1000
    */
-  paramsAndSecretsExtensionCacheSize?: number;
+  readonly paramsAndSecretsExtensionCacheSize?: number;
 
   /**
    * The port for the local HTTP server.
    *
    * @default 2773
    */
-  paramsAndSecretsExtensionHttpPort?: number;
+  readonly paramsAndSecretsExtensionHttpPort?: number;
 
   /**
    * The level of logging for the Parameters and Secrets Extension to provide.
    *
    * @default
    */
-  paramsAndSecretsExtensionLogLevel?: ParametersAndSecretsLogLevel,
+  readonly paramsAndSecretsExtensionLogLevel?: ParametersAndSecretsLogLevel,
 
   /**
    * The maximum number of connections for HTTP clients that the Parameters and Secrets
@@ -120,7 +121,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 3
    */
-  paramsAndSecretsExtensionMaxConnections?: number;
+  readonly paramsAndSecretsExtensionMaxConnections?: number;
 
   /**
    * Timeout for requests to Secrets Manager in milliseconds. A value of 0 means there is no
@@ -128,7 +129,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 0
    */
-  secretsManagertimeout?: Duration;
+  readonly secretsManagertimeout?: Duration;
 
   /**
    * The time to live of a secret in the cache in seconds. A value of 0 means there is no
@@ -138,7 +139,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 300
    */
-  secretsManagerTtl?: Duration;
+  readonly secretsManagerTtl?: Duration;
 
   /**
    * Timeout for requests to Parameter Store in milliseconds. A value of 0 means there is no
@@ -146,7 +147,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 0
    */
-  parameterStoreTimeout?: Duration;
+  readonly parameterStoreTimeout?: Duration;
 
   /**
    * The time to live of a parameter in the cache in seconds. A value of 0 means there is no
@@ -156,7 +157,7 @@ export interface ParametersAndSecretsConfig {
    *
    * @default 300
    */
-  parameterStoreTtl?: Duration;
+  readonly parameterStoreTtl?: Duration;
 }
 
 /**
@@ -1176,7 +1177,7 @@ export class Function extends FunctionBase {
     return addAlias(this, this.currentVersion, aliasName, options);
   }
 
-  public attachParametersAndSecretsExtension(config: ParametersAndSecretsConfig = {}): void {
+  public attachParametersAndSecretsExtension(secret: sm.ISecret, config: ParametersAndSecretsConfig = {}): void {
     const paramsAndSecretsLayer = LayerVersion.fromLayerVersionArn(
       this.stack,
       'ParamsAndSecretsExtensionLayer',
@@ -1184,20 +1185,27 @@ export class Function extends FunctionBase {
     );
     this.addLayers(paramsAndSecretsLayer);
 
-    // TODO: Do I need to handle the ignored variables or will they be ignored automatically?
-    // TODO: Is there a better way to structure this?
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecret'],
+      resources: [secret.secretArn],
+    }));
+
+    if (secret.encryptionKey) {
+      secret.encryptionKey.grantDecrypt(this);
+    }
+
     const environmentVariables: { [key: string]: any } = {
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: config.paramsAndSecretsExtensionCacheEnabled ?? true,
       PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: config.paramsAndSecretsExtensionCacheSize ?? 1000,
       PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: config.paramsAndSecretsExtensionHttpPort ?? 2773,
       PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: config.paramsAndSecretsExtensionLogLevel ?? ParametersAndSecretsLogLevel.INFO,
       PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: config.paramsAndSecretsExtensionMaxConnections ?? 3,
-      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagertimeout ?? 0,
-      SECRETS_MANAGER_TTL: config.secretsManagerTtl ?? Duration.seconds(300),
-      SSM_PARAMETER_STORE_TIMEOUT_MILLIS: config.parameterStoreTimeout ?? 0,
-      SSN_PARAMETER_STORE_TTL: config.parameterStoreTtl ?? Duration.seconds(300),
+      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagertimeout?.toMilliseconds() ?? 0,
+      SECRETS_MANAGER_TTL: config.secretsManagerTtl?.toSeconds() ?? 300,
+      SSM_PARAMETER_STORE_TIMEOUT_MILLIS: config.parameterStoreTimeout?.toMilliseconds() ?? 0,
+      SSN_PARAMETER_STORE_TTL: config.parameterStoreTtl?.toSeconds() ?? 300,
     };
-    Object.entries(environmentVariables).forEach(([key, value]) => this.addEnvironment(key, value));
+    Object.entries(environmentVariables).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }
 
   /**
@@ -1222,6 +1230,9 @@ export class Function extends FunctionBase {
   }
 
   public get paramsAndSecretsExtensionLambdaArn(): string {
+    if (Token.isUnresolved(this.stack.region)) {
+      throw new Error('Unable to retrieve lambda arn for parameters and secrets extension');
+    }
     return PARAMS_AND_SECRETS_EXTENSION_LAMBDA_ARNS[this.architecture.name][this.stack.region];
   }
 
