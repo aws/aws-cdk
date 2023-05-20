@@ -18,7 +18,7 @@ describe('Example Resource', () => {
   describe('created with default properties', () => {
 
     beforeEach(() => {
-      new vpclattice.ServiceNetwork(stack, 'ServiceNetwork');
+      new vpclattice.ServiceNetwork(stack, 'ServiceNetwork', {});
     });
 
     test('creates a lattice network', () => {
