@@ -11,7 +11,7 @@ import * as vpclattice from './index';
 /**
  * Propertys to Create a Lattice Listener
  */
-export interface LatticeListnerProps {
+export interface LatticeListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
   */
@@ -109,6 +109,7 @@ export class Listener extends core.Resource implements IListener {
     super(scope, id);
 
     const listener = new aws_vpclattice.CfnListener(this, 'Resource', {
+      name: props.name,
       defaultAction: props.defaultAction,
       protocol: props.protocol,
       port: props.port,

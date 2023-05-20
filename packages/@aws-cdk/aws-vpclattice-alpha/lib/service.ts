@@ -32,7 +32,7 @@ export interface IService extends core.IResource {
    * Add A vpc listener to the Service.
    * @param props
    */
-  addListener(props: AddListenerProps): vpclattice.Listener;
+  addListener(props: vpclattice.ListenerProps): vpclattice.Listener;
   /**
    * Share the service to other accounts via RAM
    * @param props
@@ -42,7 +42,7 @@ export interface IService extends core.IResource {
   /**
   * Create a DNS entry in R53 for the service.
   */
-  addDNSEntry(props: AddDNSEntryProps): void;
+  addDNSEntry(props: aws_vpclattice.CfnService.DnsEntryProperty): void;
 
   /**
    * Add a certificate to the service
@@ -68,6 +68,11 @@ export interface IService extends core.IResource {
 
 }
 
+export interface ShareServiceProps {
+  name: string;
+  allowExternalPrincipals?: boolean | undefined
+  principals?: string[] | undefined
+}
 
 export interface LatticeServiceProps {
   /**
@@ -86,7 +91,7 @@ export class Service extends core.Resource implements IService {
   authType: vpclattice.AuthType | undefined;
   certificate: certificatemanager.Certificate | undefined;
   customDomain: string | undefined;
-  dnsEntry: string | undefined;
+  dnsEntry: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
   name: string | undefined;
 
   constructor(scope: constructs.Construct, id: string, props: LatticeServiceProps) {
@@ -135,7 +140,7 @@ export class Service extends core.Resource implements IService {
         throw new Error('The actions for the policy statement are invalid, They must only be [\'vpc-lattice-svcs:Invoke\']');
       }
       if (statement.resources !== validResources) {
-        throw new Error('The resources for the policy statement are invalid, They must only be [\'' + this.serviceNetworkArn + '\']');
+        throw new Error('The resources for the policy statement are invalid, They must only be [\'' + this.serviceArn + '\']');
       }
     });
 
@@ -177,8 +182,65 @@ export class Service extends core.Resource implements IService {
     this.customDomain = domain;
   }
 
-  public addDNSEntry(props: AddDNSEntryProps): void {
-    
+  public addDNSEntry(dnsEntry: aws_vpclattice.CfnService.DnsEntryProperty): void {
+
+    this.dnsEntry = dnsEntry;
   }
 
+  public addListener(props: vpclattice.ListenerProps): vpclattice.Listener {
+
+    // check the the port is in range if it is specificed
+    if (props.port) {
+      if (props.port < 0 || props.port > 65535) {
+        throw new Error('Port out of range');
+      }
+    }
+
+    // default to using HTTPS
+    let protocol = props.protocol ?? vpclattice.Protocol.HTTPS;
+
+    // if its not specified, set it to the default port based on the protcol
+    let port: number;
+    switch (protocol) {
+      case vpclattice.Protocol.HTTP:
+        port = props.port ?? 80;
+        break;
+      case vpclattice.Protocol.HTTPS:
+        port = props.port ?? 443;
+        break;
+      default:
+        throw new Error('Protocol not supported');
+    }
+
+    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = {};
+    // the default action is a not found
+    if (props.defaultAction === undefined) {
+      defaultAction = {
+        fixedResponse: {
+          statusCode: vpclattice.FixedResponse.NOT_FOUND,
+        },
+      };
+    }
+
+    const listener = new vpclattice.Listener(this, `Listener-${props.name}`, {
+      defaultAction: defaultAction,
+      protocol: protocol,
+      port: port,
+      serviceIdentifier: this.serviceId,
+      name: props.name,
+    });
+
+    return listener;
+  }
+
+  public share(props: ShareServiceProps): void {
+
+    new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
+      name: props.name,
+      resourceArns: [this.serviceArn],
+      allowExternalPrincipals: props.allowExternalPrincipals,
+      principals: props.principals,
+    });
+	  }
 }
+
