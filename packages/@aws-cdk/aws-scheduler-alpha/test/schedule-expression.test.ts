@@ -94,7 +94,7 @@ describe('schedule expression', () => {
   });
 
   test('one-time expression string has expected date', () => {
-    const x = ScheduleExpression.at(new Date(2022, 10, 20, 19, 20, 23));
+    const x = ScheduleExpression.at(new Date(Date.UTC(2022, 10, 20, 19, 20, 23)));
     expect(x.expressionString).toEqual('at(2022-11-20T19:20:23)');
   });
 
@@ -104,7 +104,7 @@ describe('schedule expression', () => {
   });
 
   test('one-time expression has expected time zone if provided', () => {
-    const x = ScheduleExpression.at(new Date(2022, 10, 20, 19, 20, 23), TimeZone.EUROPE_LONDON);
+    const x = ScheduleExpression.at(new Date(Date.UTC(2022, 10, 20, 19, 20, 23)), TimeZone.EUROPE_LONDON);
     expect(x.expressionString).toEqual('at(2022-11-20T19:20:23)');
     expect(x.timeZone).toEqual(TimeZone.EUROPE_LONDON);
   });
