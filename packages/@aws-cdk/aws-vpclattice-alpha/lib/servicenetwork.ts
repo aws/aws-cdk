@@ -5,6 +5,7 @@ import {
   aws_s3 as s3,
   aws_logs as logs,
   aws_kinesis as kinesis,
+  aws_ram as ram,
 }
   from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
@@ -159,13 +160,64 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       resourceIdentifier: this.serviceNetworkId,
     });
   }
-
+  /**
+   * Add A lattice service to a lattice network
+   * @param service
+   */
   public addService(service: vpclattice.Service): void {
 
     new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, 'LatticeServiceAssociation', {
       serviceIdentifier: service.serviceId,
       serviceNetworkIdentifier: this.serviceNetworkId,
     });
-
   }
+  /**
+   * Associate a VPC with the Service Network
+   * @param vpc
+   * @param securityGroups
+   */
+  public associateVPC(vpc: ec2.Vpc, securityGroups: ec2.SecurityGroup[]): void {
+
+    const securityGroupIds: string[] = [];
+    securityGroups.forEach((securityGroup) => {
+      securityGroupIds.push(securityGroup.securityGroupId);
+    });
+
+    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, 'VpcAssociation', /* all optional props */ {
+      securityGroupIds: securityGroupIds,
+      serviceNetworkIdentifier: this.serviceNetworkId,
+      vpcIdentifier: vpc.vpcId,
+    });
+  }
+
+  public logToS3(bucket: s3.Bucket | s3.IBucket): void {
+    new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeLoggingtoS3', {
+      destinationArn: bucket.bucketArn,
+      resourceIdentifier: this.serviceNetworkArn,
+    });
+  }
+
+  public sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup): void {
+    new aws_vpclattice.CfnAccessLogSubscription(this, 'LattiCloudwatch', {
+      destinationArn: log.logGroupArn,
+      resourceIdentifier: this.serviceNetworkId,
+    });
+  }
+
+  public streamToKinesis(stream: kinesis.Stream | kinesis.IStream): void {
+    new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeKinesis', {
+      destinationArn: stream.streamArn,
+      resourceIdentifier: this.serviceNetworkId,
+    });
+  }
+
+  public share(props: vpclattice.ShareServiceNetworkProps): void {
+    new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
+      name: props.name,
+      resourceArns: [this.serviceNetworkArn],
+      allowExternalPrincipals: props.allowExternalPrincipals,
+      principals: props.principals,
+    });
+  }
+
 }
