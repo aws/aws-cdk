@@ -10,7 +10,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import * as sm from '../../aws-secretsmanager';
 import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
@@ -20,7 +19,6 @@ import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
-import { ParamsAndSecretsLayerVersion } from '../lib/params-and-secrets-layers';
 
 describe('function', () => {
   const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');
@@ -3207,7 +3205,7 @@ test('set SnapStart to desired value', () => {
 
 test('parameters and secrets extension', () => {
   const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
-  const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
+  new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_14_X,

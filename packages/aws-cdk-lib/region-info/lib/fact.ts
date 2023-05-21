@@ -22,6 +22,8 @@ export class Fact {
    * @returns the fact value if it is known, and `undefined` otherwise.
    */
   public static find(region: string, name: string): string | undefined {
+    /* eslint-disable no-console */
+    console.log(this.database);
     const regionFacts = this.database[region];
     return regionFacts && regionFacts[name];
   }

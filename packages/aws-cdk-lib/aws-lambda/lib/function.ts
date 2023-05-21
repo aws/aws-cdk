@@ -15,7 +15,7 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
-import { ParamsAndSecretsConfig, ParamsAndSecretsLayer, ParamsAndSecretsLogLevels } from './params-and-secrets-layers';
+import { ParamsAndSecretsConfig, ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
@@ -26,7 +26,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import * as sm from '../../aws-secretsmanager';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
@@ -264,12 +263,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly adotInstrumentation?: AdotInstrumentationConfig;
 
   /**
-   * Specify a Parameters and Secrets Extension layer
+   * Specify the configuration of Parameters and Secrets Extension
    * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
    *
    * @default - No Parameters and Secrets Extension layer
    */
-  readonly paramsAndSecretsLayer?: ParamsAndSecretsLayer;
+  readonly paramsAndSecrets?: ParamsAndSecretsConfig;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -1079,37 +1078,6 @@ export class Function extends FunctionBase {
     return addAlias(this, this.currentVersion, aliasName, options);
   }
 
-  public attachParametersAndSecretsExtension(secret: sm.ISecret, config: ParamsAndSecretsConfig = {}): void {
-    const paramsAndSecretsLayer = LayerVersion.fromLayerVersionArn(
-      this.stack,
-      'ParamsAndSecretsExtensionLayer',
-      this.paramsAndSecretsExtensionLambdaArn,
-    );
-    this.addLayers(paramsAndSecretsLayer);
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['secretsmanager:GetSecret'],
-      resources: [secret.secretArn],
-    }));
-
-    if (secret.encryptionKey) {
-      secret.encryptionKey.grantDecrypt(this);
-    }
-
-    const environmentVariables: { [key: string]: any } = {
-      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: config.paramsAndSecretsCacheEnabled ?? true,
-      PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: config.paramsAndSecretsCacheEnabled ?? 1000,
-      PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: config.paramsAndSecretsHttpPort ?? 2773,
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: config.paramsAndSecretsLogLevel ?? ParamsAndSecretsLogLevels.INFO,
-      PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: config.paramsAndSecretsMaxConnections ?? 3,
-      SECRETS_MANAGER_TIMEOUT_MILLIS: config.secretsManagerTimeout?.toMilliseconds() ?? 0,
-      SECRETS_MANAGER_TTL: config.secretsManagerTtl?.toSeconds() ?? 300,
-      SSM_PARAMETER_STORE_TIMEOUT_MILLIS: config.parameterStoreTimeout?.toMilliseconds() ?? 0,
-      SSN_PARAMETER_STORE_TTL: config.parameterStoreTtl?.toSeconds() ?? 300,
-    };
-    Object.entries(environmentVariables).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
-  }
-
   /**
    * The LogGroup where the Lambda function's logs are made available.
    *
@@ -1129,13 +1097,6 @@ export class Function extends FunctionBase {
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
     }
     return this._logGroup;
-  }
-
-  public get paramsAndSecretsExtensionLambdaArn(): string {
-    if (Token.isUnresolved(this.stack.region)) {
-      throw new Error('Unable to retrieve lambda arn for parameters and secrets extension');
-    }
-    return PARAMS_AND_SECRETS_EXTENSION_LAMBDA_ARNS[this.architecture.name][this.stack.region];
   }
 
   /** @internal */
@@ -1204,7 +1165,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * Add a Parameters and Secrets Extension Lambda layer.
    */
   private configureParamsAndSecretsExtension(props: FunctionProps): void {
+    if (props.paramsAndSecrets === undefined) {
+      return;
+    }
 
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.paramsAndSecretsVersion._bind(this, this).arn));
   }
 
   private renderLayers() {
