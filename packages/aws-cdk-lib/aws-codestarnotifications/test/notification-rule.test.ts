@@ -1,5 +1,3 @@
-import { Template } from '../../assertions';
-import * as cdk from '../../core';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
@@ -7,6 +5,8 @@ import {
   FakeSlackTarget,
   FakeSnsTopicTarget,
 } from './helpers';
+import { Template } from '../../assertions';
+import * as cdk from '../../core';
 import * as notifications from '../lib';
 
 describe('NotificationRule', () => {

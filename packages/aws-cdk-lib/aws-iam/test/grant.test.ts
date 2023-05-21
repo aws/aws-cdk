@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Template, Match } from '../../assertions';
 import { CfnResource, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
 import * as iam from '../lib';
 
 let stack: Stack;

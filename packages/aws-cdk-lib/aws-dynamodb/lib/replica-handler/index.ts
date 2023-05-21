@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
 
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', { ...event, ResponseURL: '...' });

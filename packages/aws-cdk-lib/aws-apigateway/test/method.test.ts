@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 
@@ -1072,6 +1072,54 @@ describe('method', () => {
       expect(metric.statistic).toEqual('Average');
       expect(metric.color).toEqual(color);
       expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('grantExecute', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      method.grantExecute(user);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':execute-api:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'testapiD6451F70' },
+                    '/',
+                    { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+                    '/GET/pets',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        Users: [{
+          Ref: 'user2C2B57AE',
+        }],
+      });
     });
   });
 });

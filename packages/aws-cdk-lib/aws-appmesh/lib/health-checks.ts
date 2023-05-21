@@ -1,7 +1,7 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
+import * as cdk from '../../core';
 
 /**
  * Properties used to define healthchecks.

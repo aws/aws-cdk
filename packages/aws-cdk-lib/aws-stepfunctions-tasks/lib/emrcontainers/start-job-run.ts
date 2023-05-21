@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
@@ -8,7 +9,6 @@ import { TaskInput } from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import * as cr from '../../../custom-resources';
 import * as awscli from '../../../lambda-layer-awscli';
-import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
