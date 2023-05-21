@@ -12,6 +12,7 @@ import {
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
   CR_DEFAULT_RUNTIME_MAP,
+  PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
 import {
   AWS_REGIONS,
@@ -113,6 +114,10 @@ export async function main(): Promise<void> {
           );
         }
       }
+    }
+
+    for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
+      registerFact(region, ['paramsAndSecretsLambdaLayer', arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[arch][region]);
     }
   }
   lines.push('  }');

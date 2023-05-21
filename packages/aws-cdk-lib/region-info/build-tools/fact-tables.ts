@@ -543,6 +543,15 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'us-west-2': '52.89.255.224',
 };
 
+export const PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS: { [arch: string]: { [region: string]: string } } = {
+  x86_64: {
+    'us-east-1': 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4',
+  },
+  arm64: {
+    'us-east-1': 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4',
+  },
+};
+
 const ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS: { [version: string]: { [arch: string]: { [region: string]: string } } } = {
   '1.24.0': {
     x86_64: {
