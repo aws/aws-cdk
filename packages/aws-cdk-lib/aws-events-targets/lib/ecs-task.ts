@@ -100,7 +100,7 @@ export interface EcsTaskProps extends TargetBaseProps {
    * Specifies whether the task's elastic network interface receives a public IP address.
    * You can specify true only when LaunchType is set to FARGATE.
    *
-   * @default - false
+   * @default - true if the subnet type is PUBLIC, otherwise false
    */
   readonly assignPublicIp?: boolean;
 
