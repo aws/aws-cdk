@@ -409,7 +409,7 @@ export class Instance extends Resource implements IInstance {
 
     // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
     const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
+      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken, deleteOnTermination: true }]
       : undefined;
 
     // if network interfaces array is configured then subnetId and securityGroupIds are configured on the network interface
