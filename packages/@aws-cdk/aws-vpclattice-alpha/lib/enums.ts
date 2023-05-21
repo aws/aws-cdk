@@ -12,30 +12,9 @@ export enum Protocol {
   HTTPS = 'HTTPS',
 }
 
-/**
- * Supported Endpoints for targets
- */
-export enum TargetType {
-  /**
-   * Lambda Target
-   */
-  LAMBDA = 'LAMBDA',
-  /**
-   * IP Address Target
-   */
-  IP = 'IP',
-  /**
-   * EC2 Instance Targets
-   */
-  INSTANCE = 'INSTANCE',
-  /**
-   * Application Load Balancer Target
-   */
-  ALB = 'ALB'
-}
 
 /**
- * Fixed reponse codes
+ * Fixed response codes
  */
 export enum FixedResponse {
   /**

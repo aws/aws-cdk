@@ -11,6 +11,28 @@ import {
 import * as vpclattice from './index';
 import * as constructs from 'constructs';
 
+/**
+ * Supported Endpoints for targets
+ */
+enum TargetType {
+  /**
+   * Lambda Target
+   */
+  LAMBDA = 'LAMBDA',
+  /**
+   * IP Address Target
+   */
+  IP = 'IP',
+  /**
+   * EC2 Instance Targets
+   */
+  INSTANCE = 'INSTANCE',
+  /**
+   * Application Load Balancer Target
+   */
+  ALB = 'ALB'
+}
+
 
 /**
  * Create a vpc lattice TargetGroup.
@@ -87,7 +109,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
   constructor(scope: constructs.Construct, id: string, props: TargetGroupProps) {
     super(scope, id);
 
-    let targetType: vpclattice.TargetType;
+    let targetType: TargetType;
     let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = [];
 
     // Lambda Targets
@@ -95,7 +117,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       && props.instancetargets === undefined
       && props.albTargets === undefined
       && props.ipTargets === undefined ) {
-      targetType = vpclattice.TargetType.LAMBDA;
+      targetType = TargetType.LAMBDA;
       props.lambdaTargets.forEach((target) => {
         targets.push(
           { id: target.functionArn },
@@ -106,7 +128,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       && props.lambdaTargets === undefined
       && props.albTargets === undefined
       && props.ipTargets === undefined ) {
-      targetType = vpclattice.TargetType.INSTANCE;
+      targetType = TargetType.INSTANCE;
       props.instancetargets.forEach((target) => {
         targets.push(
           { id: target.instanceId },
@@ -117,7 +139,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       && props.instancetargets === undefined
       && props.lambdaTargets === undefined
       && props.ipTargets === undefined ) {
-      targetType = vpclattice.TargetType.INSTANCE;
+      targetType = TargetType.INSTANCE;
       props.albTargets.forEach((target) => {
         targets.push(
           { id: target.listenerArn },
@@ -128,7 +150,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       && props.instancetargets === undefined
       && props.lambdaTargets === undefined
       && props.albTargets === undefined ) {
-      targetType = vpclattice.TargetType.IP;
+      targetType = TargetType.IP;
       props.ipTargets.forEach((target) => {
         targets.push(
           { id: target },

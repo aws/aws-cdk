@@ -46,9 +46,9 @@ export interface PathMatch {
 /**
  * Properties to create a Method Match
  */
-export interface MethodMatch {
-  /**
-	 * An Http Method eg GET, POST, PUT, DELETE
-	 */
-  readonly httpMethod: vpclattice.HTTPMethods
-}
+// export interface MethodMatch {
+//   /**
+// 	 * An Http Method eg GET, POST, PUT, DELETE
+// 	 */
+//   readonly httpMethod: vpclattice.HTTPMethods
+// }
