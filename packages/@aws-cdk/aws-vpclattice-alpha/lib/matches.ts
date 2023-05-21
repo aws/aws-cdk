@@ -7,20 +7,20 @@ export interface HeaderMatch {
   /**
   * the name of the header to match
   */
-  headername: string,
+  readonly headername: string,
   /**
   * Should the match be case sensitive?
   * @default true
   */
-  caseSensitive?: boolean,
+  readonly caseSensitive?: boolean,
   /**
   * Type of match to make
   */
-  matchOperator: vpclattice.MatchOperator,
+  readonly matchOperator: vpclattice.MatchOperator,
   /**
   * Value to match against
   */
-  matchValue: string,
+  readonly matchValue: string,
 }
 
 /**
@@ -31,15 +31,16 @@ export interface PathMatch {
 	 * Should the match be case sensitive?
 	 * @default true
 	 */
-  caseSensitive?: boolean,
+  readonly caseSensitive?: boolean,
   /**
 	 * Type of match to make
+   * @default true
 	 */
-  pathMatchType: vpclattice.PathMatchType,
+  readonly pathMatchType: vpclattice.PathMatchType,
   /**
 	 * Value to match against
 	 */
-  matchValue: string,
+  readonly matchValue: string,
 }
 
 /**
@@ -49,5 +50,5 @@ export interface MethodMatch {
   /**
 	 * An Http Method eg GET, POST, PUT, DELETE
 	 */
-  httpMethod: vpclattice.HTTPMethods
+  readonly httpMethod: vpclattice.HTTPMethods
 }

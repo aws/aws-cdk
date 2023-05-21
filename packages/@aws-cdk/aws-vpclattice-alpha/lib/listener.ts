@@ -11,7 +11,7 @@ import * as vpclattice from './index';
 /**
  * Propertys to Create a Lattice Listener
  */
-export interface LatticeListenerProps {
+export interface ListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
   */
@@ -22,6 +22,8 @@ export interface LatticeListenerProps {
   readonly protocol: vpclattice.Protocol
   /**
   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
+  * @default 80 or 443 depending on the Protocol
+
   */
   readonly port?: number | undefined
   /**
@@ -78,16 +80,18 @@ export interface AddRuleProps {
   readonly priority: number
   /** Properties for a header match
   * A header match can search for multiple headers
+  * @default none
   */
-
   readonly headerMatchs?: vpclattice.HeaderMatch[] | undefined
   /**
   * Properties for a Path Match
+  * @default none
   */
   readonly pathMatch?: vpclattice.PathMatch | undefined
 
   /**
   * Properties for a method Match
+  * @default none
   */
   readonly methodMatch?: vpclattice.HTTPMethods | undefined
 }
@@ -99,13 +103,24 @@ export interface AddRuleProps {
  *  Creates a vpcLattice Listener
  */
 export class Listener extends core.Resource implements IListener {
-
-  listenerId: string;
-  listenerArn: string;
+  /**
+   *  The Id of the Listener
+   */
+  readonly listenerId: string;
+  /**
+   * THe Arn of the Listener
+   */
+  readonly listenerArn: string;
+  /**
+   * A list of prioritys, to check for duplicates
+   */
   listenerPrioritys: number[] = []
-  serviceIdentifier: string
+  /**
+   * The Id of the service this listener is attached to
+   */
+  readonly serviceIdentifier: string
 
-  constructor(scope: Construct, id: string, props: LatticeListnerProps) {
+  constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
 
     const listener = new aws_vpclattice.CfnListener(this, 'Resource', {

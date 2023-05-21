@@ -13,7 +13,6 @@ const stack = new core.Stack(app, 'vpcLatticeTestStack');
 
 new vpclattice.ServiceNetwork(stack, 'ServiceNetwork', {
   name: 'serviceNetwork',
-  authType: vpclattice.AuthType.NONE,
 });
 
 app.synth();

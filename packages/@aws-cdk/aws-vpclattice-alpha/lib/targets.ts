@@ -27,48 +27,60 @@ export interface WeightedTargetGroup {
   */
   readonly weight?: number | undefined
 }
-
+/**
+ * A Configuration of the TargetGroup Health Check.
+ */
 export interface TargetGroupHealthCheck {
   /**
    * Enable this Health Check
+   * @default true
    */
-  enabled?: boolean | undefined,
+  readonly enabled?: boolean | undefined,
   /**
    * Health Check Interval
+   * @default 30 seconds
    */
-  healthCheckInterval?: core.Duration | undefined
+  readonly healthCheckInterval?: core.Duration | undefined
   /**
    * TimeOut Period
+   * @default 5 seconds
    */
-  healthCheckTimeout?: core.Duration | undefined
+  readonly healthCheckTimeout?: core.Duration | undefined
   /**
    * Number of Healthy Responses before Target is considered healthy
+   * @default 2
    */
-  healthyThresholdCount?: number | undefined
+  readonly healthyThresholdCount?: number | undefined
   /**
    * Check based on Response from target
+   * @default 200 OK
    */
-  matcher?: vpclattice.FixedResponse | undefined
+  readonly matcher?: vpclattice.FixedResponse | undefined
   /**
    * Path to use for Health Check
+   * @default '/'
    */
-  path?: string | undefined
+  readonly path?: string | undefined
   /**
    * Port to use for Health Check
+   * @default 443
    */
-  port?: number | undefined
+  readonly port?: number | undefined
   /**
    * Protocol to use for Health Check
+   * @default HTTPS
    */
-  protocol?: vpclattice.Protocol | undefined
+  readonly protocol?: vpclattice.Protocol | undefined
   /**
    * Protocol to use for Health Check
+   * @default HTTP2
    */
-  protocolVersion?: vpclattice.ProtocolVersion | undefined
+  readonly protocolVersion?: vpclattice.ProtocolVersion | undefined
   /**
    * Number of unhealty events before Target is considered unhealthy
+   * @default 1
    */
-  unhealthyThresholdCount?: number | undefined
+  readonly unhealthyThresholdCount?: number | undefined
 }
 /**
  * Target Group Configuration Properties
@@ -77,27 +89,30 @@ export interface TargetGroupConfigProps {
   /**
    * The port to listen on
    */
-  port: number;
+  readonly port: number;
   /**
    * The protocol to listen on
    */
-  protocol: vpclattice.Protocol;
+  readonly protocol: vpclattice.Protocol;
   /**
    * The VPC to use
    */
-  vpc: ec2.Vpc;
+  readonly vpc: ec2.Vpc;
   /**
    * The IP Address Type
+   * @default ipv4
    */
-  ipAddressType?: vpclattice.IpAddressType | undefined;
+  readonly ipAddressType?: vpclattice.IpAddressType | undefined;
   /**
-   * The Protocol Version
+   * The Protocol Versions
+   * @default HTTP2
    */
-  protocolVersion?: vpclattice.ProtocolVersion | undefined;
+  readonly protocolVersion?: vpclattice.ProtocolVersion | undefined;
   /**
    * The Health Check to use
+   * @default none
    */
-  healthCheck?: TargetGroupHealthCheck | undefined;
+  readonly healthCheck?: TargetGroupHealthCheck | undefined;
 }
 /**
  * A TargetGroup Configuration
@@ -107,7 +122,7 @@ export class TargetGroupConfig extends Construct {
   /**
    * The configuration
    */
-  targetGroupConfig: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+  targetGroupCfg: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
 
   constructor(scope: constructs.Construct, id: string, props: TargetGroupConfigProps) {
     super(scope, id);
@@ -169,7 +184,7 @@ export class TargetGroupConfig extends Construct {
       unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
     };
 
-    this.targetGroupConfig = {
+    this.targetGroupCfg = {
       port: props.port,
       protocol: props.protocol,
       vpcIdentifier: props.vpc.vpcId,

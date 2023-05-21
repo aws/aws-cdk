@@ -67,16 +67,33 @@ export interface IService extends core.IResource {
    */
 
 }
-
+/**
+ * Properties to Share the Service
+ */
 export interface ShareServiceProps {
-  name: string;
-  allowExternalPrincipals?: boolean | undefined
-  principals?: string[] | undefined
+  /**
+   * The name of the service
+   */
+  readonly name: string;
+  /**
+   * Allow External Principals
+   * @default false
+   */
+  readonly allowExternalPrincipals?: boolean | undefined
+  /**
+   * Principals to share the service with.
+   * TO DO, this needs some work
+   * @default none
+   */
+  readonly principals: string[] | undefined
 }
-
+/**
+ * Properties for a Lattice Service
+ */
 export interface LatticeServiceProps {
   /**
    * Name for the service
+   * @default cloudformation will provide a name
    */
   readonly name?: string | undefined
 }
@@ -85,13 +102,33 @@ export interface LatticeServiceProps {
  * Create a vpcLattice Service
  */
 export class Service extends core.Resource implements IService {
-
-  serviceId: string
-  serviceArn: string
+  /**
+   * The Id of the Service
+   */
+  readonly serviceId: string
+  /**
+   * The Arn of the Service
+   */
+  readonly serviceArn: string
+  /**
+   * The authType of the service.
+   */
   authType: vpclattice.AuthType | undefined;
+  /**
+   * A certificate that may be used by the service
+   */
   certificate: certificatemanager.Certificate | undefined;
+  /**
+   * A custom Domain used by the service
+   */
   customDomain: string | undefined;
+  /**
+   * A DNS Entry for the service
+   */
   dnsEntry: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
+  /**
+  * A name for the service
+  */
   name: string | undefined;
 
   constructor(scope: constructs.Construct, id: string, props: LatticeServiceProps) {
@@ -243,4 +280,5 @@ export class Service extends core.Resource implements IService {
     });
 	  }
 }
+
 

@@ -19,16 +19,17 @@ export interface ShareServiceNetworkProps {
   /**
    * The name of the share.
    */
-  name: string;
+  readonly name: string;
   /**
    * Are external Principals allowed
    * @default false;
    */
-  allowExternalPrincipals?: boolean | undefined
+  readonly allowExternalPrincipals?: boolean | undefined
   /**
    * Principals to share the Service Network with
+   * @default none
    */
-  principals?: string[] | undefined
+  readonly principals?: string[] | undefined
 }
 
 

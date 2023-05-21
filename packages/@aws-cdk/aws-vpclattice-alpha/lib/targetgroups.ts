@@ -20,11 +20,11 @@ export interface ITargetGroup extends core.IResource {
   /**
    * The id of the target group
    */
-  targetGroupId: string
+  readonly targetGroupId: string
   /**
    * The Arn of the target group
    */
-  targetGroupArn: string;
+  readonly targetGroupArn: string;
 
 }
 /**
@@ -34,57 +34,54 @@ export interface TargetGroupProps {
   /**
    * The name of the target group
    */
-  name: string,
+  readonly name: string,
   /**
    * A list of ec2 instance targets.
+   * @default - No targets
    */
-  instancetargets?: ec2.Instance[],
+  readonly instancetargets?: ec2.Instance[],
   /**
    * A list of ip targets
+   * @default - No targets
    */
-  ipTargets?: string[],
+  readonly ipTargets?: string[],
   /**
    * A list of lambda targets
+   * @default - No targets
    */
-  lambdaTargets?: aws_lambda.Function[],
+  readonly lambdaTargets?: aws_lambda.Function[],
   /**
    * A list of alb targets
+   * @default - No targets
    */
-  albTargets?: elbv2.ApplicationListener[]
+  readonly albTargets?: elbv2.ApplicationListener[]
   /**
    * The Target Group configuration. Must be provided for alb, instance and Ip targets, but
    * must not be provided for lambda targets
+   * @default - No configuration
    */
-  config?: vpclattice.TargetGroupConfig | undefined,
+  /**
+   * The Target Group configuration. Must be provided for alb, instance and Ip targets, but
+   * must not be provided for lambda targets
+   * @default - No configuration
+   */
+  readonly config?: vpclattice.TargetGroupConfig | undefined,
 }
 
 /**
  * Create a vpc lattice TargetGroup
  *
- * @example
- * ```javascript
- * const targetGroup = new vpclattice.TargetGroup(this, 'TargetGroup', {
- *   name: 'TargetGroup',
- *   instancetargets: [
- *     ec2Instance1,
- *     ec2Instance2,
- *   ],
- *   config: {
- *     port: 80,
- *     protocol: vpclattice.Protocol.TCP,
- *   },
- * }
  */
 export class TargetGroup extends core.Resource implements ITargetGroup {
 
   /*
   * the Id of the targetGroup
   **/
-  targetGroupId: string
+  readonly targetGroupId: string
   /**
    * The Arn of the targetGroup
    */
-  targetGroupArn: string
+  readonly targetGroupArn: string
 
 
   constructor(scope: constructs.Construct, id: string, props: TargetGroupProps) {
@@ -149,7 +146,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
     const targetGroup = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: targetType,
       name: props.name,
-      config: props.config?.targetGroupConfig,
+      config: props.config?.targetGroupCfg,
       targets: targets,
     });
 
