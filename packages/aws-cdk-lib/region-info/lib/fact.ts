@@ -210,4 +210,13 @@ export class FactName {
     const suffix = type + '_' + version.split('.').join('_') + '_' + architecture;
     return `adot-lambda-layer:${suffix}`;
   }
+
+  /**
+   * The ARN of Parameters and Secrets Lambda layer for a given lambda architecture.
+   *
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public static paramsAndSecretsLambdaLayer(architecture: string): string {
+    return `params-and-secrets-layer:${architecture}`;
+  }
 }
