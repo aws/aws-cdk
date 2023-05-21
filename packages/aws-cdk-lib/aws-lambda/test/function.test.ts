@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as sm from '../../aws-secretsmanager';
 import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
@@ -3204,16 +3205,19 @@ test('set SnapStart to desired value', () => {
 });
 
 test('parameters and secrets extension', () => {
-  const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+  const stack = new cdk.Stack(undefined, 'Stack');
   new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_14_X,
     ephemeralStorageSize: Size.mebibytes(1024),
+    paramsAndSecrets: {
+      secret: new sm.Secret(stack, 'Secret'),
+      paramsAndSecretsVersion: lambda.ParamsAndSecretsLayerVersion.FOR_X86_64,
+    },
   });
 
   /* eslint-disable no-console */
-  console.log('Duration millis = ', cdk.Duration.millis(3000));
   console.log(JSON.stringify(Template.fromStack(stack), null, 4));
 });
 

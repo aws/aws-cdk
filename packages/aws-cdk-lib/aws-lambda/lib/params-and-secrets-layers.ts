@@ -27,9 +27,9 @@ export interface ParamsAndSecretsConfig {
 }
 
 export abstract class ParamsAndSecretsLayerVersion {
-  public static readonly X86_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.X86_64);
+  public static readonly FOR_X86_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.X86_64);
 
-  public static readonly ARM_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.ARM_64);
+  public static readonly FOR_ARM_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.ARM_64);
 
   public static fromParamsAndSecretsVersionArn(arn: string): ParamsAndSecretsLayerVersion {
     class ParamsAndSecretsArn extends ParamsAndSecretsLayerVersion {
