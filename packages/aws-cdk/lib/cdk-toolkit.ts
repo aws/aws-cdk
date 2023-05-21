@@ -17,7 +17,7 @@ import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
-import { data, debug, error, highlight, print, success, warning } from './logging';
+import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -238,23 +238,24 @@ export class CdkToolkit {
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+          await withCorkedLogging(async () => {
+            // only talk to user if STDIN is a terminal (otherwise, fail)
+            if (!process.stdin.isTTY) {
+              throw new Error(
+                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+                'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
+            }
 
-          // only talk to user if STDIN is a terminal (otherwise, fail)
-          if (!process.stdin.isTTY) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
-          }
+            // only talk to user if concurrency is 1 (otherwise, fail)
+            if (concurrency > 1) {
+              throw new Error(
+                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+                'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
+            }
 
-          // only talk to user if concurrency is 1 (otherwise, fail)
-          if (concurrency > 1) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
-          }
-
-          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
-          if (!confirmed) { throw new Error('Aborted by user'); }
+            const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
+            if (!confirmed) { throw new Error('Aborted by user'); }
+          });
         }
       }
 
