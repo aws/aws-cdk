@@ -1,8 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
-import { IFunction } from './function-base';
 import { ISecret } from '../../aws-secretsmanager';
-import { Token, Stack } from '../../core';
+import { Token, Stack, Lazy } from '../../core';
 import { RegionInfo, FactName } from '../../region-info';
 
 /**
@@ -28,12 +27,15 @@ export interface ParamsAndSecretsConfig {
 }
 
 export abstract class ParamsAndSecretsLayerVersion {
-  public static readonly LATEST = ParamsAndSecretsLayerVersion.fromLookUp();
+  public static readonly X86_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.X86_64);
+
+  public static readonly ARM_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.ARM_64);
 
   public static fromParamsAndSecretsVersionArn(arn: string): ParamsAndSecretsLayerVersion {
     class ParamsAndSecretsArn extends ParamsAndSecretsLayerVersion {
       public readonly layerVersionArn = arn;
-      public _bind(_scope: Construct, _function: IFunction): ParamsAndSecretsBindConfig {
+
+      public _bind(_scope: Construct): ParamsAndSecretsBindConfig {
         return {
           arn,
         };
@@ -43,11 +45,15 @@ export abstract class ParamsAndSecretsLayerVersion {
     return new ParamsAndSecretsArn();
   }
 
-  private static fromLookUp(): ParamsAndSecretsLayerVersion {
+  private static fromArchitecture(architecture: Architecture): ParamsAndSecretsLayerVersion {
     class ParamsAndSecretsVersion extends ParamsAndSecretsLayerVersion {
-      public _bind(_scope: Construct, _function: IFunction): ParamsAndSecretsBindConfig {
+      public readonly layerVersionArn = Lazy.uncachedString({
+        produce: (context) => getVersionArn(context.scope, architecture.name),
+      });
+
+      public _bind(_scope: Construct): ParamsAndSecretsBindConfig {
         return {
-          arn: getVersionArn(_scope, _function.architecture?.name ?? Architecture.X86_64.name),
+          arn: getVersionArn(_scope, architecture.name),
         };
       }
     }
@@ -60,7 +66,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    *
    * @internal
    */
-  public abstract _bind(_scope: Construct, _function: IFunction): ParamsAndSecretsBindConfig;
+  public abstract _bind(_scope: Construct): ParamsAndSecretsBindConfig;
 }
 
 function getVersionArn(scope: IConstruct, architecture: string): string {
