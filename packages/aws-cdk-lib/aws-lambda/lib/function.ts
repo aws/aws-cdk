@@ -15,11 +15,10 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
-import { ParamsAndSecretsConfig, ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
+import { ParamsAndSecretsConfig } from './params-and-secrets-layers';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
-import { PARAMS_AND_SECRETS_EXTENSION_LAMBDA_ARNS } from '../../../@aws-cdk/region-info/build-tools/fact-tables';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
@@ -1169,7 +1168,16 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return;
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.paramsAndSecretsVersion._bind(this, this).arn));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources: [props.paramsAndSecrets.secret.secretArn],
+    }));
+
+    if (props.paramsAndSecrets.secret.encryptionKey) {
+      props.paramsAndSecrets.secret.encryptionKey.grantDecrypt(this);
+    }
+
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.paramsAndSecretsVersion._bind(this).arn));
   }
 
   private renderLayers() {
