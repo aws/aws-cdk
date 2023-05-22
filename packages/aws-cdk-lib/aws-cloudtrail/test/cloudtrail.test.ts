@@ -137,7 +137,6 @@ describe('cloudtrail', () => {
       const stack = getTestStack();
       const topic = new sns.Topic(stack, 'Topic');
 
-
       new Trail(stack, 'Trail', { snsTopic: topic });
 
       Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);

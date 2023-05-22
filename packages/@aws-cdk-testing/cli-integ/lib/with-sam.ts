@@ -10,7 +10,6 @@ import { AwsContext, withAws } from './with-aws';
 import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S } from './with-cdk-app';
 import { withTimeout } from './with-timeout';
 
-
 export interface ActionOutput {
   actionSucceeded?: boolean;
   actionOutput?: any;
