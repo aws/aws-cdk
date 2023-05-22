@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { ISecret } from './secret';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
 import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy } from '../../core';
-import { Construct } from 'constructs';
-import { ISecret } from './secret';
 
 /**
  * Options for a SecretRotationApplication
@@ -130,6 +130,8 @@ export class SecretRotationApplication {
   private readonly applicationName: string;
 
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
+    // partitions are handled explicitly via applicationArnForPartition()
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
     this.applicationName = applicationId;

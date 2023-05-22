@@ -1,5 +1,5 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
+import * as cdk from '../../core';
 
 // this file contains a bunch of functions shared
 // between Project and ResourceGroup,

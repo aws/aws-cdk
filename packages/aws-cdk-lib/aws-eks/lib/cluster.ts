@@ -1,12 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as autoscaling from '../../aws-autoscaling';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
@@ -25,6 +18,13 @@ import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import * as autoscaling from '../../aws-autoscaling';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
+import * as ssm from '../../aws-ssm';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1418,7 +1418,14 @@ export class Cluster extends ClusterBase {
       Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
     };
     this.version = props.version;
-    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
+
+    // since this lambda role needs to be added to the trust policy of the creation role,
+    // we must create it in this scope (instead of the KubectlProvider nested stack) to avoid
+    // a circular dependency.
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : new iam.Role(this, 'KubectlHandlerRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
 
     this.tagSubnets();
 
@@ -1573,6 +1580,11 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
+    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      principals: [this.kubectlLambdaRole],
+    }));
+
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
@@ -1587,21 +1599,19 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
-    // if an explicit role is not configured, define a masters role that can
-    // be assumed by anyone in the account (with sts:AssumeRole permissions of
-    // course)
-    const mastersRole = props.mastersRole ?? new iam.Role(this, 'MastersRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
+    // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
+    if (props.mastersRole) {
+      const mastersRole = props.mastersRole;
 
-    // map the IAM role to the `system:masters` group.
-    this.awsAuth.addMastersRole(mastersRole);
+      // map the IAM role to the `system:masters` group.
+      this.awsAuth.addMastersRole(mastersRole);
 
-    if (props.outputMastersRoleArn) {
-      new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      }
+
+      commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
     }
-
-    commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     if (props.albController) {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
@@ -1618,7 +1628,7 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = props.outputConfigCommand ?? true;
+    const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
