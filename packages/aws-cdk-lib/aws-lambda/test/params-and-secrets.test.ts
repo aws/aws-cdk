@@ -3,15 +3,6 @@ import * as sm from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 
-function functionWithParamsAndSecrets(stack: cdk.Stack) {
-  return new lambda.Function(stack, 'Function', {
-    functionName: 'lambda',
-    code: new lambda.InlineCode('foo'),
-    handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_18_X,
-  });
-}
-
 describe('params and secrets', () => {
   test('can provide arn to enable params and secrets', () => {
     // GIVEN
