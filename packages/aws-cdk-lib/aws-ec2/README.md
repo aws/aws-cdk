@@ -1549,7 +1549,7 @@ Aspects.of(this).add(aspect);
 
 ### Associating a Public IP Address with an Instance
 
-All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false. Importantly, if you set `associatePublicIpAddress` and there is a VPC defined in the same stack, you must make sure the `Instance` has a dependency on the VPC to declare a dependency on the VPC-gateway attachment.
+All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false.
 
 ```ts
 const vpc = new ec2.Vpc(this, 'VPC', {
@@ -1573,8 +1573,6 @@ const instance = new ec2.Instance(this, 'Instance', {
   detailedMonitoring: true,
   associatePublicIpAddress: true,
 });
-
-instance.node.addDependency(vpc);
 ```
 
 ## VPC Flow Logs
