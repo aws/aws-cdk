@@ -489,7 +489,9 @@ export class CfnResource extends CfnRefElement {
     const tagMgr = TagManager.of(this);
     if (tagMgr) {
       const tagsProp: { [key: string]: any } = {};
-      tagsProp[tagMgr.tagPropertyName] = tagMgr.renderTags(props[tagMgr.tagPropertyName]);
+      // If this object has a TagManager, then render it out into the correct field. We assume there
+      // is no shadow tags object, so we don't pass anything to renderTags().
+      tagsProp[tagMgr.tagPropertyName] = tagMgr.renderTags();
       return deepMerge(props, tagsProp);
     }
     return props;
