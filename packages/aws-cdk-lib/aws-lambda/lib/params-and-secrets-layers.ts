@@ -23,7 +23,7 @@ export interface ParamsAndSecretsConfig {
   /**
    * The Parameters and Secrets Extension layer.
    */
-  readonly paramsAndSecretsVersion: ParamsAndSecretsLayerVersion;
+  readonly layerVersion: ParamsAndSecretsLayerVersion;
 }
 
 export abstract class ParamsAndSecretsLayerVersion {
@@ -31,7 +31,7 @@ export abstract class ParamsAndSecretsLayerVersion {
 
   public static readonly FOR_ARM_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.ARM_64);
 
-  public static fromParamsAndSecretsVersionArn(arn: string): ParamsAndSecretsLayerVersion {
+  public static fromVersionArn(arn: string): ParamsAndSecretsLayerVersion {
     class ParamsAndSecretsArn extends ParamsAndSecretsLayerVersion {
       public readonly layerVersionArn = arn;
 

@@ -1177,7 +1177,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       props.paramsAndSecrets.secret.encryptionKey.grantDecrypt(this);
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.paramsAndSecretsVersion._bind(this).arn));
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.layerVersion._bind(this).arn));
   }
 
   private renderLayers() {
