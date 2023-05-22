@@ -1,0 +1,125 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ServiceNetwork": {
+        "id": "ServiceNetwork",
+        "path": "ServiceNetwork",
+        "children": {
+          "ServiceNetwork": {
+            "id": "ServiceNetwork",
+            "path": "ServiceNetwork/ServiceNetwork",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ServiceNetwork/ServiceNetwork/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::ServiceNetwork",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "thing"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnServiceNetwork",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-vpclattice-alpha.ServiceNetwork",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ServiceNetwork/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ServiceNetwork/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "vpcLatticeTestStackInteg": {
+        "id": "vpcLatticeTestStackInteg",
+        "path": "vpcLatticeTestStackInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "vpcLatticeTestStackInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "vpcLatticeTestStackInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "vpcLatticeTestStackInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "vpcLatticeTestStackInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "vpcLatticeTestStackInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.26"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
