@@ -146,8 +146,8 @@ See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest
 ### `cdk diff`
 
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
-deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
-found.
+deployed application (or a user-specified CloudFormation template). If you need the command to return a non-zero if any differences are
+found you need to use the `--fail` command line option.
 
 ```console
 $ # Diff against the currently deployed stack
