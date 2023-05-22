@@ -518,7 +518,7 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 
 ### Alb Controller
 
-Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/).
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/).
 
 From the docs:
 
