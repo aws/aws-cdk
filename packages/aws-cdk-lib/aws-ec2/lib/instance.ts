@@ -432,6 +432,9 @@ export class Instance extends Resource implements IInstance {
     });
     this.instance.node.addDependency(this.role);
 
+    const internetConnected = props.vpc.selectSubnets(props.vpcSubnets).internetConnectivityEstablished;
+    this.instance.node.addDependency(internetConnected);
+
     if (!hasPublic && props.associatePublicIpAddress) {
       throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
     }
