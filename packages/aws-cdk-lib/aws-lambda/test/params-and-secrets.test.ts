@@ -145,7 +145,6 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
         layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
         secret,
@@ -172,7 +171,6 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
         layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
         secret,
@@ -257,11 +255,24 @@ describe('params and secrets', () => {
 
   });
 
-  test('throws if x86_64 is not available in region', () => {
-
-  });
-
   test('throws if arm64 is not available in region', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '123456789012', region: 'eu-central-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
 
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
+          secret,
+        },
+      });
+    }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');
   });
 });
