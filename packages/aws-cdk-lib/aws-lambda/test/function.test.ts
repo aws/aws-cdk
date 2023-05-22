@@ -10,7 +10,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import * as sm from '../../aws-secretsmanager';
 import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
