@@ -275,9 +275,7 @@ export interface InstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
-   * NOTE: If you set this value to true to associate a public IP address with the EC2 instance and there
-   * is a VPC defined in the same stack, you must make sure the EC2 instance has a dependency on the VPC
-   * to declare a dependency on the VPC-gateway attachment.
+   * @default -
    */
   readonly associatePublicIpAddress?: boolean;
 }
@@ -409,7 +407,7 @@ export class Instance extends Resource implements IInstance {
 
     // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
     const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken, deleteOnTermination: true }]
+      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
       : undefined;
 
     // if network interfaces array is configured then subnetId and securityGroupIds are configured on the network interface
