@@ -61,6 +61,8 @@ export abstract class ParamsAndSecretsLayerVersion {
     return new ParamsAndSecretsVersion();
   }
 
+  public readonly layerVersionArn: string = '';
+
   /**
    * Returns the arn of the Parameters and Secrets extension
    *

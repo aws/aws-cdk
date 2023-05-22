@@ -3204,23 +3204,6 @@ test('set SnapStart to desired value', () => {
   });
 });
 
-test('parameters and secrets extension', () => {
-  const stack = new cdk.Stack(undefined, 'Stack');
-  new lambda.Function(stack, 'MyLambda', {
-    code: new lambda.InlineCode('foo'),
-    handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_14_X,
-    ephemeralStorageSize: Size.mebibytes(1024),
-    paramsAndSecrets: {
-      secret: new sm.Secret(stack, 'Secret'),
-      paramsAndSecretsVersion: lambda.ParamsAndSecretsLayerVersion.FOR_X86_64,
-    },
-  });
-
-  /* eslint-disable no-console */
-  console.log(JSON.stringify(Template.fromStack(stack), null, 4));
-});
-
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
