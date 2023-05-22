@@ -172,12 +172,12 @@ export abstract class QueueBase extends Resource implements IQueue {
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
-   * If encryption is used, permission to use the key to decrypt the contents of the queue will also be granted to the same principal. 
+   * If encryption is used, permission to use the key to decrypt the contents of the queue will also be granted to the same principal.
    *
    * This will grant the following KMS permissions:
    *
    *   - kms:Decrypt
-   *  
+   *
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
@@ -203,8 +203,8 @@ export abstract class QueueBase extends Resource implements IQueue {
    *  - sqs:SendMessage
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
-   *  
-   * If encryption is used, permission to use the key to encrypt/decrypt the contents of the queue will also be granted to the same principal. 
+   *
+   * If encryption is used, permission to use the key to encrypt/decrypt the contents of the queue will also be granted to the same principal.
    *
    * This will grant the following KMS permissions:
    *
