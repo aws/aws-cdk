@@ -333,21 +333,19 @@ export class TagManager {
   public readonly renderedTags: IResolvable;
 
   private readonly tags = new Map<string, Tag>();
-  private readonly dynamicTags: any;
+  private dynamicTags?: any;
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
   private readonly resourceTypeName: string;
-  private readonly initialTagPriority = 50;
+  private readonly externalTagPriority = 50;
+  private readonly didHaveInitialTags: boolean;
 
-  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
+  constructor(tagType: TagType, resourceTypeName: string, initialTags?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS()[tagType];
-    if (tagStructure !== undefined) {
-      const parseTagsResult = this.tagFormatter.parseTags(tagStructure, this.initialTagPriority);
-      this.dynamicTags = parseTagsResult.dynamicTags;
-      this._setTag(...parseTagsResult.tags);
-    }
     this.tagPropertyName = options.tagPropertyName || 'tags';
+    this.parseExternalTags(initialTags);
+    this.didHaveInitialTags = initialTags !== undefined;
 
     this.renderedTags = Lazy.any({ produce: () => this.renderTags() });
   }
@@ -384,19 +382,17 @@ export class TagManager {
    * tags at synthesis time.
    */
   public renderTags(combineWithTags?: any): any {
+    if (combineWithTags !== undefined && this.didHaveInitialTags) {
+      throw new Error('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
+    }
+    this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
-    if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
-      if (combineWithTags && !Array.isArray(combineWithTags)) {
-        throw new Error('Tags should be provided as an array');
-      }
 
-      const ret = [...formattedTags ?? [], ...this.dynamicTags ?? [], ...combineWithTags ?? []];
+    if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
+      const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
       return ret.length > 0 ? ret : undefined;
     } else {
-      if (combineWithTags && (typeof combineWithTags !== 'object' || Array.isArray(combineWithTags))) {
-        throw new Error('Tags should be provided as an object');
-      }
-      const ret = { ...formattedTags ?? {}, ...this.dynamicTags ?? {}, ...combineWithTags ?? {} };
+      const ret = { ...formattedTags ?? {}, ...this.dynamicTags ?? {} };
       return Object.keys(ret).length > 0 ? ret : undefined;
     }
   }
@@ -448,5 +444,18 @@ export class TagManager {
   private get sortedTags(): Tag[] {
     return Array.from(this.tags.values())
       .sort((a, b) => a.key.localeCompare(b.key));
+  }
+
+  /**
+   * Parse external tags.
+   *
+   * Set the parseable ones into this tag manager. Save the rest (tokens, lazies) in `this.dynamicTags`.
+   */
+  private parseExternalTags(initialTags: any) {
+    if (initialTags !== undefined) {
+      const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
+      this.dynamicTags = parseTagsResult.dynamicTags;
+      this._setTag(...parseTagsResult.tags);
+    }
   }
 }
