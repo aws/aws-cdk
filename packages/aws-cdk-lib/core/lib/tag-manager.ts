@@ -299,7 +299,8 @@ export class TagManager {
    * Check whether the given construct is Taggable
    */
   public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
+    const tags = (construct as any).tags;
+    return tags && typeof tags === 'object' && tags.constructor.name === 'TagManager';
   }
 
   /**
@@ -313,7 +314,7 @@ export class TagManager {
    * Return the TagManager associated with the given construct, if any
    */
   public static of(construct: any): TagManager | undefined {
-    return TagManager.isTaggable(construct) ? construct.tags : TagManager.isTaggable2(construct) ? construct.cdkTagManager : undefined;
+    return TagManager.isTaggable2(construct) ? construct.cdkTagManager : TagManager.isTaggable(construct) ? construct.tags : undefined;
   }
 
   /**
