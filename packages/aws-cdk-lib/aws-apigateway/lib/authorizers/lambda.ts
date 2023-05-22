@@ -7,7 +7,6 @@ import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
 
-
 /**
  * Base properties for all lambda authorizers
  */

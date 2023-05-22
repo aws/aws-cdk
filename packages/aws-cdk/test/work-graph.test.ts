@@ -249,7 +249,6 @@ describe('WorkGraph', () => {
     expect(actionedAssets).toEqual(['a-build', 'a-publish', 'A']);
   });
 
-
   // Failure
   test.each([
     // Concurrency 1

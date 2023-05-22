@@ -60,7 +60,6 @@ describe('Job', () => {
     });
   });
 
-
   describe('new', () => {
     const className = 'com.amazon.test.ClassName';
     const codeBucketName = 'bucketname';
@@ -638,7 +637,6 @@ describe('Job', () => {
         })).toThrow('Spark UI is not available for JobType.RAY');
       });
     });
-
 
     test('etl job with all props should synthesize correctly', () => {
       new glue.Job(stack, 'Job', {
