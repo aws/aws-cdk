@@ -171,7 +171,6 @@ export interface DataProtectionPolicyProps {
   readonly deliveryStreamNameAuditDestination?: string;
 }
 
-
 /**
  * A data protection identifier. If an identifier is supported but not in this class, it can be passed in the constructor instead.
  */
