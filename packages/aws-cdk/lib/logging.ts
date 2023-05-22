@@ -55,7 +55,6 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
   realStream.write(str + '\n');
 };
 
-
 function formatTime(d: Date) {
   return `${lpad(d.getHours(), 2)}:${lpad(d.getMinutes(), 2)}:${lpad(d.getSeconds(), 2)}`;
 
