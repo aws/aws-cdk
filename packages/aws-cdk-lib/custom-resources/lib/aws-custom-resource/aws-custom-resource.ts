@@ -11,7 +11,6 @@ import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 
-
 /**
  * The lambda runtime used by default for aws-cdk vended custom resources. Can change
  * based on region.

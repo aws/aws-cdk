@@ -28,7 +28,6 @@ getBuildProject.assertAtPath(
   ExpectedResult.stringLikeRegexp('.+'),
 );
 
-
 const getBuildProjectBuildSpecArn = getBuildProject.getAttString('projects.0.source.buildspec');
 
 // Assert that the buildspec for the project is in fact an S3 object arn

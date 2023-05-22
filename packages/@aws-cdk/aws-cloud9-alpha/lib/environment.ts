@@ -246,7 +246,6 @@ export class Owner {
     return { ownerArn: user.userArn };
   }
 
-
   /**
    * Make the Account Root User the environment owner (not recommended)
    *

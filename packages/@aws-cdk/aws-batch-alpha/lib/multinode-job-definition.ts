@@ -6,7 +6,6 @@ import { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
-
 interface IMultiNodeJobDefinition extends IJobDefinition {
   /**
    * The containers that this multinode job will run.

@@ -725,7 +725,6 @@ test('Create Cluster with AmazonElasticMapReduceRole managed policies', () => {
   });
 });
 
-
 test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
   // WHEN
   const app = new cdk.App({ context: { [ENABLE_EMR_SERVICE_POLICY_V2]: true } });

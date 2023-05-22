@@ -3,7 +3,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { Stack } from 'aws-cdk-lib';
 import { DnsPolicy, EksContainerDefinition, EksJobDefinition } from '../lib';
 
-
 test('EcsJobDefinition respects dnsPolicy', () => {
   // GIVEN
   const stack = new Stack();

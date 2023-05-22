@@ -33,7 +33,6 @@ describe('fs', () => {
     fs.unlinkSync(p);
     fs.unlinkSync(symlinkTmp);
 
-
   });
 
   test('mkdtemp creates a temporary directory in the system temp', () => {
@@ -43,7 +42,6 @@ describe('fs', () => {
     expect(fs.existsSync(tmpdir)).toEqual(true);
 
     fs.rmdirSync(tmpdir);
-
 
   });
 });

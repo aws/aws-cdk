@@ -1209,7 +1209,6 @@ describe('SM2', () => {
   });
 });
 
-
 function generateInvalidKeySpecKeyUsageCombinations() {
   // Copied from Key class
   const denyLists = {

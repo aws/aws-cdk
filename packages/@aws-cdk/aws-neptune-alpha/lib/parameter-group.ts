@@ -81,7 +81,6 @@ export interface IClusterParameterGroup extends IResource {
   readonly clusterParameterGroupName: string;
 }
 
-
 /**
  * A cluster parameter group
  *

@@ -18,7 +18,6 @@ export interface MetricInfoGroup {
   readonly metricTemplates: MetricTemplate[];
 }
 
-
 export interface MetricTemplate {
   /**
    * CloudFormation resource name

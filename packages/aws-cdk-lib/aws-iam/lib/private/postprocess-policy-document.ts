@@ -72,7 +72,6 @@ export interface StatementSchema {
   Condition?: unknown;
 }
 
-
 export function normalizeStatement(s: StatementSchema) {
   return noUndef({
     Action: _norm(s.Action, { unique: true }),

@@ -81,7 +81,6 @@ describe('CLI creds synthesis', () => {
     expect(evalCFN(location.repositoryName)).toEqual('cdk-hnb659fds-container-assets-the_account-the_region');
     expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
 
-
   });
 
   test('synthesis', () => {

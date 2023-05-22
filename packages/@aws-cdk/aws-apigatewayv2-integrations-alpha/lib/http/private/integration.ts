@@ -10,7 +10,6 @@ import {
 } from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-
 /**
  * Options required to use an existing vpcLink or configure a new one
  *

@@ -154,7 +154,6 @@ export class Stage extends Construct {
    */
   public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
 
-
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
@@ -168,7 +167,6 @@ export class Stage extends Construct {
 
     this.region = props.env?.region ?? this.parentStage?.region;
     this.account = props.env?.account ?? this.parentStage?.account;
-
 
     props.permissionsBoundary?._bind(this);
 

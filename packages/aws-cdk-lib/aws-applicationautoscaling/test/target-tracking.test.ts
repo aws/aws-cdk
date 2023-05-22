@@ -26,7 +26,6 @@ describe('target tracking', () => {
 
     });
 
-
   });
 
   test('test setup target tracking on predefined metric for lambda', () => {
@@ -49,7 +48,6 @@ describe('target tracking', () => {
       },
 
     });
-
 
   });
 
@@ -97,7 +95,6 @@ describe('target tracking', () => {
       },
 
     });
-
 
   });
 });

@@ -4,7 +4,6 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from '../../lib';
 
-
 describe('LambdaWebSocketIntegration', () => {
   test('default', () => {
     // GIVEN

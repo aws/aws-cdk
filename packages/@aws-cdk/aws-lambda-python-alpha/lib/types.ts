@@ -1,6 +1,5 @@
 import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from 'aws-cdk-lib';
 
-
 /**
  * Options for bundling
  */

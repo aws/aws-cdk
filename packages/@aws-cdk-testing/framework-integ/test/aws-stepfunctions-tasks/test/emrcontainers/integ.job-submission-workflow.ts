@@ -70,7 +70,6 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   resultPath: '$.job',
 });
 
-
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
 });

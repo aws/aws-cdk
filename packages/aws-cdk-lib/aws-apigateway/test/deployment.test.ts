@@ -190,7 +190,6 @@ describe('deployment', () => {
       ],
     });
 
-
   });
 
   test('integration change invalidates deployment', () => {

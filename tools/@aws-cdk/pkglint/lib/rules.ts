@@ -1614,7 +1614,6 @@ export class JestSetup extends ValidationRule {
       });
     }
 
-
   }
 }
 

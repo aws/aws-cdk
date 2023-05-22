@@ -24,7 +24,6 @@ describe('Metric Math', () => {
       });
     }).toThrow(/Invalid variable names in expression/);
 
-
   });
 
   test('cannot reuse variable names in nested MathExpressions', () => {
@@ -42,7 +41,6 @@ describe('Metric Math', () => {
       });
     }).toThrow(/The ID 'a' used for two metrics in the expression: 'BCount' and 'ACount'. Rename one/);
 
-
   });
 
   test('can not use invalid period in MathExpression', () => {
@@ -53,7 +51,6 @@ describe('Metric Math', () => {
         period: Duration.seconds(20),
       });
     }).toThrow(/'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
-
 
   });
 
@@ -133,7 +130,6 @@ describe('Metric Math', () => {
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
 
-
     });
 
     test('can nest MathExpressions in a graph', () => {
@@ -162,7 +158,6 @@ describe('Metric Math', () => {
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
-
     });
 
     test('can add the same metric under different ids', () => {
@@ -189,7 +184,6 @@ describe('Metric Math', () => {
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
-
     });
 
     test('passing an empty string as the label of a MathExpressions does not emit a label', () => {
@@ -209,7 +203,6 @@ describe('Metric Math', () => {
         [{ expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
       ]);
-
 
     });
 
@@ -236,7 +229,6 @@ describe('Metric Math', () => {
         [{ expression: 'a + c', visible: false, id: 'e' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
-
 
     });
 
@@ -352,7 +344,6 @@ describe('Metric Math', () => {
         ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
 
-
     });
 
     test('can reuse the same metric between left and right axes', () => {
@@ -379,7 +370,6 @@ describe('Metric Math', () => {
         [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
       ]);
 
-
     });
 
     test('detect name conflicts between left and right axes', () => {
@@ -403,7 +393,6 @@ describe('Metric Math', () => {
       expect(() => {
         graphMetricsAre(graph, []);
       }).toThrow(/Cannot have two different metrics share the same id \('m1'\)/);
-
 
     });
   });
@@ -452,7 +441,6 @@ describe('Metric Math', () => {
         },
 
       ]);
-
 
     });
 
@@ -521,7 +509,6 @@ describe('Metric Math', () => {
           ReturnData: false,
         },
       ]);
-
 
     });
 
@@ -593,7 +580,6 @@ describe('Metric Math', () => {
         },
       ]);
 
-
     });
 
     test('MathExpression without inner metrics emits its own period', () => {
@@ -616,7 +602,6 @@ describe('Metric Math', () => {
         },
       ]);
 
-
     });
 
     test('annotation for a mathexpression alarm is calculated based upon constituent metrics', () => {
@@ -636,7 +621,6 @@ describe('Metric Math', () => {
 
       // THEN
       expect(alarmLabel).toEqual('a + b >= 1 for 1 datapoints within 10 minutes');
-
 
     });
 
@@ -682,7 +666,6 @@ describe('Metric Math', () => {
           ReturnData: false,
         },
       ]);
-
 
     });
   });

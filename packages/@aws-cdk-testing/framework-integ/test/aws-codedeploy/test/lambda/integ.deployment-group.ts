@@ -4,7 +4,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy';
 
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 

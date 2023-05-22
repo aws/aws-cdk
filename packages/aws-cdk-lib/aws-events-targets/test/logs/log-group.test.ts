@@ -73,7 +73,6 @@ testDeprecated('use log group as an event rule target with rule target input', (
     }),
   }));
 
-
   // THEN
   expect(() => {
     app.synth();

@@ -333,7 +333,6 @@ test('Schedule can be set with Cron', () => {
   });
 });
 
-
 test('Schedule can be set with Expression', () => {
   // GIVEN
   const stack = new Stack();

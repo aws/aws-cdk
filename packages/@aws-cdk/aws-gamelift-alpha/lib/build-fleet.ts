@@ -122,7 +122,6 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     }
     (props.locations || []).forEach(this.addInternalLocation.bind(this));
 
-
     // Add all Ingress rules
     if (props.ingressRules && props.ingressRules?.length > 50) {
       throw new Error(`No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`);

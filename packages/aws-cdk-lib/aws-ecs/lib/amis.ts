@@ -27,7 +27,6 @@ export enum AmiHardwareType {
   ARM = 'ARM64',
 }
 
-
 /**
  * ECS-optimized Windows version list
  */

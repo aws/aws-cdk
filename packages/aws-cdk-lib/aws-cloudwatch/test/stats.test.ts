@@ -6,7 +6,6 @@ test('spot check some constants', () => {
   expect(cloudwatch.Stats.SAMPLE_COUNT).toEqual('SampleCount');
 });
 
-
 test('spot check percentiles', () => {
   expect(cloudwatch.Stats.p(99)).toEqual('p99');
   expect(cloudwatch.Stats.p(99.9)).toEqual('p99.9');

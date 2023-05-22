@@ -71,7 +71,6 @@ export class Schedule {
     public readonly expressionString: string) {}
 }
 
-
 /**
  * Options to configure a cron expression
  *

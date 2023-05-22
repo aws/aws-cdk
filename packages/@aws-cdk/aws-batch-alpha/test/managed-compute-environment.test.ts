@@ -8,7 +8,6 @@ import * as batch from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
 
-
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
   computeEnvironmentName: undefined,

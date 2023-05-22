@@ -56,7 +56,6 @@ describe('SQSEventSource', () => {
       },
     });
 
-
   });
 
   test('specific batch size', () => {
@@ -84,7 +83,6 @@ describe('SQSEventSource', () => {
       'BatchSize': 5,
     });
 
-
   });
 
   test('unresolved batch size', () => {
@@ -108,7 +106,6 @@ describe('SQSEventSource', () => {
       'BatchSize': 500,
     });
 
-
   });
 
   test('fails if batch size is < 1', () => {
@@ -122,7 +119,6 @@ describe('SQSEventSource', () => {
       batchSize: 0,
     }))).toThrow(/Maximum batch size must be between 1 and 10 inclusive \(given 0\) when batching window is not specified\./);
 
-
   });
 
   test('fails if batch size is > 10', () => {
@@ -135,7 +131,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       batchSize: 11,
     }))).toThrow(/Maximum batch size must be between 1 and 10 inclusive \(given 11\) when batching window is not specified\./);
-
 
   });
 
@@ -157,7 +152,6 @@ describe('SQSEventSource', () => {
       'MaximumBatchingWindowInSeconds': 300,
     });
 
-
   });
 
   test('fails if batch size is > 10000 and batch window is defined', () => {
@@ -171,7 +165,6 @@ describe('SQSEventSource', () => {
       batchSize: 11000,
       maxBatchingWindow: cdk.Duration.minutes(5),
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive/i);
-
 
   });
 
@@ -191,7 +184,6 @@ describe('SQSEventSource', () => {
       'MaximumBatchingWindowInSeconds': 300,
     });
 
-
   });
 
   test('fails if batch window defined for FIFO queue', () => {
@@ -207,7 +199,6 @@ describe('SQSEventSource', () => {
       maxBatchingWindow: cdk.Duration.minutes(5),
     }))).toThrow(/Batching window is not supported for FIFO queues/);
 
-
   });
 
   test('fails if batch window is > 5', () => {
@@ -220,7 +211,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxBatchingWindow: cdk.Duration.minutes(7),
     }))).toThrow(/Maximum batching window must be 300 seconds or less/i);
-
 
   });
 
@@ -291,7 +281,6 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
-
 
   });
 

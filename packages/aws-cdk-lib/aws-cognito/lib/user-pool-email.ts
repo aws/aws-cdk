@@ -128,7 +128,6 @@ export abstract class UserPoolEmail {
     return new SESEmail(options);
   }
 
-
   /**
    * Returns the email configuration for a Cognito UserPool
    * that controls how Cognito will send emails

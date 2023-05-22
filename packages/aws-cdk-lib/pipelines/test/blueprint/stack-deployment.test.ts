@@ -48,7 +48,6 @@ describe('templateUrl', () => {
 
 });
 
-
 test('"requiredAssets" contain only assets that are not the template', () => {
   // GIVEN
   const stage = new Stage(new TestApp(), 'MyStage');

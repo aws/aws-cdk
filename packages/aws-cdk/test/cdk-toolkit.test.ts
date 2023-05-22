@@ -460,7 +460,6 @@ describe('deploy', () => {
       });
     });
 
-
     test('with one stack specified', async () => {
       // GIVEN
       const toolkit = defaultToolkitSetup();
@@ -761,7 +760,6 @@ describe('watch', () => {
 
     expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
   });
-
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
     cloudExecutable.configuration.settings.set(['watch'], {});

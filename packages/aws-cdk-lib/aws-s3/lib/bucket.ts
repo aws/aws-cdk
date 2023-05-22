@@ -371,7 +371,6 @@ export interface IBucket extends IResource {
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
-
   /**
    * Enables event bridge notification, causing all events below to be sent to EventBridge:
    *
@@ -1306,7 +1305,6 @@ export interface IntelligentTieringConfiguration {
    */
   readonly name: string;
 
-
   /**
    * Add a filter to limit the scope of this configuration to a single prefix.
    *
@@ -1588,7 +1586,6 @@ export interface BucketProps {
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 }
-
 
 /**
  * Tag

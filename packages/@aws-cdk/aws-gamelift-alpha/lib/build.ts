@@ -57,7 +57,6 @@ export enum OperatingSystem {
   WINDOWS_2012 = 'WINDOWS_2012'
 }
 
-
 /**
  * Represents a Build content defined outside of this stack.
  */
@@ -276,6 +275,5 @@ export class Build extends BuildBase {
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
-
 
 }

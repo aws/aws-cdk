@@ -116,7 +116,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
 
     // No multiple empty lines
-    'no-multiple-empty-lines': ['error'],
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
 
     // Max line lengths
     'max-len': ['error', {

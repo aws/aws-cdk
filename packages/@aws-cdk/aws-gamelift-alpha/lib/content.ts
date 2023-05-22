@@ -19,7 +19,6 @@ export abstract class Content {
     return new S3Content(bucket, key, objectVersion);
   }
 
-
   /**
      * Loads the game content from a local disk path.
      *

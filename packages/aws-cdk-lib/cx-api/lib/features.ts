@@ -41,7 +41,6 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
 
-
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */

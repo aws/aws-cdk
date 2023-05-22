@@ -7,7 +7,6 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-
 describe('findUp', () => {
   test('Starting at process.cwd()', () => {
     expect(findUp('README.md')).toMatch(/aws-lambda-go-alpha\/README.md$/);

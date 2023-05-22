@@ -1899,7 +1899,6 @@ describe('stack', () => {
     ]);
   });
 
-
   test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
     // WHEN
     const app = new App();

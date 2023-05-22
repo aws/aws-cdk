@@ -72,7 +72,6 @@ describe('Condition Variables', () => {
       [stepfunctions.Condition.numberGreaterThanEqualsJsonPath('$.a', '$.b'), { Variable: '$.a', NumericGreaterThanEqualsPath: '$.b' }],
     ];
 
-
     for (const [cond, expected] of cases) {
       assertRendersTo(cond, expected);
     }

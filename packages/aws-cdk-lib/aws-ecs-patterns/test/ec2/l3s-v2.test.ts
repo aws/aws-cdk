@@ -965,7 +965,6 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-
   test('Assert EnableExecuteCommand is missing if not set', () => {
     // GIVEN
     const stack = new Stack();

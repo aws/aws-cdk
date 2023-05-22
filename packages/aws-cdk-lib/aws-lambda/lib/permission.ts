@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { FunctionUrlAuthType } from './function-url';
 import * as iam from '../../aws-iam';
 
-
 /**
  * Represents a permission statement that can be added to a Lambda function's
  * resource policy via the `addPermission()` method.

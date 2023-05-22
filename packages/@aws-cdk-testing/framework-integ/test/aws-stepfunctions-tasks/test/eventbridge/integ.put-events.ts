@@ -40,7 +40,6 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30),
 });
 
-
 const testCase = new IntegTest(app, 'PutEvents', {
   testCases: [stack],
 });

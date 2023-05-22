@@ -44,7 +44,6 @@ const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   new Error('Couldnt find an internet gateway'),
 );
 
-
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   vpc,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,

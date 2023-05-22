@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import awsEventsTargets from './aws-events-targets';
 import cloudformationInclude from './cloudformation-include';
 
-
 export default async function submodulesGen(modules: ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
     if (submodule.name === 'core') {

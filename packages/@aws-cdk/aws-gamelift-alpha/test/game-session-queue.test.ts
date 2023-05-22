@@ -485,7 +485,6 @@ describe('gameSessionQueue', () => {
       });
     });
 
-
   });
 
   describe('test import methods', () => {
