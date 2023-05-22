@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "test-efs-integ": {
-        "id": "test-efs-integ",
-        "path": "test-efs-integ",
+      "test-efs-permission-integ": {
+        "id": "test-efs-permission-integ",
+        "path": "test-efs-permission-integ",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "test-efs-integ/Vpc",
+            "path": "test-efs-permission-integ/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-efs-integ/Vpc/Resource",
+                "path": "test-efs-permission-integ/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,23 +25,23 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/Vpc"
+                        "value": "test-efs-permission-integ/Vpc"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "test-efs-integ/Vpc/PublicSubnet1",
+                "path": "test-efs-permission-integ/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/Subnet",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -69,27 +69,27 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/Acl",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/RouteTable",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -99,19 +99,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -124,13 +124,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -144,13 +144,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/EIP",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,19 +158,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "test-efs-integ/Vpc/PublicSubnet1/NATGateway",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,29 +186,29 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "test-efs-integ/Vpc/PublicSubnet2",
+                "path": "test-efs-permission-integ/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/Subnet",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -236,27 +236,27 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/Acl",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/RouteTable",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -266,19 +266,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -291,13 +291,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -311,13 +311,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/EIP",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,19 +325,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "test-efs-integ/Vpc/PublicSubnet2/NATGateway",
+                    "path": "test-efs-permission-integ/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,29 +353,29 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PublicSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "test-efs-integ/Vpc/PrivateSubnet1",
+                "path": "test-efs-permission-integ/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet1/Subnet",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -403,27 +403,27 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PrivateSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet1/Acl",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -433,19 +433,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PrivateSubnet1"
+                            "value": "test-efs-permission-integ/Vpc/PrivateSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -458,13 +458,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -478,23 +478,23 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "test-efs-integ/Vpc/PrivateSubnet2",
+                "path": "test-efs-permission-integ/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet2/Subnet",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -522,27 +522,27 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PrivateSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet2/Acl",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -552,19 +552,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/Vpc/PrivateSubnet2"
+                            "value": "test-efs-permission-integ/Vpc/PrivateSubnet2"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -577,13 +577,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-efs-integ/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "test-efs-permission-integ/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -597,38 +597,38 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "IGW": {
                 "id": "IGW",
-                "path": "test-efs-integ/Vpc/IGW",
+                "path": "test-efs-permission-integ/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/Vpc"
+                        "value": "test-efs-permission-integ/Vpc"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "test-efs-integ/Vpc/VPCGW",
+                "path": "test-efs-permission-integ/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -641,75 +641,75 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "test-efs-integ/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "test-efs-permission-integ/Vpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-efs-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "test-efs-permission-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "test-efs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "test-efs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Role": {
                 "id": "Role",
-                "path": "test-efs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Handler": {
                 "id": "Handler",
-                "path": "test-efs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "FileSystem": {
             "id": "FileSystem",
-            "path": "test-efs-integ/FileSystem",
+            "path": "test-efs-permission-integ/FileSystem",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-efs-integ/FileSystem/Resource",
+                "path": "test-efs-permission-integ/FileSystem/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
                   "aws:cdk:cloudformation:props": {
@@ -737,27 +737,27 @@
                     "fileSystemTags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/FileSystem"
+                        "value": "test-efs-permission-integ/FileSystem"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "EfsSecurityGroup": {
                 "id": "EfsSecurityGroup",
-                "path": "test-efs-integ/FileSystem/EfsSecurityGroup",
+                "path": "test-efs-permission-integ/FileSystem/EfsSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/FileSystem/EfsSecurityGroup/Resource",
+                    "path": "test-efs-permission-integ/FileSystem/EfsSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "test-efs-integ/FileSystem/EfsSecurityGroup",
+                        "groupDescription": "test-efs-permission-integ/FileSystem/EfsSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -768,7 +768,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/FileSystem"
+                            "value": "test-efs-permission-integ/FileSystem"
                           }
                         ],
                         "vpcId": {
@@ -777,18 +777,18 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
-                  "from testefsintegWriteInstanceInstanceSecurityGroupF0D2BC51:2049": {
-                    "id": "from testefsintegWriteInstanceInstanceSecurityGroupF0D2BC51:2049",
-                    "path": "test-efs-integ/FileSystem/EfsSecurityGroup/from testefsintegWriteInstanceInstanceSecurityGroupF0D2BC51:2049",
+                  "from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049": {
+                    "id": "from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049",
+                    "path": "test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
                         "ipProtocol": "tcp",
-                        "description": "from testefsintegWriteInstanceInstanceSecurityGroupF0D2BC51:2049",
+                        "description": "from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049",
                         "fromPort": 2049,
                         "groupId": {
                           "Fn::GetAtt": [
@@ -806,18 +806,18 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
-                  "from testefsintegReadInstanceInstanceSecurityGroup9518D91B:2049": {
-                    "id": "from testefsintegReadInstanceInstanceSecurityGroup9518D91B:2049",
-                    "path": "test-efs-integ/FileSystem/EfsSecurityGroup/from testefsintegReadInstanceInstanceSecurityGroup9518D91B:2049",
+                  "from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049": {
+                    "id": "from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049",
+                    "path": "test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
                         "ipProtocol": "tcp",
-                        "description": "from testefsintegReadInstanceInstanceSecurityGroup9518D91B:2049",
+                        "description": "from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049",
                         "fromPort": 2049,
                         "groupId": {
                           "Fn::GetAtt": [
@@ -835,18 +835,18 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
-                  "from testefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B:2049": {
-                    "id": "from testefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B:2049",
-                    "path": "test-efs-integ/FileSystem/EfsSecurityGroup/from testefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B:2049",
+                  "from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049": {
+                    "id": "from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049",
+                    "path": "test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
                         "ipProtocol": "tcp",
-                        "description": "from testefsintegAnonymousInstanceInstanceSecurityGroupE8E2F45B:2049",
+                        "description": "from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049",
                         "fromPort": 2049,
                         "groupId": {
                           "Fn::GetAtt": [
@@ -864,19 +864,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "EfsMountTarget1": {
                 "id": "EfsMountTarget1",
-                "path": "test-efs-integ/FileSystem/EfsMountTarget1",
+                "path": "test-efs-permission-integ/FileSystem/EfsMountTarget1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -897,13 +897,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "EfsMountTarget2": {
                 "id": "EfsMountTarget2",
-                "path": "test-efs-integ/FileSystem/EfsMountTarget2",
+                "path": "test-efs-permission-integ/FileSystem/EfsMountTarget2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -924,31 +924,31 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_efs.FileSystem",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "WriteInstance": {
             "id": "WriteInstance",
-            "path": "test-efs-integ/WriteInstance",
+            "path": "test-efs-permission-integ/WriteInstance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "test-efs-integ/WriteInstance/InstanceSecurityGroup",
+                "path": "test-efs-permission-integ/WriteInstance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/WriteInstance/InstanceSecurityGroup/Resource",
+                    "path": "test-efs-permission-integ/WriteInstance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "test-efs-integ/WriteInstance/InstanceSecurityGroup",
+                        "groupDescription": "test-efs-permission-integ/WriteInstance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -959,7 +959,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/WriteInstance"
+                            "value": "test-efs-permission-integ/WriteInstance"
                           }
                         ],
                         "vpcId": {
@@ -968,31 +968,31 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "test-efs-integ/WriteInstance/InstanceRole",
+                "path": "test-efs-permission-integ/WriteInstance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "test-efs-integ/WriteInstance/InstanceRole/ImportInstanceRole",
+                    "path": "test-efs-permission-integ/WriteInstance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/WriteInstance/InstanceRole/Resource",
+                    "path": "test-efs-permission-integ/WriteInstance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1025,23 +1025,23 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/WriteInstance"
+                            "value": "test-efs-permission-integ/WriteInstance"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-efs-integ/WriteInstance/InstanceRole/DefaultPolicy",
+                    "path": "test-efs-permission-integ/WriteInstance/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-efs-integ/WriteInstance/InstanceRole/DefaultPolicy/Resource",
+                        "path": "test-efs-permission-integ/WriteInstance/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1087,25 +1087,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "test-efs-integ/WriteInstance/InstanceProfile",
+                "path": "test-efs-permission-integ/WriteInstance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1117,13 +1117,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "test-efs-integ/WriteInstance/Resource",
+                "path": "test-efs-permission-integ/WriteInstance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -1156,7 +1156,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/WriteInstance"
+                        "value": "test-efs-permission-integ/WriteInstance"
                       }
                     ],
                     "userData": {
@@ -1188,47 +1188,47 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInstance",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Instance",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "test-efs-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "test-efs-permission-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "test-efs-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "test-efs-permission-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "ReadInstance": {
             "id": "ReadInstance",
-            "path": "test-efs-integ/ReadInstance",
+            "path": "test-efs-permission-integ/ReadInstance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "test-efs-integ/ReadInstance/InstanceSecurityGroup",
+                "path": "test-efs-permission-integ/ReadInstance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/ReadInstance/InstanceSecurityGroup/Resource",
+                    "path": "test-efs-permission-integ/ReadInstance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "test-efs-integ/ReadInstance/InstanceSecurityGroup",
+                        "groupDescription": "test-efs-permission-integ/ReadInstance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1239,7 +1239,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/ReadInstance"
+                            "value": "test-efs-permission-integ/ReadInstance"
                           }
                         ],
                         "vpcId": {
@@ -1248,31 +1248,31 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "test-efs-integ/ReadInstance/InstanceRole",
+                "path": "test-efs-permission-integ/ReadInstance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "test-efs-integ/ReadInstance/InstanceRole/ImportInstanceRole",
+                    "path": "test-efs-permission-integ/ReadInstance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/ReadInstance/InstanceRole/Resource",
+                    "path": "test-efs-permission-integ/ReadInstance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1305,23 +1305,23 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/ReadInstance"
+                            "value": "test-efs-permission-integ/ReadInstance"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-efs-integ/ReadInstance/InstanceRole/DefaultPolicy",
+                    "path": "test-efs-permission-integ/ReadInstance/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-efs-integ/ReadInstance/InstanceRole/DefaultPolicy/Resource",
+                        "path": "test-efs-permission-integ/ReadInstance/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1364,25 +1364,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "test-efs-integ/ReadInstance/InstanceProfile",
+                "path": "test-efs-permission-integ/ReadInstance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1394,13 +1394,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "test-efs-integ/ReadInstance/Resource",
+                "path": "test-efs-permission-integ/ReadInstance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -1433,7 +1433,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/ReadInstance"
+                        "value": "test-efs-permission-integ/ReadInstance"
                       }
                     ],
                     "userData": {
@@ -1465,31 +1465,31 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInstance",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Instance",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "AnonymousInstance": {
             "id": "AnonymousInstance",
-            "path": "test-efs-integ/AnonymousInstance",
+            "path": "test-efs-permission-integ/AnonymousInstance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "test-efs-integ/AnonymousInstance/InstanceSecurityGroup",
+                "path": "test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/AnonymousInstance/InstanceSecurityGroup/Resource",
+                    "path": "test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "test-efs-integ/AnonymousInstance/InstanceSecurityGroup",
+                        "groupDescription": "test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1500,7 +1500,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/AnonymousInstance"
+                            "value": "test-efs-permission-integ/AnonymousInstance"
                           }
                         ],
                         "vpcId": {
@@ -1509,31 +1509,31 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "test-efs-integ/AnonymousInstance/InstanceRole",
+                "path": "test-efs-permission-integ/AnonymousInstance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "test-efs-integ/AnonymousInstance/InstanceRole/ImportInstanceRole",
+                    "path": "test-efs-permission-integ/AnonymousInstance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-efs-integ/AnonymousInstance/InstanceRole/Resource",
+                    "path": "test-efs-permission-integ/AnonymousInstance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1566,23 +1566,23 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-efs-integ/AnonymousInstance"
+                            "value": "test-efs-permission-integ/AnonymousInstance"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-efs-integ/AnonymousInstance/InstanceRole/DefaultPolicy",
+                    "path": "test-efs-permission-integ/AnonymousInstance/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-efs-integ/AnonymousInstance/InstanceRole/DefaultPolicy/Resource",
+                        "path": "test-efs-permission-integ/AnonymousInstance/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1610,25 +1610,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "test-efs-integ/AnonymousInstance/InstanceProfile",
+                "path": "test-efs-permission-integ/AnonymousInstance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1640,13 +1640,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "test-efs-integ/AnonymousInstance/Resource",
+                "path": "test-efs-permission-integ/AnonymousInstance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -1679,7 +1679,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-efs-integ/AnonymousInstance"
+                        "value": "test-efs-permission-integ/AnonymousInstance"
                       }
                     ],
                     "userData": {
@@ -1711,42 +1711,42 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInstance",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Instance",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "Exports": {
             "id": "Exports",
-            "path": "test-efs-integ/Exports",
+            "path": "test-efs-permission-integ/Exports",
             "children": {
               "Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}": {
                 "id": "Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}",
-                "path": "test-efs-integ/Exports/Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}",
+                "path": "test-efs-permission-integ/Exports/Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Output{\"Ref\":\"FileSystem8A8E25C0\"}": {
                 "id": "Output{\"Ref\":\"FileSystem8A8E25C0\"}",
-                "path": "test-efs-integ/Exports/Output{\"Ref\":\"FileSystem8A8E25C0\"}",
+                "path": "test-efs-permission-integ/Exports/Output{\"Ref\":\"FileSystem8A8E25C0\"}",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               },
               "Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}": {
                 "id": "Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}",
-                "path": "test-efs-integ/Exports/Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}",
+                "path": "test-efs-permission-integ/Exports/Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
@@ -1757,24 +1757,24 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "test-efs-integ/BootstrapVersion",
+            "path": "test-efs-permission-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "test-efs-integ/CheckBootstrapVersion",
+            "path": "test-efs-permission-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.9"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.9"
         }
       },
       "EfsPermissionTest": {
@@ -1827,14 +1827,14 @@
                             "id": "Default",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d/Default/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -1851,24 +1851,24 @@
                         "id": "Staging",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -1907,14 +1907,14 @@
                             "id": "Default",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/Default/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "WaitFor": {
@@ -1937,8 +1937,8 @@
                                 "id": "Invoke",
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.9"
                                 }
                               }
                             },
@@ -1963,8 +1963,8 @@
                                 "id": "Invoke",
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.9"
                                 }
                               }
                             },
@@ -1977,16 +1977,16 @@
                             "id": "Role",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
@@ -1999,8 +1999,8 @@
                         "id": "AssertionResults",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/AssertionResults",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -2017,24 +2017,24 @@
                         "id": "Staging",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -2051,24 +2051,24 @@
                         "id": "Staging",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -2107,14 +2107,14 @@
                             "id": "Default",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f/Default/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -2153,14 +2153,14 @@
                             "id": "Default",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/Default/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       },
                       "WaitFor": {
@@ -2183,8 +2183,8 @@
                                 "id": "Invoke",
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.9"
                                 }
                               }
                             },
@@ -2209,8 +2209,8 @@
                                 "id": "Invoke",
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.2.9"
                                 }
                               }
                             },
@@ -2223,16 +2223,16 @@
                             "id": "Role",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.2.9"
                             }
                           }
                         },
@@ -2245,8 +2245,8 @@
                         "id": "AssertionResults",
                         "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/AssertionResults",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.9"
                         }
                       }
                     },
@@ -2259,22 +2259,22 @@
                     "id": "BootstrapVersion",
                     "path": "EfsPermissionTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "EfsPermissionTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.9"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.9"
                 }
               }
             },
@@ -2299,8 +2299,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.9"
     }
   }
 }
