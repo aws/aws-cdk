@@ -2437,6 +2437,8 @@
         "AccessToken": "The credentials used to access protected Salesforce resources.",
         "ClientCredentialsArn": "The secret manager ARN, which contains the client ID and client secret of the connected app.",
         "ConnectorOAuthRequest": "Used by select connectors for which the OAuth workflow is supported, such as Salesforce, Google Analytics, Marketo, Zendesk, and Slack.",
+        "JwtToken": "",
+        "OAuth2GrantType": "",
         "RefreshToken": "The credentials used to acquire new access tokens."
       }
     },
@@ -2558,6 +2560,7 @@
         "Description": "A user-entered description of the flow.",
         "DestinationFlowConfigList": "The configuration that controls how Amazon AppFlow places data in the destination connector.",
         "FlowName": "The specified name of the flow. Spaces are not allowed. Use underscores (_) or hyphens (-) only.",
+        "FlowStatus": "Indicates the current status of the flow.",
         "KMSArn": "The ARN (Amazon Resource Name) of the Key Management Service (KMS) key you provide for encryption. This is required if you do not want to use the Amazon AppFlow-managed KMS key. If you don't provide anything here, Amazon AppFlow uses the Amazon AppFlow-managed KMS key.",
         "MetadataCatalogConfig": "",
         "SourceFlowConfig": "Contains information about the configuration of the source connector used in the flow.",
@@ -2957,7 +2960,6 @@
       "attributes": {},
       "description": "The trigger settings that determine how and when Amazon AppFlow runs the specified flow.",
       "properties": {
-        "ActivateFlowOnCreate": "",
         "TriggerProperties": "Specifies the configuration details of a schedule-triggered flow as defined by the user. Currently, these settings only apply to the `Scheduled` trigger type.",
         "TriggerType": "Specifies the type of flow trigger. This can be `OnDemand` , `Scheduled` , or `Event` ."
       }
@@ -11264,6 +11266,20 @@
         "Type": "The type of phone number."
       }
     },
+    "AWS::Connect::Prompt": {
+      "attributes": {
+        "PromptArn": "The Amazon Resource Name (ARN) of the prompt.",
+        "Ref": "`Ref` returns the quick rule name. For example:\n\n`{ \"Ref\": \"myPromptName\" }`"
+      },
+      "description": "Creates a prompt for the specified Amazon Connect instance.",
+      "properties": {
+        "Description": "The description of the prompt.",
+        "InstanceArn": "The identifier of the Amazon Connect instance.",
+        "Name": "The name of the prompt.",
+        "S3Uri": "The URI for the S3 bucket where the prompt is stored.",
+        "Tags": "The tags used to organize, track, or control access for this resource. For example, { \"tags\": {\"key1\":\"value1\", \"key2\":\"value2\"} }."
+      }
+    },
     "AWS::Connect::QuickConnect": {
       "attributes": {
         "QuickConnectArn": "The Amazon Resource Name (ARN) of the quick connect.",
@@ -11421,11 +11437,11 @@
     },
     "AWS::Connect::TaskTemplate.Constraints": {
       "attributes": {},
-      "description": "",
+      "description": "Describes constraints that apply to the template fields.",
       "properties": {
-        "InvisibleFields": "",
-        "ReadOnlyFields": "",
-        "RequiredFields": ""
+        "InvisibleFields": "Lists the fields that are invisible to agents.",
+        "ReadOnlyFields": "Lists the fields that are read-only to agents, and cannot be edited.",
+        "RequiredFields": "Lists the fields that are required to be filled by agents."
       }
     },
     "AWS::Connect::TaskTemplate.DefaultFieldValue": {
@@ -13424,7 +13440,7 @@
         "AgentArns": "Specifies the Amazon Resource Names (ARNs) of the DataSync agents that can securely connect with your location.",
         "BucketName": "Specifies the name of the object storage bucket involved in the transfer.",
         "SecretKey": "Specifies the secret key (for example, a password) if credentials are required to authenticate with the object storage server.",
-        "ServerCertificate": "Specifies a certificate to authenticate with an object storage system that uses a private or self-signed certificate authority (CA). You must specify a Base64-encoded `.pem` file (for example, `file:///home/user/.ssh/storage_sys_certificate.pem` ). The certificate can be up to 32768 bytes (before Base64 encoding).\n\nTo use this parameter, configure `ServerProtocol` to `HTTPS` .",
+        "ServerCertificate": "Specifies a file with the certificates that are used to sign the object storage server's certificate (for example, `file:///home/user/.ssh/storage_sys_certificate.pem` ). The file you specify must include the following:\n\n- The certificate of the signing certificate authority (CA)\n- Any intermediate certificates\n- base64 encoding\n- A `.pem` extension\n\nThe file can be up to 32768 bytes (before base64 encoding).\n\nTo use this parameter, configure `ServerProtocol` to `HTTPS` .",
         "ServerHostname": "Specifies the domain name or IP address of the object storage server. A DataSync agent uses this hostname to mount the object storage server in a network.",
         "ServerPort": "Specifies the port that your object storage server accepts inbound network traffic on (for example, port 443).",
         "ServerProtocol": "Specifies the protocol that your object storage server uses to communicate.",
@@ -14317,8 +14333,8 @@
         "EndDate": "The date and time at which the Capacity Reservation Fleet expires. When the Capacity Reservation Fleet expires, its state changes to `expired` and all of the Capacity Reservations in the Fleet expire.\n\nThe Capacity Reservation Fleet expires within an hour after the specified time. For example, if you specify `5/31/2019` , `13:30:55` , the Capacity Reservation Fleet is guaranteed to expire between `13:30:55` and `14:30:55` on `5/31/2019` .",
         "InstanceMatchCriteria": "Indicates the type of instance launches that the Capacity Reservation Fleet accepts. All Capacity Reservations in the Fleet inherit this instance matching criteria.\n\nCurrently, Capacity Reservation Fleets support `open` instance matching criteria only. This means that instances that have matching attributes (instance type, platform, and Availability Zone) run in the Capacity Reservations automatically. Instances do not need to explicitly target a Capacity Reservation Fleet to use its reserved capacity.",
         "InstanceTypeSpecifications": "Information about the instance types for which to reserve the capacity.",
-        "NoRemoveEndDate": "",
-        "RemoveEndDate": "",
+        "NoRemoveEndDate": "Used to add an end date to a Capacity Reservation Fleet that has no end date and time. To add an end date to a Capacity Reservation Fleet, specify `true` for this paramater and specify the end date and time (in UTC time format) for the *EndDate* parameter.",
+        "RemoveEndDate": "Used to remove an end date from a Capacity Reservation Fleet that is configured to end automatically at a specific date and time. To remove the end date from a Capacity Reservation Fleet, specify `true` for this paramater and omit the *EndDate* parameter.",
         "TagSpecifications": "The tags to assign to the Capacity Reservation Fleet. The tags are automatically assigned to the Capacity Reservations in the Fleet.",
         "Tenancy": "Indicates the tenancy of the Capacity Reservation Fleet. All Capacity Reservations in the Fleet inherit this tenancy. The Capacity Reservation Fleet can have one of the following tenancy settings:\n\n- `default` - The Capacity Reservation Fleet is created on hardware that is shared with other AWS accounts .\n- `dedicated` - The Capacity Reservations are created on single-tenant hardware that is dedicated to a single AWS account .",
         "TotalTargetCapacity": "The total number of capacity units to be reserved by the Capacity Reservation Fleet. This value, together with the instance type weights that you assign to each instance type used by the Fleet determine the number of instances for which the Fleet reserves capacity. Both values are based on units that make sense for your workload. For more information, see [Total target capacity](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/crfleet-concepts.html#target-capacity) in the Amazon EC2 User Guide."
@@ -14856,6 +14872,7 @@
         "PrivateDefaultScopeId": "The ID of the IPAM's default private scope.",
         "PublicDefaultScopeId": "The ID of the IPAM's default public scope.",
         "Ref": "`Ref` returns the IPAM ID.",
+        "ResourceDiscoveryAssociationCount": "",
         "ScopeCount": "The number of scopes in the IPAM. The scope quota is 5."
       },
       "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
@@ -14864,7 +14881,6 @@
         "DefaultResourceDiscoveryId": "The IPAM's default resource discovery ID.",
         "Description": "The description for the IPAM.",
         "OperatingRegions": "The operating Regions for an IPAM. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.\n\nFor more information about operating Regions, see [Create an IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/create-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "ResourceDiscoveryAssociationCount": "The IPAM's resource discovery association count.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
       }
     },
@@ -15299,7 +15315,7 @@
       "attributes": {},
       "description": "Specifies the CPU options for an instance. For more information, see [Optimize CPU options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\n`CpuOptions` is a property of [AWS::EC2::LaunchTemplate LaunchTemplateData](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html) .",
       "properties": {
-        "AmdSevSnp": "Indicates whether to enable the instance for AMD SEV-SNP. AMD SEV-SNP is supported with M6a, R6a, and C6a instance types only.",
+        "AmdSevSnp": "Indicates whether to enable the instance for AMD SEV-SNP. AMD SEV-SNP is supported with M6a, R6a, and C6a instance types only. For more information, see [AMD SEV-SNP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sev-snp.html) .",
         "CoreCount": "The number of CPU cores for the instance.",
         "ThreadsPerCore": "The number of threads per CPU core. To disable multithreading for the instance, specify a value of `1` . Otherwise, specify the default value of `2` ."
       }
@@ -16679,6 +16695,7 @@
     },
     "AWS::EC2::SubnetCidrBlock": {
       "attributes": {
+        "Id": "The ID of the association.",
         "Ref": "`Ref` returns the association ID for the subnet\u2019s IPv6 CIDR block."
       },
       "description": "Associates a CIDR block with your subnet. You can associate a single IPv6 CIDR block with your subnet. An IPv6 CIDR block must have a prefix length of /64.",
@@ -22040,19 +22057,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> If you have active fleets using the Windows Server 2012 operating system, you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support. All others must use Windows Server 2016 when creating new Windows-based builds.",
-        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
+        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "",
+      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "",
-        "Key": "",
-        "ObjectVersion": "",
-        "RoleArn": ""
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Key": "The name of the zip file that contains the build files or script files.",
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
@@ -23301,10 +23318,10 @@
     },
     "AWS::Grafana::Workspace.NetworkAccessControl": {
       "attributes": {},
-      "description": "The configuration settings for in-bound network access to your workspace.\n\nWhen this is configured, only listed IP addresses and VPC endpoints will be able to access your workspace. Standard Grafana authentication and authorization will still be required.\n\nIf this is not configured, or is removed, then all IP addresses and VPC endpoints will be allowed. Standard Grafana authentication and authorization will still be required.",
+      "description": "The configuration settings for in-bound network access to your workspace.\n\nWhen this is configured, only listed IP addresses and VPC endpoints will be able to access your workspace. Standard Grafana authentication and authorization are still required.\n\nAccess is granted to a caller that is in either the IP address list or the VPC endpoint list - they do not need to be in both.\n\nIf this is not configured, or is removed, then all IP addresses and VPC endpoints are allowed. Standard Grafana authentication and authorization are still required.\n\n> While both `prefixListIds` and `vpceIds` are required, you can pass in an empty array of strings for either parameter if you do not want to allow any of that type.\n> \n> If both are passed as empty arrays, no traffic is allowed to the workspace, because only *explicitly* allowed connections are accepted.",
       "properties": {
-        "PrefixListIds": "An array of prefix list IDs. A prefix list is a list of CIDR ranges of IP addresses. The IP addresses specified are allowed to access your workspace. If the list is not included in the configuration then no IP addresses will be allowed to access the workspace. You create a prefix list using the Amazon VPC console.\n\nPrefix list IDs have the format `pl- *1a2b3c4d*` .\n\nFor more information about prefix lists, see [Group CIDR blocks using managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html) in the *Amazon Virtual Private Cloud User Guide* .",
-        "VpceIds": "An array of Amazon VPC endpoint IDs for the workspace. You can create VPC endpoints to your Amazon Managed Grafana workspace for access from within a VPC. If a `NetworkAccessConfiguration` is specified then only VPC endpoints specified here will be allowed to access the workspace.\n\nVPC endpoint IDs have the format `vpce- *1a2b3c4d*` .\n\nFor more information about creating an interface VPC endpoint, see [Interface VPC endpoints](https://docs.aws.amazon.com/grafana/latest/userguide/VPC-endpoints) in the *Amazon Managed Grafana User Guide* .\n\n> The only VPC endpoints that can be specified here are interface VPC endpoints for Grafana workspaces (using the `com.amazonaws.[region].grafana-workspace` service endpoint). Other VPC endpoints will be ignored."
+        "PrefixListIds": "An array of prefix list IDs. A prefix list is a list of CIDR ranges of IP addresses. The IP addresses specified are allowed to access your workspace. If the list is not included in the configuration (passed an empty array) then no IP addresses are allowed to access the workspace. You create a prefix list using the Amazon VPC console.\n\nPrefix list IDs have the format `pl- *1a2b3c4d*` .\n\nFor more information about prefix lists, see [Group CIDR blocks using managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html) in the *Amazon Virtual Private Cloud User Guide* .",
+        "VpceIds": "An array of Amazon VPC endpoint IDs for the workspace. You can create VPC endpoints to your Amazon Managed Grafana workspace for access from within a VPC. If a `NetworkAccessConfiguration` is specified then only VPC endpoints specified here are allowed to access the workspace. If you pass in an empty array of strings, then no VPCs are allowed to access the workspace.\n\nVPC endpoint IDs have the format `vpce- *1a2b3c4d*` .\n\nFor more information about creating an interface VPC endpoint, see [Interface VPC endpoints](https://docs.aws.amazon.com/grafana/latest/userguide/VPC-endpoints) in the *Amazon Managed Grafana User Guide* .\n\n> The only VPC endpoints that can be specified here are interface VPC endpoints for Grafana workspaces (using the `com.amazonaws.[region].grafana-workspace` service endpoint). Other VPC endpoints are ignored."
       }
     },
     "AWS::Grafana::Workspace.RoleValues": {
@@ -31811,7 +31828,7 @@
         "FunctionName": "The name of the Lambda function, up to 64 characters in length. If you don't specify a name, AWS CloudFormation generates one.\n\nIf you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "Handler": "The name of the method within your code that Lambda calls to run your function. Handler is required if the deployment package is a .zip file archive. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime. For more information, see [Lambda programming model](https://docs.aws.amazon.com/lambda/latest/dg/foundation-progmodel.html) .",
         "ImageConfig": "Configuration values that override the container image Dockerfile settings. For more information, see [Container image settings](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html#images-parms) .",
-        "KmsKeyArn": "The ARN of the AWS Key Management Service ( AWS KMS ) customer managed key that's used to encrypt your function's [environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-encryption) . When [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart-security.html) is activated, this key is also used to encrypt your function's snapshot. If you don't provide a customer managed key, Lambda uses a default service key.",
+        "KmsKeyArn": "The ARN of the AWS Key Management Service ( AWS KMS ) customer managed key that's used to encrypt your function's [environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-encryption) . When [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart-security.html) is activated, Lambda also uses this key is to encrypt your function's snapshot. If you deploy your function using a container image, Lambda also uses this key to encrypt your function when it's deployed. Note that this is not the same key that's used to protect your container image in the Amazon Elastic Container Registry (Amazon ECR).\nIf you don't provide a customer managed key, Lambda uses a default service key.",
         "Layers": "A list of [function layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to add to the function's execution environment. Specify each layer by its ARN, including the version.",
         "MemorySize": "The amount of [memory available to the function](https://docs.aws.amazon.com/lambda/latest/dg/configuration-function-common.html#configuration-memory-console) at runtime. Increasing the function memory also increases its CPU allocation. The default value is 128 MB. The value can be any multiple of 1 MB.",
         "PackageType": "The type of deployment package. Set to `Image` for container image and set `Zip` for .zip file archive.",
@@ -37293,8 +37310,10 @@
         "AssociatedRoles": "Provides a list of the Amazon Identity and Access Management (IAM) roles that are associated with the DB cluster. IAM roles that are associated with a DB cluster grant permission for the DB cluster to access other Amazon services on your behalf.",
         "AvailabilityZones": "Provides the list of EC2 Availability Zones that instances in the DB cluster can be created in.",
         "BackupRetentionPeriod": "Specifies the number of days for which automatic DB snapshots are retained.\n\nAn update may require some interruption. See [ModifyDBInstance](https://docs.aws.amazon.com/neptune/latest/userguide/api-instances.html#ModifyDBInstance) in the Amazon Neptune User Guide for more information.",
+        "CopyTagsToSnapshot": "*If set to `true` , tags are copied to any snapshot of the DB cluster that is created.*",
         "DBClusterIdentifier": "Contains a user-supplied DB cluster identifier. This identifier is the unique key that identifies a DB cluster.",
         "DBClusterParameterGroupName": "Provides the name of the DB cluster parameter group.\n\nAn update may require some interruption. See [ModifyDBInstance](https://docs.aws.amazon.com/neptune/latest/userguide/api-instances.html#ModifyDBInstance) in the Amazon Neptune User Guide for more information.",
+        "DBInstanceParameterGroupName": "The name of the DB parameter group to apply to all instances of the DB cluster. Used only in case of a major engine version upgrade request\n\nNote that when you apply a parameter group using `DBInstanceParameterGroupName` , parameter changes are applied immediately, not during the next maintenance window.\n\n**Constraints** - The DB parameter group must be in the same DB parameter group family as the target DB cluster version.\n- The `DBInstanceParameterGroupName` parameter is only valid for major engine version upgrades.",
         "DBSubnetGroupName": "Specifies information on the subnet group associated with the DB cluster, including the name, description, and subnets in the subnet group.",
         "DeletionProtection": "Indicates whether or not the DB cluster has deletion protection enabled. The database can't be deleted when deletion protection is enabled.",
         "EnableCloudwatchLogsExports": "Specifies a list of log types that are enabled for export to CloudWatch Logs.",
@@ -37305,6 +37324,7 @@
         "PreferredMaintenanceWindow": "Specifies the weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).",
         "RestoreToTime": "Creates a new DB cluster from a DB snapshot or DB cluster snapshot.\n\nIf a DB snapshot is specified, the target DB cluster is created from the source DB snapshot with a default configuration and default security group.\n\nIf a DB cluster snapshot is specified, the target DB cluster is created from the source DB cluster restore point with the same configuration as the original source DB cluster, except that the new DB cluster is created with the default security group.",
         "RestoreType": "Creates a new DB cluster from a DB snapshot or DB cluster snapshot.\n\nIf a DB snapshot is specified, the target DB cluster is created from the source DB snapshot with a default configuration and default security group.\n\nIf a DB cluster snapshot is specified, the target DB cluster is created from the source DB cluster restore point with the same configuration as the original source DB cluster, except that the new DB cluster is created with the default security group.",
+        "ServerlessScalingConfiguration": "",
         "SnapshotIdentifier": "Specifies the identifier for a DB cluster snapshot. Must match the identifier of an existing snapshot.\n\nAfter you restore a DB cluster using a `SnapshotIdentifier` , you must specify the same `SnapshotIdentifier` for any future updates to the DB cluster. When you specify this property for an update, the DB cluster is not restored from the snapshot again, and the data in the database is not changed.\n\nHowever, if you don't specify the `SnapshotIdentifier` , an empty DB cluster is created, and the original DB cluster is deleted. If you specify a property that is different from the previous snapshot restore property, the DB cluster is restored from the snapshot specified by the `SnapshotIdentifier` , and the original DB cluster is deleted.",
         "SourceDBClusterIdentifier": "Creates a new DB cluster from a DB snapshot or DB cluster snapshot.\n\nIf a DB snapshot is specified, the target DB cluster is created from the source DB snapshot with a default configuration and default security group.\n\nIf a DB cluster snapshot is specified, the target DB cluster is created from the source DB cluster restore point with the same configuration as the original source DB cluster, except that the new DB cluster is created with the default security group.",
         "StorageEncrypted": "Indicates whether the DB cluster is encrypted.\n\nIf you specify the `DBClusterIdentifier` , `DBSnapshotIdentifier` , or `SourceDBInstanceIdentifier` property, don't specify this property. The value is inherited from the cluster, snapshot, or source DB instance. If you specify the `KmsKeyId` property, you must enable encryption.\n\nIf you specify the `KmsKeyId` , you must enable encryption by setting `StorageEncrypted` to true.",
@@ -37319,6 +37339,14 @@
       "properties": {
         "FeatureName": "The name of the feature associated with the Amazon Identity and Access Management (IAM) role. For the list of supported feature names, see [DescribeDBEngineVersions](https://docs.aws.amazon.com/neptune/latest/userguide/api-other-apis.html#DescribeDBEngineVersions) .",
         "RoleArn": "The Amazon Resource Name (ARN) of the IAM role that is associated with the DB cluster."
+      }
+    },
+    "AWS::Neptune::DBCluster.ServerlessScalingConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "MaxCapacity": "",
+        "MinCapacity": ""
       }
     },
     "AWS::Neptune::DBClusterParameterGroup": {
@@ -54533,14 +54561,296 @@
         "WarningForeground": "The foreground color that applies to any text or other elements that appear over the warning color."
       }
     },
+    "AWS::QuickSight::Topic": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the topic.",
+        "Ref": ""
+      },
+      "description": "Creates a new Q topic.",
+      "properties": {
+        "AwsAccountId": "The ID of the AWS account that you want to create a topic in.",
+        "DataSets": "The data sets that the topic is associated with.",
+        "Description": "The description of the topic.",
+        "Name": "The name of the topic.",
+        "TopicId": "The ID for the topic. This ID is unique per AWS Region for each AWS account."
+      }
+    },
+    "AWS::QuickSight::Topic.CellValueSynonym": {
+      "attributes": {},
+      "description": "A structure that represents the cell value synonym.",
+      "properties": {
+        "CellValue": "The cell value.",
+        "Synonyms": "Other names or aliases for the cell value."
+      }
+    },
+    "AWS::QuickSight::Topic.CollectiveConstant": {
+      "attributes": {},
+      "description": "A structure that represents a collective constant.",
+      "properties": {
+        "ValueList": "A list of values for the collective constant."
+      }
+    },
+    "AWS::QuickSight::Topic.ComparativeOrder": {
+      "attributes": {},
+      "description": "The order in which data is displayed for the column when it's used in a comparative context.",
+      "properties": {
+        "SpecifedOrder": "The list of columns to be used in the ordering.",
+        "TreatUndefinedSpecifiedValues": "The treat of undefined specified values. Valid values for this structure are `LEAST` and `MOST` .",
+        "UseOrdering": "The ordering type for a column. Valid values for this structure are `GREATER_IS_BETTER` , `LESSER_IS_BETTER` and `SPECIFIED` ."
+      }
+    },
+    "AWS::QuickSight::Topic.DataAggregation": {
+      "attributes": {},
+      "description": "The definition of a data aggregation.",
+      "properties": {
+        "DatasetRowDateGranularity": "The level of time precision that is used to aggregate `DateTime` values.",
+        "DefaultDateColumnName": "The column name for the default date."
+      }
+    },
+    "AWS::QuickSight::Topic.DatasetMetadata": {
+      "attributes": {},
+      "description": "A structure that represents a dataset.",
+      "properties": {
+        "CalculatedFields": "The list of calculated field definitions.",
+        "Columns": "The list of column definitions.",
+        "DataAggregation": "The definition of a data aggregation.",
+        "DatasetArn": "The Amazon Resource Name (ARN) of the dataset.",
+        "DatasetDescription": "The description of the dataset.",
+        "DatasetName": "The name of the dataset.",
+        "Filters": "The list of filter definitions.",
+        "NamedEntities": "The list of named entities definitions."
+      }
+    },
+    "AWS::QuickSight::Topic.DefaultFormatting": {
+      "attributes": {},
+      "description": "A structure that represents a default formatting definition.",
+      "properties": {
+        "DisplayFormat": "The display format. Valid values for this structure are `AUTO` , `PERCENT` , `CURRENCY` , `NUMBER` , `DATE` , and `STRING` .",
+        "DisplayFormatOptions": "The additional options for display formatting."
+      }
+    },
+    "AWS::QuickSight::Topic.DisplayFormatOptions": {
+      "attributes": {},
+      "description": "A structure that represents additional options for display formatting.",
+      "properties": {
+        "BlankCellFormat": "Determines the blank cell format.",
+        "CurrencySymbol": "The currency symbol, such as `USD` .",
+        "DateFormat": "Determines the `DateTime` format.",
+        "DecimalSeparator": "Determines the decimal separator.",
+        "FractionDigits": "Determines the number of fraction digits.",
+        "GroupingSeparator": "Determines the grouping separator.",
+        "NegativeFormat": "The negative format.",
+        "Prefix": "The prefix value for a display format.",
+        "Suffix": "The suffix value for a display format.",
+        "UnitScaler": "The unit scaler. Valid values for this structure are: `NONE` , `AUTO` , `THOUSANDS` , `MILLIONS` , `BILLIONS` , and `TRILLIONS` .",
+        "UseBlankCellFormat": "A Boolean value that indicates whether to use blank cell format.",
+        "UseGrouping": "A Boolean value that indicates whether to use grouping."
+      }
+    },
+    "AWS::QuickSight::Topic.NamedEntityDefinition": {
+      "attributes": {},
+      "description": "A structure that represents a named entity.",
+      "properties": {
+        "FieldName": "The name of the entity.",
+        "Metric": "The definition of a metric.",
+        "PropertyName": "The property name to be used for the named entity.",
+        "PropertyRole": "The property role. Valid values for this structure are `PRIMARY` and `ID` .",
+        "PropertyUsage": "The property usage. Valid values for this structure are `INHERIT` , `DIMENSION` , and `MEASURE` ."
+      }
+    },
+    "AWS::QuickSight::Topic.NamedEntityDefinitionMetric": {
+      "attributes": {},
+      "description": "A structure that represents a metric.",
+      "properties": {
+        "Aggregation": "The aggregation of a named entity. Valid values for this structure are `SUM` , `MIN` , `MAX` , `COUNT` , `AVERAGE` , `DISTINCT_COUNT` , `STDEV` , `STDEVP` , `VAR` , `VARP` , `PERCENTILE` , `MEDIAN` , and `CUSTOM` .",
+        "AggregationFunctionParameters": "The additional parameters for an aggregation function."
+      }
+    },
+    "AWS::QuickSight::Topic.NegativeFormat": {
+      "attributes": {},
+      "description": "A structure that represents a negative format.",
+      "properties": {
+        "Prefix": "The prefix for a negative format.",
+        "Suffix": "The suffix for a negative format."
+      }
+    },
+    "AWS::QuickSight::Topic.RangeConstant": {
+      "attributes": {},
+      "description": "The value of the constant that is used to specify the endpoints of a range filter.",
+      "properties": {
+        "Maximum": "The maximum value for a range constant.",
+        "Minimum": "The minimum value for a range constant."
+      }
+    },
+    "AWS::QuickSight::Topic.SemanticEntityType": {
+      "attributes": {},
+      "description": "A structure that represents a semantic entity type.",
+      "properties": {
+        "SubTypeName": "The semantic entity sub type name.",
+        "TypeName": "The semantic entity type name.",
+        "TypeParameters": "The semantic entity type parameters."
+      }
+    },
+    "AWS::QuickSight::Topic.SemanticType": {
+      "attributes": {},
+      "description": "A structure that represents a semantic type.",
+      "properties": {
+        "FalseyCellValue": "The semantic type falsey cell value.",
+        "FalseyCellValueSynonyms": "The other names or aliases for the false cell value.",
+        "SubTypeName": "The semantic type sub type name.",
+        "TruthyCellValue": "The semantic type truthy cell value.",
+        "TruthyCellValueSynonyms": "The other names or aliases for the true cell value.",
+        "TypeName": "The semantic type name.",
+        "TypeParameters": "The semantic type parameters."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicCalculatedField": {
+      "attributes": {},
+      "description": "A structure that represents a calculated field.",
+      "properties": {
+        "Aggregation": "The default aggregation. Valid values for this structure are `SUM` , `MAX` , `MIN` , `COUNT` , `DISTINCT_COUNT` , and `AVERAGE` .",
+        "AllowedAggregations": "The list of aggregation types that are allowed for the calculated field. Valid values for this structure are `COUNT` , `DISTINCT_COUNT` , `MIN` , `MAX` , `MEDIAN` , `SUM` , `AVERAGE` , `STDEV` , `STDEVP` , `VAR` , `VARP` , and `PERCENTILE` .",
+        "CalculatedFieldDescription": "The calculated field description.",
+        "CalculatedFieldName": "The calculated field name.",
+        "CalculatedFieldSynonyms": "The other names or aliases for the calculated field.",
+        "CellValueSynonyms": "The other names or aliases for the calculated field cell value.",
+        "ColumnDataRole": "The column data role for a calculated field. Valid values for this structure are `DIMENSION` and `MEASURE` .",
+        "ComparativeOrder": "The order in which data is displayed for the calculated field when it's used in a comparative context.",
+        "DefaultFormatting": "The default formatting definition.",
+        "Expression": "The calculated field expression.",
+        "IsIncludedInTopic": "A boolean value that indicates if a calculated field is included in the topic.",
+        "NeverAggregateInFilter": "A Boolean value that indicates whether to never aggregate calculated field in filters.",
+        "NotAllowedAggregations": "The list of aggregation types that are not allowed for the calculated field. Valid values for this structure are `COUNT` , `DISTINCT_COUNT` , `MIN` , `MAX` , `MEDIAN` , `SUM` , `AVERAGE` , `STDEV` , `STDEVP` , `VAR` , `VARP` , and `PERCENTILE` .",
+        "SemanticType": "The semantic type.",
+        "TimeGranularity": "The level of time precision that is used to aggregate `DateTime` values."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicCategoryFilter": {
+      "attributes": {},
+      "description": "A structure that represents a category filter.",
+      "properties": {
+        "CategoryFilterFunction": "The category filter function. Valid values for this structure are `EXACT` and `CONTAINS` .",
+        "CategoryFilterType": "The category filter type. This element is used to specify whether a filter is a simple category filter or an inverse category filter.",
+        "Constant": "The constant used in a category filter.",
+        "Inverse": "A Boolean value that indicates if the filter is inverse."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicCategoryFilterConstant": {
+      "attributes": {},
+      "description": "A constant used in a category filter.",
+      "properties": {
+        "CollectiveConstant": "A collective constant used in a category filter. This element is used to specify a list of values for the constant.",
+        "ConstantType": "The type of category filter constant. This element is used to specify whether a constant is a singular or collective. Valid values are `SINGULAR` and `COLLECTIVE` .",
+        "SingularConstant": "A singular constant used in a category filter. This element is used to specify a single value for the constant."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicColumn": {
+      "attributes": {},
+      "description": "Represents a column in a dataset.",
+      "properties": {
+        "Aggregation": "The type of aggregation that is performed on the column data when it's queried. Valid values for this structure are `SUM` , `MAX` , `MIN` , `COUNT` , `DISTINCT_COUNT` , and `AVERAGE` .",
+        "AllowedAggregations": "The list of aggregation types that are allowed for the column. Valid values for this structure are `COUNT` , `DISTINCT_COUNT` , `MIN` , `MAX` , `MEDIAN` , `SUM` , `AVERAGE` , `STDEV` , `STDEVP` , `VAR` , `VARP` , and `PERCENTILE` .",
+        "CellValueSynonyms": "The other names or aliases for the column cell value.",
+        "ColumnDataRole": "The role of the column in the data. Valid values are `DIMENSION` and `MEASURE` .",
+        "ColumnDescription": "A description of the column and its contents.",
+        "ColumnFriendlyName": "A user-friendly name for the column.",
+        "ColumnName": "The name of the column.",
+        "ColumnSynonyms": "The other names or aliases for the column.",
+        "ComparativeOrder": "The order in which data is displayed for the column when it's used in a comparative context.",
+        "DefaultFormatting": "The default formatting used for values in the column.",
+        "IsIncludedInTopic": "A Boolean value that indicates whether the column is included in the query results.",
+        "NeverAggregateInFilter": "A Boolean value that indicates whether to aggregate the column data when it's used in a filter context.",
+        "NotAllowedAggregations": "The list of aggregation types that are not allowed for the column. Valid values for this structure are `COUNT` , `DISTINCT_COUNT` , `MIN` , `MAX` , `MEDIAN` , `SUM` , `AVERAGE` , `STDEV` , `STDEVP` , `VAR` , `VARP` , and `PERCENTILE` .",
+        "SemanticType": "The semantic type of data contained in the column.",
+        "TimeGranularity": "The level of time precision that is used to aggregate `DateTime` values."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicDateRangeFilter": {
+      "attributes": {},
+      "description": "A filter used to restrict data based on a range of dates or times.",
+      "properties": {
+        "Constant": "The constant used in a date range filter.",
+        "Inclusive": "A Boolean value that indicates whether the date range filter should include the boundary values. If set to true, the filter includes the start and end dates. If set to false, the filter excludes them."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicFilter": {
+      "attributes": {},
+      "description": "A structure that represents a filter used to select items for a topic.",
+      "properties": {
+        "CategoryFilter": "The category filter that is associated with this filter.",
+        "DateRangeFilter": "The date range filter.",
+        "FilterClass": "The class of the filter. Valid values for this structure are `ENFORCED_VALUE_FILTER` , `CONDITIONAL_VALUE_FILTER` , and `NAMED_VALUE_FILTER` .",
+        "FilterDescription": "A description of the filter used to select items for a topic.",
+        "FilterName": "The name of the filter.",
+        "FilterSynonyms": "The other names or aliases for the filter.",
+        "FilterType": "The type of the filter. Valid values for this structure are `CATEGORY_FILTER` , `NUMERIC_EQUALITY_FILTER` , `NUMERIC_RANGE_FILTER` , `DATE_RANGE_FILTER` , and `RELATIVE_DATE_FILTER` .",
+        "NumericEqualityFilter": "The numeric equality filter.",
+        "NumericRangeFilter": "The numeric range filter.",
+        "OperandFieldName": "The name of the field that the filter operates on.",
+        "RelativeDateFilter": "The relative date filter."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicNamedEntity": {
+      "attributes": {},
+      "description": "A structure that represents a named entity.",
+      "properties": {
+        "Definition": "The definition of a named entity.",
+        "EntityDescription": "The description of the named entity.",
+        "EntityName": "The name of the named entity.",
+        "EntitySynonyms": "The other names or aliases for the named entity.",
+        "SemanticEntityType": "The type of named entity that a topic represents."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicNumericEqualityFilter": {
+      "attributes": {},
+      "description": "A filter that filters topics based on the value of a numeric field. The filter includes only topics whose numeric field value matches the specified value.",
+      "properties": {
+        "Aggregation": "An aggregation function that specifies how to calculate the value of a numeric field for a topic. Valid values for this structure are `NO_AGGREGATION` , `SUM` , `AVERAGE` , `COUNT` , `DISTINCT_COUNT` , `MAX` , `MEDIAN` , `MIN` , `STDEV` , `STDEVP` , `VAR` , and `VARP` .",
+        "Constant": "The constant used in a numeric equality filter."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicNumericRangeFilter": {
+      "attributes": {},
+      "description": "A filter that filters topics based on the value of a numeric field. The filter includes only topics whose numeric field value falls within the specified range.",
+      "properties": {
+        "Aggregation": "An aggregation function that specifies how to calculate the value of a numeric field for a topic, Valid values for this structure are `NO_AGGREGATION` , `SUM` , `AVERAGE` , `COUNT` , `DISTINCT_COUNT` , `MAX` , `MEDIAN` , `MIN` , `STDEV` , `STDEVP` , `VAR` , and `VARP` .",
+        "Constant": "The constant used in a numeric range filter.",
+        "Inclusive": "A Boolean value that indicates whether the endpoints of the numeric range are included in the filter. If set to true, topics whose numeric field value is equal to the endpoint values will be included in the filter. If set to false, topics whose numeric field value is equal to the endpoint values will be excluded from the filter."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicRangeFilterConstant": {
+      "attributes": {},
+      "description": "A constant value that is used in a range filter to specify the endpoints of the range.",
+      "properties": {
+        "ConstantType": "The data type of the constant value that is used in a range filter. Valid values for this structure are `RANGE` .",
+        "RangeConstant": "The value of the constant that is used to specify the endpoints of a range filter."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicRelativeDateFilter": {
+      "attributes": {},
+      "description": "A structure that represents a relative date filter.",
+      "properties": {
+        "Constant": "The constant used in a relative date filter.",
+        "RelativeDateFilterFunction": "The function to be used in a relative date filter to determine the range of dates to include in the results. Valid values for this structure are `BEFORE` , `AFTER` , and `BETWEEN` .",
+        "TimeGranularity": "The level of time precision that is used to aggregate `DateTime` values."
+      }
+    },
+    "AWS::QuickSight::Topic.TopicSingularFilterConstant": {
+      "attributes": {},
+      "description": "A structure that represents a singular filter constant, used in filters to specify a single value to match against.",
+      "properties": {
+        "ConstantType": "The type of the singular filter constant. Valid values for this structure are `SINGULAR` .",
+        "SingularConstant": "The value of the singular filter constant."
+      }
+    },
     "AWS::QuickSight::VPCConnection": {
       "attributes": {
-        "Arn": "",
-        "CreatedTime": "",
-        "LastUpdatedTime": "",
-        "NetworkInterfaces": "",
-        "Status": "",
-        "VPCId": ""
+        "Arn": "The Amazon Resource Name (ARN) of the VPC connection.",
+        "CreatedTime": "The time that the VPC connection was created.",
+        "LastUpdatedTime": "The time that the VPC connection was last updated.",
+        "NetworkInterfaces": "A list of network interfaces.",
+        "Status": "The HTTP status of the request.",
+        "VPCId": "The ID of the VPC connection that you're creating. This ID is a unique identifier for each AWS Region in an AWS account."
       },
       "description": "Creates a new VPC connection.",
       "properties": {
@@ -56061,14 +56371,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -56076,18 +56386,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -56096,7 +56406,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -56106,15 +56416,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -62937,6 +63247,7 @@
         "DirectoryId": "The identifier of the AWS Directory Service directory that you want to stop sharing.",
         "Function": "The ARN for a Lambda function to use for the Identity provider.",
         "InvocationRole": "This parameter is only applicable if your `IdentityProviderType` is `API_GATEWAY` . Provides the type of `InvocationRole` used to authenticate the user account.",
+        "SftpAuthenticationMethods": "For SFTP-enabled servers, and for custom identity providers *only* , you can specify whether to authenticate using a password, SSH key pair, or both.\n\n- `PASSWORD` - users must provide their password to connect.\n- `PUBLIC_KEY` - users must provide their private key to connect.\n- `PUBLIC_KEY_OR_PASSWORD` - users can authenticate with either their password or their key. This is the default value.\n- `PUBLIC_KEY_AND_PASSWORD` - users must provide both their private key and their password to connect. The server checks the key first, and then if the key is valid, the system prompts for a password. If the private key provided does not match the public key that is stored, authentication fails.",
         "Url": "Provides the location of the service endpoint used to authenticate users."
       }
     },
@@ -62947,7 +63258,7 @@
     },
     "AWS::Transfer::Server.ProtocolDetails": {
       "attributes": {},
-      "description": "Protocol settings that are configured for your server.",
+      "description": "The protocol settings that are configured for your server.",
       "properties": {
         "As2Transports": "List of `As2Transport` objects.",
         "PassiveIp": "Indicates passive mode, for FTP and FTPS protocols. Enter a single IPv4 address, such as the public IP address of a firewall, router, or load balancer. For example:\n\n`aws transfer update-server --protocol-details PassiveIp=0.0.0.0`\n\nReplace `0.0.0.0` in the example above with the actual IP address you want to use.\n\n> If you change the `PassiveIp` value, you must stop and then restart your Transfer Family server for the change to take effect. For details on using passive mode (PASV) in a NAT environment, see [Configuring your FTPS server behind a firewall or NAT with AWS Transfer Family](https://docs.aws.amazon.com/storage/configuring-your-ftps-server-behind-a-firewall-or-nat-with-aws-transfer-family/) . \n\n*Special values*\n\nThe `AUTO` and `0.0.0.0` are special values for the `PassiveIp` parameter. The value `PassiveIp=AUTO` is assigned by default to FTP and FTPS type servers. In this case, the server automatically responds with one of the endpoint IPs within the PASV response. `PassiveIp=0.0.0.0` has a more unique application for its usage. For example, if you have a High Availability (HA) Network Load Balancer (NLB) environment, where you have 3 subnets, you can only specify a single IP address using the `PassiveIp` parameter. This reduces the effectiveness of having High Availability. In this case, you can specify `PassiveIp=0.0.0.0` . This tells the client to use the same IP address as the Control connection and utilize all AZs for their connections. Note, however, that not all FTP clients support the `PassiveIp=0.0.0.0` response. FileZilla and WinSCP do support it. If you are using other clients, check to see if your client supports the `PassiveIp=0.0.0.0` response.",
