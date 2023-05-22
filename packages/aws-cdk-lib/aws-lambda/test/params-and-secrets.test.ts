@@ -231,7 +231,10 @@ describe('params and secrets', () => {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: {
-              Ref: 'SecretA720EF05',
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
             },
           },
         ],

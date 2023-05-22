@@ -78,7 +78,7 @@ function getVersionArn(scope: IConstruct, architecture: string): string {
   if (region !== undefined && !Token.isUnresolved(region)) {
     const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(architecture);
     if (layerArn === undefined) {
-      throw new Error(`Parameters and Secrets Extension is not supported in region ${region}`);
+      throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
     }
     return layerArn;
   }
