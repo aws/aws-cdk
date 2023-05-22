@@ -33,7 +33,10 @@ export class FileAssetHandler implements IAssetHandler {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
     try {
-      const s3 = await this.host.aws.s3Client(destination);
+      const s3 = await this.host.aws.s3Client({
+        ...destination,
+        quiet: true,
+      });
       this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
       if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
