@@ -64,7 +64,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --loader:.png=dataurl',
       ],
       workingDirectory: '/',
     }),
@@ -94,7 +94,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -116,7 +116,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.tsx" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        'esbuild --bundle "/asset-input/lib/handler.tsx" --target=node14 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -180,6 +180,53 @@ test('esbuild bundling with externals and dependencies', () => {
   });
 });
 
+test('esbuild bundling with provided aws-sdk', () => {
+  Bundling.bundle({
+    entry: '/project/lib/index.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    includeProvidedAwsSdk: true,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with provided aws-sdk and external modules', () => {
+  Bundling.bundle({
+    entry: '/project/lib/index.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    externalModules: ['abc'],
+    includeProvidedAwsSdk: true,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:abc --external:aws-sdk',
+      ],
+    }),
+  });
+});
+
 test('esbuild bundling with esbuild options', () => {
   Bundling.bundle({
     entry,
@@ -230,7 +277,7 @@ test('esbuild bundling with esbuild options', () => {
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
-          '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
+          '--minify --sourcemap --sources-content=false --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
@@ -276,7 +323,7 @@ test('esbuild bundling source map default', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap --external:aws-sdk',
+          '--sourcemap',
         ].join(' '),
       ],
     }),
@@ -298,7 +345,7 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node18 --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node18 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -323,7 +370,7 @@ test('esbuild bundling source map inline', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          '--sourcemap=inline',
         ].join(' '),
       ],
     }),
@@ -347,7 +394,7 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          '--sourcemap=inline',
         ].join(' '),
       ],
     }),
@@ -372,7 +419,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          '--sourcemap=inline',
         ].join(' '),
       ],
     }),
@@ -591,7 +638,7 @@ test('esbuild bundling with projectRoot', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        'esbuild --bundle "/asset-input/lib/index.ts" --target=node14 --platform=node --outfile="/asset-output/index.js" --tsconfig=/asset-input/lib/custom-tsconfig.ts',
       ],
     }),
   });
@@ -652,7 +699,7 @@ test('esbuild bundling with pre compilations', () => {
         'bash', '-c',
         [
           `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
-          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
+          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
         ].join(' '),
       ],
     }),
