@@ -46,7 +46,6 @@ describe('instance', () => {
       SourceDestCheck: false,
     });
 
-
   });
   test('instance is grantable', () => {
     // GIVEN
@@ -101,7 +100,6 @@ describe('instance', () => {
       },
     });
 
-
   });
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
@@ -118,7 +116,6 @@ describe('instance', () => {
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
 
-
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
@@ -131,7 +128,6 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
     }
-
 
   });
 
@@ -175,7 +171,6 @@ describe('instance', () => {
       // THEN
       expect(() => instanceType.architecture).toThrow('Malformed instance type identifier');
     }
-
 
   });
   test('can propagate EBS volume tags', () => {
@@ -298,7 +293,6 @@ describe('instance', () => {
         ],
       });
 
-
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
@@ -314,7 +308,6 @@ describe('instance', () => {
           }],
         });
       }).toThrow(/volumeIndex must be a number starting from 0/);
-
 
     });
 
@@ -410,7 +403,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     });
-
 
   });
 
@@ -644,7 +636,6 @@ test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', 
   //THEN
   expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
-
 
 test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   // GIVEN

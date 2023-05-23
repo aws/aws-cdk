@@ -91,7 +91,6 @@ describe('pipeline-queries', () => {
   });
 });
 
-
 class Blueprint extends cdkp.PipelineBase {
   protected doBuildPipeline(): void {
   }

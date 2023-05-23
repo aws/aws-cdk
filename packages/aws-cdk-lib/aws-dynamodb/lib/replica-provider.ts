@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { Duration, NestedStack, Stack } from '../../core';
+import { Aws, Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 
 /**
  * Properties for a ReplicaProvider
@@ -97,7 +97,7 @@ export class ReplicaProvider extends NestedStack {
     // Required for replica table deletion
     let resources: string[] = [];
     props.regions.forEach((region) => {
-      resources.push(`arn:aws:dynamodb:${region}:${this.account}:table/${props.tableName}`);
+      resources.push(`arn:${Aws.PARTITION}:dynamodb:${region}:${this.account}:table/${props.tableName}`);
     });
 
     this.onEventHandler.addToRolePolicy(

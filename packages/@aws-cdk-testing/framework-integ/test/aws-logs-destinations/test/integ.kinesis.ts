@@ -5,7 +5,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as dests from 'aws-cdk-lib/aws-logs-destinations';
 
-
 class KinesisEnv extends Stack {
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id);

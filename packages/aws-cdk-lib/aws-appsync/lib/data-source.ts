@@ -1,16 +1,17 @@
+import { Construct } from 'constructs';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
+import { CfnDataSource } from './appsync.generated';
+import { IGraphqlApi } from './graphqlapi-base';
+import { BaseResolverProps, Resolver } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
+import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
-import { Construct } from 'constructs';
-import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
-import { CfnDataSource } from './appsync.generated';
-import { IGraphqlApi } from './graphqlapi-base';
-import { BaseResolverProps, Resolver } from './resolver';
 
 /**
  * Base properties for an AppSync datasource
@@ -79,6 +80,14 @@ export interface ExtendedDataSourceProps {
    * @default - No config
    */
   readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
+
+  /**
+   * configuration for EventBridge Datasource
+   *
+   * @default - No config
+   */
+  readonly eventBridgeConfig?: CfnDataSource.EventBridgeConfigProperty | IResolvable
+
   /**
    * configuration for Lambda Datasource
    *
@@ -277,6 +286,31 @@ export class HttpDataSource extends BackedDataSource {
         authorizationConfig,
       },
     });
+  }
+}
+
+/**
+ * Properties for an AppSync EventBridge datasource
+ */
+export interface EventBridgeDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The EventBridge EventBus
+   */
+  readonly eventBus: IEventBus
+}
+
+/**
+ * An AppSync datasource backed by EventBridge
+ */
+export class EventBridgeDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: EventBridgeDataSourceProps) {
+    super(scope, id, props, {
+      type: 'AMAZON_EVENTBRIDGE',
+      eventBridgeConfig: {
+        eventBusArn: props.eventBus.eventBusArn,
+      },
+    });
+    props.eventBus.grantPutEventsTo(this);
   }
 }
 

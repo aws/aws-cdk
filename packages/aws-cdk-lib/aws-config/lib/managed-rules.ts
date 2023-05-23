@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Duration, Lazy, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 
 /**
  * Construction properties for a AccessKeysRotated

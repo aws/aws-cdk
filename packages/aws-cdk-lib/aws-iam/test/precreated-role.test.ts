@@ -266,7 +266,6 @@ describe('precreatedRole report created', () => {
       })],
     });
 
-
     // THEN
     const assembly = otherApp.synth();
     const filePath = path.join(assembly.directory, 'iam-policy-report');

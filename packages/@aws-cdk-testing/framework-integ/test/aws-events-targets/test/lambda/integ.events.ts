@@ -24,7 +24,6 @@ const timer2 = new events.Rule(stack, 'Timer2', {
 });
 timer2.addTarget(new targets.LambdaFunction(fn));
 
-
 const timer3 = new events.Rule(stack, 'Timer3', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
 });

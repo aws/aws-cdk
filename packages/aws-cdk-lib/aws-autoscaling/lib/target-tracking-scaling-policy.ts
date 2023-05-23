@@ -1,8 +1,8 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { Duration } from '../../core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { Duration } from '../../core';
 
 /**
  * Base interface for target tracking props
