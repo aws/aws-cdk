@@ -39,8 +39,6 @@ class TestStack extends cdk.Stack {
       associatePublicIpAddress: true,
     });
 
-    instance.node.addDependency(vpc);
-
     instance.addToRolePolicy(new PolicyStatement({
       actions: ['ssm:*'],
       resources: ['*'],

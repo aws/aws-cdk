@@ -232,20 +232,7 @@
       "Value": "integ-ec2-instance/Instance"
      }
     ]
-   },
-   "DependsOn": [
-    "VPCIGWB7E252D3",
-    "VPCpublicsubnet1Subnet1DefaultRouteEFD0DA69",
-    "VPCpublicsubnet1Subnet1RouteTable1127E157",
-    "VPCpublicsubnet1Subnet1RouteTableAssociation99DE76A6",
-    "VPCpublicsubnet1Subnet1Subnet39B927A0",
-    "VPCpublicsubnet1Subnet2DefaultRoute3D53F956",
-    "VPCpublicsubnet1Subnet2RouteTable6613D6DE",
-    "VPCpublicsubnet1Subnet2RouteTableAssociation4859253B",
-    "VPCpublicsubnet1Subnet2Subnet1B74FFEC",
-    "VPCB9E5F0B4",
-    "VPCVPCGW99B986DC"
-   ]
+   }
   },
   "InstanceInstanceRoleDefaultPolicy4ACE9290": {
    "Type": "AWS::IAM::Policy",
@@ -266,20 +253,7 @@
       "Ref": "InstanceInstanceRoleE9785DE5"
      }
     ]
-   },
-   "DependsOn": [
-    "VPCIGWB7E252D3",
-    "VPCpublicsubnet1Subnet1DefaultRouteEFD0DA69",
-    "VPCpublicsubnet1Subnet1RouteTable1127E157",
-    "VPCpublicsubnet1Subnet1RouteTableAssociation99DE76A6",
-    "VPCpublicsubnet1Subnet1Subnet39B927A0",
-    "VPCpublicsubnet1Subnet2DefaultRoute3D53F956",
-    "VPCpublicsubnet1Subnet2RouteTable6613D6DE",
-    "VPCpublicsubnet1Subnet2RouteTableAssociation4859253B",
-    "VPCpublicsubnet1Subnet2Subnet1B74FFEC",
-    "VPCB9E5F0B4",
-    "VPCVPCGW99B986DC"
-   ]
+   }
   },
   "InstanceInstanceProfileAB5AEF02": {
    "Type": "AWS::IAM::InstanceProfile",
@@ -289,20 +263,7 @@
       "Ref": "InstanceInstanceRoleE9785DE5"
      }
     ]
-   },
-   "DependsOn": [
-    "VPCIGWB7E252D3",
-    "VPCpublicsubnet1Subnet1DefaultRouteEFD0DA69",
-    "VPCpublicsubnet1Subnet1RouteTable1127E157",
-    "VPCpublicsubnet1Subnet1RouteTableAssociation99DE76A6",
-    "VPCpublicsubnet1Subnet1Subnet39B927A0",
-    "VPCpublicsubnet1Subnet2DefaultRoute3D53F956",
-    "VPCpublicsubnet1Subnet2RouteTable6613D6DE",
-    "VPCpublicsubnet1Subnet2RouteTableAssociation4859253B",
-    "VPCpublicsubnet1Subnet2Subnet1B74FFEC",
-    "VPCB9E5F0B4",
-    "VPCVPCGW99B986DC"
-   ]
+   }
   },
   "InstanceC1063A87": {
    "Type": "AWS::EC2::Instance",
@@ -353,17 +314,10 @@
    "DependsOn": [
     "InstanceInstanceRoleDefaultPolicy4ACE9290",
     "InstanceInstanceRoleE9785DE5",
-    "VPCIGWB7E252D3",
     "VPCpublicsubnet1Subnet1DefaultRouteEFD0DA69",
-    "VPCpublicsubnet1Subnet1RouteTable1127E157",
     "VPCpublicsubnet1Subnet1RouteTableAssociation99DE76A6",
-    "VPCpublicsubnet1Subnet1Subnet39B927A0",
     "VPCpublicsubnet1Subnet2DefaultRoute3D53F956",
-    "VPCpublicsubnet1Subnet2RouteTable6613D6DE",
-    "VPCpublicsubnet1Subnet2RouteTableAssociation4859253B",
-    "VPCpublicsubnet1Subnet2Subnet1B74FFEC",
-    "VPCB9E5F0B4",
-    "VPCVPCGW99B986DC"
+    "VPCpublicsubnet1Subnet2RouteTableAssociation4859253B"
    ]
   }
  },
