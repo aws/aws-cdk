@@ -1498,7 +1498,7 @@ describe('stack', () => {
       public _toCloudFormation() {
         return new PostResolveToken({
           xoo: 1234,
-        }, props => {
+        }, (props, _context) => {
           validateString(props).assertSuccess();
         });
       }
