@@ -103,6 +103,38 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('MyStage-MyStack');
   });
 
+  test('Prefix and stack names not exceeding 128 characters are not shortened', () => {
+    // WHEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+      },
+    });
+    const stage = new Stage(app, 'ShortPrefix');
+    const stack = new BogusStack(stage, 'Short-Stack-Name');
+
+    // THEN
+    expect(stack.stackName.length).toEqual(128);
+    expect(stack.stackName).toEqual('ShortPrefix-Short-Stack-Name');
+  });
+
+  test('Stacks with more than one component and a prefix, all shorter than 128 ', () => {
+    // WHEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+      },
+    });
+    const stage = new Stage(app, 'ThePrefix');
+    const construct = new Construct(stage, 'Prod');
+    const stack = new BogusStack(construct, 'MyStack');
+
+
+    // THEN
+    expect(stack.stackName.length).toEqual(21);
+    expect(stack.stackName).toEqual('ThePrefix-Short-Stack-Name');
+  });
+
   test('generated stack names will not exceed 128 characters when using prefixes', () => {
     // WHEN
     const app = new App({

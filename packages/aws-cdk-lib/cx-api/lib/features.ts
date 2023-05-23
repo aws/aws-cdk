@@ -800,6 +800,10 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       If the flag is set, the prefix is included in the stack name generation process.
       If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+      **NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+      feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+      is not viable in some productive setups.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
