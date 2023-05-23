@@ -106,7 +106,6 @@ export interface BucketDeploymentProps {
    */
   readonly distributionPaths?: string[];
 
-
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
    *
