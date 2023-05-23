@@ -1091,7 +1091,7 @@ export class Stack extends Construct implements ITaggable {
   public _synthesizeStackPolicy(session: ISynthesisSession): void {
     const builder = session.assembly;
     const outPath = path.join(builder.outdir, this.stackPolicyFile!);
-    fs.writeFileSync(outPath, JSON.stringify(this.stackPolicy!.toJSON()));
+    fs.writeFileSync(outPath, JSON.stringify(this.stackPolicy!.toJSON(), null, 4));
   }
 
   /**
