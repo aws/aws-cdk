@@ -427,6 +427,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
+    if (this.boundStack.stackPolicy !== undefined) {
+      const policyAssetSource = this.synthesizeStackPolicy(session);
+      this.addFileAsset(policyAssetSource);
+    }
+
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,

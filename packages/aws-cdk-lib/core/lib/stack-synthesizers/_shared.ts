@@ -47,6 +47,7 @@ export function addStackArtifactToAssembly(
 
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
+    ...stack.stackPolicy ? { stackPolicyFile: stack.stackPolicyFile } : undefined,
     terminationProtection: stack.terminationProtection,
     tags: nonEmptyDict(stack.tags.tagValues()),
     validateOnSynth: session.validateOnSynth,

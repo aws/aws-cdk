@@ -37,6 +37,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly stackName: string;
 
   /**
+   * The file name of the stack policy.
+   */
+  public readonly stackPolicyFile?: string;
+
+  /**
    * A string that represents this stack. Should only be used in user
    * interfaces. If the stackName has not been set explicitly, or has been set
    * to artifactId, it will return the hierarchicalId of the stack. Otherwise,
@@ -117,6 +122,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly validateOnSynth?: boolean;
 
   private _template: any | undefined;
+  private _stackPolicy: any | undefined;
 
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
@@ -144,6 +150,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.terminationProtection = properties.terminationProtection;
     this.validateOnSynth = properties.validateOnSynth;
     this.lookupRole = properties.lookupRole;
+    this.stackPolicyFile = properties.stackPolicyFile;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
@@ -171,6 +178,26 @@ export class CloudFormationStackArtifact extends CloudArtifact {
       this._template = JSON.parse(fs.readFileSync(this.templateFullPath, 'utf-8'));
     }
     return this._template;
+  }
+
+  /**
+   * Full path to the template file
+   */
+  public get stackPolicyFullPath() {
+    return path.join(this.assembly.directory, this.stackPolicyFile!);
+  }
+
+  /**
+   * The stack policy for this stack.
+   */
+  public get stackPolicy(): any | undefined {
+    if (this.stackPolicyFile === undefined) {
+      return undefined;
+    }
+    if (this._stackPolicy === undefined) {
+      this._stackPolicy = JSON.parse(fs.readFileSync(this.stackPolicyFullPath, 'utf-8'));
+    }
+    return this._stackPolicy;
   }
 
   private tagsFromMetadata() {

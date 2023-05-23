@@ -105,6 +105,15 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   }
 
   /**
+   * Write the stack policy to the given session
+   *
+   */
+  protected synthesizeStackPolicy(session: ISynthesisSession): FileAssetSource {
+    this.boundStack._synthesizeStackPolicy(session);
+    return stackPolicyFileAsset(this.boundStack, session);
+  }
+
+  /**
    * Write the stack artifact to the session
    *
    * Use default settings to add a CloudFormationStackArtifact artifact to
@@ -289,6 +298,24 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
 
   return {
     fileName: stack.templateFile,
+    packaging: FileAssetPackaging.FILE,
+    sourceHash,
+  };
+}
+
+function stackPolicyFileAsset(stack: Stack, session: ISynthesisSession): FileAssetSource {
+  const stackPolicyPath = path.join(session.assembly.outdir, stack.stackPolicyFile!);
+
+  if (!fs.existsSync(stackPolicyPath)) {
+    throw new Error(`Stack policy ${stack.stackName} not written yet: ${stackPolicyPath}`);
+  }
+
+  const stackPolicy = fs.readFileSync(stackPolicyPath, { encoding: 'utf-8' });
+
+  const sourceHash = contentHash(stackPolicy);
+
+  return {
+    fileName: stack.stackPolicyFile,
     packaging: FileAssetPackaging.FILE,
     sourceHash,
   };

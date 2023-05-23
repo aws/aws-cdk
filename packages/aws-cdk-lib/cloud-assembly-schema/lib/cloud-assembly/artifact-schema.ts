@@ -1,4 +1,3 @@
-
 /**
  * Information needed to access an IAM role created
  * as part of the bootstrap process
@@ -60,6 +59,11 @@ export interface AwsCloudFormationStackProperties {
    * @default - name derived from artifact ID
    */
   readonly stackName?: string;
+
+  /**
+   * A file relative to the assembly root which contains the stack policy for this stack.
+   */
+  readonly stackPolicyFile?: string;
 
   /**
    * Whether to enable termination protection for this stack.
