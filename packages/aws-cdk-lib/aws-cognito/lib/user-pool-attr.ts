@@ -480,7 +480,6 @@ export interface StandardAttributesMask {
   readonly phoneNumberVerified?: boolean;
 }
 
-
 /**
  * A set of attributes, useful to set Read and Write attributes
  */

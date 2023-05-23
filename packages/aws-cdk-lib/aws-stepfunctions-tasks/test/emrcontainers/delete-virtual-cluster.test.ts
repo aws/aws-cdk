@@ -217,7 +217,6 @@ describe('Valid policy statements and resources are passed ', () => {
   });
 });
 
-
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new EmrContainersDeleteVirtualCluster(stack, 'EMR Containers DeleteVirtualCluster Job', {

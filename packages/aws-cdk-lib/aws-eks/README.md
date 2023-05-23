@@ -339,7 +339,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -416,7 +416,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -509,7 +509,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -672,8 +672,8 @@ the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 The version of kubectl used must be compatible with the Kubernetes version of the
 cluster. kubectl is supported within one minor version (older or newer) of Kubernetes
 (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)).
-Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different
-version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
+Depending on which version of kubernetes you're targeting, you will need to use one of 
+the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
 import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';

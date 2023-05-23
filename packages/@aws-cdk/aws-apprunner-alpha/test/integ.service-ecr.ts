@@ -3,11 +3,9 @@ import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as cdk from 'aws-cdk-lib';
 import { Service, Source } from '../lib';
 
-
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-apprunner');
-
 
 // Scenario 3: Create the service from local code assets
 const imageAsset = new assets.DockerImageAsset(stack, 'ImageAssets', {
