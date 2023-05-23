@@ -671,22 +671,31 @@ test('associate public IP address with instance', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
-    NetworkInterfaces: [{
-      AssociatePublicIpAddress: true,
-      DeviceIndex: '0',
-      GroupSet: [
-        {
-          'Fn::GetAtt': [
-            'SecurityGroupDD263621',
-            'GroupId',
-          ],
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    Properties: {
+      NetworkInterfaces: [{
+        AssociatePublicIpAddress: true,
+        DeviceIndex: '0',
+        GroupSet: [
+          {
+            'Fn::GetAtt': [
+              'SecurityGroupDD263621',
+              'GroupId',
+            ],
+          },
+        ],
+        SubnetId: {
+          Ref: 'VPCPublicSubnet1SubnetB4246D30',
         },
-      ],
-      SubnetId: {
-        Ref: 'VPCPublicSubnet1SubnetB4246D30',
-      },
-    }],
+      }],
+    },
+    DependsOn: [
+      'InstanceInstanceRoleE9785DE5',
+      'VPCPublicSubnet1DefaultRoute91CEF279',
+      'VPCPublicSubnet1RouteTableAssociation0B0896DC',
+      'VPCPublicSubnet2DefaultRouteB7481BBA',
+      'VPCPublicSubnet2RouteTableAssociation5A808732',
+    ],
   });
 });
 
