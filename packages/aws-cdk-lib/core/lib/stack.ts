@@ -121,6 +121,13 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
+   * A stack policy associated with the stack
+   *
+   * @default - No stack policy
+   */
+  readonly stackPolicy?: IStackPolicy;
+
+  /**
    * Synthesis method to use while deploying this stack
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -313,6 +320,14 @@ export class Stack extends Construct implements ITaggable {
   public readonly templateFile: string;
 
   /**
+   * The name of the CloudFormation template file emitted to the output
+   * directory during synthesis.
+   *
+   * Example value: `MyStack.policy.json`
+   */
+  public readonly stackPolicyFile?: string;
+
+  /**
    * The ID of the cloud assembly artifact for this stack.
    */
   public readonly artifactId: string;
@@ -358,6 +373,8 @@ export class Stack extends Construct implements ITaggable {
 
   private readonly _stackName: string;
 
+  private readonly _stackPolicy?: IStackPolicy;
+
   /**
    * Creates a new stack.
    *
@@ -395,6 +412,7 @@ export class Stack extends Construct implements ITaggable {
     this.region = region;
     this.environment = environment;
     this.terminationProtection = props.terminationProtection;
+    this._stackPolicy = props.stackPolicy;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -431,6 +449,7 @@ export class Stack extends Construct implements ITaggable {
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
+    this.stackPolicyFile = `${this.artifactId}.policy.json`;
 
     // Not for nested stacks
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
@@ -636,6 +655,14 @@ export class Stack extends Construct implements ITaggable {
    */
   public get stackName(): string {
     return this._stackName;
+  }
+
+  /**
+   * The stack policy
+   *
+   */
+  public get stackPolicy(): IStackPolicy | undefined {
+    return this._stackPolicy;
   }
 
   /**
@@ -1055,6 +1082,16 @@ export class Stack extends Construct implements ITaggable {
         builder.addMissing(ctx);
       }
     }
+  }
+
+  /**
+   * Synthesizes the stack policy into a cloud assembly.
+   * @internal
+   */
+  public _synthesizeStackPolicy(session: ISynthesisSession): void {
+    const builder = session.assembly;
+    const outPath = path.join(builder.outdir, this.stackPolicyFile!);
+    fs.writeFileSync(outPath, JSON.stringify(this.stackPolicy!.toJSON()));
   }
 
   /**
@@ -1725,6 +1762,7 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
+import { IStackPolicy } from './stack-policy';
 import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
 import { StringSpecializer } from './stack-synthesizers/_shared';
 import { Stage } from './stage';
