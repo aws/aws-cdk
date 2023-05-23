@@ -9,7 +9,6 @@ import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { ICodePipelineActionFactory, Step } from 'aws-cdk-lib/pipelines';
 
-
 class CustomStep extends Step implements ICodePipelineActionFactory {
   constructor(private readonly stackOutput: CfnOutput) {
     super('CustomStep');

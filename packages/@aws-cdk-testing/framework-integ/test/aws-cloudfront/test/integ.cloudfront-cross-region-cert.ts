@@ -32,7 +32,6 @@ const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
   crossRegionReferences: true,
 });
 
-
 const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(acmStack, 'HostedZone', {
   hostedZoneId,
   zoneName: hostedZoneName,

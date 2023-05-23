@@ -681,7 +681,6 @@ describe('AppSync Lambda Authorization', () => {
       },
     });
 
-
   });
 
   test('Attach Lambda Authorization to two or more graphql api', () => {

@@ -3,7 +3,6 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { WorkGraph } from './work-graph';
 import { DeploymentState, AssetBuildNode, WorkNode } from './work-graph-types';
 
-
 export class WorkGraphBuilder {
   /**
    * Default priorities for nodes
