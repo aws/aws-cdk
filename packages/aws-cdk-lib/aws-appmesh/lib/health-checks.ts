@@ -89,7 +89,6 @@ export interface HealthCheckBindOptions {
   readonly defaultPort?: number;
 }
 
-
 /**
  * Contains static factory methods for creating health checks for different protocols
  */

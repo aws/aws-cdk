@@ -169,7 +169,6 @@ describe(synthetics.Code.fromAsset, () => {
   });
 });
 
-
 describe(synthetics.Code.fromBucket, () => {
   test('fromBucket works', () => {
     // GIVEN

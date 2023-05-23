@@ -1468,7 +1468,6 @@ export class Vpc extends VpcBase {
       this.availabilityZones.push(FAKE_AZ_NAME);
     }
 
-
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
       service: 'ec2',
