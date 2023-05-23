@@ -729,7 +729,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -814,7 +814,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.FargateComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -990,7 +990,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1274,7 +1274,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1500,7 +1500,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -1524,6 +1524,16 @@
                             "cidrIp": "0.0.0.0/0",
                             "description": "Allow all outbound traffic by default",
                             "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "foo",
+                            "value": "bar"
+                          },
+                          {
+                            "key": "super",
+                            "value": "salamander"
                           }
                         ],
                         "vpcId": {
@@ -1584,6 +1594,16 @@
                                 ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
                               ]
                             ]
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "foo",
+                            "value": "bar"
+                          },
+                          {
+                            "key": "super",
+                            "value": "salamander"
                           }
                         ]
                       }
@@ -1664,12 +1684,16 @@
                         }
                       ],
                       "tags": {
-                        "key": "value",
-                        "foo": "bar"
+                        "foo": "bar",
+                        "super": "salamander"
                       }
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
+                    "tags": {
+                      "foo": "bar",
+                      "super": "salamander"
+                    },
                     "updatePolicy": {}
                   }
                 },
@@ -1680,7 +1704,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },

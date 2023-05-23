@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack, Duration } from 'aws-cdk-lib';
+import { Stack, Duration, Tags } from 'aws-cdk-lib';
 import { capitalizePropertyNames } from './utils';
 import * as batch from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
@@ -565,16 +565,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('respects instanceTags', () => {
+  test('respects tags', () => {
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
-      instanceTags: {
-        boo: 'bah',
-      },
     });
 
-    ce.addInstanceTag('key', 'value');
+    Tags.of(ce).add('superfood', 'acai');
+    Tags.of(ce).add('super', 'salamander');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
@@ -582,8 +580,8 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         Tags: {
-          boo: 'bah',
-          key: 'value',
+          superfood: 'acai',
+          super: 'salamander',
         },
       },
     });

@@ -894,6 +894,16 @@
       "IpProtocol": "-1"
      }
     ],
+    "Tags": [
+     {
+      "Key": "foo",
+      "Value": "bar"
+     },
+     {
+      "Key": "super",
+      "Value": "salamander"
+     }
+    ],
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
@@ -926,6 +936,16 @@
         ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "foo",
+      "Value": "bar"
+     },
+     {
+      "Key": "super",
+      "Value": "salamander"
      }
     ]
    }
@@ -982,14 +1002,18 @@
       }
      ],
      "Tags": {
-      "key": "value",
-      "foo": "bar"
+      "foo": "bar",
+      "super": "salamander"
      },
      "Type": "EC2",
      "UpdateToLatestImageVersion": true
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
+    "Tags": {
+     "foo": "bar",
+     "super": "salamander"
+    },
     "UpdatePolicy": {}
    }
   }
