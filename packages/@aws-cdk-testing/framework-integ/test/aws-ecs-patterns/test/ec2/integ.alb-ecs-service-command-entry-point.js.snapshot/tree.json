@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-ecs-integ-alb-ec2-cmd-entrypoint": {
         "id": "aws-ecs-integ-alb-ec2-cmd-entrypoint",
         "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint",
@@ -683,7 +675,7 @@
                   "aws:cdk:cloudformation:props": {
                     "capacityProviders": [
                       {
-                        "Ref": "CapacityProvier480DE32F"
+                        "Ref": "CapacityProviderF92AC12E"
                       }
                     ],
                     "cluster": {
@@ -740,6 +732,35 @@
                       "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
+                  },
+                  "from awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D8:32768-65535": {
+                    "id": "from awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D8:32768-65535",
+                    "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D8:32768-65535",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "Load balancer to target",
+                        "fromPort": 32768,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 65535
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -751,6 +772,14 @@
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole/Resource",
@@ -980,13 +1009,13 @@
               "version": "0.0.0"
             }
           },
-          "CapacityProvier": {
-            "id": "CapacityProvier",
-            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier",
+          "CapacityProvider": {
+            "id": "CapacityProvider",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider",
             "children": {
-              "CapacityProvier": {
-                "id": "CapacityProvier",
-                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier/CapacityProvier",
+              "CapacityProvider": {
+                "id": "CapacityProvider",
+                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider/CapacityProvider",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1070,15 +1099,6 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
                             "groupDescription": "Automatically created Security Group for ELB awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLB36B044C3",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "255.255.255.255/32",
-                                "description": "Disallow all traffic",
-                                "ipProtocol": "icmp",
-                                "fromPort": 252,
-                                "toPort": 86
-                              }
-                            ],
                             "securityGroupIngress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -1095,6 +1115,35 @@
                         },
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "to awsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5:32768-65535": {
+                        "id": "to awsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5:32768-65535",
+                        "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB/SecurityGroup/to awsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5:32768-65535",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                          "aws:cdk:cloudformation:props": {
+                            "groupId": {
+                              "Fn::GetAtt": [
+                                "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+                                "GroupId"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "description": "Load balancer to target",
+                            "destinationSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
+                                "GroupId"
+                              ]
+                            },
+                            "fromPort": 32768,
+                            "toPort": 65535
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupEgress",
                           "version": "0.0.0"
                         }
                       }
@@ -1205,6 +1254,14 @@
                     "id": "TaskRole",
                     "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/TaskRole",
                     "children": {
+                      "ImportTaskRole": {
+                        "id": "ImportTaskRole",
+                        "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/TaskRole/ImportTaskRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/TaskRole/Resource",
@@ -1245,18 +1302,16 @@
                         "containerDefinitions": [
                           {
                             "command": [
-                              "/usr/sbin/apache2",
-                              "-D",
-                              "FOREGROUND"
+                              "nginx",
+                              "-g",
+                              "daemon off;"
                             ],
                             "cpu": 256,
                             "entryPoint": [
-                              "/bin/bash",
-                              "-l",
-                              "-c"
+                              "/docker-entrypoint.sh"
                             ],
                             "essential": true,
-                            "image": "amazon/amazon-ecs-sample",
+                            "image": "public.ecr.aws/nginx/nginx",
                             "memory": 512,
                             "name": "web",
                             "portMappings": [
@@ -1340,6 +1395,14 @@
                     "id": "ExecutionRole",
                     "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/ExecutionRole",
                     "children": {
+                      "ImportExecutionRole": {
+                        "id": "ImportExecutionRole",
+                        "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/ExecutionRole/ImportExecutionRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/TaskDef/ExecutionRole/Resource",
@@ -1437,7 +1500,7 @@
                         "capacityProviderStrategy": [
                           {
                             "capacityProvider": {
-                              "Ref": "CapacityProvier480DE32F"
+                              "Ref": "CapacityProviderF92AC12E"
                             },
                             "base": 1,
                             "weight": 1
@@ -1483,6 +1546,22 @@
               "fqn": "@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedEc2Service",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1503,12 +1582,30 @@
                 "path": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -1524,6 +1621,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },

@@ -399,7 +399,7 @@
    "Properties": {
     "CapacityProviders": [
      {
-      "Ref": "CapacityProvier480DE32F"
+      "Ref": "CapacityProviderF92AC12E"
      }
     ],
     "Cluster": {
@@ -428,6 +428,27 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "AutoScalingGroupInstanceSecurityGroupfromawsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D83276865535B0F45BC4": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
    }
   },
   "AutoScalingGroupInstanceRoleDC70D128": {
@@ -590,7 +611,7 @@
     }
    }
   },
-  "CapacityProvier480DE32F": {
+  "CapacityProviderF92AC12E": {
    "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
     "AutoScalingGroupProvider": {
@@ -645,15 +666,6 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLB36B044C3",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -666,6 +678,27 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "ALBECSServiceWithCommandEntryPointLBSecurityGrouptoawsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5327686553551457A72": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "ToPort": 65535
    }
   },
   "ALBECSServiceWithCommandEntryPointLBPublicListener1DCF0F84": {
@@ -726,18 +759,16 @@
     "ContainerDefinitions": [
      {
       "Command": [
-       "/usr/sbin/apache2",
-       "-D",
-       "FOREGROUND"
+       "nginx",
+       "-g",
+       "daemon off;"
       ],
       "Cpu": 256,
       "EntryPoint": [
-       "/bin/bash",
-       "-l",
-       "-c"
+       "/docker-entrypoint.sh"
       ],
       "Essential": true,
-      "Image": "amazon/amazon-ecs-sample",
+      "Image": "public.ecr.aws/nginx/nginx",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -838,7 +869,7 @@
      {
       "Base": 1,
       "CapacityProvider": {
-       "Ref": "CapacityProvier480DE32F"
+       "Ref": "CapacityProviderF92AC12E"
       },
       "Weight": 1
      }

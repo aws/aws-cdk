@@ -52,6 +52,7 @@ export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmana
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
 export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
+export const ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS = '@aws-cdk/aws-ecs-patterns:addSecurityGroupToAsgCapacityProviders';
 export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
 export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
@@ -239,6 +240,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Add security group through "configureAutoScalingGroup"',
+    detailsMd: `
+    ConfigureAutoScalingGroup currently does not connect the ASG security group to the cluster's security group.
+    The result of this is that on new deployments, EC2 instances which have been autoscaled can have their security groups
+    reconfigured and lose connectivity to the ECS cluster. This feature flag enables the correct behavior. 
+    
+    If this flag is not set, cluster.addAsgCapacityProvider() does not correctly configure the autoscaling group's
+    Security Groups to work with the ECS cluster. If the flag is set, the ASG is correctly configured.`,
+    introducedIn: { v2: 'V2·NEXT' },
+    defaults: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can use `configureAutoScalingGroup()`, to add secuirty group.',
   },
 
   //////////////////////////////////////////////////////////////////////

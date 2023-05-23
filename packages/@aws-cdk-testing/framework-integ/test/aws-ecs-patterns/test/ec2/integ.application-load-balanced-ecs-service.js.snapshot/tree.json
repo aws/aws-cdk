@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-ecs-integ-alb": {
         "id": "aws-ecs-integ-alb",
         "path": "aws-ecs-integ-alb",
@@ -743,6 +735,35 @@
                       "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
+                  },
+                  "from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535": {
+                    "id": "from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "Load balancer to target",
+                        "fromPort": 32768,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "myServiceLBSecurityGroupFE0ED608",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 65535
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -754,6 +775,14 @@
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/Resource",
@@ -1054,6 +1083,35 @@
                       "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
+                  },
+                  "from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535": {
+                    "id": "from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbmyServiceLBSecurityGroup609AEDDA:32768-65535",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "Load balancer to target",
+                        "fromPort": 32768,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "myServiceLBSecurityGroupFE0ED608",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 65535
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1065,6 +1123,14 @@
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/Resource",
@@ -1368,15 +1434,6 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
                             "groupDescription": "Automatically created Security Group for ELB awsecsintegalbmyServiceLBBBB2F01E",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "255.255.255.255/32",
-                                "description": "Disallow all traffic",
-                                "ipProtocol": "icmp",
-                                "fromPort": 252,
-                                "toPort": 86
-                              }
-                            ],
                             "securityGroupIngress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -1393,6 +1450,64 @@
                         },
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "to awsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8:32768-65535": {
+                        "id": "to awsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8:32768-65535",
+                        "path": "aws-ecs-integ-alb/myService/LB/SecurityGroup/to awsecsintegalbFirstAutoScalingGroupInstanceSecurityGroup1616DBA8:32768-65535",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                          "aws:cdk:cloudformation:props": {
+                            "groupId": {
+                              "Fn::GetAtt": [
+                                "myServiceLBSecurityGroupFE0ED608",
+                                "GroupId"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "description": "Load balancer to target",
+                            "destinationSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
+                                "GroupId"
+                              ]
+                            },
+                            "fromPort": 32768,
+                            "toPort": 65535
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupEgress",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "to awsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D:32768-65535": {
+                        "id": "to awsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D:32768-65535",
+                        "path": "aws-ecs-integ-alb/myService/LB/SecurityGroup/to awsecsintegalbSecondAutoScalingGroupInstanceSecurityGroup620DB21D:32768-65535",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                          "aws:cdk:cloudformation:props": {
+                            "groupId": {
+                              "Fn::GetAtt": [
+                                "myServiceLBSecurityGroupFE0ED608",
+                                "GroupId"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "description": "Load balancer to target",
+                            "destinationSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
+                                "GroupId"
+                              ]
+                            },
+                            "fromPort": 32768,
+                            "toPort": 65535
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupEgress",
                           "version": "0.0.0"
                         }
                       }
@@ -1503,6 +1618,14 @@
                     "id": "TaskRole",
                     "path": "aws-ecs-integ-alb/myService/TaskDef/TaskRole",
                     "children": {
+                      "ImportTaskRole": {
+                        "id": "ImportTaskRole",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/TaskRole/ImportTaskRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-alb/myService/TaskDef/TaskRole/Resource",
@@ -1627,6 +1750,14 @@
                     "id": "ExecutionRole",
                     "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole",
                     "children": {
+                      "ImportExecutionRole": {
+                        "id": "ImportExecutionRole",
+                        "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole/ImportExecutionRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-alb/myService/TaskDef/ExecutionRole/Resource",
@@ -1777,6 +1908,22 @@
               "fqn": "@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedEc2Service",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-ecs-integ-alb/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-ecs-integ-alb/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1797,12 +1944,30 @@
                 "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -1818,6 +1983,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },

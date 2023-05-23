@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-alb-ec2-cmd-entrypoint.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7deef2f6c397d16d52a8f7ff8ce8ddccb2d49863ae4f859cd6dd8a96773d6db.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a2b6f9c760d3bc7595270ed832060b71a55291a5c65590ff3d3be135ecf644.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,6 +189,12 @@
             "data": "AutoScalingGroupInstanceSecurityGroup9D2E0C5E"
           }
         ],
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D8:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupInstanceSecurityGroupfromawsecsintegalbec2cmdentrypointALBECSServiceWithCommandEntryPointLBSecurityGroup7CC106D83276865535B0F45BC4"
+          }
+        ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -231,10 +231,10 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier/CapacityProvier": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvider/CapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CapacityProvier480DE32F"
+            "data": "CapacityProviderF92AC12E"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB/Resource": [
@@ -247,6 +247,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB/SecurityGroup/to awsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBECSServiceWithCommandEntryPointLBSecurityGrouptoawsecsintegalbec2cmdentrypointAutoScalingGroupInstanceSecurityGroup7A88C7A5327686553551457A72"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB/PublicListener/Resource": [
@@ -320,6 +326,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "CapacityProvier480DE32F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CapacityProvier480DE32F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ-alb-ec2-cmd-entrypoint"
@@ -370,6 +385,12 @@
         ]
       },
       "displayName": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

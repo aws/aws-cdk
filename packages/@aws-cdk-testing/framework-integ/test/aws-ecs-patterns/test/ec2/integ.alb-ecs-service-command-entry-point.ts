@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ-alb-ec2-cmd-entrypoint');
 // Create VPC and ECS Cluster
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
-const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
+const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvider', {
   autoScalingGroup: new autoscaling.AutoScalingGroup(
     stack,
     'AutoScalingGroup',
@@ -34,9 +34,15 @@ new ecsPatterns.ApplicationLoadBalancedEc2Service(
     memoryLimitMiB: 512,
     cpu: 256,
     taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      command: ['/usr/sbin/apache2', '-D', 'FOREGROUND'],
-      entryPoint: ['/bin/bash', '-l', '-c'],
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx'),
+      entryPoint: [
+        '/docker-entrypoint.sh',
+      ],
+      command: [
+        'nginx',
+        '-g',
+        'daemon off;',
+      ],
     },
     capacityProviderStrategies: [
       {
