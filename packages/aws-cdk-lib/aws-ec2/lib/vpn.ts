@@ -148,12 +148,6 @@ export enum VpnConnectionType {
    * The IPsec 1 VPN connection type.
    */
   IPSEC_1 = 'ipsec.1',
-
-  /**
-   * Dummy member
-   * TODO: remove once https://github.com/aws/jsii/issues/231 is fixed
-   */
-  DUMMY = 'dummy'
 }
 
 /**
