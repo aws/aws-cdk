@@ -104,7 +104,6 @@ function logicalIdsInSubString(x: string): string[] {
   });
 }
 
-
 function analyzeSubPattern(pattern: string): SubFragment[] {
   const ret: SubFragment[] = [];
   let start = 0;
@@ -149,7 +148,6 @@ type SubFragment =
   | { readonly type: 'literal'; readonly content: string }
   | { readonly type: 'ref'; readonly logicalId: string }
   | { readonly type: 'getatt'; readonly logicalId: string; readonly attr: string };
-
 
 function intersect<A>(xs: Set<A>, ys: Set<A>): Set<A> {
   return new Set<A>(Array.from(xs).filter(x => ys.has(x)));

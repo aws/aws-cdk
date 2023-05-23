@@ -216,7 +216,6 @@ test('CodePipeline throws when key rotation is enabled without enabling cross ac
   }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
 });
 
-
 test('CodePipeline enables key rotation on cross account keys', ()=>{
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {

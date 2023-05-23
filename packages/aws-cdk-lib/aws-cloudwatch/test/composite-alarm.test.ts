@@ -106,7 +106,6 @@ describe('CompositeAlarm', () => {
       },
     });
 
-
   });
 
   test('test action suppressor translates to a correct CFN properties', () => {
@@ -122,7 +121,6 @@ describe('CompositeAlarm', () => {
       threshold: 100,
       evaluationPeriods: 3,
     });
-
 
     const alarmRule = AlarmRule.fromBoolean(true);
 
@@ -173,7 +171,6 @@ describe('CompositeAlarm', () => {
       threshold: 100,
       evaluationPeriods: 3,
     });
-
 
     const alarmRule = AlarmRule.fromBoolean(true);
 

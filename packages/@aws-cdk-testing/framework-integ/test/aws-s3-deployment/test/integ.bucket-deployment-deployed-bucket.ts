@@ -31,7 +31,6 @@ class TestBucketDeployment extends cdk.Stack {
 const app = new cdk.App();
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-deployed-bucket');
 
-
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
 });

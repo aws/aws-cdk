@@ -1098,7 +1098,6 @@ export class Stack extends Construct implements ITaggable {
     return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
 
-
   /**
    * Create a CloudFormation Export for a string value
    *
@@ -1726,7 +1725,7 @@ import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
-import { StringSpecializer } from './stack-synthesizers/_shared';
+import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';

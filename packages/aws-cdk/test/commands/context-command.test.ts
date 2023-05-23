@@ -67,7 +67,6 @@ describe('context --reset', () => {
     });
   });
 
-
   test('can reset matched pattern', async () => {
     // GIVEN
     const configuration = new Configuration();
@@ -93,7 +92,6 @@ describe('context --reset', () => {
     });
   });
 
-
   test('prefers an exact match', async () => {
     // GIVEN
     const configuration = new Configuration();
@@ -116,7 +114,6 @@ describe('context --reset', () => {
       foo: 'bar',
     });
   });
-
 
   test('doesn\'t throw when at least one match is reset', async () => {
     // GIVEN
@@ -173,7 +170,6 @@ describe('context --reset', () => {
     } as any));
   });
 
-
   test('throws when no key of index found', async () => {
     // GIVEN
     const configuration = new Configuration();
@@ -189,7 +185,6 @@ describe('context --reset', () => {
       args: { reset: '2' },
     } as any)).rejects.toThrow(/No context key with number/);
   });
-
 
   test('throws when resetting read-only values', async () => {
     // GIVEN
@@ -209,7 +204,6 @@ describe('context --reset', () => {
       args: { reset: 'foo' },
     } as any)).rejects.toThrow(/Cannot reset readonly context value with key/);
   });
-
 
   test('throws when no matches could be reset', async () => {
     // GIVEN

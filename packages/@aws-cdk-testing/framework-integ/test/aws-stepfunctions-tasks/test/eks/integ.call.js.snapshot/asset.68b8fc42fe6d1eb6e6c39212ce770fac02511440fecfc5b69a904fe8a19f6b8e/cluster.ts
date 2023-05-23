@@ -7,7 +7,6 @@ import * as aws from 'aws-sdk';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
 
-
 const MAX_CLUSTER_NAME_LEN = 100;
 
 export class ClusterResourceHandler extends ResourceHandler {

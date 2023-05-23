@@ -13,7 +13,6 @@ describe('firelens log driver', () => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
 
-
   });
   test('create a firelens log driver with default options', () => {
     // WHEN

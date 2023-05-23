@@ -60,6 +60,14 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
+To give an IAM User or Role permission to invoke a method, use `grantExecute`:
+
+```ts
+declare user: iam.User;
+const books = api.root.addResource('books');
+books.grantExecute(user);
+```
+
 ## AWS Lambda-backed APIs
 
 A very common practice is to use Amazon API Gateway with AWS Lambda as the

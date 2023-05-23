@@ -1,110 +1,5 @@
 {
  "Resources": {
-  "HandlerServiceRoleFCDC14AE": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     },
-     {
-      "Fn::If": [
-       "HasEcrPublic",
-       {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-         ]
-        ]
-       },
-       {
-        "Ref": "AWS::NoValue"
-       }
-      ]
-     }
-    ]
-   }
-  },
-  "HandlerServiceRoleDefaultPolicyCBD0CC91": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "eks:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtestekscluster39D48404Arn"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "Roles": [
-     {
-      "Ref": "HandlerServiceRoleFCDC14AE"
-     }
-    ]
-   }
-  },
   "Handler886CB40B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -112,13 +7,10 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2427a81588377445b76031dc4adb9190776c951949a535cb32fde3ba6db8ee92.zip"
+     "S3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
     },
     "Role": {
-     "Fn::GetAtt": [
-      "HandlerServiceRoleFCDC14AE",
-      "Arn"
-     ]
+     "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -148,11 +40,7 @@
       }
      ]
     }
-   },
-   "DependsOn": [
-    "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "HandlerServiceRoleFCDC14AE"
-   ]
+   }
   },
   "AwsCliLayerF44AAF94": {
    "Type": "AWS::Lambda::LayerVersion",
@@ -161,7 +49,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -270,7 +158,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1eabd374284db340b74179e3429008132f5b6b0b7b28d472d852807d7f5f9746.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -314,16 +202,6 @@
    ]
   }
  },
- "Conditions": {
-  "HasEcrPublic": {
-   "Fn::Equals": [
-    {
-     "Ref": "AWS::Partition"
-    },
-    "aws"
-   ]
-  }
- },
  "Outputs": {
   "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksKubectlProviderframeworkonEventC503FA1CArn": {
    "Value": {
@@ -335,10 +213,7 @@
   }
  },
  "Parameters": {
-  "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtestekscluster39D48404Arn": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn": {
    "Type": "String"
   },
   "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet07C1221DRef": {

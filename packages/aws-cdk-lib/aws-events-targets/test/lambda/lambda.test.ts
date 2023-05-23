@@ -257,7 +257,6 @@ test('throw an error when using a Dead Letter Queue for the rule target in a dif
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
-
   expect(() => {
     rule.addTarget(new targets.LambdaFunction(fn, {
       deadLetterQueue: queue,
@@ -329,7 +328,6 @@ test('must display a warning when using a Dead Letter Queue from another account
     ]),
   }));
 });
-
 
 test('specifying retry policy', () => {
   // GIVEN

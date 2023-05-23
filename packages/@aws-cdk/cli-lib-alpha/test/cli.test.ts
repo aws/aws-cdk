@@ -68,7 +68,6 @@ describe('fromCloudAssemblyDirectoryProducer', () => {
   });
 });
 
-
 describe('fromDirectory', () => {
   const cdk = AwsCdkCli.fromCdkAppDirectory(join(__dirname, 'test-app'));
 

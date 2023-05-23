@@ -100,7 +100,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
-
   private policy?: ResourcePolicy;
 
   /**

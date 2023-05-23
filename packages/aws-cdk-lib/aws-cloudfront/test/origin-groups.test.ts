@@ -223,6 +223,5 @@ describe('origin group', () => {
       },
     });
 
-
   });
 });

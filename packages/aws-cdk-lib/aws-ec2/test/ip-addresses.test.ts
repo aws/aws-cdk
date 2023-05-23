@@ -289,7 +289,6 @@ describe('AwsIpam Vpc Integration', () => {
     });
   });
 
-
   test('AwsIpam provides the correct Subnet allocation to the Vpc', () => {
 
     const stack = new Stack();

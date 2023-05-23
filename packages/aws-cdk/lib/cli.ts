@@ -11,10 +11,10 @@ import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
@@ -348,7 +348,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
+  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
@@ -448,7 +448,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     const cli = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,

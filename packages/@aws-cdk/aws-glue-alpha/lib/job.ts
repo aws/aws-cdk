@@ -800,7 +800,6 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
   }).attachTo(rule);
 }
 
-
 /**
  * Returns the job arn
  * @param scope

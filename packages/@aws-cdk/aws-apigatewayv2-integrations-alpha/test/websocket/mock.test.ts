@@ -3,7 +3,6 @@ import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { Stack } from 'aws-cdk-lib';
 import { WebSocketMockIntegration } from '../../lib';
 
-
 describe('MockWebSocketIntegration', () => {
   test('default', () => {
     // GIVEN

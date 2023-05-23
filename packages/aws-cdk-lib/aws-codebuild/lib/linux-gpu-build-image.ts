@@ -86,7 +86,6 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
-
   /**
    * Returns a GPU image running Linux from an ECR repository.
    *

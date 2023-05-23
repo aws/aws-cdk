@@ -461,7 +461,6 @@ describe('tests', () => {
       importedCertificate(stack, 'cert2'),
     ]);
 
-
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'TLS',

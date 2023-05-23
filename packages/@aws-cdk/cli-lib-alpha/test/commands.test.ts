@@ -32,7 +32,6 @@ describe('deploy', () => {
     );
   });
 
-
   test('deploy with all arguments', async () => {
     // WHEN
     await await cdk.deploy({
@@ -119,7 +118,6 @@ describe('deploy', () => {
     );
   });
 
-
   test('can parse boolean arguments', async () => {
     // WHEN
     await await cdk.deploy({
@@ -163,7 +161,6 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
-
 
   test('can parse context', async () => {
     // WHEN
@@ -284,7 +281,6 @@ describe('destroy', () => {
     );
   });
 });
-
 
 describe('list', () => {
   test('default list', async () => {

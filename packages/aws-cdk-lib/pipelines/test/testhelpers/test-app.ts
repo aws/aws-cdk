@@ -130,7 +130,6 @@ export class BucketStack extends Stack {
   }
 }
 
-
 /**
  * rm -rf reimplementation, don't want to depend on an NPM package for this
  */

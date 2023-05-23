@@ -30,7 +30,6 @@ describe('cross environment', () => {
         ['Test', 'ACount'],
       ]);
 
-
     });
 
     test('metric attached to stack1 will render region and account in stack2', () => {
@@ -45,7 +44,6 @@ describe('cross environment', () => {
       graphMetricsAre(stack2, graph, [
         ['Test', 'ACount', { region: 'pluto', accountId: '1234' }],
       ]);
-
 
     });
 
@@ -62,7 +60,6 @@ describe('cross environment', () => {
         ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
       ]);
 
-
     });
 
     test('metric attached to agnostic stack will not render in agnostic stack', () => {
@@ -77,7 +74,6 @@ describe('cross environment', () => {
       graphMetricsAre(new Stack(), graph, [
         ['Test', 'ACount'],
       ]);
-
 
     });
 

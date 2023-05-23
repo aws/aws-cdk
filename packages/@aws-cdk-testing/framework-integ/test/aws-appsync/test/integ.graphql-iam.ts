@@ -89,7 +89,6 @@ testDS.createResolver('MutationAddTest', {
 
 const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda') });
 
-
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
 api.grant(lambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
 api.grantMutation(lambdaIAM, 'addTest');

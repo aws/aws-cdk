@@ -128,7 +128,6 @@ describe('VpcLink', () => {
     const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
     const sg3 = new ec2.SecurityGroup(stack, 'SG3', { vpc });
 
-
     // WHEN
     const vpcLink = new VpcLink(stack, 'VpcLink', {
       vpc,

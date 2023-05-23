@@ -29,7 +29,6 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
   }
 }
 
-
 // Beginning of the test suite
 const app = new cdk.App();
 new integTests.IntegTest(app, 'InstanceUpdateBehaviorTests', {

@@ -244,7 +244,6 @@ testDeprecated('works with imported role', () => {
   });
 });
 
-
 testDeprecated('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();
 

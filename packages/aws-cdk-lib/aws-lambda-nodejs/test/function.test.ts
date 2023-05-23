@@ -91,7 +91,6 @@ test.skip('NodejsFunction with .mjs handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler3');
 
-
   // THEN
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file

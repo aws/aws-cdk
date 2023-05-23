@@ -46,7 +46,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('routing on private and public subnets', () => {
@@ -104,7 +103,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('add statements to policy', () => {
@@ -140,7 +138,6 @@ describe('vpc endpoint', () => {
         },
       });
 
-
     });
 
     test('throws when adding a statement without a principal', () => {
@@ -156,7 +153,6 @@ describe('vpc endpoint', () => {
         actions: ['s3:GetObject', 's3:ListBucket'],
         resources: ['*'],
       }))).toThrow(/`Principal`/);
-
 
     });
 
@@ -192,7 +188,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('throws with an imported vpc without route tables ids', () => {
@@ -205,7 +200,6 @@ describe('vpc endpoint', () => {
       });
 
       expect(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 })).toThrow(/route table/);
-
 
     });
   });
@@ -265,7 +259,6 @@ describe('vpc endpoint', () => {
         },
       });
 
-
     });
 
     describe('interface endpoint retains service name in shortName property', () => {
@@ -293,7 +286,6 @@ describe('vpc endpoint', () => {
       });
     });
 
-
     test('import/export', () => {
       // GIVEN
       const stack2 = new Stack();
@@ -312,7 +304,6 @@ describe('vpc endpoint', () => {
       });
       expect(importedEndpoint.vpcEndpointId).toEqual('vpc-endpoint-id');
 
-
     });
 
     test('import/export without security group', () => {
@@ -329,7 +320,6 @@ describe('vpc endpoint', () => {
       // THEN
       expect(importedEndpoint.vpcEndpointId).toEqual('vpc-endpoint-id');
       expect(importedEndpoint.connections.securityGroups.length).toEqual(0);
-
 
     });
 
@@ -349,7 +339,6 @@ describe('vpc endpoint', () => {
         SecurityGroupIds: ['existing-id'],
       });
 
-
     });
     test('with existing security groups for efs', () => {
       // GIVEN
@@ -366,7 +355,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
       });
-
 
     });
     test('security group has ingress by default', () => {
@@ -391,7 +379,6 @@ describe('vpc endpoint', () => {
         ],
       });
 
-
     });
     test('non-AWS service interface endpoint', () => {
       // GIVEN
@@ -408,7 +395,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         PrivateDnsEnabled: false,
       });
-
 
     });
     test('marketplace partner service interface endpoint', () => {
@@ -430,7 +416,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
         PrivateDnsEnabled: true,
       });
-
 
     });
     test('test endpoint service context azs discovered', () => {
@@ -477,7 +462,6 @@ describe('vpc endpoint', () => {
         ],
       });
 
-
     });
     test('endpoint service setup with stack AZ context but no endpoint context', () => {
       // GIVEN
@@ -516,7 +500,6 @@ describe('vpc endpoint', () => {
           },
         ],
       });
-
 
     });
     test('test endpoint service context with aws service', () => {
@@ -559,7 +542,6 @@ describe('vpc endpoint', () => {
           },
         ],
       });
-
 
     });
     test('lookupSupportedAzs fails if account is unresolved', () => {
@@ -647,7 +629,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'cn.com.amazonaws.cn-north-1.ecr.api',
       });
 
-
     });
     test('test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-northwest-1', () => {
       //GIVEN
@@ -663,7 +644,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-northwest-1.lambda',
       });
-
 
     });
     test('test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-north-1', () => {
@@ -681,7 +661,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.cn-north-1.ecs',
       });
 
-
     });
     test('test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-northwest-1', () => {
       //GIVEN
@@ -698,7 +677,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.cn-northwest-1.glue',
       });
 
-
     });
     test('test vpc interface endpoint for transcribe can be created correctly in non-china regions', () => {
       //GIVEN
@@ -714,7 +692,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-east-1.transcribe',
       });
-
 
     });
     test.each([

@@ -144,7 +144,6 @@ test('supports tokens', () => {
   });
 });
 
-
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new CodeBuildStartBuild(stack, 'Task', {

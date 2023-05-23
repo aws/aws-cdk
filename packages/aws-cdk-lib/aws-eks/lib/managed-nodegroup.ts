@@ -493,7 +493,6 @@ const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_
   NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
 
-
 /**
  * This function check if the instanceType is GPU instance.
  * @param instanceType The EC2 instance type

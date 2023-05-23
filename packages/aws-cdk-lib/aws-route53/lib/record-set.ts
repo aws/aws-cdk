@@ -156,7 +156,13 @@ export interface RecordSetOptions {
   readonly zone: IHostedZone;
 
   /**
-   * The domain name for this record.
+   * The subdomain name for this record. This should be relative to the zone root name.
+   *
+   * For example, if you want to create a record for acme.example.com, specify
+   * "acme".
+   *
+   * You can also specify the fully qualified domain name which terminates with a
+   * ".". For example, "acme.example.com.".
    *
    * @default zone root
    */
@@ -376,7 +382,7 @@ export class AaaaRecord extends RecordSet {
  */
 export interface CnameRecordProps extends RecordSetOptions {
   /**
-   * The domain name.
+   * The domain name of the target that this record should point to.
    */
   readonly domainName: string;
 }

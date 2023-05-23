@@ -51,7 +51,6 @@ export interface FirehosePutRecordActionProps extends CommonActionProps {
   readonly recordSeparator?: FirehoseRecordSeparator;
 }
 
-
 /**
  * The action to put the record from an MQTT message to the Kinesis Data Firehose stream.
  */

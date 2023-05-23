@@ -3,7 +3,6 @@ import { App, Stack, Size } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 
-
 const app = new App();
 const stack = new Stack(app, 'stack');
 
@@ -47,7 +46,6 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
     ],
   }),
 });
-
 
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],

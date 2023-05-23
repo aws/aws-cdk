@@ -4,7 +4,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { Size, Stack } from 'aws-cdk-lib';
 import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition } from '../lib';
 
-
 test('MultiNodeJobDefinition respects mainNode', () => {
   // GIVEN
   const stack = new Stack();

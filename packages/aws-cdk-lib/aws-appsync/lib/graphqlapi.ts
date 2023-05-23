@@ -259,6 +259,21 @@ export interface LogConfig {
 }
 
 /**
+ * Visibility type for a GraphQL API
+ */
+export enum Visibility {
+
+  /**
+   * Public, open to the internet
+   */
+  GLOBAL = 'GLOBAL',
+  /**
+   * Only accessible through a VPC
+   */
+  PRIVATE = 'PRIVATE'
+}
+
+/**
  * Domain name configuration for AppSync
  */
 export interface DomainOptions {
@@ -311,6 +326,13 @@ export interface GraphqlApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
+
+  /**
+   * A value indicating whether the API is accessible from anywhere (GLOBAL) or can only be access from a VPC (PRIVATE).
+   *
+   * @default - GLOBAL
+   */
+  readonly visibility?: Visibility;
 
   /**
    * The domain name configuration for the GraphQL API
@@ -498,6 +520,7 @@ export class GraphqlApi extends GraphqlApiBase {
       lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
+      visibility: props.visibility,
     });
 
     this.apiId = this.api.attrApiId;

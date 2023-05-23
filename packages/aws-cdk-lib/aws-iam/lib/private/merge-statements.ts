@@ -9,7 +9,6 @@ import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from 
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
 
-
 /*
  * Don't produce any merged statements larger than this.
  *

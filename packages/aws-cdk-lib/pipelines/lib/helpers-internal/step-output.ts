@@ -1,11 +1,9 @@
 import { IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
 import { Step } from '../blueprint/step';
 
-
 const STEP_OUTPUT_SYM = Symbol.for('@aws-cdk/pipelines.StepOutput');
 
 const PRODUCED_OUTPUTS_SYM = Symbol.for('@aws-cdk/pipelines.outputs');
-
 
 /**
  * A symbolic reference to a value produced by another step

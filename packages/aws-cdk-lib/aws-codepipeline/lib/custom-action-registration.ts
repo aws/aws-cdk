@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { ActionCategory, ActionArtifactBounds } from './action';
 import { CfnCustomActionType } from './codepipeline.generated';
 
-
 /**
  * The creation attributes used for defining a configuration property
  * of a custom Action.

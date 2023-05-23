@@ -293,7 +293,6 @@ export class Role extends Resource implements IRole {
       ...options,
     });
 
-
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
@@ -306,7 +305,6 @@ export class Role extends Resource implements IRole {
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
   }
-
 
   /**
    * Import an external role by name.

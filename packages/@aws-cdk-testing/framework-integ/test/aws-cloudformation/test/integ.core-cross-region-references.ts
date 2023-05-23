@@ -77,7 +77,6 @@ const integ = new IntegTest(app, 'cross-region-references', {
   stackUpdateWorkflow: false,
 });
 
-
 /**
  * Test that if the references are still in use, deleting the producer
  * stack will fail

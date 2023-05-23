@@ -192,7 +192,6 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   return compilerOptionsString.trim();
 }
 
-
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);

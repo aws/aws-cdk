@@ -60,6 +60,5 @@ describe('notification rule', () => {
       ],
     });
 
-
   });
 });

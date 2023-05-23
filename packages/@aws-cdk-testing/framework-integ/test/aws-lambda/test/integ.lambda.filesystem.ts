@@ -7,7 +7,6 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 
-
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,
   natGateways: 1,

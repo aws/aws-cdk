@@ -4,7 +4,6 @@ import { IFunction } from './function-base';
 import { Lazy, Stack, Token } from '../../core';
 import { FactName, RegionInfo } from '../../region-info';
 
-
 /**
  * Config returned from `LambdaInsightsVersion._bind`
  */

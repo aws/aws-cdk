@@ -52,7 +52,6 @@ export interface VirtualNodeBaseProps {
    */
   readonly virtualNodeName?: string;
 
-
   /**
    * Defines how upstream clients will discover this VirtualNode
    *

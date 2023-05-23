@@ -122,7 +122,6 @@ describe('DeployAssert', () => {
       // WHEN
       deplossert.awsApiCall('MyService', 'MyApi');
 
-
       // THEN
       Template.fromStack(deplossert.scope).hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
         api: 'MyApi',
@@ -138,7 +137,6 @@ describe('DeployAssert', () => {
       const deplossert = new DeployAssert(app);
       deplossert.awsApiCall('MyService', 'MyApi1');
       deplossert.awsApiCall('MyService', 'MyApi2');
-
 
       // THEN
       const template = Template.fromStack(deplossert.scope);

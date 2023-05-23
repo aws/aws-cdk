@@ -234,7 +234,6 @@ test('cli does not throw when the `build` script succeeds', async () => {
   await lock.release();
 }, TEN_SECOND_TIMEOUT);
 
-
 function writeOutputAssembly() {
   const asm = testAssembly({
     stacks: [],

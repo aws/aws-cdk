@@ -28,7 +28,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
         });
       }).toThrow(/Action cannot have more than 4 container image inputs, got: 5/);
 
-
     });
 
     test('throws an exception if both appspec artifact input and file are specified', () => {
@@ -47,7 +46,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
         });
       }).toThrow(/Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
 
-
     });
 
     test('throws an exception if neither appspec artifact input nor file are specified', () => {
@@ -62,7 +60,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           taskDefinitionTemplateInput: artifact,
         });
       }).toThrow(/Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
-
 
     });
 
@@ -82,7 +79,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
         });
       }).toThrow(/Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
 
-
     });
 
     test('throws an exception if neither task definition artifact input nor file are specified', () => {
@@ -97,7 +93,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           appSpecTemplateInput: artifact,
         });
       }).toThrow(/Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
-
 
     });
 
@@ -138,7 +133,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
 
     });
 
@@ -193,7 +187,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
 
     });
   });

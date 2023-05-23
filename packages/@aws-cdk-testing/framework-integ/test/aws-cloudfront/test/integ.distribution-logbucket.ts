@@ -3,7 +3,6 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-logbucket');
 

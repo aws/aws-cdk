@@ -17,7 +17,6 @@ export type BootstrapSource =
   | { source: 'default' }
   | { source: 'custom'; templateFile: string };
 
-
 export class Bootstrapper {
   constructor(private readonly source: BootstrapSource) {
   }

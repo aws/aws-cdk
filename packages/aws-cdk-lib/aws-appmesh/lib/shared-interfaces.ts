@@ -288,7 +288,6 @@ export interface BackendConfig {
   readonly virtualServiceBackend: CfnVirtualNode.BackendProperty;
 }
 
-
 /**
  * Contains static factory methods to create backends
  */

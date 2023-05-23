@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
-import { prepareSdkWithLookupRoleFor } from '../cloudformation-deployments';
+import { Deployments } from '../deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
@@ -49,7 +49,7 @@ export async function findCloudWatchLogGroups(
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // try to assume the lookup role and fallback to the default credentials
   try {
-    sdk = (await prepareSdkWithLookupRoleFor(sdkProvider, stackArtifact)).sdk;
+    sdk = (await new Deployments({ sdkProvider }).prepareSdkWithLookupRoleFor(stackArtifact)).sdk;
   } catch {
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;
   }

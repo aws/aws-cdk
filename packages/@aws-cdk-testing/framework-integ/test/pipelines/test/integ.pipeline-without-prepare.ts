@@ -20,7 +20,6 @@ export class BucketStack extends Stack {
   }
 }
 
-
 export class PlainStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);

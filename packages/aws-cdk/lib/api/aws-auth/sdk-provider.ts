@@ -13,7 +13,6 @@ import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
 
-
 // Some configuration that can only be achieved by setting
 // environment variables.
 process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
@@ -174,8 +173,10 @@ export class SdkProvider {
     environment: cxapi.Environment,
     mode: Mode,
     options?: CredentialsOptions,
+    quiet = false,
   ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
+
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials
@@ -212,7 +213,8 @@ export class SdkProvider {
       // but if we can't then let's just try with available credentials anyway.
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
-        warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
+        const logger = quiet ? debug : warning;
+        logger(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
         return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
       }
 

@@ -121,7 +121,6 @@ export interface OriginBindOptions {
   readonly originId: string;
 }
 
-
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.

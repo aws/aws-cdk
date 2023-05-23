@@ -188,7 +188,6 @@ test('test ECS queue worker service construct - with ECS Exec', () => {
     enableExecuteCommand: true,
   });
 
-
   // THEN
   // ECS Exec
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {

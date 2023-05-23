@@ -698,7 +698,6 @@ test('setting ALB record type to NONE correctly omits the recordset', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Route53::RecordSet', 0);
 });
 
-
 test('setting NLB cname option correctly sets the recordset type', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1163,7 +1162,6 @@ test('ApplicationLoadBalancedFargateService multiple capacity provider strategie
     ]),
   });
 });
-
 
 test('NetworkLoadBalancedFargateService multiple capacity provider strategies are set', () => {
   // GIVEN
