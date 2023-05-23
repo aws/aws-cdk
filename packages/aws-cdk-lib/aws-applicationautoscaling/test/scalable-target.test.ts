@@ -1,8 +1,8 @@
+import { createScalableTarget } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('scalable target', () => {

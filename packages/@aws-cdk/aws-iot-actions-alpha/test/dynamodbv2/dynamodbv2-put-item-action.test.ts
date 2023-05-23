@@ -67,7 +67,6 @@ test('Default dynamoDBv2 action', () => {
   });
 });
 
-
 test('can set role', () => {
   // GIVEN
   const stack = new cdk.Stack();

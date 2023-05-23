@@ -8,7 +8,6 @@ import { Endpoints } from "@octokit/types";
 export type GitHubPr =
   Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
 
-
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
 /**
@@ -99,7 +98,6 @@ interface Test {
  * Represents a set of tests and the conditions under which those rules exempt.
  */
 interface ValidateRuleSetOptions {
-
   /**
    * The function to test for exemption from the rules in testRuleSet.
    */
@@ -151,7 +149,6 @@ class ValidationCollector {
  * Props used to perform linting against the pull request.
  */
 export interface PullRequestLinterProps {
-
   /**
    * GitHub client scoped to pull requests. Imported via @actions/github.
    */
@@ -207,7 +204,6 @@ export class PullRequestLinter {
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
   private readonly issueParams: { owner: string, repo: string, issue_number: number };
-
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
@@ -310,7 +306,7 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
-    const statuses = await this.client.rest.repos.listCommitStatusesForRef({
+    const statuses = await this.client.repos.listCommitStatusesForRef({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
       ref: sha,
@@ -340,7 +336,15 @@ export class PullRequestLinter {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     // NOTE: MEMBER = a member of the organization that owns the repository
     // COLLABORATOR = has been invited to collaborate on the repository
-    const maintainerRequestedChanges = reviews.data.some(review => review.author_association === 'MEMBER' && review.state === 'CHANGES_REQUESTED');
+    const maintainerRequestedChanges = reviews.data.some(
+      review => review.author_association === 'MEMBER'
+        && review.user?.login !== 'aws-cdk-automation'
+        && review.state === 'CHANGES_REQUESTED'
+    );
+    const maintainerApproved = reviews.data.some(
+      review => review.author_association === 'MEMBER'
+        && review.state === 'APPROVED'
+    );
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
@@ -360,6 +364,8 @@ export class PullRequestLinter {
         || maintainerRequestedChanges
         // or the PR linter failed and the user didn't request an exemption
         || (prLinterFailed && !userRequestsExemption)
+        // or a maintainer has already approved the PR
+        || maintainerApproved
     ) {
       if (pr.labels.some(label => label.name === 'pr/needs-review')) {
         console.log(`removing labels from pr ${pr.number}`);
@@ -444,16 +450,19 @@ export class PullRequestLinter {
     });
 
     await this.deletePRLinterComment();
-    await this.communicateResult(validationCollector);
-
-    // also assess whether the PR needs review or not
     try {
-      const state = await this.codeBuildJobSucceeded(sha);
-      if (state) {
-        await this.assessNeedsReview(pr);
+      await this.communicateResult(validationCollector);
+      // always assess the review, even if the linter fails
+    } finally {
+      // also assess whether the PR needs review or not
+      try {
+        const state = await this.codeBuildJobSucceeded(sha);
+        if (state) {
+          await this.assessNeedsReview(pr);
+        }
+      } catch (e) {
+        console.log(`assessing review failed for sha ${sha}: `, e);
       }
-    } catch (e) {
-      console.log(`assessing review failed for sha ${sha}: `, e);
     }
   }
 
@@ -522,7 +531,6 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
 };
-
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.README);

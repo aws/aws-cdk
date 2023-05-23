@@ -7,7 +7,6 @@ import { md5hash } from '../private/hash';
 import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
 import { IDeployAssert } from '../types';
 
-
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
 /**

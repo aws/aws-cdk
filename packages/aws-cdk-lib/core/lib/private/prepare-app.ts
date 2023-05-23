@@ -127,7 +127,6 @@ function findTransitiveDeps(root: IConstruct): Dependency[] {
   return ret;
 }
 
-
 interface Dependency {
   readonly source: IConstruct;
   readonly target: IConstruct;

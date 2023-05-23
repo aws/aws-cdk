@@ -1,5 +1,5 @@
-import { Token, IResolvable, JsonNull } from '../../core';
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
+import { Token, IResolvable, JsonNull } from '../../core';
 
 /**
  * Extract a field from the State Machine data or context
