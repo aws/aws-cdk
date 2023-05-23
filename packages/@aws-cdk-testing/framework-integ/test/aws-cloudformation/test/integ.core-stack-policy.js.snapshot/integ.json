@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "StackPolicyTest/DefaultTest": {
+      "stacks": [
+        "MyStack"
+      ],
+      "assertionStack": "StackPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "StackPolicyTestDefaultTestDeployAssert35B208A7"
+    }
+  }
+}
