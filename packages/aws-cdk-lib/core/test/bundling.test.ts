@@ -161,7 +161,6 @@ describe('bundling', () => {
 
   });
 
-
   test('throws in case of spawnSync error', () => {
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,

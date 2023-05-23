@@ -2,7 +2,6 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from 'aws-cdk-lib/aws-cognito';
 
-
 /*
  * Stack verification steps
  * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'Google' sign in link shows up.

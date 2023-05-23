@@ -22,7 +22,6 @@ export abstract class ApiBase extends Resource implements IApi {
   }
 }
 
-
 /**
  * Base class representing a Stage
  * @internal

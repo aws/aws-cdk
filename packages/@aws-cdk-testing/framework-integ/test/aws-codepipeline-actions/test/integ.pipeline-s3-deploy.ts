@@ -92,7 +92,6 @@ getObjectCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 
-
 const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: bucket.bucketName,
   Key: 'key',
