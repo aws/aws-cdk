@@ -334,7 +334,6 @@ describe('custom resource provider', () => {
       throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
     }
 
-
   });
 
   test('policyStatements can be used to add statements to the inline policy', () => {

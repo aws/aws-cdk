@@ -51,7 +51,6 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       finalEbs = undefined;
     }
 
-
     const noDevice = mappingEnabled === false ? noDeviceValue : undefined;
     return { deviceName, ebs: finalEbs, virtualName, noDevice } as any;
   });

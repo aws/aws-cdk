@@ -1365,7 +1365,6 @@ describe('auto scaling group', () => {
 
   });
 
-
   test('Can protect new instances from scale-in via constructor property', () => {
     // GIVEN
     const stack = new cdk.Stack();
