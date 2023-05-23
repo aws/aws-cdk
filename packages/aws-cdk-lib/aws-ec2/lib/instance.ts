@@ -275,7 +275,7 @@ export interface InstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
-   * @default -
+   * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
 }
