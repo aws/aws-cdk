@@ -1,6 +1,6 @@
+import { IConstruct } from 'constructs';
 import { Annotations } from '../../assertions';
 import * as cdk from '../../core';
-import { IConstruct } from 'constructs';
 import * as s3 from '../lib';
 
 describe('aspect', () => {

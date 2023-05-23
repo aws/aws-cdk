@@ -1,10 +1,10 @@
+import { TestFixture } from './test-fixture';
 import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { TestFixture } from './test-fixture';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -195,7 +195,6 @@ describe('CloudFormation Pipeline Actions', () => {
       }],
     });
 
-
   });
 
   test('fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions', () => {
@@ -265,7 +264,6 @@ describe('CloudFormation Pipeline Actions', () => {
       Roles: [{ Ref: roleId }],
     });
 
-
   });
 
   test('outputFileName leads to creation of output artifact', () => {
@@ -296,7 +294,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
 
   });
 
@@ -330,7 +327,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
 
   });
 
@@ -372,7 +368,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
 
   });
 
@@ -424,7 +419,6 @@ describe('CloudFormation Pipeline Actions', () => {
       ],
     });
 
-
   });
 
   test('Single capability is passed to template', () => {
@@ -466,7 +460,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
 
   });
 
@@ -511,7 +504,6 @@ describe('CloudFormation Pipeline Actions', () => {
       ],
     });
 
-
   });
 
   test('Empty capabilities is not passed to template', () => {
@@ -553,7 +545,6 @@ describe('CloudFormation Pipeline Actions', () => {
       ],
     });
 
-
   });
 
   test('can use CfnCapabilities from the core module', () => {
@@ -594,7 +585,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
 
   });
 
@@ -719,7 +709,6 @@ describe('CloudFormation Pipeline Actions', () => {
       Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
       });
-
 
     });
   });

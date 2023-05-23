@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IDependable, Construct } from 'constructs';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
@@ -7,7 +8,6 @@ import * as ec2 from '../../../../aws-ec2';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
 import { ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '../../../../core';
-import { IDependable, Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { toPosixPath } from '../../private/fs';
@@ -76,7 +76,6 @@ export interface PublishAssetsActionProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
-
 
   /**
    * Custom BuildSpec that is merged with generated one
@@ -180,7 +179,6 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       fs.writeFileSync(specFile, Stack.of(this).resolve(this.buildSpec.toBuildSpec()), { encoding: 'utf-8' });
     }
   }
-
 
   /**
    * Add a single publishing command

@@ -1,8 +1,8 @@
-import * as iam from '../../aws-iam';
 import { IConstruct } from 'constructs';
 import { CfnRule } from './events.generated';
 import { RuleTargetInput } from './input';
 import { IRule } from './rule-ref';
+import * as iam from '../../aws-iam';
 
 /**
  * An abstract target for EventRules.
