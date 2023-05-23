@@ -29,6 +29,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   },
   parameterGroup: params,
   storageEncryptionKey: kmsKey,
+  storageType: 'aurora',
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

@@ -277,6 +277,14 @@ interface DatabaseClusterBaseProps {
   readonly storageEncryptionKey?: kms.IKey;
 
   /**
+   * The storage type to be associated with the DB cluster.
+   * Valid values: `aurora` , `aurora-iopt1` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)
+   *
+   * @default: `aurora` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)
+   */
+  readonly storageType?: string;
+
+  /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - true
@@ -498,6 +506,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
       networkType: props.networkType,
+      storageType: props.storageType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),

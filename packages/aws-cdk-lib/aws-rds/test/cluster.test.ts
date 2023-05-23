@@ -29,6 +29,7 @@ describe('cluster', () => {
         vpc,
       },
       iamAuthentication: true,
+      storageType: 'aurora',
     });
 
     // THEN
@@ -41,6 +42,7 @@ describe('cluster', () => {
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         EnableIAMDatabaseAuthentication: true,
         CopyTagsToSnapshot: true,
+        StorageType: 'aurora',
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
