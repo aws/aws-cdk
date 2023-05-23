@@ -375,7 +375,7 @@ class FullCloudFormationDeployment {
         return this.changeSetDeployment(deploymentMethod);
 
       case 'direct':
-        return this.directDeployment();
+    return this.directDeployment();
     }
   }
 
@@ -469,6 +469,7 @@ class FullCloudFormationDeployment {
     if (this.update) {
       await this.cfn.updateStack({
         StackName: this.stackName,
+        ...this.stackArtifact.stackPolicy ? { StackPolicyBody: JSON.stringify(this.stackArtifact.stackPolicy) } : undefined,
         ClientRequestToken: `update${this.uuid}`,
         ...this.commonPrepareOptions(),
         ...this.commonExecuteOptions(),
@@ -483,6 +484,7 @@ class FullCloudFormationDeployment {
 
       await this.cfn.createStack({
         StackName: this.stackName,
+        ...this.stackArtifact.stackPolicy ? { StackPolicyBody: JSON.stringify(this.stackArtifact.stackPolicy) } : undefined,
         ClientRequestToken: `create${this.uuid}`,
         ...terminationProtection ? { EnableTerminationProtection: true } : undefined,
         ...this.commonPrepareOptions(),
