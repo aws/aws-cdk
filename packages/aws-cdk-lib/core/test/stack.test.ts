@@ -13,6 +13,9 @@ import {
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
   Stage,
+  StackPolicy,
+  StackPolicyStatement,
+  Effect,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -250,6 +253,31 @@ describe('stack', () => {
     const output = toCloudFormation(stack);
 
     expect(typeof output.Description).toEqual('string');
+  });
+
+  test('Stack policy is referenced in manifest file', () => {
+    // GIVEN
+    const app = new App();
+
+    const statements = new StackPolicyStatement({ effect: Effect.ALLOW });
+    const stackPolicy = new StackPolicy({ statements: [statements] });
+
+    new Stack(app, 'MyStack', {
+      stackPolicy: stackPolicy,
+    });
+
+    // THEN
+    const assembly = app.synth();
+
+    expect(assembly.manifest).toMatchObject({
+      artifacts: {
+        MyStack: {
+          properties: {
+            stackPolicyFile: 'MyStack.policy.json',
+          },
+        },
+      },
+    });
   });
 
   test('Pseudo values attached to one stack can be referenced in another stack', () => {
