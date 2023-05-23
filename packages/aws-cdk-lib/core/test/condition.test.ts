@@ -59,4 +59,54 @@ describe('condition', () => {
       },
     });
   });
+
+  test('condition length is 10n + 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const expression = cdk.Fn.conditionOr(
+      cdk.Fn.conditionEquals('a', '1'),
+      cdk.Fn.conditionEquals('b', '2'),
+      cdk.Fn.conditionEquals('c', '3'),
+      cdk.Fn.conditionEquals('d', '4'),
+      cdk.Fn.conditionEquals('e', '5'),
+      cdk.Fn.conditionEquals('f', '6'),
+      cdk.Fn.conditionEquals('g', '7'),
+      cdk.Fn.conditionEquals('h', '8'),
+      cdk.Fn.conditionEquals('i', '9'),
+      cdk.Fn.conditionEquals('j', '10'),
+      cdk.Fn.conditionEquals('k', '11'),
+    );
+
+    // WHEN
+    new cdk.CfnCondition(stack, 'Condition1', { expression });
+
+    // THEN
+    expect(toCloudFormation(stack)).toEqual({
+      Conditions: {
+        Condition1: {
+          'Fn::Or': [
+            {
+              'Fn::Or': [
+                { 'Fn::Equals': ['a', '1'] },
+                { 'Fn::Equals': ['b', '2'] },
+                { 'Fn::Equals': ['c', '3'] },
+                { 'Fn::Equals': ['d', '4'] },
+                { 'Fn::Equals': ['e', '5'] },
+                { 'Fn::Equals': ['f', '6'] },
+                { 'Fn::Equals': ['g', '7'] },
+                { 'Fn::Equals': ['h', '8'] },
+                { 'Fn::Equals': ['i', '9'] },
+              ],
+            },
+            {
+              'Fn::Or': [
+                { 'Fn::Equals': ['j', '10'] },
+                { 'Fn::Equals': ['k', '11'] },
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
 });

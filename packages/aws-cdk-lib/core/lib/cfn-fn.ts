@@ -334,6 +334,10 @@ export class Fn {
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
     }
+    // prevent the error "Fn::Or object requires a list of at least 2" when the condition is split into groups of 10 and 1
+    if (conditions.length % 10 === 1) {
+      return Fn.conditionOr(..._inGroupsOf(conditions, 9).map(group => new FnOr(...group)));
+    }
     return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
 
