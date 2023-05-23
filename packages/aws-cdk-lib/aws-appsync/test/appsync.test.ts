@@ -239,3 +239,18 @@ test('log retention should not appear when no retention time is specified', () =
   // THEN
   Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
 });
+
+test('when visibility is set it should be used when creating the API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'api-x-ray', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    visibility: appsync.Visibility.PRIVATE,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    Visibility: 'PRIVATE',
+  });
+});

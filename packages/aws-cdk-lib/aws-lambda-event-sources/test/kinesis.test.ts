@@ -75,7 +75,6 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'TRIM_HORIZON',
     });
 
-
   });
 
   test('specific tumblingWindowInSeconds', () => {
@@ -107,7 +106,6 @@ describe('KinesisEventSource', () => {
       'TumblingWindowInSeconds': 60,
     });
 
-
   });
 
   test('specific batch size', () => {
@@ -137,7 +135,6 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if batch size < 1', () => {
@@ -151,7 +148,6 @@ describe('KinesisEventSource', () => {
       batchSize: 0,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
-
 
   });
 
@@ -167,7 +163,6 @@ describe('KinesisEventSource', () => {
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
 
-
   });
 
   test('accepts if batch size is a token', () => {
@@ -181,7 +176,6 @@ describe('KinesisEventSource', () => {
       batchSize: cdk.Lazy.number({ produce: () => 10 }),
       startingPosition: lambda.StartingPosition.LATEST,
     }));
-
 
   });
 
@@ -211,7 +205,6 @@ describe('KinesisEventSource', () => {
       'MaximumBatchingWindowInSeconds': 120,
       'StartingPosition': 'LATEST',
     });
-
 
   });
 
