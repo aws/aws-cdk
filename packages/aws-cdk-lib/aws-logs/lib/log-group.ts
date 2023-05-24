@@ -584,4 +584,11 @@ export interface MetricFilterOptions {
    * @default - No unit attached to metrics.
    */
   readonly unit?: cloudwatch.Unit;
+
+  /**
+   * The name of the metric filter.
+   *
+   * @default - Cloudformation generated name.
+   */
+  readonly filterName?: string;
 }
