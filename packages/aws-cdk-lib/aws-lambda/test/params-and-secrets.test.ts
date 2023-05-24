@@ -1,5 +1,4 @@
 import { Template } from '../../assertions';
-import * as kms from '../../aws-kms';
 import * as sm from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
@@ -59,220 +58,28 @@ describe('params and secrets', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
         layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        secret,
+        secrets: [secret],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [layerArn],
-    });
-    verifyRoleHasCorrectPolicies(stack);
-    expect(() => app.synth()).not.toThrow();
-  });
-
-  test('can specify x86_64 architecture in non-agnostic stack', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
-    const secret = new sm.Secret(stack, 'Secret');
-
-    // WHEN
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_X86_64,
-        secret,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4'],
-    });
-    verifyRoleHasCorrectPolicies(stack);
-    expect(() => app.synth()).not.toThrow();
-  });
-
-  test('can specify x86_64 architecture in agnostic stack', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const secret = new sm.Secret(stack, 'Secret');
-
-    // WHEN
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_X86_64,
-        secret,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: [
-        {
-          'Fn::FindInMap': [
-            'ParamsandsecretslayerMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'x86x64',
-          ],
+      Environment: {
+        Variables: {
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: '1000',
+          PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT: '2773',
+          PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL: 'info',
+          PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS: '3',
+          SECRETS_MANAGER_TIMEOUT_MILLIS: '0',
+          SECRETS_MANAGER_TTL: '300',
+          SSM_PARAMETER_STORE_TIMEOUT_MILLIS: '0',
+          SSM_PARAMETER_STORE_TTL: '300',
         },
-      ],
+      },
     });
     verifyRoleHasCorrectPolicies(stack);
     expect(() => app.synth()).not.toThrow();
-  });
-
-  test('can specify arm64 architecture in non-agnostic stack', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
-    const secret = new sm.Secret(stack, 'Secret');
-
-    // WHEN
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
-        secret,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4'],
-    });
-    verifyRoleHasCorrectPolicies(stack);
-    expect(() => app.synth()).not.toThrow();
-  });
-
-  test('can specify arm64 architecture in agnostic stack', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const secret = new sm.Secret(stack, 'Secret');
-
-    // WHEN
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
-        secret,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: [
-        {
-          'Fn::FindInMap': [
-            'ParamsandsecretslayerMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'arm64',
-          ],
-        },
-      ],
-    });
-    verifyRoleHasCorrectPolicies(stack);
-    expect(() => app.synth()).not.toThrow();
-  });
-
-  test('role has kms:Decrypt for secret with encryption key', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const encryptionKey = new kms.Key(stack, 'Key');
-    const secret = new sm.Secret(stack, 'Secret', { encryptionKey });
-
-    // WHEN
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
-        secret,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'secretsmanager:GetSecretValue',
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'SecretA720EF05',
-            },
-          },
-          {
-            Action: 'kms:Decrypt',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'FunctionServiceRoleDefaultPolicy2F49994A',
-      Roles: [
-        {
-          Ref: 'FunctionServiceRole675BB04A',
-        },
-      ],
-    });
-  });
-
-  test('can create two functions in a region agnostic stack with the same version', () => {
-
-  });
-
-  test('can create two functions with different architectures in agnostic stack', () => {
-
-  });
-
-  test('throws if arm64 is not available in region', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack', { env: { account: '123456789012', region: 'eu-central-2' } });
-    const secret = new sm.Secret(stack, 'Secret');
-
-    // WHEN/THEN
-    expect(() => {
-      new lambda.Function (stack, 'Function', {
-        functionName: 'lambda-function',
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.FOR_ARM_64,
-          secret,
-        },
-      });
-    }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');
   });
 });

@@ -1,8 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
-import { Architecture } from './architecture';
 import { ISecret } from '../../aws-secretsmanager';
-import { Token, Stack, Lazy, Duration } from '../../core';
+import { Token, Stack, Duration } from '../../core';
 import { RegionInfo, FactName } from '../../region-info';
+import * as lambda from '../lib';
 
 /**
  * Config returned from `ParamsAndSecretsVersion._bind`
@@ -12,10 +12,15 @@ interface ParamsAndSecretsBindConfig {
    * ARN of the Parameters and Secrets layer version
    */
   readonly arn: string;
+
+  /**
+   * Environment variables for the Parameters and Secrets layer configuration
+   */
+  readonly environmentVars: { [key: string]: string };
 }
 
 /**
- * Logging levels for the Parametes and Secrets Extension layer
+ * Logging levels for the Parametes and Secrets Extension
  */
 export enum ParamsAndSecretsLogLevel {
   /**
@@ -60,7 +65,7 @@ export interface ParamsAndSecretsOptions {
    * The maximum number of secrets and parameters to cache. Must be a value
    * from 0 to 1000. A value of 0 means there is no caching.
    *
-   * Note: This variable is ignored is parameterStoreTtl and secretsManagerTtl
+   * Note: This variable is ignored if parameterStoreTtl and secretsManagerTtl
    * are 0.
    *
    * @default 1000
@@ -136,87 +141,63 @@ export interface ParamsAndSecretsOptions {
  */
 export interface ParamsAndSecretsConfig {
   /**
-   * The secret to grant the function access to
-   *
-   * TODO: Multiple secrets
+   * The secrets to grant the function access to
    */
-  readonly secret: ISecret;
+  readonly secrets: ISecret[];
 
   /**
    * The Parameters and Secrets Extension layer
+   *
+   * @default - Parameters and Secrets Extension will be configured using
    */
   readonly layerVersion: ParamsAndSecretsLayerVersion;
-
-  /**
-   * Configuration options for the Parameters and Secrets Extension layer
-   */
-  readonly options: ParamsAndSecretsOptions;
 }
 
-/**
- * Version of Parameters and Secrets Extension
- */
 export abstract class ParamsAndSecretsLayerVersion {
-  /**
-   * Version for x86_64 architecture
-   */
-  public static readonly FOR_X86_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.X86_64);
-
-  /**
-   * Version for ARM_64 architecture
-   */
-  public static readonly FOR_ARM_64 = ParamsAndSecretsLayerVersion.fromArchitecture(Architecture.ARM_64);
-
-  /**
-   * Use the Parameters and Secrets Extension associated with the provided ARN. Make sure the ARN is associated
-   * with the same region as your function.
-   *
-   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
-   */
-  public static fromVersionArn(arn: string): ParamsAndSecretsLayerVersion {
-    class ParamsAndSecretsArn extends ParamsAndSecretsLayerVersion {
-      public readonly layerVersionArn = arn;
-
-      public _bind(_scope: Construct): ParamsAndSecretsBindConfig {
+  public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+    return new (class extends ParamsAndSecretsLayerVersion {
+      public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
           arn,
+          environmentVars: this.environmentVariablesFromOptions,
         };
       }
-    }
-
-    return new ParamsAndSecretsArn();
+    })(options);
   }
 
-  /**
-   * Use the architecture to build the object
-   */
-  private static fromArchitecture(architecture: Architecture): ParamsAndSecretsLayerVersion {
-    class ParamsAndSecretsVersion extends ParamsAndSecretsLayerVersion {
-      public readonly layerVersionArn = Lazy.uncachedString({
-        produce: (context) => getVersionArn(context.scope, architecture.name),
-      });
-
-      public _bind(_scope: Construct): ParamsAndSecretsBindConfig {
+  public static fromParamsAndSecretsExtension(options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+    return new (class extends ParamsAndSecretsLayerVersion {
+      public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
-          arn: getVersionArn(_scope, architecture.name),
+          arn: getVersionArn(_scope, _function.architecture.name),
+          environmentVars: this.environmentVariablesFromOptions,
         };
       }
-    }
-
-    return new ParamsAndSecretsVersion();
+    })(options);
   }
 
-  /**
-   * The ARN of the Parameters and Secrets Extension lambda
-   */
-  public readonly layerVersionArn: string = '';
+  protected constructor(protected readonly options: ParamsAndSecretsOptions) {}
 
   /**
    * Returns the ARN of the Parameters and Secrets Extension
    *
    * @internal
    */
-  public abstract _bind(_scope: Construct): ParamsAndSecretsBindConfig;
+  public abstract _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig;
+
+  private get environmentVariablesFromOptions(): { [key: string]: any } {
+    return {
+      PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: this.options.cacheEnabled ?? true,
+      PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: this.options.cacheSize ?? 1000,
+      PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT: this.options.httpPort ?? 2773,
+      PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL: this.options.logLevel ?? ParamsAndSecretsLogLevel.INFO,
+      PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS: this.options.maxConnections ?? 3,
+      SECRETS_MANAGER_TIMEOUT_MILLIS: this.options.secretsManagerTimeout?.toMilliseconds() ?? 0,
+      SECRETS_MANAGER_TTL: this.options.secretsManagerTtl?.toSeconds() ?? 300,
+      SSM_PARAMETER_STORE_TIMEOUT_MILLIS: this.options.parameterStoreTimeout?.toMilliseconds() ?? 0,
+      SSM_PARAMETER_STORE_TTL: this.options.parameterStoreTtl?.toSeconds() ?? 300,
+    };
+  }
 }
 
 /**

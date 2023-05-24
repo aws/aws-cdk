@@ -265,7 +265,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Specify the configuration of Parameters and Secrets Extension
    * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
    *
-   * @default - No Parameters and Secrets Extension layer
+   * @default - No Parameters and Secrets Extension
    */
   readonly paramsAndSecrets?: ParamsAndSecretsConfig;
 
@@ -1168,16 +1168,22 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return;
     }
 
+    // grant permissions to lambda execution role to allow access to provided secrets
+    const resources: string[] = [];
+    props.paramsAndSecrets.secrets.forEach(secret => {
+      resources.push(secret.secretArn);
+      if (secret.encryptionKey) {
+        secret.encryptionKey.grantDecrypt(this);
+      }
+    });
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:GetSecretValue'],
-      resources: [props.paramsAndSecrets.secret.secretArn],
+      resources,
     }));
 
-    if (props.paramsAndSecrets.secret.encryptionKey) {
-      props.paramsAndSecrets.secret.encryptionKey.grantDecrypt(this);
-    }
-
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', props.paramsAndSecrets.layerVersion._bind(this).arn));
+    const layerVersion = props.paramsAndSecrets.layerVersion._bind(this, this);
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
+    Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }
 
   private renderLayers() {
