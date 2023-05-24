@@ -1,13 +1,13 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, isAssetManifest, last } from './util';
 import { AppStagingSynthesizer, DEPLOY_TIME_PREFIX } from '../lib';
-import path = require('path');
 
 describe(AppStagingSynthesizer, () => {
   let app: App;
