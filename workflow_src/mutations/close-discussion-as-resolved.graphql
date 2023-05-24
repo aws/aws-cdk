@@ -1,0 +1,7 @@
+mutation CloseDiscussionAsResolved($discussionId: ID!){
+  closeDiscussion(input: {discussionId: $discussionId, reason: RESOLVED}) {
+    discussion {
+      id
+    }
+  }
+}

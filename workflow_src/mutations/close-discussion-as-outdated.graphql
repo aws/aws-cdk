@@ -1,0 +1,7 @@
+mutation CloseDiscussionAsOutdated($discussionId: ID!){
+  closeDiscussion(input: {discussionId: $discussionId, reason: OUTDATED}) {
+    discussion {
+      id
+    }
+  }
+}

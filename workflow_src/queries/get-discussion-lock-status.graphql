@@ -1,0 +1,15 @@
+query IsDiscussionLocked ($owner: String!, $name: String!, $categoryId: ID, $count: Int!){
+  repository(owner: $owner, name: $name) {
+    discussions(
+      categoryId: $categoryId
+      last: $count
+    ) {
+      edges {
+        node {
+          locked
+          id
+        }
+      }
+    }
+  }
+}

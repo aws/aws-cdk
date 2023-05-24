@@ -1,0 +1,8 @@
+mutation UpdateDiscussionComment($commentId: ID!, $body: String!) {
+  updateDiscussionComment(input: {commentId: $commentId, body: $body}) 
+  {
+    comment {
+      id
+    }
+  }
+}

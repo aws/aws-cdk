@@ -1,0 +1,17 @@
+# codegen.yml
+overwrite: true
+schema: 'workflow_src/generated/github-schema-loader.ts'
+generates:
+  workflow_src/generated/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+      - "typescript-document-nodes"
+      - "typescript-operations"
+
+require:
+  - ts-node/register
+
+documents:
+  - workflow_src/queries/*.graphql
+  - workflow_src/mutations/*.graphql

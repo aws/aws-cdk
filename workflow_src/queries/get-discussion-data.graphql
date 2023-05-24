@@ -1,0 +1,35 @@
+query GetDiscussionData($owner: String!, $name: String!,$categoryID: ID!, $count: Int) {
+  repository(owner: $owner, name: $name) {
+    discussions(categoryId: $categoryID last:$count) {
+      edges {
+        node {
+          locked
+          id
+          bodyText
+          author{
+            login
+          }
+          answer{
+            id
+            bodyText
+          }
+          comments(last: 1) {
+            edges {
+              node {
+                id
+                bodyText
+                updatedAt
+                reactions(last:10) {
+                  nodes
+                  {
+                    content
+                  }
+                }                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

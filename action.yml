@@ -1,0 +1,6 @@
+name: 'Handle stale discussions'
+description: 'Custom GH action on discussions'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

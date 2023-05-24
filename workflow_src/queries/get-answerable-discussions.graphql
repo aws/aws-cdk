@@ -1,0 +1,12 @@
+query GetAnswerableDiscussionID($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    discussionCategories(last: 10) {
+      edges {
+        node {
+          isAnswerable
+          id
+        }
+      }
+    }
+  }
+}

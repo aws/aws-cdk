@@ -1,0 +1,5 @@
+query WhoAmI {
+  viewer {
+    login
+  }
+}

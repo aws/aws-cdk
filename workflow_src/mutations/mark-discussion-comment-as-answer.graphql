@@ -1,0 +1,5 @@
+mutation markDiscussionCommentAsAnswer($commentId: ID!) {
+   markDiscussionCommentAsAnswer(input: { id: $commentId }) {
+    clientMutationId
+  }
+}

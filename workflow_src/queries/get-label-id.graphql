@@ -1,0 +1,7 @@
+query GetLabelId($owner : String!, $name: String!,$labelName: String!){
+    repository(owner: $owner, name: $name){
+        label(name:$labelName){
+            id
+        }
+    }
+}

@@ -1,0 +1,7 @@
+query GetDiscussionCount($owner: String!, $name: String!, $categoryId: ID!) {
+  repository(owner: $owner, name: $name) {
+    discussions(categoryId: $categoryId) {
+      totalCount
+    }
+  }
+}
