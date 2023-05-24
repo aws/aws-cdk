@@ -26,8 +26,8 @@ are as follows:
 - the `AppStagingSynthesizer`, a new CDK synthesizer that will synthesize CDK applications with
   the staging resources provided.
 
-> Currently this module does not support CDK Pipelines. You must deploy CDK Apps using this
-> synthesizer via `cdk deploy`.
+> As this library is `experimental`, there are features that are not yet implemented. Please look
+> at the list of [Known Limitations](#known-limitations) before getting started.
 
 To get started, update your CDK App with a new `defaultStackSynthesizer`:
 
@@ -148,9 +148,6 @@ benefits:
 - Resources between separate CDK Apps are separated so they can be cleaned up and lifecycle
 controlled individually.
 - Users have a familiar way to customize staging resources in the CDK Application.
-
-> As this library is `experimental`, the accompanying Bootstrap Stack is not yet implemented. To use this
-> library right now, you must reuse roles that have been traditionally bootstrapped.
 
 ## Using the Default Staging Stack per Environment
 
@@ -387,3 +384,18 @@ const app = new App({
   }),
 });
 ```
+
+## Known Limitations
+
+Since this module is experimental, there are some known limitations:
+
+- Currently this module does not support CDK Pipelines. You must deploy CDK Apps using this 
+  synthesizer via `cdk deploy`.
+- This synthesizer only needs a bootstrap stack with Roles, without staging resources. We
+  haven't written such a bootstrap stack yet; at the moment you can use the existing modern
+  bootstrap stack, the staging resources in them will just go unused.
+- Due to limitations on the CloudFormation template size, CDK Applications can have
+  at most 38 independent ECR images.
+- When you run `cdk destroy` (for example during testing), the staging bucket and ECR
+  repositories will be left behind because CloudFormation cannot clean up non-empty resources.
+  You must deploy those resources manually if you want to redeploy again using the same `appId`.
