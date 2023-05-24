@@ -56,7 +56,6 @@ describe('SdkHandler', () => {
     // WHEN
     const response: AwsApiCallResult = await handler.processEvent(request);
 
-
     // THEN
     expect(response.apiCallResponse).toEqual(expectedResponse);
   });
@@ -78,7 +77,6 @@ describe('SdkHandler', () => {
       // WHEN
       await handler.processEvent(request);
 
-
       // THEN
       sinon.assert.calledWith(fake, { DryRun: true });
     });
@@ -98,7 +96,6 @@ describe('SdkHandler', () => {
 
       // WHEN
       await handler.processEvent(request);
-
 
       // THEN
       sinon.assert.calledWith(fake, { DryRun: false });

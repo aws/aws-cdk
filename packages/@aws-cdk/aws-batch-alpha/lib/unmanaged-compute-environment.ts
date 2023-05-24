@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
-
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
  * in this ComputeEvironment.

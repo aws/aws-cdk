@@ -220,7 +220,6 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
   }
 }
 
-
 /**
  * A backup vault
  */
