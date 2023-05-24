@@ -165,17 +165,19 @@ export class WorkGraph {
       function startOne(x: WorkNode) {
         x.deploymentState = DeploymentState.DEPLOYING;
         active[x.type]++;
-        void fn(x).then(() => {
-          active[x.type]--;
-          graph.deployed(x);
-          start();
-        }).catch((err) => {
-          active[x.type]--;
-          // By recording the failure immediately as the queued task exits, we prevent the next
-          // queued task from starting.
-          graph.failed(x, err);
-          start();
-        });
+        void fn(x)
+          .finally(() => {
+            active[x.type]--;
+          })
+          .then(() => {
+            graph.deployed(x);
+            start();
+          }).catch((err) => {
+            // By recording the failure immediately as the queued task exits, we prevent the next
+            // queued task from starting.
+            graph.failed(x, err);
+            start();
+          });
       }
     });
   }
