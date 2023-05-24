@@ -103,7 +103,7 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('MyStage-MyStack');
   });
 
-  test('Prefix and stack names not exceeding 128 characters are not shortened', () => {
+  test('FF include prefix: Prefix and stack names not exceeding 128 characters are not shortened', () => {
     // WHEN
     const app = new App({
       context: {
@@ -118,7 +118,7 @@ describe('stage', () => {
     expect(stack.stackName).toEqual('ShortPrefix-Short-Stack-Name');
   });
 
-  test('Stacks with more than one component and a prefix hashed even if short enough', () => {
+  test('FF include prefix: Stacks with more than one component and a prefix hashed even if short enough', () => {
     // WHEN
     const app = new App({
       context: {
@@ -126,15 +126,15 @@ describe('stage', () => {
       },
     });
     const stage = new Stage(app, 'ThePrefix');
-    const rootStack = new BogusStack(stage, 'Prod');
-    const stack = new BogusStack(rootStack, 'MyStack');
+    const rootStack = new Stack(stage, 'Prod');
+    const stack = new Stack(rootStack, 'MyStack');
 
     // THEN
+    expect(stack.stackName.length).toEqual(29);
     expect(stack.stackName).toEqual('ThePrefix-ProdMyStackFEA60919');
-    expect(stack.stackName.length).toEqual(21);
   });
 
-  test('Stacks with more than one component and a prefix shortened if too big', () => {
+  test('FF include prefix: Stacks with more than one component and a prefix shortened if too big', () => {
     // WHEN
     const app = new App({
       context: {
@@ -146,8 +146,8 @@ describe('stage', () => {
     const stack = new BogusStack(construct, 'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName');
 
     // THEN
-    expect(stack.stackName).toEqual('ThePrefix-ProdMyStackFEA60919');
-    expect(stack.stackName.length).toEqual(21);
+    expect(stack.stackName.length).toEqual(128);
+    expect(stack.stackName).toEqual('ThePrefixIsLongEnoughToExceedTheMaxLenght-ReallyReallyLooooomeIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName1E474FCA');
   });
 
   test('generated stack names will not exceed 128 characters when using prefixes', () => {
