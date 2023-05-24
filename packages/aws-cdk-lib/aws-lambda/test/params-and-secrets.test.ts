@@ -475,4 +475,90 @@ describe('params and secrets', () => {
       });
     }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 65536');
   });
+
+  test('throws for max connections < 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      maxConnections: 0,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Maximum connections must be at least 1 - provided: 0');
+  });
+
+  test('throws for secrets TTL > 300 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      secretsManagerTtl: cdk.Duration.seconds(301),
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Maximum TTL for a cached secret is 300 seconds - provided: 301 seconds');
+  });
+
+  test('throws for parameters TTL > 300 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      parameterStoreTtl: cdk.Duration.seconds(301),
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Maximum TTL for a cached parameter is 300 seconds - provided: 301 seconds');
+  });
+
+  test('', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4);
+
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion,
+        secrets: [],
+      },
+    });
+  });
 });
