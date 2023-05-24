@@ -16214,16 +16214,16 @@
       },
       "description": "Specifies a route in a route table.\n\nYou must specify either `DestinationCidrBlock` or `DestinationIpv6CidrBlock` , plus the ID of one of the target resources.\n\nIf you create a route that references a transit gateway in the same template where you create the transit gateway, you must declare a dependency on the transit gateway attachment. The route table cannot use the transit gateway until it has successfully attached to the VPC. Add a [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) in the `AWS::EC2::Route` resource to explicitly declare a dependency on the `AWS::EC2::TransitGatewayAttachment` resource.",
       "properties": {
-        "CarrierGatewayId": "The ID of the carrier gateway.",
-        "DestinationCidrBlock": "The IPv4 CIDR block used for the destination match.",
-        "DestinationIpv6CidrBlock": "The IPv6 CIDR block used for the destination match.",
-        "EgressOnlyInternetGatewayId": "The ID of the egress-only internet gateway.",
+        "CarrierGatewayId": "The ID of the carrier gateway.\n\nYou can only use this option when the VPC contains a subnet which is associated with a Wavelength Zone.",
+        "DestinationCidrBlock": "The IPv4 CIDR address block used for the destination match. Routing decisions are based on the most specific match. We modify the specified CIDR block to its canonical form; for example, if you specify `100.68.0.18/18` , we modify it to `100.68.0.0/18` .",
+        "DestinationIpv6CidrBlock": "The IPv6 CIDR block used for the destination match. Routing decisions are based on the most specific match.",
+        "EgressOnlyInternetGatewayId": "[IPv6 traffic only] The ID of an egress-only internet gateway.",
         "GatewayId": "The ID of an internet gateway or virtual private gateway attached to your VPC.",
-        "InstanceId": "The ID of a NAT instance in your VPC.",
+        "InstanceId": "The ID of a NAT instance in your VPC. The operation fails if you specify an instance ID unless exactly one network interface is attached.",
         "LocalGatewayId": "The ID of the local gateway.",
-        "NatGatewayId": "The ID of a NAT gateway.",
-        "NetworkInterfaceId": "The ID of the network interface.",
-        "RouteTableId": "The ID of the route table. The routing table must be associated with the same VPC that the virtual private gateway is attached to.",
+        "NatGatewayId": "[IPv4 traffic only] The ID of a NAT gateway.",
+        "NetworkInterfaceId": "The ID of a network interface.",
+        "RouteTableId": "The ID of the route table for the route.",
         "TransitGatewayId": "The ID of a transit gateway.",
         "VpcEndpointId": "The ID of a VPC endpoint. Supported for Gateway Load Balancer endpoints only.",
         "VpcPeeringConnectionId": "The ID of a VPC peering connection."
@@ -41544,7 +41544,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Analysis.ColorScale": {
@@ -45726,7 +45726,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Dashboard.ColorScale": {
@@ -50617,7 +50617,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Template.ColorScale": {
