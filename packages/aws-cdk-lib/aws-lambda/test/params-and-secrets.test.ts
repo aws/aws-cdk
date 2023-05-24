@@ -406,7 +406,66 @@ describe('params and secrets', () => {
   });
 
   test('can provide multiple secrets', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret1 = new sm.Secret(stack, 'FirstSecret');
+    const secret2 = new sm.Secret(stack, 'SecondSecret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4);
 
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion,
+        secrets: [secret1, secret2],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: [
+              {
+                Ref: 'FirstSecret68ED90E5',
+              },
+              {
+                Ref: 'SecondSecret188EE3B6',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'FunctionServiceRoleDefaultPolicy2F49994A',
+      Roles: [
+        {
+          Ref: 'FunctionServiceRole675BB04A',
+        },
+      ],
+    });
   });
 
   test('throws for architecture in unsupported region', () => {
