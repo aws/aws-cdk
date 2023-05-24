@@ -171,6 +171,9 @@ export interface ParamsAndSecretsConfig {
 }
 
 export abstract class ParamsAndSecretsLayerVersion {
+  /**
+   * Create layer version with provided ARN
+   */
   public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
@@ -182,6 +185,9 @@ export abstract class ParamsAndSecretsLayerVersion {
     })(options);
   }
 
+  /**
+   * Create layer version from specific version
+   */
   public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
@@ -202,6 +208,9 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public abstract _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig;
 
+  /**
+   * Configure environment variables for Parameters and Secrets Extension based on configuration options
+   */
   private get environmentVariablesFromOptions(): { [key: string]: any } {
     if (this.options.cacheSize !== undefined && (this.options.cacheSize < 0 || this.options.cacheSize > 1000)) {
       throw new Error(`Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`);

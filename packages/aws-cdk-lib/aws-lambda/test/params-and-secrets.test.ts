@@ -623,6 +623,7 @@ describe('params and secrets', () => {
         paramsAndSecrets: {
           layerVersion,
           secrets: [secret],
+          parameters: []
         },
       });
     }).toThrow('Maximum TTL for a cached secret is 300 seconds - provided: 301 seconds');
