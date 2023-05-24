@@ -20,7 +20,7 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/dc7275f639c45accfa2abc4842978bcb3b0c5f0b83fcde22015e344b2e008f26.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
