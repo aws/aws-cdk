@@ -186,7 +186,7 @@ test('esbuild bundling with provided aws-sdk', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
-    includeProvidedAwsSdk: true,
+    bundleLambdaProvidedAwsSdk: true,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
@@ -210,7 +210,7 @@ test('esbuild bundling with provided aws-sdk and external modules', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
     externalModules: ['abc'],
-    includeProvidedAwsSdk: true,
+    bundleLambdaProvidedAwsSdk: true,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });

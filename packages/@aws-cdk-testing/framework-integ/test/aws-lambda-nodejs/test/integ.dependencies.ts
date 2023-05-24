@@ -4,6 +4,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Bundling } from 'aws-cdk-lib/aws-lambda-nodejs/lib/bundling';
 
 class SdkV2TestStack extends Stack {
   public lambdaFunction: IFunction
@@ -37,6 +38,9 @@ class SdkV3TestStack extends Stack {
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
+      bundling: {
+        bundleLambdaProvidedAwsSdk: true,
+      }
     });
   }
 }

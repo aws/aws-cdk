@@ -48,15 +48,6 @@ export interface BundlingProps extends BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: cdk.BundlingFileAccess;
-
-  /**
-   * Include Lambda provided AWS SDK
-   *
-   * @default - false
-   * if `true` the `aws-sdk` will be resolved to the Lambda provided bundle and
-   * will not be included in the asset bundle.
-   */
-  readonly includeProvidedAwsSdk?: boolean;
 }
 
 /**
@@ -134,7 +125,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     this.externals = [
-      ...(props.externalModules ?? []).concat(props.includeProvidedAwsSdk ? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']) : []), // Mark aws-sdk as external by default (available in the runtime)
+      ...(props.externalModules ?? []).concat(props.bundleLambdaProvidedAwsSdk ? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']) : []), // Mark aws-sdk as external by default (available in the runtime)
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
