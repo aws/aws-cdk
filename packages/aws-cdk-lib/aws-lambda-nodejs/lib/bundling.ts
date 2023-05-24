@@ -51,7 +51,7 @@ export interface BundlingProps extends BundlingOptions {
 
   /**
    * Include Lambda provided AWS SDK
-   * 
+   *
    * @default - false
    * if `true` the `aws-sdk` will be resolved to the Lambda provided bundle and
    * will not be included in the asset bundle.

@@ -175,7 +175,7 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * A list of modules that should be considered as externals (already available
    * in the runtime).
-   * 
+   *
    * @default - no replacements are made
    */
   readonly externalModules?: string[];
