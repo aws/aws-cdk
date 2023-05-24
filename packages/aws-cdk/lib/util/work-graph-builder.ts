@@ -75,9 +75,9 @@ export class WorkGraphBuilder {
         // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
         // is going to interfere with the progress bar of the stack deployment. We could remove this
         // for overall faster deployments if we ever have a better method of progress displaying.
-        // Note: this may introduce a cycle if one of the parent's dependency is another stack that
-        // depends on this asset. To workaround this we remove these cycles once all stack node have
-        // been added before the built graph is returned.
+        // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
+        // depends on this asset. To workaround this we remove these cycles once all nodes have
+        // been added to the graph.
         ...this.getDepIds(parentStack.dependencies.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact)),
       ]),
       parentStack,
