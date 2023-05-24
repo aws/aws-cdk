@@ -109,6 +109,50 @@ test('dependencies on unselected artifacts are silently ignored', async () => {
   }));
 });
 
+test('assets with shared contents between dependant stacks', async () => {
+  const files = {
+    // Referencing an existing file on disk is important here.
+    // It means these two assets will have the same AssetManifest
+    // and the graph will merge the two into a single asset.
+    'work-graph-builder.test.js': {
+      source: { path: __dirname },
+      destinations: {
+        D1: { bucketName: 'bucket', objectKey: 'key' },
+      },
+    },
+  };
+
+  addStack(rootBuilder, 'StackA', {
+    environment: 'aws://11111/us-east-1',
+    dependencies: ['StackA.assets'],
+  });
+  addAssets(rootBuilder, 'StackA.assets', { files });
+
+  addStack(rootBuilder, 'StackB', {
+    environment: 'aws://11111/us-east-1',
+    dependencies: ['StackB.assets', 'StackA'],
+  });
+  addAssets(rootBuilder, 'StackB.assets', { files });
+
+  const assembly = rootBuilder.buildAssembly();
+
+  const traversal: string[] = [];
+  const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+  await graph.doParallel(1, {
+    deployStack: async (node) => { traversal.push(node.id); },
+    buildAsset: async (node) => { traversal.push(node.id); },
+    publishAsset: async (node) => { traversal.push(node.id); },
+  });
+
+  expect(traversal).toHaveLength(4); // 1 asset build, 1 asset publish, 2 stacks
+  expect(traversal).toEqual([
+    'work-graph-builder.test.js:D1-build',
+    'work-graph-builder.test.js:D1-publish',
+    'StackA',
+    'StackB',
+  ]);
+});
+
 /**
  * Write an asset manifest file and add it to the assembly builder
  */
