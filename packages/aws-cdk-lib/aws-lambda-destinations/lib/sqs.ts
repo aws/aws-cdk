@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
-import { Construct } from 'constructs';
 
 /**
  * Use a SQS queue as a Lambda destination

@@ -1,6 +1,3 @@
-import * as ecr from '../../aws-ecr';
-import * as core from '../../core';
-import { FactName } from '../../region-info';
 import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
@@ -8,6 +5,9 @@ import {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, ComputeType, IBindableBuildImage, IBuildImage,
   ImagePullPrincipalType, IProject,
 } from './project';
+import * as ecr from '../../aws-ecr';
+import * as core from '../../core';
+import { FactName } from '../../region-info';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -85,7 +85,6 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   public static awsDeepLearningContainersImage(repositoryName: string, tag: string, account?: string): IBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
-
 
   /**
    * Returns a GPU image running Linux from an ECR repository.

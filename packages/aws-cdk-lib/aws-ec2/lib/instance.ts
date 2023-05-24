@@ -1,7 +1,4 @@
-import * as iam from '../../aws-iam';
 
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
-import { md5hash } from '../../core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
@@ -14,6 +11,9 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
+import * as iam from '../../aws-iam';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
+import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
  * Name tag constant
@@ -271,6 +271,13 @@ export interface InstanceProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * Whether to associate a public IP address to the primary network interface attached to this instance.
+   *
+   * @default - public IP address is automatically assigned based on default behavior
+   */
+  readonly associatePublicIpAddress?: boolean;
 }
 
 /**
@@ -373,7 +380,7 @@ export class Instance extends Resource implements IInstance {
     const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
-    const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnets, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
     if (props.availabilityZone) {
       const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
@@ -398,14 +405,22 @@ export class Instance extends Resource implements IInstance {
       });
     }
 
+    // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
+    const networkInterfaces = props.associatePublicIpAddress !== undefined
+      ? [{ deviceIndex: '0', associatePublicIpAddress: props.associatePublicIpAddress, subnetId: subnet.subnetId, groupSet: securityGroupsToken }]
+      : undefined;
+
+    // if network interfaces array is configured then subnetId and securityGroupIds are configured on the network interface
+    // level and there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroupIds: securityGroupsToken,
+      subnetId: networkInterfaces ? undefined : subnet.subnetId,
+      securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
+      networkInterfaces,
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
-      subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
@@ -414,6 +429,16 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
     });
     this.instance.node.addDependency(this.role);
+
+    // if associatePublicIpAddress is true, then there must be a dependency on internet connectivity
+    if (props.associatePublicIpAddress !== undefined && props.associatePublicIpAddress) {
+      const internetConnected = props.vpc.selectSubnets(props.vpcSubnets).internetConnectivityEstablished;
+      this.instance.node.addDependency(internetConnected);
+    }
+
+    if (!hasPublic && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+    }
 
     this.osType = imageConfig.osType;
     this.node.defaultChild = this.instance;

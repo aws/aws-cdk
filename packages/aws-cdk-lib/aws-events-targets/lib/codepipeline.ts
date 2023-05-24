@@ -1,7 +1,7 @@
+import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as codepipeline from '../../aws-codepipeline';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customization options when creating a `CodePipeline` event target.

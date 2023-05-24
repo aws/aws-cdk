@@ -1,3 +1,7 @@
+import { Construct } from 'constructs';
+import { IServerApplication, ServerApplication } from './application';
+import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
+import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -5,10 +9,6 @@ import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { Construct } from 'constructs';
-import { IServerApplication, ServerApplication } from './application';
-import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
-import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
