@@ -1,3 +1,8 @@
+import { Construct, IConstruct } from 'constructs';
+import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { ECSMetrics } from './ecs-canned-metrics.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -8,12 +13,6 @@ import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct, IConstruct } from 'constructs';
-import { BottleRocketImage, EcsOptimizedAmi } from './amis';
-import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
-import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
-
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
