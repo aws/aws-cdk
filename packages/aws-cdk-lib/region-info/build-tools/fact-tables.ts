@@ -543,6 +543,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'us-west-2': '52.89.255.224',
 };
 
+// https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
 export const PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS: { [version: string]: { [arch: string]: { [region: string]: string } } } = {
   4: {
     x86_64: {
