@@ -142,7 +142,7 @@ test('the application set in --app is executed', async () => {
   // GIVEN
   config.settings.set(['app'], 'cloud-executable');
   mockSpawn({
-    commandLine: 'cloud-executable',
+    commandLine: '"cloud-executable"',
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -155,7 +155,7 @@ test('the application set in --app is executed as-is if it contains a filename t
   // GIVEN
   config.settings.set(['app'], 'does-not-exist');
   mockSpawn({
-    commandLine: 'does-not-exist',
+    commandLine: '"does-not-exist"',
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -168,7 +168,7 @@ test('the application set in --app is executed with arguments', async () => {
   // GIVEN
   config.settings.set(['app'], 'cloud-executable an-arg');
   mockSpawn({
-    commandLine: 'cloud-executable an-arg',
+    commandLine: '"cloud-executable" an-arg',
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -182,7 +182,7 @@ test('application set in --app as `*.js` always uses handler on windows', async 
   sinon.stub(process, 'platform').value('win32');
   config.settings.set(['app'], 'windows.js');
   mockSpawn({
-    commandLine: process.execPath + ' windows.js',
+    commandLine: `"${process.execPath}"` + ' windows.js',
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -195,7 +195,7 @@ test('application set in --app is `*.js` and executable', async () => {
   // GIVEN
   config.settings.set(['app'], 'executable-app.js');
   mockSpawn({
-    commandLine: 'executable-app.js',
+    commandLine: '"executable-app.js"',
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -225,7 +225,7 @@ test('cli does not throw when the `build` script succeeds', async () => {
     exitCode: 0,
   },
   {
-    commandLine: 'executable-app.js',
+    commandLine: '"executable-app.js"',
     sideEffect: () => writeOutputAssembly(),
   });
 
