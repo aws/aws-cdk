@@ -34,13 +34,13 @@ export interface PathMatch {
   readonly caseSensitive?: boolean,
   /**
 	 * Type of match to make
-   * @default true
+   * @default vpcLattice.PathMatchType.EXACT
 	 */
-  readonly pathMatchType: vpclattice.PathMatchType,
+  readonly pathMatchType?: vpclattice.PathMatchType,
   /**
 	 * Value to match against
 	 */
-  readonly matchValue: string,
+  readonly path: string,
 }
 
 /**

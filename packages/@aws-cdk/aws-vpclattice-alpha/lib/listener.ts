@@ -15,7 +15,7 @@ export interface ListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
   */
-  readonly defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty
+  readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
   /**
   * protocol that the listener will listen on
   */
@@ -29,11 +29,11 @@ export interface ListenerProps {
   /**
   * The Id of the service that this will be added to.
   */
-  readonly serviceIdentifier: string
-  /**
-  * A name for the service which shoudl be unique
-  */
   readonly name: string
+  /**
+   * The service Identifier
+   */
+  readonly serviceIdentifier: string
 }
 
 /**
@@ -123,9 +123,19 @@ export class Listener extends core.Resource implements IListener {
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
 
+    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = {};
+    // the default action is a not provided, it will be set to NOT_FOUND
+    if (props.defaultAction === undefined) {
+      defaultAction = {
+        fixedResponse: {
+          statusCode: vpclattice.FixedResponse.NOT_FOUND,
+        },
+      };
+    }
+
     const listener = new aws_vpclattice.CfnListener(this, 'Resource', {
       name: props.name,
-      defaultAction: props.defaultAction,
+      defaultAction: defaultAction,
       protocol: props.protocol,
       port: props.port,
       serviceIdentifier: props.serviceIdentifier,
@@ -161,7 +171,7 @@ export class Listener extends core.Resource implements IListener {
       // loop through the action to build a set of target groups
       props.action.forEach((targetGroup) => {
         targetGroups.push({
-          targetGroupIdentifier: targetGroup.target.targetGroupId,
+          targetGroupIdentifier: targetGroup.targetGroup.targetGroupId,
           // if the targetGroup is no specified set sensible default of 100
           // this is an opinionated choice.
           weight: targetGroup.weight ?? 100,
@@ -215,7 +225,7 @@ export class Listener extends core.Resource implements IListener {
             httpMatch: {
               pathMatch: {
                 match: {
-                  exact: props.pathMatch.matchValue,
+                  exact: props.pathMatch.path,
                 },
                 caseSensitive: props.pathMatch.caseSensitive ?? false,
               },
@@ -229,7 +239,7 @@ export class Listener extends core.Resource implements IListener {
             httpMatch: {
               pathMatch: {
                 match: {
-                  prefix: props.pathMatch.matchValue,
+                  prefix: props.pathMatch.path,
                 },
                 caseSensitive: props.pathMatch.caseSensitive ?? false,
               },

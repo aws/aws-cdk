@@ -20,7 +20,7 @@ export interface WeightedTargetGroup {
   /**
    * A target Group
    */
-  readonly target: vpclattice.TargetGroup,
+  readonly targetGroup: vpclattice.TargetGroup,
   /**
   * A weight for the target group.
   * @default 100

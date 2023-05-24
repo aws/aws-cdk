@@ -32,6 +32,18 @@ export interface ShareServiceNetworkProps {
   readonly principals?: string[] | undefined
 }
 
+export interface associateVPCProps {
+  /**
+   * The VPC to associate with the Service Network
+   */
+  readonly vpc: ec2.Vpc;
+  /**
+   * The security groups to associate with the Service Network
+   * @default none
+   */
+  readonly securityGroups?: ec2.SecurityGroup[] | undefined
+
+}
 
 /**
  * Create a vpc lattice service network.
@@ -59,7 +71,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Associate a VPC with the Service Network
    */
-  associateVPC(vpc: ec2.Vpc, securityGroups: ec2.SecurityGroup[]): void;
+  associateVPC(props: associateVPCProps): void;
   /**
    * Log To S3
    */
@@ -177,17 +189,19 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * @param vpc
    * @param securityGroups
    */
-  public associateVPC(vpc: ec2.Vpc, securityGroups: ec2.SecurityGroup[]): void {
+  public associateVPC(props: associateVPCProps): void {
 
     const securityGroupIds: string[] = [];
-    securityGroups.forEach((securityGroup) => {
-      securityGroupIds.push(securityGroup.securityGroupId);
-    });
+    if (props.securityGroups) {
+      props.securityGroups.forEach((securityGroup) => {
+        securityGroupIds.push(securityGroup.securityGroupId);
+      });
+    }
 
     new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, 'VpcAssociation', /* all optional props */ {
       securityGroupIds: securityGroupIds,
       serviceNetworkIdentifier: this.serviceNetworkId,
-      vpcIdentifier: vpc.vpcId,
+      vpcIdentifier: props.vpc.vpcId,
     });
   }
 
