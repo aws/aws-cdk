@@ -752,7 +752,6 @@ behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
     bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
   });
 
-
   suite.legacy(() => {
     // GIVEN
     const synthAction = cdkp.SimpleSynthAction.standardNpmSynth({
@@ -993,7 +992,6 @@ behavior('Can easily switch on privileged mode for synth', (suite) => {
     });
   });
 });
-
 
 behavior('can provide custom BuildSpec that is merged with generated one', (suite) => {
   suite.legacy(() => {

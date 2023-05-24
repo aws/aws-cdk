@@ -37,7 +37,6 @@ describe('Dashboard', () => {
       { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third' } },
     ]);
 
-
   });
 
   test('widgets in same add are laid out next to each other', () => {
@@ -74,7 +73,6 @@ describe('Dashboard', () => {
       { type: 'text', width: 4, height: 1, x: 11, y: 0, properties: { markdown: 'third' } },
     ]);
 
-
   });
 
   test('tokens in widgets are retained', () => {
@@ -97,7 +95,6 @@ describe('Dashboard', () => {
         ]],
       },
     });
-
 
   });
 
@@ -127,7 +124,6 @@ describe('Dashboard', () => {
         ]],
       },
     });
-
 
   });
 
@@ -171,7 +167,6 @@ describe('Dashboard', () => {
       DashboardName: 'MyCustomDashboardName',
     });
 
-
   });
 
   test('DashboardName is not generated if not provided', () => {
@@ -184,7 +179,6 @@ describe('Dashboard', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {});
-
 
   });
 

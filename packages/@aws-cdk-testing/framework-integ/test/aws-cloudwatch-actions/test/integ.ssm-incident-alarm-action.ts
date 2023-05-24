@@ -37,7 +37,6 @@ class SsmIncidentAlarmActionIntegrationTestStack extends Stack {
 
     responsePlan.node.addDependency(replicationSet);
 
-
     const metric = new cloudwatch.Metric({
       namespace: 'CDK/Test',
       metricName: 'Metric',

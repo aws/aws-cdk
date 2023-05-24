@@ -1093,7 +1093,6 @@ describe('bucket', () => {
       expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
     });
 
-
     testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { region: 'us-east-1' },

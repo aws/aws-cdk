@@ -44,7 +44,6 @@ describe('resource', () => {
       },
     });
 
-
   });
 
   test('if "anyMethod" is false, then an ANY method will not be defined', () => {
@@ -64,7 +63,6 @@ describe('resource', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Resource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { 'HttpMethod': 'GET' });
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', Match.not({ 'HttpMethod': 'ANY' }));
-
 
   });
 
@@ -133,7 +131,6 @@ describe('resource', () => {
       },
     });
 
-
   });
 
   test('if proxy is added to root, proxy methods are automatically duplicated (with integration and options)', () => {
@@ -174,7 +171,6 @@ describe('resource', () => {
       },
       OperationName: 'DeleteMe',
     });
-
 
   });
 
@@ -367,7 +363,6 @@ describe('resource', () => {
         // THEN
         expect(child.getResource('hello')).toEqual(r1);
         expect(child.getResource('outside-world')).toEqual(r2);
-
 
       });
     });
