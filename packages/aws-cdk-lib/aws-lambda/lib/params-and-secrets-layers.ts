@@ -176,7 +176,7 @@ export abstract class ParamsAndSecretsLayerVersion {
     })(options);
   }
 
-  protected constructor(protected readonly options: ParamsAndSecretsOptions) {}
+  private constructor(private readonly options: ParamsAndSecretsOptions) {}
 
   /**
    * Returns the ARN of the Parameters and Secrets Extension
