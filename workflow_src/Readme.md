@@ -275,10 +275,10 @@ Once the required setup, installation is done with queries and mutations needed,
 ## Files Hierarchy and usage
 
 - `.github/workflows/handle-stale-discussions.yml` - contains the workflow for running the github action 2 times a day.
-- `src/generated/github-schema-loader.ts` - created during setup manually, for importing the GraphQL Schema.
-- `src/generated/graphql.ts` - generated during config setup automatically.
-- `src/mutations/*.graphql`- contains mutations for different scenario.
-- `src/queries/*.graphql` - contains queries for fetching the required data for different scenarios.
+- `workflow_src/generated/github-schema-loader.ts` - created during setup manually, for importing the GraphQL Schema.
+- `workflow_src/generated/graphql.ts` - generated during config setup automatically.
+- `workflow_src/mutations/*.graphql`- contains mutations for different scenario.
+- `workflow_src/queries/*.graphql` - contains queries for fetching the required data for different scenarios.
 - `client.ts` - code for making the GraphQL client call.
 - `index.ts` - meaty code for handling the discussions.
 - `test/index.test.ts` - unit test code for different code blocks.
