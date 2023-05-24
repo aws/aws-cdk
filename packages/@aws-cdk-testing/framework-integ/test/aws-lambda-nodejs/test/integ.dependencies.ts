@@ -39,7 +39,7 @@ class SdkV3TestStack extends Stack {
       runtime: Runtime.NODEJS_18_X,
       bundling: {
         bundleLambdaProvidedAwsSdk: true,
-      }
+      },
     });
   }
 }
