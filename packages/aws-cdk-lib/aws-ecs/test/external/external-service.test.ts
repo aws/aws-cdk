@@ -95,7 +95,6 @@ describe('external service', () => {
       ServiceName: 'bonjour',
     });
 
-
   });
 
   test('with cloudmap set on cluster, throw error', () => {
@@ -127,7 +126,6 @@ describe('external service', () => {
       })],
       serviceName: 'bonjour',
     })).toThrow('Cloud map integration is not supported for External service' );
-
 
   });
 
@@ -203,7 +201,6 @@ describe('external service', () => {
       ],
     });
 
-
   });
 
   test('throws when task definition is not External compatible', () => {
@@ -224,7 +221,6 @@ describe('external service', () => {
       cluster,
       taskDefinition,
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
-
 
   });
 
@@ -247,7 +243,6 @@ describe('external service', () => {
       minHealthyPercent: 100,
       maxHealthyPercent: 100,
     })).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
-
 
   });
 
@@ -519,7 +514,6 @@ describe('external service', () => {
       container: container,
       containerPort: 8000,
     })).toThrow('Cloud map service association is not supported for an external service');
-
 
   });
 

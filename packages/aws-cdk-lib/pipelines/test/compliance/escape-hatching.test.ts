@@ -221,7 +221,6 @@ behavior('can add another action to an existing stage', (suite) => {
   }
 });
 
-
 behavior('assets stage inserted after existing pipeline actions', (suite) => {
   let existingCodePipeline: cp.Pipeline;
   beforeEach(() => {
