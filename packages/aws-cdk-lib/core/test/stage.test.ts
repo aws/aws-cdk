@@ -114,11 +114,11 @@ describe('stage', () => {
     const stack = new BogusStack(stage, 'Short-Stack-Name');
 
     // THEN
-    expect(stack.stackName.length).toEqual(128);
+    expect(stack.stackName.length).toEqual(28);
     expect(stack.stackName).toEqual('ShortPrefix-Short-Stack-Name');
   });
 
-  test('Stacks with more than one component and a prefix, all shorter than 128 ', () => {
+  test('Stacks with more than one component and a prefix hashed even if short enough', () => {
     // WHEN
     const app = new App({
       context: {
@@ -126,13 +126,28 @@ describe('stage', () => {
       },
     });
     const stage = new Stage(app, 'ThePrefix');
-    const construct = new Construct(stage, 'Prod');
-    const stack = new BogusStack(construct, 'MyStack');
-
+    const rootStack = new BogusStack(stage, 'Prod');
+    const stack = new BogusStack(rootStack, 'MyStack');
 
     // THEN
+    expect(stack.stackName).toEqual('ThePrefix-ProdMyStackFEA60919');
     expect(stack.stackName.length).toEqual(21);
-    expect(stack.stackName).toEqual('ThePrefix-Short-Stack-Name');
+  });
+
+  test('Stacks with more than one component and a prefix shortened if too big', () => {
+    // WHEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+      },
+    });
+    const stage = new Stage(app, 'ThePrefixIsLongEnoughToExceedTheMaxLenght');
+    const construct = new Construct(stage, 'ReallyReallyLoooooooongConstructName');
+    const stack = new BogusStack(construct, 'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName');
+
+    // THEN
+    expect(stack.stackName).toEqual('ThePrefix-ProdMyStackFEA60919');
+    expect(stack.stackName.length).toEqual(21);
   });
 
   test('generated stack names will not exceed 128 characters when using prefixes', () => {
