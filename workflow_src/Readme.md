@@ -52,8 +52,8 @@ To access github discussions and fetch the metadata, Apollo GraphQL API needs to
          Answer few questions and we will setup everything for you.
         - What type of application are you building?  (For getting started, choose this option for the app you are building)
             - Backend - API or server
-        - Where is your schema?: (We’ll point graphql-codegen at the schema published by @octokit/graphql-schema that we installed earlier. For now, type src/generated/github-schema-loader.ts and press enter.)
-            - src/generated/github-schema-loader.ts
+        - Where is your schema?: (We’ll point graphql-codegen at the schema published by @octokit/graphql-schema that we installed earlier. For now, type workflow_src/generated/github-schema-loader.ts and press enter.)
+            - workflow_src/generated/github-schema-loader.ts
         - Pick plugins: (Here, we would be using typescript-document-nodes for writing distinct GraphQL Files for IDE Support)
 
                 ◉ TypeScript (required by other typescript plugins)
@@ -62,7 +62,7 @@ To access github discussions and fetch the metadata, Apollo GraphQL API needs to
                 ❯◉ TypeScript GraphQL document nodes (embedded GraphQL document)
 
         - Where to write the output: (Select the default suggestion here)
-            - src/generated/graphql.ts
+            - workflow_src/generated/graphql.ts
 
         - Do you want to generate an introspection file? (Y/n) (We don't need an introspection file)
             - n
@@ -76,7 +76,7 @@ To access github discussions and fetch the metadata, Apollo GraphQL API needs to
 4. Since the initial config settings are done, install all the plugins the wizard wrote to package.json’s devDependencies.
     - npm install
 
-5. The last setup step is to write the src/generated/github-schema-loader.ts file we referenced earlier. Create a file at src/generated/github-schema-loader.ts and paste the following code:
+5. The last setup step is to write the src/generated/github-schema-loader.ts file we referenced earlier. Create a file at workflow_src/generated/github-schema-loader.ts and paste the following code:
 
 `
 import { schema } from '@octokit/graphql-schema'
@@ -90,12 +90,12 @@ This will load the schema up from the package published by Github, @octokit/grap
 ```
 overwrite: true
 
-schema: "src/generated/github-schema-loader.ts"
+schema: "workflow_src/generated/github-schema-loader.ts"
 
 documents: null
 
 generates:
-  src/generated/graphql.ts:
+  workflow_src/generated/graphql.ts:
     plugins:
       - "typescript"
       - "typescript-resolvers"
@@ -112,8 +112,8 @@ require:
 
 Note -> It is preferrable to keep the queries and mutations in separate folders like created in this repo. We would learn more about writing queries/mutations in sections below.
 
-    - src/queries/*.graphql
-    - src/mutation/*.graphql
+    - workflow_src/queries/*.graphql
+    - workflow_src/mutation/*.graphql
 
 ### Install Apollo
 
@@ -121,7 +121,7 @@ Apollo is used as GraphQL Client. Install Apollo and its dependencies by running
     
 - npm install --save @apollo/client cross-fetch
 
-Create a file `src/client.ts` and copy the below code in the file -
+Create a file `workflow_src/client.ts` and copy the below code in the file -
 
 ```
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client/core";
@@ -159,7 +159,7 @@ and reference it in your codegen.yml file under the plugins list.
 
 ```
 generates:
-  src/generated/graphql.ts:
+  workflow_src/generated/graphql.ts:
     plugins:
       - "typescript"
       - "typescript-resolvers"
