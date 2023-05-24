@@ -381,7 +381,25 @@ describe('params and secrets', () => {
   });
 
   test('throws for architecture in unsupported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'eu-central-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4);
 
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        architecture: lambda.Architecture.ARM_64,
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');
   });
 
   test('throws for cache size < 0', () => {
@@ -543,22 +561,5 @@ describe('params and secrets', () => {
         },
       });
     }).toThrow('Maximum TTL for a cached parameter is 300 seconds - provided: 301 seconds');
-  });
-
-  test('', () => {
-    // GIVEN
-    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
-    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4);
-
-    new lambda.Function (stack, 'Function', {
-      functionName: 'lambda-function',
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion,
-        secrets: [],
-      },
-    });
   });
 });
