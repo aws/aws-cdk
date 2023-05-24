@@ -391,11 +391,11 @@ Since this module is experimental, there are some known limitations:
 
 - Currently this module does not support CDK Pipelines. You must deploy CDK Apps using this 
   synthesizer via `cdk deploy`.
-- The accompanying Bootstrap Stack is not yet implemented. To use this library right now,
-  you must reuse roles that have been traditionally bootstrapped.
-- Due to limitations on the CloudFormation template size, we support CDK Applications with
+- This synthesizer only needs a bootstrap stack with Roles, without staging resources. We
+  haven't written such a bootstrap stack yet; at the moment you can use the existing modern
+  bootstrap stack, the staging resources in them will just go unused.
+- Due to limitations on the CloudFormation template size, CDK Applications can have
   at most 38 independent ECR images.
-- The workflow of running `cdk deploy` and `cdk destroy` during development will have friction.
-  `cdk destroy` will not destroy staging resources like ECR repositories and the S3 bucket,
-  causing subsequent deployments with the same name to fail. You will have to manage the
-  deletion of staging resources yourself.
+- When you run `cdk destroy` (for example during testing), the staging bucket and ECR
+  repositories will be left behind because CloudFormation cannot clean up non-empty resources.
+  You must deploy those resources manually if you want to redeploy again using the same `appId`.
