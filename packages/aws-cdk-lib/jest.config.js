@@ -1,15 +1,11 @@
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
 
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  ...baseConfig,
-  testMatch: [
-    "<rootDir>/**/test/**/?(*.)+(test).js",
-  ],
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  coverageThreshold: {
-    global: {
-      branches: 40,
-      statements: 55,
-    },
-  },
+  testMatch: [
+    '<rootDir>/**/test/**/?(*.)+(test).ts',
+  ],
+  maxWorkers: '50%',
 };

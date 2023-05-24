@@ -8,7 +8,7 @@ beforeEach(() => {
 });
 
 describe('callsites', () => {
-  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.js$/);
+  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.ts$/);
 });
 
 describe('findUp', () => {

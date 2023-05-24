@@ -15,7 +15,7 @@
     "gen": "ts-node -P tsconfig.dev.json scripts/gen.ts",
     "build": "cdk-build",
     "lint": "cdk-lint",
-    "test": "jest --maxWorkers=50%",
+    "test": "jest",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
     "build+test": "yarn build && yarn test",
@@ -65,7 +65,8 @@
   },
   "jsii": {
     "excludeTypescript": [
-      "scripts"
+      "scripts",
+      "**/test/**/*.ts"
     ],
     "outdir": "dist",
     "targets": {
