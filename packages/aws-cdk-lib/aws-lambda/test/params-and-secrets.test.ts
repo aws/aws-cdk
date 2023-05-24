@@ -372,8 +372,37 @@ describe('params and secrets', () => {
       },
     });
 
-    /* eslint-disable no-console */
-    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'FunctionServiceRoleDefaultPolicy2F49994A',
+      Roles: [
+        {
+          Ref: 'FunctionServiceRole675BB04A',
+        },
+      ],
+    });
   });
 
   test('can provide multiple secrets', () => {
