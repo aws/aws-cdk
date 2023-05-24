@@ -175,8 +175,8 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * A list of modules that should be considered as externals (already available
    * in the runtime).
-   *
-   * @default - ['aws-sdk'] if the runtime is < Node.js 18.x, ['@aws-sdk/*'] otherwise.
+   * 
+   * @default - no replacements are made
    */
   readonly externalModules?: string[];
 
