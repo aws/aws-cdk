@@ -212,9 +212,11 @@ export class FactName {
   /**
    * The ARN of Parameters and Secrets Lambda layer for a given lambda architecture.
    *
+   * @param version the layer version
    * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
    */
-  public static paramsAndSecretsLambdaLayer(architecture: string): string {
-    return `params-and-secrets-layer:${architecture}`;
+  public static paramsAndSecretsLambdaLayer(version: string, architecture: string): string {
+    const suffix = version.split('.').join('_') + `_${architecture}`;
+    return `params-and-secrets-layer:${suffix}`;
   }
 }

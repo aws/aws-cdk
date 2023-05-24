@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as sm from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
@@ -96,7 +97,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromExtension(),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
         secrets: [secret],
       },
     });
@@ -135,7 +136,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromExtension(),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
         secrets: [secret],
       },
     });
@@ -148,7 +149,7 @@ describe('params and secrets', () => {
           {
             Ref: 'AWS::Region',
           },
-          'x86x64',
+          '4xx86x64',
         ],
       }],
       Environment: {
@@ -183,7 +184,7 @@ describe('params and secrets', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromExtension(),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
         secrets: [secret],
       },
     });
@@ -223,7 +224,7 @@ describe('params and secrets', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromExtension(),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
         secrets: [secret],
       },
     });
@@ -236,7 +237,7 @@ describe('params and secrets', () => {
           {
             Ref: 'AWS::Region',
           },
-          'arm64',
+          '4xarm64',
         ],
       }],
       Environment: {
@@ -309,7 +310,7 @@ describe('params and secrets', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
     const secret = new sm.Secret(stack, 'Secret');
-    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromExtension({
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
       cacheEnabled: false,
       cacheSize: 200,
       httpPort: 8080,
@@ -350,5 +351,128 @@ describe('params and secrets', () => {
         },
       },
     });
+  });
+
+  test('execution role has kms:Decrypt', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const key = new kms.Key(stack, 'Key');
+    const secret = new sm.Secret(stack, 'Secret', { encryptionKey: key });
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4);
+
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion,
+        secrets: [secret],
+      },
+    });
+
+    /* eslint-disable no-console */
+    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
+  });
+
+  test('can provide multiple secrets', () => {
+
+  });
+
+  test('throws for architecture in unsupported region', () => {
+
+  });
+
+  test('throws for cache size < 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      cacheSize: -1,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: -1');
+  });
+
+  test('throws for cache size > 1000', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      cacheSize: 1001,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: 1001');
+  });
+
+  test('throws for port number < 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      httpPort: 0,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 0');
+  });
+
+  test('throws for port number > 65535', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const secret = new sm.Secret(stack, 'Secret');
+    const layerVersion = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+      httpPort: 65536,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion,
+          secrets: [secret],
+        },
+      });
+    }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 65536');
   });
 });

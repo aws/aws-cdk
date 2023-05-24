@@ -1,5 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { ISecret } from '../../aws-secretsmanager';
+import { IParameter } from '../../aws-ssm';
 import { Token, Stack, Duration } from '../../core';
 import { RegionInfo, FactName } from '../../region-info';
 import * as lambda from '../lib';
@@ -17,6 +18,15 @@ interface ParamsAndSecretsBindConfig {
    * Environment variables for the Parameters and Secrets layer configuration
    */
   readonly environmentVars: { [key: string]: string };
+}
+
+export enum ParamsAndSecretsVersions {
+  /**
+   * V4
+   *
+   * Note: This is the latest version
+   */
+  V4 = '4',
 }
 
 /**
@@ -73,7 +83,7 @@ export interface ParamsAndSecretsOptions {
   readonly cacheSize?: number;
 
   /**
-   * The port for the local HTTP server.
+   * The port for the local HTTP server. Valid port numbers are 1 - 65535.
    *
    * @default 2773
    */
@@ -91,7 +101,7 @@ export interface ParamsAndSecretsOptions {
   /**
    * The maximum number of connection for HTTP clients that the Parameters and
    * Secrets Extension uses to make requests to Parameter Store or Secrets
-   * Manager.
+   * Manager. There is no maximum limit. Minimum is 1.
    *
    * Note: This is a per-client configuration.
    *
@@ -141,16 +151,23 @@ export interface ParamsAndSecretsOptions {
  */
 export interface ParamsAndSecretsConfig {
   /**
-   * The secrets to grant the function access to
-   */
-  readonly secrets: ISecret[];
-
-  /**
    * The Parameters and Secrets Extension layer
-   *
-   * @default - Parameters and Secrets Extension will be configured using
    */
   readonly layerVersion: ParamsAndSecretsLayerVersion;
+
+  /**
+   * The secrets to grant lambda access to
+   *
+   * @default - No secrets
+   */
+  readonly secrets?: ISecret[];
+
+  /**
+   * The parameters to grant lambda access to
+   *
+   * @default - No parameters
+   */
+  readonly parameters?: IParameter[];
 }
 
 export abstract class ParamsAndSecretsLayerVersion {
@@ -165,11 +182,11 @@ export abstract class ParamsAndSecretsLayerVersion {
     })(options);
   }
 
-  public static fromExtension(options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+  public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
-          arn: getVersionArn(_scope, _function.architecture.name),
+          arn: getVersionArn(_scope, version, _function.architecture.name),
           environmentVars: this.environmentVariablesFromOptions,
         };
       }
@@ -186,6 +203,27 @@ export abstract class ParamsAndSecretsLayerVersion {
   public abstract _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig;
 
   private get environmentVariablesFromOptions(): { [key: string]: any } {
+    if (this.options.cacheSize !== undefined && (this.options.cacheSize < 0 || this.options.cacheSize > 1000)) {
+      throw new Error(`Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`);
+    }
+
+    if (this.options.httpPort !== undefined && (this.options.httpPort < 1 || this.options.httpPort > 65535)) {
+      throw new Error(`HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`);
+    }
+
+    // max connections has no maximum limit
+    if (this.options.maxConnections !== undefined && this.options.maxConnections < 1) {
+      throw new Error(`Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`);
+    }
+
+    if (this.options.secretsManagerTtl !== undefined && this.options.secretsManagerTtl.toSeconds() > 300) {
+      throw new Error(`Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`);
+    }
+
+    if (this.options.parameterStoreTtl !== undefined && this.options.parameterStoreTtl.toSeconds() > 300) {
+      throw new Error(`Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`);
+    }
+
     return {
       PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: this.options.cacheEnabled ?? true,
       PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: this.options.cacheSize ?? 1000,
@@ -206,17 +244,17 @@ export abstract class ParamsAndSecretsLayerVersion {
  *
  * This function is run on CDK synthesis.
  */
-function getVersionArn(scope: IConstruct, architecture: string): string {
+function getVersionArn(scope: IConstruct, version: string, architecture: string): string {
   const stack = Stack.of(scope);
   const region = stack.region;
 
   if (region !== undefined && !Token.isUnresolved(region)) {
-    const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(architecture);
+    const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
     if (layerArn === undefined) {
       throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
     }
     return layerArn;
   }
 
-  return stack.regionalFact(FactName.paramsAndSecretsLambdaLayer(architecture));
+  return stack.regionalFact(FactName.paramsAndSecretsLambdaLayer(version, architecture));
 }

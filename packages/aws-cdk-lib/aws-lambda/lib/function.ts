@@ -1168,18 +1168,34 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return;
     }
 
+    let resources: string[];
     // grant permissions to lambda execution role to allow access to provided secrets
-    const resources: string[] = [];
-    props.paramsAndSecrets.secrets.forEach(secret => {
-      resources.push(secret.secretArn);
-      if (secret.encryptionKey) {
-        secret.encryptionKey.grantDecrypt(this);
-      }
-    });
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['secretsmanager:GetSecretValue'],
-      resources,
-    }));
+    if (props.paramsAndSecrets.secrets) {
+      resources = [];
+      props.paramsAndSecrets.secrets?.forEach(secret => {
+        resources.push(secret.secretArn);
+        if (secret.encryptionKey) {
+          secret.encryptionKey.grantDecrypt(this);
+        }
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources,
+      }));
+    }
+
+    // grant permission to lambda execution role to allow access to provided parameters
+    if (props.paramsAndSecrets.parameters) {
+      resources = [];
+      props.paramsAndSecrets.parameters?.forEach(param => {
+        resources.push(param.parameterArn);
+        // TODO: Figure out how to determine if param is secure string for kms:Decrypt
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['ssm:GetParameter'],
+        resources,
+      }));
+    }
 
     const layerVersion = props.paramsAndSecrets.layerVersion._bind(this, this);
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));

@@ -116,8 +116,10 @@ export async function main(): Promise<void> {
       }
     }
 
-    for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
-      registerFact(region, ['paramsAndSecretsLambdaLayer', arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[arch][region]);
+    for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
+      for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version]) {
+        registerFact(region, ['paramsAndSecretsLambdaLayer', version, arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]);
+      }
     }
   }
   lines.push('  }');
