@@ -58,7 +58,6 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   };
 }
 
-
 export async function createLibraryReadme(namespace: string, readmePath: string, alphaPackageName?: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 

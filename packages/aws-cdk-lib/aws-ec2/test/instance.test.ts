@@ -19,6 +19,8 @@ import {
   LaunchTemplate,
   UserData,
   Vpc,
+  SubnetType,
+  SecurityGroup,
 } from '../lib';
 
 let stack: Stack;
@@ -43,7 +45,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       SourceDestCheck: false,
     });
-
 
   });
   test('instance is grantable', () => {
@@ -99,7 +100,6 @@ describe('instance', () => {
       },
     });
 
-
   });
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
@@ -116,7 +116,6 @@ describe('instance', () => {
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
 
-
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
@@ -129,7 +128,6 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
     }
-
 
   });
 
@@ -173,7 +171,6 @@ describe('instance', () => {
       // THEN
       expect(() => instanceType.architecture).toThrow('Malformed instance type identifier');
     }
-
 
   });
   test('can propagate EBS volume tags', () => {
@@ -296,7 +293,6 @@ describe('instance', () => {
         ],
       });
 
-
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
@@ -312,7 +308,6 @@ describe('instance', () => {
           }],
         });
       }).toThrow(/volumeIndex must be a number starting from 0/);
-
 
     });
 
@@ -408,7 +403,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     });
-
 
   });
 
@@ -643,7 +637,6 @@ test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', 
   expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
-
 test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.C4, InstanceSize.LARGE);
@@ -653,3 +646,94 @@ test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
 });
 
+test('associate public IP address with instance', () => {
+  // GIVEN
+  const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    vpcSubnets: { subnetType: SubnetType.PUBLIC },
+    securityGroup,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    sourceDestCheck: false,
+    associatePublicIpAddress: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    Properties: {
+      NetworkInterfaces: [{
+        AssociatePublicIpAddress: true,
+        DeviceIndex: '0',
+        GroupSet: [
+          {
+            'Fn::GetAtt': [
+              'SecurityGroupDD263621',
+              'GroupId',
+            ],
+          },
+        ],
+        SubnetId: {
+          Ref: 'VPCPublicSubnet1SubnetB4246D30',
+        },
+      }],
+    },
+    DependsOn: [
+      'InstanceInstanceRoleE9785DE5',
+      'VPCPublicSubnet1DefaultRoute91CEF279',
+      'VPCPublicSubnet1RouteTableAssociation0B0896DC',
+      'VPCPublicSubnet2DefaultRouteB7481BBA',
+      'VPCPublicSubnet2RouteTableAssociation5A808732',
+    ],
+  });
+});
+
+test('do not associate public IP address with instance', () => {
+  // GIVEN
+  const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    vpcSubnets: { subnetType: SubnetType.PUBLIC },
+    securityGroup,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    sourceDestCheck: false,
+    associatePublicIpAddress: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    NetworkInterfaces: [{
+      AssociatePublicIpAddress: false,
+      DeviceIndex: '0',
+      GroupSet: [
+        {
+          'Fn::GetAtt': [
+            'SecurityGroupDD263621',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetId: {
+        Ref: 'VPCPublicSubnet1SubnetB4246D30',
+      },
+    }],
+  });
+});
+
+test('associate public IP address with instance and no public subnet', () => {
+  // WHEN/THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      sourceDestCheck: false,
+      associatePublicIpAddress: true,
+    });
+  }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+});

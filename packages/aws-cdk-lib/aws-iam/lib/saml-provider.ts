@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { IResource, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
 import { CfnSAMLProvider } from './iam.generated';
+import { IResource, Resource, Token } from '../../core';
 
 /**
  * A SAML provider

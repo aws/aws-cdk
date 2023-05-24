@@ -1,6 +1,6 @@
+import { SubscriptionProps } from './subscription';
 import * as sns from '../../aws-sns';
 import { Token } from '../../core';
-import { SubscriptionProps } from './subscription';
 
 /**
  * Options for URL subscriptions.

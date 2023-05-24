@@ -1,8 +1,8 @@
 /* eslint-disable object-curly-newline */
+import { Construct, IConstruct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Construct, IConstruct } from 'constructs';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
