@@ -1,5 +1,4 @@
 import { Template } from '../../assertions';
-import * as kms from '../../aws-kms';
 import * as sm from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
