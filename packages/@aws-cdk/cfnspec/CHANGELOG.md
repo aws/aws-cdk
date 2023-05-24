@@ -1,3 +1,342 @@
+# CloudFormation Resource Specification v122.0.0
+
+## New Resource Types
+
+* AWS::EC2::VerifiedAccessEndpoint
+* AWS::EC2::VerifiedAccessGroup
+* AWS::EC2::VerifiedAccessTrustProvider
+* AWS::IoT::BillingGroup
+* AWS::IoT::ThingGroup
+* AWS::IoT::ThingType
+* AWS::OSIS::Pipeline
+
+## Attribute Changes
+
+* AWS::Logs::LogStream Id (__deleted__)
+* AWS::SecretsManager::Secret Id (__added__)
+* AWS::Synthetics::Canary Code.SourceLocationArn (__added__)
+
+## Property Changes
+
+* AWS::ElastiCache::ReplicationGroup ClusterMode (__added__)
+* AWS::MediaConnect::FlowSource MinLatency (__added__)
+* AWS::MediaConnect::FlowSource SenderControlPort (__added__)
+* AWS::MediaConnect::FlowSource SenderIpAddress (__added__)
+* AWS::MediaConnect::FlowSource SourceListenerAddress (__added__)
+* AWS::MediaConnect::FlowSource SourceListenerPort (__added__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+* AWS::SimSpaceWeaver::Simulation MaximumDuration (__added__)
+* AWS::SimSpaceWeaver::Simulation SnapshotS3Location (__added__)
+* AWS::SimSpaceWeaver::Simulation Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation SchemaS3Location.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__deleted__)
+* AWS::Synthetics::Canary StartCanaryAfterCreation.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::XRay::Group GroupName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule RuleName (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.IPSet (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PolicyVariables (__added__)
+* AWS::SageMaker::ModelCard.Container (__added__)
+* AWS::SageMaker::ModelCard.InferenceSpecification (__added__)
+* AWS::SageMaker::ModelCard.ModelPackageCreator (__added__)
+* AWS::SageMaker::ModelCard.ModelPackageDetails (__added__)
+* AWS::SageMaker::ModelCard.SourceAlgorithm (__added__)
+* AWS::MediaConnect::FlowSource.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy PolicyVariables (__added__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::EndpointConfig.ServerlessConfig ProvisionedConcurrency (__added__)
+* AWS::SageMaker::ModelCard.Content ModelPackageDetails (__added__)
+* AWS::SimSpaceWeaver::Simulation.S3Location BucketName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location ObjectKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary.Code SourceLocationArn (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+# CloudFormation Resource Specification (us-west-2) v122.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v121.0.0
+
+## New Resource Types
+
+* AWS::BackupGateway::Hypervisor
+* AWS::Connect::EvaluationForm
+* AWS::EC2::VerifiedAccessInstance
+* AWS::Proton::EnvironmentAccountConnection
+* AWS::Proton::EnvironmentTemplate
+* AWS::Proton::ServiceTemplate
+* AWS::QuickSight::VPCConnection
+
+## Attribute Changes
+
+* AWS::AppSync::GraphQLApi GraphQLDns (__added__)
+* AWS::AppSync::GraphQLApi RealtimeDns (__added__)
+* AWS::AppSync::GraphQLApi RealtimeUrl (__added__)
+* AWS::Lightsail::Disk Location (__deleted__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Form LabelDecorator (__added__)
+* AWS::AppIntegrations::DataIntegration FileConfiguration (__added__)
+* AWS::AppIntegrations::DataIntegration ObjectConfiguration (__added__)
+* AWS::AppSync::GraphQLApi Visibility (__added__)
+* AWS::Detective::Graph AutoEnableMembers (__added__)
+* AWS::EC2::NetworkInsightsPath FilterAtDestination (__added__)
+* AWS::EC2::NetworkInsightsPath FilterAtSource (__added__)
+* AWS::FinSpace::Environment DataBundles (__deleted__)
+* AWS::FinSpace::Environment Tags (__added__)
+* AWS::FinSpace::Environment FederationParameters.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::GameLift::Build ServerSdkVersion (__added__)
+* AWS::LakeFormation::Resource WithFederation (__added__)
+* AWS::Lightsail::Disk Location (__added__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation Application.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation AttributeGroup.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation Application.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation Resource.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::AmplifyUIBuilder::Form.FileUploaderFieldConfig (__added__)
+* AWS::AppIntegrations::DataIntegration.FileConfiguration (__added__)
+* AWS::EC2::NetworkInsightsPath.FilterPortRange (__added__)
+* AWS::EC2::NetworkInsightsPath.PathFilter (__added__)
+* AWS::FinSpace::Environment.AttributeMapItems (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DocumentIdOptions (__added__)
+* AWS::AmplifyUIBuilder::Form.FieldInputConfig FileUploaderConfig (__added__)
+* AWS::AppIntegrations::DataIntegration.ScheduleConfig FirstExecutionFrom.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppIntegrations::DataIntegration.ScheduleConfig Object.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream.MetricStreamFilter MetricNames (__added__)
+* AWS::EC2::LaunchTemplate.CpuOptions AmdSevSnp (__added__)
+* AWS::FinSpace::Environment.FederationParameters ApplicationCallBackURL.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.PrimitiveType (__deleted__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.DuplicatesAllowed (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.ItemType (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.Type (__added__)
+* AWS::FinSpace::Environment.FederationParameters AttributeMap.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters FederationProviderName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters FederationURN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters SamlMetadataDocument.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::FinSpace::Environment.FederationParameters SamlMetadataURL.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceDestinationConfiguration DocumentIdOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration DocumentIdOptions (__added__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3ObjectLambda::AccessPoint.Alias Status.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::S3ObjectLambda::AccessPoint.Alias Value.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::Domain.DefaultSpaceSettings ExecutionRole.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SageMaker::Domain.UserSettings ExecutionRole.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+
+# CloudFormation Resource Specification (us-west-2) v121.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DeviceFarm::Project VpcConfig (__added__)
+
+## Property Type Changes
+
+* AWS::DeviceFarm::Project.VpcConfig (__added__)
+
+
 # CloudFormation Resource Specification v120.0.0
 
 ## New Resource Types

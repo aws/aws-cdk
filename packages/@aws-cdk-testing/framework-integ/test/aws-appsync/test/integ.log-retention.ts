@@ -7,7 +7,6 @@ import { GraphqlApi, LogConfig, SchemaFile } from 'aws-cdk-lib/aws-appsync';
 const app = new App();
 const stack = new Stack(app, 'AppSyncIntegLogRetention');
 
-
 const retentionTime = RetentionDays.ONE_WEEK;
 const logConfig: LogConfig = {
   retention: retentionTime,

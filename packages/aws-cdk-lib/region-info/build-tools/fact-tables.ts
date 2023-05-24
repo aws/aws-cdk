@@ -1,3 +1,4 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 export const AWS_CDK_METADATA = new Set([
   'us-east-2',
   'us-east-1',

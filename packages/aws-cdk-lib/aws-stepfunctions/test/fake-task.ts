@@ -1,5 +1,5 @@
-import * as iam from '../../aws-iam';
 import * as constructs from 'constructs';
+import * as iam from '../../aws-iam';
 import * as sfn from '../lib';
 
 export interface FakeTaskProps extends sfn.TaskStateBaseProps {

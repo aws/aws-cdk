@@ -1,7 +1,7 @@
-import { Fn, Token } from '../../core';
 import { calculateCidrSplits } from './cidr-splits';
 import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
+import { Fn, Token } from '../../core';
 
 /**
  * An abstract Provider of IpAddresses

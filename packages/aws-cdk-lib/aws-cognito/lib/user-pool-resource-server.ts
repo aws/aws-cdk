@@ -1,7 +1,7 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
 import { IUserPool } from './user-pool';
+import { IResource, Resource } from '../../core';
 
 /**
  * Represents a Cognito user pool resource server
@@ -48,7 +48,6 @@ export class ResourceServerScope {
     this.scopeDescription = props.scopeDescription;
   }
 }
-
 
 /**
  * Options to create a UserPoolResourceServer

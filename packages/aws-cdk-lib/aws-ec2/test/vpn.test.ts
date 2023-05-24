@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { Duration, SecretValue, Stack, Token } from '../../core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
@@ -35,7 +35,6 @@ describe('vpn', () => {
       },
       StaticRoutesOnly: false,
     });
-
 
   });
 
@@ -81,7 +80,6 @@ describe('vpn', () => {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
     });
-
 
   });
 
@@ -165,7 +163,6 @@ describe('vpn', () => {
       },
     })).toThrow(/`ip`.+IPv4/);
 
-
   });
 
   test('fails when specifying more than two tunnel options', () => {
@@ -191,7 +188,6 @@ describe('vpn', () => {
       },
     })).toThrow(/two.+`tunnelOptions`/);
 
-
   });
 
   test('fails with duplicate tunnel inside cidr', () => {
@@ -214,7 +210,6 @@ describe('vpn', () => {
       },
     })).toThrow(/`tunnelInsideCidr`.+both tunnels/);
 
-
   });
 
   testDeprecated('fails when specifying an invalid pre-shared key', () => {
@@ -233,7 +228,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`preSharedKey`/);
-
 
   });
 
@@ -254,7 +248,6 @@ describe('vpn', () => {
       },
     })).toThrow(/`tunnelInsideCidr`.+reserved/);
 
-
   });
 
   test('fails when specifying an invalid tunnel inside cidr', () => {
@@ -273,7 +266,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`tunnelInsideCidr`.+size/);
-
 
   });
 
@@ -297,7 +289,6 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Average',
     });
-
 
   });
 
@@ -355,7 +346,6 @@ describe('vpn', () => {
       statistic: 'Sum',
     });
 
-
   });
 
   test('fails when enabling vpnGateway without having subnets', () => {
@@ -366,7 +356,6 @@ describe('vpn', () => {
       vpnGateway: true,
       subnetConfiguration: [],
     })).toThrow(/VPN gateway/);
-
 
   });
 

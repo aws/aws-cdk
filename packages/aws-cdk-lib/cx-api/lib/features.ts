@@ -41,7 +41,6 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
 
-
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */
@@ -501,6 +500,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
     detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
@@ -772,7 +772,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       To allow all ingress/egress traffic to the VPC default security group you
       can set the \`restrictDefaultSecurityGroup: false\`.
     `,
-   },
+  },
 
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {

@@ -107,9 +107,3 @@ if find dist/ | grep -F "${marker}"; then
   echo "This is expected for builds in a development environment but should not happen in CI builds!"
   exit 1
 fi
-
-# for posterity, print all files in dist
-echo "=============================================================================================="
-echo " dist contents"
-echo "=============================================================================================="
-find dist/

@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import { LogGroup, QueryDefinition, QueryString } from '../lib';
 
