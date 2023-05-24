@@ -165,7 +165,7 @@ export abstract class ParamsAndSecretsLayerVersion {
     })(options);
   }
 
-  public static fromParamsAndSecretsExtension(options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+  public static fromExtension(options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
