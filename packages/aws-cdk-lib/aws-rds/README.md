@@ -12,19 +12,26 @@ To set up a clustered database (like Aurora), define a `DatabaseCluster`. You mu
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
+You must specify the instance to use as the writer, along with an optional list
+of readers (up to 15).
+
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
-  instanceProps: {
+  writer: rds.ClusterInstance.provisioned('writer', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-    vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-    },
-    vpc,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('reader1', { promotionTier: 1 }),
+    rds.ClusterInstance.serverlessV2('reader2'),
+  ]
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
+  vpc,
 });
 ```
 
@@ -46,10 +53,10 @@ To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property
 declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
-  instanceProps: {
-    vpc,
+  writer: rds.ClusterInstance.provisioned('writer', {
     publiclyAccessible: false,
-  },
+  }),
+  vpc,
   networkType: rds.NetworkType.DUAL,
 });
 ```
@@ -62,9 +69,8 @@ Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 declare const vpc: ec2.Vpc;
 new rds.DatabaseClusterFromSnapshot(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
-  instanceProps: {
-    vpc,
-  },
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
   snapshotIdentifier: 'mySnapshot',
 });
 ```
@@ -81,14 +87,158 @@ Use `InstanceUpdateBehavior.BULK` to update all instances at once.
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
-  instances: 2,
-  instanceProps: {
+  writer: rds.ClusterInstance.provisioned({
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-    vpc,
-  },
+  }),
+  readers [rds.ClusterInstance.provisioned('reader')],
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING, // Optional - defaults to rds.InstanceUpdateBehaviour.BULK
+  vpc,
 });
 ```
+
+### Serverless V2 instances in a Cluster
+
+It is possible to create an RDS cluster with _both_ serverlessV2 and provisioned
+instances. For example, this will create a cluster with a provisioned writer and
+a serverless v2 reader.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  readers: [
+    rds.ClusterInstance.serverlessV2('reader'),
+  ]
+  vpc,
+});
+```
+
+#### Capacity & Scaling
+
+There are some things to take into consideration with Aurora Serverless v2.
+
+To create a cluster that can support serverless v2 instance you configure a
+minimum and maximum capacity range on the cluster. This is an example showing 
+the default values:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  serverlessV2MinCapacity: 0.5,
+  serverlessV2MaxCapacity: 2,
+  vpc,
+});
+```
+
+The capacity is defined as a number of Aurora capacity units (ACUs). You can
+specify in half-step increments (40, 40.5, 41, etc). Each serverless instance in
+the cluster inherits the capacity that is defined on the cluster. It is not
+possible to configure separate capacity at the instance level.
+
+The maximum capacity is mainly used for budget control since it allows you to
+set a cap on how high your instance can scale.
+
+The minimum capacity is a little more involved. This controls a couple different
+things.
+
+* The scale-up rate is proportional to the current capacity (larger instances
+  scale up faster)
+  * Adjust the minimum capacity to obtain a suitable scaling rate
+* Network throughput is proportional to capacity
+
+More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
+
+Another way that you control the capacity/scaling of your serverless v2 reader
+instances is based on the [promotion tier](https://aws.amazon.com/blogs/aws/additional-failover-control-for-amazon-aurora/)
+which can be between 0-15. Any serverless v2 instance in the 0-1 tiers will scale alongside the
+writer even if the current read load does not require the capacity. This is
+because instances in the 0-1 tier are first priority for failover and Aurora
+wants to ensure that in the event of a failover the reader that gets promoted is
+scaled to handle the write load.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  readers: [
+    // will be put in promotion tier 1 and will scale with the writer
+    rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
+    // will be put in promotion tier 2 and will not scale with the writer
+    rds.ClusterInstance.serverlessV2('reader2'),
+  ]
+  vpc,
+});
+```
+
+* When the writer scales up, any readers in tier 0-1 will scale up to match
+* Scaling for tier 2-15 is independent of what is happening on the writer
+* Readers in tier 2-15 scale up based on read load against the individual reader
+
+When configuring your cluster it is important to take this into consideration
+and ensure that in the event of a failover there is an instance that is scaled
+up to take over.
+
+### Mixing Serverless v2 and Provisioned instances
+
+You are able to create a cluster that has both provisioned and serverless
+instances. [This blog post](https://aws.amazon.com/blogs/database/evaluate-amazon-aurora-serverless-v2-for-your-provisioned-aurora-clusters/)
+has an excellent guide on choosing between serverless and provisioned instances
+based on use case.
+
+There are a couple of high level differences:
+
+* Engine Version (serverless only supports MySQL 8+ & PostgreSQL 13+)
+* Memory up to 256GB can be replaced with serverless
+
+#### Provisioned writer
+
+With a provisioned writer and serverless v2 readers, some of the serverless
+readers will need to be configured to scale with the writer so they can act as
+failover targets. You will need to determine the correct capacity based on the
+provisioned instance type and it's utilization.
+
+As an example, if the CPU utilization for a db.r6g.4xlarge (128 GB) instance
+stays at 10% most times, then the minimum ACUs may be set at 6.5 ACUs
+(10% of 128 GB) and maximum may be set at 64 ACUs (64x2GB=128GB). Keep in mind
+that the speed at which the serverless instance can scale up is determined by
+the minimum capacity so if your cluster has spiky workloads you may need to set
+a higher minimum capacity.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  writer: rds.ClusterInstance.provisioned('writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
+  }),
+  serverlessV2MinCapacity: 6.5,
+  serverlessV2MaxCapacity: 64,
+  readers: [
+    // will be put in promotion tier 1 and will scale with the writer
+    rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
+    // will be put in promotion tier 2 and will not scale with the writer
+    rds.ClusterInstance.serverlessV2('reader2'),
+  ]
+  vpc,
+});
+```
+
+In the above example `reader1` will scale with the writer based on the writer's
+utilization. So if the writer were to go to `50%` utilization then `reader1`
+would scale up to use `32` ACUs. If the read load stayed consistent then
+`reader2` may remain at `6.5` since it is not configured to scale with the
+writer.
+
+If one of your Aurora Serverless v2 DB instances consistently reaches the
+limit of its maximum capacity, Aurora indicates this condition by setting the
+DB instance to a status of `incompatible-parameters`. While the DB instance has
+the incompatible-parameters status, some operations are blocked. For example,
+you can't upgrade the engine version.
+
 
 ## Starting an instance database
 
@@ -434,7 +584,8 @@ The following example shows granting connection access for RDS Proxy to an IAM r
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
-  instanceProps: { vpc },
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
 });
 
 const proxy = new rds.DatabaseProxy(this, 'Proxy', {
@@ -526,9 +677,8 @@ const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
 new rds.DatabaseCluster(this, 'dbcluster', {
   engine: rds.DatabaseClusterEngine.AURORA,
-  instanceProps: {
-    vpc,
-  },
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
 });
@@ -571,9 +721,8 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({
     version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
   }),
-  instanceProps: {
-    vpc,
-  },
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
   cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   cloudwatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided

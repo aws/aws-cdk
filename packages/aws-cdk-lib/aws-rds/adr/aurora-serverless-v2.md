@@ -198,7 +198,7 @@ _user configuration_ (properties are not shown to focus on the API)
 new rds.DatabaseCluster(this, 'Cluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_03_0 }),
   // capacity applies to all serverless instances in the cluster
-  serverlessV2Capacity: 1,
+  serverlessV2MaxCapacity: 1,
   serverlessV2MinCapacity: 0.5,
   writer: ClusterInstance.provisioned('writer', { ...props }),
   readers: [

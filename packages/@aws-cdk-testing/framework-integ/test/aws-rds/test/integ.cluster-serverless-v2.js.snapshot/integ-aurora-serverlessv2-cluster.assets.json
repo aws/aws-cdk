@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "c124cab7d8a98cc66aa81986e6076d47dbd4c4b9622119636b7974340cc71ca4": {
+      "source": {
+        "path": "integ-aurora-serverlessv2-cluster.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c124cab7d8a98cc66aa81986e6076d47dbd4c4b9622119636b7974340cc71ca4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
