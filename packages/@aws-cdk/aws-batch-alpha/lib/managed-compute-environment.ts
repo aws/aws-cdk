@@ -7,7 +7,6 @@ import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
-
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
  * meet the requirements of the jobs executing in this ComputeEnvironment.
@@ -1120,6 +1119,7 @@ function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole
 
   result.instanceRole = instanceRole ?? new iam.Role(scope, 'InstanceProfileRole', {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')],
   });
 
   result.instanceProfile = new iam.CfnInstanceProfile(scope, 'InstanceProfile', {

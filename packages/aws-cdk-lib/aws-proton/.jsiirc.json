@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "services.proton"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.Proton"
+    },
+    "python": {
+      "module": "aws_cdk.aws_proton"
+    }
+  }
+}

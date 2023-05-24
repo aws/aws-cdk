@@ -23,7 +23,6 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
   code: lambda.Code.fromAsset(path.join(__dirname, '../auth-handler')),
 });
 
-
 const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   authorizerName: 'my-simple-authorizer',
   identitySource: ['$request.header.X-API-Key'],

@@ -75,7 +75,13 @@ and *account* of the Stack containing the VPC. If the [region and account are
 specified](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) on
 the Stack, the CLI will [look up the existing Availability
 Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#using-regions-availability-zones-describe)
-and get an accurate count. If region and account are not specified, the stack
+and get an accurate count. The result of this operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
+
+If region and account are not specified, the stack
 could be deployed anywhere and it will have to make a safe choice, limiting
 itself to 2 Availability Zones.
 
@@ -542,6 +548,25 @@ The above example will create an `IVpc` instance with three public subnets:
 | s-12345   | us-east-1a        | Subnet A    | rt-12345       | 10.0.0.0/24 |
 | s-34567   | us-east-1b        | Subnet B    | rt-34567       | 10.0.1.0/24 |
 | s-56789   | us-east-1c        | Subnet B    | rt-56789       | 10.0.2.0/24 |
+
+### Restricting access to the VPC default security group
+
+AWS Security best practices recommend that the [VPC default security group should
+not allow inbound and outbound
+traffic](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2).
+When the `@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` feature flag is set to
+`true` (default for new projects) this will be enabled by default. If you do not
+have this feature flag set you can either set the feature flag _or_ you can set
+the `restrictDefaultSecurityGroup` property to `true`.
+
+```ts
+new ec2.Vpc(this, 'VPC', {
+  restrictDefaultSecurityGroup: true,
+});
+```
+
+If you set this property to `true` and then later remove it or set it to `false`
+the default ingress/egress will be restored on the default security group.
 
 ## Allowing Connections
 
@@ -1526,6 +1551,34 @@ The following example demonstrates how to use the `InstanceRequireImdsv2Aspect` 
 ```ts
 const aspect = new ec2.InstanceRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
+```
+
+### Associating a Public IP Address with an Instance
+
+All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false. Including this property, removing this property, or updating the value of this property on an existing instance will result in replacement of the instance.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 0,
+  maxAzs: 3,
+  subnetConfiguration: [
+    {
+      name: 'public-subnet-1',
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+    },
+  ],
+});
+
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  vpcSubnets: { subnetGroupName: 'public-subnet-1' },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  detailedMonitoring: true,
+  associatePublicIpAddress: true,
+});
 ```
 
 ## VPC Flow Logs

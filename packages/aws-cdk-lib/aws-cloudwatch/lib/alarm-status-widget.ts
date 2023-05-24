@@ -2,7 +2,6 @@ import { IAlarm } from './alarm-base';
 import { AlarmState } from './alarm-rule';
 import { ConcreteWidget } from './widget';
 
-
 /**
  * The sort possibilities for AlarmStatusWidgets
  */
