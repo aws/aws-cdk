@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Duration, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
@@ -11,7 +11,7 @@ import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } 
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
  * meet the requirements of the jobs executing in this ComputeEnvironment.
  */
-export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable {
+export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable, ITaggable {
   /**
    * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
    *
@@ -205,6 +205,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   public readonly terminateOnUpdate?: boolean;
   public readonly securityGroups: ec2.ISecurityGroup[];
   public readonly updateToLatestImageVersion?: boolean;
+  public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
   public readonly connections: ec2.Connections;
 
@@ -594,6 +595,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly maxvCpus = 1;
       public readonly connections = { } as any;
       public readonly securityGroups = [];
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
@@ -673,6 +675,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: this.tags.renderedTags as any,
       },
     });
 
@@ -1019,6 +1022,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: this.placementGroup?.placementGroupName,
+        tags: this.tags.renderedTags as any,
       },
     });
 
