@@ -292,7 +292,7 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
@@ -808,7 +808,7 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
@@ -1324,7 +1324,7 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
