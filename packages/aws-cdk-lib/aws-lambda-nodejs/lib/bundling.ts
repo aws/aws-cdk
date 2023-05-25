@@ -132,26 +132,26 @@ export class Bundling implements cdk.BundlingOptions {
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
     // If runtime isn't passed use regional default, lowest common denominator is node14
-    const imageRuntime = props.runtime ?? Runtime.NODEJS_14_X
+    const imageRuntime = props.runtime ?? Runtime.NODEJS_14_X;
     // Use supported version of pnpm based on the chosen runtime
     const imagePnpmVersion = ((runtime) => {
       switch (runtime) {
         case Runtime.NODEJS_4_3:
-          return '^1.27.0-1'
+          return '^1.27.0-1';
         case Runtime.NODEJS_6_10:
-          return '^2.24.0-0'
+          return '^2.24.0-0';
         case Runtime.NODEJS_8_10:
-          return '^3.8.1'
+          return '^3.8.1';
         case Runtime.NODEJS_10_X:
-          return '^5.18.10'
+          return '^5.18.10';
         case Runtime.NODEJS_12_X:
-          return '^6.35.1'
+          return '^6.35.1';
         case Runtime.NODEJS_14_X:
-          return '^7.32.5'
+          return '^7.32.5';
         default:
-          return '^8.5.1'
+          return '^8.5.1';
       }
-    })(imageRuntime)
+    })(imageRuntime);
     this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'),
       {
         buildArgs: {
