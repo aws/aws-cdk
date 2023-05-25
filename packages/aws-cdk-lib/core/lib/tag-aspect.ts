@@ -73,14 +73,14 @@ abstract class TagBase implements IAspect {
 
   public visit(construct: IConstruct): void {
     if (TagManager.isTaggableV2(construct)) {
-      this.applyTag2(construct);
+      this.applyTagV2(construct);
     } else if (TagManager.isTaggable(construct)) {
       this.applyTag(construct);
     }
   }
 
   protected abstract applyTag(resource: ITaggable): void;
-  protected abstract applyTag2(resource: ITaggableV2): void;
+  protected abstract applyTagV2(resource: ITaggableV2): void;
 }
 
 /**
@@ -127,7 +127,7 @@ export class Tag extends TagBase {
     this.applyManager(resource.tags);
   }
 
-  protected applyTag2(resource: ITaggableV2) {
+  protected applyTagV2(resource: ITaggableV2) {
     this.applyManager(resource.cdkTagManager);
   }
 
@@ -187,7 +187,7 @@ export class RemoveTag extends TagBase {
     this.applyManager(resource.tags);
   }
 
-  protected applyTag2(resource: ITaggableV2): void {
+  protected applyTagV2(resource: ITaggableV2): void {
     this.applyManager(resource.cdkTagManager);
   }
 
