@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Result of binding `Code` into a `Function`.

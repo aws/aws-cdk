@@ -1,4 +1,7 @@
 import * as path from 'path';
+import { kebab as toKebabCase } from 'case';
+import { Construct } from 'constructs';
+import { ISource, SourceConfig } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -8,9 +11,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import { kebab as toKebabCase } from 'case';
-import { Construct } from 'constructs';
-import { ISource, SourceConfig } from './source';
 
 // tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
@@ -105,7 +105,6 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
-
 
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.

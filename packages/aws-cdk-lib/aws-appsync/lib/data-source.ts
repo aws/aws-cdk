@@ -1,17 +1,17 @@
+import { Construct } from 'constructs';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
+import { CfnDataSource } from './appsync.generated';
+import { IGraphqlApi } from './graphqlapi-base';
+import { BaseResolverProps, Resolver } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
+import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
-import { Construct } from 'constructs';
-import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
-import { CfnDataSource } from './appsync.generated';
-import { IGraphqlApi } from './graphqlapi-base';
-import { BaseResolverProps, Resolver } from './resolver';
-import { IEventBus } from "../../aws-events";
 
 /**
  * Base properties for an AppSync datasource

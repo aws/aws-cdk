@@ -1,6 +1,6 @@
+import { IConstruct } from 'constructs';
 import * as cdk from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { IConstruct } from 'constructs';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';

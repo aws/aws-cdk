@@ -250,7 +250,6 @@ describe('DynamoAttributeValue', () => {
     });
   });
 
-
   test('from invalid boolean with json path', () => {
     // GIVEN
     const m = 'invalid';
@@ -261,7 +260,6 @@ describe('DynamoAttributeValue', () => {
     }).toThrow("Data JSON path values must either be exactly equal to '$' or start with '$.'");
 
   });
-
 
   test('from boolean with json path', () => {
     // GIVEN

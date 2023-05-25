@@ -1,9 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
@@ -14,6 +8,12 @@ import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentia
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
   * Interface representing a serverless database cluster.
@@ -413,7 +413,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     });
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
-
 
     const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
       ? props.clusterIdentifier?.toLowerCase()

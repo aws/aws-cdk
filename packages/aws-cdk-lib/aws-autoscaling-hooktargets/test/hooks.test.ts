@@ -9,7 +9,6 @@ import * as sqs from '../../aws-sqs';
 import { Stack } from '../../core';
 import * as hooks from '../lib';
 
-
 describe('given an AutoScalingGroup and no role', () => {
   let stack: Stack;
   let asg: autoscaling.AutoScalingGroup;
