@@ -20,6 +20,7 @@
       "implicitDependencies": ["aws-cdk-lib"],
       "dependsOn": ["^build"],
       "inputs": [
+        "{projectRoot}/**/bin/!(*.d|*.generated).ts",
         "{projectRoot}/**/lib/!(*.d|*.generated).ts",
         "{projectRoot}/**/test/!(*.d).ts",
         "!{workspaceRoot}/**/tsconfig.json",
@@ -46,7 +47,10 @@
       ]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": ["build"],
+      "inputs": [
+        "{projectRoot}/**/test/!(*.d|*.generated).ts",
+      ]
     }
   },
   "affected": {
