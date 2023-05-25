@@ -632,6 +632,16 @@ export class CacheControl {
   public static noTransform() { return new CacheControl('no-transform'); }
 
   /**
+   * Sets 'no-store'.
+   */
+  public static noStore() { return new CacheControl('no-store'); }
+
+  /**
+   * Sets 'must-understand'.
+   */
+  public static mustUnderstand() { return new CacheControl('must-understand'); }
+
+  /**
    * Sets 'public'.
    */
   public static setPublic() { return new CacheControl('public'); }
@@ -640,6 +650,11 @@ export class CacheControl {
    * Sets 'private'.
    */
   public static setPrivate() { return new CacheControl('private'); }
+
+  /**
+   * Sets 'immutable'.
+   */
+  public static immutable() { return new CacheControl('immutable'); }
 
   /**
    * Sets 'proxy-revalidate'.
@@ -655,6 +670,16 @@ export class CacheControl {
    * Sets 's-maxage=<duration-in-seconds>'.
    */
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+
+  /**
+   * Sets 'stale-while-revalidate=<duration-in-seconds>'.
+   */
+  public static staleWhileRevalidate(t: cdk.Duration) { return new CacheControl(`stale-while-revalidate=${t.toSeconds()}`); }
+
+  /**
+   * Sets 'stale-if-error=<duration-in-seconds>'.
+   */
+  public static staleIfError(t: cdk.Duration) { return new CacheControl(`stale-if-error=${t.toSeconds()}`); }
 
   /**
    * Constructs a custom cache control key from the literal value.
