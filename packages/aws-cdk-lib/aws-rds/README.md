@@ -119,6 +119,42 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+### Monitoring
+
+There are some CloudWatch metrics that are [important for Aurora Serverless
+v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.viewing.monitoring).
+
+- `ServerlessDatabaseCapacity`: An instance-level metric that can also be
+  evaluated at the cluster level. At the cluster-level it represents the average
+  capacity of all the instances in the cluster.
+- `ACUUtilization`: Value of the `ServerlessDatabaseCapacity`/ max ACU of the
+  cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  readers: [
+    rds.ClusterInstance.serverlessV2('reader'),
+  ]
+  vpc,
+});
+
+cluster.metricServerlessDatabaseCapacity({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'capacity', {
+    threshold: 1.5,
+    evaluationPeriods: 3,
+});
+cluster.metricACUUtilization({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'alarm', {
+  evaluationPeriods: 3,
+  threshold: 90,
+});
+```
+
 #### Capacity & Scaling
 
 There are some things to take into consideration with Aurora Serverless v2.
