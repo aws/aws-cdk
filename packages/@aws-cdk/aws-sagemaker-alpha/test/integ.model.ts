@@ -114,7 +114,7 @@ new sagemaker.Model(stack, 'PrimaryContainerModel', {
     image: ecrImage,
     modelData: s3ModelData,
   }],
-  vpc: new ec2.Vpc(stack, 'VPC'),
+  vpc: new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false }),
 });
 
 new sagemaker.Model(stack, 'InferencePipelineModel', {

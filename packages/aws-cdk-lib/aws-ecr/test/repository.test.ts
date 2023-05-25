@@ -707,6 +707,32 @@ describe('repository', () => {
         },
       });
     });
+
+    test('grant read adds appropriate permissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestRepo');
+
+      // WHEN
+      repo.grantRead(new iam.AnyPrincipal());
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:DescribeRepositories',
+                'ecr:DescribeImages',
+              ],
+              'Effect': 'Allow',
+              'Principal': { 'AWS': '*' },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+    });
   });
 
   describe('repository name validation', () => {

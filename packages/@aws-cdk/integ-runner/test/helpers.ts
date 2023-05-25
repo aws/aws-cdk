@@ -1,4 +1,4 @@
-import { ICdk, CdkCliWrapper, CdkCliWrapperOptions, SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
+import { ICdk, CdkCliWrapper, CdkCliWrapperOptions, SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from '@aws-cdk/cdk-cli-wrapper';
 import { IntegSnapshotRunner, IntegTest } from '../lib/runner';
 import { DestructiveChange, Diagnostic } from '../lib/workers';
 
@@ -47,7 +47,6 @@ export class MockCdkProvider {
 
     return this.mocks as Required<MockCdkMocks>;
   }
-
 
   /**
    * Run a test of the testSnapshot method

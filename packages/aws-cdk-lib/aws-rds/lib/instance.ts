@@ -1,12 +1,3 @@
-import * as ec2 from '../../aws-ec2';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -18,6 +9,15 @@ import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, Rot
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * A database instance
@@ -538,7 +538,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * @default 7 this is the free tier
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 

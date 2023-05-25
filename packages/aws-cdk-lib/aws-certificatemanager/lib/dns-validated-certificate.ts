@@ -1,12 +1,13 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { CertificateProps, ICertificate } from './certificate';
+import { CertificateBase } from './certificate-base';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
-import { Construct } from 'constructs';
-import { CertificateProps, ICertificate } from './certificate';
-import { CertificateBase } from './certificate-base';
+import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
@@ -109,7 +110,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: builtInCustomResourceNodeRuntime(this),
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });

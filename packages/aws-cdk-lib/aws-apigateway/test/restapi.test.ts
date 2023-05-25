@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnElement, CfnResource, Lazy, Size, Stack } from '../../core';
 import * as apigw from '../lib';
 
@@ -932,7 +932,6 @@ describe('restapi', () => {
     })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
   });
 });
-
 
 describe('Import', () => {
   test('fromRestApiId()', () => {

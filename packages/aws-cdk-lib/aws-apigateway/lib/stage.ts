@@ -1,5 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
@@ -8,6 +6,8 @@ import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
 
 /**
  * Represents an APIGateway Stage.
@@ -102,7 +102,7 @@ export interface StageOptions extends MethodDeploymentOptions {
   /**
    * A map that defines the stage variables. Variable names must consist of
    * alphanumeric characters, and the values must match the following regular
-   * expression: [A-Za-z0-9-._~:/?#&amp;=,]+.
+   * expression: [A-Za-z0-9-._~:/?#&=,]+.
    *
    * @default - No stage variables.
    */
@@ -435,7 +435,6 @@ export class Stage extends StageBase {
       this.restApi._attachStage(this);
     }
   }
-
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
     const settings = new Array<CfnStage.MethodSettingProperty>();

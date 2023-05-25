@@ -421,7 +421,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "ComputeEnvInstanceProfileB98CEF4C": {
@@ -475,7 +489,7 @@
     "UpdatePolicy": {}
    }
   },
-  "JobQueueC5644E0D": {
+  "JobQueueEE3AD499": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
@@ -624,7 +638,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "JobQueueC5644E0D",
+          "JobQueueEE3AD499",
           "JobQueueArn"
          ]
         },
@@ -713,7 +727,7 @@
        "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
        {
         "Fn::GetAtt": [
-         "JobQueueC5644E0D",
+         "JobQueueEE3AD499",
          "JobQueueArn"
         ]
        },
@@ -734,7 +748,7 @@
   "JobQueueArn": {
    "Value": {
     "Fn::GetAtt": [
-     "JobQueueC5644E0D",
+     "JobQueueEE3AD499",
      "JobQueueArn"
     ]
    }

@@ -334,7 +334,6 @@ describe('custom resource provider', () => {
       throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
     }
 
-
   });
 
   test('policyStatements can be used to add statements to the inline policy', () => {
@@ -461,7 +460,7 @@ describe('custom resource provider', () => {
   describe('builtInCustomResourceProviderNodeRuntime', () => {
     test('returns node16 for commercial region', () => {
       const app = new App();
-      const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1' }});
+      const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1' } });
 
       const rt = builtInCustomResourceProviderNodeRuntime(stack);
       expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_16_X);
@@ -469,7 +468,7 @@ describe('custom resource provider', () => {
 
     test('returns node14 for iso region', () => {
       const app = new App();
-      const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' }});
+      const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' } });
 
       const rt = builtInCustomResourceProviderNodeRuntime(stack);
       expect(rt).toEqual(CustomResourceProviderRuntime.NODEJS_14_X);

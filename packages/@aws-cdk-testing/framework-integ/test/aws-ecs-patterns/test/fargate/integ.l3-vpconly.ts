@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ-l3-vpconly');
 
 // Create VPC only
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 // Create ALB service
 new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService', {

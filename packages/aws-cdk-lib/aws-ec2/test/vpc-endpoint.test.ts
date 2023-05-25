@@ -46,7 +46,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('routing on private and public subnets', () => {
@@ -104,7 +103,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('add statements to policy', () => {
@@ -140,7 +138,6 @@ describe('vpc endpoint', () => {
         },
       });
 
-
     });
 
     test('throws when adding a statement without a principal', () => {
@@ -156,7 +153,6 @@ describe('vpc endpoint', () => {
         actions: ['s3:GetObject', 's3:ListBucket'],
         resources: ['*'],
       }))).toThrow(/`Principal`/);
-
 
     });
 
@@ -192,7 +188,6 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Gateway',
       });
 
-
     });
 
     test('throws with an imported vpc without route tables ids', () => {
@@ -205,7 +200,6 @@ describe('vpc endpoint', () => {
       });
 
       expect(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 })).toThrow(/route table/);
-
 
     });
   });
@@ -265,7 +259,6 @@ describe('vpc endpoint', () => {
         },
       });
 
-
     });
 
     describe('interface endpoint retains service name in shortName property', () => {
@@ -293,7 +286,6 @@ describe('vpc endpoint', () => {
       });
     });
 
-
     test('import/export', () => {
       // GIVEN
       const stack2 = new Stack();
@@ -312,7 +304,6 @@ describe('vpc endpoint', () => {
       });
       expect(importedEndpoint.vpcEndpointId).toEqual('vpc-endpoint-id');
 
-
     });
 
     test('import/export without security group', () => {
@@ -329,7 +320,6 @@ describe('vpc endpoint', () => {
       // THEN
       expect(importedEndpoint.vpcEndpointId).toEqual('vpc-endpoint-id');
       expect(importedEndpoint.connections.securityGroups.length).toEqual(0);
-
 
     });
 
@@ -349,7 +339,6 @@ describe('vpc endpoint', () => {
         SecurityGroupIds: ['existing-id'],
       });
 
-
     });
     test('with existing security groups for efs', () => {
       // GIVEN
@@ -366,7 +355,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         SecurityGroupIds: ['existing-id'],
       });
-
 
     });
     test('security group has ingress by default', () => {
@@ -391,7 +379,6 @@ describe('vpc endpoint', () => {
         ],
       });
 
-
     });
     test('non-AWS service interface endpoint', () => {
       // GIVEN
@@ -408,7 +395,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
         PrivateDnsEnabled: false,
       });
-
 
     });
     test('marketplace partner service interface endpoint', () => {
@@ -430,7 +416,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
         PrivateDnsEnabled: true,
       });
-
 
     });
     test('test endpoint service context azs discovered', () => {
@@ -477,7 +462,6 @@ describe('vpc endpoint', () => {
         ],
       });
 
-
     });
     test('endpoint service setup with stack AZ context but no endpoint context', () => {
       // GIVEN
@@ -516,7 +500,6 @@ describe('vpc endpoint', () => {
           },
         ],
       });
-
 
     });
     test('test endpoint service context with aws service', () => {
@@ -559,7 +542,6 @@ describe('vpc endpoint', () => {
           },
         ],
       });
-
 
     });
     test('lookupSupportedAzs fails if account is unresolved', () => {
@@ -647,7 +629,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'cn.com.amazonaws.cn-north-1.ecr.api',
       });
 
-
     });
     test('test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-northwest-1', () => {
       //GIVEN
@@ -663,7 +644,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'cn.com.amazonaws.cn-northwest-1.lambda',
       });
-
 
     });
     test('test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-north-1', () => {
@@ -681,7 +661,6 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.cn-north-1.ecs',
       });
 
-
     });
     test('test vpc interface endpoint without cn.com.amazonaws prefix can be created correctly in cn-northwest-1', () => {
       //GIVEN
@@ -697,7 +676,6 @@ describe('vpc endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.cn-northwest-1.glue',
       });
-
 
     });
     test('test vpc interface endpoint for transcribe can be created correctly in non-china regions', () => {
@@ -715,42 +693,130 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.us-east-1.transcribe',
       });
 
-
     });
-    test('test vpc interface endpoint for transcribe can be created correctly in cn-north-1', () => {
+    test.each([
+      ['transcribe', InterfaceVpcEndpointAwsService.TRANSCRIBE],
+    ])('test vpc interface endpoint with .cn suffix for %s can be created correctly in China regions', (name: string, given: InterfaceVpcEndpointAwsService) => {
+      //GIVEN
+      const stack1 = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
+      const stack2 = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc1 = new Vpc(stack1, 'VPC');
+      const vpc2 = new Vpc(stack2, 'VPC');
+
+      //WHEN
+      vpc1.addInterfaceEndpoint('Endpoint', { service: given });
+      vpc2.addInterfaceEndpoint('Endpoint', { service: given });
+
+      //THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `cn.com.amazonaws.cn-north-1.${name}.cn`,
+      });
+      Template.fromStack(stack2).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `cn.com.amazonaws.cn-northwest-1.${name}.cn`,
+      });
+    });
+    test.each([
+      ['application-autoscaling', InterfaceVpcEndpointAwsService.APPLICATION_AUTOSCALING],
+      ['appmesh-envoy-management', InterfaceVpcEndpointAwsService.APP_MESH],
+      ['athena', InterfaceVpcEndpointAwsService.ATHENA],
+      ['autoscaling', InterfaceVpcEndpointAwsService.AUTOSCALING],
+      ['awsconnector', InterfaceVpcEndpointAwsService.SERVER_MIGRATION_SERVICE_AWSCONNECTOR],
+      ['backup', InterfaceVpcEndpointAwsService.BACKUP],
+      ['batch', InterfaceVpcEndpointAwsService.BATCH],
+      ['cassandra', InterfaceVpcEndpointAwsService.KEYSPACES],
+      ['cloudcontrolapi', InterfaceVpcEndpointAwsService.CLOUD_CONTROL_API],
+      ['cloudformation', InterfaceVpcEndpointAwsService.CLOUDFORMATION],
+      ['cloudformation', InterfaceVpcEndpointAwsService.CLOUDFORMATION],
+      ['codedeploy-commands-secure', InterfaceVpcEndpointAwsService.CODEDEPLOY_COMMANDS_SECURE],
+      ['databrew', InterfaceVpcEndpointAwsService.GLUE_DATABREW],
+      ['dms', InterfaceVpcEndpointAwsService.DATABASE_MIGRATION_SERVICE],
+      ['ebs', InterfaceVpcEndpointAwsService.EBS_DIRECT],
+      ['ec2', InterfaceVpcEndpointAwsService.EC2],
+      ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
+      ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
+      ['eks', InterfaceVpcEndpointAwsService.EKS],
+      ['elasticache', InterfaceVpcEndpointAwsService.ELASTICACHE],
+      ['elasticbeanstalk', InterfaceVpcEndpointAwsService.ELASTIC_BEANSTALK],
+      ['elasticfilesystem', InterfaceVpcEndpointAwsService.ELASTIC_FILESYSTEM],
+      ['elasticfilesystem-fips', InterfaceVpcEndpointAwsService.ELASTIC_FILESYSTEM_FIPS],
+      ['emr-containers', InterfaceVpcEndpointAwsService.EMR_EKS],
+      ['execute-api', InterfaceVpcEndpointAwsService.APIGATEWAY],
+      ['fsx', InterfaceVpcEndpointAwsService.FSX],
+      ['imagebuilder', InterfaceVpcEndpointAwsService.IMAGE_BUILDER],
+      ['iot.data', InterfaceVpcEndpointAwsService.IOT_CORE],
+      ['kinesis-streams', InterfaceVpcEndpointAwsService.KINESIS_STREAMS],
+      ['lambda', InterfaceVpcEndpointAwsService.LAMBDA],
+      ['license-manager', InterfaceVpcEndpointAwsService.LICENSE_MANAGER],
+      ['monitoring', InterfaceVpcEndpointAwsService.CLOUDWATCH_MONITORING],
+      ['rds', InterfaceVpcEndpointAwsService.RDS],
+      ['redshift', InterfaceVpcEndpointAwsService.REDSHIFT],
+      ['redshift-data', InterfaceVpcEndpointAwsService.REDSHIFT_DATA],
+      ['s3', InterfaceVpcEndpointAwsService.S3],
+      ['sagemaker.api', InterfaceVpcEndpointAwsService.SAGEMAKER_API],
+      ['sagemaker.featurestore-runtime', InterfaceVpcEndpointAwsService.SAGEMAKER_FEATURESTORE_RUNTIME],
+      ['sagemaker.runtime', InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME],
+      ['securityhub', InterfaceVpcEndpointAwsService.SECURITYHUB],
+      ['servicecatalog', InterfaceVpcEndpointAwsService.SERVICE_CATALOG],
+      ['sms', InterfaceVpcEndpointAwsService.SERVER_MIGRATION_SERVICE],
+      ['sqs', InterfaceVpcEndpointAwsService.SQS],
+      ['states', InterfaceVpcEndpointAwsService.STEP_FUNCTIONS],
+      ['states', InterfaceVpcEndpointAwsService.STEP_FUNCTIONS],
+      ['sts', InterfaceVpcEndpointAwsService.STS],
+      ['sync-states', InterfaceVpcEndpointAwsService.STEP_FUNCTIONS_SYNC],
+      ['synthetics', InterfaceVpcEndpointAwsService.CLOUDWATCH_SYNTHETICS],
+      ['transcribestreaming', InterfaceVpcEndpointAwsService.TRANSCRIBE_STREAMING],
+      ['transfer', InterfaceVpcEndpointAwsService.TRANSFER],
+      ['xray', InterfaceVpcEndpointAwsService.XRAY],
+    ])('test vpc interface endpoint for %s can be created correctly in China regions', (name: string, given: InterfaceVpcEndpointAwsService) => {
+      //GIVEN
+      const stack1 = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
+      const stack2 = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
+      const vpc1 = new Vpc(stack1, 'VPC');
+      const vpc2 = new Vpc(stack2, 'VPC');
+
+      //WHEN
+      vpc1.addInterfaceEndpoint('Endpoint', { service: given });
+      vpc2.addInterfaceEndpoint('Endpoint', { service: given });
+
+      //THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `cn.com.amazonaws.cn-north-1.${name}`,
+      });
+      Template.fromStack(stack2).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `cn.com.amazonaws.cn-northwest-1.${name}`,
+      });
+    });
+    test.each([
+      ['iotsitewise.api', InterfaceVpcEndpointAwsService.IOT_SITEWISE_API],
+      ['iotsitewise.data', InterfaceVpcEndpointAwsService.IOT_SITEWISE_DATA],
+    ])('test vpc interface endpoint for %s can be created correctly in cn-north-1 only', (name: string, given: InterfaceVpcEndpointAwsService) => {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
       const vpc = new Vpc(stack, 'VPC');
 
       //WHEN
-      vpc.addInterfaceEndpoint('Transcribe Endpoint', {
-        service: InterfaceVpcEndpointAwsService.TRANSCRIBE,
-      });
+      vpc.addInterfaceEndpoint('Endpoint', { service: given });
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'cn.com.amazonaws.cn-north-1.transcribe.cn',
+        ServiceName: `cn.com.amazonaws.cn-north-1.${name}`,
       });
-
-
     });
-
-    test('test vpc interface endpoint for transcribe can be created correctly in cn-northwest-1', () => {
+    test.each([
+      ['account', InterfaceVpcEndpointAwsService.ACCOUNT_MANAGEMENT],
+      ['workspaces', InterfaceVpcEndpointAwsService.WORKSPACES],
+    ])('test vpc interface endpoint for %s can be created correctly in cn-northwest-1 only', (name: string, given: InterfaceVpcEndpointAwsService) => {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-northwest-1' } });
       const vpc = new Vpc(stack, 'VPC');
 
       //WHEN
-      vpc.addInterfaceEndpoint('Transcribe Endpoint', {
-        service: InterfaceVpcEndpointAwsService.TRANSCRIBE,
-      });
+      vpc.addInterfaceEndpoint('Endpoint', { service: given });
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'cn.com.amazonaws.cn-northwest-1.transcribe.cn',
+        ServiceName: `cn.com.amazonaws.cn-northwest-1.${name}`,
       });
-
-
     });
 
     test('test codeartifact vpc interface endpoint in us-west-2', () => {

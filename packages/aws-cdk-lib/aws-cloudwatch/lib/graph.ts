@@ -1,8 +1,8 @@
-import * as cdk from '../../core';
 import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
+import * as cdk from '../../core';
 
 /**
  * Basic properties for widgets that display metrics

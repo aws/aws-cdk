@@ -3,13 +3,14 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, FlowLogMaxAggregationInterval } from 'aws-cdk-lib/aws-ec2';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
-
 
 class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
     const vpc = new Vpc(this, 'VPC');
 
@@ -68,7 +69,6 @@ class TestStack extends Stack {
     });
   }
 }
-
 
 new IntegTest(app, 'FlowLogs', {
   testCases: [

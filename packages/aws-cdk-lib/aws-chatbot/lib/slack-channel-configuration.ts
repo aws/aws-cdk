@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { CfnSlackChannelConfiguration } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration } from './chatbot.generated';
 
 /**
  * Properties for a new Slack channel configuration
@@ -213,7 +213,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new Error('The ARN of a Slack integration must be in the form: arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}');
+      throw new Error('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>');
     }
 
     class Import extends SlackChannelConfigurationBase {

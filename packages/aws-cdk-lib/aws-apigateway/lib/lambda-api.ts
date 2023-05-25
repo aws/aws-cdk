@@ -1,9 +1,10 @@
-import * as lambda from '../../aws-lambda';
+// import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { LambdaIntegration, LambdaIntegrationOptions } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
+import * as lambda from '../../aws-lambda';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -68,6 +69,19 @@ export class LambdaRestApi extends RestApi {
       this.root.addMethod = addMethodThrows;
       this.root.addProxy = addProxyThrows;
     }
+
+    this.node.addValidation({
+      validate() {
+        for (const value of Object.values(props.deployOptions?.variables ?? {})) {
+          // Checks that variable Stage values match regex
+          const regexp = /[A-Za-z0-9-._~:/?#&=,]+/;
+          if (value.match(regexp) === null) {
+            return ['Stage variable value ' + value + ' does not match the regex.'];
+          }
+        }
+        return [];
+      },
+    });
   }
 }
 

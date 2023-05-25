@@ -1,6 +1,6 @@
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import { Duration } from '../../core';
-import { testFixture } from './util';
 import * as ga from '../lib';
 
 test('create accelerator', () => {
@@ -188,7 +188,6 @@ test('addEndpoint', () => {
       },
     ],
   });
-
 
   listener.addEndpointGroup('Group', {
     endpoints: [

@@ -34,6 +34,7 @@ export class Runtime {
    * - The Chromium version that matches Puppeteer-core 1.14.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-1.0
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0', RuntimeFamily.NODEJS);
 
@@ -46,9 +47,9 @@ export class Runtime {
    * - Chromium version 83.0.4103.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.0
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0', RuntimeFamily.NODEJS);
-
 
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
@@ -59,6 +60,7 @@ export class Runtime {
    * - Chromium version 83.0.4103.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.1
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_2_1 = new Runtime('syn-nodejs-2.1', RuntimeFamily.NODEJS);
 
@@ -71,6 +73,7 @@ export class Runtime {
    * - Chromium version 83.0.4103.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.2
+   * @deprecated Use the latest version instead
    */
   public static readonly SYNTHETICS_NODEJS_2_2 = new Runtime('syn-nodejs-2.2', RuntimeFamily.NODEJS);
 
