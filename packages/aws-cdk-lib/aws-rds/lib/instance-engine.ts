@@ -375,7 +375,6 @@ export class MariaDbEngineVersion {
   /** Version "10.6.12". */
   public static readonly VER_10_6_12 = MariaDbEngineVersion.of('10.6.12', '10.6');
 
-
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
    *
@@ -1767,7 +1766,6 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4198_2_V1 = SqlServerEngineVersion.of('15.00.4198.2.v1', '15.00');
   /** Version "15.00.4236.7.v1". */
   public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
-
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

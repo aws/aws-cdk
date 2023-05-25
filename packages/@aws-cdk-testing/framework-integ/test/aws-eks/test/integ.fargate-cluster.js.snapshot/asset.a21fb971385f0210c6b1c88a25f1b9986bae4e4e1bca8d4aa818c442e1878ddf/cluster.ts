@@ -7,7 +7,6 @@ import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
 import { IsCompleteResponse, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
 
-
 const MAX_CLUSTER_NAME_LEN = 100;
 
 export class ClusterResourceHandler extends ResourceHandler {

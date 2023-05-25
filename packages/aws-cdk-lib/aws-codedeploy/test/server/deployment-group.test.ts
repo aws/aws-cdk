@@ -464,7 +464,6 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
   });
 
-
   test('can be used with an imported ALB Target Group as the load balancer', () => {
     const stack = new cdk.Stack();
 

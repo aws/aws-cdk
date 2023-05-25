@@ -3,7 +3,6 @@ import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from 'aws-cdk
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
-
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
   const stack = new Stack();

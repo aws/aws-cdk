@@ -17,6 +17,7 @@ class TestStack extends cdk.Stack {
     });
     customSecret.addRotationSchedule('Schedule', {
       hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+      rotateImmediatelyOnUpdate: false,
     });
   }
 }
