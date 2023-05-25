@@ -1450,15 +1450,11 @@ export class Vpc extends VpcBase {
     Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
     if (props.availabilityZones) {
-      // we can only successfully validate provided AZs against stack AZs if a context is provided, otherwise we're working
-      // with tokens or an array of dummy values
-      const stackAzs = stack.node.tryGetContext(`availability-zones:account=${stack.account}:region=${stack.region}`) ??
-        stack.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY);
-      // if no context is provided then resolvedStackAzs will be undefined and no validation is possible - move on without throwing an error
-      const areGivenAzsSubsetOfStackAzs = stackAzs === undefined ||
-        props.availabilityZones.every(az => Token.isUnresolved(az) || stackAzs.includes(az));
-      if (!areGivenAzsSubsetOfStackAzs) {
-        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stackAzs}`);
+      // If given AZs and stack AZs are both resolved, then validate their compatibility.
+      const resolvedStackAzs = stack.resolvedAvailabilityZones;
+      const areGivenAzsSubsetOfStack = props.availabilityZones.every(az => Token.isUnresolved(az) || resolvedStackAzs.includes(az));
+      if (resolvedStackAzs.length > 0 && !areGivenAzsSubsetOfStack) {
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
       }
       this.availabilityZones = props.availabilityZones;
     } else {

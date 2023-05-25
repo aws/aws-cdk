@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import {
   AclCidr,
   AclTraffic,
@@ -723,36 +723,25 @@ describe('vpc', () => {
       });
     });
 
-    test('with availabilityZones set correctly and context availability zone fallback key provided', () => {
+    test('with availabilityZones set correctly', () => {
       const stack = getTestStack();
-      stack.node.setContext(AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, ['us-east-1a', 'us-east-1b', 'us-east-1c']);
+      const specificAz = stack.availabilityZones[1]; // not the first item
       new Vpc(stack, 'VPC', {
-        availabilityZones: ['us-east-1c'],
+        availabilityZones: [specificAz],
       });
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-        AvailabilityZone: 'us-east-1c',
+        AvailabilityZone: specificAz,
       });
     });
 
-    test('with availabilityZones set incorrectly and context avaialbility-zones key provided', () => {
+    test('with availabilityZones set to zones different from stack', () => {
       const stack = getTestStack();
-      stack.node.setContext('availability-zones:account=123456789012:region=us-east-1', ['us-east-1a', 'us-east-1b', 'us-east-1c']);
       expect(() => {
         new Vpc(stack, 'VPC', {
-          availabilityZones: ['us-west-2a', 'us-west-2b'],
+          availabilityZones: [stack.availabilityZones[0] + 'invalid'],
         });
-      }).toThrow(/Given VPC 'availabilityZones' us-west-2a,us-west-2b must be a subset of the stack's availability zones us-east-1a,us-east-1b,us-east-1c/);
-    });
-
-    test('with availabilityZones set incorrectly and context availability zone fallback key provided', () => {
-      const stack = getTestStack();
-      stack.node.setContext(AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, ['us-east-1a', 'us-east-1b', 'us-east-1c']);
-      expect(() => {
-        new Vpc(stack, 'VPC', {
-          availabilityZones: ['us-west-2a'],
-        });
-      }).toThrow(/Given VPC 'availabilityZones' us-west-2a must be a subset of the stack's availability zones us-east-1a,us-east-1b,us-east-1c/);
+      }).toThrow(/must be a subset of the stack/);
     });
 
     test('non-agnostic stack without context with defined vpc AZs', () => {

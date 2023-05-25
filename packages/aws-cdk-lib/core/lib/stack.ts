@@ -805,6 +805,14 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Will add later
+   */
+  public get resolvedAvailabilityZones(): string[] {
+    const dummyValues = ['dummy1a', 'dummy1b', 'dummy1c'];
+    return this.availabilityZones.filter(az => !Token.isUnresolved(az) && !dummyValues.includes(az));
+  }
+
+  /**
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
