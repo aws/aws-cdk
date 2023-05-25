@@ -21,8 +21,6 @@ import {
   CustomResourceProvider,
   builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
-import { Fact } from '../../region-info';
-import { getAllPartitions } from '../../region-info/lib/aws-entities';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -565,25 +563,10 @@ export class Repository extends RepositoryBase {
     });
 
     function validateRepositoryArn() {
-      const arnRegex = /^arn:(\w+):ecr:([a-z]+-[a-z]+-\d{1}):(\d{12}):repository\/([A-Za-z]+.*)$/;
-      const arnInfo = arnRegex.exec(repositoryArn);
+      const splitArn = repositoryArn.split(':');
 
-      if (arnInfo === null) {
-        throw new Error(`The regex validation failed for repository arn: ${repositoryArn}.`);
-      }
-
-      const partition = arnInfo[1];
-      const allPartitions = getAllPartitions();
-
-      if (!allPartitions.includes(partition)) {
-        throw new Error(`The mentioned aws partition: ${partition} in the repository arn: ${repositoryArn} is invalid.`);
-      }
-
-      const region = arnInfo[2];
-      const allRegions = Fact.regions;
-
-      if (!allRegions.includes(region)) {
-        throw new Error(`The mentioned region: ${region} in the repository arn: ${repositoryArn} does not exist.`);
+      if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
+        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
       }
     }
   }

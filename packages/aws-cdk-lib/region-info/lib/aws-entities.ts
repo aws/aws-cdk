@@ -128,16 +128,6 @@ const PARTITION_MAP: {readonly [region: string]: Region } = {
   'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
 };
 
-export function getAllPartitions(): string[] {
-  const partitions = [];
-
-  for (const value of Object.values(PARTITION_MAP)) {
-    partitions.push(value.partition);
-  }
-
-  return partitions;
-}
-
 export function partitionInformation(region: string): Region {
   for (const [prefix, info] of Object.entries(PARTITION_MAP)) {
     if (region.startsWith(prefix)) {

@@ -209,45 +209,17 @@ describe('repository', () => {
     expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
   });
 
-  test('import with invalid concrete arn', () => {
+  test('import with arn without /repository', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const invalidArn = 'fooBar';
+    const invalidArn = 'arn:aws:ecr:us-east-1:123456789012:foo-ecr-repo-name';
 
     // THEN
     expect(() => {
       ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`The regex validation failed for repository arn: ${invalidArn}.`);
-  });
-
-  test('import with concrete arn with invalid aws partition', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const invalidPartition = 'foo';
-    const invalidArn = `arn:${invalidPartition}:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo`;
-
-    // THEN
-    expect(() => {
-      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`The mentioned aws partition: ${invalidPartition} in the repository arn: ${invalidArn} is invalid.`);
-  });
-
-  test('import with concrete arn with invalid aws region', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const invalidRegion = 'foo-bar-1';
-    const invalidArn = `arn:aws:ecr:${invalidRegion}:585695036304:repository/foo/bar/foo/fooo`;
-
-    // THEN
-    expect(() => {
-      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`The mentioned region: ${invalidRegion} in the repository arn: ${invalidArn} does not exist.`);
+    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
   });
 
   test('fails if importing with token arn and no name', () => {
