@@ -1,6 +1,5 @@
 import { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
-
 export interface FargateServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.

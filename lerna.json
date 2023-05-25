@@ -3,7 +3,6 @@
   "useWorkspaces": true,
   "packages": [
     "packages/aws-cdk-lib",
-    "packages/cdk-cli-wrapper",
     "packages/cdk-assets",
     "packages/aws-cdk",
     "packages/cdk",

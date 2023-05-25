@@ -49,7 +49,6 @@ EPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM
   }
 }
 
-
 /*
  * Creates a channel, playback key pair and stream key
  *

@@ -11,13 +11,13 @@ class EksClusterInferenceStack extends Stack {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
       ...getClusterVersionConfig(this),
       albController: {
-        version: eks.AlbControllerVersion.V2_4_1,
+        version: eks.AlbControllerVersion.V2_5_1,
       },
     });
 

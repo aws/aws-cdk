@@ -37,7 +37,6 @@ describe('cross stack', () => {
       taskDefinition,
     });
 
-
   });
 
   test('ALB next to Service', () => {
@@ -54,7 +53,6 @@ describe('cross stack', () => {
 
     expectIngress(stack2);
 
-
   });
 
   test('ALB next to Cluster', () => {
@@ -69,7 +67,6 @@ describe('cross stack', () => {
     // THEN: it shouldn't throw due to cyclic dependencies
     Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
-
 
   });
 
@@ -86,7 +83,6 @@ describe('cross stack', () => {
     // THEN: it shouldn't throw due to cyclic dependencies
     Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
-
 
   });
 });

@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as core from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Collection of arbitrary properties
@@ -75,7 +75,7 @@ export class CustomResourceProvider implements ICustomResourceProvider {
    */
   private constructor(public readonly serviceToken: string) { }
 
-  public bind(_: Construct): CustomResourceProviderConfig {
+  public bind(_scope: Construct): CustomResourceProviderConfig {
     return { serviceToken: this.serviceToken };
   }
 }

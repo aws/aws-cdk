@@ -1,6 +1,6 @@
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
 import { App, CfnElement, CfnResource, Stack } from '../lib';
 
 /**
