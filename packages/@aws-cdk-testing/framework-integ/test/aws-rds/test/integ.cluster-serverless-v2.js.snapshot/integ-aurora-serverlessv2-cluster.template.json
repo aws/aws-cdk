@@ -526,6 +526,46 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "integauroraserverlessv20capacity09BB04C7": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv20IntegCluster5133790E"
+      }
+     }
+    ],
+    "MetricName": "ServerlessDatabaseCapacity",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 1.5
+   }
+  },
+  "integauroraserverlessv20alarmA67BFE09": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv20IntegCluster5133790E"
+      }
+     }
+    ],
+    "MetricName": "ACUUtilization",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 90
+   }
+  },
   "integauroraserverlessv21IntegClusterSubnetsAEE71920": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
@@ -699,6 +739,46 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "integauroraserverlessv21capacityAFD8D6D1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
+      }
+     }
+    ],
+    "MetricName": "ServerlessDatabaseCapacity",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 1.5
+   }
+  },
+  "integauroraserverlessv21alarmE70B8A00": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
+      }
+     }
+    ],
+    "MetricName": "ACUUtilization",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 90
+   }
+  },
   "integauroraserverlessv22IntegClusterSubnets241DB50C": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
@@ -871,6 +951,46 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "integauroraserverlessv22capacityCC6A400C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
+      }
+     }
+    ],
+    "MetricName": "ServerlessDatabaseCapacity",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 1.5
+   }
+  },
+  "integauroraserverlessv22alarmA8DB3F10": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
+      }
+     }
+    ],
+    "MetricName": "ACUUtilization",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 90
+   }
   }
  },
  "Parameters": {

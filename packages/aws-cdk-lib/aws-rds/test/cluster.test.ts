@@ -206,7 +206,7 @@ describe('cluster new api', () => {
   });
 
   describe('migrate from instanceProps', () => {
-    test('', () => {
+    test('template contains no changes', () => {
       // GIVEN
       const stack1 = testStack();
       const stack2 = testStack();
@@ -241,23 +241,27 @@ describe('cluster new api', () => {
         iamAuthentication: true,
       });
 
-      const clusterInstances = ClusterInstance.fromInstanceProps(test2);
       new DatabaseCluster(stack2, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
         vpc: test2.vpc,
         securityGroups: test2.securityGroups,
-        writer: clusterInstances[0],
-        readers: [...clusterInstances.slice(1)],
+        writer: ClusterInstance.provisioned('Instance1', {
+          ...test2,
+          isFromLegacyInstanceProps: true,
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            ...test2,
+            isFromLegacyInstanceProps: true,
+          }),
+        ],
         iamAuthentication: true,
       });
 
       // THEN
       const test1Template = Template.fromStack(stack1).toJSON();
-      // Dbsubnetgroup is not needed on the instance, it is set on the cluster
-      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DBSubnetGroupName;
       // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
       delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
-      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DBSubnetGroupName;
       delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
       expect(
         test1Template,
@@ -462,7 +466,16 @@ describe('cluster new api', () => {
       Annotations.fromStack(stack).hasNoWarning('*', '*');
     });
 
-    test('serverless reader cannot scale with writer, throw warning', () => {
+    test.each([
+      [
+        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        undefined,
+      ],
+      [
+        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+        4,
+      ],
+    ])('serverless reader cannot scale with writer, throw warning', (instanceType: ec2.InstanceType, maxCapacity?: number) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -472,8 +485,9 @@ describe('cluster new api', () => {
         engine: DatabaseClusterEngine.AURORA,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          instanceType,
         }),
+        serverlessV2MaxCapacity: maxCapacity,
         readers: [ClusterInstance.serverlessV2('reader', { scaleWithWriter: true })],
         iamAuthentication: true,
       });
@@ -483,7 +497,7 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::RDS::DBInstance', 2);
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
-        DBInstanceClass: 'db.m5.24xlarge',
+        DBInstanceClass: `db.${instanceType.toString()}`,
         PromotionTier: 0,
       });
 
@@ -497,7 +511,7 @@ describe('cluster new api', () => {
         'For high availability any serverless instances in promotion tiers 0-1 '+
         'should be able to scale to match the provisioned instance capacity.\n'+
         'Serverless instance reader is in promotion tier 1,\n'+
-        'But can not scale to match the provisioned writer instance (m5.24xlarge)',
+        `But can not scale to match the provisioned writer instance (${instanceType.toString()})`,
       );
     });
   });

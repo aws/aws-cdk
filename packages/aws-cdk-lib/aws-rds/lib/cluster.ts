@@ -417,8 +417,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public abstract readonly connections: ec2.Connections;
 
-  protected hasServerlessInstance?: boolean;
-
   /**
    * Add a new db proxy to this cluster.
    */
@@ -440,148 +438,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   }
 
 
-  /**
-   * Create cluster instances
-   */
-  protected createInstances(props: DatabaseClusterProps): InstanceConfig {
-    const instanceEndpoints: Endpoint[] = [];
-    const instanceIdentifiers: string[] = [];
-    const readers: IAuroraClusterInstance[] = [];
-    // need to create the writer first since writer is determined by what instance is first
-    const writer = props.writer!.bind(this, this, {
-      monitoringInterval: props.monitoringInterval,
-      monitoringRole: props.monitoringRole,
-      removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
-      promotionTier: 0, // override the promotion tier so that writers are always 0
-    });
-    (props.readers ?? []).forEach(instance => {
-      const clusterInstance = instance.bind(this, this, {
-        monitoringInterval: props.monitoringInterval,
-        monitoringRole: props.monitoringRole,
-        removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
-      });
-      readers.push(clusterInstance);
-
-      if (clusterInstance.tier < 2) {
-        this.validateReaderInstance(writer, clusterInstance);
-      }
-      instanceEndpoints.push(new Endpoint(clusterInstance.dbInstanceEndpointAddress, this.clusterEndpoint.port));
-      instanceIdentifiers.push(clusterInstance.instanceIdentifier);
-    });
-    this.validateClusterInstances(writer, readers);
-
-    return {
-      instanceEndpoints,
-      instanceIdentifiers,
-    };
-  }
-
-  /**
-   * Perform validations on the cluster instances
-   */
-  private validateClusterInstances(writer: IAuroraClusterInstance, readers: IAuroraClusterInstance[]): void {
-    if (writer.type === InstanceType.SERVERLESS_V2) {
-      this.hasServerlessInstance = true;
-    }
-    if (readers.length > 0) {
-      const sortedReaders = readers.sort((a, b) => a.tier - b.tier);
-      const highestTierReaders: IAuroraClusterInstance[] = [];
-      const highestTier = sortedReaders[0].tier;
-      let hasProvisionedReader = false;
-      let noFailoverTierInstances = true;
-      let serverlessInHighestTier = false;
-      let hasServerlessReader = false;
-      const someProvisionedReadersDontMatchWriter: IAuroraClusterInstance[] = [];
-      for (const reader of sortedReaders) {
-        if (reader.type === InstanceType.SERVERLESS_V2) {
-          hasServerlessReader = true;
-          this.hasServerlessInstance = true;
-        } else {
-          hasProvisionedReader = true;
-          if (reader.instanceSize !== writer.instanceSize) {
-            someProvisionedReadersDontMatchWriter.push(reader);
-          }
-        }
-        if (reader.tier === highestTier) {
-          if (reader.type === InstanceType.SERVERLESS_V2) {
-            serverlessInHighestTier = true;
-          }
-          highestTierReaders.push(reader);
-        }
-        if (reader.tier <= 1) {
-          noFailoverTierInstances = false;
-        }
-      }
-      const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
-      if (hasOnlyServerlessReaders) {
-        if (noFailoverTierInstances) {
-          Annotations.of(this).addWarning(
-            `Cluster ${this.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
-            'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
-            'availability issues if a failover event occurs. It is recommended that at least one reader '+
-            'has `scaleWithWriter` set to true',
-          );
-        }
-      } else {
-        if (serverlessInHighestTier && highestTier > 1) {
-          Annotations.of(this).addWarning(
-            `There are serverlessV2 readers in tier ${highestTier}. Since there are no instances in a higher tier, `+
-            'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
-            'with the writer which could lead to availability issues during failover.',
-          );
-        }
-        if (someProvisionedReadersDontMatchWriter.length > 0 && writer.type === InstanceType.PROVISIONED) {
-          Annotations.of(this).addWarning(
-            `There are provisioned readers in the highest promotion tier ${highestTier} that do not have the same `+
-            'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
-            'of a failover.\n'+
-            `Writer InstanceSize: ${writer.instanceSize}\n`+
-            `Reader InstanceSizes: ${someProvisionedReadersDontMatchWriter.map(reader => reader.instanceSize).join(', ')}`,
-          );
-        }
-      }
-    }
-  }
-
-  /**
-   * Perform validations on the reader instance
-   */
-  private validateReaderInstance(writer: IAuroraClusterInstance, reader: IAuroraClusterInstance): void {
-    if (writer.type === InstanceType.PROVISIONED) {
-      if (reader.type === InstanceType.SERVERLESS_V2) {
-        if (!instanceSizeSupportedByServerlessV2(writer.instanceSize!)) {
-          Annotations.of(this).addWarning(
-            'For high availability any serverless instances in promotion tiers 0-1 '+
-            'should be able to scale to match the provisioned instance capacity.\n'+
-            `Serverless instance ${reader.node.id} is in promotion tier ${reader.tier},\n`+
-            `But can not scale to match the provisioned writer instance (${writer.instanceSize})`,
-          );
-        }
-      }
-    } else {
-      // TODO: add some info around serverless instance tiers and matching scaling
-      Annotations.of(this).addInfo('...');
-    }
-  }
-
-  /**
-   * As a cluster-level metric, it represents the average of the ServerlessDatabaseCapacity
-   * values of all the Aurora Serverless v2 DB instances in the cluster.
-   */
-  public metricServerlessDatabaseCapacity(props?: cloudwatch.MetricOptions) {
-    return this.metric('ServerlessDatabaseCapacity', { statistic: 'Average', ...props });
-  }
-
-  /**
-   * This value is represented as a percentage. It's calculated as the value of the
-   * ServerlessDatabaseCapacity metric divided by the maximum ACU value of the DB cluster.
-   *
-   * If this metric approaches a value of 100.0, the DB instance has scaled up as high as it can.
-   * Consider increasing the maximum ACU setting for the cluster.
-   */
-  public metricACUUtilization(props?: cloudwatch.MetricOptions) {
-    return this.metric('ACUUtilization', { statistic: 'Average', ...props });
-  }
 }
 
 /**
@@ -625,6 +481,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
+
+  protected hasServerlessInstance?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -746,6 +604,153 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
+  }
+
+  /**
+   * Create cluster instances
+   *
+   * @internal
+   */
+  protected _createInstances(props: DatabaseClusterProps): InstanceConfig {
+    const instanceEndpoints: Endpoint[] = [];
+    const instanceIdentifiers: string[] = [];
+    const readers: IAuroraClusterInstance[] = [];
+    // need to create the writer first since writer is determined by what instance is first
+    const writer = props.writer!.bind(this, this, {
+      monitoringInterval: props.monitoringInterval,
+      monitoringRole: props.monitoringRole,
+      removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
+      subnetGroup: this.subnetGroup,
+      promotionTier: 0, // override the promotion tier so that writers are always 0
+    });
+    (props.readers ?? []).forEach(instance => {
+      const clusterInstance = instance.bind(this, this, {
+        monitoringInterval: props.monitoringInterval,
+        monitoringRole: props.monitoringRole,
+        removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
+        subnetGroup: this.subnetGroup,
+      });
+      readers.push(clusterInstance);
+
+      if (clusterInstance.tier < 2) {
+        this.validateReaderInstance(writer, clusterInstance);
+      }
+      instanceEndpoints.push(new Endpoint(clusterInstance.dbInstanceEndpointAddress, this.clusterEndpoint.port));
+      instanceIdentifiers.push(clusterInstance.instanceIdentifier);
+    });
+    this.validateClusterInstances(writer, readers);
+
+    return {
+      instanceEndpoints,
+      instanceIdentifiers,
+    };
+  }
+
+  /**
+   * Perform validations on the cluster instances
+   */
+  private validateClusterInstances(writer: IAuroraClusterInstance, readers: IAuroraClusterInstance[]): void {
+    if (writer.type === InstanceType.SERVERLESS_V2) {
+      this.hasServerlessInstance = true;
+    }
+    if (readers.length > 0) {
+      const sortedReaders = readers.sort((a, b) => a.tier - b.tier);
+      const highestTierReaders: IAuroraClusterInstance[] = [];
+      const highestTier = sortedReaders[0].tier;
+      let hasProvisionedReader = false;
+      let noFailoverTierInstances = true;
+      let serverlessInHighestTier = false;
+      let hasServerlessReader = false;
+      const someProvisionedReadersDontMatchWriter: IAuroraClusterInstance[] = [];
+      for (const reader of sortedReaders) {
+        if (reader.type === InstanceType.SERVERLESS_V2) {
+          hasServerlessReader = true;
+          this.hasServerlessInstance = true;
+        } else {
+          hasProvisionedReader = true;
+          if (reader.instanceSize !== writer.instanceSize) {
+            someProvisionedReadersDontMatchWriter.push(reader);
+          }
+        }
+        if (reader.tier === highestTier) {
+          if (reader.type === InstanceType.SERVERLESS_V2) {
+            serverlessInHighestTier = true;
+          }
+          highestTierReaders.push(reader);
+        }
+        if (reader.tier <= 1) {
+          noFailoverTierInstances = false;
+        }
+      }
+      const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
+      if (hasOnlyServerlessReaders) {
+        if (noFailoverTierInstances) {
+          Annotations.of(this).addWarning(
+            `Cluster ${this.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
+            'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
+            'availability issues if a failover event occurs. It is recommended that at least one reader '+
+            'has `scaleWithWriter` set to true',
+          );
+        }
+      } else {
+        if (serverlessInHighestTier && highestTier > 1) {
+          Annotations.of(this).addWarning(
+            `There are serverlessV2 readers in tier ${highestTier}. Since there are no instances in a higher tier, `+
+            'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
+            'with the writer which could lead to availability issues during failover.',
+          );
+        }
+        if (someProvisionedReadersDontMatchWriter.length > 0 && writer.type === InstanceType.PROVISIONED) {
+          Annotations.of(this).addWarning(
+            `There are provisioned readers in the highest promotion tier ${highestTier} that do not have the same `+
+            'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
+            'of a failover.\n'+
+            `Writer InstanceSize: ${writer.instanceSize}\n`+
+            `Reader InstanceSizes: ${someProvisionedReadersDontMatchWriter.map(reader => reader.instanceSize).join(', ')}`,
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Perform validations on the reader instance
+   */
+  private validateReaderInstance(writer: IAuroraClusterInstance, reader: IAuroraClusterInstance): void {
+    if (writer.type === InstanceType.PROVISIONED) {
+      if (reader.type === InstanceType.SERVERLESS_V2) {
+        if (!instanceSizeSupportedByServerlessV2(writer.instanceSize!, this.serverlessV2MaxCapacity)) {
+          Annotations.of(this).addWarning(
+            'For high availability any serverless instances in promotion tiers 0-1 '+
+            'should be able to scale to match the provisioned instance capacity.\n'+
+            `Serverless instance ${reader.node.id} is in promotion tier ${reader.tier},\n`+
+            `But can not scale to match the provisioned writer instance (${writer.instanceSize})`,
+          );
+        }
+      }
+    } else {
+      // TODO: add some info around serverless instance tiers and matching scaling
+      Annotations.of(this).addInfo('...');
+    }
+  }
+
+  /**
+   * As a cluster-level metric, it represents the average of the ServerlessDatabaseCapacity
+   * values of all the Aurora Serverless v2 DB instances in the cluster.
+   */
+  public metricServerlessDatabaseCapacity(props?: cloudwatch.MetricOptions) {
+    return this.metric('ServerlessDatabaseCapacity', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * This value is represented as a percentage. It's calculated as the value of the
+   * ServerlessDatabaseCapacity metric divided by the maximum ACU value of the DB cluster.
+   *
+   * If this metric approaches a value of 100.0, the DB instance has scaled up as high as it can.
+   * Consider increasing the maximum ACU setting for the cluster.
+   */
+  public metricACUUtilization(props?: cloudwatch.MetricOptions) {
+    return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
   private validateServerlessScalingConfig(): void {
@@ -961,7 +966,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('writer must be provided');
     }
 
-    const createdInstances = props.writer ? this.createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -969,52 +974,57 @@ export class DatabaseCluster extends DatabaseClusterNew {
 }
 
 /**
- * RDS instances that require more memory than is supported by serverlessV2
- *
- * The key is the instance type and the value is the minimum size that is NOT supported.
- * Example, { m5: '24' } means that if the instance type is m5.24xlarge or above then
- * it is not supported by serverless v2 because the memory requirement is > 256GB
+ * Mapping of instance type to memory setting on the xlarge size
+ * The memory is predictable based on the xlarge size. For example
+ * if m5.xlarge has 16GB memory then
+ *   - m5.2xlarge will have 32 (16*2)
+ *   - m5.4xlarge will have 62 (16*4)
+ *   - m5.24xlarge will have 384 (16*24)
  */
-const UN_SUPPORTED_PROVISIONED_SIZES: { [type: string]: string } = {
-  m5: '24',
-  m5d: '24',
-  r6g: '12',
-  r5: '12',
-  r5b: '12',
-  r5d: '12',
-  r4: '16',
-  x2g: '4',
-  x1e: '4',
-  x1: '16',
-  z1d: '12',
+const INSTANCE_TYPE_XLARGE_MEMORY_MAPPING: { [instanceType: string]: number } = {
+  m5: 16,
+  m5d: 16,
+  m6g: 16,
+  t4g: 16,
+  t3: 16,
+  m4: 16,
+  r6g: 32,
+  r5: 32,
+  r5b: 32,
+  r5d: 32,
+  r4: 30.5,
+  x2g: 64,
+  x1e: 122,
+  x1: 61,
+  z1d: 32,
 };
 
 /**
- * This validates that the instance size falls within the maximum available serverless
- * capacity (256GB memory). This does not validate whether the actual provided `serverlessV2MaxCapacity`
- * is supported by the instance size. That would be ideal, but would also require having a mapping
- * of instance size to total memory.
+ * This validates that the instance size falls within the maximum configured serverless capacity.
  *
  * @param instanceSize the instance size of the provisioned writer, e.g. r5.xlarge
+ * @param serverlessV2MaxCapacity the maxCapacity configured on the cluster
  * @returns true if the instance size is supported by serverless v2 instances
  */
-function instanceSizeSupportedByServerlessV2(instanceSize: string): boolean {
+function instanceSizeSupportedByServerlessV2(instanceSize: string, serverlessV2MaxCapacity: number): boolean {
 
+  const serverlessMaxMem = serverlessV2MaxCapacity*2;
   // i.e. r5.xlarge
   const sizeParts = instanceSize.split('.');
   if (sizeParts.length === 2) {
     const type = sizeParts[0];
     const size = sizeParts[1];
-    if (size === 'xlarge') {
-      return true;
-    } else if (size.endsWith('xlarge')) {
-      const sizeNum = size.slice(0, -6);
-      if (UN_SUPPORTED_PROVISIONED_SIZES.hasOwnProperty(type)) {
-        const unSupported = UN_SUPPORTED_PROVISIONED_SIZES[type];
-        if (sizeNum >= unSupported) {
-          return false;
-        }
+    const xlargeMem = INSTANCE_TYPE_XLARGE_MEMORY_MAPPING[type];
+    if (size.endsWith('xlarge')) {
+      const instanceMem = size === 'xlarge'
+        ? xlargeMem
+        : Number(size.slice(0, -6))*xlargeMem;
+      if (instanceMem > serverlessMaxMem) {
+        return false;
       }
+    // smaller than xlarge
+    } else {
+      return true;
     }
   } else {
     // some weird non-standard instance types
@@ -1153,7 +1163,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
-    const createdInstances = props.writer ? this.createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }

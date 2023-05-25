@@ -1,7 +1,7 @@
 {
   "version": "31.0.0",
   "files": {
-    "c124cab7d8a98cc66aa81986e6076d47dbd4c4b9622119636b7974340cc71ca4": {
+    "5ec15cecd9b8441a50d23535be26d2c68417eac2f5ddaf3d86e820b5d95a5ea9": {
       "source": {
         "path": "integ-aurora-serverlessv2-cluster.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c124cab7d8a98cc66aa81986e6076d47dbd4c4b9622119636b7974340cc71ca4.json",
+          "objectKey": "5ec15cecd9b8441a50d23535be26d2c68417eac2f5ddaf3d86e820b5d95a5ea9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

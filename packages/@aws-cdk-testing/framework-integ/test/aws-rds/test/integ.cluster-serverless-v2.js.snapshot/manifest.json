@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c124cab7d8a98cc66aa81986e6076d47dbd4c4b9622119636b7974340cc71ca4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ec15cecd9b8441a50d23535be26d2c68417eac2f5ddaf3d86e820b5d95a5ea9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,6 +207,18 @@
             "data": "integauroraserverlessv20IntegClusterwriter68858AE9"
           }
         ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-0/capacity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20capacity09BB04C7"
+          }
+        ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-0/alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20alarmA67BFE09"
+          }
+        ],
         "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -253,6 +265,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "integauroraserverlessv21IntegClusterOtherReaderBC649D9A"
+          }
+        ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-1/capacity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21capacityAFD8D6D1"
+          }
+        ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-1/alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21alarmE70B8A00"
           }
         ],
         "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-2/Integ-Cluster": [
@@ -307,6 +331,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "integauroraserverlessv22IntegClusterOtherReader63C2651D"
+          }
+        ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-2/capacity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22capacityCC6A400C"
+          }
+        ],
+        "/integ-aurora-serverlessv2-cluster/integ-aurora-serverlessv2-2/alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22alarmA8DB3F10"
           }
         ],
         "/integ-aurora-serverlessv2-cluster/BootstrapVersion": [

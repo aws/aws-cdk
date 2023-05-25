@@ -102,10 +102,15 @@ It is possible to create an RDS cluster with _both_ serverlessV2 and provisioned
 instances. For example, this will create a cluster with a provisioned writer and
 a serverless v2 reader.
 
+> *Note* Before getting starting with this type of cluster it is
+> highly recommended that you read through the [Developer Guide](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
+> which goes into much more detail on the things you need to take into
+> consideration.
+
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
@@ -118,14 +123,14 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 
 There are some things to take into consideration with Aurora Serverless v2.
 
-To create a cluster that can support serverless v2 instance you configure a
+To create a cluster that can support serverless v2 instances you configure a
 minimum and maximum capacity range on the cluster. This is an example showing 
 the default values:
 
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5,
   serverlessV2MaxCapacity: 2,
@@ -149,7 +154,7 @@ things.
   * Adjust the minimum capacity to obtain a suitable scaling rate
 * Network throughput is proportional to capacity
 
-More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
+> *Info* More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
 
 Another way that you control the capacity/scaling of your serverless v2 reader
 instances is based on the [promotion tier](https://aws.amazon.com/blogs/aws/additional-failover-control-for-amazon-aurora/)
@@ -192,7 +197,7 @@ based on use case.
 There are a couple of high level differences:
 
 * Engine Version (serverless only supports MySQL 8+ & PostgreSQL 13+)
-* Memory up to 256GB can be replaced with serverless
+* Memory up to 256GB can be supported by serverless
 
 #### Provisioned writer
 
@@ -239,6 +244,61 @@ DB instance to a status of `incompatible-parameters`. While the DB instance has
 the incompatible-parameters status, some operations are blocked. For example,
 you can't upgrade the engine version.
 
+### Migrating from instanceProps
+
+Creating instances in a `DatabaseCluster` using `instanceProps` & `instances` is
+deprecated. To migrate to the new properties you can provide the
+`isFromLegacyInstanceProps` property.
+
+For example, in order to migrate from this deprecated config:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(stack, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  instances: 2,
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    vpc,
+  },
+});
+```
+
+You would need to migrate to this. The old method of providing `instanceProps`
+and `instances` will create the number of `instances` that you provide. The
+first instance will be the writer and the rest will be the readers. It's
+important that the `id` that you provide is `Instance{NUMBER}`. The writer
+should always be `Instance1` and the readers will increment from there.
+
+Make sure to run a `cdk diff` before deploying to make sure that all changes are
+expected. **Always test the migration in a non-production environment first.**
+
+```ts
+const instanceProps = {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+  isFromLegacyInstanceProps: true,
+};
+
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(stack, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  vpc,
+  writer: ClusterInstance.provisioned('Instance1', {
+    ...instanceProps,
+  }),
+  readers: [
+    ClusterInstance.provisioned('Instance2', {
+      ...instanceProps,
+    }),
+  ],
+});
+```
 
 ## Starting an instance database
 
@@ -374,7 +434,9 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 // Setting public accessibility for DB cluster
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.AURORA,
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
   instanceProps: {
     vpc,
     vpcSubnets: {
@@ -583,7 +645,9 @@ The following example shows granting connection access for RDS Proxy to an IAM r
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.AURORA,
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
 });
@@ -676,7 +740,9 @@ declare const vpc: ec2.Vpc;
 const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
 new rds.DatabaseCluster(this, 'dbcluster', {
-  engine: rds.DatabaseClusterEngine.AURORA,
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
   s3ImportBuckets: [importBucket],

@@ -3,13 +3,17 @@ import { DatabaseCluster } from './cluster';
 import { IDatabaseCluster } from './cluster-ref';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { helperRemovalPolicy } from './private/util';
-import { InstanceProps, PerformanceInsightRetention } from './props';
+import { PerformanceInsightRetention } from './props';
 import { CfnDBInstance } from './rds.generated';
+import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat } from '../../core';
 
+/**
+ * Options for binding the instance to the cluster
+ */
 export interface ClusterInstanceBindOptions {
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -46,6 +50,13 @@ export interface ClusterInstanceBindOptions {
    */
   readonly promotionTier?: number;
 
+  /**
+   * Existing subnet group for the cluster.
+   * This is only needed when using the isFromLegacyInstanceProps
+   *
+   * @default - cluster subnet group is used
+   */
+  readonly subnetGroup?: ISubnetGroup;
 }
 
 /**
@@ -70,7 +81,6 @@ export class ClusterInstanceType {
       InstanceType.PROVISIONED,
     );
   }
-
 
   constructor(
     private readonly instanceType: string,
@@ -118,6 +128,52 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    * @default 2
    */
   readonly promotionTier?: number;
+
+  /**
+   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
+   *
+   * @example
+   * // existing cluster
+   * declare const vpc: ec2.Vpc;
+   * const cluster = new rds.DatabaseCluster(stack, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   instances: 2,
+   *   instanceProps: {
+   *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *     vpc,
+   *   },
+   * });
+   *
+   * // migration
+   *
+   * const instanceProps = {
+   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+   *   isFromLegacyInstanceProps: true,
+   * };
+   *
+   * declare const vpc: ec2.Vpc;
+   * const cluster = new rds.DatabaseCluster(stack, 'Database', {
+   *   engine: rds.DatabaseClusterEngine.auroraMysql({
+   *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+   *   }),
+   *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+   *   vpc,
+   *   writer: ClusterInstance.provisioned('Instance1', {
+   *     ...instanceProps,
+   *   }),
+   *   readers: [
+   *     ClusterInstance.provisioned('Instance2', {
+   *       ...instanceProps,
+   *     }),
+   *   ],
+   * });
+   *
+   * @default false
+   */
+  readonly isFromLegacyInstanceProps?: boolean;
 }
 
 /**
@@ -163,11 +219,16 @@ export interface ClusterInstanceProps extends ClusterInstanceOptions{
   readonly promotionTier?: number;
 
   /**
+   * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
+   *
    * @default false
    */
   readonly isFromLegacyInstanceProps?: boolean;
 }
 
+/**
+ * Common options for creating a cluster instance
+ */
 export interface ClusterInstanceOptions {
   /**
    * The identifier for the database instance
@@ -239,35 +300,38 @@ export interface ClusterInstanceOptions {
   readonly parameterGroup?: IParameterGroup;
 }
 
-export interface LegacyInstanceProps extends InstanceProps {
-  /**
-   * How many replicas/instances to create
-   *
-   * Has to be at least 1.
-   *
-   * @default 2
-   */
-  readonly instances?: number;
-
-  /**
-   * An optional identifier for the cluster
-   *
-   * @default - A name is automatically generated.
-   */
-  readonly clusterIdentifier?: string;
-
-  /**
-   * Base identifier for instances
-   *
-   * Every replica is named by appending the replica number to this string, 1-based.
-   *
-   * @default - clusterIdentifier is used with the word "Instance" appended.
-   * If clusterIdentifier is not provided, the identifier is automatically generated.
-   */
-  readonly instanceIdentifierBase?: string;
-}
-
+/**
+ * Create an RDS Aurora Cluster Instance. You can create either provisioned or
+ * serverless v2 instances.
+ *
+ * @example
+ *
+ * declare const vpc: ec2.Vpc;
+ * const cluster = new rds.DatabaseCluster(this, 'Database', {
+ *   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
+ *   writer: rds.ClusterInstance.provisioned('writer', {
+ *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
+ *   }),
+ *   serverlessV2MinCapacity: 6.5,
+ *   serverlessV2MaxCapacity: 64,
+ *   readers: [
+ *     // will be put in promotion tier 1 and will scale with the writer
+ *     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
+ *     // will be put in promotion tier 2 and will not scale with the writer
+ *     rds.ClusterInstance.serverlessV2('reader2'),
+ *   ]
+ *   vpc,
+ * });
+ */
 export class ClusterInstance implements IClusterInstance {
+  /**
+   * Add a provisioned instance to the cluster
+   *
+   * @example
+   * ClusterInstance.provisioned('ClusterInstance', {
+   *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
+   * });
+   */
   public static provisioned(id: string, props: ProvisionedClusterInstanceProps = {}): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
@@ -275,6 +339,14 @@ export class ClusterInstance implements IClusterInstance {
     });
   }
 
+  /**
+   * Add a serverless v2 instance to the cluster
+   *
+   * @example
+   * ClusterInstance.serverlessV2('ClusterInstance', {
+   *   scaleWithWriter: true,
+   * });
+   */
   public static serverlessV2(id: string, props: ServerlessV2ClusterInstanceProps = {}): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
@@ -283,32 +355,11 @@ export class ClusterInstance implements IClusterInstance {
     });
   }
 
-  public static fromInstanceProps(props: LegacyInstanceProps, instances?: number): IClusterInstance[] {
-    const instanceCount = instances != null ? instances : 2;
-    if (instanceCount < 1) {
-      throw new Error('At least one instance is required');
-    }
-    const clusterInstances: IClusterInstance[] = [];
-    for (let i = 0; i < instanceCount; i++) {
-      const instanceIndex = i + 1;
-      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}` :
-        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
-          undefined;
-      clusterInstances.push(
-        new ClusterInstance(`Instance${instanceIndex}`, {
-          ...props,
-          isFromLegacyInstanceProps: true,
-          instanceType: ClusterInstanceType.provisioned(props.instanceType),
-          instanceIdentifier,
-          promotionTier: 1,
-        }),
-      );
-    }
-    return clusterInstances;
-  }
-
   private constructor(private id: string, private readonly props: ClusterInstanceProps) { }
 
+  /**
+   * Add the ClusterInstance to the cluster
+   */
   public bind(scope: Construct, cluster: IDatabaseCluster, props: ClusterInstanceBindOptions): IAuroraClusterInstance {
     return new AuroraClusterInstance(scope, this.id, {
       cluster,
@@ -327,13 +378,43 @@ export enum InstanceType {
   SERVERLESS_V2 = 'SERVERLESS_V2',
 }
 
+/**
+ * An Aurora Cluster Instance
+ */
 export interface IAuroraClusterInstance extends IResource {
+  /**
+   * The instance ARN
+   */
   readonly dbInstanceArn: string;
+
+  /**
+   * The instance resource ID
+   */
   readonly dbiResourceId: string;
+
+  /**
+   * The instance endpoint address
+   */
   readonly dbInstanceEndpointAddress: string;
+
+  /**
+   * The instance identifier
+   */
   readonly instanceIdentifier: string;
+
+  /**
+   * The instance type (provisioned vs serverless v2)
+   */
   readonly type: InstanceType;
+
+  /**
+   * The instance size if the instance is a provisioned type
+   */
   readonly instanceSize?: string;
+
+  /**
+   * Te promotion tier the instance was created in
+   */
   readonly tier: number;
 }
 
@@ -405,6 +486,10 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         performanceInsightsRetentionPeriod: enablePerformanceInsights
           ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
           : undefined,
+        // only need to supply this when migrating from legacy method.
+        // this is not applicable for aurora instances, but if you do provide it and then
+        // change it it will cause an instance replacement
+        dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.subnetGroupName : undefined,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,

@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
@@ -11,16 +11,25 @@ interface TestCaseProps extends Pick<rds.DatabaseClusterProps, 'writer' | 'reade
 class TestCase extends Construct {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id);
-    new rds.DatabaseCluster(this, 'Integ-Cluster', {
+    const cluster = new rds.DatabaseCluster(this, 'Integ-Cluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_03_0 }),
       writer: props.writer,
       readers: props.readers,
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: props.vpc,
     });
-    // cluster.metricACUUtilization().createAlarm(this, 'alarm', {
-    //   evaluationPeriods: 1,
-    // });
+    cluster.metricServerlessDatabaseCapacity({
+      period: Duration.minutes(10),
+    }).createAlarm(this, 'capacity', {
+      threshold: 1.5,
+      evaluationPeriods: 3,
+    });
+    cluster.metricACUUtilization({
+      period: Duration.minutes(10),
+    }).createAlarm(this, 'alarm', {
+      evaluationPeriods: 3,
+      threshold: 90,
+    });
   }
 }
 
