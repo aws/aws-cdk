@@ -698,7 +698,6 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
   }
 
-
   public readonly parameterArn: string;
   public readonly parameterName: string;
   public readonly parameterType: string;

@@ -838,7 +838,6 @@ describe('pipeline with single asset publisher', () => {
   });
 });
 
-
 describe('pipeline with custom asset publisher BuildSpec', () => {
 
   behavior('custom buildspec is merged correctly', (suite) => {
@@ -883,7 +882,6 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
 
       THEN_codePipelineExpectation();
     });
-
 
     function THEN_codePipelineExpectation() {
       const buildSpecName = new Capture(stringLike('buildspec-*'));
@@ -969,7 +967,6 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
     Roles: [{ Ref: attachedRole }],
   };
 }
-
 
 behavior('necessary secrets manager permissions get added to asset roles', suite => {
   // Not possible to configure this for legacy pipelines

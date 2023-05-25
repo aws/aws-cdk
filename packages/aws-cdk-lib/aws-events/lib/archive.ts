@@ -32,7 +32,6 @@ export interface BaseArchiveProps {
   readonly retention?: Duration;
 }
 
-
 /**
  * The event archive properties
  */

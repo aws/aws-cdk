@@ -67,7 +67,6 @@ export interface BaseNetworkListenerProps {
    */
   readonly sslPolicy?: SslPolicy;
 
-
   /**
    * Application-Layer Protocol Negotiation (ALPN) is a TLS extension that is sent on the initial TLS handshake hello messages.
    * ALPN enables the application layer to negotiate which protocols should be used over a secure connection, such as HTTP/1 and HTTP/2.

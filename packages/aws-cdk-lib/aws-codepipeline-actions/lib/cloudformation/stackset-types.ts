@@ -178,7 +178,6 @@ export abstract class StackInstances {
     }();
   }
 
-
   /**
    * The artifacts referenced by the properties of this deployment target
    *
@@ -469,7 +468,6 @@ export enum StackSetOrganizationsAutoDeployment {
    */
   ENABLED_WITH_STACK_RETENTION = 'EnabledWithStackRetention'
 }
-
 
 /**
  * Properties for configuring self-managed permissions

@@ -63,7 +63,6 @@ export interface VpcLinkAttributes {
   readonly vpc: ec2.IVpc;
 }
 
-
 /**
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a HTTP API to access resources in an Amazon Virtual Private Cloud (VPC).

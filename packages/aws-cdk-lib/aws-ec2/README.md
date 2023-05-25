@@ -1553,6 +1553,34 @@ const aspect = new ec2.InstanceRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
 ```
 
+### Associating a Public IP Address with an Instance
+
+All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false. Including this property, removing this property, or updating the value of this property on an existing instance will result in replacement of the instance.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 0,
+  maxAzs: 3,
+  subnetConfiguration: [
+    {
+      name: 'public-subnet-1',
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+    },
+  ],
+});
+
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  vpcSubnets: { subnetGroupName: 'public-subnet-1' },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  detailedMonitoring: true,
+  associatePublicIpAddress: true,
+});
+```
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).

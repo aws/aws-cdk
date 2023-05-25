@@ -689,7 +689,6 @@ describe('serverless cluster', () => {
     });
     const user = new iam.User(stack, 'User');
 
-
     // WHEN
     cluster.grantDataApiAccess(user);
 

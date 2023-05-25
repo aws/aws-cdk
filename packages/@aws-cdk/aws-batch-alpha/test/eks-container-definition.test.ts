@@ -5,7 +5,6 @@ import { capitalizePropertyNames } from './utils';
 import { EksContainerDefinitionProps, EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
-
 // GIVEN
 const defaultContainerProps: EksContainerDefinitionProps = {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),

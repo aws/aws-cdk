@@ -10,7 +10,6 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -501,7 +500,6 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
-
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isLocal: true,
@@ -750,7 +748,6 @@ test('Custom bundling volumesFrom', () => {
     }),
   });
 });
-
 
 test('Custom bundling workingDirectory', () => {
   Bundling.bundle({

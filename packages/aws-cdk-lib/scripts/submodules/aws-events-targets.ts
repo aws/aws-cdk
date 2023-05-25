@@ -8,7 +8,6 @@ import { ModuleMap } from '@aws-cdk/cfn2ts';
 import * as sdkMetadata from 'aws-sdk/apis/metadata.json';
 import * as packageInfo from 'aws-sdk/package.json';
 
-
 export default async function awsEventsTargets(_moduleMap: ModuleMap, outPath: string) {
   fs.writeFileSync(
     path.resolve(outPath, 'aws-events-targets', 'lib', 'sdk-api-metadata.generated.ts'),

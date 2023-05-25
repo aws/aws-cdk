@@ -121,7 +121,6 @@ export class LinuxParameters extends Construct {
     this.tmpfs.push(...tmpfs);
   }
 
-
   /**
    * Renders the Linux parameters to the Batch version of this resource,
    * which does not have 'capabilities' and requires tmpfs.containerPath to be defined.

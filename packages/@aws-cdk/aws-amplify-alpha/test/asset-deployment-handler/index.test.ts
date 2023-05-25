@@ -705,7 +705,6 @@ describe('handler', () => {
       PhysicalResourceId: 'physicalResourceIdValue',
     })).rejects.toThrow('Unsupported resource type "Custom::BadResourceType"');
 
-
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
     expect(getJobResponse).not.toHaveBeenCalled();

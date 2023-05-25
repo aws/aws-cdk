@@ -124,6 +124,7 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
 });
 ```
 

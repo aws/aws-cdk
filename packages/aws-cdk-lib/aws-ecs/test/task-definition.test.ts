@@ -291,7 +291,6 @@ describe('task definition', () => {
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
       expect(taskDefinition.executionRole).toEqual(undefined);
 
-
     });
 
     test('can import a Task Definition using attributes', () => {
@@ -323,7 +322,6 @@ describe('task definition', () => {
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
 
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
@@ -348,7 +346,6 @@ describe('task definition', () => {
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -370,7 +367,6 @@ describe('task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
 
     });
   });

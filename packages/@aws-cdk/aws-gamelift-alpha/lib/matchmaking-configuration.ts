@@ -48,7 +48,6 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
    */
   readonly notificationTarget?: sns.ITopic;
 
-
   /**
      * Return the given named metric for this matchmaking configuration.
      */
@@ -194,7 +193,6 @@ export interface MatchmakingConfigurationProps {
  * Base class for new and imported GameLift Matchmaking configuration.
  */
 export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
-
 
   /**
    * Import an existing matchmaking configuration from its attributes.

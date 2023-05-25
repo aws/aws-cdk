@@ -7,7 +7,6 @@ import {
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-
 export class TestCase extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -19,7 +18,6 @@ export class TestCase extends Stack {
     });
   }
 }
-
 
 const app = new App();
 new IntegTest(app, 'integ-test', {

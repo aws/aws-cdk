@@ -371,7 +371,6 @@ export interface IBucket extends IResource {
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
-
   /**
    * Enables event bridge notification, causing all events below to be sent to EventBridge:
    *
@@ -1306,7 +1305,6 @@ export interface IntelligentTieringConfiguration {
    */
   readonly name: string;
 
-
   /**
    * Add a filter to limit the scope of this configuration to a single prefix.
    *
@@ -1588,7 +1586,6 @@ export interface BucketProps {
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 }
-
 
 /**
  * Tag
@@ -2126,17 +2123,14 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    if (
-      // KMS can't be used for logging since the logging service can't use the key - logs don't write
-      // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
-      (!props.serverAccessLogsBucket && (
-        props.encryptionKey ||
-        props.encryption === BucketEncryption.KMS_MANAGED ||
-        props.encryption === BucketEncryption.KMS )) ||
-      // Another bucket is being used that is configured for default SSE-KMS
-      props.serverAccessLogsBucket?.encryptionKey
-    ) {
-      throw new Error('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+    // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
+    if (!props.serverAccessLogsBucket && props.encryption === BucketEncryption.KMS_MANAGED) {
+      throw new Error('Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets');
+    }
+
+    // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
+    if (props.serverAccessLogsBucket?.encryptionKey) {
+      props.serverAccessLogsBucket.encryptionKey.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
     }
 
     return {

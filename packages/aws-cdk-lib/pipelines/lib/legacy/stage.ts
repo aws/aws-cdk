@@ -62,7 +62,6 @@ export interface CdkStageProps {
   readonly securityNotificationTopic?: sns.ITopic;
 }
 
-
 /**
  * Stage in a CdkPipeline
  *

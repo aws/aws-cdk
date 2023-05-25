@@ -8,7 +8,6 @@ import { IGameSessionQueueDestination } from './game-session-queue';
 import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 
-
 /**
  * Current resource capacity settings in a specified fleet or location.
  * The location value might refer to a fleet's remote location or its home Region.

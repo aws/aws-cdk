@@ -439,7 +439,6 @@ export class Rule extends Resource implements IRule {
     return role;
   }
 
-
   /**
    * Whether two string probably contain the same environment dimension (region or account)
    *

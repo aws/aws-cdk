@@ -87,7 +87,6 @@ export interface CdkPipelineProps {
   readonly crossAccountKeys?: boolean;
   // @deprecated(v2): switch to default false
 
-
   /**
    * Enables KMS key rotation for cross-account keys.
    *
@@ -98,7 +97,6 @@ export interface CdkPipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
-
 
   /**
    * CDK CLI version to use in pipeline

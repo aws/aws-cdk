@@ -39,7 +39,6 @@ describe('instance', () => {
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
 
-
   });
 
   test('IpInstance for service in PublicDnsNamespace', () => {
@@ -76,7 +75,6 @@ describe('instance', () => {
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
-
 
   });
 
@@ -117,7 +115,6 @@ describe('instance', () => {
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
 
-
   });
 
   test('Registering IpInstance throws when omitting port for a service using SRV', () => {
@@ -139,7 +136,6 @@ describe('instance', () => {
         instanceId: 'id',
       });
     }).toThrow(/A `port` must be specified for a service using a `SRV` record./);
-
 
   });
 
@@ -163,7 +159,6 @@ describe('instance', () => {
       });
     }).toThrow(/At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
 
-
   });
 
   test('Registering IpInstance throws when omitting ipv4 for a service using A records', () => {
@@ -185,7 +180,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/An `ipv4` must be specified for a service using a `A` record./);
-
 
   });
 
@@ -209,7 +203,6 @@ describe('instance', () => {
       });
     }).toThrow(/An `ipv6` must be specified for a service using a `AAAA` record./);
 
-
   });
 
   test('Registering IpInstance throws with wrong DNS record type', () => {
@@ -231,7 +224,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
-
 
   });
 
@@ -275,7 +267,6 @@ describe('instance', () => {
       InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76',
     });
 
-
   });
 
   test('Throws when registering AliasTargetInstance with Http Namespace', () => {
@@ -297,7 +288,6 @@ describe('instance', () => {
     expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
     }).toThrow(/Namespace associated with Service must be a DNS Namespace./);
-
 
   });
 
@@ -321,7 +311,6 @@ describe('instance', () => {
     expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
     }).toThrow(/Service must use `WEIGHTED` routing policy./);
-
 
   });
 
@@ -357,7 +346,6 @@ describe('instance', () => {
       InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D',
     });
 
-
   });
 
   test('Throws when registering CnameInstance for an HTTP namespace', () => {
@@ -378,7 +366,6 @@ describe('instance', () => {
         instanceCname: 'foo.com',
       });
     }).toThrow(/Namespace associated with Service must be a DNS Namespace/);
-
 
   });
 
@@ -409,7 +396,6 @@ describe('instance', () => {
       },
       InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
     });
-
 
   });
 
@@ -463,7 +449,6 @@ describe('instance', () => {
       });
     }).toThrow(/This type of instance can only be registered for HTTP namespaces./);
 
-
   });
 
   test('Throws when no custom attribues specified for NonIpInstance', () => {
@@ -482,7 +467,6 @@ describe('instance', () => {
         instanceId: 'nonIp',
       });
     }).toThrow(/You must specify at least one custom attribute for this instance type./);
-
 
   });
 
@@ -503,7 +487,6 @@ describe('instance', () => {
         customAttributes: {},
       });
     }).toThrow(/You must specify at least one custom attribute for this instance type./);
-
 
   });
 
@@ -528,7 +511,6 @@ describe('instance', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::Instance', 2);
-
 
   });
 });

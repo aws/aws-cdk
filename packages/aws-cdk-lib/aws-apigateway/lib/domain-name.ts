@@ -167,7 +167,6 @@ export class DomainName extends Resource implements IDomainName {
       ? resource.attrDistributionHostedZoneId
       : resource.attrRegionalHostedZoneId;
 
-
     const multiLevel = this.validateBasePath(props.basePath);
     if (props.mapping && !multiLevel) {
       this.addBasePathMapping(props.mapping, {

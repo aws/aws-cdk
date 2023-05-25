@@ -82,7 +82,6 @@ main(tempDir).then(
   },
 );
 
-
 /**
  * Spawn sync with error handling
  */

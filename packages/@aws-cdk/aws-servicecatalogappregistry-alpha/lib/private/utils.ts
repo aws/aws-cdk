@@ -1,6 +1,5 @@
 import { Token } from 'aws-cdk-lib';
 
-
 /**
   * Verifies if application or the visited node is region agnostic.
   *

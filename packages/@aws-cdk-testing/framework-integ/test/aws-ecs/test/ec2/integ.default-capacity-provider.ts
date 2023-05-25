@@ -39,7 +39,6 @@ cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE_SPOT', weight: 1 },
 ]);
 
-
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,
   taskDefinition,

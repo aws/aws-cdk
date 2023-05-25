@@ -151,7 +151,6 @@ export interface S3DestinationOptions {
  */
 export interface DestinationOptions extends S3DestinationOptions { }
 
-
 /**
  * The destination type for the flow log
  */

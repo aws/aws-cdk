@@ -12,7 +12,6 @@ describe('aws log driver', () => {
     stack = new cdk.Stack();
     td = new ecs.FargateTaskDefinition(stack, 'TaskDefinition');
 
-
   });
 
   test('create an aws log driver', () => {
@@ -144,7 +143,6 @@ describe('aws log driver', () => {
       logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello',
     })).toThrow(/`logGroup`.*`logRetentionDays`/);
-
 
   });
 

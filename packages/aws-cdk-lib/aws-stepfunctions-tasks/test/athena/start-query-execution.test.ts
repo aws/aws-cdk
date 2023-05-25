@@ -171,7 +171,6 @@ describe('Start Query Execution', () => {
       },
     });
 
-
     // THEN
     expect(stack.resolve(task.toStateJson())).not.toHaveProperty('Parameters.QueryExecutionContext');
   });

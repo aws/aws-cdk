@@ -13,7 +13,6 @@ import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
-
 class EksClusterStack extends Stack {
 
   private cluster: eks.Cluster;

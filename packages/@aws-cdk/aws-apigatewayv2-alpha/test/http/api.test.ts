@@ -396,7 +396,6 @@ describe('HttpApi', () => {
     });
   });
 
-
   describe('default authorization settings', () => {
     test('can add default authorizer', () => {
       const stack = new Stack();

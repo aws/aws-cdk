@@ -3,7 +3,6 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { WorkGraph } from './work-graph';
 import { DeploymentState, AssetBuildNode, WorkNode } from './work-graph-types';
 
-
 export class WorkGraphBuilder {
   /**
    * Default priorities for nodes
@@ -76,7 +75,10 @@ export class WorkGraphBuilder {
         // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
         // is going to interfere with the progress bar of the stack deployment. We could remove this
         // for overall faster deployments if we ever have a better method of progress displaying.
-        ...this.getDepIds(parentStack.dependencies),
+        // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
+        // depends on this asset. To workaround this we remove these cycles once all nodes have
+        // been added to the graph.
+        ...this.getDepIds(parentStack.dependencies.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact)),
       ]),
       parentStack,
       assetManifestArtifact: assetArtifact,
@@ -115,6 +117,10 @@ export class WorkGraphBuilder {
     }
 
     this.graph.removeUnavailableDependencies();
+
+    // Remove any potentially introduced cycles between asset publishing and the stacks that depend on them.
+    this.removeStackPublishCycles();
+
     return this.graph;
   }
 
@@ -129,6 +135,24 @@ export class WorkGraphBuilder {
       }
     }
     return ids;
+  }
+
+  private removeStackPublishCycles() {
+    const stacks = this.graph.nodesOfType('stack');
+    for (const stack of stacks) {
+      for (const dep of stack.dependencies) {
+        const node = this.graph.nodes[dep];
+
+        if (!node || node.type !== 'asset-publish' || !node.dependencies.has(stack.id)) {
+          continue;
+        }
+
+        // Delete the dependency from the asset-publish onto the stack.
+        // The publish -> stack dependencies are purely cosmetic to prevent publish output
+        // from interfering with the progress bar of the stack deployment.
+        node.dependencies.delete(stack.id);
+      }
+    }
   }
 }
 

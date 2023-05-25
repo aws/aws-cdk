@@ -45,7 +45,6 @@ describe('SNSEventSource', () => {
       },
     });
 
-
   });
 
   test('props are passed to subscription', () => {
@@ -107,7 +106,6 @@ describe('SNSEventSource', () => {
         },
       },
     });
-
 
   });
 });

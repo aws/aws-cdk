@@ -8,7 +8,6 @@ import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
-
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');

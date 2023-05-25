@@ -79,7 +79,6 @@ test('looks up the requested Key - multiple results', async () => {
   });
 });
 
-
 test('looks up the requested Key - multiple results with pagination', async () => {
   // GIVEN
   const provider = new KeyContextProviderPlugin(mockSDK);

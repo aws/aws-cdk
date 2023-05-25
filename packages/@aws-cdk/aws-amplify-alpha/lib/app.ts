@@ -118,7 +118,6 @@ export interface AppProps {
    */
   readonly buildSpec?: codebuild.BuildSpec;
 
-
   /**
    * The custom HTTP response headers for an Amplify app.
    *

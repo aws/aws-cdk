@@ -406,7 +406,6 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
     return this.metric('KPUs', { statistic: 'Average', ...props });
   }
 
-
   /**
    * The time elapsed during an outage for failing/recovering jobs.
    *

@@ -1,7 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
 import { IAspect, Aspects } from './aspect';
-import { ITaggable, TagManager } from './tag-manager';
+import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
  * Properties for a tag
@@ -72,12 +72,15 @@ abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    if (TagManager.isTaggable(construct)) {
+    if (TagManager.isTaggableV2(construct)) {
+      this.applyTagV2(construct);
+    } else if (TagManager.isTaggable(construct)) {
       this.applyTag(construct);
     }
   }
 
   protected abstract applyTag(resource: ITaggable): void;
+  protected abstract applyTagV2(resource: ITaggableV2): void;
 }
 
 /**
@@ -121,8 +124,16 @@ export class Tag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable) {
-    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
-      resource.tags.setTag(
+    this.applyManager(resource.tags);
+  }
+
+  protected applyTagV2(resource: ITaggableV2) {
+    this.applyManager(resource.cdkTagManager);
+  }
+
+  private applyManager(mgr: TagManager) {
+    if (mgr.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+      mgr.setTag(
         this.key,
         this.value,
         this.props.priority ?? this.defaultPriority,
@@ -173,8 +184,16 @@ export class RemoveTag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable): void {
-    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
-      resource.tags.removeTag(this.key, this.props.priority ?? this.defaultPriority);
+    this.applyManager(resource.tags);
+  }
+
+  protected applyTagV2(resource: ITaggableV2): void {
+    this.applyManager(resource.cdkTagManager);
+  }
+
+  private applyManager(mgr: TagManager) {
+    if (mgr.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+      mgr.removeTag(this.key, this.props.priority ?? this.defaultPriority);
     }
   }
 }

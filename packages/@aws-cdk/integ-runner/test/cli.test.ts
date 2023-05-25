@@ -96,7 +96,6 @@ describe('Test discovery', () => {
     ]]);
   });
 
-
   test('cannot use --test-regex by itself with more than one language preset', async () => {
     await expect(() => main([
       '--list',

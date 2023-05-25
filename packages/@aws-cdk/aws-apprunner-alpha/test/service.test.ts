@@ -627,7 +627,6 @@ test('create a service with local assets(image repository type: ECR)', () => {
   });
 });
 
-
 test('create a service with github repository', () => {
   // GIVEN
   const app = new cdk.App();
@@ -781,7 +780,6 @@ test('create a service with github repository - buildCommand, environment and st
   });
 });
 
-
 test('import from service name', () => {
   // GIVEN
   const app = new cdk.App();
@@ -810,7 +808,6 @@ test('import from service attributes', () => {
   expect(svc).toHaveProperty('serviceStatus');
   expect(svc).toHaveProperty('serviceUrl');
 });
-
 
 test('undefined imageConfiguration port is allowed', () => {
   // GIVEN

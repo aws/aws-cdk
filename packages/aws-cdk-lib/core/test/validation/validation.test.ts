@@ -6,7 +6,6 @@ import { table } from 'table';
 import * as core from '../../lib';
 import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
-
 let consoleErrorMock: jest.SpyInstance;
 let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {

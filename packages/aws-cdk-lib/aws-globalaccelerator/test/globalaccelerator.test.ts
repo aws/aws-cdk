@@ -189,7 +189,6 @@ test('addEndpoint', () => {
     ],
   });
 
-
   listener.addEndpointGroup('Group', {
     endpoints: [
       new ga.RawEndpoint({

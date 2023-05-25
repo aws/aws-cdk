@@ -53,7 +53,6 @@ const setDesired = integ.assertions.awsApiCall('AutoScaling', 'setDesiredCapacit
   DesiredCapacity: 1,
 });
 
-
 const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: testCase.queueUrl,
 });

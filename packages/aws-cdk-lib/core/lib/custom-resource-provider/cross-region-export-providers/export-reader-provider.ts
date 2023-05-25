@@ -8,7 +8,6 @@ import { Intrinsic } from '../../private/intrinsic';
 import { Stack } from '../../stack';
 import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider } from '../custom-resource-provider';
 
-
 /**
  * Properties for an ExportReader
  */

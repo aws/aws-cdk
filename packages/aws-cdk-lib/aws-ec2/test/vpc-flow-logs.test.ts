@@ -621,7 +621,6 @@ test('with custom log format set empty, it not creates with cloudwatch log desti
 
 });
 
-
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {
     env: { account: '123456789012', region: 'us-east-1' },

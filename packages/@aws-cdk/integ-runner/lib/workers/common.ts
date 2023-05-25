@@ -57,7 +57,6 @@ export interface DestructiveChange {
   readonly impact: ResourceImpact;
 }
 
-
 /**
  * Represents integration tests metrics for a given worker
  */

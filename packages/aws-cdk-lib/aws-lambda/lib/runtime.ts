@@ -141,7 +141,6 @@ export class Runtime {
     supportsCodeGuruProfiling: true,
   });
 
-
   /**
    * The Java 8 runtime (java8)
    */

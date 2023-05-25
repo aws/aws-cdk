@@ -59,7 +59,6 @@ describe('StepFunctions Invoke Action', () => {
         ],
       }));
 
-
     });
 
     test('Allows the pipeline to invoke this stepfunction', () => {
@@ -83,7 +82,6 @@ describe('StepFunctions Invoke Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
-
 
     });
 
@@ -139,7 +137,6 @@ describe('StepFunctions Invoke Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
-
 
     });
 

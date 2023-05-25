@@ -933,7 +933,6 @@ describe('restapi', () => {
   });
 });
 
-
 describe('Import', () => {
   test('fromRestApiId()', () => {
     // GIVEN

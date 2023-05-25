@@ -38,7 +38,6 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  */
 export const PROVIDER_ERROR_KEY = '$providerError';
 
-
 /**
  * This SSM parameter does not invalidate the template
  *

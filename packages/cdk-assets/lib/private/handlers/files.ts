@@ -33,7 +33,10 @@ export class FileAssetHandler implements IAssetHandler {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
     try {
-      const s3 = await this.host.aws.s3Client(destination);
+      const s3 = await this.host.aws.s3Client({
+        ...destination,
+        quiet: true,
+      });
       this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
       if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
@@ -190,7 +193,6 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
   );
 }
 
-
 /**
  * A packaged asset which can be uploaded (either a single file or directory)
  */
@@ -207,7 +209,6 @@ interface PackagedFileAsset {
    */
   readonly contentType?: string;
 }
-
 
 /**
  * Cache for bucket information, so we don't have to keep doing the same calls again and again

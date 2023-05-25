@@ -6,7 +6,6 @@ const app = new App();
 
 const stack = new Stack(app, 'RuleStack');
 
-
 new Rule(stack, 'MyRule', {
   eventPattern: {
     account: ['account1', 'account2'],

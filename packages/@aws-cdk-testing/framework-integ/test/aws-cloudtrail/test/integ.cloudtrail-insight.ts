@@ -38,7 +38,6 @@ new cloudtrail.Trail(stack, 'Trail', {
   ],
 });
 
-
 new integ.IntegTest(app, 'aws-cdk-cloudtrail-inshights', {
   testCases: [stack],
 });

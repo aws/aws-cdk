@@ -1,0 +1,44 @@
+// Fixture with packages imported, but nothing else
+import { App, Stack, StackProps, DockerImageAssetSource, FileAssetSource } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import {
+  AppStagingSynthesizer,
+  DefaultStagingStack,
+  BootstrapRole,
+  FileStagingLocation,
+  ImageStagingLocation,
+  ObtainStagingResourcesContext,
+  IStagingResourcesFactory,
+  IStagingResources,
+} from '@aws-cdk/app-staging-synthesizer-alpha';
+
+interface CustomStagingStackProps extends StackProps {}
+
+class CustomStagingStack extends Stack implements IStagingResources {
+  public constructor(scope: Construct, id: string, props: CustomStagingStackProps) {
+    super(scope, id, props);
+  }
+
+  public addFile(asset: FileAssetSource): FileStagingLocation {
+    return {
+      bucketName: 'myBucket',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+
+  public addDockerImage(asset: DockerImageAssetSource): ImageStagingLocation {
+    return {
+      repoName: 'myRepo',
+      assumeRoleArn: 'myArn',
+      dependencyStack: this,
+    };
+  }
+}
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

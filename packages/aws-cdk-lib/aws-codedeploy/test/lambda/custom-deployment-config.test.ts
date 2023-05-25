@@ -30,7 +30,6 @@ beforeEach(() => {
   alias = mockAlias(stack);
 });
 
-
 testDeprecated('custom resource created', () => {
   // WHEN
   const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {

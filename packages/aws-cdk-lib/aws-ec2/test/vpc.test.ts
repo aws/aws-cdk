@@ -194,7 +194,6 @@ describe('vpc', () => {
 
     describe('dns getters correspond to CFN properties', () => {
 
-
       const inputs = [
         { dnsSupport: false, dnsHostnames: false },
         // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
@@ -224,10 +223,8 @@ describe('vpc', () => {
           expect(input.dnsSupport).toEqual(vpc.dnsSupportEnabled);
           expect(input.dnsHostnames).toEqual(vpc.dnsHostnamesEnabled);
 
-
         });
       }
-
 
     });
 
@@ -798,7 +795,6 @@ describe('vpc', () => {
         });
       }).toThrow(/make sure you don't configure any PRIVATE/);
 
-
     });
 
     test('natGateways = 0 succeeds if PRIVATE_WITH_EGRESS subnets configured', () => {
@@ -953,7 +949,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('with a vpn gateway and route propagation on isolated subnets', () => {
       const stack = getTestStack();
@@ -986,7 +981,6 @@ describe('vpc', () => {
           Ref: 'VPCVpnGatewayB5ABAE68',
         },
       });
-
 
     });
     test('with a vpn gateway and route propagation on private and isolated subnets', () => {
@@ -1034,7 +1028,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to isolated subnets when there are no private subnets', () => {
       const stack = getTestStack();
@@ -1063,7 +1056,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to public subnets when there are no private/isolated subnets', () => {
       const stack = getTestStack();
@@ -1091,7 +1083,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('fails when specifying vpnConnections with vpnGateway set to false', () => {
       // GIVEN
@@ -1107,7 +1098,6 @@ describe('vpc', () => {
         },
       })).toThrow(/`vpnConnections`.+`vpnGateway`.+false/);
 
-
     });
     test('fails when specifying vpnGatewayAsn with vpnGateway set to false', () => {
       // GIVEN
@@ -1117,7 +1107,6 @@ describe('vpc', () => {
         vpnGateway: false,
         vpnGatewayAsn: 65000,
       })).toThrow(/`vpnGatewayAsn`.+`vpnGateway`.+false/);
-
 
     });
 
@@ -1201,7 +1190,6 @@ describe('vpc', () => {
         DestinationIpv6CidrBlock: '2001:4860:4860::8888/32',
         NetworkInterfaceId: 'router-1',
       });
-
 
     });
     test('Can add an IPv4 route', () => {
@@ -1436,7 +1424,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('natGateways controls amount of NAT instances', () => {
@@ -1495,7 +1482,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll INBOUND_AND_OUTBOUND', () => {
@@ -1532,7 +1518,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll OUTBOUND_ONLY', () => {
@@ -1561,7 +1546,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1593,7 +1577,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1730,7 +1713,6 @@ describe('vpc', () => {
       // THEN
       expect(subnetIds).toEqual(vpc.publicSubnets.map(s => s.subnetId));
 
-
     });
 
     test('can select isolated subnets', () => {
@@ -1748,7 +1730,6 @@ describe('vpc', () => {
 
       // THEN
       expect(subnetIds).toEqual(vpc.isolatedSubnets.map(s => s.subnetId));
-
 
     });
 
@@ -1835,7 +1816,6 @@ describe('vpc', () => {
         vpc.selectSubnets({ subnetGroupName: 'Toot' });
       }).toThrow(/There are no subnet groups with name 'Toot' in this VPC. Available names: Public,Private/);
 
-
     });
 
     test('select subnets with az restriction', () => {
@@ -1920,7 +1900,6 @@ describe('vpc', () => {
           { 'Fn::Select': [1, publicSubnetList] },
         ],
       });
-
 
     });
 

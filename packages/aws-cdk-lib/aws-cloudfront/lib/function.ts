@@ -56,7 +56,6 @@ class InlineCode extends FunctionCode {
   }
 }
 
-
 /**
  * Represents the function's source code loaded from an external file
  */

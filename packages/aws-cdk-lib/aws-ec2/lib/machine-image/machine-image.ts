@@ -11,7 +11,6 @@ import * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
 
-
 /**
  * Factory functions for standard Amazon Machine Image objects.
  */
@@ -329,7 +328,6 @@ export class WindowsImage extends GenericSSMParameterImage {
   }
 }
 
-
 /**
  * Amazon Linux image properties
  */
@@ -475,7 +473,6 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     };
   }
 }
-
 
 /**
  * Amazon Linux Kernel

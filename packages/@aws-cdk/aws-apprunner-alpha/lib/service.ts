@@ -70,7 +70,6 @@ export class Cpu {
   private constructor(public readonly unit: string) {}
 }
 
-
 /**
  * The amount of memory reserved for each instance of your App Runner service.
  */

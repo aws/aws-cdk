@@ -119,7 +119,6 @@ export function genScript(): string | undefined {
   return currentPackageJson().scripts?.gen;
 }
 
-
 export interface CDKBuildOptions {
   /**
    * What CloudFormation scope to generate resources for, if any

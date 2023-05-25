@@ -77,7 +77,6 @@ export interface PublishAssetsActionProps {
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
-
   /**
    * Custom BuildSpec that is merged with generated one
    *
@@ -180,7 +179,6 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       fs.writeFileSync(specFile, Stack.of(this).resolve(this.buildSpec.toBuildSpec()), { encoding: 'utf-8' });
     }
   }
-
 
   /**
    * Add a single publishing command

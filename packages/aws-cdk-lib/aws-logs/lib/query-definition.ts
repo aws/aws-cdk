@@ -3,7 +3,6 @@ import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
 import { Resource } from '../../core';
 
-
 /**
  * Properties for a QueryString
  */
