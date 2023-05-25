@@ -241,13 +241,14 @@ export interface ITaggable {
 /**
  * Modernized version of ITaggable
  *
- * `ITaggable` was a bad idea: for many resources, 'tags' is a valid property
- * name that should be directly available on the L1 resource. For old resources we have to
- * keep `tags` as the `TagManager`, but for newer resources `tags` will be the L1
- * property and `cdkTagManager: TagManager` will have the tag manager.
+ * `ITaggable` has a problem: for a number of L1 resources, we failed to generate
+ * `tags: TagManager`, and generated `tags: CfnSomeResource.TagProperty[]` instead.
  *
+ * To mark these resources as taggable, we need to put the `TagManager` in a new property
+ * whose name is unlikely to conflict with any existing properties. Hence, a new interface
+ * for that purpose. All future resources will implement `ITaggableV2`.
  */
-export interface ITaggable2 {
+export interface ITaggableV2 {
   /**
    * TagManager to set, remove and format tags
    */
@@ -304,9 +305,9 @@ export class TagManager {
   }
 
   /**
-   * Check whether the given construct is ITaggable2
+   * Check whether the given construct is ITaggableV2
    */
-  public static isTaggable2(construct: any): construct is ITaggable2 {
+  public static isTaggableV2(construct: any): construct is ITaggableV2 {
     return (construct as any).cdkTagManager !== undefined;
   }
 
@@ -314,7 +315,7 @@ export class TagManager {
    * Return the TagManager associated with the given construct, if any
    */
   public static of(construct: any): TagManager | undefined {
-    return TagManager.isTaggable2(construct) ? construct.cdkTagManager : TagManager.isTaggable(construct) ? construct.tags : undefined;
+    return TagManager.isTaggableV2(construct) ? construct.cdkTagManager : TagManager.isTaggable(construct) ? construct.tags : undefined;
   }
 
   /**

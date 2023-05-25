@@ -1,7 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
 import { IAspect, Aspects } from './aspect';
-import { ITaggable, ITaggable2, TagManager } from './tag-manager';
+import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
  * Properties for a tag
@@ -72,7 +72,7 @@ abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    if (TagManager.isTaggable2(construct)) {
+    if (TagManager.isTaggableV2(construct)) {
       this.applyTag2(construct);
     } else if (TagManager.isTaggable(construct)) {
       this.applyTag(construct);
@@ -80,7 +80,7 @@ abstract class TagBase implements IAspect {
   }
 
   protected abstract applyTag(resource: ITaggable): void;
-  protected abstract applyTag2(resource: ITaggable2): void;
+  protected abstract applyTag2(resource: ITaggableV2): void;
 }
 
 /**
@@ -127,7 +127,7 @@ export class Tag extends TagBase {
     this.applyManager(resource.tags);
   }
 
-  protected applyTag2(resource: ITaggable2) {
+  protected applyTag2(resource: ITaggableV2) {
     this.applyManager(resource.cdkTagManager);
   }
 
@@ -187,7 +187,7 @@ export class RemoveTag extends TagBase {
     this.applyManager(resource.tags);
   }
 
-  protected applyTag2(resource: ITaggable2): void {
+  protected applyTag2(resource: ITaggableV2): void {
     this.applyManager(resource.cdkTagManager);
   }
 

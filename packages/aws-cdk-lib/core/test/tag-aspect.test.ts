@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
-import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggable2 } from '../lib';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggableV2 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource implements ITaggable {
@@ -15,7 +15,7 @@ class TaggableResource extends CfnResource implements ITaggable {
   }
 }
 
-class TaggableResource2 extends CfnResource implements ITaggable2 {
+class TaggableResource2 extends CfnResource implements ITaggableV2 {
   public readonly cdkTagManager: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
