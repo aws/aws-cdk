@@ -1452,9 +1452,10 @@ export class Vpc extends VpcBase {
     if (props.availabilityZones) {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
       const resolvedStackAzs = stack.resolvedAvailabilityZones;
-      const areGivenAzsSubsetOfStack = props.availabilityZones.every(az => Token.isUnresolved(az) || resolvedStackAzs.includes(az));
-      if (resolvedStackAzs.length > 0 && !areGivenAzsSubsetOfStack) {
-        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
+        props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
+      if (!areGivenAzsSubsetOfStack) {
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`);
       }
       this.availabilityZones = props.availabilityZones;
     } else {
