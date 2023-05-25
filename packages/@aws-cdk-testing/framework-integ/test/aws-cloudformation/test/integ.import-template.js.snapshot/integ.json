@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "DependsOnTest/DefaultTest": {
+      "stacks": [
+        "ImportStack"
+      ],
+      "assertionStack": "DependsOnTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DependsOnTestDefaultTestDeployAssert3B3B50E2"
+    }
+  }
+}

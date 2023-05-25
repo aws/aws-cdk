@@ -17,16 +17,6 @@
     }
   },
   "Resources": {
-    "CodeDeployApp": {
-      "Type": "AWS::CodeDeploy::Application"
-    },
-    "CodeDeployDg": {
-      "Type": "AWS::CodeDeploy::DeploymentGroup",
-      "Properties": {
-        "ApplicationName": { "Ref":  "CodeDeployApp" },
-        "ServiceRoleArn": "my-role-arn"
-      }
-    },
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy" : {

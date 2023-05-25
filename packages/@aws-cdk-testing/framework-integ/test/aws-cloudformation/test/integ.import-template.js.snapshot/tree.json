@@ -1,0 +1,181 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ImportStack": {
+        "id": "ImportStack",
+        "path": "ImportStack",
+        "children": {
+          "ImportStack": {
+            "id": "ImportStack",
+            "path": "ImportStack/ImportStack",
+            "children": {
+              "$Mappings": {
+                "id": "$Mappings",
+                "path": "ImportStack/ImportStack/$Mappings",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "WaitOnResourceSignals": {
+                "id": "WaitOnResourceSignals",
+                "path": "ImportStack/ImportStack/WaitOnResourceSignals",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "$Conditions": {
+                "id": "$Conditions",
+                "path": "ImportStack/ImportStack/$Conditions",
+                "children": {
+                  "AlwaysFalseCond": {
+                    "id": "AlwaysFalseCond",
+                    "path": "ImportStack/ImportStack/$Conditions/AlwaysFalseCond",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnCondition",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "$Rules": {
+                "id": "$Rules",
+                "path": "ImportStack/ImportStack/$Rules",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "Bucket": {
+                "id": "Bucket",
+                "path": "ImportStack/ImportStack/Bucket",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "$Hooks": {
+                "id": "$Hooks",
+                "path": "ImportStack/ImportStack/$Hooks",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "$Ouputs": {
+                "id": "$Ouputs",
+                "path": "ImportStack/ImportStack/$Ouputs",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.cloudformation_include.CfnInclude",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ImportStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ImportStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "DependsOnTest": {
+        "id": "DependsOnTest",
+        "path": "DependsOnTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "DependsOnTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DependsOnTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "DependsOnTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "DependsOnTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "DependsOnTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.26"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
