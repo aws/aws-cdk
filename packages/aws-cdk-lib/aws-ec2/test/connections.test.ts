@@ -60,7 +60,6 @@ describe('connections', () => {
       ToPort: 65535,
     });
 
-
   });
 
   test('security groups added to connections after rule still gets rule', () => {
@@ -102,7 +101,6 @@ describe('connections', () => {
       ],
     });
 
-
   });
 
   test('when security groups are added to target they also get the rule', () => {
@@ -135,7 +133,6 @@ describe('connections', () => {
       ToPort: 88,
     });
 
-
   });
 
   test('multiple security groups allows internally between them', () => {
@@ -164,7 +161,6 @@ describe('connections', () => {
       FromPort: 88,
       ToPort: 88,
     });
-
 
   });
 
@@ -196,7 +192,6 @@ describe('connections', () => {
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     });
 
-
   });
 
   test('can establish cross stack Security Group connections - allowTo', () => {
@@ -226,7 +221,6 @@ describe('connections', () => {
       GroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
       DestinationSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
     });
-
 
   });
 
@@ -260,7 +254,6 @@ describe('connections', () => {
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
     });
 
-
   });
   test('Imported SecurityGroup does not create egress rule', () => {
     // GIVEN
@@ -286,7 +279,6 @@ describe('connections', () => {
 
     // THEN: rule to imported security group to allow connections from generated
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
-
 
   });
   test('Imported SecurityGroup with allowAllOutbound: false DOES create egress rule', () => {
@@ -322,7 +314,6 @@ describe('connections', () => {
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       ToPort: 65535,
     });
-
 
   });
 });

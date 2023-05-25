@@ -1498,7 +1498,7 @@ describe('stack', () => {
       public _toCloudFormation() {
         return new PostResolveToken({
           xoo: 1234,
-        }, props => {
+        }, (props, _context) => {
           validateString(props).assertSuccess();
         });
       }
@@ -1898,7 +1898,6 @@ describe('stack', () => {
       { 'Fn::Select': [1, { 'Fn::GetAZs': '' }] },
     ]);
   });
-
 
   test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
     // WHEN

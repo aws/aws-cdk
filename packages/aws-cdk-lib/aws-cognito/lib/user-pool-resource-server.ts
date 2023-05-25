@@ -49,7 +49,6 @@ export class ResourceServerScope {
   }
 }
 
-
 /**
  * Options to create a UserPoolResourceServer
  */

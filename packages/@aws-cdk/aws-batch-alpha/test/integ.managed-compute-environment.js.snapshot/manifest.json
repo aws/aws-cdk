@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f47b7d60111f82dad5c04d0bef76e1b62fe75dc319951520566c9d9bce188d10.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ebdcdec29ca32bb55c4daa83140fbc6af6c8a2663beb1c1a833a3d4c6ee12c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -291,6 +291,33 @@
             "data": "SpotEc2A0470C83"
           }
         ],
+        "/batch-stack/taggedCE/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCESecurityGroup82CCF59F"
+          }
+        ],
+        "/batch-stack/taggedCE/InstanceProfileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCEInstanceProfileRoleC239DAF9"
+          }
+        ],
+        "/batch-stack/taggedCE/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCEInstanceProfileB29F2197"
+          }
+        ],
+        "/batch-stack/taggedCE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCE5029E6F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
         "/batch-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -301,24 +328,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "minimalPropsFargate8E9B9556": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "minimalPropsFargate8E9B9556",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "maximalPropsFargateA2E688D8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "maximalPropsFargateA2E688D8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

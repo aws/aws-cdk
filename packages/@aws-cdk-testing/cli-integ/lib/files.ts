@@ -45,7 +45,6 @@ export function findUp(name: string, directory: string = process.cwd()): string 
   return findUp(name, path.dirname(absoluteDirectory));
 }
 
-
 /**
  * Docker-safe home directory
  */
