@@ -176,7 +176,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
-      public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
+      public _bind(_scope: Construct, _fn: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
           arn,
           environmentVars: this.environmentVariablesFromOptions,
@@ -190,9 +190,9 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
-      public _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig {
+      public _bind(scope: Construct, fn: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
-          arn: getVersionArn(_scope, version, _function.architecture.name),
+          arn: getVersionArn(scope, version, fn.architecture.name),
           environmentVars: this.environmentVariablesFromOptions,
         };
       }
@@ -206,7 +206,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    *
    * @internal
    */
-  public abstract _bind(_scope: Construct, _function: lambda.IFunction): ParamsAndSecretsBindConfig;
+  public abstract _bind(scope: Construct, fn: lambda.IFunction): ParamsAndSecretsBindConfig;
 
   /**
    * Configure environment variables for Parameters and Secrets Extension based on configuration options
