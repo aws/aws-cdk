@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.81.0](https://github.com/aws/aws-cdk/compare/v2.80.0...v2.81.0) (2023-05-25)
+
+
+### Features
+
+* **ec2:** added support for network interfaces on ec2 instances by providing an associatePublicIpAddress property ([#25441](https://github.com/aws/aws-cdk/issues/25441)) ([d43834d](https://github.com/aws/aws-cdk/commit/d43834d441ae8eb0192df45c1cfa0101e5533e4e)), closes [#17127](https://github.com/aws/aws-cdk/issues/17127)
+* **glue:** Add G.4X and G.8X worker types for AWS Glue ([#25637](https://github.com/aws/aws-cdk/issues/25637)) ([1e4ffcd](https://github.com/aws/aws-cdk/commit/1e4ffcd83c10c9fb17dafc20c03ee9dff30d7e3e))
+* **lambda:** lambda code assets are marked as deploy time assets ([#25705](https://github.com/aws/aws-cdk/issues/25705)) ([8a6b376](https://github.com/aws/aws-cdk/commit/8a6b3761adc4c4513bdf894ec5bfa1339b975c1f))
+* **logs:** filterName property in MetricFilter ([#25246](https://github.com/aws/aws-cdk/issues/25246)) ([4f8aae5](https://github.com/aws/aws-cdk/commit/4f8aae50884b9238b3e0862874bcca6daea72a31))
+* **s3-deployment:** add some convenient methods to `CacheControl` ([#25477](https://github.com/aws/aws-cdk/issues/25477)) ([21fc1d1](https://github.com/aws/aws-cdk/commit/21fc1d1945a5dd75a6d413f4fde563b2c9255c84))
+* **secretsmanager:** add support for rotateImmediatelyOnUpdate for secret rotation schedule ([#25652](https://github.com/aws/aws-cdk/issues/25652)) ([cdafcc5](https://github.com/aws/aws-cdk/commit/cdafcc52ad4aea3ef7f1446da7521fb504cb33b9)), closes [#25365](https://github.com/aws/aws-cdk/issues/25365)
+* new synthesizer separates assets out per CDK application  ([#24430](https://github.com/aws/aws-cdk/issues/24430)) ([ae21ecc](https://github.com/aws/aws-cdk/commit/ae21ecc2a72be14ececdf0c5b8649e49dc456b0c)), closes [#25536](https://github.com/aws/aws-cdk/issues/25536)
+
+
+### Bug Fixes
+
+* **core:** allow override with cross-stack references ([#24920](https://github.com/aws/aws-cdk/issues/24920)) ([1135356](https://github.com/aws/aws-cdk/commit/11353560be08e86cd1604cd043657948038f0944)), closes [#18882](https://github.com/aws/aws-cdk/issues/18882)
+* **core:** cdk deploy stops early if 2 stacks with a dependency between them share an asset ([#25719](https://github.com/aws/aws-cdk/issues/25719)) ([9e45095](https://github.com/aws/aws-cdk/commit/9e450954e26c2ae3c8ddf8fac77ee2dfcc9977bc)), closes [#25714](https://github.com/aws/aws-cdk/issues/25714)
+* **lambda:** validation for FunctionUrlCorsOptions.maxAge ([#25495](https://github.com/aws/aws-cdk/issues/25495)) ([0f40880](https://github.com/aws/aws-cdk/commit/0f40880702fb01814b7bb35dea3a8154a7249659))
+* **s3:** KMS encryption works fine for server access logging target buckets ([#25350](https://github.com/aws/aws-cdk/issues/25350)) ([6c5b67e](https://github.com/aws/aws-cdk/commit/6c5b67ed3174bfd27a473e1468dc18917c3d7bba))
+
 ## [2.80.0](https://github.com/aws/aws-cdk/compare/v2.79.1...v2.80.0) (2023-05-19)
 
 
