@@ -40,7 +40,6 @@ const capacityProviderBottlerocket = new ecs.AsgCapacityProvider(stack, 'provide
   machineImageType: ecs.MachineImageType.BOTTLEROCKET,
 });
 
-
 const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
   vpc,
   enableFargateCapacityProviders: true,

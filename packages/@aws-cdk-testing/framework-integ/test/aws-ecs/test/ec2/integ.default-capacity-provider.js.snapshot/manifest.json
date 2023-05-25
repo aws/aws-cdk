@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "integ-default-capacity-provider.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/687fa683c4a58b386c9614e629f13006a1d99245e99981d834be4d63ccbd4d99.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f6363ccf7a97995b735f3a737a4e94a7f10af67f944a605324e300ffc478453.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -279,10 +279,112 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/integ-default-capacity-provider/asgBottlerocket/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketInstanceSecurityGroup6563698C"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketInstanceRoleC89B54F3"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketInstanceRoleDefaultPolicy7CA15C95"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketInstanceProfileEB284626"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketLaunchConfig6B47C973"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketASG156A7788"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketDrainECSHookFunctionServiceRole34F872E0"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketDrainECSHookFunctionServiceRoleDefaultPolicy8AC09BA9"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketDrainECSHookFunction83F2CB5B"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/DrainECSHook/Function/AllowInvoke:integdefaultcapacityproviderasgBottlerocketLifecycleHookDrainHookTopicA5086DB3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketDrainECSHookFunctionAllowInvokeintegdefaultcapacityproviderasgBottlerocketLifecycleHookDrainHookTopicA5086DB301162FB9"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketDrainECSHookFunctionTopic1D257D1E"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketLifecycleHookDrainHookTopic3AECA522"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketLifecycleHookDrainHookRole4AEEC99E"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketLifecycleHookDrainHookRoleDefaultPolicy80F1901E"
+          }
+        ],
+        "/integ-default-capacity-provider/asgBottlerocket/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "asgBottlerocketLifecycleHookDrainHookF30BCF94"
+          }
+        ],
+        "/integ-default-capacity-provider/SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
         "/integ-default-capacity-provider/EC2CapacityProvider/EC2CapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EC2CapacityProvider5A2E35CD"
+          }
+        ],
+        "/integ-default-capacity-provider/providerBottlerocket/providerBottlerocket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "providerBottlerocket90C039FA"
           }
         ],
         "/integ-default-capacity-provider/EC2CPCluster/Resource": [
