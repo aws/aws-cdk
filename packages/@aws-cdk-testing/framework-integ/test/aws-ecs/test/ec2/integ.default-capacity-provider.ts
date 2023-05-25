@@ -22,11 +22,24 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
 });
 
+const autoScalingGroupBottlerocket = new autoscaling.AutoScalingGroup(stack, 'asgBottlerocket', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: new ecs.BottleRocketImage(),
+});
+
 const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   autoScalingGroup,
   // This is to allow cdk destroy to work; otherwise deletion will hang bc ASG cannot be deleted
   enableManagedTerminationProtection: false,
 });
+
+const capacityProviderBottlerocket = new ecs.AsgCapacityProvider(stack, 'providerBottlerocket', {
+  autoScalingGroup: autoScalingGroupBottlerocket,
+  enableManagedTerminationProtection: false,
+  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+});
+
 
 const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
   vpc,
@@ -38,6 +51,8 @@ cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 1, weight: 1 },
   { capacityProvider: 'FARGATE_SPOT', weight: 1 },
 ]);
+
+cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
 
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,

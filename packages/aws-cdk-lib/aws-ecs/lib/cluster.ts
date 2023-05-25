@@ -474,6 +474,9 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (autoScalingGroup.connections?.securityGroups) {
+      this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
+    }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {

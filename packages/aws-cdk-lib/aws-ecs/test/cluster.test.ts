@@ -2683,6 +2683,124 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
+test('can add ASG capacity with autoscaling', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  const autoScalingGroupBottlerocket = new autoscaling.AutoScalingGroup(stack, 'asgBottlerocket', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: new ecs.BottleRocketImage(),
+  });
+
+  // WHEN
+  const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+    autoScalingGroup: autoScalingGroupAl2,
+    enableManagedTerminationProtection: false,
+  });
+
+  const capacityProviderBottlerocket = new ecs.AsgCapacityProvider(stack, 'providerBottlerocket', {
+    autoScalingGroup: autoScalingGroupBottlerocket,
+    enableManagedTerminationProtection: false,
+    machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  });
+
+  cluster.enableFargateCapacityProviders();
+
+  // Ensure not added twice
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+
+  // Add Bottlerocket ASG Capacity Provider
+  cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
+  
+  // THEN Bottlerocket LaunchConfiguration
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '\n[settings.ecs]\ncluster = \"',
+            {
+              Ref: 'EcsCluster97242B84',
+            },
+            '\"',
+          ],
+        ],
+      },
+    },
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'asgBottlerocketInstanceSecurityGroup6563698C',
+          'GroupId',
+        ],
+      },
+    ],
+  });
+
+  // THEN AmazonLinux2 LaunchConfiguration
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: 'EcsCluster97242B84',
+
+            },
+            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+          ],
+        ],
+      },
+    },
+    SecurityGroups: [
+      {
+        'Fn::GetAtt': [
+          'asgal2InstanceSecurityGroup16510CAC',
+          'GroupId',
+        ],
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
+    CapacityProviders: [
+      'FARGATE',
+      'FARGATE_SPOT',
+      {
+        Ref: 'provideral2A427CBC0',
+      },
+      {
+        Ref: 'providerBottlerocket90C039FA',
+      },
+    ],
+    Cluster: {
+      Ref: 'EcsCluster97242B84',
+    },
+    DefaultCapacityProviderStrategy: [],
+  });
+
+});
 test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
   // GIVEN
   const app = new cdk.App();
