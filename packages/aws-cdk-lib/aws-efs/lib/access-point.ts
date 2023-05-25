@@ -1,7 +1,7 @@
-import { ArnFormat, IResource, Resource, Stack, Tags } from '../../core';
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
+import { ArnFormat, IResource, Resource, Stack, Tags } from '../../core';
 
 /**
  * Represents an EFS AccessPoint

@@ -1,3 +1,4 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 export const AWS_CDK_METADATA = new Set([
   'us-east-2',
   'us-east-1',
@@ -48,7 +49,9 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-southeast-1': 'Z3O0J2DXBE1FTB',
   'ap-southeast-2': 'Z1WCIGYICN2BYD',
   'ap-southeast-3': 'Z01846753K324LI26A3VV',
+  // 'ap-southeast-4': 'Z0312387243XT5FE14WFO',
   'ca-central-1': 'Z1QDHH18159H29',
+  'cn-north-1': 'Z5CN8UMXT92WN',
   'cn-northwest-1': 'Z282HJ1KT0DH03',
   'eu-central-1': 'Z21DNDUVLTQW6Q',
   'eu-central-2': 'Z030506016YDQGETNASS',
@@ -83,6 +86,7 @@ export const EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS: { [region: string]: string } = {
   'ap-south-1': 'Z18NTBI3Y7N9TZ',
   'ap-southeast-1': 'Z16FZ9L249IFLT',
   'ap-southeast-2': 'Z2PCDNR3VC2G1N',
+  'ap-southeast-3': 'Z05913172VM7EAZB40TA8',
   'ca-central-1': 'ZJFCZL7SSZB5I',
   'eu-central-1': 'Z1FRNW7UH4DEZJ',
   'eu-north-1': 'Z23GO28BZ5AETM',

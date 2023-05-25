@@ -30,7 +30,6 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
       unwritten.delete(flavor);
     }
 
-
     cb({
       legacy: (testFn) => {
         scratchOff('legacy');

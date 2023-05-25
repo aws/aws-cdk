@@ -1,6 +1,6 @@
+import * as sinon from 'sinon';
 import { Template } from '../../assertions';
 import { App, Stack, Token } from '../../core';
-import * as sinon from 'sinon';
 import * as iam from '../lib';
 import { arrayDiff } from '../lib/oidc-provider/diff';
 import { external } from '../lib/oidc-provider/external';

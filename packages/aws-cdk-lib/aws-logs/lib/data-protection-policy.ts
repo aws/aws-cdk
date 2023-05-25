@@ -1,7 +1,7 @@
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { IBucket } from '../../aws-s3';
+import { Stack } from '../../core';
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
@@ -11,7 +11,7 @@ export class DataProtectionPolicy {
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new Error("DataIdentifier cannot be empty");
+      throw new Error('DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }
@@ -74,7 +74,7 @@ export class DataProtectionPolicy {
         },
       },
     ];
-    return {name, description, version, statement};
+    return { name, description, version, statement };
   }
 }
 
@@ -170,7 +170,6 @@ export interface DataProtectionPolicyProps {
    */
   readonly deliveryStreamNameAuditDestination?: string;
 }
-
 
 /**
  * A data protection identifier. If an identifier is supported but not in this class, it can be passed in the constructor instead.
