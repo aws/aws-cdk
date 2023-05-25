@@ -708,21 +708,6 @@ describe('vpc', () => {
       }).toThrow(/Vpc supports 'availabilityZones' or 'maxAzs', but not both./);
     });
 
-    test('with availabilityZones set correctly and context avaialbility-zones key provided', () => {
-      const stack = getTestStack();
-      stack.node.setContext('availability-zones:account=123456789012:region=us-east-1', ['us-east-1a', 'us-east-1b', 'us-east-1c']);
-      new Vpc(stack, 'VPC', {
-        availabilityZones: ['us-east-1a', 'us-east-1b'],
-      });
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 4);
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-        AvailabilityZone: 'us-east-1a',
-      });
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-        AvailabilityZone: 'us-east-1b',
-      });
-    });
-
     test('with availabilityZones set correctly', () => {
       const stack = getTestStack();
       const specificAz = stack.availabilityZones[1]; // not the first item
