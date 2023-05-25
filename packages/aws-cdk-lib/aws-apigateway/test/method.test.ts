@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 
@@ -31,7 +31,6 @@ describe('method', () => {
       },
     });
 
-
   });
 
   test('method options can be specified', () => {
@@ -54,7 +53,6 @@ describe('method', () => {
       ApiKeyRequired: true,
       OperationName: 'MyOperation',
     });
-
 
   });
 
@@ -86,7 +84,6 @@ describe('method', () => {
         },
       },
     });
-
 
   });
 
@@ -138,7 +135,6 @@ describe('method', () => {
       },
     });
 
-
   });
 
   test('use default integration from api', () => {
@@ -164,7 +160,6 @@ describe('method', () => {
         Uri: 'https://amazon.com',
       },
     });
-
 
   });
 
@@ -199,7 +194,6 @@ describe('method', () => {
       ],
     });
 
-
   });
 
   test('"testMethodArn" returns the ARN of the "test-invoke-stage" stage (console UI)', () => {
@@ -231,7 +225,6 @@ describe('method', () => {
       ],
     });
 
-
   });
 
   test('"methodArn" returns an arn with "*" as its stage when deploymentStage is not set', () => {
@@ -259,7 +252,6 @@ describe('method', () => {
         ],
       ],
     });
-
 
   });
 
@@ -305,7 +297,6 @@ describe('method', () => {
         ],
       ],
     });
-
 
   });
 
@@ -406,7 +397,6 @@ describe('method', () => {
       }],
     });
 
-
   });
 
   test('multiple integration responses can be used', () => { // @see https://github.com/aws/aws-cdk/issues/1608
@@ -505,7 +495,6 @@ describe('method', () => {
       },
     });
 
-
   });
 
   test('methodResponse has a mix of response modes', () => {
@@ -570,7 +559,6 @@ describe('method', () => {
       }],
     });
 
-
   });
 
   test('method has a request validator', () => {
@@ -600,7 +588,6 @@ describe('method', () => {
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
     });
-
 
   });
 
@@ -632,7 +619,6 @@ describe('method', () => {
       },
     });
 
-
   });
 
   test('authorizer is bound correctly', () => {
@@ -648,7 +634,6 @@ describe('method', () => {
       AuthorizationType: 'CUSTOM',
       AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
     });
-
 
   });
 
@@ -679,7 +664,6 @@ describe('method', () => {
       RestApiId: stack.resolve(restApi.restApiId),
     });
 
-
   });
 
   test('fails when authorization type does not match the authorizer', () => {
@@ -693,7 +677,6 @@ describe('method', () => {
         authorizer: DUMMY_AUTHORIZER,
       });
     }).toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
-
 
   });
 
@@ -711,7 +694,6 @@ describe('method', () => {
         authorizationType: apigw.AuthorizationType.NONE,
       });
     }).toThrow(/Authorization type is set to NONE which is different from what is required by the authorizer/);
-
 
   });
 
@@ -735,7 +717,6 @@ describe('method', () => {
       ApiKeyRequired: true,
       AuthorizationScopes: ['AuthScope1', 'AuthScope2'],
     });
-
 
   });
 
@@ -764,7 +745,6 @@ describe('method', () => {
       OperationName: 'defaultAuthScopes',
       AuthorizationScopes: ['DefaultAuth'],
     });
-
 
   });
 
@@ -795,7 +775,6 @@ describe('method', () => {
       AuthorizationScopes: ['MethodAuthScope'],
     });
 
-
   });
 
   test('Auth Scopes absent', () => {
@@ -820,7 +799,6 @@ describe('method', () => {
       OperationName: 'authScopesAbsent',
       AuthorizationScopes: Match.absent(),
     });
-
 
   });
 
@@ -850,7 +828,6 @@ describe('method', () => {
       Name: 'test-validator',
     });
 
-
   });
 
   test('method does not have a request validator', () => {
@@ -868,7 +845,6 @@ describe('method', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       RequestValidatorId: Match.absent(),
     });
-
 
   });
 
@@ -899,7 +875,6 @@ describe('method', () => {
     expect(() => new apigw.Method(stack, 'method', methodProps))
       .toThrow(/Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
 
-
   });
 
   testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
@@ -914,7 +889,6 @@ describe('method', () => {
     expect(method.restApi).toBeDefined();
     expect(method.api).toBeDefined();
     expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
-
 
   });
 
@@ -932,7 +906,6 @@ describe('method', () => {
     // THEN
     expect(() => method.restApi).toThrow(/not available on Resource not connected to an instance of RestApi/);
     expect(method.api).toBeDefined();
-
 
   });
 
@@ -1072,6 +1045,54 @@ describe('method', () => {
       expect(metric.statistic).toEqual('Average');
       expect(metric.color).toEqual(color);
       expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+    });
+
+    test('grantExecute', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'test-api');
+      const method = api.root.addResource('pets').addMethod('GET');
+      method.grantExecute(user);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':execute-api:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'testapiD6451F70' },
+                    '/',
+                    { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+                    '/GET/pets',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        Users: [{
+          Ref: 'user2C2B57AE',
+        }],
+      });
     });
   });
 });

@@ -1,9 +1,9 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
 import { Construct, Node } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import { IResource, Resource, Annotations, withResolved } from '../../core';
 
 /**
  * NodeGroup interface
@@ -492,7 +492,6 @@ const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
   NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
-
 
 /**
  * This function check if the instanceType is GPU instance.

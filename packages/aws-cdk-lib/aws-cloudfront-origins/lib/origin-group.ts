@@ -1,5 +1,5 @@
-import * as cloudfront from '../../aws-cloudfront';
 import { Construct } from 'constructs';
+import * as cloudfront from '../../aws-cloudfront';
 
 /** Construction properties for `OriginGroup`. */
 export interface OriginGroupProps {

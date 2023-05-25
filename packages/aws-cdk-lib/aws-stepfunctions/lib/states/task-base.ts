@@ -1,14 +1,13 @@
+import { Construct } from 'constructs';
+import { renderJsonPath, State } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
-import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-
 
 /**
  * Props that are common to all tasks

@@ -1,7 +1,7 @@
-import { Grant, IGrantable } from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
+import { Grant, IGrantable } from '../../aws-iam';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * The compute platform of the profiling group.

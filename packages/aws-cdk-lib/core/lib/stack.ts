@@ -1,7 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxschema from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
@@ -21,6 +19,8 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import * as cxschema from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -1113,7 +1113,6 @@ export class Stack extends Construct implements ITaggable {
     return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
 
-
   /**
    * Create a CloudFormation Export for a string value
    *
@@ -1741,7 +1740,7 @@ import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
-import { StringSpecializer } from './stack-synthesizers/_shared';
+import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';

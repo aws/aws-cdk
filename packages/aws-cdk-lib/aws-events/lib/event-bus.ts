@@ -1,8 +1,8 @@
-import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import * as iam from '../../aws-iam';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 
 /**
  * Interface which all EventBus based classes MUST implement

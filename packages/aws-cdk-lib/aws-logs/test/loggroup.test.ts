@@ -1,8 +1,9 @@
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { Bucket } from '../../aws-s3';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays } from '../lib';
+import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -452,6 +453,235 @@ describe('log group', () => {
     expect(logGroup.logGroupPhysicalName()).toEqual('my-log-group');
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: 'my-log-group',
+    });
+  });
+
+  test('set data protection policy with custom name and description and no audit destinations', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [DataIdentifier.EMAILADDRESS],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy string-based data identifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [new DataIdentifier('NewIdentifier')],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/NewIdentifier',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/NewIdentifier',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with audit destinations', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const auditLogGroup = new LogGroup(stack, 'LogGroupAudit', { logGroupName: 'audit-log-group' });
+    const auditS3Bucket = new Bucket(stack, 'BucketAudit', { bucketName: 'audit-bucket' });
+    const auditDeliveryStreamName = 'delivery-stream-name';
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      identifiers: [DataIdentifier.EMAILADDRESS],
+      logGroupAuditDestination: auditLogGroup,
+      s3BucketAuditDestination: auditS3Bucket,
+      deliveryStreamNameAuditDestination: auditDeliveryStreamName,
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'data-protection-policy-cdk',
+        description: 'cdk generated data protection policy',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {
+                  cloudWatchLogs: {
+                    logGroup: {
+                      Ref: 'LogGroupAudit2C8B7F73',
+                    },
+                  },
+                  firehose: {
+                    deliveryStream: auditDeliveryStreamName,
+                  },
+                  s3: {
+                    bucket: {
+                      Ref: 'BucketAudit1DED3529',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
     });
   });
 });

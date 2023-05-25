@@ -1,8 +1,8 @@
-import * as core from '../../core';
-import * as cfn_parse from '../../core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+import * as core from '../../core';
+import * as cfn_parse from '../../core/lib/helpers-internal';
 
 /**
  * Construction properties of `CfnInclude`.
