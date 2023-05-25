@@ -1,8 +1,8 @@
-import * as iam from '../../../aws-iam';
-import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
 import { Construct } from 'constructs';
 import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
+import * as iam from '../../../aws-iam';
+import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 

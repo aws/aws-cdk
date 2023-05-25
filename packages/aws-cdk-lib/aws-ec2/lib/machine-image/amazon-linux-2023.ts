@@ -47,7 +47,6 @@ export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageS
   readonly kernel?: AmazonLinux2023Kernel;
 }
 
-
 /**
  * A SSM Parameter that contains the AMI ID for Amazon Linux 2023
  */

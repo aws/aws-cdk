@@ -1,8 +1,8 @@
+import { IDependable } from 'constructs';
 import { Connections } from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
-import { IDependable } from 'constructs';
 
 /**
  * FileSystem configurations for the Lambda function

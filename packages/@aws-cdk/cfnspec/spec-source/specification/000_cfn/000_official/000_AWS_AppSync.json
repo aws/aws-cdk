@@ -1,5 +1,5 @@
 {
-  "$version": "120.0.0",
+  "$version": "122.0.0",
   "PropertyTypes": {
     "AWS::AppSync::DataSource.AuthorizationConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-datasource-authorizationconfig.html",
@@ -838,7 +838,16 @@
         "Arn": {
           "PrimitiveType": "String"
         },
+        "GraphQLDns": {
+          "PrimitiveType": "String"
+        },
         "GraphQLUrl": {
+          "PrimitiveType": "String"
+        },
+        "RealtimeDns": {
+          "PrimitiveType": "String"
+        },
+        "RealtimeUrl": {
           "PrimitiveType": "String"
         }
       },
@@ -893,6 +902,12 @@
           "Required": false,
           "Type": "UserPoolConfig",
           "UpdateType": "Mutable"
+        },
+        "Visibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-visibility",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
         },
         "XrayEnabled": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-xrayenabled",

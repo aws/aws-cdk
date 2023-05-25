@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as cxapi from '../../../cx-api';
 import { AssetType } from './asset-type';
 import { Step } from './step';
+import * as cxapi from '../../../cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 

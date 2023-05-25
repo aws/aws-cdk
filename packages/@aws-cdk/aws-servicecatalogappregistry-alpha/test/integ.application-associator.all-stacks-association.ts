@@ -5,7 +5,6 @@ import * as appreg from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
-
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'AppRegistryAssociatedApplication',
