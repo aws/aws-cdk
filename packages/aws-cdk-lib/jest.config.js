@@ -9,7 +9,6 @@ module.exports = {
   ],
   maxWorkers: '50%',
   preset: 'ts-jest',
-  testEnvironment: 'node',
   testMatch: [
     '<rootDir>/**/test/**/?(*.)+(test).ts',
   ],
