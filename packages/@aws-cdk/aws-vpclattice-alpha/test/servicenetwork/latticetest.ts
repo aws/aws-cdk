@@ -61,15 +61,10 @@ export class ServiceNetworkStack extends core.Stack {
       }),
     );
 
-    // add a LatticeAuthPolicy to the serviceNetwork, tis will
-    // allow this account ( and this account only ) to use the
-    // service network. THere is no need to specify the resource
-    // or actions as the method will fill provide them by default
-    serviceNetwork.addLatticeAuthPolicy(
+    // grantAccess to the serviceNetwork for these Principals.
+    serviceNetwork.grantAccess(
       [
-        new iam.PolicyStatement(
-          { principals: [new iam.AccountPrincipal(core.Aws.ACCOUNT_ID)] },
-        ),
+        new iam.AccountPrincipal(core.Aws.ACCOUNT_ID),
       ],
     );
 
@@ -117,13 +112,12 @@ export class ServiceNetworkStack extends core.Stack {
     // associate the service with the serviceNetwork
     serviceNetwork.addService(service);
 
-
-    service.addLatticeAuthPolicy([
-      new iam.PolicyStatement({
-        principals: [new iam.AccountPrincipal(core.Aws.ACCOUNT_ID)],
-        resources: ['*'],
-      }),
-    ]);
+    // this will permit access to the entire service
+    service.grantAccess(
+      [
+        new iam.AccountPrincipal(core.Aws.ACCOUNT_ID),
+      ],
+    );
 
 
     // by default the listener will add a default method of
@@ -143,6 +137,9 @@ export class ServiceNetworkStack extends core.Stack {
       pathMatch: {
         path: '/',
       },
+      allowedPrincipals: [
+        new iam.AccountPrincipal('123456789012'),
+      ],
     });
 
 

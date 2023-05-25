@@ -24,11 +24,6 @@ export interface IService extends core.IResource {
   readonly serviceId: string;
 
   /**
-   * Add An Authentication Policy to the Service.
-   * @param policyStatement[];
-   */
-  addLatticeAuthPolicy(policyStatement: iam.PolicyStatement[]): iam.PolicyDocument;
-  /**
    * Add A vpc listener to the Service.
    * @param props
    */
@@ -62,11 +57,13 @@ export interface IService extends core.IResource {
    */
   addName(name: string): void;
   /**
-   * add Tags to the service
-   * @deafult
+   * grant access to the service
+   *
    */
-
+  grantAccess(principals: iam.IPrincipal[]): void;
 }
+
+
 /**
  * Properties to Share the Service
  */
@@ -149,37 +146,25 @@ export class Service extends core.Resource implements IService {
   }
 
   /**
-   * add an IAM policy to the service network. statements should only
-   * contain a single action 'vpc-lattice-svcs:Invoke' and a single resource
-   * which is the service network ARN. The policy statements resource and action
-   * are optional. If they are not provided, the correct values will be set.
+   * .grantAccess on a lattice service, will permit the principals to
+   * access all of the service. Consider using more granual permissions
+   * at the rule level.
    *
-   * @param policyStatements
+   * @param principals
    */
-  public addLatticeAuthPolicy(policyStatements: iam.PolicyStatement[]): iam.PolicyDocument {
+  public grantAccess(principals: iam.IPrincipal[]): iam.PolicyDocument {
 
     let policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
 
-    // create the policy document and validdate the action
-    const validAction = ['vpc-lattice-svcs:Invoke'];
-    const validResources = [this.serviceArn];
+    // create the policy document
 
-    policyStatements.forEach((statement) => {
-      if (statement.actions === undefined) {
-        statement.addActions('vpc-lattice-svcs:Invoke');
-      }
-      if (statement.resources === undefined) {
-        statement.addResources(this.serviceArn);
-      }
-      policyDocument.addStatements(statement);
-
-      if (statement.actions !== validAction) {
-        throw new Error('The actions for the policy statement are invalid, They must only be [\'vpc-lattice-svcs:Invoke\']');
-      }
-      if (statement.resources !== validResources) {
-        throw new Error('The resources for the policy statement are invalid, They must only be [\'' + this.serviceArn + '\']');
-      }
+    principals.forEach((principal) => {
+      principal.addToPrincipalPolicy(policyStatement);
     });
+    policyStatement.addActions('vpc-lattice-svcs:Invoke');
+    policyStatement.addResources(this.serviceArn + '/*');
+
 
     if (policyDocument.validateForResourcePolicy().length > 0) {
       throw new Error('policyDocument.validateForResourcePolicy() failed');
@@ -224,7 +209,7 @@ export class Service extends core.Resource implements IService {
     this.dnsEntry = dnsEntry;
   }
 
-  public addListener(props: vpclattice.ListenerProps): vpclattice.Listener {
+  public addListener(props: vpclattice.addListenerProps): vpclattice.Listener {
 
     // check the the port is in range if it is specificed
     if (props.port) {

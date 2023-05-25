@@ -2,11 +2,62 @@ import * as core from 'aws-cdk-lib';
 
 import {
   aws_vpclattice,
+  aws_iam as iam,
 }
   from 'aws-cdk-lib';
 
 import { Construct } from 'constructs';
 import * as vpclattice from './index';
+
+export interface IHttpMatchProperty {
+  /**
+   * The header matches. Matches incoming requests with rule based on request header value before applying rule action.
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-headermatches
+   */
+  headerMatches?: Array<aws_vpclattice.CfnRule.HeaderMatchProperty | core.IResolvable> | core.IResolvable;
+  /**
+   * The HTTP method type.
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-method
+   */
+  method?: string;
+  /**
+   * The path match.
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-pathmatch
+   */
+  pathMatch?: aws_vpclattice.CfnRule.PathMatchProperty | core.IResolvable;
+}
+
+
+export interface addListenerProps {
+  /**
+   *  * A default action that will be taken if no rules match.
+   * @ default
+  */
+  readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
+
+  /**
+  * protocol that the listener will listen on
+  * @default HTTPS
+  * @see vpclattice.Protocol
+  */
+  readonly protocol?: vpclattice.Protocol | undefined;
+
+  /**
+  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
+  * @default 80 or 443 depending on the Protocol
+  */
+  readonly port?: number | undefined;
+
+  /**
+  * The Id of the service that this will be added to.
+  */
+  readonly name: string;
+
+}
+
 
 /**
  * Propertys to Create a Lattice Listener
@@ -29,15 +80,15 @@ export interface ListenerProps {
   /**
   * The Id of the service that this will be added to.
   */
-  readonly name: string
+  readonly name: string;
   /**
-   * The service Identifier
+   * The service
    */
-  readonly serviceIdentifier: string
+  readonly service: vpclattice.Service;
 }
 
 /**
- * Create a vpcLattice service network.
+ * Create a vpcLattice service.
  * Implemented by `Service`.
  */
 export interface IListener extends core.IResource {
@@ -94,6 +145,12 @@ export interface AddRuleProps {
   * @default none
   */
   readonly methodMatch?: vpclattice.HTTPMethods | undefined
+
+  /**
+   * AuthPolicy for rule
+   * @default none
+  */
+  readonly allowedPrincipals?: iam.IPrincipal[] | undefined;
 }
 
 
@@ -118,7 +175,7 @@ export class Listener extends core.Resource implements IListener {
   /**
    * The Id of the service this listener is attached to
    */
-  readonly serviceIdentifier: string
+  readonly service: vpclattice.Service;
 
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
@@ -138,12 +195,13 @@ export class Listener extends core.Resource implements IListener {
       defaultAction: defaultAction,
       protocol: props.protocol,
       port: props.port,
-      serviceIdentifier: props.serviceIdentifier,
+      serviceIdentifier: props.service.serviceId,
     });
 
     this.listenerId = listener.attrId;
     this.listenerArn = listener.attrArn;
-    this.serviceIdentifier = props.serviceIdentifier;
+    this.service = props.service;
+
   }
 
   /**
@@ -151,10 +209,23 @@ export class Listener extends core.Resource implements IListener {
    * @param props AddRuleProps
    */
   public addListenerRule(props: AddRuleProps): void {
+
+    // conditionaly build a policy statement if principals where provided
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+
+    // add principals
+    if (props.allowedPrincipals) {
+      // add the principals
+      props.allowedPrincipals.forEach((principal) => {
+        principal.addToPrincipalPolicy(policyStatement);
+      });
+      // add the action for the statement
+      policyStatement.addActions('vpc-lattice-svcs:Invoke');
+    }
+
     /**
     * Create the Action for the Rule
     */
-
     let action: aws_vpclattice.CfnRule.ActionProperty;
 
     // if the rule has a fixed response
@@ -185,123 +256,102 @@ export class Listener extends core.Resource implements IListener {
       };
     }
 
-    let match: aws_vpclattice.CfnRule.MatchProperty = {
-      httpMatch: {
-        method: vpclattice.HTTPMethods.GET,
-      },
-    };
-
-    // check to see if a rule with this priority has already been assigned
+    /**
+    * Validate the priority and set it in teh rule
+    */
     if (props.priority in this.listenerPrioritys) {
       throw new Error('Priority is already in use');
     }
     this.listenerPrioritys.push(props.priority);
 
+    // process the matching type
+    let match: IHttpMatchProperty = {};
+    // fail if at least one method is not selected
     if (!(props.methodMatch || props.pathMatch || props.headerMatchs)) {
       throw new Error('At least one of PathMatch, headerMatch, or MethodMatch must be set');
-    } else {
-
-      let matchMethodSet: boolean = false;
-
-      // method match
-      if (props.methodMatch) {
-        matchMethodSet = true;
-        match = {
-          httpMatch: {
-            method: props.methodMatch,
-          },
-        };
-      }
-
-      // path match
-      if (props.pathMatch) {
-        if (matchMethodSet) {
-          throw new Error(' Only one of PathMatch, headerMatch, or MethodMatch can be set');
-        }
-        matchMethodSet = true;
-
-        if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.EXACT) {
-          match = {
-            httpMatch: {
-              pathMatch: {
-                match: {
-                  exact: props.pathMatch.path,
-                },
-                caseSensitive: props.pathMatch.caseSensitive ?? false,
-              },
-
-            },
-          };
-        }
-
-        if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.PREFIX) {
-          match = {
-            httpMatch: {
-              pathMatch: {
-                match: {
-                  prefix: props.pathMatch.path,
-                },
-                caseSensitive: props.pathMatch.caseSensitive ?? false,
-              },
-            },
-          };
-        }
-      }
-
-      // header Match
-      if (props.headerMatchs) {
-        if (matchMethodSet) {
-          throw new Error(' Only one of PathMatch, headerMatch, or MethodMatch can be set');
-        }
-
-        let headerMatches: aws_vpclattice.CfnRule.HeaderMatchProperty[] = [];
-
-        props.headerMatchs.forEach((headerMatch) => {
-
-          if (headerMatch.matchOperator === vpclattice.MatchOperator.EXACT) {
-            headerMatches.push({
-              name: headerMatch.headername,
-              match: {
-                exact: headerMatch.matchValue,
-              },
-              caseSensitive: headerMatch.caseSensitive ?? false,
-            });
-          } else if (headerMatch.matchOperator === vpclattice.MatchOperator.CONTAINS) {
-            headerMatches.push({
-              name: headerMatch.headername,
-              match: {
-                contains: headerMatch.matchValue,
-              },
-              caseSensitive: headerMatch.caseSensitive ?? false,
-            });
-          } else if (headerMatch.matchOperator === vpclattice.MatchOperator.PREFIX) {
-            headerMatches.push({
-              name: headerMatch.headername,
-              match: {
-                prefix: headerMatch.matchValue,
-              },
-              caseSensitive: headerMatch.caseSensitive ?? false,
-            });
-
-          }
-        });
-
-        match = {
-          httpMatch: {
-            headerMatches: headerMatches,
-          },
-        };
-      }
-
-      // finally create a rule
-      new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
-        action: action,
-        match: match,
-        priority: props.priority,
-        listenerIdentifier: this.listenerId,
-        serviceIdentifier: this.serviceIdentifier,
-      });
     }
 
+    // method match
+    if (props.methodMatch) {
+      match.method = props.methodMatch;
+      policyStatement.addCondition('StringEquals', { 'vpc-lattice-svcs:RequestMethod': props.methodMatch });
+    }
+
+    // path match
+    if (props.pathMatch) {
+
+      if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.EXACT) {
+        match.pathMatch = {
+          match: {
+            exact: props.pathMatch.path,
+          },
+          caseSensitive: props.pathMatch.caseSensitive ?? false,
+        };
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
+        policyStatement.addResources(arn + props.pathMatch.path);
+      };
+
+      if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.PREFIX) {
+        match.pathMatch = {
+          match: {
+            prefix: props.pathMatch.path,
+          },
+          caseSensitive: props.pathMatch.caseSensitive ?? false,
+        };
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
+        policyStatement.addResources(arn + props.pathMatch.path + '*');
+      }
+    }
+
+    // header Match
+    if (props.headerMatchs) {
+
+      let headerMatches: aws_vpclattice.CfnRule.HeaderMatchProperty[] = [];
+
+      props.headerMatchs.forEach((headerMatch) => {
+
+        if (headerMatch.matchOperator === vpclattice.MatchOperator.EXACT) {
+          headerMatches.push({
+            name: headerMatch.headername,
+            match: {
+              exact: headerMatch.matchValue,
+            },
+            caseSensitive: headerMatch.caseSensitive ?? false,
+          });
+          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue } );
+        } else if (headerMatch.matchOperator === vpclattice.MatchOperator.CONTAINS) {
+          headerMatches.push({
+            name: headerMatch.headername,
+            match: {
+              contains: headerMatch.matchValue,
+            },
+            caseSensitive: headerMatch.caseSensitive ?? false,
+          });
+          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `*${headerMatch.matchValue}*` });
+
+        } else if (headerMatch.matchOperator === vpclattice.MatchOperator.PREFIX) {
+          headerMatches.push({
+            name: headerMatch.headername,
+            match: {
+              prefix: headerMatch.matchValue,
+            },
+            caseSensitive: headerMatch.caseSensitive ?? false,
+          });
+          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `${headerMatch.matchValue}*` });
+        }
+      });
+      match.headerMatches = headerMatches;
+    };
+
+    this.service.authPolicy.addStatements(policyStatement);
+
+    // finally create a rule
+    new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
+      action: action,
+      match: match as aws_vpclattice.CfnRule.MatchProperty,
+      priority: props.priority,
+      listenerIdentifier: this.listenerId,
+      serviceIdentifier: this.service.serviceId,
+    });
   }
 }

@@ -63,7 +63,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add LatticeAuthPolicy
    */
-  addLatticeAuthPolicy(policyDocument: iam.PolicyStatement[]): void;
+  grantAccess(policyDocument: iam.IPrincipal[]): void;
   /**
    * Add Lattice Service Policy
    */
@@ -116,17 +116,29 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   /**
    * the authType of the service network
    */
-  public authType: vpclattice.AuthType | undefined;
+  authType: vpclattice.AuthType | undefined;
+  /**
+   * policy document to be used.
+   */
+  authPolicy: iam.PolicyDocument;
 
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id);
 
+    this.authPolicy = new iam.PolicyDocument();
+
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
+      authType: this.authType ?? vpclattice.AuthType.NONE,
     });
 
     this.serviceNetworkId = serviceNetwork.attrId;
     this.serviceNetworkArn = serviceNetwork.attrArn;
+
+    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
+      policy: this.authPolicy.toJSON(),
+      resourceIdentifier: this.serviceNetworkId,
+    });
   }
 
   /**
@@ -137,41 +149,19 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    *
    * @param policyStatements
    */
-  public addLatticeAuthPolicy(policyStatements: iam.PolicyStatement[]): void {
+  public grantAccess(principals: iam.IPrincipal[]): void {
 
-    let policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
 
-    // create the policy document and validdate the action
-    const validAction = ['vpc-lattice-svcs:Invoke'];
-    const validResources = [this.serviceNetworkArn];
-
-    policyStatements.forEach((statement) => {
-      if (statement.actions === undefined) {
-        statement.addActions('vpc-lattice-svcs:Invoke');
-      }
-      if (statement.resources === undefined) {
-        statement.addResources(this.serviceNetworkArn);
-      }
-      policyDocument.addStatements(statement);
-
-      if (statement.actions !== validAction) {
-        throw new Error('The actions for the policy statement are invalid, They must only be [\'vpc-lattice-svcs:Invoke\']');
-      }
-      if (statement.resources !== validResources) {
-        throw new Error('The resources for the policy statement are invalid, They must only be [\'' + this.serviceNetworkArn + '\']');
-      }
+    principals.forEach((principal) => {
+      principal.addToPrincipalPolicy(policyStatement);
     });
-
-    if (policyDocument.validateForResourcePolicy().length > 0) {
-      throw new Error('policyDocument.validateForResourcePolicy() failed');
-    }
+    policyStatement.addActions('vpc-lattice-svcs:Invoke');
+    policyStatement.addResources(this.serviceNetworkArn + '/*');
 
     this.authType = vpclattice.AuthType.IAM;
+    this.authPolicy.addStatements(policyStatement);
 
-    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
-      policy: policyDocument.toJSON(),
-      resourceIdentifier: this.serviceNetworkId,
-    });
   }
   /**
    * Add A lattice service to a lattice network
