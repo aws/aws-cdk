@@ -100,7 +100,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
-
   private policy?: ResourcePolicy;
 
   /**
@@ -585,4 +584,11 @@ export interface MetricFilterOptions {
    * @default - No unit attached to metrics.
    */
   readonly unit?: cloudwatch.Unit;
+
+  /**
+   * The name of the metric filter.
+   *
+   * @default - Cloudformation generated name.
+   */
+  readonly filterName?: string;
 }

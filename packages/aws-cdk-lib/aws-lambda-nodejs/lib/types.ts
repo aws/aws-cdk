@@ -382,7 +382,6 @@ export enum LogLevel {
   SILENT = 'silent',
 }
 
-
 /**
  * SourceMap mode for esbuild
  * @see https://esbuild.github.io/api/#sourcemap

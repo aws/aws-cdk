@@ -59,7 +59,6 @@ describe('ecr source action', () => {
         ]),
       });
 
-
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'detail': {

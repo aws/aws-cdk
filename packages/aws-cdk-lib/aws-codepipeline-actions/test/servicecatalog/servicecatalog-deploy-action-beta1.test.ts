@@ -51,7 +51,6 @@ describe('ServiceCatalog Deploy Action', () => {
       ]),
     });
 
-
   });
   test('deployment without a description works successfully', () => {
     // GIVEN
@@ -94,7 +93,6 @@ describe('ServiceCatalog Deploy Action', () => {
         }),
       ]),
     });
-
 
   });
 });

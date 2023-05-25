@@ -39,7 +39,6 @@ describe('codecommit', () => {
         },
       });
 
-
     });
 
     test('fails when triggers have duplicate names', () => {
@@ -50,7 +49,6 @@ describe('codecommit', () => {
       }).notify('myTrigger');
 
       expect(() => myRepository.notify('myTrigger')).toThrow();
-
 
     });
 
@@ -65,7 +63,6 @@ describe('codecommit', () => {
       // THEN
       expect(stack.resolve(repo.repositoryArn)).toEqual(repositoryArn);
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
-
 
     });
 
@@ -199,7 +196,6 @@ describe('codecommit', () => {
       expect(repo.env.account).toEqual('585695036304');
       expect(repo.env.region).toEqual('us-west-2');
 
-
     });
 
     test('can be imported using just a Repository name (the ARN is deduced)', () => {
@@ -248,7 +244,6 @@ describe('codecommit', () => {
         ],
       });
 
-
     });
 
     test('grant push', () => {
@@ -293,7 +288,6 @@ describe('codecommit', () => {
         },
       });
 
-
     });
 
     test('HTTPS (GRC) clone URL', () => {
@@ -314,7 +308,6 @@ describe('codecommit', () => {
           ],
         ],
       });
-
 
     });
   });
