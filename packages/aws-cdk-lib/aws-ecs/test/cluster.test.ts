@@ -2722,7 +2722,7 @@ test('can add ASG capacity with autoscaling', () => {
 
   // Add Bottlerocket ASG Capacity Provider
   cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
-  
+
   // THEN Bottlerocket LaunchConfiguration
   Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
     ImageId: {
