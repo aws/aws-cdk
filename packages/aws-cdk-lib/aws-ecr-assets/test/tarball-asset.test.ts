@@ -9,7 +9,6 @@ import { TarballImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-
 describe('image asset', () => {
   const tarballFile = path.join(__dirname, 'demo-tarball', 'empty.tar');
   test('test instantiating Asset Image', () => {

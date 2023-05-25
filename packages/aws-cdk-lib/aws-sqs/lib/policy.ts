@@ -1,8 +1,8 @@
-import { PolicyDocument } from '../../aws-iam';
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
+import { PolicyDocument } from '../../aws-iam';
+import { Resource } from '../../core';
 
 /**
  * Properties to associate SQS queues with a policy

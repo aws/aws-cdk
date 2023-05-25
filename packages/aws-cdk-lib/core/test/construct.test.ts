@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cxschema from '../../cloud-assembly-schema';
 import { Construct, ConstructOrder, IConstruct } from 'constructs';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
+import * as cxschema from '../../cloud-assembly-schema';
 import { Names } from '../lib';
 import { Annotations } from '../lib/annotations';
 

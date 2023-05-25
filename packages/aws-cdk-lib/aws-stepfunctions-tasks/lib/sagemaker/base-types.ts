@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as ecr from '../../../aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '../../../aws-ecr-assets';
@@ -6,7 +7,6 @@ import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Size } from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker

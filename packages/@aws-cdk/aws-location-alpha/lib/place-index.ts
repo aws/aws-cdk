@@ -174,7 +174,6 @@ export class PlaceIndex extends PlaceIndexBase {
    */
   public readonly placeIndexUpdateTime: string;
 
-
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
     if (props.placeIndexName && !Token.isUnresolved(props.placeIndexName) && !/^[-.\w]{1,100}$/.test(props.placeIndexName)) {
       throw new Error(`Invalid place index name. The place index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.placeIndexName}`);
