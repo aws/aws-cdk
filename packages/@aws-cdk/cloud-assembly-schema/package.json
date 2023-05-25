@@ -23,6 +23,9 @@
     }
   },
   "jsii": {
+    "excludeTypescript": [
+      "**/test/**/*.ts"
+    ],
     "outdir": "dist",
     "targets": {
       "java": {
