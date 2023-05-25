@@ -6,7 +6,7 @@ import * as flink from '../lib';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppTest');
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 new flink.Application(stack, 'App', {
   code: flink.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset')),

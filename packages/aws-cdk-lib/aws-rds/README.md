@@ -21,9 +21,6 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
   writer: rds.ClusterInstance.provisioned('writer', {
-    // optional , defaults to t3.medium
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  }),
   readers: [
     rds.ClusterInstance.provisioned('reader1', { promotionTier: 1 }),
     rds.ClusterInstance.serverlessV2('reader2'),

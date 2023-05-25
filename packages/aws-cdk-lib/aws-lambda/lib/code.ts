@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Represents the Lambda Handler Code.
@@ -277,6 +277,7 @@ export class AssetCode extends Code {
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
+        deployTime: true,
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
@@ -468,7 +469,7 @@ export class EcrImageCode extends Code {
     super();
   }
 
-  public bind(_: Construct): CodeConfig {
+  public bind(_scope: Construct): CodeConfig {
     this.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
 
     return {

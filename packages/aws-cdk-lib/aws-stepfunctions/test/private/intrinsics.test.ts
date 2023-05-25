@@ -1,6 +1,5 @@
 import { IntrinsicParser } from '../../lib/private/intrinstics';
 
-
 test('parse JSON path', () => {
   expect(parse('$.Path')).toEqual({ type: 'path', path: '$.Path' });
   expect(parse('$[\'complex\'].Path')).toEqual({ type: 'path', path: '$[\'complex\'].Path' });

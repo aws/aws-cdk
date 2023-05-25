@@ -5,7 +5,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-rotation');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
 const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
   vpc,

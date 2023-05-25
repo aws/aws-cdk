@@ -19,7 +19,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'my_vpc');
+    const vpc = new Vpc(this, 'my_vpc', { restrictDefaultSecurityGroup: false });
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),

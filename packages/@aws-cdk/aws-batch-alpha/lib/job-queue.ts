@@ -178,7 +178,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this.enabled = props?.enabled;
     this.schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, id, {
+    const resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {

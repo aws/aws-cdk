@@ -119,7 +119,6 @@ export function genScript(): string | undefined {
   return currentPackageJson().scripts?.gen;
 }
 
-
 export interface CDKBuildOptions {
   /**
    * What CloudFormation scope to generate resources for, if any
@@ -142,14 +141,14 @@ export interface CDKBuildOptions {
   };
 
   /**
-   * An optional command (formatted as a list of strings) to run before building
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before building
    *
    * (Typically a code generator)
    */
   pre?: string[];
 
   /**
-   * An optional command (formatted as a list of strings) to run after building
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after building
    *
    * (Schema generator for example)
    */
@@ -190,8 +189,13 @@ export interface CDKPackageOptions {
    */
   shrinkWrap?: boolean;
 
+  /**
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before packaging
+   */
+  pre?: string[];
+
   /*
-   * An optional command (formatted as a list of strings) to run after packaging
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after packaging
   */
   post?: string[];
 

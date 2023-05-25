@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { AmazonLinuxGeneration, Connections, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Peer, SubnetType, Vpc } from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '../../core';
 import { ILoadBalancerTarget, InstanceTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
