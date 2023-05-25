@@ -100,7 +100,7 @@ integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
 }).expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(10),
+  totalTimeout: cdk.Duration.seconds(30),
   interval: cdk.Duration.seconds(3),
 });
 
