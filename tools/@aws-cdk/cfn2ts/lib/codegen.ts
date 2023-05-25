@@ -17,6 +17,8 @@ enum TreeAttributes {
   CFN_PROPS = 'aws:cdk:cloudformation:props'
 }
 
+export const LEGACY_TAGGING: Record<string, string> = {};
+
 interface Dictionary<T> { [key: string]: T; }
 
 export interface CodeGeneratorOptions {
@@ -351,6 +353,7 @@ export default class CodeGenerator {
       this.code.line();
       for (const prop of Object.values(propMap)) {
         if (schema.isTagPropertyName(upcaseFirst(prop)) && schema.isTaggableResource(spec)) {
+          LEGACY_TAGGING[cfnName] = upcaseFirst(prop);
           this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.${prop}, { tagPropertyName: '${prop}' });`);
         } else {
           this.code.line(`this.${prop} = props.${prop};`);

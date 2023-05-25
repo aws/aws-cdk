@@ -4,7 +4,7 @@ import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import { AugmentationGenerator, AugmentationsGeneratorOptions } from './augmentation-generator';
 import { CannedMetricsGenerator } from './canned-metrics-generator';
-import CodeGenerator, { CodeGeneratorOptions } from './codegen';
+import CodeGenerator, { CodeGeneratorOptions, LEGACY_TAGGING } from './codegen';
 import { packageName } from './genspec';
 
 interface GenerateOutput {
@@ -140,6 +140,8 @@ export async function generateAll(
       moduleMap[name].resources = resources;
       moduleMap[name].files = outputFiles;
     }));
+
+  await fs.writeJson('tagging.json', LEGACY_TAGGING, { spaces: 2 });
 
   return moduleMap;
 }
