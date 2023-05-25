@@ -2,6 +2,7 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Creates a state machine with a task state to invoke a Lambda function
@@ -85,6 +86,22 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+});
+const res = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+const executionArn = res.getAttString('executionArn');
+integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn,
+}).expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(10),
+  interval: cdk.Duration.seconds(3),
 });
 
 app.synth();
