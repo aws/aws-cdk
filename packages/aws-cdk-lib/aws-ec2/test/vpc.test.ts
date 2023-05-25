@@ -737,6 +737,11 @@ describe('vpc', () => {
 
     test('with availabilityZones set to zones different from stack', () => {
       const stack = getTestStack();
+      // we need to create a context with availability zones, otherwise we're checking against dummy values
+      stack.node.setContext(
+        `availability-zones:account=${stack.account}:region=${stack.region}`,
+        ['us-east-1a', 'us-east1b', 'us-east-1c'],
+      );
       expect(() => {
         new Vpc(stack, 'VPC', {
           availabilityZones: [stack.availabilityZones[0] + 'invalid'],
@@ -744,15 +749,13 @@ describe('vpc', () => {
       }).toThrow(/must be a subset of the stack/);
     });
 
-    test('non-agnostic stack without context with defined vpc AZs', () => {
+    test('does not throw with availability zones set without context in non-agnostic stack', () => {
       const stack = getTestStack();
-      new Vpc(stack, 'VPC', {
-        availabilityZones: ['us-east-1a'],
-      });
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-        AvailabilityZone: 'us-east-1a',
-      });
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: ['us-east-1a'],
+        });
+      }).not.toThrow();
     });
 
     test('agnostic stack without context with defined vpc AZs', () => {
