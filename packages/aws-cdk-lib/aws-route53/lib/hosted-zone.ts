@@ -139,6 +139,11 @@ export class HostedZone extends Resource implements IHostedZone {
       props: query,
     }).value;
 
+
+    // CDK handles the '.' at the end, so remove it here
+    if (response.Name.endsWith('.')) {
+      response.Name = response.Name.substring(0, response.Name.length - 1);
+    }
     response.Id = response.Id.replace('/hostedzone/', '');
 
     return HostedZone.fromHostedZoneAttributes(scope, id, {
@@ -161,7 +166,7 @@ export class HostedZone extends Resource implements IHostedZone {
 
     validateZoneName(props.zoneName);
 
-    // addTrailingDot プロパティが false でなければ末尾にドットを追加
+    // Add a dot at the end if the addTrailingDot property is not false.
     const zoneName = (props.addTrailingDot === false || props.zoneName.endsWith('.')) ? props.zoneName : `${props.zoneName}.`;
 
     const resource = new CfnHostedZone(this, 'Resource', {
