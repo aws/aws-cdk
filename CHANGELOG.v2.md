@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.81.0](https://github.com/aws/aws-cdk/compare/v2.80.0...v2.81.0) (2023-05-25)
+
+
+### Features
+
+* **ec2:** added support for network interfaces on ec2 instances by providing an associatePublicIpAddress property ([#25441](https://github.com/aws/aws-cdk/issues/25441)) ([d43834d](https://github.com/aws/aws-cdk/commit/d43834d441ae8eb0192df45c1cfa0101e5533e4e)), closes [#17127](https://github.com/aws/aws-cdk/issues/17127)
+* **glue:** Add G.4X and G.8X worker types for AWS Glue ([#25637](https://github.com/aws/aws-cdk/issues/25637)) ([1e4ffcd](https://github.com/aws/aws-cdk/commit/1e4ffcd83c10c9fb17dafc20c03ee9dff30d7e3e))
+* **lambda:** lambda code assets are marked as deploy time assets ([#25705](https://github.com/aws/aws-cdk/issues/25705)) ([8a6b376](https://github.com/aws/aws-cdk/commit/8a6b3761adc4c4513bdf894ec5bfa1339b975c1f))
+* **logs:** filterName property in MetricFilter ([#25246](https://github.com/aws/aws-cdk/issues/25246)) ([4f8aae5](https://github.com/aws/aws-cdk/commit/4f8aae50884b9238b3e0862874bcca6daea72a31))
+* **s3-deployment:** add some convenient methods to `CacheControl` ([#25477](https://github.com/aws/aws-cdk/issues/25477)) ([21fc1d1](https://github.com/aws/aws-cdk/commit/21fc1d1945a5dd75a6d413f4fde563b2c9255c84))
+* **secretsmanager:** add support for rotateImmediatelyOnUpdate for secret rotation schedule ([#25652](https://github.com/aws/aws-cdk/issues/25652)) ([cdafcc5](https://github.com/aws/aws-cdk/commit/cdafcc52ad4aea3ef7f1446da7521fb504cb33b9)), closes [#25365](https://github.com/aws/aws-cdk/issues/25365)
+* new synthesizer separates assets out per CDK application  ([#24430](https://github.com/aws/aws-cdk/issues/24430)) ([ae21ecc](https://github.com/aws/aws-cdk/commit/ae21ecc2a72be14ececdf0c5b8649e49dc456b0c))
+
+
+### Bug Fixes
+
+* **core:** allow override with cross-stack references ([#24920](https://github.com/aws/aws-cdk/issues/24920)) ([1135356](https://github.com/aws/aws-cdk/commit/11353560be08e86cd1604cd043657948038f0944)), closes [#18882](https://github.com/aws/aws-cdk/issues/18882)
+* **core:** cdk deploy stops early if 2 stacks with a dependency between them share an asset ([#25719](https://github.com/aws/aws-cdk/issues/25719)) ([9e45095](https://github.com/aws/aws-cdk/commit/9e450954e26c2ae3c8ddf8fac77ee2dfcc9977bc)), closes [#25714](https://github.com/aws/aws-cdk/issues/25714)
+* **lambda:** validation for FunctionUrlCorsOptions.maxAge ([#25495](https://github.com/aws/aws-cdk/issues/25495)) ([0f40880](https://github.com/aws/aws-cdk/commit/0f40880702fb01814b7bb35dea3a8154a7249659))
+* **s3:** KMS encryption works fine for server access logging target buckets ([#25350](https://github.com/aws/aws-cdk/issues/25350)) ([6c5b67e](https://github.com/aws/aws-cdk/commit/6c5b67ed3174bfd27a473e1468dc18917c3d7bba))
+
+## [2.80.0](https://github.com/aws/aws-cdk/compare/v2.79.1...v2.80.0) (2023-05-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **eks:** A masters role is no longer provisioned by default. Use the `mastersRole` property to explicitly pass a role that needs cluster access. In addition, the creation role no longer allows any identity (with the appropriate `sts:AssumeRole` permissions) to assume it. 
+
+### Features
+
+* **apigateway:** add grantExecute to API Methods ([#25630](https://github.com/aws/aws-cdk/issues/25630)) ([ecb59fd](https://github.com/aws/aws-cdk/commit/ecb59fda50078e29d579b7b0ee82600f553aec75))
+* **appmesh:** access log format support for app mesh ([#25229](https://github.com/aws/aws-cdk/issues/25229)) ([c4b00be](https://github.com/aws/aws-cdk/commit/c4b00bee9a2ada024c8d838ba083549bc69889f8))
+* **appsync:** Add Private API support when creating a GraphqlApi ([#25569](https://github.com/aws/aws-cdk/issues/25569)) ([d7e263d](https://github.com/aws/aws-cdk/commit/d7e263d5d175f5f189f3ea3d1a5501b975a26281))
+* **cfnspec:** cloudformation spec v122.0.0 ([#25555](https://github.com/aws/aws-cdk/issues/25555)) ([5ccc569](https://github.com/aws/aws-cdk/commit/5ccc56975c323ea19fd0917def51184e13f440d9))
+* **cli:** assets can now depend on stacks ([#25536](https://github.com/aws/aws-cdk/issues/25536)) ([25d5d60](https://github.com/aws/aws-cdk/commit/25d5d60fd0ed852b1817d749b65c68d5279b38a3))
+* **cli:** logging can be corked ([#25644](https://github.com/aws/aws-cdk/issues/25644)) ([0643020](https://github.com/aws/aws-cdk/commit/064302007e902a1521ccc6948a5691cd777afc15)), closes [#25536](https://github.com/aws/aws-cdk/issues/25536)
+* **codepipeline-actions:** add KMSEncryptionKeyARN for S3DeployAction ([#24536](https://github.com/aws/aws-cdk/issues/24536)) ([b60876f](https://github.com/aws/aws-cdk/commit/b60876f7bd973f88e965c7e6204ced11c55c55a3)), closes [#24535](https://github.com/aws/aws-cdk/issues/24535)
+* **eks:** alb controller include versions 2.4.2 - 2.5.1 ([#25330](https://github.com/aws/aws-cdk/issues/25330)) ([83c4c36](https://github.com/aws/aws-cdk/commit/83c4c36e56917be248bdee1bc11516982d50b17a)), closes [#25307](https://github.com/aws/aws-cdk/issues/25307)
+* **msk:** Kafka version 3.4.0 ([#25557](https://github.com/aws/aws-cdk/issues/25557)) ([6317518](https://github.com/aws/aws-cdk/commit/6317518e5d68e5659237b676668fd69bfbd2f42f)), closes [#25522](https://github.com/aws/aws-cdk/issues/25522)
+* **scheduler:** schedule expression construct ([#25422](https://github.com/aws/aws-cdk/issues/25422)) ([97a698e](https://github.com/aws/aws-cdk/commit/97a698ee9e1e47ffb4af5d7d06cd309ddd3a2732))
+
+
+### Bug Fixes
+
+* **bootstrap:** bootstrap doesn't work in non-aws partitions anymore (revert security hub finding fix) ([#25540](https://github.com/aws/aws-cdk/issues/25540)) ([8854739](https://github.com/aws/aws-cdk/commit/8854739a6b4cdd33dc0da3b76b634b5ab151437b)), closes [/github.com/aws/aws-cdk/issues/19380#issuecomment-1512009270](https://github.com/aws//github.com/aws/aws-cdk/issues/19380/issues/issuecomment-1512009270) [#25272](https://github.com/aws/aws-cdk/issues/25272) [#25273](https://github.com/aws/aws-cdk/issues/25273) [#25507](https://github.com/aws/aws-cdk/issues/25507)
+* **eks:** overly permissive trust policies ([#25473](https://github.com/aws/aws-cdk/issues/25473)) ([51f0193](https://github.com/aws/aws-cdk/commit/51f0193bf34cca8254743561a1176e3ca5d83a74)). We would like to thank @twelvemo and @stefreak for reporting this issue.
+
 ## [2.79.1](https://github.com/aws/aws-cdk/compare/v2.79.0...v2.79.1) (2023-05-11)
 
 

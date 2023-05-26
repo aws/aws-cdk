@@ -293,7 +293,6 @@ export class CustomResourceProvider extends Construct {
       this.roleArn = Token.asString(this._role.getAtt('Arn'));
     }
 
-
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 

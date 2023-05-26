@@ -38,5 +38,4 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
 
-
 app.synth();
