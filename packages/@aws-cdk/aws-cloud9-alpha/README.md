@@ -136,6 +136,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 ```
 
 ## Auto-Hibernation
+
 A Cloud9 environemnt can automatically start and stop the associated EC2 instance to reduce costs.
 
 Use `automaticStopTimeMinutes` to specify the number of minutes until the running instance is shut down after the environment was last used.
