@@ -134,6 +134,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
   owner: cloud9.Owner.user(user)
 })
 ```
+
 ## Auto-Hibernation
 A Cloud9 environemnt can automatically start and stop the associated EC2 instance to reduce costs.
 
