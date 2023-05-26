@@ -46,7 +46,6 @@ describeDeprecated('BitBucket source Action', () => {
         ],
       });
 
-
     });
   });
 
@@ -79,7 +78,6 @@ describeDeprecated('BitBucket source Action', () => {
         ],
       },
     });
-
 
   });
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
@@ -153,7 +151,6 @@ describeDeprecated('BitBucket source Action', () => {
         },
       ],
     });
-
 
   });
 });

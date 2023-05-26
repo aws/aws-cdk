@@ -135,7 +135,6 @@ test('tiny file does not count as cache hit', async () => {
   expect(aws.mockS3.upload).toHaveBeenCalled();
 });
 
-
 test('upload file if new (list returns other key)', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.81.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.80.0-alpha.0...v2.81.0-alpha.0) (2023-05-25)
+
+
+### Features
+
+* **batch-alpha:** tag instances launched from your managed CEs ([#25643](https://github.com/aws/aws-cdk/issues/25643)) ([8498740](https://github.com/aws/aws-cdk/commit/849874045cd1e877619c3b636e6f16a58c85b4a1))
+
+## [2.80.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.79.1-alpha.0...v2.80.0-alpha.0) (2023-05-19)
+
 ## [2.79.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.79.0-alpha.0...v2.79.1-alpha.0) (2023-05-11)
 
 ## [2.79.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.78.0-alpha.0...v2.79.0-alpha.0) (2023-05-10)

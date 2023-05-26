@@ -19,7 +19,6 @@ beforeEach(() => {
   });
 });
 
-
 test('secret rotation single user', () => {
   // GIVEN
   const excludeCharacters = ' ;+%{}' + '@\'"`/\\#'; // DMS and BASH problem chars
@@ -349,7 +348,6 @@ test('rotation function name does not exceed 64 chars', () => {
     },
   });
 });
-
 
 test('with interface vpc endpoint', () => {
   // GIVEN

@@ -45,7 +45,6 @@ export class IntegTestSuite {
     public readonly synthContext?: { [name: string]: string },
   ) {}
 
-
   /**
    * Returns a list of stacks that have stackUpdateWorkflow disabled
    */
@@ -181,7 +180,6 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       ...ctxPragmaContext,
     };
   }
-
 
   /**
    * Reads stack names from the "!cdk-integ" pragma.
