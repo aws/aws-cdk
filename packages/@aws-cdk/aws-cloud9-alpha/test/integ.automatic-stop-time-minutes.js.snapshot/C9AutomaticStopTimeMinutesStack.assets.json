@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "b4ace33442eb5fb8a32765fb178c8b0cb78d32ae32217070deb47be21b72ce44": {
+      "source": {
+        "path": "C9AutomaticStopTimeMinutesStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b4ace33442eb5fb8a32765fb178c8b0cb78d32ae32217070deb47be21b72ce44.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
