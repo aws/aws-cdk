@@ -50,8 +50,12 @@ const submitJob = new LambdaInvoke(stack, 'Invoke Handler', {
 
 const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
   code: Code.fromInline(`exports.handler = async function(event, context) {
-        const fields = Object.keys(event).filter(key => key !== 'statusCode');
-        const fieldsAreSet = fields.every(field => field !== undefined);
+        const expectedFields = [
+          'execId', 'execInput', 'execName', 'execRoleArn',
+          'execStartTime', 'stateEnteredTime', 'stateName',
+          'stateRetryCount', 'stateMachineId', 'stateMachineName',
+        ];
+        const fieldsAreSet = expectedFields.every(field => event[field] !== undefined);
         return {
           status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'
         };
