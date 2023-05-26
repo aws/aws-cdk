@@ -1171,15 +1171,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // grant permissions to lambda execution role to allow access to provided secrets
     props.paramsAndSecrets.secrets?.forEach(secret => {
       secret.grantRead(this);
-      if (secret.encryptionKey) {
-        secret.encryptionKey.grantDecrypt(this);
-      }
     });
 
     // grant permission to lambda execution role to allow access to provided parameters
     props.paramsAndSecrets.parameters?.forEach(param => {
       param.grantRead(this);
-      // TODO: Figure out how to determine if param is secure string for kms:Decrypt
     });
 
     const layerVersion = props.paramsAndSecrets.layerVersion._bind(this, this);

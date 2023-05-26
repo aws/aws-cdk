@@ -103,7 +103,9 @@ export interface ParamsAndSecretsOptions {
    * Secrets Extension uses to make requests to Parameter Store or Secrets
    * Manager. There is no maximum limit. Minimum is 1.
    *
-   * Note: This is a per-client configuration.
+   * Note: Every running copy of this Lambda function may open the number of
+   * connections specified by this property. Thus, the total number of connections
+   * may exceed this number.
    *
    * @default 3
    */
@@ -192,7 +194,7 @@ export abstract class ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(scope: Construct, fn: lambda.IFunction): ParamsAndSecretsBindConfig {
         return {
-          arn: getVersionArn(scope, version, fn.architecture.name),
+          arn: this.getVersionArn(scope, version, fn.architecture.name),
           environmentVars: this.environmentVariablesFromOptions,
         };
       }
@@ -245,25 +247,27 @@ export abstract class ParamsAndSecretsLayerVersion {
       SSM_PARAMETER_STORE_TTL: this.options.parameterStoreTtl?.toSeconds() ?? 300,
     };
   }
-}
 
-/**
- * Function to retrieve the correct Parameters and Secrets Extension Lambda ARN from RegionInfo,
- * or create a mapping to look it up at stack deployment time.
- *
- * This function is run on CDK synthesis.
- */
-function getVersionArn(scope: IConstruct, version: string, architecture: string): string {
-  const stack = Stack.of(scope);
-  const region = stack.region;
+  /**
+   * Retrieve the correct Parameters and Secrets Extension Lambda ARN from RegionInfo,
+   * or create a mapping to look it up at stack deployment time.
+   *
+   * This function is run on CDK synthesis.
+   */
+  private getVersionArn(scope: IConstruct, version: string, architecture: string): string {
+    const stack = Stack.of(scope);
+    const region = stack.region;
 
-  if (region !== undefined && !Token.isUnresolved(region)) {
-    const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
-    if (layerArn === undefined) {
-      throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
+    // region is resolved - look it up directly from table
+    if (region !== undefined && !Token.isUnresolved(region)) {
+      const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
+      if (layerArn === undefined) {
+        throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
+      }
+      return layerArn;
     }
-    return layerArn;
-  }
 
-  return stack.regionalFact(FactName.paramsAndSecretsLambdaLayer(version, architecture));
+    // region is unresolved - create mapping and look up during deployment
+    return stack.regionalFact(FactName.paramsAndSecretsLambdaLayer(version, architecture));
+  }
 }
