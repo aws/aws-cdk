@@ -963,3 +963,45 @@ test('fails if parameterName is undefined and simpleName is "false"', () => {
   // THEN
   expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(/If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
 });
+
+test('When a parameter name contains unresolved tokens, use dynamic reference instead', () => {
+  // GIVEN
+  const app = new cdk.App();
+
+  const PARAM_NAME = 'service-token-param-name';
+
+  const stackA = new cdk.Stack(app, 'StackA');
+  new cdk.CfnOutput(stackA, 'OutputParamName', {
+    exportName: PARAM_NAME,
+    value: 'service-token',
+  });
+
+  const stackB = new cdk.Stack(app, 'StackB');
+  stackB.addDependency(stackA);
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterAttributes(stackB, 'import-string-param', {
+    simpleName: true,
+    parameterName: cdk.Fn.importValue(PARAM_NAME),
+  });
+  new cdk.CfnOutput(stackB, 'OutputParamValue', {
+    value: param.stringValue,
+  });
+
+  // THEN
+  const template = Template.fromStack(stackB);
+  template.hasOutput('OutputParamValue', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:ssm:',
+          {
+            'Fn::ImportValue': 'service-token-param-name',
+          },
+          '}}',
+        ],
+      ],
+    },
+  });
+});
