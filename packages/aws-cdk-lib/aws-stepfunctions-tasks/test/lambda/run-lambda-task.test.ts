@@ -1,5 +1,6 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as lambda from '../../../aws-lambda';
+import { TestFunction } from '../../../aws-lambda-event-sources/test/test-function';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
@@ -94,6 +95,66 @@ describeDeprecated('run lambda task', () => {
         },
         Payload: {
           'token.$': '$$.Task.Token',
+        },
+      },
+    });
+  });
+
+  test('Lambda function is invoked with context object fields', () => {
+    const lambdaFunction = new TestFunction(stack, 'TestFunction');
+    const task = new tasks.LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payload: sfn.TaskInput.fromObject({
+        execId: sfn.JsonPath.executionId,
+        execInput: sfn.JsonPath.executionInput,
+        execName: sfn.JsonPath.executionName,
+        execRoleArn: sfn.JsonPath.executionRoleArn,
+        execStartTime: sfn.JsonPath.executionStartTime,
+        stateEnteredTime: sfn.JsonPath.stateEnteredTime,
+        stateName: sfn.JsonPath.stateName,
+        stateRetryCount: sfn.JsonPath.stateRetryCount,
+        stateMachineId: sfn.JsonPath.stateMachineId,
+        stateMachineName: sfn.JsonPath.stateMachineName,
+      }),
+      retryOnServiceExceptions: false,
+    });
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'TestFunction22AD90FC',
+            'Arn',
+          ],
+        },
+        Payload: {
+          'execId.$': '$$.Execution.Id',
+          'execInput.$': '$$.Execution.Input',
+          'execName.$': '$$.Execution.Name',
+          'execRoleArn.$': '$$.Execution.RoleArn',
+          'execStartTime.$': '$$.Execution.StartTime',
+          'stateEnteredTime.$': '$$.State.EnteredTime',
+          'stateName.$': '$$.State.Name',
+          'stateRetryCount.$': '$$.State.RetryCount',
+          'stateMachineId.$': '$$.StateMachine.Id',
+          'stateMachineName.$': '$$.StateMachine.Name',
         },
       },
     });
