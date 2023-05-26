@@ -17,7 +17,6 @@ class TestCaseBase extends cdk.Stack {
   }
 }
 
-
 const app = new cdk.App({
   treeMetadata: false,
 });
@@ -29,7 +28,6 @@ const testCase = new cdk.Stack(app, 'list-param');
 new cdk.CfnOutput(testCase, 'Output', {
   value: cdk.Fn.join(',', base.listParam.stringListValue),
 });
-
 
 /**
  * get the value from the `base` stack and then write it to a new parameter
@@ -57,7 +55,6 @@ const ssmVersionValue = new ssm.CfnParameter(testCase, 'version-value-test', {
   type: 'StringList',
   value: cdk.Fn.join(',', versionValue),
 });
-
 
 const integ = new IntegTest(app, 'ssm-string-param', {
   testCases: [

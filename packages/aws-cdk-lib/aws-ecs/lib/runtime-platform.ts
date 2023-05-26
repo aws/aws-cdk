@@ -90,7 +90,6 @@ export class OperatingSystemFamily {
   private constructor(public readonly _operatingSystemFamily: string) { }
 }
 
-
 /**
  * The interface for Runtime Platform.
  */

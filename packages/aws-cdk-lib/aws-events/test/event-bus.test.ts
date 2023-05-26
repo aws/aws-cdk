@@ -586,7 +586,6 @@ describe('event bus', () => {
     const stack = new Stack(app, 'Stack');
     const bus = new EventBus(stack, 'Bus');
 
-
     const statement = new iam.PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],

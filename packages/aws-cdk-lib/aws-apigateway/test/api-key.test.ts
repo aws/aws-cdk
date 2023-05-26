@@ -32,7 +32,6 @@ describe('api key', () => {
     }).toThrow(/Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage"/);
   });
 
-
   test('enabled flag is respected', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -49,7 +48,6 @@ describe('api key', () => {
       Value: 'arandomstringwithmorethantwentycharacters',
     });
   });
-
 
   testDeprecated('specify props for apiKey', () => {
     // GIVEN
