@@ -650,7 +650,10 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
+      // set the retention policy fot the bucket policy to "RETAIN".
+      // if set to "DESTROY", the bucket policy will be deleted before the bucket is deleted, if deleting the bucket fails it wont have the bucket policy
+      // this leads to an insecure bucket. Setting the Removal Policy to RETAIN will allow the bucket to be deleted and will also clean up the bucket policy
+      this.policy = new BucketPolicy(this, 'Policy', { bucket: this, removalPolicy: RemovalPolicy.RETAIN });
     }
 
     if (this.policy) {
