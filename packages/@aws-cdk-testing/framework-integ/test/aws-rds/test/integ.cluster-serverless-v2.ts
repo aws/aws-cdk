@@ -66,7 +66,6 @@ export class TestStack extends Stack {
   }
 }
 
-
 const app = new App();
 new IntegTest(app, 'integ-test', {
   testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster')],

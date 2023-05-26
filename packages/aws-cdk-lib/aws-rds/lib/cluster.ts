@@ -436,8 +436,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
-
-
 }
 
 /**
