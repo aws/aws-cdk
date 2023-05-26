@@ -968,24 +968,19 @@ test('When a parameter name contains unresolved tokens, use dynamic reference in
   // GIVEN
   const app = new cdk.App();
 
-  const PARAM_NAME = 'service-token-param-name';
-
   const stackA = new cdk.Stack(app, 'StackA');
-  new cdk.CfnOutput(stackA, 'OutputParamName', {
-    exportName: PARAM_NAME,
-    value: 'service-token',
+  const paramA = new ssm.StringParameter(stackA, 'StringParameter', {
+    stringValue: 'Initial parameter value',
   });
-
   const stackB = new cdk.Stack(app, 'StackB');
-  stackB.addDependency(stackA);
 
   // WHEN
-  const param = ssm.StringParameter.fromStringParameterAttributes(stackB, 'import-string-param', {
+  const paramB = ssm.StringParameter.fromStringParameterAttributes(stackB, 'import-string-param', {
     simpleName: true,
-    parameterName: cdk.Fn.importValue(PARAM_NAME),
+    parameterName: paramA.parameterName,
   });
   new cdk.CfnOutput(stackB, 'OutputParamValue', {
-    value: param.stringValue,
+    value: paramB.stringValue,
   });
 
   // THEN
@@ -997,7 +992,7 @@ test('When a parameter name contains unresolved tokens, use dynamic reference in
         [
           '{{resolve:ssm:',
           {
-            'Fn::ImportValue': 'service-token-param-name',
+            'Fn::ImportValue': 'StackA:ExportsOutputRefStringParameter472EED0ECEFE290A',
           },
           '}}',
         ],
