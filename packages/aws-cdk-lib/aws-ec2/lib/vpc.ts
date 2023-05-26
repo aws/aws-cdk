@@ -1451,7 +1451,7 @@ export class Vpc extends VpcBase {
 
     if (props.availabilityZones) {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
-      const resolvedStackAzs = stack.resolvedAvailabilityZones;
+      const resolvedStackAzs = this.resolveStackAvailabilityZones(stack.availabilityZones);
       const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
         props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
@@ -1719,6 +1719,19 @@ export class Vpc extends VpcBase {
         Account: Stack.of(this).account,
       },
     });
+  }
+
+  /**
+   * Returns the list of resolved availability zones found in the provided stack availability
+   * zones.
+   *
+   * Note: A resolved availability zone refers to an availability zone that is not a token
+   * and is also not a dummy value.
+   */
+  private resolveStackAvailabilityZones(stackAvailabilityZones: string[]): string[] {
+    const dummyValues = ['dummy1a', 'dummy1b', 'dummy1c'];
+    // if an az is resolved and it is not a 'dummy' value, then add it to array as a resolved az
+    return stackAvailabilityZones.filter(az => !Token.isUnresolved(az) && !dummyValues.includes(az));
   }
 }
 

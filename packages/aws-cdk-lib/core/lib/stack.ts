@@ -805,21 +805,6 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returns the list of resolved AZs that are available in the AWS environment
-   * (account/region) associated with this stack. If there are no resolved AZs,
-   * then an empty array will be returned.
-   *
-   * If no availability zones exist in the context, then they will be reported
-   * as missing and the CLI will resolve them by calling EC2 `DescribeAvailabilityZones`
-   * on the target environment.
-   */
-  public get resolvedAvailabilityZones(): string[] {
-    const dummyValues = ['dummy1a', 'dummy1b', 'dummy1c'];
-    // if an az is resolved and it is not a 'dummy' value, then add it to array as a resolved az
-    return this.availabilityZones.filter(az => !Token.isUnresolved(az) && !dummyValues.includes(az));
-  }
-
-  /**
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
