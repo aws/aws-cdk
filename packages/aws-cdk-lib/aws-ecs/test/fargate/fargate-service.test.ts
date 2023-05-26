@@ -572,7 +572,6 @@ describe('fargate service', () => {
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
 
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -657,7 +656,6 @@ describe('fargate service', () => {
         },
       });
     });
-
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN

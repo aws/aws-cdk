@@ -49,7 +49,6 @@ export function allResourcesProperties(template: Template, type: string, props: 
 
 }
 
-
 export function hasResource(template: Template, type: string, props: any): string | void {
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
