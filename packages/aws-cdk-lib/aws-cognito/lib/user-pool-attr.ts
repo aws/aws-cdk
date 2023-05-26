@@ -1,5 +1,5 @@
-import { Token } from '../../core';
 import { StandardAttributeNames } from './private/attr-names';
+import { Token } from '../../core';
 
 /**
  * The set of standard attributes that can be marked as required or mutable.
@@ -479,7 +479,6 @@ export interface StandardAttributesMask {
    */
   readonly phoneNumberVerified?: boolean;
 }
-
 
 /**
  * A set of attributes, useful to set Read and Write attributes

@@ -1,5 +1,5 @@
-import * as lambda from '../../aws-lambda';
 import * as constructs from 'constructs';
+import * as lambda from '../../aws-lambda';
 
 export class TestFunction extends lambda.Function {
   constructor(scope: constructs.Construct, id: string) {

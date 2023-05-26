@@ -45,7 +45,6 @@ function sanitizeName(x: string): string {
   return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
 }
 
-
 /**
  * Makes sure the given identifier length does not exceed N characters
  *

@@ -1,6 +1,6 @@
+import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
 import { Duration, Token } from '../../core';
-import { IBackupVault } from './vault';
 
 /**
  * Properties for a BackupPlanRule

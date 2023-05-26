@@ -1,0 +1,153 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "GrantExecute.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GrantExecute.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GrantExecute": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GrantExecute.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/454874b4674a38a5eb7ede0bc79fe77dcbf5062acaeb3b4424c7919758ae5191.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GrantExecute.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GrantExecute.assets"
+      ],
+      "metadata": {
+        "/GrantExecute/user/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "user2C2B57AE"
+          }
+        ],
+        "/GrantExecute/user/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userDefaultPolicy083DF682"
+          }
+        ],
+        "/GrantExecute/test-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapiD6451F70"
+          }
+        ],
+        "/GrantExecute/test-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapiDeployment356D2C358af14d7f8fefbad1c57a65ea01cc6136"
+          }
+        ],
+        "/GrantExecute/test-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapiDeploymentStageprod5C9E92A4"
+          }
+        ],
+        "/GrantExecute/test-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapiEndpoint4AE34D29"
+          }
+        ],
+        "/GrantExecute/test-api/Default/pets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapipets981F319E"
+          }
+        ],
+        "/GrantExecute/test-api/Default/pets/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapipetsGET25A78130"
+          }
+        ],
+        "/GrantExecute/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GrantExecute/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GrantExecute"
+    },
+    "GrantExecuteTestDefaultTestDeployAssertA66B6F20.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GrantExecuteTestDefaultTestDeployAssertA66B6F20.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GrantExecuteTestDefaultTestDeployAssertA66B6F20": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GrantExecuteTestDefaultTestDeployAssertA66B6F20.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GrantExecuteTestDefaultTestDeployAssertA66B6F20.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GrantExecuteTestDefaultTestDeployAssertA66B6F20.assets"
+      ],
+      "metadata": {
+        "/GrantExecuteTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GrantExecuteTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GrantExecuteTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
