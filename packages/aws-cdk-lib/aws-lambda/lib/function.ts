@@ -1202,7 +1202,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }

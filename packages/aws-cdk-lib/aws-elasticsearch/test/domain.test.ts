@@ -262,7 +262,6 @@ testDeprecated('can set a self-referencing custom policy', () => {
   });
 });
 
-
 describe('UltraWarm instances', () => {
 
   testDeprecated('can enable UltraWarm instances', () => {

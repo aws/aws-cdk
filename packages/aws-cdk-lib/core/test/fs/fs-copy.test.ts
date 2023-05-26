@@ -97,7 +97,6 @@ describe('fs copy', () => {
       'normal-file.txt',
     ]);
 
-
   });
 
   test('exclude', () => {
