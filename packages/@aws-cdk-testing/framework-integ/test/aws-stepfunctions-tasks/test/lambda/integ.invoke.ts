@@ -20,10 +20,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-lambda-invoke-integ');
 
 const submitJobLambda = new Function(stack, 'submitJobLambda', {
-  code: Code.fromInline(`exports.handler = async () => {
+  code: Code.fromInline(`exports.handler = async (event, context) => {
         return {
           statusCode: '200',
-          body: 'hello, world!'
+          body: 'hello, world!',
+          ...event,
         };
       };`),
   runtime: Runtime.NODEJS_14_X,
@@ -32,24 +33,6 @@ const submitJobLambda = new Function(stack, 'submitJobLambda', {
 
 const submitJob = new LambdaInvoke(stack, 'Invoke Handler', {
   lambdaFunction: submitJobLambda,
-  outputPath: '$.Payload',
-});
-
-const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
-  code: Code.fromInline(`exports.handler = async function(event, context) {
-        return {
-          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
-        };
-  };`),
-  runtime: Runtime.NODEJS_14_X,
-  handler: 'index.handler',
-});
-
-const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
-  lambdaFunction: checkJobStateLambda,
-  resultSelector: {
-    status: sfn.JsonPath.stringAt('$.Payload.status'),
-  },
   payload: sfn.TaskInput.fromObject({
     execId: sfn.JsonPath.executionId,
     execInput: sfn.JsonPath.executionInput,
@@ -62,6 +45,26 @@ const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
     stateMachineId: sfn.JsonPath.stateMachineId,
     stateMachineName: sfn.JsonPath.stateMachineName,
   }),
+  outputPath: '$.Payload',
+});
+
+const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
+  code: Code.fromInline(`exports.handler = async function(event, context) {
+        const fields = Object.keys(event).filter(key => key !== 'statusCode');
+        const fieldsAreSet = fields.every(field => field !== undefined);
+        return {
+          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'
+        };
+  };`),
+  runtime: Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+});
+
+const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
+  lambdaFunction: checkJobStateLambda,
+  resultSelector: {
+    status: sfn.JsonPath.stringAt('$.Payload.status'),
+  },
 });
 
 const isComplete = new sfn.Choice(stack, 'Job Complete?');
@@ -100,7 +103,7 @@ integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
 }).expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(15),
+  totalTimeout: cdk.Duration.seconds(10),
   interval: cdk.Duration.seconds(3),
 });
 
