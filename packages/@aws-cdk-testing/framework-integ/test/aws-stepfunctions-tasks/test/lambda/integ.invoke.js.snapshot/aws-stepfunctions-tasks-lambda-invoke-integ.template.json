@@ -85,7 +85,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async function(event, context) {\n        const fields = Object.keys(event).filter(key => key !== 'statusCode');\n        const fieldsAreSet = fields.every(field => field !== undefined);\n        return {\n          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
+     "ZipFile": "exports.handler = async function(event, context) {\n        const expectedFields = [\n          'execId', 'execInput', 'execName', 'execRoleArn',\n          'execStartTime', 'stateEnteredTime', 'stateName',\n          'stateRetryCount', 'stateMachineId', 'stateMachineName',\n        ];\n        const fieldsAreSet = expectedFields.every(field => event[field] !== undefined);\n        return {\n          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
     },
     "Role": {
      "Fn::GetAtt": [
