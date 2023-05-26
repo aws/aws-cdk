@@ -11,8 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '../../core';
-import * as cxapi from '../../cx-api';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -475,8 +474,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
-    const enableEcsAddSecurityGroup = FeatureFlags.of(this).isEnabled(cxapi.ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS);
-    if (enableEcsAddSecurityGroup && autoScalingGroup.connections?.securityGroups) {
+    if (autoScalingGroup.connections?.securityGroups) {
       this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
     }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {

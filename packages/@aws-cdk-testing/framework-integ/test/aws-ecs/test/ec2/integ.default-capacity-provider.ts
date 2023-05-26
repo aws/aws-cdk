@@ -1,14 +1,10 @@
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 
-const addSecurityGroupToAsgCapacityProvidersFeatureFlag =
-  { [cxapi.ECS_ADD_SECURITY_GROUP_TO_ASG_CAPACITY_PROVIDERS]: true };
-
-const app = new cdk.App({ context: addSecurityGroupToAsgCapacityProvidersFeatureFlag });
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-default-capacity-provider');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
