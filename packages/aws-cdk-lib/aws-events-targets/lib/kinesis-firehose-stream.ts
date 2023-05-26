@@ -17,7 +17,6 @@ export interface KinesisFirehoseStreamProps {
   readonly message?: events.RuleTargetInput;
 }
 
-
 /**
  * Customize the Firehose Stream Event Target
  */
@@ -36,7 +35,6 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
       actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
       resources: [this.stream.attrArn],
     }));
-
 
     return {
       arn: this.stream.attrArn,

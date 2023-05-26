@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 // We need to mock the chokidar library, used by 'cdk watch'
 const mockChokidarWatcherOn = jest.fn();
 const fakeChokidarWatcher = {
@@ -59,14 +58,14 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
+import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag, AssetBuildTime } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
 
@@ -101,7 +100,7 @@ function defaultToolkitSetup() {
     cloudExecutable,
     configuration: cloudExecutable.configuration,
     sdkProvider: cloudExecutable.sdkProvider,
-    cloudFormation: new FakeCloudFormation({
+    deployments: new FakeCloudFormation({
       'Test-Stack-A': { Foo: 'Bar' },
       'Test-Stack-B': { Baz: 'Zinga!' },
       'Test-Stack-C': { Baz: 'Zinga!' },
@@ -148,7 +147,9 @@ describe('readCurrentTemplate', () => {
         },
       ],
     });
-    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
+    mockForEnvironment = jest.fn().mockImplementation(() => {
+      return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };
+    });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubCloudFormation({
       getTemplate() {
@@ -192,7 +193,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -226,7 +227,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -261,7 +262,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -299,7 +300,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -331,7 +332,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
@@ -370,7 +371,7 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+      deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
     });
 
     // WHEN
@@ -408,7 +409,7 @@ describe('deploy', () => {
   describe('with hotswap deployment', () => {
     test("passes through the 'hotswap' option to CloudFormationDeployments.deployStack()", async () => {
       // GIVEN
-      const mockCfnDeployments = instanceMockFrom(CloudFormationDeployments);
+      const mockCfnDeployments = instanceMockFrom(Deployments);
       mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
         noOp: false,
         outputs: {},
@@ -419,7 +420,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: mockCfnDeployments,
+        deployments: mockCfnDeployments,
       });
 
       // WHEN
@@ -459,7 +460,6 @@ describe('deploy', () => {
       });
     });
 
-
     test('with one stack specified', async () => {
       // GIVEN
       const toolkit = defaultToolkitSetup();
@@ -492,7 +492,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: new FakeCloudFormation({
+        deployments: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
           'Test-Stack-B': { Baz: 'Zinga!' },
         }, notificationArns),
@@ -513,7 +513,7 @@ describe('deploy', () => {
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: new FakeCloudFormation({
+        deployments: new FakeCloudFormation({
           'Test-Stack-A': { Foo: 'Bar' },
         }, notificationArns),
       });
@@ -583,64 +583,6 @@ describe('deploy', () => {
 
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();
-    });
-
-    test('can disable asset parallelism', async () => {
-      // GIVEN
-      cloudExecutable = new MockCloudExecutable({
-        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
-      });
-      const fakeCloudFormation = new FakeCloudFormation({});
-
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: fakeCloudFormation,
-      });
-
-      // WHEN
-      // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
-        await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-Asset'] },
-          assetParallelism: false,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        });
-
-        expect(mockBuildStackAssets).toHaveBeenCalledWith(expect.objectContaining({
-          buildOptions: expect.objectContaining({
-            parallel: false,
-          }),
-        }));
-      });
-    });
-
-    test('can disable asset prebuild', async () => {
-      // GIVEN
-      cloudExecutable = new MockCloudExecutable({
-        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
-      });
-      const fakeCloudFormation = new FakeCloudFormation({});
-
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: fakeCloudFormation,
-      });
-
-      // WHEN
-      // Not the best test but following this through to the asset publishing library fails
-      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
-        await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-Asset'] },
-          assetBuildTime: AssetBuildTime.JUST_IN_TIME,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        });
-
-        expect(mockBuildStackAssets).not.toHaveBeenCalled();
-      });
     });
   });
 });
@@ -818,7 +760,6 @@ describe('watch', () => {
 
     expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
   });
-
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
     cloudExecutable.configuration.settings.set(['watch'], {});
@@ -1096,7 +1037,7 @@ class MockStack {
   }
 }
 
-class FakeCloudFormation extends CloudFormationDeployments {
+class FakeCloudFormation extends Deployments {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns?: string[];
 
