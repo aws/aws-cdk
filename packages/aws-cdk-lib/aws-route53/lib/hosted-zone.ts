@@ -139,7 +139,6 @@ export class HostedZone extends Resource implements IHostedZone {
       props: query,
     }).value;
 
-
     // CDK handles the '.' at the end, so remove it here
     if (response.Name.endsWith('.')) {
       response.Name = response.Name.substring(0, response.Name.length - 1);
