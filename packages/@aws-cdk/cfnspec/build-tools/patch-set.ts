@@ -248,7 +248,6 @@ function findPatches(data: any, patchSource: any): Patch[] {
   }
 }
 
-
 /**
  * Run this file as a CLI tool, to apply a patch set from the command line
  */

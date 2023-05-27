@@ -218,6 +218,7 @@ export * as aws_servicecatalogappregistry from './aws-servicecatalogappregistry'
 export * as aws_servicediscovery from './aws-servicediscovery';
 export * as aws_ses from './aws-ses';
 export * as aws_ses_actions from './aws-ses-actions';
+export * as aws_shield from './aws-shield';
 export * as aws_signer from './aws-signer';
 export * as aws_simspaceweaver from './aws-simspaceweaver';
 export * as aws_sns from './aws-sns';

@@ -108,7 +108,6 @@ test('already uppercased stack tags get left alone', () => {
   ]);
 });
 
-
 test('read tags from stack metadata', () => {
   // Backwards compatibility test
   // GIVEN
