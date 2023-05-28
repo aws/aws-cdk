@@ -1,5 +1,5 @@
 import * as core from 'aws-cdk-lib';
-import { ServiceNetworkStack } from './servicenetwork/servicenetwork';
+import { ServiceNetworkStack } from '../test/servicenetwork/latticetest';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new core.App();

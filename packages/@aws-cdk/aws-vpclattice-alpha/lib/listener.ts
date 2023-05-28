@@ -9,7 +9,7 @@ import {
 import { Construct } from 'constructs';
 import * as vpclattice from './index';
 
-export interface IHttpMatchProperty {
+interface IHttpMatchProperty {
   /**
    * The header matches. Matches incoming requests with rule based on request header value before applying rule action.
    *
@@ -30,11 +30,13 @@ export interface IHttpMatchProperty {
   pathMatch?: aws_vpclattice.CfnRule.PathMatchProperty | core.IResolvable;
 }
 
-
-export interface addListenerProps {
+/**
+ * Props for AddListener
+ */
+export interface AddListenerProps {
   /**
-   *  * A default action that will be taken if no rules match.
-   * @ default
+   *  The default action that will be taken if no rules match.
+   * @default The default action will be to return 404 not found
   */
   readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
 
@@ -65,6 +67,7 @@ export interface addListenerProps {
 export interface ListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
+   *  @default 404 NOT Found
   */
   readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
   /**
@@ -84,7 +87,12 @@ export interface ListenerProps {
   /**
    * The service
    */
-  readonly service: vpclattice.Service;
+  readonly serviceId: string;
+  /**
+   * the authpolicy for the service this listener is associated with
+   * @default none.
+   */
+  readonly serviceAuthPolicy?: iam.PolicyDocument | undefined
 }
 
 /**
@@ -151,6 +159,7 @@ export interface AddRuleProps {
    * @default none
   */
   readonly allowedPrincipals?: iam.IPrincipal[] | undefined;
+
 }
 
 
@@ -175,7 +184,13 @@ export class Listener extends core.Resource implements IListener {
   /**
    * The Id of the service this listener is attached to
    */
-  readonly service: vpclattice.Service;
+  readonly serviceId: string;
+  /**
+   * Service auth Policy
+   * @default none.
+   */
+  readonly serviceAuthPolicy?: iam.PolicyDocument | undefined;
+
 
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
@@ -195,12 +210,12 @@ export class Listener extends core.Resource implements IListener {
       defaultAction: defaultAction,
       protocol: props.protocol,
       port: props.port,
-      serviceIdentifier: props.service.serviceId,
+      serviceIdentifier: props.serviceId,
     });
 
     this.listenerId = listener.attrId;
     this.listenerArn = listener.attrArn;
-    this.service = props.service;
+    this.serviceId = props.serviceId;
 
   }
 
@@ -287,7 +302,7 @@ export class Listener extends core.Resource implements IListener {
           },
           caseSensitive: props.pathMatch.caseSensitive ?? false,
         };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
         policyStatement.addResources(arn + props.pathMatch.path);
       };
 
@@ -298,7 +313,7 @@ export class Listener extends core.Resource implements IListener {
           },
           caseSensitive: props.pathMatch.caseSensitive ?? false,
         };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
         policyStatement.addResources(arn + props.pathMatch.path + '*');
       }
     }
@@ -343,7 +358,10 @@ export class Listener extends core.Resource implements IListener {
       match.headerMatches = headerMatches;
     };
 
-    this.service.authPolicy.addStatements(policyStatement);
+    // only add the policy statement if there are principals
+    if (props.allowedPrincipals && this.serviceAuthPolicy) {
+      this.serviceAuthPolicy.addStatements(policyStatement);
+    }
 
     // finally create a rule
     new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
@@ -351,7 +369,7 @@ export class Listener extends core.Resource implements IListener {
       match: match as aws_vpclattice.CfnRule.MatchProperty,
       priority: props.priority,
       listenerIdentifier: this.listenerId,
-      serviceIdentifier: this.service.serviceId,
+      serviceIdentifier: this.serviceId,
     });
   }
 }

@@ -1,11 +1,12 @@
 import * as core from 'aws-cdk-lib';
+
 import {
   aws_s3 as s3,
   aws_logs as logs,
-  aws_kinesis as kinesis,
+  //aws_kinesis as kinesis,
   aws_iam as iam,
   aws_ec2 as ec2,
-  aws_lambda,
+//   aws_lambda,
 }
   from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -15,20 +16,27 @@ import {
   Service,
   Protocol,
   FixedResponse,
-  TargetGroup,
+  //TargetGroup,
 }
   from '../../lib/index';
 
-import * as path from 'path';
+
+//import * as path from 'path';
+
 
 export class ServiceNetworkStack extends core.Stack {
 
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
-    // create a ServiceNetwork
+    /**
+     * Create a ServiceNetwork.
+     * OPINIONATED DEFAULT: The default behavior is to create a
+     * service network that requries an IAM policy
+     */
+
     const serviceNetwork = new ServiceNetwork(this, 'LatticeServiceNetwork', {
-      name: 'LatticeServiceNetwork',
+      name: 'latticeservicenetwork',
     });
 
     // log servicenetwork to s3
@@ -38,17 +46,6 @@ export class ServiceNetworkStack extends core.Stack {
         enforceSSL: true,
         blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         removalPolicy: core.RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-      }),
-    );
-
-    // stream servicenetwork events to kinesis
-    serviceNetwork.streamToKinesis(
-      new kinesis.Stream(this, 'ServiceNetworkLogStream', {
-        encryption: kinesis.StreamEncryption.KMS,
-        shardCount: 1,
-        streamName: 'ServiceNetworkLogStream',
-        retentionPeriod: core.Duration.days(30),
       }),
     );
 
@@ -81,43 +78,29 @@ export class ServiceNetworkStack extends core.Stack {
       ],
     });
 
-    const securityGroup = new ec2.SecurityGroup(this, 'ServiceNetworkSecurityGroup', {
-      vpc: vpc,
-      allowAllOutbound: true,
-      description: 'ServiceNetworkSecurityGroup',
-    });
-
-    // add ingress rules to securityGroup to allow tcp 80 from vpc cidr
-    securityGroup.addIngressRule(
-      ec2.Peer.ipv4(vpc.vpcCidrBlock),
-      ec2.Port.tcp(80),
-    );
-
-    securityGroup.addIngressRule(
-      ec2.Peer.ipv4(vpc.vpcCidrBlock),
-      ec2.Port.tcp(443),
-    );
-
-    // associate the vpc with the serviceNetwork
+    // associate the vpc with the serviceNetwork, this will permit the default 443.
     serviceNetwork.associateVPC({
       vpc: vpc,
-      securityGroups: [securityGroup],
     });
 
     // create a lattice service
     const service = new Service(this, 'LatticeService', {
-      name: 'LatticeService',
+      name: 'lattice-service',
     });
 
     // associate the service with the serviceNetwork
     serviceNetwork.addService(service);
 
-    // this will permit access to the entire service
+    // this will permit the principals, access to the entire Service
+
     service.grantAccess(
       [
         new iam.AccountPrincipal(core.Aws.ACCOUNT_ID),
       ],
     );
+
+    // apply the Auth Policy to the ServiceNetork
+    service.applyAuthPolicy();
 
 
     // by default the listener will add a default method of
@@ -127,9 +110,9 @@ export class ServiceNetworkStack extends core.Stack {
       name: 'MyServiceListener',
     });
 
-
+    // add a rule that matches the root path of the service
     listener.addListenerRule({
-      name: 'messingwithya',
+      name: 'serviceroot',
       action: FixedResponse.OK,
       priority: 100,
       // default behavior assumes case Senstivity is true
@@ -143,33 +126,36 @@ export class ServiceNetworkStack extends core.Stack {
     });
 
 
-    // add a hello world lambda function;
-    const helloWorld = new aws_lambda.Function(this, 'FunctionOne', {
-      runtime: aws_lambda.Runtime.PYTHON_3_10,
-      handler: 'helloworld.lambda_handler',
-      code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
-      timeout: core.Duration.seconds(15),
-    });
+    // // add a hello world lambda function;
+    // const helloWorld = new aws_lambda.Function(this, 'FunctionOne', {
+    //   runtime: aws_lambda.Runtime.PYTHON_3_10,
+    //   handler: 'helloworld.lambda_handler',
+    //   code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
+    //   timeout: core.Duration.seconds(15),
+    // });
 
-    listener.addListenerRule({
-      name: 'helloworld',
-      action: [
-        {
-          targetGroup: new TargetGroup(this, 'helloworldTargetGroup', {
-            name: 'helloworld',
-            lambdaTargets: [
-              helloWorld,
-            ],
-          }),
-          weight: 100,
-        },
-      ],
-      priority: 200,
-      // default behavior assumes case Senstivity is true
-      // and is an exact match
-      pathMatch: {
-        path: '/helloworld',
-      },
-    });
+    // listener.addListenerRule({
+    //   name: 'helloworld',
+    //   action: [
+    //     {
+    //       targetGroup: new TargetGroup(this, 'helloworldTargetGroup', {
+    //         name: 'helloworld',
+    //         lambdaTargets: [
+    //           helloWorld,
+    //         ],
+    //       }),
+    //       weight: 100,
+    //     },
+    //   ],
+    //   priority: 200,
+    //   // default behavior assumes case Senstivity is true
+    //   // and is an exact match
+    //   pathMatch: {
+    //     path: '/helloworld',
+    //   },
+    //   allowedPrincipals: [
+    //     new iam.AccountPrincipal('123456789012'),
+    //   ],
+    // });
   }
 }

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04a471e522f46f6521c85736c3edc30c1b6c30e1b4b8e5360bde7a32bf6d7a53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab6a8eb6f4caa7065611d86c787347215916b69fe983f4b13bcdba173b85f7df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +33,136 @@
         "ServiceNetwork.assets"
       ],
       "metadata": {
-        "/ServiceNetwork/ServiceNetwork/Resource": [
+        "/ServiceNetwork/LatticeServiceNetwork/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkEF29AF70"
+            "data": "LatticeServiceNetwork096BE615"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/LatticeLoggingtoS3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkLatticeLoggingtoS3DF98D204"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/LattiCloudwatch": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkLattiCloudwatch14C02E1B"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAuthPolicy2788B62F"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/ServiceNetworkSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkServiceNetworkSecurityGroupF9CD91ED"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/VpcAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkVpcAssociation86578FDC"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/LatticeServiceAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkLatticeServiceAssociationDD6BE4CA"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkLogBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkLogBucketE19D8EC0"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkLogBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkLogBucketPolicy4E98BDA5"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkLogGroup7B3CD395"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpc85D7CC59"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet1Subnet7E28627F"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet1RouteTableF7056800"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet1RouteTableAssociationD4EB79A2"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet2SubnetBD8C408E"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet2RouteTableD4C3582E"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/privateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcprivateSubnet2RouteTableAssociationBA4F6709"
+          }
+        ],
+        "/ServiceNetwork/ServiceNetworkVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkVpcRestrictDefaultSecurityGroupCustomResource6259B51B"
+          }
+        ],
+        "/ServiceNetwork/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/ServiceNetwork/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/ServiceNetwork/LatticeService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeService93F80647"
+          }
+        ],
+        "/ServiceNetwork/LatticeService/ServiceAuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceServiceAuthPolicy37FB686C"
           }
         ],
         "/ServiceNetwork/BootstrapVersion": [

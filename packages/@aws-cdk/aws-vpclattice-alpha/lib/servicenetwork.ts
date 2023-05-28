@@ -10,7 +10,9 @@ import {
   from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as constructs from 'constructs';
-import * as vpclattice from './index';
+import {
+  Service,
+} from './index';
 
 /**
  * Properties to share a Service Network
@@ -31,15 +33,17 @@ export interface ShareServiceNetworkProps {
    */
   readonly principals?: string[] | undefined
 }
-
-export interface associateVPCProps {
+/**
+ * Properties to associate a VPC with a Service Network
+ */
+export interface AssociateVPCProps {
   /**
    * The VPC to associate with the Service Network
    */
   readonly vpc: ec2.Vpc;
   /**
    * The security groups to associate with the Service Network
-   * @default none
+   * @default a security group that allows inbound 443 will be permitted.
    */
   readonly securityGroups?: ec2.SecurityGroup[] | undefined
 
@@ -67,11 +71,11 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add Lattice Service Policy
    */
-  addService(service: vpclattice.Service): void;
+  addService(service: Service): void;
   /**
    * Associate a VPC with the Service Network
    */
-  associateVPC(props: associateVPCProps): void;
+  associateVPC(props: AssociateVPCProps): void;
   /**
    * Log To S3
    */
@@ -99,6 +103,11 @@ export interface ServiceNetworkProps {
    * @default cloudformation generated name
    */
   readonly name?: string
+
+  /** The type of  authentication to use with the Service Network.
+   * @default 'AWS_IAM'
+   */
+  readonly authType?: string | undefined;
 }
 
 /**
@@ -116,58 +125,68 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   /**
    * the authType of the service network
    */
-  authType: vpclattice.AuthType | undefined;
+  authType: string | undefined;
   /**
    * policy document to be used.
    */
-  authPolicy: iam.PolicyDocument;
+  authPolicy: iam.PolicyDocument = new iam.PolicyDocument();
+
 
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id);
 
-    this.authPolicy = new iam.PolicyDocument();
 
+    if (props.name !== undefined) {
+      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
+        throw new Error('Theservice network name must be between 3 and 63 characters long. The name can only contain alphanumeric characters and hyphens. The name must be unique to the account.');
+      }
+    }
+
+    // the opinionated default for the servicenetwork is to use AWS_IAM as the
+    // authentication method. Provide 'NONE' to props.authType to disable.
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
-      authType: this.authType ?? vpclattice.AuthType.NONE,
+      authType: props.authType ?? 'AWS_IAM',
     });
 
     this.serviceNetworkId = serviceNetwork.attrId;
     this.serviceNetworkArn = serviceNetwork.attrArn;
-
-    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
-      policy: this.authPolicy.toJSON(),
-      resourceIdentifier: this.serviceNetworkId,
-    });
   }
 
   /**
-   * - Add an IAM policy to the service network. statements should only
-   * contain a single action 'vpc-lattice-svcs:Invoke' and a single resource
-   * which is the service network ARN. The policy statements resource and action
-   * are optional. If they are not provided, the correct values will be set.
+   * This will give the principals access to all resources that are on this
+   * service network. This is a broad permission.
+   * Consider granting Access at the Service
    *
-   * @param policyStatements
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
 
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+    policyStatement.addActions('vpc-lattice-svcs:Invoke');
+    policyStatement.addResources(this.serviceNetworkArn);
+    policyStatement.effect = iam.Effect.ALLOW;
 
     principals.forEach((principal) => {
-      principal.addToPrincipalPolicy(policyStatement);
+      policyStatement.addPrincipals(principal);
     });
-    policyStatement.addActions('vpc-lattice-svcs:Invoke');
-    policyStatement.addResources(this.serviceNetworkArn + '/*');
 
-    this.authType = vpclattice.AuthType.IAM;
     this.authPolicy.addStatements(policyStatement);
+
+    if (this.authPolicy.validateForResourcePolicy().length > 0) {
+      throw new Error(`Auth Policy for granting access on  Service Network is invalid\n, ${this.authPolicy}`);
+    }
+
+    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
+      policy: this.authPolicy.toJSON(),
+      resourceIdentifier: this.serviceNetworkArn,
+    });
 
   }
   /**
    * Add A lattice service to a lattice network
    * @param service
    */
-  public addService(service: vpclattice.Service): void {
+  public addService(service: Service): void {
 
     new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, 'LatticeServiceAssociation', {
       serviceIdentifier: service.serviceId,
@@ -176,17 +195,28 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
   /**
    * Associate a VPC with the Service Network
-   * @param vpc
-   * @param securityGroups
+   * This provides an opinionated default of adding a security group to allow inbound 443
    */
-  public associateVPC(props: associateVPCProps): void {
+  public associateVPC(props: AssociateVPCProps): void {
 
     const securityGroupIds: string[] = [];
-    if (props.securityGroups) {
-      props.securityGroups.forEach((securityGroup) => {
-        securityGroupIds.push(securityGroup.securityGroupId);
+
+    if (props.securityGroups === undefined) {
+      const securityGroup = new ec2.SecurityGroup(this, 'ServiceNetworkSecurityGroup', {
+        vpc: props.vpc,
+        allowAllOutbound: true,
+        description: 'ServiceNetworkSecurityGroup',
       });
+
+      securityGroup.addIngressRule(
+        ec2.Peer.ipv4(props.vpc.vpcCidrBlock),
+        ec2.Port.tcp(443),
+      );
+
+      securityGroupIds.push(securityGroup.securityGroupId);
+
     }
+
 
     new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, 'VpcAssociation', /* all optional props */ {
       securityGroupIds: securityGroupIds,
@@ -195,28 +225,43 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     });
   }
 
+  /**
+   * Send logs to a S3 bucket.
+   * @param bucket
+   */
   public logToS3(bucket: s3.Bucket | s3.IBucket): void {
     new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeLoggingtoS3', {
       destinationArn: bucket.bucketArn,
       resourceIdentifier: this.serviceNetworkArn,
     });
   }
-
+  /**
+   * Send event to Cloudwatch
+   * @param log
+   */
   public sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup): void {
     new aws_vpclattice.CfnAccessLogSubscription(this, 'LattiCloudwatch', {
       destinationArn: log.logGroupArn,
-      resourceIdentifier: this.serviceNetworkId,
+      resourceIdentifier: this.serviceNetworkArn,
     });
   }
 
+  /**
+   * Stream Events to Kinesis
+   * @param stream
+   */
   public streamToKinesis(stream: kinesis.Stream | kinesis.IStream): void {
     new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeKinesis', {
       destinationArn: stream.streamArn,
-      resourceIdentifier: this.serviceNetworkId,
+      resourceIdentifier: this.serviceNetworkArn,
     });
   }
 
-  public share(props: vpclattice.ShareServiceNetworkProps): void {
+  /**
+   * Share the The Service network using RAM
+   * @param props ShareServiceNetwork
+   */
+  public share(props: ShareServiceNetworkProps): void {
     new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
       name: props.name,
       resourceArns: [this.serviceNetworkArn],

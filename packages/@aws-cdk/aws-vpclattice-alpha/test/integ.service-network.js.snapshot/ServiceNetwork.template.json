@@ -1,9 +1,540 @@
 {
  "Resources": {
-  "ServiceNetworkEF29AF70": {
+  "LatticeServiceNetwork096BE615": {
    "Type": "AWS::VpcLattice::ServiceNetwork",
    "Properties": {
-    "Name": "thing"
+    "AuthType": "AWS_IAM",
+    "Name": "latticeservicenetwork"
+   }
+  },
+  "LatticeServiceNetworkLatticeLoggingtoS3DF98D204": {
+   "Type": "AWS::VpcLattice::AccessLogSubscription",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::GetAtt": [
+      "ServiceNetworkLogBucketE19D8EC0",
+      "Arn"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeServiceNetwork096BE615",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LatticeServiceNetworkLattiCloudwatch14C02E1B": {
+   "Type": "AWS::VpcLattice::AccessLogSubscription",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::GetAtt": [
+      "ServiceNetworkLogGroup7B3CD395",
+      "Arn"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeServiceNetwork096BE615",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LatticeServiceNetworkAuthPolicy2788B62F": {
+   "Type": "AWS::VpcLattice::AuthPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "vpc-lattice-svcs:Invoke",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "LatticeServiceNetwork096BE615",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeServiceNetwork096BE615",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LatticeServiceNetworkServiceNetworkSecurityGroupF9CD91ED": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ServiceNetworkSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "ServiceNetworkVpc85D7CC59",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "ServiceNetworkVpc85D7CC59",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "VpcId": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    }
+   }
+  },
+  "LatticeServiceNetworkVpcAssociation86578FDC": {
+   "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
+   "Properties": {
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "LatticeServiceNetworkServiceNetworkSecurityGroupF9CD91ED",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceNetworkIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeServiceNetwork096BE615",
+      "Id"
+     ]
+    },
+    "VpcIdentifier": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    }
+   }
+  },
+  "LatticeServiceNetworkLatticeServiceAssociationDD6BE4CA": {
+   "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
+   "Properties": {
+    "ServiceIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeService93F80647",
+      "Id"
+     ]
+    },
+    "ServiceNetworkIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeServiceNetwork096BE615",
+      "Id"
+     ]
+    }
+   }
+  },
+  "ServiceNetworkLogBucketE19D8EC0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ServiceNetworkLogBucketPolicy4E98BDA5": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "ServiceNetworkLogBucketE19D8EC0"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ServiceNetworkLogBucketE19D8EC0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ServiceNetworkLogBucketE19D8EC0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServiceNetworkLogGroup7B3CD395": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "ServiceNetworkLogGroup",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ServiceNetworkVpc85D7CC59": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ServiceNetwork/ServiceNetworkVpc"
+     }
+    ]
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet1Subnet7E28627F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "ServiceNetwork/ServiceNetworkVpc/privateSubnet1"
+     }
+    ]
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet1RouteTableF7056800": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ServiceNetwork/ServiceNetworkVpc/privateSubnet1"
+     }
+    ]
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet1RouteTableAssociationD4EB79A2": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ServiceNetworkVpcprivateSubnet1RouteTableF7056800"
+    },
+    "SubnetId": {
+     "Ref": "ServiceNetworkVpcprivateSubnet1Subnet7E28627F"
+    }
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet2SubnetBD8C408E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "ServiceNetwork/ServiceNetworkVpc/privateSubnet2"
+     }
+    ]
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet2RouteTableD4C3582E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "ServiceNetworkVpc85D7CC59"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ServiceNetwork/ServiceNetworkVpc/privateSubnet2"
+     }
+    ]
+   }
+  },
+  "ServiceNetworkVpcprivateSubnet2RouteTableAssociationBA4F6709": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ServiceNetworkVpcprivateSubnet2RouteTableD4C3582E"
+    },
+    "SubnetId": {
+     "Ref": "ServiceNetworkVpcprivateSubnet2SubnetBD8C408E"
+    }
+   }
+  },
+  "ServiceNetworkVpcRestrictDefaultSecurityGroupCustomResource6259B51B": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ServiceNetworkVpc85D7CC59",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "ServiceNetworkVpc85D7CC59",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ba598c1f1d84f7077ea9c16a6b921e4f8acf18e996100e72a8f17da980e64fdd.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs16.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "LatticeService93F80647": {
+   "Type": "AWS::VpcLattice::Service",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "Name": "lattice-service"
+   }
+  },
+  "LatticeServiceServiceAuthPolicy37FB686C": {
+   "Type": "AWS::VpcLattice::AuthPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "vpc-lattice-svcs:Invoke",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "LatticeService93F80647",
+      "Id"
+     ]
+    }
    }
   }
  },
