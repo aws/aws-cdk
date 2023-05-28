@@ -146,5 +146,5 @@ const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
 new cloud9.Ec2Environment(this, 'Cloud9Env2', {
   vpc: defaultVpc,
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
-  automaticStopTimeMinutes: 30,
+  automaticStopTimeMinutes: cdk.Duration.minutes(30),
 });
