@@ -17,7 +17,7 @@ export class Cloud9Env extends cdk.Stack {
     // create a cloud9 ec2 environment in a new VPC
     const c9env = new cloud9.Ec2Environment(this, 'C9Env', {
       vpc,
-      automaticStopTimeMinutes: 30,
+      automaticStopTimeMinutes: cdk.Duration.minutes(30),
       imageId: cloud9.ImageId.AMAZON_LINUX_2,
     });
     new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });

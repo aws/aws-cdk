@@ -147,7 +147,7 @@ test('environment owner can be account root', () => {
 
 test('can set automaticStopTimeMinutes', () => {
   // WHEN
-  const automaticStopTimeMinutes = 30;
+  const automaticStopTimeMinutes = cdk.Duration.minutes(30);
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
@@ -155,7 +155,7 @@ test('can set automaticStopTimeMinutes', () => {
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
-    AutomaticStopTimeMinutes: automaticStopTimeMinutes,
+    AutomaticStopTimeMinutes: automaticStopTimeMinutes.toMinutes(),
   });
 });
 

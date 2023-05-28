@@ -133,7 +133,7 @@ export interface Ec2EnvironmentProps {
    *
    * @default - The instance will not be shut down automatically.
    */
-  readonly automaticStopTimeMinutes?: number
+  readonly automaticStopTimeMinutes?: cdk.Duration
 }
 
 /**
@@ -210,7 +210,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
       imageId: props.imageId,
-      automaticStopTimeMinutes: props.automaticStopTimeMinutes,
+      automaticStopTimeMinutes: props.automaticStopTimeMinutes?.toMinutes(),
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
