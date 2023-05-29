@@ -2,6 +2,7 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Creates a state machine with a task state to invoke a Lambda function
@@ -19,10 +20,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-lambda-invoke-integ');
 
 const submitJobLambda = new Function(stack, 'submitJobLambda', {
-  code: Code.fromInline(`exports.handler = async () => {
+  code: Code.fromInline(`exports.handler = async (event, context) => {
         return {
           statusCode: '200',
-          body: 'hello, world!'
+          body: 'hello, world!',
+          ...event,
         };
       };`),
   runtime: Runtime.NODEJS_14_X,
@@ -31,13 +33,31 @@ const submitJobLambda = new Function(stack, 'submitJobLambda', {
 
 const submitJob = new LambdaInvoke(stack, 'Invoke Handler', {
   lambdaFunction: submitJobLambda,
+  payload: sfn.TaskInput.fromObject({
+    execId: sfn.JsonPath.executionId,
+    execInput: sfn.JsonPath.executionInput,
+    execName: sfn.JsonPath.executionName,
+    execRoleArn: sfn.JsonPath.executionRoleArn,
+    execStartTime: sfn.JsonPath.executionStartTime,
+    stateEnteredTime: sfn.JsonPath.stateEnteredTime,
+    stateName: sfn.JsonPath.stateName,
+    stateRetryCount: sfn.JsonPath.stateRetryCount,
+    stateMachineId: sfn.JsonPath.stateMachineId,
+    stateMachineName: sfn.JsonPath.stateMachineName,
+  }),
   outputPath: '$.Payload',
 });
 
 const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
   code: Code.fromInline(`exports.handler = async function(event, context) {
+        const expectedFields = [
+          'execId', 'execInput', 'execName', 'execRoleArn',
+          'execStartTime', 'stateEnteredTime', 'stateName',
+          'stateRetryCount', 'stateMachineId', 'stateMachineName',
+        ];
+        const fieldsAreSet = expectedFields.every(field => event[field] !== undefined);
         return {
-          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
+          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'
         };
   };`),
   runtime: Runtime.NODEJS_14_X,
@@ -73,6 +93,22 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+});
+const res = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+const executionArn = res.getAttString('executionArn');
+integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn,
+}).expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(10),
+  interval: cdk.Duration.seconds(3),
 });
 
 app.synth();
