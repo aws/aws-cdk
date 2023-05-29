@@ -140,6 +140,26 @@ describe('FunctionUrl', () => {
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 
+  test('throws when CORS maxAge is greater than 86400 secs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    // WHEN
+    expect(() => {
+      new lambda.FunctionUrl(stack, 'FunctionUrl', {
+        function: fn,
+        cors: {
+          maxAge: cdk.Duration.seconds(86401),
+        },
+      });
+    }).toThrow(/FunctionUrl CORS maxAge should be less than or equal to 86400 secs/);
+  });
+
   test('grantInvokeUrl: adds appropriate permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
