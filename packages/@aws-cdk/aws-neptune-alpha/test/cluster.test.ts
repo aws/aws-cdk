@@ -33,8 +33,8 @@ describe('DatabaseCluster', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::Neptune::DBInstance', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
