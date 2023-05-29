@@ -1,3 +1,149 @@
+# CloudFormation Resource Specification v123.0.0
+
+## New Resource Types
+
+* AWS::Connect::Prompt
+* AWS::QuickSight::Topic
+* AWS::Shield::DRTAccess
+* AWS::Shield::ProactiveEngagement
+* AWS::Shield::Protection
+* AWS::Shield::ProtectionGroup
+
+## Attribute Changes
+
+* AWS::EC2::IPAM ResourceDiscoveryAssociationCount (__added__)
+* AWS::EC2::SubnetCidrBlock Id (__added__)
+* AWS::Logs::LogStream Id (__deleted__)
+* AWS::Synthetics::Canary Code.SourceLocationArn (__added__)
+
+## Property Changes
+
+* AWS::AppFlow::Flow FlowStatus (__added__)
+* AWS::EC2::IPAM ResourceDiscoveryAssociationCount (__deleted__)
+* AWS::Neptune::DBCluster Port (__deleted__)
+* AWS::Neptune::DBCluster CopyTagsToSnapshot (__added__)
+* AWS::Neptune::DBCluster DBInstanceParameterGroupName (__added__)
+* AWS::Neptune::DBCluster ServerlessScalingConfiguration (__added__)
+* AWS::Neptune::DBCluster AssociatedRoles.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster AvailabilityZones.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Neptune::DBCluster Tags.DuplicatesAllowed (__added__)
+* AWS::Neptune::DBCluster VpcSecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SimSpaceWeaver::Simulation MaximumDuration (__added__)
+* AWS::SimSpaceWeaver::Simulation SnapshotS3Location (__added__)
+* AWS::SimSpaceWeaver::Simulation Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SimSpaceWeaver::Simulation RoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation SchemaS3Location.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary DeleteLambdaResourcesOnCanaryDeletion (__deleted__)
+* AWS::Synthetics::Canary StartCanaryAfterCreation.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::XRay::Group GroupName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::Group Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+* AWS::XRay::SamplingRule RuleName (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleRecord (__deleted__)
+* AWS::XRay::SamplingRule SamplingRuleUpdate (__deleted__)
+* AWS::XRay::SamplingRule Tags.ItemType (__changed__)
+  * Old: TagsItems
+  * New: Tag
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::XRay::Group.TagsItems (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleRecord (__removed__)
+* AWS::XRay::SamplingRule.SamplingRuleUpdate (__removed__)
+* AWS::XRay::SamplingRule.TagsItems (__removed__)
+* AWS::Neptune::DBCluster.ServerlessScalingConfiguration (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials JwtToken (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials OAuth2GrantType (__added__)
+* AWS::AppFlow::Flow.TriggerConfig ActivateFlowOnCreate (__deleted__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SimSpaceWeaver::Simulation.S3Location BucketName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SimSpaceWeaver::Simulation.S3Location ObjectKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Synthetics::Canary.Code SourceLocationArn (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails SftpAuthenticationMethods (__added__)
+* AWS::XRay::SamplingRule.SamplingRule FixedRate.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule HTTPMethod.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Host.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Priority.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ReservoirSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ResourceARN.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule ServiceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule URLPath.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::XRay::SamplingRule.SamplingRule Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+# CloudFormation Resource Specification (us-west-2) v123.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v122.0.0
 
 ## New Resource Types
