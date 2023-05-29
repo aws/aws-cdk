@@ -514,11 +514,16 @@ test('cache control type has correct values', () => {
   expect(s3deploy.CacheControl.mustRevalidate().value).toEqual('must-revalidate');
   expect(s3deploy.CacheControl.noCache().value).toEqual('no-cache');
   expect(s3deploy.CacheControl.noTransform().value).toEqual('no-transform');
+  expect(s3deploy.CacheControl.noStore().value).toEqual('no-store');
+  expect(s3deploy.CacheControl.mustUnderstand().value).toEqual('must-understand');
   expect(s3deploy.CacheControl.setPublic().value).toEqual('public');
   expect(s3deploy.CacheControl.setPrivate().value).toEqual('private');
+  expect(s3deploy.CacheControl.immutable().value).toEqual('immutable');
   expect(s3deploy.CacheControl.proxyRevalidate().value).toEqual('proxy-revalidate');
   expect(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value).toEqual('max-age=60');
   expect(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value).toEqual('s-maxage=60');
+  expect(s3deploy.CacheControl.staleWhileRevalidate(cdk.Duration.minutes(1)).value).toEqual('stale-while-revalidate=60');
+  expect(s3deploy.CacheControl.staleIfError(cdk.Duration.minutes(1)).value).toEqual('stale-if-error=60');
   expect(s3deploy.CacheControl.fromString('only-if-cached').value).toEqual('only-if-cached');
 });
 

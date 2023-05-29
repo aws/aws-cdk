@@ -277,6 +277,7 @@ export class AssetCode extends Code {
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
+        deployTime: true,
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {

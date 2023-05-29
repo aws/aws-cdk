@@ -44,6 +44,7 @@ new glue.Job(this, 'ScalaSparkEtlJob', {
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
   }),
+  workerType: glue.WorkerType.G_8X,
   description: 'an example Scala ETL job',
 });
 ```

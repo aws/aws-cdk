@@ -31,7 +31,7 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       glueVersion,
       script,
     }),
-    workerType: glue.WorkerType.G_2X,
+    workerType: glue.WorkerType.G_1X,
     workerCount: 10,
     maxConcurrentRuns: 2,
     maxRetries: 2,
