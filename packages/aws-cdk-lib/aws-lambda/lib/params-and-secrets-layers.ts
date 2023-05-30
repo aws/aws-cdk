@@ -20,6 +20,9 @@ interface ParamsAndSecretsBindConfig {
   readonly environmentVars: { [key: string]: string };
 }
 
+/**
+ * Parameters and Secrets Extension versions
+ */
 export enum ParamsAndSecretsVersions {
   /**
    * V4
@@ -172,9 +175,15 @@ export interface ParamsAndSecretsConfig {
   readonly parameters?: IParameter[];
 }
 
+/**
+ * Parameters and Secrets Extension layer version
+ */
 export abstract class ParamsAndSecretsLayerVersion {
   /**
-   * Create layer version with provided ARN
+   * Use the Parameters and Secrets Extension associated with the provided ARN. Make sure the ARN is associated
+   * with the same region and architecture as your function.
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
    */
   public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
@@ -188,7 +197,7 @@ export abstract class ParamsAndSecretsLayerVersion {
   }
 
   /**
-   * Create layer version from specific version
+   * Use a specific version of the Parameters and Secrets Extension to generate a layer version.
    */
   public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {

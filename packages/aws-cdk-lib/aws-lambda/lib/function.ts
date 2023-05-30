@@ -264,6 +264,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Specify the configuration of Parameters and Secrets Extension
    * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+   * @see https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html
    *
    * @default - No Parameters and Secrets Extension
    */

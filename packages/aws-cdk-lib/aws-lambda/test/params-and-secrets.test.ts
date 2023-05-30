@@ -818,6 +818,278 @@ describe('params and secrets', () => {
   });
 
   test('can enable params and secrets with multiple secrets and parameters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const secret1 = new sm.Secret(stack, 'Secret1');
+    const secret2 = new sm.Secret(stack, 'Secret2');
+    const parameter1 = new ssm.StringParameter(stack, 'Parameter1', {
+      parameterName: 'name',
+      stringValue: 'value',
+    });
+    const parameter2 = new ssm.StringParameter(stack, 'Parameter2', {
+      parameterName: 'name',
+      stringValue: 'value',
+    });
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
+        secrets: [secret1, secret2],
+        parameters: [parameter1, parameter2],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'Secret1C2786A59',
+            },
+          },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'Secret244EA3BB5',
+            },
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/',
+                  {
+                    Ref: 'Parameter184B7AC48',
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/',
+                  {
+                    Ref: 'Parameter28A824271',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('throws for cacheSize < 0', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            cacheSize: -1,
+          }),
+        },
+      });
+    }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: -1');
+  });
+
+  test('throws for cacheSize > 1000', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            cacheSize: 1001,
+          }),
+        },
+      });
+    }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: 1001');
+  });
+
+  test('throws for httpPort < 1', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            httpPort: 0,
+          }),
+        },
+      });
+    }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 0');
+  });
+
+  test('throws for httpPort > 65535', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            httpPort: 65536,
+          }),
+        },
+      });
+    }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 65536');
+  });
+
+  test('throws for maxConnections < 1', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            maxConnections: 0,
+          }),
+        },
+      });
+    }).toThrow('Maximum connections must be at least 1 - provided: 0');
+  });
+
+  test('throws for secretsManagerTtl > 300 seconds', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            secretsManagerTtl: cdk.Duration.seconds(301),
+          }),
+        },
+      });
+    }).toThrow('Maximum TTL for a cached secret is 300 seconds - provided: 301 seconds');
+  });
+
+  test('throws for parameterStoreTtl > 300 seconds', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+
+    // WHEN/THEN
+    expect(() => {
+      new lambda.Function (stack, 'Function', {
+        functionName: 'lambda-function',
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        paramsAndSecrets: {
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+            parameterStoreTtl: cdk.Duration.seconds(301),
+          }),
+        },
+      });
+    }).toThrow('Maximum TTL for a cached parameter is 300 seconds - provided: 301 seconds');
   });
 });
