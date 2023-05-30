@@ -157,14 +157,19 @@ declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'BucketDeployment', {
   sources: [s3deploy.Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket,
-  cacheControl: [s3deploy.CacheControl.fromString('max-age=31536000,public,immutable')],
+  cacheControl: [
+    s3deploy.CacheControl.maxAge(Duration.days(365)),
+    s3deploy.CacheControl.immutable(),
+  ],
   prune: false,
 });
 
 new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
   sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
   destinationBucket,
-  cacheControl: [s3deploy.CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
+  cacheControl: [
+    s3deploy.CacheControl.maxAge(Duration.seconds(0)),
+  ],
   prune: false,
 });
 ```

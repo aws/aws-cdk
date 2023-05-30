@@ -1,6 +1,8 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
@@ -178,32 +180,43 @@ describe(AppStagingSynthesizer, () => {
         deployTime: true,
       });
 
-      // THEN - asset has bucket prefix
+      // THEN - asset has deploy time prefix
       expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.js`);
     });
 
-    test('do not get specified bucketPrefix', () => {
-      // GIVEN
-      app = new App({
-        defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
+    test('lambda assets are by default deploy time assets', () => {
+      // WHEN
+      new lambda.Function(stack, 'Lambda', {
+        handler: 'index.handler',
+        code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+        runtime: lambda.Runtime.PYTHON_3_10,
       });
-      stack = new Stack(app, 'Stack', {
-        env: {
-          account: '000000000000',
-          region: 'us-west-2',
+
+      // THEN - lambda asset has deploy time prefix
+      const asm = app.synth();
+
+      const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+      expect(manifestArtifact).toBeDefined();
+      const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+      expect(manifest.files).toBeDefined();
+      expect(Object.keys(manifest.files!).length).toEqual(2);
+      const firstFile = manifest.files![Object.keys(manifest.files!)[0]];
+      const assetHash = '68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650';
+      expect(firstFile).toEqual({
+        source: {
+          packaging: 'zip',
+          path: `asset.${assetHash}`,
+        },
+        destinations: {
+          '000000000000-us-east-1': {
+            bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
+            objectKey: `${DEPLOY_TIME_PREFIX}${assetHash}.zip`,
+            region: 'us-east-1',
+            assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-role-us-east-1`,
+          },
         },
       });
-
-      // WHEN
-      const location = stack.synthesizer.addFileAsset({
-        fileName: __filename,
-        packaging: FileAssetPackaging.FILE,
-        sourceHash: 'abcdef',
-        deployTime: true,
-      });
-
-      // THEN - asset has bucket prefix
-      expect(evalCFN(location.objectKey)).toEqual(`${DEPLOY_TIME_PREFIX}abcdef.js`);
     });
 
     test('have s3 bucket has lifecycle rule by default', () => {

@@ -9,12 +9,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip",
+          "objectKey": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-file-role-${AWS::Region}"
         }
       }
     },
-    "e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0": {
+    "dc7275f639c45accfa2abc4842978bcb3b0c5f0b83fcde22015e344b2e008f26": {
       "source": {
         "path": "synthesize-default-resources.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "deploy-time/e21d11bec65be920861a56a86066cc88a0241d5cbe8324d0692ca982420e4cb0.json",
+          "objectKey": "deploy-time/dc7275f639c45accfa2abc4842978bcb3b0c5f0b83fcde22015e344b2e008f26.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resources-file-role-${AWS::Region}"
         }
       }
