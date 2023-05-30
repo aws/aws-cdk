@@ -72,7 +72,6 @@ describe('vpc endpoint service', () => {
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
 
-
     });
 
     test('with acceptance requried', () => {
@@ -99,7 +98,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
-
 
     });
   });

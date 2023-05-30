@@ -98,7 +98,6 @@ describe('Start Job Run', () => {
     });
   });
 
-
   test('wait_for_task_token integrationPattern throws an error', () => {
     // GIVEN
     const stack = new cdk.Stack();

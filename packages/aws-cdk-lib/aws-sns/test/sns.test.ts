@@ -28,7 +28,6 @@ describe('Topic', () => {
         'TopicName': 'topicName',
       });
 
-
     });
 
     test('specify displayName', () => {
@@ -41,7 +40,6 @@ describe('Topic', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         'DisplayName': 'displayName',
       });
-
 
     });
 
@@ -57,7 +55,6 @@ describe('Topic', () => {
         'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       });
 
-
     });
 
     test('specify displayName and topicName', () => {
@@ -72,7 +69,6 @@ describe('Topic', () => {
         'DisplayName': 'displayName',
         'TopicName': 'topicName',
       });
-
 
     });
 
@@ -103,7 +99,6 @@ describe('Topic', () => {
         'TopicName': 'topicName.fifo',
       });
 
-
     });
 
     test('specify fifo with .fifo suffix in topicName', () => {
@@ -119,7 +114,6 @@ describe('Topic', () => {
         'TopicName': 'topicName.fifo',
       });
 
-
     });
 
     test('specify fifo without contentBasedDeduplication', () => {
@@ -134,7 +128,6 @@ describe('Topic', () => {
         'FifoTopic': true,
         'TopicName': 'topicName.fifo',
       });
-
 
     });
 
@@ -153,7 +146,6 @@ describe('Topic', () => {
         'TopicName': 'topicName.fifo',
       });
 
-
     });
 
     test('throw with contentBasedDeduplication on non-fifo topic', () => {
@@ -162,7 +154,6 @@ describe('Topic', () => {
       expect(() => new sns.Topic(stack, 'MyTopic', {
         contentBasedDeduplication: true,
       })).toThrow(/Content based deduplication can only be enabled for FIFO SNS topics./);
-
 
     });
   });
@@ -193,7 +184,6 @@ describe('Topic', () => {
       },
     });
 
-
   });
 
   test('give publishing permissions', () => {
@@ -218,7 +208,6 @@ describe('Topic', () => {
         ],
       },
     });
-
 
   });
 
@@ -253,7 +242,6 @@ describe('Topic', () => {
         },
       ],
     });
-
 
   });
 
@@ -332,7 +320,6 @@ describe('Topic', () => {
       ],
     });
 
-
   });
 
   test('fromTopicArn', () => {
@@ -383,7 +370,6 @@ describe('Topic', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
 
   });
 
@@ -493,7 +479,6 @@ describe('Topic', () => {
         Ref: 'TopicBFC7AF6E',
       }],
     });
-
 
   });
 });

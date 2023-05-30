@@ -176,6 +176,7 @@ Object.defineProperty(exports, 'aws_opensearchservice', { get: function () { ret
 Object.defineProperty(exports, 'aws_opsworks', { get: function () { return require('./aws-opsworks'); } });
 Object.defineProperty(exports, 'aws_opsworkscm', { get: function () { return require('./aws-opsworkscm'); } });
 Object.defineProperty(exports, 'aws_organizations', { get: function () { return require('./aws-organizations'); } });
+Object.defineProperty(exports, 'aws_osis', { get: function () { return require('./aws-osis'); } });
 Object.defineProperty(exports, 'aws_panorama', { get: function () { return require('./aws-panorama'); } });
 Object.defineProperty(exports, 'aws_personalize', { get: function () { return require('./aws-personalize'); } });
 Object.defineProperty(exports, 'aws_pinpoint', { get: function () { return require('./aws-pinpoint'); } });
@@ -219,6 +220,7 @@ Object.defineProperty(exports, 'aws_servicecatalogappregistry', { get: function 
 Object.defineProperty(exports, 'aws_servicediscovery', { get: function () { return require('./aws-servicediscovery'); } });
 Object.defineProperty(exports, 'aws_ses_actions', { get: function () { return require('./aws-ses-actions'); } });
 Object.defineProperty(exports, 'aws_ses', { get: function () { return require('./aws-ses'); } });
+Object.defineProperty(exports, 'aws_shield', { get: function () { return require('./aws-shield'); } });
 Object.defineProperty(exports, 'aws_signer', { get: function () { return require('./aws-signer'); } });
 Object.defineProperty(exports, 'aws_simspaceweaver', { get: function () { return require('./aws-simspaceweaver'); } });
 Object.defineProperty(exports, 'aws_sns_subscriptions', { get: function () { return require('./aws-sns-subscriptions'); } });

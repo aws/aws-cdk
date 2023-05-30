@@ -174,6 +174,7 @@ export * as aws_opensearchservice from './aws-opensearchservice';
 export * as aws_opsworks from './aws-opsworks';
 export * as aws_opsworkscm from './aws-opsworkscm';
 export * as aws_organizations from './aws-organizations';
+export * as aws_osis from './aws-osis';
 export * as aws_panorama from './aws-panorama';
 export * as aws_personalize from './aws-personalize';
 export * as aws_pinpoint from './aws-pinpoint';
@@ -217,6 +218,7 @@ export * as aws_servicecatalogappregistry from './aws-servicecatalogappregistry'
 export * as aws_servicediscovery from './aws-servicediscovery';
 export * as aws_ses from './aws-ses';
 export * as aws_ses_actions from './aws-ses-actions';
+export * as aws_shield from './aws-shield';
 export * as aws_signer from './aws-signer';
 export * as aws_simspaceweaver from './aws-simspaceweaver';
 export * as aws_sns from './aws-sns';
