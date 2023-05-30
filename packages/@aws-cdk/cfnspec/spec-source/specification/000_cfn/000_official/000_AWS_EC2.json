@@ -1,5 +1,5 @@
 {
-  "$version": "123.0.0",
+  "$version": "124.0.0",
   "PropertyTypes": {
     "AWS::EC2::CapacityReservation.TagSpecification": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-capacityreservation-tagspecification.html",
@@ -7241,6 +7241,12 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
+        },
+        "EnablePrimaryIpv6": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-enableprimaryipv6",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Conditional"
         },
         "GroupSet": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-groupset",
