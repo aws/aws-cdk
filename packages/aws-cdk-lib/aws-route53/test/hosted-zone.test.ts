@@ -287,3 +287,67 @@ test('grantDelegation', () => {
     },
   });
 });
+
+describe('Hosted Zone with dot', () => {
+  test('Hosted Zone constructs without trailing dot by default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
+      Name: 'testZone.',
+    });
+  });
+
+  test('Hosted Zone constructs with trailing dot when addTrailingDot is set to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      addTrailingDot: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
+      Name: 'testZone',
+    });
+  });
+
+  test('Hosted Zone constructs without trailing dot by default with dot', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone.',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
+      Name: 'testZone.',
+    });
+  });
+
+  test('Hosted Zone constructs with trailing dot when addTrailingDot is set to false by default with dot', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone.',
+      addTrailingDot: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
+      Name: 'testZone.',
+    });
+  });
+});

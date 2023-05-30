@@ -20,6 +20,11 @@ const publicSubZone = new PublicHostedZone(stack, 'PublicSubZone', {
 });
 publicZone.addDelegation(publicSubZone);
 
+new PublicHostedZone(stack, 'PublicZoneWithDot', {
+  zoneName: 'cdk.test',
+  addTrailingDot: false,
+});
+
 new TxtRecord(privateZone, 'TXT', {
   zone: privateZone,
   recordName: '_foo',
