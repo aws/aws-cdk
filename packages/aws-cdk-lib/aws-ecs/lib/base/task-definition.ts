@@ -46,7 +46,6 @@ export interface ITaskDefinition extends IResource {
    */
   readonly isExternalCompatible: boolean;
 
-
   /**
    * The networking mode to use for the containers in the task.
    */
@@ -756,7 +755,6 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     });
-
 
     return ret;
   }
