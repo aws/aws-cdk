@@ -2560,7 +2560,7 @@
         "Description": "A user-entered description of the flow.",
         "DestinationFlowConfigList": "The configuration that controls how Amazon AppFlow places data in the destination connector.",
         "FlowName": "The specified name of the flow. Spaces are not allowed. Use underscores (_) or hyphens (-) only.",
-        "FlowStatus": "Indicates the current status of the flow.",
+        "FlowStatus": "Sets the status of the flow. You can specify one of the following values:\n\n- **Active** - The flow runs based on the trigger settings that you defined. Active scheduled flows run as scheduled, and active event-triggered flows run when the specified change event occurs. However, active on-demand flows run only when you manually start them by using Amazon AppFlow.\n- **Suspended** - You can use this option to deactivate an active flow. Scheduled and event-triggered flows will cease to run until you reactive them. This value only affects scheduled and event-triggered flows. It has no effect for on-demand flows.\n\nIf you omit the FlowStatus parameter, Amazon AppFlow creates the flow with a default status. The default status for on-demand flows is Active. The default status for scheduled and event-triggered flows is Draft, which means they\u2019re not yet active.",
         "KMSArn": "The ARN (Amazon Resource Name) of the Key Management Service (KMS) key you provide for encryption. This is required if you do not want to use the Amazon AppFlow-managed KMS key. If you don't provide anything here, Amazon AppFlow uses the Amazon AppFlow-managed KMS key.",
         "MetadataCatalogConfig": "",
         "SourceFlowConfig": "Contains information about the configuration of the source connector used in the flow.",
@@ -5077,11 +5077,14 @@
       "description": "The `AWS::AppSync::GraphQLApi` resource creates a new AWS AppSync GraphQL API. This is the top-level construct for your application. For more information, see [Quick Start](https://docs.aws.amazon.com/appsync/latest/devguide/quickstart.html) in the *AWS AppSync Developer Guide* .",
       "properties": {
         "AdditionalAuthenticationProviders": "A list of additional authentication providers for the `GraphqlApi` API.",
+        "ApiType": "The value that indicates whether the GraphQL API is a standard API ( `GRAPHQL` ) or merged API ( `MERGED` ).\n\nThe following values are valid:\n\n`GRAPHQL | MERGED`",
         "AuthenticationType": "Security configuration for your GraphQL API. For allowed values (such as `API_KEY` , `AWS_IAM` , `AMAZON_COGNITO_USER_POOLS` , `OPENID_CONNECT` , or `AWS_LAMBDA` ), see [Security](https://docs.aws.amazon.com/appsync/latest/devguide/security.html) in the *AWS AppSync Developer Guide* .",
         "LambdaAuthorizerConfig": "A `LambdaAuthorizerConfig` holds configuration on how to authorize AWS AppSync API access when using the `AWS_LAMBDA` authorizer mode. Be aware that an AWS AppSync API may have only one Lambda authorizer configured at a time.",
         "LogConfig": "The Amazon CloudWatch Logs configuration.",
+        "MergedApiExecutionRoleArn": "The AWS Identity and Access Management service role ARN for a merged API. The AppSync service assumes this role on behalf of the Merged API to validate access to source APIs at runtime and to prompt the `AUTO_MERGE` to update the merged API endpoint with the source API changes automatically.",
         "Name": "The API name.",
         "OpenIDConnectConfig": "The OpenID Connect configuration.",
+        "OwnerContact": "The owner contact information for an API resource.\n\nThis field accepts any string input with a length of 0 - 256 characters.",
         "Tags": "An arbitrary set of tags (key-value pairs) for this GraphQL API.",
         "UserPoolConfig": "Optional authorization configuration for using Amazon Cognito user pools with your GraphQL endpoint.",
         "Visibility": "Sets the scope of the GraphQL API to public ( `GLOBAL` ) or private ( `PRIVATE` ). By default, the scope is set to `Global` if no value is provided.",
@@ -5147,7 +5150,7 @@
     },
     "AWS::AppSync::GraphQLSchema": {
       "attributes": {
-        "Ref": "When you pass the logical ID of an `AWS::AppSync::GraphQLSchema` resource to the intrinsic `Ref` function, the function returns the GraphQL API id with the literal String GraphQLSchema attached to it."
+        "Ref": "When you pass the logical ID of an `AWS::AppSync::GraphQLSchema` resource to the intrinsic `Ref` function, the function returns the GraphQL API ID with the literal String GraphQLSchema attached to it."
       },
       "description": "The `AWS::AppSync::GraphQLSchema` resource is used for your AWS AppSync GraphQL schema that controls the data model for your API. Schema files are text written in Schema Definition Language (SDL) format. For more information about schema authoring, see [Designing a GraphQL API](https://docs.aws.amazon.com/appsync/latest/devguide/designing-a-graphql-api.html) in the *AWS AppSync Developer Guide* .\n\n> When you submit an update, AWS CloudFormation updates resources based on differences between what you submit and the stack's current template. To cause this resource to be updated you must change a property value for this resource in the CloudFormation template. Changing the Amazon S3 file content without changing a property value will not result in an update operation.\n> \n> See [Update Behaviors of Stack Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html) in the *AWS CloudFormation User Guide* .",
       "properties": {
@@ -5220,6 +5223,34 @@
         "ConflictDetection": "The Conflict Detection strategy to use.\n\n- *VERSION* : Detect conflicts based on object versions for this resolver.\n- *NONE* : Do not detect conflicts when invoking this resolver.",
         "ConflictHandler": "The Conflict Resolution strategy to perform in the event of a conflict.\n\n- *OPTIMISTIC_CONCURRENCY* : Resolve conflicts by rejecting mutations when versions don't match the latest version at the server.\n- *AUTOMERGE* : Resolve conflicts with the Automerge conflict resolution strategy.\n- *LAMBDA* : Resolve conflicts with an AWS Lambda function supplied in the `LambdaConflictHandlerConfig` .",
         "LambdaConflictHandlerConfig": "The `LambdaConflictHandlerConfig` when configuring `LAMBDA` as the Conflict Handler."
+      }
+    },
+    "AWS::AppSync::SourceApiAssociation": {
+      "attributes": {
+        "AssociationArn": "The Amazon Resource Name (ARN) of the source API association.",
+        "AssociationId": "The ID generated by the AppSync service for the source API association.",
+        "LastSuccessfulMergeDate": "The datetime value of the last successful merge of the source API association. The result will be in UTC format and your local time zone.",
+        "MergedApiArn": "The Amazon Resource Name (ARN) of the merged API.",
+        "MergedApiId": "The ID of the merged API.",
+        "Ref": "When you pass the logical ID of an `AWS::AppSync::SourceApiAssociation` resource to the intrinsic `Ref` function, the function returns the ARN of the source API association.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref) .",
+        "SourceApiArn": "The source API's Amazon Resource Name (ARN) value.",
+        "SourceApiAssociationStatus": "The state of the source API association.\n\nThe following values are valid:\n\n`MERGE_SCHEDULED | MERGE_FAILED | MERGE_SUCCESS | MERGE_IN_PROGRESS | AUTO_MERGE_SCHEDULE_FAILED | DELETION_SCHEDULED | DELETION_IN_PROGRESS | DELETION_FAILED`",
+        "SourceApiAssociationStatusDetail": "The message describing the state of the source API association.",
+        "SourceApiId": "The ID of the source API."
+      },
+      "description": "Describes the configuration of a source API. A source API is a GraphQL API that is linked to a merged API. There can be multiple source APIs attached to each merged API. When linked to a merged API, the source API's schema, data sources, and resolvers will be combined with other linked source API data to form a new, singular API. Source APIs can originate from your account or from other accounts via Resource Access Manager.",
+      "properties": {
+        "Description": "The description field of the association configuration.",
+        "MergedApiIdentifier": "The identifier of the AppSync Merged API. This is generated by the AppSync service. In most cases, Merged APIs (especially in your account) only require the API ID value or ARN of the merged API. However, Merged APIs from other accounts (cross-account use cases) strictly require the full resource ARN of the merged API.",
+        "SourceApiAssociationConfig": "The `SourceApiAssociationConfig` object data.",
+        "SourceApiIdentifier": "The identifier of the AppSync Source API. This is generated by the AppSync service. In most cases, source APIs (especially in your account) only require the API ID value or ARN of the source API. However, source APIs from other accounts (cross-account use cases) strictly require the full resource ARN of the source API."
+      }
+    },
+    "AWS::AppSync::SourceApiAssociation.SourceApiAssociationConfig": {
+      "attributes": {},
+      "description": "Describes properties used to specify configurations related to a source API. This is a property of the `AWS:AppSync:SourceApiAssociation` type.",
+      "properties": {
+        "MergeType": "The property that indicates which merging option is enabled in the source API association.\n\nValid merge types are `MANUAL_MERGE` (default) and `AUTO_MERGE` . Manual merges are the default behavior and require the user to trigger any changes from the source APIs to the merged API manually. Auto merges subscribe the merged API to the changes performed on the source APIs so that any change in the source APIs are also made to the merged API. Auto merges use `MergedApiExecutionRoleArn` to perform merge operations.\n\nThe following values are valid:\n\n`MANUAL_MERGE | AUTO_MERGE`"
       }
     },
     "AWS::ApplicationAutoScaling::ScalableTarget": {
@@ -5556,16 +5587,16 @@
     },
     "AWS::Athena::WorkGroup.AclConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. When Athena stores query results in Amazon S3, the canned ACL is set with the `x-amz-acl` request header. For more information about S3 Object Ownership, see [Object Ownership settings](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html#object-ownership-overview) in the *Amazon S3 User Guide* .",
       "properties": {
-        "S3AclOption": ""
+        "S3AclOption": "The Amazon S3 canned ACL that Athena should specify when storing query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . If a query runs in a workgroup and the workgroup overrides client-side settings, then the Amazon S3 canned ACL specified in the workgroup's settings is used for all queries that run in the workgroup. For more information about Amazon S3 canned ACLs, see [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) in the *Amazon S3 User Guide* ."
       }
     },
     "AWS::Athena::WorkGroup.CustomerContentEncryptionConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
       "properties": {
-        "KmsKey": ""
+        "KmsKey": "The KMS key that is used to encrypt the user's data stores in Athena."
       }
     },
     "AWS::Athena::WorkGroup.EncryptionConfiguration": {
@@ -5588,9 +5619,9 @@
       "attributes": {},
       "description": "The location in Amazon S3 where query and calculation results are stored and the encryption option, if any, used for query and calculation results. These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
       "properties": {
-        "AclConfiguration": "",
+        "AclConfiguration": "Indicates that an Amazon S3 canned ACL should be set to control ownership of stored query results. Currently the only supported canned ACL is `BUCKET_OWNER_FULL_CONTROL` . This is a client-side setting. If workgroup settings override client-side settings, then the query uses the ACL configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` .",
         "EncryptionConfiguration": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information. This is a client-side setting. If workgroup settings override client-side settings, then the query uses the encryption configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
-        "ExpectedBucketOwner": "",
+        "ExpectedBucketOwner": "The account ID that you expect to be the owner of the Amazon S3 bucket specified by `ResultConfiguration:OutputLocation` . If set, Athena uses the value for `ExpectedBucketOwner` when it makes Amazon S3 calls to your specified output location. If the `ExpectedBucketOwner` account ID does not match the actual owner of the Amazon S3 bucket, the call fails with a permissions error.\n\nThis is a client-side setting. If workgroup settings override client-side settings, then the query uses the `ExpectedBucketOwner` setting that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` .",
         "OutputLocation": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` . To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` ."
       }
     },
@@ -5598,12 +5629,12 @@
       "attributes": {},
       "description": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified. The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
       "properties": {
-        "AdditionalConfiguration": "",
+        "AdditionalConfiguration": "Specifies a user defined JSON string that is passed to the session engine.",
         "BytesScannedCutoffPerQuery": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan. No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
-        "CustomerContentEncryptionConfiguration": "",
+        "CustomerContentEncryptionConfiguration": "Specifies the KMS key that is used to encrypt the user's data stores in Athena.",
         "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\", client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
-        "EngineVersion": "",
-        "ExecutionRole": "",
+        "EngineVersion": "The engine version that all queries running on the workgroup use.",
+        "ExecutionRole": "Role used in an Apache Spark session for accessing the user's resources.",
         "PublishCloudWatchMetricsEnabled": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup.",
         "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
         "ResultConfiguration": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) ."
@@ -7802,7 +7833,7 @@
         "FailureTolerancePercentage": "The percentage of accounts, per Region, for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If the operation is stopped in a Region, AWS CloudFormation doesn't attempt the operation in any subsequent Regions.\n\nWhen calculating the number of accounts based on the specified percentage, AWS CloudFormation rounds *down* to the next whole number.\n\nConditional: You must specify either `FailureToleranceCount` or `FailureTolerancePercentage` , but not both.",
         "MaxConcurrentCount": "The maximum number of accounts in which to perform this operation at one time. This is dependent on the value of `FailureToleranceCount` . `MaxConcurrentCount` is at most one more than the `FailureToleranceCount` .\n\nNote that this setting lets you specify the *maximum* for operations. For large deployments, under certain circumstances the actual number of accounts acted upon concurrently may be lower due to service throttling.\n\nConditional: You must specify either `MaxConcurrentCount` or `MaxConcurrentPercentage` , but not both.",
         "MaxConcurrentPercentage": "The maximum percentage of accounts in which to perform this operation at one time.\n\nWhen calculating the number of accounts based on the specified percentage, AWS CloudFormation rounds down to the next whole number. This is true except in cases where rounding down would result is zero. In this case, CloudFormation sets the number as one instead.\n\nNote that this setting lets you specify the *maximum* for operations. For large deployments, under certain circumstances the actual number of accounts acted upon concurrently may be lower due to service throttling.\n\nConditional: You must specify either `MaxConcurrentCount` or `MaxConcurrentPercentage` , but not both.",
-        "RegionConcurrencyType": "The concurrency type of deploying StackSets operations in Regions, could be in parallel or one Region at a time.\n\n*Allowed values* : `SEQUENTIAL` | `PARALLEL`",
+        "RegionConcurrencyType": "The concurrency type of deploying StackSets operations in Regions, could be in parallel or one Region at a time.",
         "RegionOrder": "The order of the Regions where you want to perform the stack operation."
       }
     },
@@ -8685,7 +8716,7 @@
       "description": "A list of AWS accounts whose public keys CloudFront can use to verify the signatures of signed URLs and signed cookies.",
       "properties": {
         "AwsAccountNumbers": "An AWS account number that contains active CloudFront key pairs that CloudFront can use to verify the signatures of signed URLs and signed cookies. If the AWS account that owns the key pairs is the same account that owns the CloudFront distribution, the value of this field is `self` .",
-        "Enabled": "This field is `true` if any of the AWS accounts have public keys that CloudFront can use to verify the signatures of signed URLs and signed cookies. If not, this field is `false` ."
+        "Enabled": "This field is `true` if any of the AWS accounts in the list are configured as trusted signers. If not, this field is `false` ."
       }
     },
     "AWS::CloudTrail::Channel": {
@@ -10047,6 +10078,18 @@
       "properties": {
         "ApplicationArns": "The ARNs of the Amazon SNS platform applications that could be used by clients.",
         "RoleArn": "An IAM role configured to allow Amazon Cognito to call Amazon SNS on behalf of the developer."
+      }
+    },
+    "AWS::Cognito::IdentityPoolPrincipalTag": {
+      "attributes": {
+        "Ref": "`Ref` returns the principal tag primary ID, like `us-east-1:1cf667a2-49a6-454b-9e45-23199EXAMPLE|graph.facebook.com` ."
+      },
+      "description": "A list of the identity pool principal tag assignments for attributes for access control.",
+      "properties": {
+        "IdentityPoolId": "The identity pool that you want to associate with this principal tag map.",
+        "IdentityProviderName": "The identity pool identity provider (IdP) that you want to associate with this principal tag map.",
+        "PrincipalTags": "A JSON-formatted list of user claims and the principal tags that you want to associate with them. When Amazon Cognito requests credentials, it sets the value of the principal tag to the value of the user's claim.",
+        "UseDefaults": "Use a default set of mappings between claims and tags for this provider, instead of a custom map."
       }
     },
     "AWS::Cognito::IdentityPoolRoleAttachment": {
@@ -14283,7 +14326,7 @@
       "attributes": {},
       "description": "Represents the settings used to enable or disable Time to Live (TTL) for the specified table.",
       "properties": {
-        "AttributeName": "The name of the TTL attribute used to store the expiration time for items in the table.\n\n> To update this property, you must first disable TTL then enable TTL with the new attribute name.",
+        "AttributeName": "The name of the TTL attribute used to store the expiration time for items in the table.\n\n> - To update this property, you must first disable TTL and then enable TTL with the new attribute name.",
         "Enabled": "Indicates whether TTL is to be enabled (true) or disabled (false) on the table."
       }
     },
@@ -16108,6 +16151,7 @@
       "description": "Describes a network interface in an Amazon EC2 instance for AWS CloudFormation .",
       "properties": {
         "Description": "A description for the network interface.",
+        "EnablePrimaryIpv6": "",
         "GroupSet": "The security group IDs associated with this network interface.",
         "InterfaceType": "The type of network interface. The default is `interface` . The supported values are `efa` and `trunk` .",
         "Ipv6AddressCount": "The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. To specify specific IPv6 addresses, use the `Ipv6Addresses` property and don't specify this property.",
@@ -16214,16 +16258,16 @@
       },
       "description": "Specifies a route in a route table.\n\nYou must specify either `DestinationCidrBlock` or `DestinationIpv6CidrBlock` , plus the ID of one of the target resources.\n\nIf you create a route that references a transit gateway in the same template where you create the transit gateway, you must declare a dependency on the transit gateway attachment. The route table cannot use the transit gateway until it has successfully attached to the VPC. Add a [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) in the `AWS::EC2::Route` resource to explicitly declare a dependency on the `AWS::EC2::TransitGatewayAttachment` resource.",
       "properties": {
-        "CarrierGatewayId": "The ID of the carrier gateway.",
-        "DestinationCidrBlock": "The IPv4 CIDR block used for the destination match.",
-        "DestinationIpv6CidrBlock": "The IPv6 CIDR block used for the destination match.",
-        "EgressOnlyInternetGatewayId": "The ID of the egress-only internet gateway.",
+        "CarrierGatewayId": "The ID of the carrier gateway.\n\nYou can only use this option when the VPC contains a subnet which is associated with a Wavelength Zone.",
+        "DestinationCidrBlock": "The IPv4 CIDR address block used for the destination match. Routing decisions are based on the most specific match. We modify the specified CIDR block to its canonical form; for example, if you specify `100.68.0.18/18` , we modify it to `100.68.0.0/18` .",
+        "DestinationIpv6CidrBlock": "The IPv6 CIDR block used for the destination match. Routing decisions are based on the most specific match.",
+        "EgressOnlyInternetGatewayId": "[IPv6 traffic only] The ID of an egress-only internet gateway.",
         "GatewayId": "The ID of an internet gateway or virtual private gateway attached to your VPC.",
-        "InstanceId": "The ID of a NAT instance in your VPC.",
+        "InstanceId": "The ID of a NAT instance in your VPC. The operation fails if you specify an instance ID unless exactly one network interface is attached.",
         "LocalGatewayId": "The ID of the local gateway.",
-        "NatGatewayId": "The ID of a NAT gateway.",
-        "NetworkInterfaceId": "The ID of the network interface.",
-        "RouteTableId": "The ID of the route table. The routing table must be associated with the same VPC that the virtual private gateway is attached to.",
+        "NatGatewayId": "[IPv4 traffic only] The ID of a NAT gateway.",
+        "NetworkInterfaceId": "The ID of a network interface.",
+        "RouteTableId": "The ID of the route table for the route.",
         "TransitGatewayId": "The ID of a transit gateway.",
         "VpcEndpointId": "The ID of a VPC endpoint. Supported for Gateway Load Balancer endpoints only.",
         "VpcPeeringConnectionId": "The ID of a VPC peering connection."
@@ -21466,7 +21510,7 @@
         "CopyTagsToBackups": "A Boolean value indicating whether tags for the file system should be copied to backups. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "CopyTagsToVolumes": "A Boolean value indicating whether tags for the file system should be copied to volumes. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to volumes where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to volumes. If you specify one or more tags when creating the volume, no tags are copied from the file system, regardless of this value.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
-        "DeploymentType": "Specifies the file system deployment type. Single AZ deployment types are configured for redundancy within a single Availability Zone in an AWS Region . Valid values are the following:\n\n- `SINGLE_AZ_1` - (Default) Creates file systems with throughput capacities of 64 - 4,096 MB/s. `Single_AZ_1` is available in all AWS Regions where Amazon FSx for OpenZFS is available, except US West (Oregon).\n- `SINGLE_AZ_2` - Creates file systems with throughput capacities of 160 - 10,240 MB/s using an NVMe L2ARC cache. `Single_AZ_2` is available only in the US East (N. Virginia), US East (Ohio), US West (Oregon), and Europe (Ireland) AWS Regions .\n\nFor more information, see: [Deployment type availability](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/availability-durability.html#available-aws-regions) and [File system performance](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/performance.html#zfs-fs-performance) in the *Amazon FSx for OpenZFS User Guide* .",
+        "DeploymentType": "Specifies the file system deployment type. Single AZ deployment types are configured for redundancy within a single Availability Zone in an AWS Region . Valid values are the following:\n\n- `SINGLE_AZ_1` - (Default) Creates file systems with throughput capacities of 64 - 4,096 MB/s. `Single_AZ_1` is available in all AWS Regions where Amazon FSx for OpenZFS is available.\n- `SINGLE_AZ_2` - Creates file systems with throughput capacities of 160 - 10,240 MB/s using an NVMe L2ARC cache. `Single_AZ_2` is available only in the US East (N. Virginia), US East (Ohio), US West (Oregon), and Europe (Ireland) AWS Regions .\n\nFor more information, see: [Deployment type availability](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/availability-durability.html#available-aws-regions) and [File system performance](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/performance.html#zfs-fs-performance) in the *Amazon FSx for OpenZFS User Guide* .",
         "DiskIopsConfiguration": "The SSD IOPS (input/output operations per second) configuration for an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS file system. The default is 3 IOPS per GB of storage capacity, but you can provision additional IOPS per GB of storage. The configuration consists of the total number of provisioned SSD IOPS and how the amount was provisioned (by the customer or by the system).",
         "Options": "To delete a file system if there are child volumes present below the root volume, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` . If your file system has child volumes and you don't use this option, the delete request will fail.",
         "RootVolumeConfiguration": "The configuration Amazon FSx uses when creating the root value of the Amazon FSx for OpenZFS file system. All volumes are children of the root volume.",
@@ -22536,7 +22580,10 @@
       "attributes": {},
       "description": "Specifies an AWS Glue Data Catalog target.",
       "properties": {
+        "ConnectionName": "",
         "DatabaseName": "The name of the database to be synchronized.",
+        "DlqEventQueueArn": "",
+        "EventQueueArn": "",
         "Tables": "A list of the tables to be synchronized."
       }
     },
@@ -22652,6 +22699,28 @@
       "properties": {
         "CatalogEncryptionMode": "The encryption-at-rest mode for encrypting Data Catalog data.",
         "SseAwsKmsKeyId": "The ID of the AWS KMS key to use for encryption at rest."
+      }
+    },
+    "AWS::Glue::DataQualityRuleset": {
+      "attributes": {
+        "Ref": ""
+      },
+      "description": "The `AWS::Glue::DataQualityRuleset` resource specifies a data quality ruleset with DQDL rules applied to a specified AWS Glue table. For more information, see AWS Glue Data Quality in the AWS Glue Developer Guide.",
+      "properties": {
+        "ClientToken": "Used for idempotency and is recommended to be set to a random ID (such as a UUID) to avoid creating or starting multiple instances of the same resource.",
+        "Description": "A description of the data quality ruleset.",
+        "Name": "The name of the data quality ruleset.",
+        "Ruleset": "A Data Quality Definition Language (DQDL) ruleset. For more information see the AWS Glue Developer Guide.",
+        "Tags": "A list of tags applied to the data quality ruleset.",
+        "TargetTable": "An object representing an AWS Glue table."
+      }
+    },
+    "AWS::Glue::DataQualityRuleset.TargetTable": {
+      "attributes": {},
+      "description": "An object representing an AWS Glue table.",
+      "properties": {
+        "DatabaseName": "The name of the database where the AWS Glue table exists.",
+        "TableName": "The name of the AWS Glue table."
       }
     },
     "AWS::Glue::Database": {
@@ -23269,7 +23338,7 @@
       "attributes": {
         "CreationTimestamp": "The date that the workspace was created.\n\nType: Timestamp",
         "Endpoint": "The URL that users can use to access the Grafana console in the workspace.\n\nType: String",
-        "GrafanaVersion": "The version of Grafana supported in this workspace.\n\nType: String",
+        "GrafanaVersion": "Specifies the version of Grafana supported by this workspace.\n\nType: String",
         "Id": "The unique ID of this workspace.\n\nType: String",
         "ModificationTimestamp": "The most recent date that the workspace was modified.\n\nType: Timestamp",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"Id\" }`",
@@ -23284,6 +23353,7 @@
         "ClientToken": "A unique, case-sensitive, user-provided identifier to ensure the idempotency of the request.",
         "DataSources": "Specifies the AWS data sources that have been configured to have IAM roles and permissions created to allow Amazon Managed Grafana to read data from these sources.\n\nThis list is only used when the workspace was created through the AWS console, and the `permissionType` is `SERVICE_MANAGED` .",
         "Description": "The user-defined description of the workspace.",
+        "GrafanaVersion": "Specifies the version of Grafana to support in the new workspace.\n\nSupported values are `8.4` and `9.4` .",
         "Name": "The name of the workspace.",
         "NetworkAccessControl": "The configuration settings for network access to your workspace.",
         "NotificationDestinations": "The AWS notification channels that Amazon Managed Grafana can automatically create IAM roles and permissions for, to allow Amazon Managed Grafana to use these channels.",
@@ -23293,7 +23363,7 @@
         "RoleArn": "The IAM role that grants permissions to the AWS resources that the workspace will view data from. This role must already exist.",
         "SamlConfiguration": "If the workspace uses SAML, use this structure to map SAML assertion attributes to workspace user information and define which groups in the assertion attribute are to have the `Admin` and `Editor` roles in the workspace.",
         "StackSetName": "The name of the AWS CloudFormation stack set that is used to generate IAM roles to be used for this workspace.",
-        "VpcConfiguration": "The configuration for connecting to data sources in a private VPC ( Amazon Virtual Private Cloud )."
+        "VpcConfiguration": "The configuration settings for an Amazon VPC that contains data sources for your Grafana workspace to connect to.\n\n> Connecting to a private VPC is not yet available in the Asia Pacific (Seoul) Region (ap-northeast-2)."
       }
     },
     "AWS::Grafana::Workspace.AssertionAttributes": {
@@ -23345,7 +23415,7 @@
     },
     "AWS::Grafana::Workspace.VpcConfiguration": {
       "attributes": {},
-      "description": "The configuration settings for an Amazon VPC that contains data sources for your Grafana workspace to connect to.\n\n> Provided `securityGroupIds` and `subnetIds` must be part of the same VPC.",
+      "description": "The configuration settings for an Amazon VPC that contains data sources for your Grafana workspace to connect to.\n\n> Provided `securityGroupIds` and `subnetIds` must be part of the same VPC.\n> \n> Connecting to a private VPC is not yet available in the Asia Pacific (Seoul) Region (ap-northeast-2).",
       "properties": {
         "SecurityGroupIds": "The list of Amazon EC2 security group IDs attached to the Amazon VPC for your Grafana workspace to connect. Duplicates not allowed.\n\n*Array Members* : Minimum number of 1 items. Maximum number of 5 items.\n\n*Length* : Minimum length of 0. Maximum length of 255.",
         "SubnetIds": "The list of Amazon EC2 subnet IDs created in the Amazon VPC for your Grafana workspace to connect. Duplicates not allowed.\n\n*Array Members* : Minimum number of 2 items. Maximum number of 6 items.\n\n*Length* : Minimum length of 0. Maximum length of 255."
@@ -27847,6 +27917,7 @@
         "Action": "",
         "CollectionScheme": "",
         "Compression": "",
+        "DataDestinationConfigs": "",
         "DataExtraDimensions": "",
         "Description": "The description of the campaign.",
         "DiagnosticsMode": "",
@@ -27880,6 +27951,24 @@
         "TriggerMode": ""
       }
     },
+    "AWS::IoTFleetWise::Campaign.DataDestinationConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "S3Config": "",
+        "TimestreamConfig": ""
+      }
+    },
+    "AWS::IoTFleetWise::Campaign.S3Config": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "BucketArn": "",
+        "DataFormat": "",
+        "Prefix": "",
+        "StorageCompressionFormat": ""
+      }
+    },
     "AWS::IoTFleetWise::Campaign.SignalInformation": {
       "attributes": {},
       "description": "Information about a signal.",
@@ -27894,6 +27983,14 @@
       "description": "",
       "properties": {
         "PeriodMs": ""
+      }
+    },
+    "AWS::IoTFleetWise::Campaign.TimestreamConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ExecutionRoleArn": "",
+        "TimestreamTableArn": ""
       }
     },
     "AWS::IoTFleetWise::DecoderManifest": {
@@ -33977,6 +34074,7 @@
         "EngineType": "The type of the target platform for this application.",
         "KmsKeyId": "The identifier of a customer managed key.",
         "Name": "The name of the application.",
+        "RoleArn": "",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -37779,10 +37877,6 @@
         "CoreNetworkArn": "The ARN of the core network.",
         "CreatedAt": "The timestamp when the Connect attachment was created.",
         "OwnerAccountId": "The ID of the Connect attachment owner.",
-        "ProposedSegmentChange": "",
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": "",
-        "ProposedSegmentChange.SegmentName": "",
-        "ProposedSegmentChange.Tags": "",
         "Ref": "`Ref` returns the `AttachmentId` . For example, `{ \"Ref: \"attachment-02767e74104a33690\" }` .",
         "ResourceArn": "The resource ARN for the Connect attachment.",
         "SegmentName": "The name of the Connect attachment's segment.",
@@ -37794,6 +37888,7 @@
         "CoreNetworkId": "The ID of the core network where the Connect attachment is located.",
         "EdgeLocation": "The Region where the edge is located.",
         "Options": "Options for connecting an attachment.",
+        "ProposedSegmentChange": "",
         "Tags": "",
         "TransportAttachmentId": "The ID of the transport attachment."
       }
@@ -38024,10 +38119,6 @@
         "CreatedAt": "The timestamp when the site-to-site VPN attachment was created.",
         "EdgeLocation": "The Region where the core network edge is located.",
         "OwnerAccountId": "The ID of the site-to-site VPN attachment owner.",
-        "ProposedSegmentChange": "",
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": "",
-        "ProposedSegmentChange.SegmentName": "",
-        "ProposedSegmentChange.Tags": "",
         "Ref": "`Ref` returns the `AttachmentId` . For example, `{ \"Ref: \"attachment-05467e74104d33861\" }` .",
         "ResourceArn": "The resource ARN for the site-to-site VPN attachment.",
         "SegmentName": "The name of the site-to-site VPN attachment's segment.",
@@ -38037,6 +38128,7 @@
       "description": "Creates an Amazon Web Services site-to-site VPN attachment on an edge location of a core network.",
       "properties": {
         "CoreNetworkId": "",
+        "ProposedSegmentChange": "",
         "Tags": "",
         "VpnConnectionArn": "The ARN of the site-to-site VPN attachment."
       }
@@ -38122,10 +38214,6 @@
         "CreatedAt": "The timestamp when the VPC attachment was created.",
         "EdgeLocation": "The Region where the core network edge is located.",
         "OwnerAccountId": "The ID of the VPC attachment owner.",
-        "ProposedSegmentChange": "",
-        "ProposedSegmentChange.AttachmentPolicyRuleNumber": "",
-        "ProposedSegmentChange.SegmentName": "",
-        "ProposedSegmentChange.Tags": "",
         "Ref": "`Ref` returns the `AttachmentId` . For example, `{ \"Ref: \"attachment-00067e74104d33769\" }` .",
         "ResourceArn": "The resource ARN for the VPC attachment.",
         "SegmentName": "The name of the attachment's segment.",
@@ -38136,6 +38224,7 @@
       "properties": {
         "CoreNetworkId": "The core network ID.",
         "Options": "Options for creating the VPC attachment.",
+        "ProposedSegmentChange": "",
         "SubnetArns": "The subnet ARNs.",
         "Tags": "The tags associated with the VPC attachment.",
         "VpcArn": "The ARN of the VPC attachment."
@@ -38756,6 +38845,7 @@
         "DedicatedMasterType": "The hardware configuration of the computer that hosts the dedicated master node, such as `m3.medium.search` . If you specify this property, you must specify `true` for the `DedicatedMasterEnabled` property. For valid values, see [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html) .",
         "InstanceCount": "The number of data nodes (instances) to use in the OpenSearch Service domain.",
         "InstanceType": "The instance type for your data nodes, such as `m3.medium.search` . For valid values, see [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html) .",
+        "MultiAZWithStandbyEnabled": "Indicates whether Multi-AZ with Standby deployment option is enabled. For more information, see [Multi-AZ with Standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby) .",
         "WarmCount": "The number of warm nodes in the cluster.",
         "WarmEnabled": "Whether to enable UltraWarm storage for the cluster. See [UltraWarm storage for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html) .",
         "WarmType": "The instance type for the cluster's warm nodes.",
@@ -41544,7 +41634,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Analysis.ColorScale": {
@@ -45726,7 +45816,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Dashboard.ColorScale": {
@@ -50617,7 +50707,7 @@
       "attributes": {},
       "description": "The cluster marker configuration of the geospatial map selected point style.",
       "properties": {
-        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration"
+        "ClusterMarker": "The cluster marker that is a part of the cluster marker configuration."
       }
     },
     "AWS::QuickSight::Template.ColorScale": {
@@ -54969,7 +55059,7 @@
         "SourceDBClusterIdentifier": "When restoring a DB cluster to a point in time, the identifier of the source DB cluster from which to restore.\n\nConstraints:\n\n- Must match the identifier of an existing DBCluster.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "SourceRegion": "The AWS Region which contains the source DB cluster when replicating a DB cluster. For example, `us-east-1` .\n\nValid for: Aurora DB clusters only",
         "StorageEncrypted": "Indicates whether the DB cluster is encrypted.\n\nIf you specify the `KmsKeyId` property, then you must enable encryption.\n\nIf you specify the `SourceDBClusterIdentifier` property, don't specify this property. The value is inherited from the source DB cluster, and if the DB cluster is encrypted, the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot is encrypted, don't specify this property. The value is inherited from the snapshot, and the specified `KmsKeyId` property is used.\n\nIf you specify the `SnapshotIdentifier` and the specified snapshot isn't encrypted, you can use this property to specify that the restored DB cluster is encrypted. Specify the `KmsKeyId` property for the KMS key to use for encryption. If you don't want the restored DB cluster to be encrypted, then don't set this property or set it to `false` .\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
-        "StorageType": "Specifies the storage type to be associated with the DB cluster.\n\nThis setting is required to create a Multi-AZ DB cluster.\n\nWhen specified for a Multi-AZ DB cluster, a value for the `Iops` parameter is required.\n\nValid values: `aurora` , `aurora-iopt1` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)\n\nDefault: `aurora` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
+        "StorageType": "Specifies the storage type to be associated with the DB cluster.\n\nThis setting is required to create a Multi-AZ DB cluster.\n\nWhen specified for a Multi-AZ DB cluster, a value for the `Iops` parameter is required.\n\nValid values: `aurora` , `aurora-iopt1` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)\n\nDefault: `aurora` (Aurora DB clusters); `io1` (Multi-AZ DB clusters)\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters\n\nFor more information on storage types for Aurora DB clusters, see [Storage configurations for Amazon Aurora DB clusters](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html#aurora-storage-type) . For more information on storage types for Multi-AZ DB clusters, see [Settings for creating Multi-AZ DB clusters](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/create-multi-az-db-cluster.html#create-multi-az-db-cluster-settings) .",
         "Tags": "An optional array of key-value pairs to apply to this DB cluster.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "UseLatestRestorableTime": "A value that indicates whether to restore the DB cluster to the latest restorable backup time. By default, the DB cluster is not restored to the latest restorable backup time.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "VpcSecurityGroupIds": "A list of EC2 VPC security groups to associate with this DB cluster.\n\nIf you plan to update the resource, don't specify VPC security groups in a shared VPC.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters"
@@ -55924,9 +56014,10 @@
       "description": "The configuration for the URI path route type.",
       "properties": {
         "ActivationState": "If set to `ACTIVE` , traffic is forwarded to this route\u2019s service after the route is created.",
+        "AppendSourcePath": "",
         "IncludeChildPaths": "Indicates whether to match all subpaths of the given source path. If this value is `false` , requests must match the source path exactly before they are forwarded to this route's service.",
         "Methods": "A list of HTTP methods to match. An empty list matches all values. If a method is present, only HTTP requests using that method are forwarded to this route\u2019s service.",
-        "SourcePath": "The path to use to match traffic. Paths must start with `/` and are relative to the base of the application."
+        "SourcePath": "This is the path that Refactor Spaces uses to match traffic. Paths must start with `/` and are relative to the base of the application. To use path parameters in the source path, add a variable in curly braces. For example, the resource path {user} represents a path parameter called 'user'."
       }
     },
     "AWS::RefactorSpaces::Service": {
@@ -56100,6 +56191,7 @@
       "attributes": {},
       "description": "Defines a resource mapping.",
       "properties": {
+        "EksSourceName": "",
         "LogicalStackName": "The name of the CloudFormation stack this resource is mapped to.",
         "MappingType": "Specifies the type of resource mapping.\n\nValid Values: CfnStack | Resource | AppRegistryApp | ResourceGroup | Terraform\n\n- **AppRegistryApp** - The resource is mapped to another application. The name of the application is contained in the `appRegistryAppName` property.\n- **CfnStack** - The resource is mapped to a CloudFormation stack. The name of the CloudFormation stack is contained in the `logicalStackName` property.\n- **Resource** - The resource is mapped to another resource. The name of the resource is contained in the `resourceName` property.\n- **ResourceGroup** - The resource is mapped to a resource group. The name of the resource group is contained in the `resourceGroupName` property.",
         "PhysicalResourceId": "The identifier of this resource.",
@@ -56371,14 +56463,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -56386,18 +56478,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -56406,7 +56498,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -56416,15 +56508,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -56978,7 +57070,7 @@
       "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.\n\n> - You cannot update `ResolverEndpointType` and `IpAddresses` in the same request.\n> - When you update a dual-stack IP address, you must update both IP addresses. You can\u2019t update only an IPv4 or IPv6 and keep an existing IP address.",
       "properties": {
         "Direction": "Indicates whether the Resolver endpoint allows inbound or outbound DNS queries:\n\n- `INBOUND` : allows DNS queries to your VPC from your network\n- `OUTBOUND` : allows DNS queries from your VPC to your network",
-        "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.",
+        "IpAddresses": "The subnets and IP addresses in your VPC that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). The subnet ID uniquely identifies a VPC.\n\n> Even though the minimum is 1, Route\u00a053 requires that you create at least two.",
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
         "OutpostArn": "",
         "PreferredInstanceType": "",
@@ -58212,10 +58304,10 @@
       "attributes": {
         "Ref": "`Ref` returns the resource name."
       },
-      "description": "Create a new pool of dedicated IP addresses. A pool can include one or more dedicated IP addresses that are associated with your AWS account . You can associate a pool with a configuration set. When you send an email that uses that configuration set, the message is sent from one of the addresses in the associated pool.\n\n> You can't delete dedicated IP pools that have a `STANDARD` scaling mode and one or more dedicated IP addresses. This constraint doesn't apply to dedicated IP pools that have a `MANAGED` scaling mode.",
+      "description": "Create a new pool of dedicated IP addresses. A pool can include one or more dedicated IP addresses that are associated with your AWS account . You can associate a pool with a configuration set. When you send an email that uses that configuration set, the message is sent from one of the addresses in the associated pool.\n\n> You can't delete dedicated IP pools that have a `STANDARD` scaling mode with one or more dedicated IP addresses. This constraint doesn't apply to dedicated IP pools that have a `MANAGED` scaling mode.",
       "properties": {
         "PoolName": "The name of the dedicated IP pool that the IP address is associated with.",
-        "ScalingMode": "The type of scaling mode.\n\nThe following options are available:\n\n- `STANDARD` - The customer controls which IPs are part of the dedicated IP pool.\n- `MANAGED` - The reputation and number of IPs is automatically managed by Amazon SES .\n\nThe `STANDARD` option is selected by default if no value is specified."
+        "ScalingMode": "The type of scaling mode.\n\nThe following options are available:\n\n- `STANDARD` - The customer controls which IPs are part of the dedicated IP pool.\n- `MANAGED` - The reputation and number of IPs are automatically managed by Amazon SES .\n\nThe `STANDARD` option is selected by default if no value is specified.\n\n> Updating *ScalingMode* doesn't require a replacement if you're updating its value from `STANDARD` to `MANAGED` . However, updating *ScalingMode* from `MANAGED` to `STANDARD` is not supported."
       }
     },
     "AWS::SES::EmailIdentity": {
@@ -58950,7 +59042,7 @@
       "description": "The `Stage` property type specifies a set amount of time that an escalation plan or engagement plan engages the specified contacts or contact methods.",
       "properties": {
         "DurationInMinutes": "The time to wait until beginning the next stage. The duration can only be set to 0 if a target is specified.",
-        "RotationIds": "",
+        "RotationIds": "The Amazon Resource Names (ARNs) of the on-call rotations associated with the plan.",
         "Targets": "The contacts or contact methods that the escalation plan or engagement plan is engaging."
       }
     },
@@ -59655,7 +59747,7 @@
     },
     "AWS::SageMaker::Domain.RStudioServerProAppSettings": {
       "attributes": {},
-      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app. `RStudioServerProAppSettings` cannot be updated. The `RStudioServerPro` app must be deleted and a new one created to make any changes.",
+      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app.",
       "properties": {
         "AccessStatus": "Indicates whether the current user has access to the `RStudioServerPro` app.",
         "UserGroup": "The level of permissions that the user has within the `RStudioServerPro` app. This value defaults to `User`. The `Admin` value allows the user access to the RStudio Administrative Dashboard."
@@ -61639,15 +61731,13 @@
         "ProjectArn": "The Amazon Resource Name (ARN) of the project.",
         "ProjectId": "The ID of the project. This ID is prepended to all entities associated with this project.",
         "ProjectStatus": "The status of the project.",
-        "Ref": "",
-        "ServiceCatalogProvisionedProductDetails": "The product ID and status message of the projet as a service catalog provisioned product. For information, see [What is AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html) .",
-        "ServiceCatalogProvisionedProductDetails.ProvisionedProductId": "",
-        "ServiceCatalogProvisionedProductDetails.ProvisionedProductStatusMessage": ""
+        "Ref": ""
       },
       "description": "Creates a machine learning (ML) project that can contain one or more templates that set up an ML pipeline from training to deploying an approved model.",
       "properties": {
         "ProjectDescription": "The description of the project.",
         "ProjectName": "The name of the project.",
+        "ServiceCatalogProvisionedProductDetails": "",
         "ServiceCatalogProvisioningDetails": "The product ID and provisioning artifact ID to provision a service catalog. For information, see [What is AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html) .",
         "Tags": "A list of key-value pairs to apply to this resource.\n\nFor more information, see [Resource Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) and [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html#allocation-what) in the *AWS Billing and Cost Management User Guide* ."
       }
@@ -61773,7 +61863,7 @@
     },
     "AWS::SageMaker::UserProfile.RStudioServerProAppSettings": {
       "attributes": {},
-      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app. `RStudioServerProAppSettings` cannot be updated. The `RStudioServerPro` app must be deleted and a new one created to make any changes.",
+      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app.",
       "properties": {
         "AccessStatus": "Indicates whether the current user has access to the `RStudioServerPro` app.",
         "UserGroup": "The level of permissions that the user has within the `RStudioServerPro` app. This value defaults to `User`. The `Admin` value allows the user access to the RStudio Administrative Dashboard."
@@ -62626,6 +62716,83 @@
       "description": "A complex type that contains information about an optional custom health check. A custom health check, which requires that you use a third-party health checker to evaluate the health of your resources, is useful in the following circumstances:\n\n- You can't use a health check that's defined by `HealthCheckConfig` because the resource isn't available over the internet. For example, you can use a custom health check when the instance is in an Amazon VPC. (To check the health of resources in a VPC, the health checker must also be in the VPC.)\n- You want to use a third-party health checker regardless of where your resources are located.\n\n> If you specify a health check configuration, you can specify either `HealthCheckCustomConfig` or `HealthCheckConfig` but not both. \n\nTo change the status of a custom health check, submit an `UpdateInstanceCustomHealthStatus` request. AWS Cloud Map doesn't monitor the status of the resource, it just keeps a record of the status specified in the most recent `UpdateInstanceCustomHealthStatus` request.\n\nHere's how custom health checks work:\n\n- You create a service.\n- You register an instance.\n- You configure a third-party health checker to monitor the resource that's associated with the new instance.\n\n> AWS Cloud Map doesn't check the health of the resource directly.\n- The third-party health-checker determines that the resource is unhealthy and notifies your application.\n- Your application submits an `UpdateInstanceCustomHealthStatus` request.\n- AWS Cloud Map waits for 30 seconds.\n- If another `UpdateInstanceCustomHealthStatus` request doesn't arrive during that time to change the status back to healthy, AWS Cloud Map stops routing traffic to the resource.",
       "properties": {
         "FailureThreshold": "> This parameter is no longer supported and is always set to 1. AWS Cloud Map waits for approximately 30 seconds after receiving an `UpdateInstanceCustomHealthStatus` request before changing the status of the service instance. \n\nThe number of 30-second intervals that you want AWS Cloud Map to wait after receiving an `UpdateInstanceCustomHealthStatus` request before it changes the health status of a service instance.\n\nSending a second or subsequent `UpdateInstanceCustomHealthStatus` request with the same value before 30 seconds has passed doesn't accelerate the change. AWS Cloud Map still waits `30` seconds after the first request to make the change."
+      }
+    },
+    "AWS::Shield::DRTAccess": {
+      "attributes": {
+        "AccountId": "The ID of the account that submitted the template.",
+        "Ref": "`Ref` returns the ID of the account that submitted the template."
+      },
+      "description": "Provides permissions for the AWS Shield Advanced Shield response team (SRT) to access your account and your resource protections, to help you mitigate potential distributed denial of service (DDoS) attacks.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "properties": {
+        "LogBucketList": "Authorizes the Shield Response Team (SRT) to access the specified Amazon S3 bucket containing log data such as Application Load Balancer access logs, CloudFront logs, or logs from third party sources. You can associate up to 10 Amazon S3 buckets with your subscription.\n\nUse this to share information with the SRT that's not available in AWS WAF logs.\n\nTo use the services of the SRT, you must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .",
+        "RoleArn": "Authorizes the Shield Response Team (SRT) using the specified role, to access your AWS account to assist with DDoS attack mitigation during potential attacks. This enables the SRT to inspect your AWS WAF configuration and logs and to create or update AWS WAF rules and web ACLs.\n\nYou can associate only one `RoleArn` with your subscription. If you submit this update for an account that already has an associated role, the new `RoleArn` will replace the existing `RoleArn` .\n\nThis change requires the following:\n\n- You must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .\n- You must have the `iam:PassRole` permission. For more information, see [Granting a user permissions to pass a role to an AWS service](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html) .\n- The `AWSShieldDRTAccessPolicy` managed policy must be attached to the role that you specify in the request. You can access this policy in the IAM console at [AWSShieldDRTAccessPolicy](https://docs.aws.amazon.com/iam/home?#/policies/arn:aws:iam::aws:policy/service-role/AWSShieldDRTAccessPolicy) . For information, see [Adding and removing IAM identity permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html) .\n- The role must trust the service principal `drt.shield.amazonaws.com` . For information, see [IAM JSON policy elements: Principal](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html) .\n\nThe SRT will have access only to your AWS WAF and Shield resources. By submitting this request, you provide permissions to the SRT to inspect your AWS WAF and Shield configuration and logs, and to create and update AWS WAF rules and web ACLs on your behalf. The SRT takes these actions only if explicitly authorized by you."
+      }
+    },
+    "AWS::Shield::ProactiveEngagement": {
+      "attributes": {
+        "AccountId": "The ID of the account that submitted the template.",
+        "Ref": "`Ref` returns the ID of the account that submitted the template."
+      },
+      "description": "Authorizes the Shield Response Team (SRT) to use email and phone to notify contacts about escalations to the SRT and to initiate proactive customer support.\n\nTo enable proactive engagement, you must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "properties": {
+        "EmergencyContactList": "The list of email addresses and phone numbers that the Shield Response Team (SRT) can use to contact you for escalations to the SRT and to initiate proactive customer support, plus any relevant notes.\n\nTo enable proactive engagement, the contact list must include at least one phone number.\n\nIf you provide more than one contact, in the notes, indicate the circumstances under which each contact should be used. Include primary and secondary contact designations, and provide the hours of availability and time zones for each contact.\n\nExample contact notes:\n\n- This is a hotline that's staffed 24x7x365. Please work with the responding analyst and they will get the appropriate person on the call.\n- Please contact the secondary phone number if the hotline doesn't respond within 5 minutes.",
+        "ProactiveEngagementStatus": "Specifies whether proactive engagement is enabled or disabled.\n\nValid values:\n\n`ENABLED` - The Shield Response Team (SRT) will use email and phone to notify contacts about escalations to the SRT and to initiate proactive customer support.\n\n`DISABLED` - The SRT will not proactively notify contacts about escalations or to initiate proactive customer support."
+      }
+    },
+    "AWS::Shield::ProactiveEngagement.EmergencyContact": {
+      "attributes": {},
+      "description": "Contact information that the SRT can use to contact you if you have proactive engagement enabled, for escalations to the SRT and to initiate proactive customer support.",
+      "properties": {
+        "ContactNotes": "Additional notes regarding the contact.",
+        "EmailAddress": "The email address for the contact.",
+        "PhoneNumber": "The phone number for the contact."
+      }
+    },
+    "AWS::Shield::Protection": {
+      "attributes": {
+        "ProtectionArn": "The ARN (Amazon Resource Name) of the new protection.",
+        "ProtectionId": "The ID of the new protection.",
+        "Ref": "`Ref` returns the ARN (Amazon Resource Name) of the protection."
+      },
+      "description": "Enables AWS Shield Advanced for a specific AWS resource. The resource can be an Amazon CloudFront distribution, Amazon Route\u00a053 hosted zone, AWS Global Accelerator standard accelerator, Elastic IP Address, Application Load Balancer, or a Classic Load Balancer. You can protect Amazon EC2 instances and Network Load Balancers by association with protected Amazon EC2 Elastic IP addresses.\n\nUse this to add protection to a single resource at a time. You can add protection to multiple resources at once through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) . For more information see [Getting Started with AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/getting-started-ddos.html) and [Managing resource protections in AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "properties": {
+        "ApplicationLayerAutomaticResponseConfiguration": "The automatic application layer DDoS mitigation settings for the protection. This configuration determines whether Shield Advanced automatically manages rules in the web ACL in order to respond to application layer events that Shield Advanced determines to be DDoS attacks.",
+        "HealthCheckArns": "The ARN (Amazon Resource Name) of the health check to associate with the protection. Health-based detection provides improved responsiveness and accuracy in attack detection and mitigation.\n\nYou can use this option with any resource type except for Route\u00a053 hosted zones.\n\nFor more information, see [Configuring health-based detection using health checks](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-health-checks.html) in the *AWS Shield Advanced Developer Guide* .",
+        "Name": "The name of the protection. For example, `My CloudFront distributions` .",
+        "ResourceArn": "The ARN (Amazon Resource Name) of the AWS resource that is protected.",
+        "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS Shield Advanced APIs or command line interface. With AWS CloudFormation , you can only add tags to resources during resource creation."
+      }
+    },
+    "AWS::Shield::Protection.Action": {
+      "attributes": {},
+      "description": "Specifies the action setting that Shield Advanced should use in the AWS WAF rules that it creates on behalf of the protected resource in response to DDoS attacks. You specify this as part of the configuration for the automatic application layer DDoS mitigation feature, when you enable or update automatic mitigation. Shield Advanced creates the AWS WAF rules in a Shield Advanced-managed rule group, inside the web ACL that you have associated with the resource.",
+      "properties": {
+        "Block": "Specifies that Shield Advanced should configure its AWS WAF rules with the AWS WAF `Block` action.\n\nYou must specify exactly one action, either `Block` or `Count` .\n\nExample JSON: `{ \"Block\": {} }`\n\nExample YAML: `Block: {}`",
+        "Count": "Specifies that Shield Advanced should configure its AWS WAF rules with the AWS WAF `Count` action.\n\nYou must specify exactly one action, either `Block` or `Count` .\n\nExample JSON: `{ \"Count\": {} }`\n\nExample YAML: `Count: {}`"
+      }
+    },
+    "AWS::Shield::Protection.ApplicationLayerAutomaticResponseConfiguration": {
+      "attributes": {},
+      "description": "The automatic application layer DDoS mitigation settings for a `Protection` . This configuration determines whether Shield Advanced automatically manages rules in the web ACL in order to respond to application layer events that Shield Advanced determines to be DDoS attacks.",
+      "properties": {
+        "Action": "Specifies the action setting that Shield Advanced should use in the AWS WAF rules that it creates on behalf of the protected resource in response to DDoS attacks. You specify this as part of the configuration for the automatic application layer DDoS mitigation feature, when you enable or update automatic mitigation. Shield Advanced creates the AWS WAF rules in a Shield Advanced-managed rule group, inside the web ACL that you have associated with the resource.",
+        "Status": "Indicates whether automatic application layer DDoS mitigation is enabled for the protection."
+      }
+    },
+    "AWS::Shield::ProtectionGroup": {
+      "attributes": {
+        "ProtectionGroupArn": "The ARN (Amazon Resource Name) of the new protection group.",
+        "Ref": "`Ref` returns the ARN (Amazon Resource Name) of the protection group."
+      },
+      "description": "Creates a grouping of protected resources so they can be handled as a collective. This resource grouping improves the accuracy of detection and reduces false positives.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "properties": {
+        "Aggregation": "Defines how AWS Shield combines resource data for the group in order to detect, mitigate, and report events.\n\n- Sum - Use the total traffic across the group. This is a good choice for most cases. Examples include Elastic IP addresses for EC2 instances that scale manually or automatically.\n- Mean - Use the average of the traffic across the group. This is a good choice for resources that share traffic uniformly. Examples include accelerators and load balancers.\n- Max - Use the highest traffic from each resource. This is useful for resources that don't share traffic and for resources that share that traffic in a non-uniform way. Examples include Amazon CloudFront distributions and origin resources for CloudFront distributions.",
+        "Members": "The ARNs (Amazon Resource Names) of the resources to include in the protection group. You must set this when you set `Pattern` to `ARBITRARY` and you must not set it for any other `Pattern` setting.",
+        "Pattern": "The criteria to use to choose the protected resources for inclusion in the group. You can include all resources that have protections, provide a list of resource ARNs (Amazon Resource Names), or include all resources of a specified resource type.",
+        "ProtectionGroupId": "The name of the protection group. You use this to identify the protection group in lists and to manage the protection group, for example to update, delete, or describe it.",
+        "ResourceType": "The resource type to include in the protection group. All protected resources of this type are included in the protection group. You must set this when you set `Pattern` to `BY_RESOURCE_TYPE` and you must not set it for any other `Pattern` setting.",
+        "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS Shield Advanced APIs or command line interface. With AWS CloudFormation , you can only add tags to resources during resource creation."
       }
     },
     "AWS::Signer::ProfilePermission": {
@@ -64378,7 +64545,7 @@
         "PositionalConstraint": "The area within the portion of the web request that you want AWS WAF to search for `SearchString` . Valid values include the following:\n\n*CONTAINS*\n\nThe specified part of the web request must include the value of `SearchString` , but the location doesn't matter.\n\n*CONTAINS_WORD*\n\nThe specified part of the web request must include the value of `SearchString` , and `SearchString` must contain only alphanumeric characters or underscore (A-Z, a-z, 0-9, or _). In addition, `SearchString` must be a word, which means that both of the following are true:\n\n- `SearchString` is at the beginning of the specified part of the web request or is preceded by a character other than an alphanumeric character or underscore (_). Examples include the value of a header and `;BadBot` .\n- `SearchString` is at the end of the specified part of the web request or is followed by a character other than an alphanumeric character or underscore (_), for example, `BadBot;` and `-BadBot;` .\n\n*EXACTLY*\n\nThe value of the specified part of the web request must exactly match the value of `SearchString` .\n\n*STARTS_WITH*\n\nThe value of `SearchString` must appear at the beginning of the specified part of the web request.\n\n*ENDS_WITH*\n\nThe value of `SearchString` must appear at the end of the specified part of the web request.",
         "SearchString": "A string value that you want AWS WAF to search for. AWS WAF searches only in the part of web requests that you designate for inspection in `FieldToMatch` . The maximum length of the value is 200 bytes. For alphabetic characters A-Z and a-z, the value is case sensitive.\n\nDon't encode this string. Provide the value that you want AWS WAF to search for. AWS CloudFormation automatically base64 encodes the value for you.\n\nFor example, suppose the value of `Type` is `HEADER` and the value of `Data` is `User-Agent` . If you want to search the `User-Agent` header for the value `BadBot` , you provide the string `BadBot` in the value of `SearchString` .\n\nYou must specify either `SearchString` or `SearchStringBase64` in a `ByteMatchStatement` .",
         "SearchStringBase64": "String to search for in a web request component, base64-encoded. If you don't want to encode the string, specify the unencoded value in `SearchString` instead.\n\nYou must specify either `SearchString` or `SearchStringBase64` in a `ByteMatchStatement` .",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::RuleGroup.CaptchaAction": {
@@ -64596,11 +64763,11 @@
     },
     "AWS::WAFv2::RuleGroup.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule counts incoming requests and rate limits requests when they are coming at too fast a rate. The rule categorizes requests according to your aggregation criteria, collects them into aggregation instances, and counts and rate limits the requests for each instance.\n\nYou can specify individual aggregation keys, like IP address or HTTP method. You can also specify aggregation key combinations, like IP address and HTTP method, or HTTP method, query argument, and cookie.\n\nEach unique set of values for the aggregation keys that you specify is a separate aggregation instance, with the value from each key contributing to the aggregation instance definition.\n\nFor example, assume the rule evaluates web requests with the following IP address and HTTP method values:\n\n- IP address 10.1.1.1, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n- IP address 127.0.0.0, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n\nThe rule would create different aggregation instances according to your aggregation criteria, for example:\n\n- If the aggregation criteria is just the IP address, then each individual address is an aggregation instance, and AWS WAF counts requests separately for each. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1: count 3\n- IP address 127.0.0.0: count 1\n- If the aggregation criteria is HTTP method, then each individual HTTP method is an aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- HTTP method POST: count 2\n- HTTP method GET: count 2\n- If the aggregation criteria is IP address and HTTP method, then each IP address and each HTTP method would contribute to the combined aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1, HTTP method POST: count 1\n- IP address 10.1.1.1, HTTP method GET: count 2\n- IP address 127.0.0.0, HTTP method POST: count 1\n\nFor any n-tuple of aggregation keys, each unique combination of values for the keys defines a separate aggregation instance, which AWS WAF counts and rate-limits individually.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts and rate limits requests that match the nested statement. You can use this nested scope-down statement in conjunction with your aggregation key specifications or you can just count and rate limit all requests that match the scope-down statement, without additional aggregation. When you choose to just manage all requests that match a scope-down statement, the aggregation instance is singular for the rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.\n\nFor additional information about the options, see [Rate limiting web requests using rate-based rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rate-based-rules.html) in the *AWS WAF Developer Guide* .\n\nIf you only aggregate on the individual IP address or forwarded IP address, you can retrieve the list of IP addresses that AWS WAF is currently rate limiting for a rule through the API call `GetRateBasedStatementManagedKeys` . This option is not available for other aggregation configurations.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
-        "AggregateKeyType": "Setting that indicates how to aggregate the request counts.\n\n> Web requests that are missing any of the components specified in the aggregation keys are omitted from the rate-based rule evaluation and handling. \n\n- `CONSTANT` - Count and limit the requests that match the rate-based rule's scope-down statement. With this option, the counted requests aren't further aggregated. The scope-down statement is the only specification used. When the count of all requests that satisfy the scope-down statement goes over the limit, AWS WAF applies the rule action to all requests that satisfy the scope-down statement.\n\nWith this option, you must configure the `ScopeDownStatement` property.\n- `CUSTOM_KEYS` - Aggregate the request counts using one or more web request components as the aggregate keys.\n\nWith this option, you must specify the aggregate keys in the `CustomKeys` property.\n\nTo aggregate on only the IP address or only the forwarded IP address, don't use custom keys. Instead, set the aggregate key type to `IP` or `FORWARDED_IP` .\n- `FORWARDED_IP` - Aggregate the request counts on the first IP address in an HTTP header.\n\nWith this option, you must specify the header to use in the `ForwardedIPConfig` property.\n\nTo aggregate on a combination of the forwarded IP address with other aggregate keys, use `CUSTOM_KEYS` .\n- `IP` - Aggregate the request counts on the IP address from the web request origin.\n\nTo aggregate on a combination of the IP address with other aggregate keys, use `CUSTOM_KEYS` .",
+        "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- `IP` - Aggregate the request counts on the IP address from the web request origin.\n- `FORWARDED_IP` - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.\n\n> You can only use the `IP` and `FORWARDED_IP` key types.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if you specify a forwarded IP in the rule's aggregate key settings.",
-        "Limit": "The limit on requests per 5-minute period for a single aggregation instance for the rate-based rule. If the rate-based statement includes a `ScopeDownStatement` , this limit is applied only to the requests that match the statement.\n\nExamples:\n\n- If you aggregate on just the IP address, this is the limit on requests from any single IP address.\n- If you aggregate on the HTTP method and the query argument name \"city\", then this is the limit on requests for any single method, city pair.",
+        "Limit": "The limit on requests per 5-minute period for a single originating IP address. If the statement includes a `ScopeDownStatement` , this limit is applied only to the requests that match the statement.",
         "ScopeDownStatement": "An optional nested statement that narrows the scope of the web requests that are evaluated by the rate-based statement. Requests are only tracked by the rate-based statement if they match the scope-down statement. You can use any nestable statement in the scope-down statement, and you can nest statements at any level, the same as you can for a rule statement."
       }
     },
@@ -64610,7 +64777,7 @@
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "RegexString": "The string representing the regular expression.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement": {
@@ -64619,7 +64786,7 @@
       "properties": {
         "Arn": "The Amazon Resource Name (ARN) of the `RegexPatternSet` that this statement references.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::RuleGroup.Rule": {
@@ -64668,7 +64835,7 @@
         "ComparisonOperator": "The operator to use to compare the request part to the size setting.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "Size": "The size, in byte, to compare to the request part, after any transformations.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::RuleGroup.SqliMatchStatement": {
@@ -64677,7 +64844,7 @@
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "SensitivityLevel": "The sensitivity that you want AWS WAF to use to inspect for SQL injection attacks.\n\n`HIGH` detects more attacks, but might generate more false positives, especially if your web requests frequently contain unusual strings. For information about identifying and mitigating false positives, see [Testing and tuning](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html) in the *AWS WAF Developer Guide* .\n\n`LOW` is generally a better choice for resources that already have other protections against SQL injection attacks or that have a low tolerance for false positives.\n\nDefault: `LOW`",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::RuleGroup.Statement": {
@@ -64691,7 +64858,7 @@
         "LabelMatchStatement": "A rule statement to match against labels that have been added to the web request by rules that have already run in the web ACL.\n\nThe label match statement provides the label or namespace string to search for. The label string can represent a part or all of the fully qualified label name that had been added to the web request. Fully qualified labels have a prefix, optional namespaces, and label name. The prefix identifies the rule group or web ACL context of the rule that added the label. If you do not provide the fully qualified name in your label match string, AWS WAF performs the search for labels that were added in the same context as the label match statement.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule counts incoming requests and rate limits requests when they are coming at too fast a rate. The rule categorizes requests according to your aggregation criteria, collects them into aggregation instances, and counts and rate limits the requests for each instance.\n\nYou can specify individual aggregation keys, like IP address or HTTP method. You can also specify aggregation key combinations, like IP address and HTTP method, or HTTP method, query argument, and cookie.\n\nEach unique set of values for the aggregation keys that you specify is a separate aggregation instance, with the value from each key contributing to the aggregation instance definition.\n\nFor example, assume the rule evaluates web requests with the following IP address and HTTP method values:\n\n- IP address 10.1.1.1, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n- IP address 127.0.0.0, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n\nThe rule would create different aggregation instances according to your aggregation criteria, for example:\n\n- If the aggregation criteria is just the IP address, then each individual address is an aggregation instance, and AWS WAF counts requests separately for each. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1: count 3\n- IP address 127.0.0.0: count 1\n- If the aggregation criteria is HTTP method, then each individual HTTP method is an aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- HTTP method POST: count 2\n- HTTP method GET: count 2\n- If the aggregation criteria is IP address and HTTP method, then each IP address and each HTTP method would contribute to the combined aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1, HTTP method POST: count 1\n- IP address 10.1.1.1, HTTP method GET: count 2\n- IP address 127.0.0.0, HTTP method POST: count 1\n\nFor any n-tuple of aggregation keys, each unique combination of values for the keys defines a separate aggregation instance, which AWS WAF counts and rate-limits individually.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts and rate limits requests that match the nested statement. You can use this nested scope-down statement in conjunction with your aggregation key specifications or you can just count and rate limit all requests that match the scope-down statement, without additional aggregation. When you choose to just manage all requests that match a scope-down statement, the aggregation instance is singular for the rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.\n\nFor additional information about the options, see [Rate limiting web requests using rate-based rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rate-based-rules.html) in the *AWS WAF Developer Guide* .\n\nIf you only aggregate on the individual IP address or forwarded IP address, you can retrieve the list of IP addresses that AWS WAF is currently rate limiting for a rule through the API call `GetRateBasedStatementManagedKeys` . This option is not available for other aggregation configurations.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "SizeConstraintStatement": "A rule statement that compares a number of bytes against the size of a request component, using a comparison operator, such as greater than (>) or less than (<). For example, you can use a size constraint statement to look for query strings that are longer than 100 bytes.\n\nIf you configure AWS WAF to inspect the request body, AWS WAF inspects only the number of bytes of the body up to the limit for the web ACL. By default, for regional web ACLs, this limit is 8 KB (8,192 kilobytes) and for CloudFront web ACLs, this limit is 16 KB (16,384 kilobytes). For CloudFront web ACLs, you can increase the limit in the web ACL `AssociationConfig` , for additional fees. If you know that the request body for your web requests should never exceed the inspection limit, you could use a size constraint statement to block requests that have a larger request body size.\n\nIf you choose URI for the value of Part of the request to filter on, the slash (/) in the URI counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
@@ -64721,7 +64888,7 @@
       "description": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL": {
@@ -64799,7 +64966,7 @@
         "PositionalConstraint": "The area within the portion of the web request that you want AWS WAF to search for `SearchString` . Valid values include the following:\n\n*CONTAINS*\n\nThe specified part of the web request must include the value of `SearchString` , but the location doesn't matter.\n\n*CONTAINS_WORD*\n\nThe specified part of the web request must include the value of `SearchString` , and `SearchString` must contain only alphanumeric characters or underscore (A-Z, a-z, 0-9, or _). In addition, `SearchString` must be a word, which means that both of the following are true:\n\n- `SearchString` is at the beginning of the specified part of the web request or is preceded by a character other than an alphanumeric character or underscore (_). Examples include the value of a header and `;BadBot` .\n- `SearchString` is at the end of the specified part of the web request or is followed by a character other than an alphanumeric character or underscore (_), for example, `BadBot;` and `-BadBot;` .\n\n*EXACTLY*\n\nThe value of the specified part of the web request must exactly match the value of `SearchString` .\n\n*STARTS_WITH*\n\nThe value of `SearchString` must appear at the beginning of the specified part of the web request.\n\n*ENDS_WITH*\n\nThe value of `SearchString` must appear at the end of the specified part of the web request.",
         "SearchString": "A string value that you want AWS WAF to search for. AWS WAF searches only in the part of web requests that you designate for inspection in `FieldToMatch` . The maximum length of the value is 200 bytes. For alphabetic characters A-Z and a-z, the value is case sensitive.\n\nDon't encode this string. Provide the value that you want AWS WAF to search for. AWS CloudFormation automatically base64 encodes the value for you.\n\nFor example, suppose the value of `Type` is `HEADER` and the value of `Data` is `User-Agent` . If you want to search the `User-Agent` header for the value `BadBot` , you provide the string `BadBot` in the value of `SearchString` .\n\nYou must specify either `SearchString` or `SearchStringBase64` in a `ByteMatchStatement` .",
         "SearchStringBase64": "String to search for in a web request component, base64-encoded. If you don't want to encode the string, specify the unencoded value in `SearchString` instead.\n\nYou must specify either `SearchString` or `SearchStringBase64` in a `ByteMatchStatement` .",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL.CaptchaAction": {
@@ -65065,11 +65232,11 @@
     },
     "AWS::WAFv2::WebACL.RateBasedStatement": {
       "attributes": {},
-      "description": "A rate-based rule counts incoming requests and rate limits requests when they are coming at too fast a rate. The rule categorizes requests according to your aggregation criteria, collects them into aggregation instances, and counts and rate limits the requests for each instance.\n\nYou can specify individual aggregation keys, like IP address or HTTP method. You can also specify aggregation key combinations, like IP address and HTTP method, or HTTP method, query argument, and cookie.\n\nEach unique set of values for the aggregation keys that you specify is a separate aggregation instance, with the value from each key contributing to the aggregation instance definition.\n\nFor example, assume the rule evaluates web requests with the following IP address and HTTP method values:\n\n- IP address 10.1.1.1, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n- IP address 127.0.0.0, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n\nThe rule would create different aggregation instances according to your aggregation criteria, for example:\n\n- If the aggregation criteria is just the IP address, then each individual address is an aggregation instance, and AWS WAF counts requests separately for each. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1: count 3\n- IP address 127.0.0.0: count 1\n- If the aggregation criteria is HTTP method, then each individual HTTP method is an aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- HTTP method POST: count 2\n- HTTP method GET: count 2\n- If the aggregation criteria is IP address and HTTP method, then each IP address and each HTTP method would contribute to the combined aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1, HTTP method POST: count 1\n- IP address 10.1.1.1, HTTP method GET: count 2\n- IP address 127.0.0.0, HTTP method POST: count 1\n\nFor any n-tuple of aggregation keys, each unique combination of values for the keys defines a separate aggregation instance, which AWS WAF counts and rate-limits individually.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts and rate limits requests that match the nested statement. You can use this nested scope-down statement in conjunction with your aggregation key specifications or you can just count and rate limit all requests that match the scope-down statement, without additional aggregation. When you choose to just manage all requests that match a scope-down statement, the aggregation instance is singular for the rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.\n\nFor additional information about the options, see [Rate limiting web requests using rate-based rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rate-based-rules.html) in the *AWS WAF Developer Guide* .\n\nIf you only aggregate on the individual IP address or forwarded IP address, you can retrieve the list of IP addresses that AWS WAF is currently rate limiting for a rule through the API call `GetRateBasedStatementManagedKeys` . This option is not available for other aggregation configurations.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .",
+      "description": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
       "properties": {
-        "AggregateKeyType": "Setting that indicates how to aggregate the request counts.\n\n> Web requests that are missing any of the components specified in the aggregation keys are omitted from the rate-based rule evaluation and handling. \n\n- `CONSTANT` - Count and limit the requests that match the rate-based rule's scope-down statement. With this option, the counted requests aren't further aggregated. The scope-down statement is the only specification used. When the count of all requests that satisfy the scope-down statement goes over the limit, AWS WAF applies the rule action to all requests that satisfy the scope-down statement.\n\nWith this option, you must configure the `ScopeDownStatement` property.\n- `CUSTOM_KEYS` - Aggregate the request counts using one or more web request components as the aggregate keys.\n\nWith this option, you must specify the aggregate keys in the `CustomKeys` property.\n\nTo aggregate on only the IP address or only the forwarded IP address, don't use custom keys. Instead, set the aggregate key type to `IP` or `FORWARDED_IP` .\n- `FORWARDED_IP` - Aggregate the request counts on the first IP address in an HTTP header.\n\nWith this option, you must specify the header to use in the `ForwardedIPConfig` property.\n\nTo aggregate on a combination of the forwarded IP address with other aggregate keys, use `CUSTOM_KEYS` .\n- `IP` - Aggregate the request counts on the IP address from the web request origin.\n\nTo aggregate on a combination of the IP address with other aggregate keys, use `CUSTOM_KEYS` .",
+        "AggregateKeyType": "Setting that indicates how to aggregate the request counts. The options are the following:\n\n- `IP` - Aggregate the request counts on the IP address from the web request origin.\n- `FORWARDED_IP` - Aggregate the request counts on the first IP address in an HTTP header. If you use this, configure the `ForwardedIPConfig` , to specify the header to use.\n\n> You can only use the `IP` and `FORWARDED_IP` key types.",
         "ForwardedIPConfig": "The configuration for inspecting IP addresses in an HTTP header that you specify, instead of using the IP address that's reported by the web request origin. Commonly, this is the X-Forwarded-For (XFF) header, but you can specify any header name.\n\n> If the specified header isn't present in the request, AWS WAF doesn't apply the rule to the web request at all. \n\nThis is required if you specify a forwarded IP in the rule's aggregate key settings.",
-        "Limit": "The limit on requests per 5-minute period for a single aggregation instance for the rate-based rule. If the rate-based statement includes a `ScopeDownStatement` , this limit is applied only to the requests that match the statement.\n\nExamples:\n\n- If you aggregate on just the IP address, this is the limit on requests from any single IP address.\n- If you aggregate on the HTTP method and the query argument name \"city\", then this is the limit on requests for any single method, city pair.",
+        "Limit": "The limit on requests per 5-minute period for a single originating IP address. If the statement includes a `ScopeDownStatement` , this limit is applied only to the requests that match the statement.",
         "ScopeDownStatement": "An optional nested statement that narrows the scope of the web requests that are evaluated by the rate-based statement. Requests are only tracked by the rate-based statement if they match the scope-down statement. You can use any nestable `Statement` in the scope-down statement, and you can nest statements at any level, the same as you can for a rule statement."
       }
     },
@@ -65079,7 +65246,7 @@
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "RegexString": "The string representing the regular expression.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement": {
@@ -65088,7 +65255,7 @@
       "properties": {
         "Arn": "The Amazon Resource Name (ARN) of the `RegexPatternSet` that this statement references.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL.RequestInspection": {
@@ -65208,7 +65375,7 @@
         "ComparisonOperator": "The operator to use to compare the request part to the size setting.",
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "Size": "The size, in byte, to compare to the request part, after any transformations.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL.SqliMatchStatement": {
@@ -65217,7 +65384,7 @@
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
         "SensitivityLevel": "The sensitivity that you want AWS WAF to use to inspect for SQL injection attacks.\n\n`HIGH` detects more attacks, but might generate more false positives, especially if your web requests frequently contain unusual strings. For information about identifying and mitigating false positives, see [Testing and tuning](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-testing.html) in the *AWS WAF Developer Guide* .\n\n`LOW` is generally a better choice for resources that already have other protections against SQL injection attacks or that have a low tolerance for false positives.\n\nDefault: `LOW`",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACL.Statement": {
@@ -65232,7 +65399,7 @@
         "ManagedRuleGroupStatement": "A rule statement used to run the rules that are defined in a managed rule group. To use this, provide the vendor name and the name of the rule group in this statement.\n\nYou cannot nest a `ManagedRuleGroupStatement` , for example for use inside a `NotStatement` or `OrStatement` . It can only be referenced as a top-level statement within a rule.",
         "NotStatement": "A logical rule statement used to negate the results of another rule statement. You provide one `Statement` within the `NotStatement` .",
         "OrStatement": "A logical rule statement used to combine other rule statements with OR logic. You provide more than one `Statement` within the `OrStatement` .",
-        "RateBasedStatement": "A rate-based rule counts incoming requests and rate limits requests when they are coming at too fast a rate. The rule categorizes requests according to your aggregation criteria, collects them into aggregation instances, and counts and rate limits the requests for each instance.\n\nYou can specify individual aggregation keys, like IP address or HTTP method. You can also specify aggregation key combinations, like IP address and HTTP method, or HTTP method, query argument, and cookie.\n\nEach unique set of values for the aggregation keys that you specify is a separate aggregation instance, with the value from each key contributing to the aggregation instance definition.\n\nFor example, assume the rule evaluates web requests with the following IP address and HTTP method values:\n\n- IP address 10.1.1.1, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n- IP address 127.0.0.0, HTTP method POST\n- IP address 10.1.1.1, HTTP method GET\n\nThe rule would create different aggregation instances according to your aggregation criteria, for example:\n\n- If the aggregation criteria is just the IP address, then each individual address is an aggregation instance, and AWS WAF counts requests separately for each. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1: count 3\n- IP address 127.0.0.0: count 1\n- If the aggregation criteria is HTTP method, then each individual HTTP method is an aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- HTTP method POST: count 2\n- HTTP method GET: count 2\n- If the aggregation criteria is IP address and HTTP method, then each IP address and each HTTP method would contribute to the combined aggregation instance. The aggregation instances and request counts for our example would be the following:\n\n- IP address 10.1.1.1, HTTP method POST: count 1\n- IP address 10.1.1.1, HTTP method GET: count 2\n- IP address 127.0.0.0, HTTP method POST: count 1\n\nFor any n-tuple of aggregation keys, each unique combination of values for the keys defines a separate aggregation instance, which AWS WAF counts and rate-limits individually.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts and rate limits requests that match the nested statement. You can use this nested scope-down statement in conjunction with your aggregation key specifications or you can just count and rate limit all requests that match the scope-down statement, without additional aggregation. When you choose to just manage all requests that match a scope-down statement, the aggregation instance is singular for the rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.\n\nFor additional information about the options, see [Rate limiting web requests using rate-based rules](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rate-based-rules.html) in the *AWS WAF Developer Guide* .\n\nIf you only aggregate on the individual IP address or forwarded IP address, you can retrieve the list of IP addresses that AWS WAF is currently rate limiting for a rule through the API call `GetRateBasedStatementManagedKeys` . This option is not available for other aggregation configurations.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .",
+        "RateBasedStatement": "A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action when the rate exceeds a limit that you specify on the number of requests in any 5-minute time span. You can use this to put a temporary block on requests from an IP address that is sending excessive requests.\n\nAWS WAF tracks and manages web requests separately for each instance of a rate-based rule that you use. For example, if you provide the same rate-based rule settings in two web ACLs, each of the two rule statements represents a separate instance of the rate-based rule and gets its own tracking and management by AWS WAF . If you define a rate-based rule inside a rule group, and then use that rule group in multiple places, each use creates a separate instance of the rate-based rule that gets its own tracking and management by AWS WAF .\n\nWhen the rule action triggers, AWS WAF blocks additional requests from the IP address until the request rate falls below the limit.\n\nYou can optionally nest another statement inside the rate-based statement, to narrow the scope of the rule so that it only counts requests that match the nested statement. For example, based on recent requests that you have seen from an attacker, you might create a rate-based rule with a nested AND rule statement that contains the following nested statements:\n\n- An IP match statement with an IP set that specifies the address 192.0.2.44.\n- A string match statement that searches in the User-Agent header for the string BadBot.\n\nIn this rate-based rule, you also define a rate limit. For this example, the rate limit is 1,000. Requests that meet the criteria of both of the nested statements are counted. If the count exceeds 1,000 requests per five minutes, the rule action triggers. Requests that do not meet the criteria of both of the nested statements are not counted towards the rate limit and are not affected by this rule.\n\nYou cannot nest a `RateBasedStatement` inside another statement, for example inside a `NotStatement` or `OrStatement` . You can define a `RateBasedStatement` inside a web ACL and inside a rule group.",
         "RegexMatchStatement": "A rule statement used to search web request components for a match against a single regular expression.",
         "RegexPatternSetReferenceStatement": "A rule statement used to search web request components for matches with regular expressions. To use this, create a `RegexPatternSet` that specifies the expressions that you want to detect, then use the ARN of that set in this statement. A web request matches the pattern set rule statement if the request component matches any of the patterns in the set.\n\nEach regex pattern set rule statement references a regex pattern set. You create and maintain the set independent of your rules. This allows you to use the single set in multiple rules. When you update the referenced set, AWS WAF automatically updates all rules that reference it.",
         "RuleGroupReferenceStatement": "A rule statement used to run the rules that are defined in a `RuleGroup` . To use this, create a rule group with your rules, then provide the ARN of the rule group in this statement.\n\nYou cannot nest a `RuleGroupReferenceStatement` , for example for use inside a `NotStatement` or `OrStatement` . You can only use a rule group reference statement at the top level inside a web ACL.",
@@ -65263,7 +65430,7 @@
       "description": "A rule statement that inspects for cross-site scripting (XSS) attacks. In XSS attacks, the attacker uses vulnerabilities in a benign website as a vehicle to inject malicious client-site scripts into other legitimate web browsers.",
       "properties": {
         "FieldToMatch": "The part of the web request that you want AWS WAF to inspect.",
-        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. Text transformations are used in rule match statements, to transform the `FieldToMatch` request component before inspecting it, and they're used in rate-based rule statements, to transform request components before using them as custom aggregation keys. If you specify one or more transformations to apply, AWS WAF performs all transformations on the specified content, starting from the lowest priority setting, and then uses the component contents."
+        "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
     "AWS::WAFv2::WebACLAssociation": {

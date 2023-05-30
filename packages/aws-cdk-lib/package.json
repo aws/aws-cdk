@@ -412,6 +412,7 @@
     "./aws-servicediscovery": "./aws-servicediscovery/index.js",
     "./aws-ses": "./aws-ses/index.js",
     "./aws-ses-actions": "./aws-ses-actions/index.js",
+    "./aws-shield": "./aws-shield/index.js",
     "./aws-signer": "./aws-signer/index.js",
     "./aws-simspaceweaver": "./aws-simspaceweaver/index.js",
     "./aws-sns": "./aws-sns/index.js",

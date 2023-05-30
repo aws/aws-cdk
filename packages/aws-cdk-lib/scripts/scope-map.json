@@ -591,6 +591,9 @@
   "aws-ses": [
     "AWS::SES"
   ],
+  "aws-shield": [
+    "AWS::Shield"
+  ],
   "aws-signer": [
     "AWS::Signer"
   ],

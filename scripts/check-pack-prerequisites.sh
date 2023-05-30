@@ -57,13 +57,7 @@ if [ $(echo $app_v | grep -c -E "1\.[89]\.[0-9].*") -eq 1 ] || [ $(echo $app_v |
 then
     echo "Ok"
 else
-    # 11 or 14 or 15 or 16
-    if [ $(echo $app_v | grep -c -E "1[1-6]\.[0-9]\.[0-9].*") -eq 1 ]
-    then
-        echo "Ok"
-    else
-        wrong_version
-    fi
+    wrong_version
 fi
 
 # [Apache Maven >= 3.6.0, < 4.0]

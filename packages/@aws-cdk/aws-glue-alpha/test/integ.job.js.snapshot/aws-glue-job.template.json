@@ -190,7 +190,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob20SuccessMetricRule1759F889": {
@@ -547,7 +547,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob30SuccessMetricRuleF8870F8A": {
@@ -904,7 +904,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob40SuccessMetricRule00D3EF34": {
