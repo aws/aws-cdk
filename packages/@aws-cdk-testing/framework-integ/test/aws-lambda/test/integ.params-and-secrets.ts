@@ -25,7 +25,7 @@ class StackUnderTest extends Stack {
     super(scope, id, props);
 
     const parameter = new StringParameter(this, 'Parameter', {
-      parameterName: 'email_url',
+      parameterName: `email_url_${id}`,
       stringValue: 'api.example.com',
     });
     const secret = new Secret(this, 'MySecret');
@@ -33,11 +33,13 @@ class StackUnderTest extends Stack {
     new Function(this, 'MyFunc', {
       runtime: Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler', 'index.py')),
+      code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler')),
       architecture: props.architecture,
       paramsAndSecrets: {
         layerVersion: ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V4, {
-
+          cacheSize: 100,
+          secretsManagerTtl: cdk.Duration.seconds(100),
+          parameterStoreTtl: cdk.Duration.seconds(100),
         }),
         secrets: [secret],
         parameters: [parameter],
@@ -56,3 +58,5 @@ new IntegTest(app, 'IntegTest', {
     }),
   ],
 });
+
+app.synth();
