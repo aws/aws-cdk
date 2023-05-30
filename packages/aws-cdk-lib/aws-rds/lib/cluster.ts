@@ -340,6 +340,13 @@ interface DatabaseClusterBaseProps {
   readonly storageEncryptionKey?: kms.IKey;
 
   /**
+   * The storage type to be associated with the DB cluster.
+   *
+   * @default - DBClusterStorageType.AURORA_IOPT1
+   */
+  readonly storageType?: DBClusterStorageType;
+
+  /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - true
@@ -352,6 +359,21 @@ interface DatabaseClusterBaseProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+}
+
+/**
+ * The storage type to be associated with the DB cluster.
+ */
+export enum DBClusterStorageType {
+  /**
+   * Storage type for Aurora DB standard clusters.
+   */
+  AURORA = 'aurora',
+
+  /**
+   * Storage type for Aurora DB I/O-Optimized clusters.
+   */
+  AURORA_IOPT1 = 'aurora-iopt1',
 }
 
 /**
@@ -589,6 +611,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
           return undefined;
         },
       }),
+      storageType: props.storageType?.toString(),
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
