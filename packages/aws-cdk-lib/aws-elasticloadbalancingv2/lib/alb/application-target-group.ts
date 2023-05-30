@@ -516,7 +516,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * The only valid statistic is Sum. Note that this represents the average not the sum.
    *
    * @default Sum over 5 minutes
-   * @deprecated Use ``ApplicationTargetGroup.metrics.requestCountPerTarget`` instead
+   * @deprecated Use `ApplicationTargetGroup.metrics.requestCountPerTarget` instead
    */
   public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metrics.requestCountPerTarget(props);
