@@ -588,7 +588,7 @@ new lambda.Function(this, 'MyFunction', {
   architecture: lambda.Architecture.ARM_64,
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   paramsAndSecrets: {
-    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersion.V4, {
+    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
       cacheSize: 500,
     }),
     secrets: [secret],
