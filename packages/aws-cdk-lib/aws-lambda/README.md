@@ -568,6 +568,63 @@ new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+### Parameters and Secrets Extension
+
+Lambda functions can be configured to use the Parameters and Secrets Extension. The Parameters and Secrets Extension can be used to retrieve and cache [secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html) from Secrets Manager or [parameters](https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html) from Parameter Store in Lambda functions without using an SDK.
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(stack, 'Secret');
+const parameter = new ssm.StringParameter(stack, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets: {
+    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersion.V4, {
+      cacheSize: 500,
+    }),
+    secrets: [secret],
+    parameters: [parameter],
+  },
+});
+```
+
+If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so -
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(stack, 'Secret');
+const parameter = new ssm.StringParameter(stack, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets: {
+    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      cacheSize: 500,
+    }),
+    secrets: [secret],
+    parameters: [parameter],
+  },
+});
+```
+
 ## Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
