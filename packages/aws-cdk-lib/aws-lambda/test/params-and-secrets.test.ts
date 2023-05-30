@@ -1,6 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as sm from '../../aws-secretsmanager';
+import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 
@@ -607,11 +608,213 @@ describe('params and secrets', () => {
   });
 
   test('can enable params and secrets with a provided parameter', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const parameter = new ssm.StringParameter(stack, 'Parameter', {
+      parameterName: 'name',
+      stringValue: 'value',
+    });
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
+        parameters: [parameter],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: [layerArn],
+      Environment: {
+        Variables: {
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: '1000',
+          PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT: '2773',
+          PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL: 'info',
+          PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS: '3',
+          SECRETS_MANAGER_TIMEOUT_MILLIS: '0',
+          SECRETS_MANAGER_TTL: '300',
+          SSM_PARAMETER_STORE_TIMEOUT_MILLIS: '0',
+          SSM_PARAMETER_STORE_TTL: '300',
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/',
+                  {
+                    Ref: 'Parameter9E1B4FBA',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+      PolicyName: 'FunctionServiceRoleDefaultPolicy2F49994A',
+      Roles: [
+        {
+          Ref: 'FunctionServiceRole675BB04A',
+        },
+      ],
+    });
+    expect(() => app.synth()).not.toThrow();
   });
 
   test('can enable params and secrets with a provided parameter with encryption', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {});
+    const key = new kms.Key(stack, 'Key');
+    // note: parameters of type SecureString cannot be created directly from a CDK application
+    const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+      parameterName: 'name',
+      encryptionKey: key,
+    });
+    const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
+    // WHEN
+    new lambda.Function (stack, 'Function', {
+      functionName: 'lambda-function',
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      paramsAndSecrets: {
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
+        parameters: [parameter],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: [layerArn],
+      Environment: {
+        Variables: {
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: 'true',
+          PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: '1000',
+          PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT: '2773',
+          PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL: 'info',
+          PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS: '3',
+          SECRETS_MANAGER_TIMEOUT_MILLIS: '0',
+          SECRETS_MANAGER_TTL: '300',
+          SSM_PARAMETER_STORE_TIMEOUT_MILLIS: '0',
+          SSM_PARAMETER_STORE_TTL: '300',
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':parameter/name',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+      PolicyName: 'FunctionServiceRoleDefaultPolicy2F49994A',
+      Roles: [
+        {
+          Ref: 'FunctionServiceRole675BB04A',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    });
+    expect(() => app.synth()).not.toThrow();
   });
 
   test('can enable params and secrets with multiple secrets and parameters', () => {
