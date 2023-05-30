@@ -11,7 +11,8 @@ async function run() {
   try {
     switch (github.context.eventName) {
       case 'status':
-        const pr = await linter.PullRequestLinter.getPRFromCommit(client, 'aws', 'aws-cdk', github.context.payload.sha);
+        const statusPayload = github.context.payload as StatusEvent;
+        const pr = await linter.PullRequestLinter.getPRFromCommit(client, 'aws', 'aws-cdk', statusPayload.sha);
         if (pr) {
           const prLinter = new linter.PullRequestLinter({
             client,
@@ -19,6 +20,7 @@ async function run() {
             repo: 'aws-cdk',
             number: pr.number,
           });
+          console.log('validating status event');
           await prLinter.validateStatusEvent(pr, github.context.payload as StatusEvent);
         }
         break;
