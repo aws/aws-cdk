@@ -9,6 +9,34 @@ describe('tag manager', () => {
     expect(mgr.tagPropertyName).toEqual(tagPropName);
   });
 
+  test.each(['early' as const, 'late' as const])('supplying tags %s works for MAP tags', (when) => {
+    const externalTags = { someTag: 'someValue' };
+    const mgr = new TagManager(TagType.MAP, 'Foo', when === 'early' ? externalTags : undefined);
+    mgr.setTag('givenTag', 'givenValue');
+
+    expect(mgr.renderTags(when === 'late' ? externalTags : undefined)).toEqual({
+      givenTag: 'givenValue',
+      someTag: 'someValue',
+    });
+  });
+
+  test.each(['early' as const, 'late' as const])('supplying tags %s works for STANDARD tags', (when) => {
+    const externalTags = [{ key: 'someTag', value: 'someValue' }];
+    const mgr = new TagManager(TagType.STANDARD, 'Foo', when === 'early' ? externalTags : undefined);
+    mgr.setTag('givenTag', 'givenValue');
+
+    expect(mgr.renderTags(when === 'late' ? externalTags : undefined)).toEqual([
+      {
+        key: 'givenTag',
+        value: 'givenValue',
+      },
+      {
+        key: 'someTag',
+        value: 'someValue',
+      },
+    ]);
+  });
+
   test('#setTag() supports setting a tag regardless of Type', () => {
     const notTaggable = new TagManager(TagType.NOT_TAGGABLE, 'AWS::Resource::Type');
     notTaggable.setTag('key', 'value');
@@ -127,6 +155,61 @@ describe('tag manager', () => {
       { key: 'myKey', value: 'myVal' },
       { key: 'name', value: 'test' },
     ]);
+  });
+
+  test('can add direct tags: STANDARD', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
+
+    // WHEN
+    mgr.setTag('key', 'value');
+    const rendered = mgr.renderTags([
+      { key: 'key2', value: 'value2' },
+    ]);
+
+    // THEN
+    expect(rendered).toEqual([
+      { key: 'key', value: 'value' },
+      { key: 'key2', value: 'value2' },
+    ]);
+  });
+
+  test('can add direct tags: MAP', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.MAP, 'AWS::Resource::Type');
+
+    // WHEN
+    mgr.setTag('key', 'value');
+    const rendered = mgr.renderTags({
+      key2: 'value2',
+    });
+
+    // THEN
+    expect(rendered).toEqual({
+      key: 'value',
+      key2: 'value2',
+    });
+  });
+
+  test('may not specify external tags both at TagManager creation AND into renderTags', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.MAP, 'AWS::Resource::Type', { initial: 'tag' });
+
+    // WHEN
+    expect(() => mgr.renderTags({
+      external: 'tag',
+    })).toThrow(/not both/);
+  });
+
+  test('it is safe to call renderTags multiple times with external tags', () => {
+    // GIVEN
+    const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
+    mgr.setTag('tagOne', 'one');
+    mgr.setTag('tagTwo', 'two');
+
+    // WHEN
+    const renders = [1, 2].map(() => mgr.renderTags([{ key: 'external', value: 'tag' }]));
+    expect(renders[0]).toEqual(renders[1]);
   });
 
   test('excludeResourceTypes only tags resources that do not match', () => {

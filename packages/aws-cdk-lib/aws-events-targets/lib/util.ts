@@ -60,7 +60,6 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
   };
 }
 
-
 /**
  * Obtain the Role for the EventBridge event
  *
@@ -137,7 +136,6 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
     Annotations.of(rule).addWarning(`Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
   }
 }
-
 
 /**
  * Whether two string probably contain the same environment dimension (region or account)

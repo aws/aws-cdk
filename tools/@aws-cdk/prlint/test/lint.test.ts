@@ -716,7 +716,6 @@ describe('integration tests required on features', () => {
   });
 });
 
-
 function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {

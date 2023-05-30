@@ -256,6 +256,10 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
   }
 
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
+    if (cors.maxAge && !cors.maxAge.isUnresolved() && cors.maxAge.toSeconds() > 86400) {
+      throw new Error(`FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`);
+    }
+
     return {
       allowCredentials: cors.allowCredentials,
       allowHeaders: cors.allowedHeaders,

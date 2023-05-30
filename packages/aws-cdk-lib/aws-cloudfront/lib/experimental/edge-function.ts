@@ -17,7 +17,6 @@ import {
   Token,
 } from '../../../core';
 
-
 /**
  * Properties for creating a Lambda@Edge function
  */
