@@ -97,5 +97,8 @@
   "peerDependencies": {
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
