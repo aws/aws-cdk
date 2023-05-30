@@ -28,6 +28,22 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+To adopt Aurora I/O-Optimized. Speicify `DBClusterStorageType.AURORA_IOPT1` on the `storageType` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_2 }),
+  credentials: rds.Credentials.fromUsername('adminuser', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.X2G, ec2.InstanceSize.XLARGE),
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    vpc,
+  },
+  storageType: rds.DBClusterStorageType.AURORA_IOPT1,
+});
+```
+
 If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
