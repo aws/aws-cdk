@@ -191,6 +191,17 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 });
 ```
 
+### Add Trailing Dot to Domain Names
+
+In order to continue managing existing domain names with trailing dots using CDK, you can set `addTrailingDot: false` to prevent the Construct from adding a dot at the end of the domain name.
+
+```ts
+new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'fully.qualified.domain.com.',
+  addTrailingDot: false,
+});
+```
+
 ## Imports
 
 If you don't know the ID of the Hosted Zone to import, you can use the
