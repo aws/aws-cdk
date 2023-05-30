@@ -645,7 +645,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       instance.node.addDependency(internetConnectivityEstablished);
 
       // Neptune instance's default deletion policy should be DESTROY to align with the CFN behaviour and
-      // to allow customers to set cluster's RemovalPolicy to SNAPSHOT since instance doesn't support SNAPSHOT.
+      // to allow users to set cluster's RemovalPolicy to SNAPSHOT since instance doesn't support SNAPSHOT.
       instance.applyRemovalPolicy(RemovalPolicy.DESTROY, {
         applyToUpdateReplacePolicy: true,
       });
