@@ -1,5 +1,5 @@
 {
-  "$version": "121.0.0",
+  "$version": "124.0.0",
   "PropertyTypes": {
     "AWS::Synthetics::Canary.ArtifactConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-artifactconfig.html",
@@ -60,6 +60,12 @@
         },
         "Script": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-code.html#cfn-synthetics-canary-code-script",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "SourceLocationArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-code.html#cfn-synthetics-canary-code-sourcelocationarn",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -180,6 +186,9 @@
   "ResourceTypes": {
     "AWS::Synthetics::Canary": {
       "Attributes": {
+        "Code.SourceLocationArn": {
+          "PrimitiveType": "String"
+        },
         "Id": {
           "PrimitiveType": "String"
         },
@@ -205,12 +214,6 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-code",
           "Required": true,
           "Type": "Code",
-          "UpdateType": "Mutable"
-        },
-        "DeleteLambdaResourcesOnCanaryDeletion": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion",
-          "PrimitiveType": "Boolean",
-          "Required": false,
           "UpdateType": "Mutable"
         },
         "ExecutionRoleArn": {
@@ -252,7 +255,7 @@
         "StartCanaryAfterCreation": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-startcanaryaftercreation",
           "PrimitiveType": "Boolean",
-          "Required": true,
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "SuccessRetentionPeriod": {
