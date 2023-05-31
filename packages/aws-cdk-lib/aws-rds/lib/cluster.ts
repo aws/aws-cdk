@@ -749,9 +749,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
           );
         }
       }
-    } else {
-      // TODO: add some info around serverless instance tiers and matching scaling
-      Annotations.of(this).addInfo('...');
     }
   }
 
@@ -781,6 +778,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     if (this.serverlessV2MinCapacity > 128 || this.serverlessV2MinCapacity < 0.5) {
       throw new Error('serverlessV2MinCapacity must be >= 0.5 & <= 128');
+    }
+
+    if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
+      throw new Error('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity');
     }
 
     if (this.serverlessV2MaxCapacity === 0.5 && this.serverlessV2MinCapacity === 0.5) {

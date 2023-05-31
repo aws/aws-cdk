@@ -114,6 +114,7 @@ describe('cluster new api', () => {
       [0.5, 0.5, /If serverlessV2MinCapacity === 0.5 then serverlessV2MaxCapacity must be >=1/],
       [10.1, 12, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
       [12, 12.1, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
+      [5, 1, /serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity/],
     ])('when serverless capacity is incorrect', (minCapacity, maxCapacity, errorMessage) => {
       // GIVEN
       const stack = testStack();
