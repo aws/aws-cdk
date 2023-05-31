@@ -9,7 +9,6 @@ import { StateGraph } from '../state-graph';
 import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 
-
 /**
  * Props that are common to all tasks
  */

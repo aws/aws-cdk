@@ -6,7 +6,6 @@ import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
-
 const enableExecuteCommandPermissions = {
   Statement: [
     {
@@ -588,7 +587,6 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -708,7 +706,6 @@ describe('When Network Load Balancer', () => {
       ],
     });
 
-
     // ECS Exec
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: enableExecuteCommandPermissions,
@@ -810,7 +807,6 @@ describe('When Network Load Balancer', () => {
         image: ecs.ContainerImage.fromRegistry('test'),
       },
     });
-
 
     new NetworkMultipleTargetGroupsFargateService(stack, 'NLBService', {
       cluster: cluster,

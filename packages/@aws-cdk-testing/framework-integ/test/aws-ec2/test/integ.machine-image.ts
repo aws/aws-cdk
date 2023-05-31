@@ -8,7 +8,6 @@ import {
 import { Construct } from 'constructs';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-
 export class TestCase extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -31,7 +30,6 @@ export class TestCase extends Stack {
     });
   }
 }
-
 
 const app = new App();
 new IntegTest(app, 'integ-test', {

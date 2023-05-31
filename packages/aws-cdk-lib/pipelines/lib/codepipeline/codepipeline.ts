@@ -29,7 +29,6 @@ import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
 
-
 /**
  * Properties for a `CodePipeline`
  */
@@ -335,7 +334,6 @@ export interface CodeBuildOptions {
   readonly logging?: cb.LoggingOptions;
 }
 
-
 /**
  * A CDK Pipeline that uses CodePipeline to deploy CDK apps
  *
@@ -424,7 +422,6 @@ export class CodePipeline extends PipelineBase {
     }
     return this._pipeline;
   }
-
 
   protected doBuildPipeline(): void {
     if (this._pipeline) {
@@ -1035,7 +1032,6 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
     ret.push(tranches);
   }
-
 
   return ret;
 }

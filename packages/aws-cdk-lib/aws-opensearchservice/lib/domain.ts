@@ -16,7 +16,6 @@ import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 
-
 /**
  * Configures the capacity of the cluster such as the instance type and the
  * number of instances.
@@ -726,7 +725,6 @@ export interface IDomain extends cdk.IResource {
   metricIndexingLatency(props?: MetricOptions): Metric;
 }
 
-
 /**
  * A new or imported domain.
  */
@@ -1085,7 +1083,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
 }
 
-
 /**
  * Reference to an Amazon OpenSearch Service domain.
  */
@@ -1100,7 +1097,6 @@ export interface DomainAttributes {
    */
   readonly domainEndpoint: string;
 }
-
 
 /**
  * Provides an Amazon OpenSearch Service domain.
@@ -1192,7 +1188,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public readonly masterUserPassword?: cdk.SecretValue;
 
-
   private readonly domain: CfnDomain;
 
   private accessPolicy?: OpenSearchAccessPolicy
@@ -1230,7 +1225,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const zoneAwarenessEnabled =
       props.zoneAwareness?.enabled ??
       props.zoneAwareness?.availabilityZoneCount != null;
-
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
@@ -1688,7 +1682,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
     return this._connections;
   }
-
 
   /**
    * Add policy statements to the domain access policy
