@@ -590,7 +590,8 @@ framework designed to implement simple and slim custom resource providers. It
 currently only supports Node.js-based user handlers, represents permissions as raw
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
-timeout).
+timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
