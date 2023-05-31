@@ -7,7 +7,6 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-
     // IAM-authenticated Function URLs
     const fnUrlIamAuth = new Function(this, 'IamAuthFunctionUrls', {
       code: new InlineCode('def handler(event, context):\n  return "success"'),
