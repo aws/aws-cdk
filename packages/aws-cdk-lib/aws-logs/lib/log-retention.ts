@@ -73,12 +73,13 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-export class LogRetention extends Construct {
-
+export class LogRetention extends Construct implements cdk.ITaggable {
   /**
    * The ARN of the LogGroup.
    */
   public readonly logGroupArn: string;
+
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Custom::LogRetention');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -106,6 +107,7 @@ export class LogRetention extends Construct {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
+        Tags: this.tags.renderedTags,
       },
     });
 
