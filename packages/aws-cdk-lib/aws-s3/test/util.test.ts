@@ -57,5 +57,10 @@ describe('utils', () => {
       const bucketArn = 'invalid-arn';
       expect(() => parseBucketName(stack, { bucketArn })).toThrow(/ARNs must/);
     });
+
+    test('undefined if neither arn nor name are provided', () => {
+      const stack = new cdk.Stack();
+      expect(parseBucketName(stack, {})).toBeUndefined();
+    });
   });
 });
