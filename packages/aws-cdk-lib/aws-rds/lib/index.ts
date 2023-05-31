@@ -13,6 +13,7 @@ export * from './instance';
 export * from './proxy';
 export * from './serverless-cluster';
 export * from './subnet-group';
+export * from './aurora-cluster-instance';
 
 // AWS::RDS CloudFormation Resources:
 export * from './rds.generated';

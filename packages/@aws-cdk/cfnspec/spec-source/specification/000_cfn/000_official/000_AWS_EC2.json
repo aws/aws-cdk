@@ -1,5 +1,5 @@
 {
-  "$version": "122.0.0",
+  "$version": "124.0.0",
   "PropertyTypes": {
     "AWS::EC2::CapacityReservation.TagSpecification": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-capacityreservation-tagspecification.html",
@@ -5906,6 +5906,9 @@
         "PublicDefaultScopeId": {
           "PrimitiveType": "String"
         },
+        "ResourceDiscoveryAssociationCount": {
+          "PrimitiveType": "Integer"
+        },
         "ScopeCount": {
           "PrimitiveType": "Integer"
         }
@@ -5936,12 +5939,6 @@
           "ItemType": "IpamOperatingRegion",
           "Required": false,
           "Type": "List",
-          "UpdateType": "Mutable"
-        },
-        "ResourceDiscoveryAssociationCount": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html#cfn-ec2-ipam-resourcediscoveryassociationcount",
-          "PrimitiveType": "Integer",
-          "Required": false,
           "UpdateType": "Mutable"
         },
         "Tags": {
@@ -7245,6 +7242,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "EnablePrimaryIpv6": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-enableprimaryipv6",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Conditional"
+        },
         "GroupSet": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-groupset",
           "DuplicatesAllowed": true,
@@ -7900,6 +7903,11 @@
       }
     },
     "AWS::EC2::SubnetCidrBlock": {
+      "Attributes": {
+        "Id": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnetcidrblock.html",
       "Properties": {
         "Ipv6CidrBlock": {

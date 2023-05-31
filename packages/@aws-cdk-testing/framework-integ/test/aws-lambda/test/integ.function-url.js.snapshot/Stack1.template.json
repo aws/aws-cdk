@@ -1,0 +1,371 @@
+{
+ "Resources": {
+  "IamAuthFunctionUrlsServiceRole35DF9DE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IamAuthFunctionUrls609024A0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n  return \"success\""
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "IamAuthFunctionUrlsServiceRole35DF9DE0",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "IamAuthFunctionUrlsServiceRole35DF9DE0"
+   ]
+  },
+  "IamAuthFunctionUrlsFunctionUrl144E56C2": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "IamAuthFunctionUrls609024A0",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "NoAuthFunctionUrlsServiceRole7247E6F2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "NoAuthFunctionUrls65ABC157": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n  return \"success\""
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "NoAuthFunctionUrlsServiceRole7247E6F2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "NoAuthFunctionUrlsServiceRole7247E6F2"
+   ]
+  },
+  "NoAuthFunctionUrlsFunctionUrl22F8FCD9": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "NoAuthFunctionUrls65ABC157",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "NoAuthFunctionUrlsinvokefunctionurl832C0266": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "NoAuthFunctionUrls65ABC157",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "FunctionUrlAuthType": "NONE"
+   }
+  },
+  "CorsFunctionUrlsServiceRole6227B597": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CorsFunctionUrlsD81CF424": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n  return \"success\""
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CorsFunctionUrlsServiceRole6227B597",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "CorsFunctionUrlsServiceRole6227B597"
+   ]
+  },
+  "CorsFunctionUrlsFunctionUrl591106C8": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "CorsFunctionUrlsD81CF424",
+      "Arn"
+     ]
+    },
+    "Cors": {
+     "AllowMethods": [
+      "*"
+     ],
+     "AllowOrigins": [
+      "https://example.com"
+     ]
+    }
+   }
+  },
+  "CorsFunctionUrlsinvokefunctionurl5E7D2994": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CorsFunctionUrlsD81CF424",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "FunctionUrlAuthType": "NONE"
+   }
+  },
+  "StreamFunctionUrlsServiceRoleAF76EC5D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "StreamFunctionUrlsAAB55C9C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n  return \"success\""
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamFunctionUrlsServiceRoleAF76EC5D",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "StreamFunctionUrlsServiceRoleAF76EC5D"
+   ]
+  },
+  "StreamFunctionUrlsFunctionUrl56476535": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "StreamFunctionUrlsAAB55C9C",
+      "Arn"
+     ]
+    },
+    "InvokeMode": "RESPONSE_STREAM"
+   }
+  },
+  "StreamFunctionUrlsinvokefunctionurl4FD8689D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "StreamFunctionUrlsAAB55C9C",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "FunctionUrlAuthType": "NONE"
+   }
+  }
+ },
+ "Outputs": {
+  "TheIamAuthFunctionUrls": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IamAuthFunctionUrlsFunctionUrl144E56C2",
+     "FunctionUrl"
+    ]
+   }
+  },
+  "TheNoAuthFunctionUrls": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NoAuthFunctionUrlsFunctionUrl22F8FCD9",
+     "FunctionUrl"
+    ]
+   }
+  },
+  "TheCorsFunctionUrls": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CorsFunctionUrlsFunctionUrl591106C8",
+     "FunctionUrl"
+    ]
+   }
+  },
+  "TheStreamFunctionUrls": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StreamFunctionUrlsFunctionUrl56476535",
+     "FunctionUrl"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -257,6 +257,13 @@ an `ExternalId` works like this:
 
 [supplying an external ID](test/example.external-id.lit.ts)
 
+## SourceArn and SourceAccount
+
+If you need to create resource policies using `aws:SourceArn` and `aws:SourceAccount` for cross-service resource access,
+use `addSourceArnCondition` and `addSourceAccountCondition` to create the conditions.
+
+See [Cross-service confused deputy prevention for more details](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html#cross-service-confused-deputy-prevention).
+
 ## Principals vs Identities
 
 When we say *Principal*, we mean an entity you grant permissions to. This

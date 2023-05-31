@@ -1,5 +1,5 @@
 {
-  "$version": "121.0.0",
+  "$version": "124.0.0",
   "PropertyTypes": {
     "AWS::Logs::MetricFilter.Dimension": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-dimension.html",
@@ -140,11 +140,6 @@
       }
     },
     "AWS::Logs::LogStream": {
-      "Attributes": {
-        "Id": {
-          "PrimitiveType": "String"
-        }
-      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html",
       "Properties": {
         "LogGroupName": {

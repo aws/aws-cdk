@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-route53-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00cd063646d893e6ee34f7fb3e022ab4f3c0de2c0388548e226905f45a0caec2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9c954c8023429cbccaf7169883a3b5bb6ecd00c97f9931179eb65a405f68dd4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -147,6 +141,12 @@
             "data": "PublicSubZoneDBD26A0A"
           }
         ],
+        "/aws-cdk-route53-integ/PublicZoneWithDot/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicZoneWithDotAE1455DD"
+          }
+        ],
         "/aws-cdk-route53-integ/CNAME/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -197,6 +197,12 @@
         ]
       },
       "displayName": "aws-cdk-route53-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
