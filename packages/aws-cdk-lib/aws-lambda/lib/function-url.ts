@@ -22,6 +22,25 @@ export enum FunctionUrlAuthType {
 }
 
 /**
+ * The invoke modes for a Lambda function
+ */
+export enum InvokeMode {
+  /**
+   * Default option. Lambda invokes your function using the Invoke API operation.
+   * Invocation results are available when the payload is complete.
+   * The maximum payload size is 6 MB.
+   */
+  BUFFERED = 'BUFFERED',
+
+  /**
+   * Your function streams payload results as they become available.
+   * Lambda invokes your function using the InvokeWithResponseStream API operation.
+   * The maximum response payload size is 20 MB, however, you can request a quota increase.
+   */
+  RESPONSE_STREAM = 'RESPONSE_STREAM',
+}
+
+/**
  * All http request methods
  */
 export enum HttpMethod {
@@ -147,6 +166,13 @@ export interface FunctionUrlOptions {
    * @default - No CORS configuration.
    */
   readonly cors?: FunctionUrlCorsOptions;
+
+  /**
+   * The type of invocation mode that your Lambda function uses.
+   *
+   * @default InvokeMode.BUFFERED
+   */
+  readonly invokeMode?: InvokeMode;
 }
 
 /**
@@ -194,6 +220,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
       authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
+      invokeMode: props.invokeMode,
       targetFunctionArn: targetFunction.functionArn,
       qualifier: alias?.aliasName,
     });
