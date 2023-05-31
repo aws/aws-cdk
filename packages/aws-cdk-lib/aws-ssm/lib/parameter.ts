@@ -9,7 +9,6 @@ import {
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
-import { TokenString } from '../../core/lib/private/encoding';
 
 /**
  * An SSM Parameter reference.
@@ -477,8 +476,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     let stringValue: string;
     if (attrs.version) {
       stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
-    // } else if (typeof Stack.of(scope).resolve(attrs.parameterName) != 'string') {
-    } else if (TokenString.forString(attrs.parameterName).test()) {
+    } else if (typeof Stack.of(scope).resolve(attrs.parameterName) != 'string') {
       // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
       stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
     } else {
