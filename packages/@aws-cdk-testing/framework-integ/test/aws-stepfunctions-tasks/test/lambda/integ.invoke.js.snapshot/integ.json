@@ -1,14 +1,12 @@
 {
-  "version": "30.0.0",
+  "version": "32.0.0",
   "testCases": {
-    "integ.invoke": {
+    "IntegTest/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-tasks-lambda-invoke-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
