@@ -964,7 +964,43 @@ test('fails if parameterName is undefined and simpleName is "false"', () => {
   expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(/If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
 });
 
-test('When a parameter name contains resolvable tokens, use dynamic reference instead', () => {
+test('When a parameter name contains tokens, use dynamic reference instead', () => {
+  // GIVEN
+  const app = new cdk.App();
+
+  const stack = new cdk.Stack(app, 'Stack');
+  const paramA = new ssm.StringParameter(stack, 'StringParameter', {
+    stringValue: 'Initial parameter value',
+  });
+
+  // WHEN
+  const paramB = ssm.StringParameter.fromStringParameterAttributes(stack, 'import-string-param', {
+    simpleName: true,
+    parameterName: paramA.parameterName,
+  });
+  new cdk.CfnOutput(stack, 'OutputParamValue', {
+    value: paramB.stringValue,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasOutput('OutputParamValue', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:ssm:',
+          {
+            Ref: 'StringParameter472EED0E',
+          },
+          '}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('When a parameter name contains tokens, use dynamic reference instead (cross-stack)', () => {
   // GIVEN
   const app = new cdk.App();
 
@@ -1001,7 +1037,7 @@ test('When a parameter name contains resolvable tokens, use dynamic reference in
   });
 });
 
-test('When a parameter name contains unresolved tokens, use parameter', () => {
+test('When a parameter name contains tokens that can be resolved to string, use parameter', () => {
   // GIVEN
   const app = new cdk.App();
 
