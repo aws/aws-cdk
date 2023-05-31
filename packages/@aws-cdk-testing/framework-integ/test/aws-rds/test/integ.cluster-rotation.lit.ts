@@ -13,22 +13,40 @@ const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
 });
 
 /// !show
+const instanceProps = {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  isFromLegacyInstanceProps: true,
+};
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.AURORA,
-  instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-    vpc,
-  },
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.provisioned('Instance1', {
+    ...instanceProps,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('Instance2', {
+      ...instanceProps,
+    }),
+  ],
 });
 
 cluster.addRotationSingleUser();
 
 const clusterWithCustomRotationOptions = new rds.DatabaseCluster(stack, 'CustomRotationOptions', {
-  engine: rds.DatabaseClusterEngine.AURORA,
-  instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-    vpc,
-  },
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.provisioned('Instance1', {
+    ...instanceProps,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('Instance2', {
+      ...instanceProps,
+    }),
+  ],
 });
 clusterWithCustomRotationOptions.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7),
