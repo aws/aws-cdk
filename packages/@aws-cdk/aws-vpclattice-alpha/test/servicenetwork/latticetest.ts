@@ -99,15 +99,11 @@ export class ServiceNetworkStack extends core.Stack {
       ],
     );
 
-    // apply the Auth Policy to the ServiceNetork
-    service.applyAuthPolicy();
-
-
     // by default the listener will add a default method of
     // 404 NOT FOUND, if one is not specified.
     const listener = service.addListener({
       protocol: Protocol.HTTPS,
-      name: 'MyServiceListener',
+      name: 'alistener',
     });
 
     // add a rule that matches the root path of the service
@@ -157,5 +153,8 @@ export class ServiceNetworkStack extends core.Stack {
     //     new iam.AccountPrincipal('123456789012'),
     //   ],
     // });
+
+    // apply the Auth Policy to the ServiceNetork
+    service.applyAuthPolicy();
   }
 }

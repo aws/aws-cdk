@@ -292,7 +292,14 @@ export class Service extends core.Resource implements IService {
           statusCode: FixedResponse.NOT_FOUND,
         },
       };
+    };
+
+    if (props.name !== undefined) {
+      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
+        throw new Error('The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.');
+      }
     }
+
 
     const listener = new Listener(this, `Listener-${props.name}`, {
       defaultAction: defaultAction,

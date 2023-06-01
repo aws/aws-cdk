@@ -7,7 +7,16 @@ import {
   from 'aws-cdk-lib';
 
 import { Construct } from 'constructs';
-import * as vpclattice from './index';
+import {
+  FixedResponse,
+  PathMatchType,
+  PathMatch,
+  HeaderMatch,
+  WeightedTargetGroup,
+  Protocol,
+  HTTPMethods,
+  MatchOperator,
+} from './index';
 
 interface IHttpMatchProperty {
   /**
@@ -45,7 +54,7 @@ export interface AddListenerProps {
   * @default HTTPS
   * @see vpclattice.Protocol
   */
-  readonly protocol?: vpclattice.Protocol | undefined;
+  readonly protocol?: Protocol | undefined;
 
   /**
   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
@@ -73,7 +82,7 @@ export interface ListenerProps {
   /**
   * protocol that the listener will listen on
   */
-  readonly protocol: vpclattice.Protocol
+  readonly protocol: Protocol
   /**
   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
   * @default 80 or 443 depending on the Protocol
@@ -131,7 +140,7 @@ export interface AddRuleProps {
   * the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup
   */
 
-  readonly action: vpclattice.FixedResponse | vpclattice.WeightedTargetGroup[]
+  readonly action: FixedResponse | WeightedTargetGroup[]
   /**
   * the priority of this rule, a lower priority will be processed first
   */
@@ -141,18 +150,18 @@ export interface AddRuleProps {
   * A header match can search for multiple headers
   * @default none
   */
-  readonly headerMatchs?: vpclattice.HeaderMatch[] | undefined
+  readonly headerMatchs?: HeaderMatch[] | undefined
   /**
   * Properties for a Path Match
   * @default none
   */
-  readonly pathMatch?: vpclattice.PathMatch | undefined
+  readonly pathMatch?: PathMatch | undefined
 
   /**
   * Properties for a method Match
   * @default none
   */
-  readonly methodMatch?: vpclattice.HTTPMethods | undefined
+  readonly methodMatch?: HTTPMethods | undefined
 
   /**
    * AuthPolicy for rule
@@ -200,7 +209,7 @@ export class Listener extends core.Resource implements IListener {
     if (props.defaultAction === undefined) {
       defaultAction = {
         fixedResponse: {
-          statusCode: vpclattice.FixedResponse.NOT_FOUND,
+          statusCode: FixedResponse.NOT_FOUND,
         },
       };
     }
@@ -295,7 +304,9 @@ export class Listener extends core.Resource implements IListener {
     // path match
     if (props.pathMatch) {
 
-      if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.EXACT) {
+      const pathMatchType = props.pathMatch.pathMatchType ?? PathMatchType.EXACT;
+
+      if (pathMatchType === PathMatchType.EXACT) {
         match.pathMatch = {
           match: {
             exact: props.pathMatch.path,
@@ -306,7 +317,7 @@ export class Listener extends core.Resource implements IListener {
         policyStatement.addResources(arn + props.pathMatch.path);
       };
 
-      if (props.pathMatch.pathMatchType === vpclattice.PathMatchType.PREFIX) {
+      if (pathMatchType === PathMatchType.PREFIX) {
         match.pathMatch = {
           match: {
             prefix: props.pathMatch.path,
@@ -325,7 +336,7 @@ export class Listener extends core.Resource implements IListener {
 
       props.headerMatchs.forEach((headerMatch) => {
 
-        if (headerMatch.matchOperator === vpclattice.MatchOperator.EXACT) {
+        if (headerMatch.matchOperator === MatchOperator.EXACT) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {
@@ -334,7 +345,7 @@ export class Listener extends core.Resource implements IListener {
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
           policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue } );
-        } else if (headerMatch.matchOperator === vpclattice.MatchOperator.CONTAINS) {
+        } else if (headerMatch.matchOperator === MatchOperator.CONTAINS) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {
@@ -344,7 +355,7 @@ export class Listener extends core.Resource implements IListener {
           });
           policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `*${headerMatch.matchValue}*` });
 
-        } else if (headerMatch.matchOperator === vpclattice.MatchOperator.PREFIX) {
+        } else if (headerMatch.matchOperator === MatchOperator.PREFIX) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {
@@ -363,13 +374,26 @@ export class Listener extends core.Resource implements IListener {
       this.serviceAuthPolicy.addStatements(policyStatement);
     }
 
+
     // finally create a rule
     new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
       action: action,
-      match: match as aws_vpclattice.CfnRule.MatchProperty,
+      match: {
+        httpMatch: {
+          pathMatch: {
+            match: {
+              exact: 'exact',
+              prefix: '/',
+            },
+            caseSensitive: false,
+          },
+        },
+      },
+      // match: match as aws_vpclattice.CfnRule.MatchProperty,
       priority: props.priority,
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.serviceId,
     });
+
   }
 }

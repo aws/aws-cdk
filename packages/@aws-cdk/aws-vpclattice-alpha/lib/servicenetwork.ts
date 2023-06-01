@@ -40,7 +40,7 @@ export interface AssociateVPCProps {
   /**
    * The VPC to associate with the Service Network
    */
-  readonly vpc: ec2.Vpc;
+  readonly vpc: ec2.IVpc;
   /**
    * The security groups to associate with the Service Network
    * @default a security group that allows inbound 443 will be permitted.
@@ -108,6 +108,42 @@ export interface ServiceNetworkProps {
    * @default 'AWS_IAM'
    */
   readonly authType?: string | undefined;
+  /**
+   * S3 buckets for access logs
+   * @default no s3 logging
+   */
+  readonly s3LogDestination: s3.Bucket | s3.IBucket[] | undefined;
+  /**
+   * Cloudwatch Logs
+   * @default no loggs
+   */
+  readonly cloudwatchLogs?: logs.ILogGroup | logs.ILogGroup[] | undefined;
+  /**
+   * kinesis streams
+   * @default no streams
+   */
+  readonly kinesisStream?: kinesis.IStream | kinesis.IStream[];
+  /**
+   * Lattice Services that are assocaited with this Service Network
+   * @default none
+   */
+  readonly services?: Service | Service[] | undefined;
+
+  /**
+   * Vpcs that are associated with this Service Network
+   * @default none
+   */
+  readonly vpcs?: ec2.IVpc | ec2.IVpc[] | undefined;
+  /**
+   * Account principals that are permitted to use this service
+   * @default none
+   */
+  readonly principals?: iam.AccountPrincipal | iam.AccountPrincipal[] | undefined;
+  /**
+   * Allow external principals
+   * @default false
+   */
+  readonly allowExternalPrincipals?: boolean | undefined;
 }
 
 /**
@@ -135,19 +171,92 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id);
 
-
     if (props.name !== undefined) {
       if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
         throw new Error('Theservice network name must be between 3 and 63 characters long. The name can only contain alphanumeric characters and hyphens. The name must be unique to the account.');
       }
     }
-
     // the opinionated default for the servicenetwork is to use AWS_IAM as the
     // authentication method. Provide 'NONE' to props.authType to disable.
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
       authType: props.authType ?? 'AWS_IAM',
     });
+
+    // log to s3
+    if (props.s3LogDestination !== undefined) {
+      if (Array.isArray(props.s3LogDestination)) {
+        props.s3LogDestination.forEach((bucket) => {
+          this.logToS3(bucket);
+        });
+      } else {
+        this.logToS3(props.s3LogDestination);
+      }
+    }
+    // log to cloudwatch
+    if (props.cloudwatchLogs !== undefined) {
+      if (Array.isArray(props.cloudwatchLogs)) {
+        props.cloudwatchLogs.forEach((log) => {
+          this.sendToCloudWatch(log);
+        });
+      } else {
+        this.sendToCloudWatch(props.cloudwatchLogs);
+      }
+    }
+    // log to kinesis
+    if (props.kinesisStream !== undefined) {
+      if (Array.isArray(props.kinesisStream)) {
+        props.kinesisStream.forEach((stream) => {
+          this.streamToKinesis(stream);
+        });
+      } else {
+        this.streamToKinesis(props.kinesisStream);
+      }
+    }
+    // associate vpcs
+    if (props.vpcs !== undefined) {
+      if (Array.isArray(props.vpcs)) {
+        props.vpcs.forEach((vpc) => {
+          this.associateVPC({ vpc: vpc });
+        });
+      } else {
+        this.associateVPC({ vpc: props.vpcs });
+      }
+    }
+
+    //associate services
+    if (props.services !== undefined) {
+      if (Array.isArray(props.services)) {
+        props.services.forEach((service) => {
+          this.addService(service);
+        });
+      } else {
+        this.addService(props.services);
+      }
+    }
+
+    const allowExternalPrincipals = props.allowExternalPrincipals ?? false;
+
+    // share the service network, and permit the account principals to use it
+    if (props.principals !== undefined) {
+      if (Array.isArray(props.principals)) {
+        props.principals.forEach((principal) => {
+          this.grantAccess([principal]);
+          this.share({
+            name: 'Share',
+            principals: principal.accountId,
+            allowExternalPrincipals: allowExternalPrincipals,
+          });
+        });
+      } else {
+        this.grantAccess([props.principals]);
+        this.share({
+          name: 'Share',
+          principals: props.principals.accountId,
+          allowExternalPrincipals: allowExternalPrincipals,
+        });
+      }
+    }
 
     this.serviceNetworkId = serviceNetwork.attrId;
     this.serviceNetworkArn = serviceNetwork.attrArn;
@@ -187,12 +296,12 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * @param service
    */
   public addService(service: Service): void {
-
-    new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, 'LatticeServiceAssociation', {
+    new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeService$${service.serviceId}`, {
       serviceIdentifier: service.serviceId,
       serviceNetworkIdentifier: this.serviceNetworkId,
     });
   }
+
   /**
    * Associate a VPC with the Service Network
    * This provides an opinionated default of adding a security group to allow inbound 443
@@ -202,7 +311,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     const securityGroupIds: string[] = [];
 
     if (props.securityGroups === undefined) {
-      const securityGroup = new ec2.SecurityGroup(this, 'ServiceNetworkSecurityGroup', {
+      const securityGroup = new ec2.SecurityGroup(this, `ServiceNetworkSecurityGroup${props.vpc.vpcId}`, {
         vpc: props.vpc,
         allowAllOutbound: true,
         description: 'ServiceNetworkSecurityGroup',
@@ -217,8 +326,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
     }
 
-
-    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, 'VpcAssociation', /* all optional props */ {
+    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `${props.vpc.vpcId}VpcAssociation`, /* all optional props */ {
       securityGroupIds: securityGroupIds,
       serviceNetworkIdentifier: this.serviceNetworkId,
       vpcIdentifier: props.vpc.vpcId,
@@ -230,7 +338,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * @param bucket
    */
   public logToS3(bucket: s3.Bucket | s3.IBucket): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeLoggingtoS3', {
+    new aws_vpclattice.CfnAccessLogSubscription(this, `LoggingtoS3${bucket.bucketName}`, {
       destinationArn: bucket.bucketArn,
       resourceIdentifier: this.serviceNetworkArn,
     });
@@ -240,7 +348,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * @param log
    */
   public sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, 'LattiCloudwatch', {
+    new aws_vpclattice.CfnAccessLogSubscription(this, `LattiCloudwatch${log.logGroupName}`, {
       destinationArn: log.logGroupArn,
       resourceIdentifier: this.serviceNetworkArn,
     });
@@ -251,7 +359,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * @param stream
    */
   public streamToKinesis(stream: kinesis.Stream | kinesis.IStream): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, 'LatticeKinesis', {
+    new aws_vpclattice.CfnAccessLogSubscription(this, `LatticeKinesis${stream.streamName}`, {
       destinationArn: stream.streamArn,
       resourceIdentifier: this.serviceNetworkArn,
     });

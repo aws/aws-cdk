@@ -1,4 +1,8 @@
-import * as vpclattice from './index';
+import {
+  MatchOperator,
+  PathMatchType,
+}
+  from './index';
 
 /**
  * Properties to Create A HeaderMatch
@@ -16,7 +20,7 @@ export interface HeaderMatch {
   /**
   * Type of match to make
   */
-  readonly matchOperator: vpclattice.MatchOperator,
+  readonly matchOperator: MatchOperator,
   /**
   * Value to match against
   */
@@ -34,9 +38,9 @@ export interface PathMatch {
   readonly caseSensitive?: boolean,
   /**
 	 * Type of match to make
-   * @default vpcLattice.PathMatchType.EXACT
+   * @default PathMatchType.EXACT
 	 */
-  readonly pathMatchType?: vpclattice.PathMatchType,
+  readonly pathMatchType?: PathMatchType,
   /**
 	 * Value to match against
 	 */
