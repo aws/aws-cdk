@@ -2,6 +2,38 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::S3::AccessPoint PublicAccessBlockConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::S3::AccessPoint.PolicyStatus (__removed__)
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration BlockPublicPolicy.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration IgnorePublicAcls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint.PublicAccessBlockConfiguration RestrictPublicBuckets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v124.0.0
+
+## New Resource Types
+
 * AWS::AppSync::SourceApiAssociation
 * AWS::Cognito::IdentityPoolPrincipalTag
 
