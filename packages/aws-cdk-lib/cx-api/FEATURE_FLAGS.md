@@ -18,6 +18,7 @@ Flags come in three types:
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
 | [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
+| [@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation](#aws-cdkaws-autoscalingdisabledefaultlaunchconfigcreation) | Do not create a launch configuration when creating an AutoScalingGroup | V2·NEXT | (default) |
 | [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
@@ -94,7 +95,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-redshift:columnId": true,
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
-    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation": true,
   }
 }
 ```
@@ -339,6 +341,23 @@ Any additional RequestValidators have to be created directly with `new RequestVa
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2·NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation
+
+*Do not create a launch configuration when creating an AutoScalingGroup* (fix)
+
+Enable this flag to disallow creating a launch configuration when creating an AutoScalingGroup.
+Launch Configurations have been deprecated and cannot be created in new AWS accounts.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:**
+      If backwards compatibility needs to be maintained due to an existing autoscaling group using a launch config, set this flag to false.
 
 
 ### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
