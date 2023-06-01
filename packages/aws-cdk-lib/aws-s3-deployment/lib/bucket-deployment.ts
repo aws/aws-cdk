@@ -1,7 +1,8 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig } from './source';
+import { ISource, SourceConfig, Source } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -574,6 +575,42 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+}
+
+export interface DeployTimeSubstitutedFileProps {
+  /**
+   * Path to the user's local file.
+   */
+  readonly source: string;
+
+  /**
+   * User-defined substitutions to make in the file.
+   */
+  readonly substitutions: { [key: string]: string };
+
+  /**
+   * The S3 bucket to sync the contents of the zip file to.
+   */
+  readonly destinationBucket: s3.IBucket;
+}
+
+export class DeployTimeSubstitutedFile extends BucketDeployment {
+
+  constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
+    // Makes substitutions on the file
+    let fileData = fs.readFileSync(props.source, 'utf-8');
+    for (const key in props.substitutions) {
+      fileData = fileData.replace(key, props.substitutions[key]);
+    };
+    const fileSource = Source.data(props.source, fileData);
+    const fullBucketDeploymentProps: BucketDeploymentProps = {
+      ...props,
+      prune: false,
+      extract: false,
+      sources: [fileSource],
+    };
+    super(scope, id, fullBucketDeploymentProps);
   }
 }
 
