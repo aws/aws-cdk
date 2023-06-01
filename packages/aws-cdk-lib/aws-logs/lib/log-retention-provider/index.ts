@@ -143,6 +143,7 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
         ? Object.keys(tagsOnLogGroup.tags).filter(key => !tagsToSetKeys.includes(key))
         : [];
 
+      // don't need to unconditionally set every key-value
       await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
       if (tagsToDelete.length > 0) {
         await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
@@ -183,6 +184,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
       await setLogGroupTags(logGroupName, event.ResourceProperties.Tags, logGroupRegion, retryOptions);
 
+      // event request type of update has old resource properties - use these
+
+      // propagate tags to custom resource logs
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this very function.
         // Due to the async nature of the log group creation, the log group for this function might

@@ -46,6 +46,8 @@ export interface LogRetentionProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  readonly propagateTags?: boolean;
 }
 
 /**
@@ -107,7 +109,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
-        Tags: this.tags.renderedTags,
+        Tags: this.tags.renderedTags, // make this conditional
       },
     });
 

@@ -312,6 +312,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
+   * Whether tags added to the Lambda function will also be added to the corresponding Cloudwatch log
+   * group.
+   *
    * @default false
    */
   readonly propagateTagsToLogGroup?: boolean
@@ -860,7 +863,7 @@ export class Function extends FunctionBase {
       this.addEventSource(event);
     }
 
-    // Log retention
+    // Log retention - shouldn't always add tags
     if (props.logRetention || props.propagateTagsToLogGroup) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
