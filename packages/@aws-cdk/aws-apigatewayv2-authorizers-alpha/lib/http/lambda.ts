@@ -9,7 +9,7 @@ import {
 } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Stack, Duration, Names } from 'aws-cdk-lib';
+import { Stack, Duration, Names } from 'aws-cdk-lib/core';
 
 /**
  * Specifies the type responses the lambda returns

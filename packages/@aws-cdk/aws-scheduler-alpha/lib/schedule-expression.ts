@@ -1,4 +1,4 @@
-import { Duration, TimeZone } from 'aws-cdk-lib';
+import { Duration, TimeZone } from 'aws-cdk-lib/core';
 import * as events from 'aws-cdk-lib/aws-events';
 
 /**
