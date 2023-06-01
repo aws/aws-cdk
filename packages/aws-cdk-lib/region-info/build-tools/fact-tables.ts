@@ -548,7 +548,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
 
 // https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
 export const PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS: { [version: string]: { [arch: string]: { [region: string]: string } } } = {
-  4: {
+  '1.0.103': {
     x86_64: {
       'us-east-1': 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4',
       'us-east-2': 'arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4',

@@ -102,7 +102,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       },
     });
 
@@ -138,7 +138,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       },
     });
 
@@ -151,7 +151,7 @@ describe('params and secrets', () => {
             {
               Ref: 'AWS::Region',
             },
-            '4xx86x64',
+            '1x0x103xx86x64',
           ],
         },
       ],
@@ -185,7 +185,7 @@ describe('params and secrets', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       },
     });
 
@@ -222,7 +222,7 @@ describe('params and secrets', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       },
     });
 
@@ -235,7 +235,7 @@ describe('params and secrets', () => {
             {
               Ref: 'AWS::Region',
             },
-            '4xarm64',
+            '1x0x103xarm64',
           ],
         },
       ],
@@ -268,7 +268,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
+        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
           cacheEnabled: false,
           cacheSize: 500,
           httpPort: 8080,
@@ -317,7 +317,7 @@ describe('params and secrets', () => {
         runtime: lambda.Runtime.NODEJS_18_X,
         architecture: lambda.Architecture.ARM_64,
         paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4),
+          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
         },
       });
     }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');

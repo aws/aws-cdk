@@ -25,11 +25,11 @@ interface ParamsAndSecretsBindConfig {
  */
 export enum ParamsAndSecretsVersions {
   /**
-   * V4
+   * 1.0.103
    *
    * Note: This is the latest version
    */
-  V4 = '4',
+  V1_0_103 = '1.0.103',
 }
 
 /**
