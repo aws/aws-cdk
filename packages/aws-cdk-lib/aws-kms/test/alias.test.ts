@@ -3,9 +3,9 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Aws, CfnOutput, Stack } from '../../core';
+import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
-import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
 test('default alias', () => {
   const app = new App();
