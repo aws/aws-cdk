@@ -155,7 +155,7 @@ test('can set automaticStop', () => {
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
-    automaticStop: automaticStop.toMinutes(),
+    AutomaticStopTimeMinutes: automaticStop.toMinutes(),
   });
 });
 
