@@ -177,6 +177,11 @@ export class FactName {
   public static readonly DEFAULT_CR_NODE_VERSION = 'defaultCrNodeVersion';
 
   /**
+   * The SAML Sign On URL for partition used by IAM SAML Principal
+   */
+  public static readonly SAML_SIGN_ON_URL = 'samlSignOnUrl';
+
+  /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
   public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {

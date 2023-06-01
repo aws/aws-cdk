@@ -12,6 +12,7 @@ import {
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
   CR_DEFAULT_RUNTIME_MAP,
+  PARTITION_SAML_SIGN_ON_URL,
 } from './fact-tables';
 import {
   AWS_REGIONS,
@@ -83,6 +84,8 @@ export async function main(): Promise<void> {
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
     registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]);
+
+    registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition]);
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {

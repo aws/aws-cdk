@@ -182,6 +182,84 @@ test('SAML principal', () => {
   });
 });
 
+test('SAML principal CN', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Cn', { env: { region: 'cn-northwest-1' } });
+  const provider = new iam.SamlProvider(stack, 'MyProvider', {
+    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
+  });
+
+  // WHEN
+  const principal = new iam.SamlConsolePrincipal(provider);
+  new iam.Role(stack, 'Role', {
+    assumedBy: principal,
+  });
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRoleWithSAML',
+          Condition: {
+            StringEquals: {
+              'SAML:aud': 'https://signin.amazonaws.cn/saml',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: {
+              Ref: 'MyProvider730BA1C8',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('SAML principal UsGov', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'UsGov', { env: { region: 'us-gov-east-1' } });
+  const provider = new iam.SamlProvider(stack, 'MyProvider', {
+    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
+  });
+
+  // WHEN
+  const principal = new iam.SamlConsolePrincipal(provider);
+  new iam.Role(stack, 'Role', {
+    assumedBy: principal,
+  });
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRoleWithSAML',
+          Condition: {
+            StringEquals: {
+              'SAML:aud': 'https://signin.amazonaws-us-gov.com/saml',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: {
+              Ref: 'MyProvider730BA1C8',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('StarPrincipal', () => {
   // GIVEN
   const stack = new Stack();

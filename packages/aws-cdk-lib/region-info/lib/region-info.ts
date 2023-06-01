@@ -169,6 +169,13 @@ export class RegionInfo {
   }
 
   /**
+   * SAML Sign On URL used by IAM SAML Principals.
+   */
+  public get samlSignOnUrl(): string | undefined {
+    return Fact.find(this.name, FactName.SAML_SIGN_ON_URL);
+  }
+
+  /**
    * The ARN of the ADOT Lambda layer, for the given layer type, version and architecture.
    *
    * @param type the type of the ADOT lambda layer
