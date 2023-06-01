@@ -280,7 +280,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     });
   }
 
-
   /**
    * Return the given named metric for this State Machine's executions
    *

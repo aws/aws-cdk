@@ -108,7 +108,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
   });
 
-
   test('Application Configuration', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {

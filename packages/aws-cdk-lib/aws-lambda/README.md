@@ -483,6 +483,21 @@ fn.addFunctionUrl({
 });
 ```
 
+### Invoke Mode for Function URLs
+
+Invoke mode determines how AWS Lambda invokes your function. You can configure the invoke mode when creating a Function URL using the invokeMode property
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
+});
+```
+
+If the invokeMode property is not specified, the default BUFFERED mode will be used.
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
