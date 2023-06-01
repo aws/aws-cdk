@@ -33,6 +33,7 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.App.Staging.Synthesizer.Alpha",
+        "packageId": "Amazon.CDK.App.Staging.Synthesizer.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       }
     }
