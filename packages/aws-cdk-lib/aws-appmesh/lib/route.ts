@@ -1,10 +1,10 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
+import * as cdk from '../../core';
 
 /**
  * Interface for which all Route based classes MUST implement

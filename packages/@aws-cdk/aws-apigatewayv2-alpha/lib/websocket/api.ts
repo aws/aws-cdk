@@ -101,7 +101,6 @@ export interface WebSocketApiAttributes {
   readonly apiEndpoint?: string;
 }
 
-
 /**
  * Create a new API Gateway WebSocket API endpoint.
  * @resource AWS::ApiGatewayV2::Api

@@ -1,8 +1,8 @@
+import { IRule } from './rule-ref';
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
   IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
 } from '../../core';
-import { IRule } from './rule-ref';
 
 /**
  * The input to send to the event target

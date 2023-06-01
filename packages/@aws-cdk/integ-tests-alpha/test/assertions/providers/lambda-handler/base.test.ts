@@ -18,7 +18,6 @@ interface CloudFormationResponse extends Omit<AWSLambda.CloudFormationCustomReso
   readonly Data: any;
 }
 
-
 let mockMyApi: sinon.SinonSpy;
 let mockStartExecution: sinon.SinonSpy;
 describe('CustomResourceHandler', () => {

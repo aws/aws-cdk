@@ -1,9 +1,9 @@
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
-import { Aws, Annotations, Duration, Token } from '../../../core';
 import { IConstruct, Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import * as ec2 from '../../../aws-ec2';
+import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -108,7 +108,6 @@ export interface IApplicationTargetGroupMetrics {
    */
   custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-
   /**
    * The number of IPv6 requests received by the target group
    *
@@ -181,7 +180,6 @@ export interface IApplicationTargetGroupMetrics {
   targetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
-
 /**
  * The metrics for a Application Load Balancer.
  */
@@ -207,7 +205,6 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
       ...props,
     }).attachTo(this.scope);
   }
-
 
   public ipv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);

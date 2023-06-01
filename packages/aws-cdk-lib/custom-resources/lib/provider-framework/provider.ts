@@ -1,14 +1,14 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
+import * as consts from './runtime/consts';
+import { calculateRetryPolicy } from './util';
+import { WaiterStateMachine } from './waiter-state-machine';
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration } from '../../../core';
-import { Construct } from 'constructs';
-import * as consts from './runtime/consts';
-import { calculateRetryPolicy } from './util';
-import { WaiterStateMachine } from './waiter-state-machine';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now

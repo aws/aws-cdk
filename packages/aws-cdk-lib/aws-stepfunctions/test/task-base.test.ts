@@ -1,9 +1,9 @@
-import { Metric } from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cdk from '../../core';
 import { FakeTask } from './private/fake-task';
 import { renderGraph } from './private/render-util';
+import { Metric } from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
+import * as cdk from '../../core';
 import * as sfn from '../lib';
 
 describe('Task base', () => {

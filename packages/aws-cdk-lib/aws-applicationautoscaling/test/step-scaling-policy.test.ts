@@ -1,8 +1,8 @@
+import * as fc from 'fast-check';
+import { arbitrary_input_intervals, createScalableTarget } from './util';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
-import * as fc from 'fast-check';
-import { arbitrary_input_intervals, createScalableTarget } from './util';
 import * as appscaling from '../lib';
 
 describe('step scaling policy', () => {
@@ -23,7 +23,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('generated step intervals are valid intervals', () => {
@@ -38,7 +37,6 @@ describe('step scaling policy', () => {
         }), steps, 'template', JSON.stringify(template, undefined, 2));
       },
     ));
-
 
   });
 
@@ -59,7 +57,6 @@ describe('step scaling policy', () => {
         return true;
       },
     ), { verbose: true });
-
 
   });
 
@@ -82,7 +79,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('lower alarm uses lower policy', () => {
@@ -97,7 +93,6 @@ describe('step scaling policy', () => {
       },
     ));
 
-
   });
 
   test('upper alarm uses upper policy', () => {
@@ -111,7 +106,6 @@ describe('step scaling policy', () => {
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.upperPolicy, alarm);
       },
     ));
-
 
   });
 
@@ -148,7 +142,6 @@ describe('step scaling policy', () => {
       },
 
     });
-
 
   });
 
@@ -187,7 +180,6 @@ describe('step scaling policy', () => {
       Threshold: 100,
     });
 
-
   });
 
   test('step scaling with evaluation period configured', () => {
@@ -223,7 +215,6 @@ describe('step scaling policy', () => {
       Namespace: 'Test',
       Threshold: 100,
     });
-
 
   });
 
