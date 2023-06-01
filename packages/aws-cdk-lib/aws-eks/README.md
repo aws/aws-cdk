@@ -16,6 +16,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Endpoint Access](#endpoint-access)
   * [ALB Controller](#alb-controller)
   * [VPC Support](#vpc-support)
+  * [IPv6 Support](#ipv6-support)
   * [Kubectl Support](#kubectl-support)
   * [ARM64 Support](#arm64-support)
   * [Masters Role](#masters-role)
@@ -628,6 +629,37 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup,
 });
+```
+
+### IPv6 Support
+
+You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// make an ipv6 cidr
+const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
+  vpcId: vpc.vpcId,
+  amazonProvidedIpv6CidrBlock: true,
+});
+
+// connect the ipv6 cidr to all vpc subnets
+let subnetcount = 0;
+let subnets = [...vpc.publicSubnets, ...vpc.privateSubnets];
+for ( let subnet of subnets) {
+  // Wait for the ipv6 cidr to complete
+  subnet.node.addDependency(ipv6cidr);
+  this._associate_subnet_with_v6_cidr(subnetcount, subnet);
+  subnetcount++;
+}
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  vpc: vpc,
+  ipFamily: eks.IpFamily.IP_V6,
+  vpcSubnets: [{ subnets: [...vpc.publicSubnets] }],
+});
+
 ```
 
 ### Kubectl Support
