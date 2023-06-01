@@ -263,7 +263,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "4xx86x64"
+                          "1x0x103xx86x64"
                         ]
                       }
                     ],
@@ -578,7 +578,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "4xarm64"
+                          "1x0x103xarm64"
                         ]
                       }
                     ],

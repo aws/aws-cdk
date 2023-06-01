@@ -36,7 +36,7 @@ class StackUnderTest extends Stack {
       code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler')),
       architecture: props.architecture,
       paramsAndSecrets: {
-        layerVersion: ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V4, {
+        layerVersion: ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V1_0_103, {
           cacheSize: 100,
           secretsManagerTtl: cdk.Duration.seconds(100),
           parameterStoreTtl: cdk.Duration.seconds(100),
