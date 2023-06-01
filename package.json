@@ -28,7 +28,7 @@
     "jsii-diff": "1.82.0",
     "jsii-pacmak": "1.82.0",
     "jsii-reflect": "1.82.0",
-    "jsii-rosetta": "1.82.0",
+    "jsii-rosetta": "~5.0.8",
     "lerna": "^6.6.1",
     "nx": "^15.9.4",
     "patch-package": "^6.5.1",
