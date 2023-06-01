@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-lambda-log-retention.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53d9f93777a59c056d47bcb74a136aae7c53c3e010fe62d984859dd0aa334457.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9acea2a750ec80570e8e20a95cfc92d7b6f105e84062081288adb40dd0bcda15.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -75,42 +75,6 @@
             "data": "DefaultCrNodeVersionMap"
           }
         ],
-        "/aws-cdk-lambda-log-retention/OneMonth/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneMonthServiceRoleFBD1064F"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/OneMonth/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneMonth64E966BF"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/OneMonth/LogRetention/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneMonthLogRetention814A40D9"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/OneYear/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneYearServiceRole24D47762"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/OneYear/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneYearA82EBDA9"
-          }
-        ],
-        "/aws-cdk-lambda-log-retention/OneYear/LogRetention/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OneYearLogRetentionBD83A067"
-          }
-        ],
         "/aws-cdk-lambda-log-retention/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,6 +85,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "OneMonthServiceRoleFBD1064F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneMonthServiceRoleFBD1064F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "OneMonth64E966BF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneMonth64E966BF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "OneMonthLogRetention814A40D9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneMonthLogRetention814A40D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "OneYearServiceRole24D47762": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneYearServiceRole24D47762",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "OneYearA82EBDA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneYearA82EBDA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "OneYearLogRetentionBD83A067": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OneYearLogRetentionBD83A067",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

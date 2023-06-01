@@ -14,7 +14,7 @@ import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
-import { Aspects, Lazy, Size } from '../../core';
+import { Aspects, Lazy, Size, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
@@ -1767,14 +1767,18 @@ describe('function', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new lambda.Function(stack, 'MyLambda', {
+    const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
+    Tags.of(fn).add('env', 'dev');
+    Tags.of(fn).add('department', 'engineering');
 
     // THEN
+    /* eslint-disable no-console */
+    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       LogGroupName: {
         'Fn::Join': [

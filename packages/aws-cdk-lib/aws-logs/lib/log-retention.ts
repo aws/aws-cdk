@@ -160,7 +160,13 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     });
     // Duplicate statements will be deduplicated by `PolicyDocument`
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+      actions: [
+        'logs:PutRetentionPolicy',
+        'logs:DeleteRetentionPolicy',
+        'logs:ListTagsLogGroup',
+        'logs:TagLogGroup',
+        'logs:UntagLogGroup',
+      ],
       // We need '*' here because we will also put a retention policy on
       // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.

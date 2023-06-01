@@ -312,6 +312,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
+   * @default false
+   */
+  readonly propagateTagsToLogGroup?: boolean
+
+  /**
    * Options for the `lambda.Version` resource automatically created by the
    * `fn.currentVersion` method.
    * @default - default options as described in `VersionOptions`
@@ -856,10 +861,10 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetention) {
+    if (props.logRetention || props.propagateTagsToLogGroup) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: props.logRetention,
+        retention: props.logRetention ?? logs.RetentionDays.INFINITE,
         role: props.logRetentionRole,
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });

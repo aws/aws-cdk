@@ -11,9 +11,9 @@ const fn = new lambda.Function(stack, 'OneWeek', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
   logRetention: logs.RetentionDays.ONE_WEEK,
+  functionName: 'OneWeekFunction',
 });
-cdk.Tags.of(fn).add('env', 'dev');
-cdk.Tags.of(fn).remove('dept');
+cdk.Tags.of(fn).add('env', 'prod');
 cdk.Tags.of(fn).add('key', 'value');
 
 new lambda.Function(stack, 'OneMonth', {
