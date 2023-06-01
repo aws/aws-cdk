@@ -17,7 +17,7 @@ export class Cloud9Env extends cdk.Stack {
     // create a cloud9 ec2 environment in a new VPC
     const c9env = new cloud9.Ec2Environment(this, 'C9Env', {
       vpc,
-      automaticStopTimeMinutes: cdk.Duration.minutes(30),
+      automaticStop: cdk.Duration.minutes(30),
       imageId: cloud9.ImageId.AMAZON_LINUX_2,
     });
     new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
@@ -26,7 +26,7 @@ export class Cloud9Env extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const stack = new Cloud9Env(app, 'C9AutomaticStopTimeMinutesStack');
+const stack = new Cloud9Env(app, 'C9automaticStopStack');
 
 new integ.IntegTest(app, 'cloud-9-automatic-stop-time-mintues', {
   testCases: [stack],

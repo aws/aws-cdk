@@ -1,27 +1,27 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "C9AutomaticStopTimeMinutesStack.assets": {
+    "C9automaticStopStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "C9AutomaticStopTimeMinutesStack.assets.json",
+        "file": "C9automaticStopStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "C9AutomaticStopTimeMinutesStack": {
+    "C9automaticStopStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "C9AutomaticStopTimeMinutesStack.template.json",
+        "templateFile": "C9automaticStopStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4ace33442eb5fb8a32765fb178c8b0cb78d32ae32217070deb47be21b72ce44.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d302c7f90912c93bef6f8fda089adb33206a67ff3bdb6ce885b1f90a7fac7e25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "C9AutomaticStopTimeMinutesStack.assets"
+          "C9automaticStopStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,167 +30,167 @@
         }
       },
       "dependencies": [
-        "C9AutomaticStopTimeMinutesStack.assets"
+        "C9automaticStopStack.assets"
       ],
       "metadata": {
-        "/C9AutomaticStopTimeMinutesStack/VPC/Resource": [
+        "/C9automaticStopStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/Subnet": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/RouteTable": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/DefaultRoute": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/EIP": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1/NATGateway": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2/Subnet": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2/RouteTable": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2/DefaultRoute": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1/Subnet": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1/RouteTable": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1/DefaultRoute": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2/Subnet": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2/RouteTable": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2/DefaultRoute": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/IGW": [
+        "/C9automaticStopStack/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/VPC/VPCGW": [
+        "/C9automaticStopStack/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/C9Env/Resource": [
+        "/C9automaticStopStack/C9Env/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "C9EnvF05FC3BE"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/URL": [
+        "/C9automaticStopStack/URL": [
           {
             "type": "aws:cdk:logicalId",
             "data": "URL"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/ARN": [
+        "/C9automaticStopStack/ARN": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ARN"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/BootstrapVersion": [
+        "/C9automaticStopStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/C9AutomaticStopTimeMinutesStack/CheckBootstrapVersion": [
+        "/C9automaticStopStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "C9AutomaticStopTimeMinutesStack"
+      "displayName": "C9automaticStopStack"
     },
     "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.assets": {
       "type": "cdk:asset-manifest",

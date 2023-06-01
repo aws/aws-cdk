@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC"
+      "Value": "C9automaticStopStack/VPC"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet1"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet2"
      }
     ]
    }
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PublicSubnet2"
+      "Value": "C9automaticStopStack/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1"
+      "Value": "C9automaticStopStack/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -236,7 +236,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet1"
+      "Value": "C9automaticStopStack/VPC/PrivateSubnet1"
      }
     ]
    }
@@ -291,7 +291,7 @@
      },
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2"
+      "Value": "C9automaticStopStack/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -305,7 +305,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC/PrivateSubnet2"
+      "Value": "C9automaticStopStack/VPC/PrivateSubnet2"
      }
     ]
    }
@@ -339,7 +339,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "C9AutomaticStopTimeMinutesStack/VPC"
+      "Value": "C9automaticStopStack/VPC"
      }
     ]
    }

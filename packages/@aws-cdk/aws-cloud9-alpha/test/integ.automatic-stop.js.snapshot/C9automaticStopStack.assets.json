@@ -1,15 +1,15 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "files": {
-    "b4ace33442eb5fb8a32765fb178c8b0cb78d32ae32217070deb47be21b72ce44": {
+    "d302c7f90912c93bef6f8fda089adb33206a67ff3bdb6ce885b1f90a7fac7e25": {
       "source": {
-        "path": "C9AutomaticStopTimeMinutesStack.template.json",
+        "path": "C9automaticStopStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b4ace33442eb5fb8a32765fb178c8b0cb78d32ae32217070deb47be21b72ce44.json",
+          "objectKey": "d302c7f90912c93bef6f8fda089adb33206a67ff3bdb6ce885b1f90a7fac7e25.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
