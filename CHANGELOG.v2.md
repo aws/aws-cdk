@@ -18,7 +18,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** support Aurora Serverless V2 instances ([#25437](https://github.com/aws/aws-cdk/issues/25437)) ([fe5ed10](https://github.com/aws/aws-cdk/commit/fe5ed1041e1ef5a7058f22a63ba6db61ae4b8683)), closes [#20197](https://github.com/aws/aws-cdk/issues/20197)
 * **route53:** HostedZone's default period at the end should be optional  ([#25379](https://github.com/aws/aws-cdk/issues/25379)) ([cc204ca](https://github.com/aws/aws-cdk/commit/cc204caef96079d823bb3878a519d290f95cc2d4)), closes [#22406](https://github.com/aws/aws-cdk/issues/22406)
 * **stepfunctions:** add getters for context object fields ([#25646](https://github.com/aws/aws-cdk/issues/25646)) ([42b43d6](https://github.com/aws/aws-cdk/commit/42b43d613bc5d2f7cb6488ba4f42d48b72118e01)), closes [#25415](https://github.com/aws/aws-cdk/issues/25415)
-* **synthetics:** support runtime nodejs puppeteer 4.0 ([#25553](https://github.com/aws/aws-cdk/issues/25553)) ([1d7a9a8](https://github.com/aws/aws-cdk/commit/1d7a9a80b08d41ce8759bed9286adaa8259c2bc8)), closes [#25493](https://github.com/aws/aws-cdk/issues/25493)
 
 
 ### Bug Fixes
