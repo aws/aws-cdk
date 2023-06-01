@@ -111,6 +111,9 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
 
 /**
  * A default Staging Stack that implements IStagingResources.
+ *
+ * @example
+ * const defaultStagingStack = DefaultStagingStack.factory({ appId: 'my-app-id' });
  */
 export class DefaultStagingStack extends Stack implements IStagingResources {
   /**
