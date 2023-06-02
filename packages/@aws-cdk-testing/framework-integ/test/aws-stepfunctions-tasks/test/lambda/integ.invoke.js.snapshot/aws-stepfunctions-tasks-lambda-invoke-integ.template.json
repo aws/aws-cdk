@@ -35,7 +35,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async () => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!'\n        };\n      };"
+     "ZipFile": "exports.handler = async (event, context) => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!',\n          ...event,\n        };\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -85,7 +85,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async function(event, context) {\n        return {\n          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
+     "ZipFile": "exports.handler = async function(event, context) {\n        const expectedFields = [\n          'execId', 'execInput', 'execName', 'execRoleArn',\n          'execStartTime', 'stateEnteredTime', 'stateName',\n          'stateRetryCount', 'stateMachineId', 'stateMachineName',\n        ];\n        const fieldsAreSet = expectedFields.every(field => event[field] !== undefined);\n        return {\n          status: event.statusCode === '200' && fieldsAreSet ? 'SUCCEEDED' : 'FAILED'\n        };\n  };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -203,7 +203,7 @@
          "Arn"
         ]
        },
-       "\",\"Payload.$\":\"$\"}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
+       "\",\"Payload\":{\"execId.$\":\"$$.Execution.Id\",\"execInput.$\":\"$$.Execution.Input\",\"execName.$\":\"$$.Execution.Name\",\"execRoleArn.$\":\"$$.Execution.RoleArn\",\"execStartTime.$\":\"$$.Execution.StartTime\",\"stateEnteredTime.$\":\"$$.State.EnteredTime\",\"stateName.$\":\"$$.State.Name\",\"stateRetryCount.$\":\"$$.State.RetryCount\",\"stateMachineId.$\":\"$$.StateMachine.Id\",\"stateMachineName.$\":\"$$.StateMachine.Name\"}}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultSelector\":{\"status.$\":\"$.Payload.status\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -231,6 +231,14 @@
   "stateMachineArn": {
    "Value": {
     "Ref": "StateMachine2E01A3A5"
+   }
+  },
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-lambda-invoke-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  },
