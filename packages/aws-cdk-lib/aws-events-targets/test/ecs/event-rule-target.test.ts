@@ -537,6 +537,74 @@ test('Can use same fargate taskdef multiple times in a rule', () => {
   }))).not.toThrow();
 });
 
+test('Isolated subnet does not have AssignPublicIp=true', () => {
+  // GIVEN
+  vpc = new ec2.Vpc(stack, 'Vpc2', {
+    maxAzs: 1,
+    subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+      name: 'Isolated',
+    }],
+  });
+  cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: 'Vpc2IsolatedSubnet1SubnetB1A200D6',
+                },
+              ],
+              AssignPublicIp: 'DISABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
 testDeprecated('throws an error if both securityGroup and securityGroups is specified', () => {
   // GIVEN
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
