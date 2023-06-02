@@ -1,0 +1,147 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "custom-resource-test-node-18-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "custom-resource-test-node-18-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "custom-resource-test-node-18-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "custom-resource-test-node-18-stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e5d3e20624023e8f794f5d686d025da3e98b1b5a8acbe187a994bb8dc26f2c1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "custom-resource-test-node-18-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "custom-resource-test-node-18-stack.assets"
+      ],
+      "metadata": {
+        "/custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderRoleB4B29AEC"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/Custom::ReflectCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderHandler2E189D0B"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/MyResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyResource"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/MyLengthyTypeResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLengthyTypeResource"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ref"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/GetAtt.Attribute1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute1"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/GetAtt.Attribute2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute2"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/custom-resource-test-node-18-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "custom-resource-test-node-18-stack"
+    },
+    "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets"
+      ],
+      "metadata": {
+        "/custom-resource-test-node-18-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/custom-resource-test-node-18-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
