@@ -290,6 +290,7 @@ export class WorkGraph {
    * Not the fastest, but effective and should be rare
    */
   private findCycle(): string[] {
+    const seen = new Set<string>();
     const self = this;
     for (const nodeId of Object.keys(this.nodes)) {
       const cycle = recurse(nodeId, [nodeId]);
@@ -298,14 +299,24 @@ export class WorkGraph {
     return ['No cycle found!'];
 
     function recurse(nodeId: string, path: string[]): string[] | undefined {
-      for (const dep of self.nodes[nodeId].dependencies ?? []) {
-        if (dep === path[0]) { return [...path, dep]; }
-
-        const cycle = recurse(dep, [...path, dep]);
-        if (cycle) { return cycle; }
+      if (seen.has(nodeId)) {
+        return undefined;
       }
+      try {
+        for (const dep of self.nodes[nodeId].dependencies ?? []) {
+          const index = path.indexOf(dep);
+          if (index > -1) {
+            return [...path.slice(index), dep];
+          }
 
-      return undefined;
+          const cycle = recurse(dep, [...path, dep]);
+          if (cycle) { return cycle; }
+        }
+
+        return undefined;
+      } finally {
+        seen.add(nodeId);
+      }
     }
   }
 }
