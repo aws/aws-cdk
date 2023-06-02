@@ -1,5 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 /// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
+import {
+  IntegTest,
+} from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
@@ -34,6 +37,7 @@ class PipelineStack extends Stack {
     const group2 = pipeline.addWave('Wave2', { postPrepare: [new pipelines.ManualApprovalStep('Approval2')] });
     group2.addStage(new AppStage2(this, 'Prod3'));
     group2.addStage(new AppStage3(this, 'Prod4'));
+
   }
 }
 
@@ -75,5 +79,10 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-new PipelineStack(app, 'PipelineWithPostPrepareStack');
+const pipeStack = new PipelineStack(app, 'PipelineWithPostPrepareStack');
+
+new IntegTest(app, 'Integ', {
+  testCases: [pipeStack],
+});
+
 app.synth();
