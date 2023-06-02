@@ -209,6 +209,19 @@ describe('repository', () => {
     expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
   });
 
+  test('import with arn without /repository', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'arn:aws:ecr:us-east-1:123456789012:foo-ecr-repo-name';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+  });
+
   test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();
