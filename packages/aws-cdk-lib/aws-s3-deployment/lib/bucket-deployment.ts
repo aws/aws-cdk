@@ -1,3 +1,4 @@
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { kebab as toKebabCase } from 'case';
@@ -585,17 +586,23 @@ export interface DeployTimeSubstitutedFileProps {
   readonly source: string;
 
   /**
-   * User-defined substitutions to make in the file.
-   */
-  readonly substitutions: { [key: string]: string };
-
-  /**
    * The S3 bucket to sync the contents of the zip file to.
    */
   readonly destinationBucket: s3.IBucket;
+
+  /**
+   * User-defined substitutions to make in the file.
+   */
+  readonly substitutions: { [key: string]: string };
 }
 
+/**
+ * `DeployTimeSubstitutedFile` is an extension of `BucketDeployment` that allows users to
+ * upload individual files and specify to make substitutions in the file.
+ */
 export class DeployTimeSubstitutedFile extends BucketDeployment {
+
+  public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
     // Makes substitutions on the file
@@ -605,12 +612,15 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     };
     const fileSource = Source.data(props.source, fileData);
     const fullBucketDeploymentProps: BucketDeploymentProps = {
-      ...props,
       prune: false,
-      extract: false,
+      extract: true,
+      ...props,
       sources: [fileSource],
     };
     super(scope, id, fullBucketDeploymentProps);
+
+    // sets the object key
+    this.objectKey = cdk.Fn.select(0, this.objectKeys);
   }
 }
 
