@@ -3184,16 +3184,16 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.1.244:
-  version "0.1.244"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.244.tgz#4779aea46f105678aaa7579f17d83b6655e0dfaa"
-  integrity sha512-goVWAgqB14uFZ/VEUYBsFFdK4pnSBfpi8w5020p2FCW+35nfjb/x3CdDqdV48YxcXby6ijhcXk5L0txCzXkNCg==
+cdk-generate-synthetic-examples@^0.1.260:
+  version "0.1.260"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.260.tgz#ad5ebb2aa1dfb39093cd5efde92c7f858606d30a"
+  integrity sha512-43KEdbZpyiBpfdQ+pTHWoF38v9/JRByX7Ufit4TFrwgCkmBEd7CJVXE3lot1nNeItkul2db5lSCmn0ZemLS3lQ==
   dependencies:
-    "@jsii/spec" "^1.81.0"
+    "@jsii/spec" "^1.82.0"
     fs-extra "^10.1.0"
-    jsii "^1.81.0"
-    jsii-reflect "^1.81.0"
-    jsii-rosetta "^1.81.0"
+    jsii "^1.82.0"
+    jsii-reflect "^1.82.0"
+    jsii-rosetta "^1.82.0"
     yargs "^17.7.2"
 
 cdk8s-plus-24@2.7.31:
@@ -6960,7 +6960,7 @@ jsii-pacmak@1.82.0:
     xmlbuilder "^15.1.1"
     yargs "^16.2.0"
 
-jsii-reflect@1.81.0, jsii-reflect@^1.81.0:
+jsii-reflect@1.81.0:
   version "1.81.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.81.0.tgz#51ad71021de979a55192d094afdea2e3acde1976"
   integrity sha512-HENelplypflpgMbkwyOBhH/McVJP+LzYZHnMjxZOSMXOMl9ZmZf8bhr9ZBu56ZyMicK0JGPQMqcu5xE+cPyklQ==
@@ -6984,25 +6984,7 @@ jsii-reflect@1.82.0, jsii-reflect@^1.82.0:
     oo-ascii-tree "^1.82.0"
     yargs "^16.2.0"
 
-jsii-rosetta@^1.81.0:
-  version "1.81.0"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.81.0.tgz#636281b54cba8d1dd1ea9b5c14a4682c0bd88362"
-  integrity sha512-eb93UzJapapW+h87C3EgykVNqpqjuVzaUSlB3xgtOGmSOJIuL9kCfABYPujV6MVAC2d415H5mIeW/y65iGFMyg==
-  dependencies:
-    "@jsii/check-node" "1.81.0"
-    "@jsii/spec" "1.81.0"
-    "@xmldom/xmldom" "^0.8.7"
-    commonmark "^0.30.0"
-    fast-glob "^3.2.12"
-    jsii "1.81.0"
-    semver "^7.5.0"
-    semver-intersect "^1.4.0"
-    stream-json "^1.7.5"
-    typescript "~3.9.10"
-    workerpool "^6.4.0"
-    yargs "^16.2.0"
-
-jsii-rosetta@^1.82.0:
+jsii-rosetta@1.82.0, jsii-rosetta@^1.82.0:
   version "1.82.0"
   resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.82.0.tgz#8680af6223ada85a247731e036cf4fc3220b90e3"
   integrity sha512-3R/+fYm1gIUp6HEBzRyvHgCxKy1BZB2ZqO+0zYvgi7LEUEsvn7OBUDI7NoVe6/Bqp8DKOxzUYm4xe8jJ6Gr0og==
@@ -7077,7 +7059,7 @@ jsii@1.82.0:
     typescript "~3.9.10"
     yargs "^16.2.0"
 
-jsii@5.0.x, jsii@~5.0.8:
+jsii@~5.0.8:
   version "5.0.8"
   resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.8.tgz#324c84179097d092545f0090f9517dddc8151427"
   integrity sha512-FQlEQX1o/v1CnkYsap7iPQH/L0QRzo8zv00L28qdcfAYuUGNlBc35q8G7G5zmrQfionVxDdpz00l8l+Fj6I2hA==
