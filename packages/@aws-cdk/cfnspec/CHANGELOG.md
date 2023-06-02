@@ -1,3 +1,53 @@
+# CloudFormation Resource Specification v125.0.0
+
+## New Resource Types
+
+* AWS::Detective::OrganizationAdmin
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::RouteResponse RouteResponseId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.PrimitiveType (__deleted__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.ItemType (__added__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.Type (__added__)
+* AWS::CloudTrail::EventDataStore IngestionEnabled (__added__)
+* AWS::CloudTrail::Trail AdvancedEventSelectors (__added__)
+* AWS::EC2::NetworkInterface EnablePrimaryIpv6 (__deleted__)
+* AWS::QuickSight::DataSet DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet DatasetParameters (__added__)
+* AWS::QuickSight::DataSet RowLevelPermissionTagConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CloudTrail::Trail.AdvancedEventSelector (__added__)
+* AWS::CloudTrail::Trail.AdvancedFieldSelector (__added__)
+* AWS::QuickSight::DataSet.DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet.DatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.IncrementalRefresh (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.LookbackWindow (__added__)
+* AWS::QuickSight::DataSet.NewDefaultValues (__added__)
+* AWS::QuickSight::DataSet.OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSet.RefreshConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagRule (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameterDefaultValues (__added__)
+* AWS::Glue::Job.JobCommand Runtime (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet Status (__added__)
+* AWS::QuickSight::DataSet.TransformOperation OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSource.AthenaParameters RoleArn (__added__)
+* AWS::QuickSight::DataSource.S3Parameters RoleArn (__added__)
+
+
 # CloudFormation Resource Specification v124.0.0
 
 ## New Resource Types
