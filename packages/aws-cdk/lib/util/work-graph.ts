@@ -244,35 +244,34 @@ export class WorkGraph {
   }
 
   private updateReadyPool() {
-    let activeCount = 0;
-    let pendingCount = 0;
-    for (const node of Object.values(this.nodes)) {
-      switch (node.deploymentState) {
-        case DeploymentState.DEPLOYING:
-          activeCount += 1;
-          break;
-        case DeploymentState.PENDING:
-          pendingCount += 1;
-          if (Array.from(node.dependencies).every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED)) {
-            node.deploymentState = DeploymentState.QUEUED;
-            this.readyPool.push(node);
-          }
-          break;
-      }
+    const activeCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.DEPLOYING).length;
+    const pendingCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.PENDING).length;
+
+    const newlyReady = Object.values(this.nodes).filter((x) =>
+      x.deploymentState === DeploymentState.PENDING &&
+      Array.from(x.dependencies).every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED));
+
+    // Add newly available nodes to the ready pool
+    for (const node of newlyReady) {
+      node.deploymentState = DeploymentState.QUEUED;
+      this.readyPool.push(node);
     }
 
+    // Remove nodes from the ready pool that have already started deploying
     for (let i = 0; i < this.readyPool.length; i++) {
       const node = this.readyPool[i];
       if (node.deploymentState !== DeploymentState.QUEUED) {
         this.readyPool.splice(i, 1);
       }
+      // FIXME: BUG
     }
 
     // Sort by reverse priority
     this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
-      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${this.findCycle().join(' -> ')}`);
+      const cycle = this.findCycle() ?? ['No cycle found!'];
+      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')}`);
     }
   }
 
@@ -289,14 +288,14 @@ export class WorkGraph {
    *
    * Not the fastest, but effective and should be rare
    */
-  private findCycle(): string[] {
+  public findCycle(): string[] | undefined {
     const seen = new Set<string>();
     const self = this;
     for (const nodeId of Object.keys(this.nodes)) {
       const cycle = recurse(nodeId, [nodeId]);
       if (cycle) { return cycle; }
     }
-    return ['No cycle found!'];
+    return undefined;
 
     function recurse(nodeId: string, path: string[]): string[] | undefined {
       if (seen.has(nodeId)) {

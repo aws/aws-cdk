@@ -9,6 +9,8 @@ const sleep = async (duration: number) => new Promise<void>((resolve) => setTime
 // a chance to start new tasks.
 const SLOW = 200;
 
+jest.setTimeout(600_000);
+
 /**
  * Repurposing unused stack attributes to create specific test scenarios
  * - stack.name          = deployment duration
@@ -356,6 +358,105 @@ describe('WorkGraph', () => {
   });
 });
 
+// Generate a bunch of nodes and arbitrary dependencies with arbitrary speeds and check for race conditions
+test('race condition checking', async () => {
+  const N = 1000;
+  for (let i = 0; i < N; i++) {
+    const graph = new WorkGraph();
+    const M = 10;
+    const depchance = 0.2;
+
+    const ids = range(M).map((id) => `a${id}`);
+
+    for (const id of ids) {
+      const type = pick(['stack', 'asset-publish', 'asset-build']) as 'stack'|'asset-publish'|'asset-build';
+      switch (type) {
+        case 'stack':
+          graph.addNodes({
+            type,
+            id,
+            deploymentState: DeploymentState.PENDING,
+            dependencies: new Set<string>(),
+            stack: {
+              // We're smuggling information here so that the set of callbacks can do some appropriate action
+              stackName: Math.round(Math.random() * 50), // Timeout
+              displayName: '',
+            } as any,
+          });
+          break;
+        case 'asset-build':
+          graph.addNodes({
+            type,
+            id,
+            deploymentState: DeploymentState.PENDING,
+            dependencies: new Set<string>(),
+            asset: DUMMY,
+            assetManifest: DUMMY,
+            assetManifestArtifact: DUMMY,
+            parentStack: {
+              // We're smuggling information here so that the set of callbacks can do some appropriate action
+              stackName: `${Math.round(Math.random() * 100)}`, // Timeout
+            } as any,
+          });
+          break;
+        case 'asset-publish':
+          graph.addNodes({
+            type,
+            id,
+            deploymentState: DeploymentState.PENDING,
+            dependencies: new Set<string>(),
+            asset: DUMMY,
+            assetManifest: DUMMY,
+            assetManifestArtifact: DUMMY,
+            parentStack: {
+              // We're smuggling information here so that the set of callbacks can do some appropriate action
+              stackName: `${Math.round(Math.random() * 100)}`, // Timeout
+            } as any,
+          });
+          break;
+      }
+    }
+
+    for (const id of ids) {
+      const dependencies = new Set(ids.flatMap((did) => Math.random() < depchance && id !== did ? [did] : []));
+      for (const dep of dependencies) {
+        graph.node(id).dependencies.add(dep);
+        if (graph.findCycle()) {
+          // Oops
+          graph.node(id).dependencies.delete(dep);
+        }
+      }
+    }
+
+    const callbacks = {
+      deployStack: async (x: StackNode) => {
+        const timeout = Number(x.stack.stackName) || 0;
+        await sleep(timeout);
+      },
+      buildAsset: async(x: AssetBuildNode) => {
+        const timeout = Number(x.parentStack.stackName) || 0;
+        await sleep(timeout);
+      },
+      publishAsset: async(x: AssetPublishNode) => {
+        const timeout = Number(x.parentStack.stackName) || 0;
+        await sleep(timeout);
+      },
+    };
+
+    try {
+      await graph.doParallel({ 'asset-build': 1, 'asset-publish': 1, 'stack': 1 }, callbacks);
+      // eslint-disable-next-line no-console
+      console.log(i);
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.log(e.message);
+      if (!e.message.includes('->')) {
+        throw e;
+      }
+    }
+  }
+});
+
 interface TestArtifact {
   stackDependencies?: string[];
   assetDependencies?: string[];
@@ -410,4 +511,17 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
     }
   }
   graph.removeUnavailableDependencies();
+}
+
+function range(n: number): number[] {
+  const ret = new Array<number>();
+  for (let i = 0; i < n; i++) {
+    ret.push(i);
+  }
+  return ret;
+}
+
+function pick<A>(xs: A[]): A {
+  const i = Math.min(Math.floor(Math.random() * xs.length), xs.length - 1);
+  return xs[i];
 }
