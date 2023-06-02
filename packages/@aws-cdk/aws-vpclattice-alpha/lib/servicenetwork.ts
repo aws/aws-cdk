@@ -14,6 +14,11 @@ import {
   Service,
 } from './index';
 
+export enum AuthType {
+  NONE = 'NONE',
+  AWS_IAM = 'AWS_IAM'
+}
+
 /**
  * Properties to share a Service Network
  */
@@ -65,9 +70,9 @@ export interface IServiceNetwork extends core.IResource {
    */
   readonly serviceNetworkId: string;
   /**
-   * Add LatticeAuthPolicy
+   * Grant Princopals access to the Service Network
    */
-  grantAccess(policyDocument: iam.IPrincipal[]): void;
+  grantAccess(principal: iam.IPrincipal[]): void;
   /**
    * Add Lattice Service Policy
    */
@@ -92,13 +97,18 @@ export interface IServiceNetwork extends core.IResource {
    * Share the ServiceNetwork
    */
   share(props: ShareServiceNetworkProps): void;
+  /**
+   * Create and Add an auth policy to the Service Network
+   */
+  addAuthPolicy(): void;
 
 }
 /**
  * The properties for the ServiceNetwork.
  */
 export interface ServiceNetworkProps {
-  /** The name of the Service Network. If not set Cloudformation will provide
+
+  /** The name of the Service Network. If not provided Cloudformation will provide
    * a name
    * @default cloudformation generated name
    */
@@ -107,42 +117,55 @@ export interface ServiceNetworkProps {
   /** The type of  authentication to use with the Service Network.
    * @default 'AWS_IAM'
    */
-  readonly authType?: string | undefined;
+  readonly authType?: AuthType | undefined;
+
   /**
    * S3 buckets for access logs
    * @default no s3 logging
    */
-  readonly s3LogDestination: s3.Bucket | s3.IBucket[] | undefined;
+
+  readonly s3LogDestination: s3.IBucket[] | undefined;
   /**
    * Cloudwatch Logs
-   * @default no loggs
+   * @default no logging to S3
    */
-  readonly cloudwatchLogs?: logs.ILogGroup | logs.ILogGroup[] | undefined;
+  readonly cloudwatchLogs?: logs.ILogGroup[] | undefined;
+
   /**
    * kinesis streams
-   * @default no streams
+   * @default no streaming to Kinesis
    */
-  readonly kinesisStream?: kinesis.IStream | kinesis.IStream[];
+  readonly kinesisStreams?: kinesis.IStream[];
+
   /**
    * Lattice Services that are assocaited with this Service Network
-   * @default none
+   * @default no services are associated with the service network
    */
-  readonly services?: Service | Service[] | undefined;
+  readonly services?: Service[] | undefined;
 
   /**
    * Vpcs that are associated with this Service Network
-   * @default none
+   * @default no vpcs are associated
    */
-  readonly vpcs?: ec2.IVpc | ec2.IVpc[] | undefined;
+  readonly vpcs?: ec2.IVpc[] | undefined;
+
   /**
    * Account principals that are permitted to use this service
    * @default none
    */
-  readonly principals?: iam.AccountPrincipal | iam.AccountPrincipal[] | undefined;
+  readonly accounts?: iam.AccountPrincipal[] | undefined;
+
+  /**
+   * arnToShareWith, use this for specifying Orgs and OU's
+   * @default false
+   */
+  readonly arnToShareServiceWith?: string[] | undefined;
+
   /**
    * Allow external principals
    * @default false
    */
+
   readonly allowExternalPrincipals?: boolean | undefined;
 }
 
@@ -161,7 +184,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   /**
    * the authType of the service network
    */
-  authType: string | undefined;
+  authType: AuthType | undefined;
   /**
    * policy document to be used.
    */
@@ -185,77 +208,68 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
     // log to s3
     if (props.s3LogDestination !== undefined) {
-      if (Array.isArray(props.s3LogDestination)) {
-        props.s3LogDestination.forEach((bucket) => {
-          this.logToS3(bucket);
-        });
-      } else {
-        this.logToS3(props.s3LogDestination);
-      }
-    }
+      props.s3LogDestination.forEach((bucket) => {
+        this.logToS3(bucket);
+      });
+    };
+
     // log to cloudwatch
     if (props.cloudwatchLogs !== undefined) {
-      if (Array.isArray(props.cloudwatchLogs)) {
-        props.cloudwatchLogs.forEach((log) => {
-          this.sendToCloudWatch(log);
-        });
-      } else {
-        this.sendToCloudWatch(props.cloudwatchLogs);
-      }
-    }
+      props.cloudwatchLogs.forEach((log) => {
+        this.sendToCloudWatch(log);
+      });
+    };
+
     // log to kinesis
-    if (props.kinesisStream !== undefined) {
-      if (Array.isArray(props.kinesisStream)) {
-        props.kinesisStream.forEach((stream) => {
-          this.streamToKinesis(stream);
-        });
-      } else {
-        this.streamToKinesis(props.kinesisStream);
-      }
-    }
+    if (props.kinesisStreams !== undefined) {
+      props.kinesisStreams.forEach((stream) => {
+        this.streamToKinesis(stream);
+      });
+    };
+
     // associate vpcs
     if (props.vpcs !== undefined) {
-      if (Array.isArray(props.vpcs)) {
-        props.vpcs.forEach((vpc) => {
-          this.associateVPC({ vpc: vpc });
-        });
-      } else {
-        this.associateVPC({ vpc: props.vpcs });
-      }
-    }
+      props.vpcs.forEach((vpc) => {
+        this.associateVPC({ vpc: vpc });
+      });
+    };
 
     //associate services
     if (props.services !== undefined) {
-      if (Array.isArray(props.services)) {
-        props.services.forEach((service) => {
-          this.addService(service);
-        });
-      } else {
-        this.addService(props.services);
-      }
-    }
+      props.services.forEach((service) => {
+        this.addService(service);
+      });
+    };
 
     const allowExternalPrincipals = props.allowExternalPrincipals ?? false;
 
+    // An AWS account ID
+    // An Amazon Resource Name (ARN) of an organization in AWS Organizations
+    // An ARN of an organizational unit (OU) in AWS Organizations
+    //
+
     // share the service network, and permit the account principals to use it
-    if (props.principals !== undefined) {
-      if (Array.isArray(props.principals)) {
-        props.principals.forEach((principal) => {
-          this.grantAccess([principal]);
-          this.share({
-            name: 'Share',
-            principals: principal.accountId,
-            allowExternalPrincipals: allowExternalPrincipals,
-          });
-        });
-      } else {
-        this.grantAccess([props.principals]);
+    if (props.accounts !== undefined) {
+      props.accounts.forEach((account) => {
+        this.grantAccess([account]);
         this.share({
           name: 'Share',
-          principals: props.principals.accountId,
+          principals: [account.accountId],
           allowExternalPrincipals: allowExternalPrincipals,
         });
-      }
+      });
+    }
+    // share the service network and permit this to be used;
+    if (props.arnToShareServiceWith!== undefined) {
+      props.arnToShareServiceWith.forEach((resource) => {
+        //check if resource is a valid arn;
+        this.grantAccess([new iam.ArnPrincipal(resource)]);
+        this.share({
+          name: 'Share',
+          principals: [resource],
+          allowExternalPrincipals: allowExternalPrincipals,
+        });
+      });
     }
 
     this.serviceNetworkId = serviceNetwork.attrId;
@@ -280,11 +294,19 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     });
 
     this.authPolicy.addStatements(policyStatement);
+  }
 
+  public addAuthPolicy(): void {
+
+    // check to see if there are any errors with the auth policy
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
       throw new Error(`Auth Policy for granting access on  Service Network is invalid\n, ${this.authPolicy}`);
     }
-
+    // check to see if the AuthType is AWS_IAM
+    if (this.authType !== AuthType.AWS_IAM ) {
+      throw new Error(`AuthType must be ${AuthType.AWS_IAM} to add an Auth Policy`);
+    }
+    // attach the AuthPolicy to the Service Network
     new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
       policy: this.authPolicy.toJSON(),
       resourceIdentifier: this.serviceNetworkArn,
@@ -321,9 +343,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
         ec2.Peer.ipv4(props.vpc.vpcCidrBlock),
         ec2.Port.tcp(443),
       );
-
       securityGroupIds.push(securityGroup.securityGroupId);
-
     }
 
     new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `${props.vpc.vpcId}VpcAssociation`, /* all optional props */ {
@@ -379,3 +399,4 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
 
 }
+
