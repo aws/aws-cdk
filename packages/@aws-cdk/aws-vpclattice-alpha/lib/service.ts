@@ -126,12 +126,21 @@ export interface LatticeServiceProps {
   readonly listeners?: IListener[] | undefined;
 
   /**
-   * 
+   * A certificate that may be used by the service
    */
   readonly certificate?: certificatemanager.Certificate | undefined;
+  /**
+   * A customDomain used by the service
+   */
   readonly customDomain?: string | undefined;
+  /**
+   * A customDomain 
+   */
   readonly dnsEntry?: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
-  readonly shares: SharedServiceProps[];: undefined;
+  /**
+   * 
+   */
+  readonly shares: ShareServiceProps[]; undefined;
 
 }
 
