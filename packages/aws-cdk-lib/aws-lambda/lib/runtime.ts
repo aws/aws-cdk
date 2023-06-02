@@ -215,6 +215,11 @@ export class Runtime {
   public static readonly RUBY_2_7 = new Runtime('ruby2.7', RuntimeFamily.RUBY);
 
   /**
+   * The Ruby 3.2 runtime (ruby3.2)
+   */
+  public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
+
+  /**
    * The custom provided runtime (provided)
    */
   public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
