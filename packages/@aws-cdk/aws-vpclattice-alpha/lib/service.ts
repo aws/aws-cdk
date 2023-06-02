@@ -9,11 +9,36 @@ import {
 import * as constructs from 'constructs';
 import {
   AddListenerProps,
+  IListener,
   Listener,
   FixedResponse,
   Protocol,
 }
   from './index';
+
+
+
+
+/**
+ * Properties to Share the Service
+ */
+export interface ShareServiceProps {
+  /**
+   * The name of the service
+   */
+  readonly name: string;
+  /**
+   * Allow External Principals
+   * @default false
+   */
+  readonly allowExternalPrincipals?: boolean | undefined
+  /**
+   * Principals to share the service with.
+   * TO DO, this needs some work
+   * @default none
+   */
+  readonly principals: string[] | undefined
+}
 
 /**
  * Create a vpcLattice service network.
@@ -79,39 +104,35 @@ export interface IService extends core.IResource {
 
 
 /**
- * Properties to Share the Service
- */
-export interface ShareServiceProps {
-  /**
-   * The name of the service
-   */
-  readonly name: string;
-  /**
-   * Allow External Principals
-   * @default false
-   */
-  readonly allowExternalPrincipals?: boolean | undefined
-  /**
-   * Principals to share the service with.
-   * TO DO, this needs some work
-   * @default none
-   */
-  readonly principals: string[] | undefined
-}
-/**
  * Properties for a Lattice Service
  */
 export interface LatticeServiceProps {
+
   /**
    * Name for the service
    * @default cloudformation will provide a name
    */
   readonly name?: string | undefined;
+
   /**
    * The authType of the Service
    * @default 'AWS_IAM'
    */
   readonly authType?: string | undefined;
+
+  /**
+   * Listeners that will be attached to the service
+  */
+  readonly listeners?: IListener[] | undefined;
+
+  /**
+   * 
+   */
+  readonly certificate?: certificatemanager.Certificate | undefined;
+  readonly customDomain?: string | undefined;
+  readonly dnsEntry?: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
+  readonly shares: SharedServiceProps[];: undefined;
+
 }
 
 /**

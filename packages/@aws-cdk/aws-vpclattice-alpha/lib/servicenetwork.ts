@@ -127,7 +127,7 @@ export interface ServiceNetworkProps {
   readonly s3LogDestination: s3.IBucket[] | undefined;
   /**
    * Cloudwatch Logs
-   * @default no logging to S3
+   * @default no logging to cloudwatch
    */
   readonly cloudwatchLogs?: logs.ILogGroup[] | undefined;
 
