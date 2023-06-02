@@ -272,7 +272,7 @@ export class WorkGraph {
     this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
-      throw new Error(`Unable to make progress anymore among: ${this}`);
+      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${this.findCycle().join(' -> ')}`);
     }
   }
 
@@ -281,6 +281,31 @@ export class WorkGraph {
       if ([DeploymentState.QUEUED, DeploymentState.PENDING].includes(node.deploymentState)) {
         node.deploymentState = DeploymentState.SKIPPED;
       }
+    }
+  }
+
+  /**
+   * Find cycles in a graph
+   *
+   * Not the fastest, but effective and should be rare
+   */
+  private findCycle(): string[] {
+    const self = this;
+    for (const nodeId of Object.keys(this.nodes)) {
+      const cycle = recurse(nodeId, [nodeId]);
+      if (cycle) { return cycle; }
+    }
+    return ['No cycle found!'];
+
+    function recurse(nodeId: string, path: string[]): string[] | undefined {
+      for (const dep of self.nodes[nodeId].dependencies ?? []) {
+        if (dep === path[0]) { return [...path, dep]; }
+
+        const cycle = recurse(dep, [...path, dep]);
+        if (cycle) { return cycle; }
+      }
+
+      return undefined;
     }
   }
 }

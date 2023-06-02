@@ -1284,16 +1284,5 @@
   },
   "internetmonitor": {
     "name": "InternetMonitor"
-  },
-  "ivsrealtime": {
-    "prefix": "ivs-realtime",
-    "name": "IVSRealTime"
-  },
-  "vpclattice": {
-    "prefix": "vpc-lattice",
-    "name": "VPCLattice"
-  },
-  "osis": {
-    "name": "OSIS"
   }
 }
