@@ -124,29 +124,24 @@ export function filterCommits(commits: ConventionalCommit[], opts: FilterCommits
     .filter(commit => excludeScopes.length === 0 || !commit.scope || !excludeScopes.includes(commit.scope));
 }
 
-function createScopeVariations(names: string[]) {
-  const simplifiedNames = names.map(n => n.replace(/^@aws-cdk\//, ''));
+export function createScopeVariations(names: string[]) {
+  const simplifiedNames = new Set(names.map(n => n.replace(/^@aws-cdk\//, '')));
 
-  return flatMap(simplifiedNames, (pkgName) => [
-    pkgName,
-    ...(pkgName.startsWith('aws-')
-      ? [
-        // if the package name starts with 'aws', like 'aws-s3',
-        // also include in the scopes variants without the prefix,
-        // and without the '-' in the prefix
-        // (so, 's3' and 'awss3')
-        pkgName.slice('aws-'.length),
-        pkgName.replace(/^aws-/, 'aws'),
-      ]
-      : []
-    ),
-  ]);
-}
+  // if the package name starts with 'aws', like 'aws-s3',
+  // also include in the scopes variants without the prefix,
+  // and without the '-' in the prefix
+  // (so, 's3' and 'awss3')
+  const transforms: Array<(x: string) => string> = [
+    (name) => name.replace(/^aws-/, ''),
+    (name) => name.replace(/^aws-/, 'aws'),
+    (name) => name.replace(/-alpha$/, ''),
+  ];
 
-function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...fn(x));
+  for (const transform of transforms) {
+    for (const name of simplifiedNames) {
+      simplifiedNames.add(transform(name));
+    }
   }
-  return ret;
+
+  return Array.from(simplifiedNames);
 }
