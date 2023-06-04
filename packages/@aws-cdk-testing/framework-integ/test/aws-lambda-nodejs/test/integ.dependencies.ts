@@ -47,13 +47,13 @@ class SdkV3TestStack extends Stack {
 const app = new App();
 const sdkV2testCase = new SdkV2TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
 const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
-const sdkV3testCaseWithLambdaProvidedSdk = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3', true);
+const sdkV3testCaseUseLambdaProvidedSdk = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-use-lambda-provided-sdk', true);
 
 const integ = new IntegTest(app, 'LambdaDependencies', {
-  testCases: [sdkV2testCase, sdkV3testCase, sdkV3testCaseWithLambdaProvidedSdk],
+  testCases: [sdkV2testCase, sdkV3testCase, sdkV3testCaseUseLambdaProvidedSdk],
 });
 
-for (const testCase of [sdkV2testCase, sdkV3testCase, sdkV3testCaseWithLambdaProvidedSdk]) {
+for (const testCase of [sdkV2testCase, sdkV3testCase, sdkV3testCaseUseLambdaProvidedSdk]) {
   const response = integ.assertions.invokeFunction({
     functionName: testCase.lambdaFunction.functionName,
   });
