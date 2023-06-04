@@ -125,7 +125,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     this.externals = [
-      ...(props.externalModules ?? []).concat(props.bundleLambdaProvidedAwsSdk ? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']) : []), // Mark aws-sdk as external by default (available in the runtime)
+      ...(props.externalModules ?? []).concat(props.useLambdaProvidedAwsSdk ? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']) : []), // Mark aws-sdk as external by default (available in the runtime)
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
