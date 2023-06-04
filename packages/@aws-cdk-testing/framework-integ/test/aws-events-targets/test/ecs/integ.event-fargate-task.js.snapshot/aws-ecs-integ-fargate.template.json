@@ -516,6 +516,7 @@
        }
       },
       "EcsParameters": {
+       "EnableExecuteCommand": true,
        "LaunchType": "FARGATE",
        "NetworkConfiguration": {
         "AwsVpcConfiguration": {
