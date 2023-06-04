@@ -89,7 +89,7 @@ export interface IRepository extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Gran tthe given identity permissions to read images in this repository.
+   * Grant the given identity permissions to read images in this repository.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
@@ -97,6 +97,11 @@ export interface IRepository extends IResource {
    * Grant the given identity permissions to pull images in this repository.
    */
   grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to push images in this repository.
+   */
+  grantPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
@@ -361,8 +366,33 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage');
+    const ret = this.grant(grantee,
+      'ecr:BatchCheckLayerAvailability',
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage',
+    );
 
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
+  }
+
+  /**
+   * Grant the given identity permissions to use the images in this repository
+   */
+  public grantPush(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee,
+      'ecr:CompleteLayerUpload',
+      'ecr:UploadLayerPart',
+      'ecr:InitiateLayerUpload',
+      'ecr:BatchCheckLayerAvailability',
+      'ecr:PutImage',
+    );
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],

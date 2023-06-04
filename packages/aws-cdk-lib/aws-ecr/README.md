@@ -61,6 +61,56 @@ ecr.PublicGalleryAuthorizationToken.grantRead(user);
 
 This user can then proceed to login to the registry using one of the [authentication methods](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth).
 
+### Other Grantee
+
+#### grantPush
+The grantPush method grants the specified IAM entity (the grantee) permission to push images to the ECR repository. Specifically, it grants permissions for the following actions:
+
+- 'ecr:CompleteLayerUpload'
+- 'ecr:UploadLayerPart'
+- 'ecr:InitiateLayerUpload'
+- 'ecr:BatchCheckLayerAvailability'
+- 'ecr:PutImage'
+- 'ecr:GetAuthorizationToken'
+
+Here is an example of granting a user push permissions:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPush(role);
+```
+
+#### grantPull
+The grantPull method grants the specified IAM entity (the grantee) permission to pull images from the ECR repository. Specifically, it grants permissions for the following actions:
+
+- 'ecr:BatchCheckLayerAvailability'
+- 'ecr:GetDownloadUrlForLayer'
+- 'ecr:BatchGetImage'
+- 'ecr:GetAuthorizationToken'
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPush(role);
+```
+
+#### grantPullPush
+The grantPullPush method grants the specified IAM entity (the grantee) permission to both pull and push images from/to the ECR repository. Specifically, it grants permissions for all the actions required for pull and push permissions.
+
+Here is an example of granting a user both pull and push permissions:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+repository.grantPullPush(role);
+```
+
+By using these methods, you can grant specific operational permissions on the ECR repository to IAM entities. This allows for proper management of access to the repository and ensures security.
+
 ### Image tag immutability
 
 You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.

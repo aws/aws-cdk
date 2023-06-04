@@ -15,6 +15,8 @@ repo.addToResourcePolicy(new iam.PolicyStatement({
 
 const user = new iam.User(stack, 'MyUser');
 repo.grantRead(user);
+repo.grantPull(user);
+repo.grantPush(user);
 repo.grantPullPush(user);
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {

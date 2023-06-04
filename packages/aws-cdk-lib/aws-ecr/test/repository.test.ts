@@ -708,6 +708,35 @@ describe('repository', () => {
       });
     });
 
+    test('grant push', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      repo.grantPush(new iam.AnyPrincipal());
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Principal': { 'AWS': '*' },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+    });
+
     test('grant read adds appropriate permissions', () => {
       // GIVEN
       const stack = new cdk.Stack();
