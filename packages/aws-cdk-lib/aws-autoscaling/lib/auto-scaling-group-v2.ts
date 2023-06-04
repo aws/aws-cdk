@@ -13,6 +13,12 @@ import { TerminationPolicy } from './termination-policy';
 import * as ec2 from '../../aws-ec2';
 import { Duration } from '../../core';
 
+/**
+ * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
+ *
+ * Constructs that want to create AutoScalingGroups can inherit
+ * this interface and specialize the essential parts in various ways.
+ */
 export interface CommonAutoScalingGroupV2Props {
   /**
    * Minimum number of instances in the fleet
@@ -226,6 +232,9 @@ export interface CommonAutoScalingGroupV2Props {
   readonly ssmSessionPermissions?: boolean;
 }
 
+/**
+ * Properties of a Fleet
+ */
 export interface AutoScalingGroupV2Props extends CommonAutoScalingGroupV2Props {
   /**
    * VPC to launch these instances in.
@@ -280,6 +289,18 @@ export interface AutoScalingGroupV2Props extends CommonAutoScalingGroupV2Props {
   readonly requireImdsv2?: boolean;
 }
 
+/**
+ * A Fleet represents a managed set of EC2 instances
+ *
+ * The Fleet models a number of AutoScalingGroups, a launch configuration, a
+ * security group and an instance role.
+ *
+ * It allows adding arbitrary commands to the startup scripts of the instances
+ * in the fleet.
+ *
+ * The ASG spans the availability zones specified by vpcSubnets, falling back to
+ * the Vpc default strategy if not specified.
+ */
 export class AutoScalingGroupV2 extends AutoScalingGroup {
   constructor(scope: Construct, id: string, props: AutoScalingGroupV2Props) {
     super(scope, id, props);
