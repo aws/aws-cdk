@@ -35,7 +35,7 @@ class SdkV3TestStack extends Stack {
 
     // This function uses @aws-sdk/* but it will not be included
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
-      entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
+      entry: useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-aws-cdk-custom/index.mjs') : path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
       bundling: {
         useLambdaProvidedAwsSdk: useLambdaProvidedSdk,
