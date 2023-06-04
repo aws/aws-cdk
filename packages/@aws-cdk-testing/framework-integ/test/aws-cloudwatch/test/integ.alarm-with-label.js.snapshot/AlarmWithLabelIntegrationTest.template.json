@@ -12,7 +12,7 @@
       "MetricStat": {
        "Metric": {
         "MetricName": "Metric",
-        "Namespace": "CDK/Test"
+        "Namespace": "CDK/Test1"
        },
        "Period": 300,
        "Stat": "Average"
@@ -35,7 +35,7 @@
       "MetricStat": {
        "Metric": {
         "MetricName": "Metric",
-        "Namespace": "CDK/Test"
+        "Namespace": "CDK/Test1"
        },
        "Period": 300,
        "Stat": "Average"

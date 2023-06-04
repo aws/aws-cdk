@@ -8,7 +8,7 @@ class AlarmWithLabelIntegrationTest extends Stack {
     super(scope, id, props);
 
     const testMetric = new Metric({
-      namespace: 'CDK/Test',
+      namespace: 'CDK/Test1',
       metricName: 'Metric',
       label: 'Metric [AVG: ${AVG}]',
     });
