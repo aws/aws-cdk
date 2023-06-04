@@ -1225,7 +1225,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
-  private readonly launchTemplate?: ec2.LaunchTemplate;
+  protected readonly launchTemplate?: ec2.LaunchTemplate;
   private readonly _connections?: ec2.Connections;
   private readonly _userData?: ec2.UserData;
   private readonly _role?: iam.IRole;

@@ -305,4 +305,8 @@ export class AutoScalingGroupV2 extends AutoScalingGroup {
   constructor(scope: Construct, id: string, props: AutoScalingGroupV2Props) {
     super(scope, id, props);
   }
+
+  public addUserData(...commands: string[]): void {
+    this.launchTemplate?.userData?.addCommands(...commands);
+  }
 }
