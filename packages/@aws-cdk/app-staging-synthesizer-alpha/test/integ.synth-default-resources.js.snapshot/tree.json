@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
+                      "s3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1150,7 +1150,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },

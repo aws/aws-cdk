@@ -52,7 +52,6 @@ export abstract class CfnElement extends Construct {
    */
   private _logicalIdLocked?: boolean;
 
-
   /**
    * Creates an entity and binds it to a tree.
    * Note that the root of the tree must be a Stack object (not just any Root).
@@ -203,7 +202,6 @@ function notTooLong(x: string) {
   if (x.length < 100) { return x; }
   return x.slice(0, 47) + '...' + x.slice(-47);
 }
-
 
 // These imports have to be at the end to prevent circular imports
 import { CfnReference } from './private/cfn-reference';

@@ -11,7 +11,6 @@ beforeAll(() => {
   HUMAN_TIME = new Date(TIMESTAMP).toLocaleTimeString();
 });
 
-
 test('prints 0/4 progress report, when addActivity is called with an "IN_PROGRESS" ResourceStatus', () => {
   const historyActivityPrinter = new HistoryActivityPrinter({
     resourceTypeColumnWidth: 23,
@@ -84,7 +83,6 @@ test('prints 1/4 progress report, when addActivity is called with an "UPDATE_COM
   expect(output[0].trim()).toStrictEqual(`stack-name | 1/4 | ${HUMAN_TIME} | ${green('UPDATE_COMPLETE_CLEA')} | AWS::CloudFormation::Stack | ${green(bold('stack1'))}`);
 });
 
-
 test('prints 1/4 progress report, when addActivity is called with an "ROLLBACK_COMPLETE_CLEAN_IN_PROGRESS" ResourceStatus', () => {
   const historyActivityPrinter = new HistoryActivityPrinter({
     resourceTypeColumnWidth: 23,
@@ -132,7 +130,6 @@ test('prints 0/4 progress report, when addActivity is called with an "UPDATE_FAI
 
   expect(output[0].trim()).toStrictEqual(`stack-name | 0/4 | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}`);
 });
-
 
 test('does not print "Failed Resources:" list, when all deployments are successful', () => {
   const historyActivityPrinter = new HistoryActivityPrinter({
