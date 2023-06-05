@@ -40,7 +40,7 @@ Alternatively, an entry file and handler can be specified:
 
 ```ts
 new nodejs.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts, .tsx and .mjs files
+  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .cjs, .mjs, .ts, .tsx, .cts and .mts files
   handler: 'myExportedFunc', // defaults to 'handler'
 });
 ```
