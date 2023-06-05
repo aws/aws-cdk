@@ -4,14 +4,6 @@
   "description": "The CDK Construct Library for AWS Lambda in Golang",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "typesVersions": {
-    "<=3.9": {
-      "*": [
-        ".types-compat/ts3.9/*",
-        ".types-compat/ts3.9/*/index.d.ts"
-      ]
-    }
-  },
   "jsii": {
     "outdir": "dist",
     "targets": {
