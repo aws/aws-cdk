@@ -168,6 +168,7 @@ describe('tests that use assets', () => {
     const assembly = rootBuilder.buildAssembly();
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
+    // THEN
     expect(graph.findCycle()).toBeUndefined();
   });
 });
