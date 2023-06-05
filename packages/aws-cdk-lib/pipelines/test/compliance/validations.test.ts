@@ -9,7 +9,20 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ShellStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { AppWithOutput, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, StageWithStackOutput, TestApp, TwoStackApp, behavior, sortByRunOrder, stringNoLongerThan } from '../testhelpers';
+import {
+  AppWithOutput,
+  LegacyTestGitHubNpmPipeline,
+  ModernTestGitHubNpmPipeline,
+  OneStackApp,
+  PIPELINE_ENV,
+  StageWithStackOutput,
+  TestApp,
+  TwoStackApp,
+  behavior,
+  sortByRunOrder,
+  stringLike,
+  stringNoLongerThan,
+} from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -78,9 +91,9 @@ behavior('can add steps to wave', (suite) => {
       Stages: Match.arrayWith([{
         Name: 'MyWave',
         Actions: sortByRunOrder([
-          Match.objectLike({ Name: 'Stage1.Stack.Prepare' }),
-          Match.objectLike({ Name: 'Stage2.Stack.Prepare' }),
-          Match.objectLike({ Name: 'Stage3.Stack.Prepare' }),
+          Match.objectLike({ Name: stringLike('Stage1.Stack.Prepare*') }),
+          Match.objectLike({ Name: stringLike('Stage2.Stack.Prepare*') }),
+          Match.objectLike({ Name: stringLike('Stage3.Stack.Prepare*') }),
           Match.objectLike({ Name: 'Stage1.Stack.Deploy' }),
           Match.objectLike({ Name: 'Stage2.Stack.Deploy' }),
           Match.objectLike({ Name: 'Stage3.Stack.Deploy' }),
