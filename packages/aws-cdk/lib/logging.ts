@@ -7,6 +7,34 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
+export async function withCorkedLogging<A>(block: () => Promise<A>): Promise<A> {
+  corkLogging();
+  try {
+    return await block();
+  } finally {
+    uncorkLogging();
+  }
+}
+
+let CORK_COUNTER = 0;
+const logBuffer: [Writable, string][] = [];
+
+function corked() {
+  return CORK_COUNTER !== 0;
+}
+
+function corkLogging() {
+  CORK_COUNTER += 1;
+}
+
+function uncorkLogging() {
+  CORK_COUNTER -= 1;
+  if (!corked()) {
+    logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
+    logBuffer.splice(0);
+  }
+}
+
 const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: unknown[]) => {
   const ts = timestamp ? `[${formatTime(new Date())}] ` : '';
 
@@ -15,8 +43,15 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
     str = styles.reduce((a, style) => style(a), str);
   }
 
-
   const realStream = typeof stream === 'function' ? stream() : stream;
+
+  // Logger is currently corked, so we store the message to be printed
+  // later when we are uncorked.
+  if (corked()) {
+    logBuffer.push([realStream, str]);
+    return;
+  }
+
   realStream.write(str + '\n');
 };
 
@@ -37,7 +72,6 @@ export enum LogLevel {
   /** Extremely verbose */
   TRACE = 2
 }
-
 
 export let logLevel = LogLevel.DEFAULT;
 export let CI = false;

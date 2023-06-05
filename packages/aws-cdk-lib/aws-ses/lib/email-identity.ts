@@ -1,10 +1,10 @@
-import * as route53 from '../../aws-route53';
-import { IPublicHostedZone } from '../../aws-route53';
-import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
+import { IPublicHostedZone } from '../../aws-route53';
+import * as route53 from '../../aws-route53';
+import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
 
 /**
  * An email identity

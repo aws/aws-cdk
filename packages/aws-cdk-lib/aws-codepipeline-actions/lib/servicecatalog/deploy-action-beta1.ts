@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**

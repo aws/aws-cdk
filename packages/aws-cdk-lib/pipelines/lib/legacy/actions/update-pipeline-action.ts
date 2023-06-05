@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as cpactions from '../../../../aws-codepipeline-actions';
 import * as events from '../../../../aws-events';
 import * as iam from '../../../../aws-iam';
 import { Stack } from '../../../../core';
-import { Construct } from 'constructs';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
 import { embeddedAsmPath } from '../../private/construct-internals';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
