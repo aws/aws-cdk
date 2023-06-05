@@ -94,7 +94,7 @@ The grantPull method grants the specified IAM entity (the grantee) permission to
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });
-repository.grantPush(role);
+repository.grantPull(role);
 ```
 
 #### grantPullPush
