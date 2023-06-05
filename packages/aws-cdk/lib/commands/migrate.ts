@@ -18,9 +18,9 @@ export async function cliMigrate(
     throw new Error(`couldn't find template for ${type} app type, this should never happen`);
   }
 
-  if (!language) {
+  if (!language || !(language == 'typescript')) {
     language = 'typescript';
-    warning(`No --language was provided, defaulting to --language=${language}`);
+    warning(`currently only have suppport for typescript, defaulting to --language=${language}`);
   }
 
   await initializeProject(template, language, true, generateOnly, outputpath);
