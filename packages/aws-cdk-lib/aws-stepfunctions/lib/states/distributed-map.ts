@@ -7,7 +7,6 @@ import { FieldUtils } from '../fields';
 import { StateMachineType } from '../state-machine';
 import { INextable } from '../types';
 
-
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
 /**
@@ -461,7 +460,6 @@ export interface DistributedMapProps extends MapProps {
      * @default - No toleratedFailureCountPath
      */
   readonly toleratedFailureCountPath?: string
-
 
   /**
      * Label

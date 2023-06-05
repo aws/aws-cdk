@@ -7,7 +7,6 @@ import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 
-
 /**
  * Two modes of Map states are available in AWS Step Functions: INLINE AND DISTRIBUTED.
  *
