@@ -14,13 +14,13 @@ repo.addToResourcePolicy(new iam.PolicyStatement({
 }));
 
 const user = new iam.User(stack, 'MyUser');
-repo.grantRead(user);
-repo.grantPullPush(user);
+repo.grantPush(user);
+repo.grantPull(user);
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,
 });
 
-new IntegTest(app, 'cdk-ecr-integ-test-basic', {
+new IntegTest(app, 'cdk-ecr-integ-test-grant', {
   testCases: [stack],
 });

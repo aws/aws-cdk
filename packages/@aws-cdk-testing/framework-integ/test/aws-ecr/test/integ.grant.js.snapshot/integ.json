@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "cdk-ecr-integ-test-grant/DefaultTest": {
+      "stacks": [
+        "aws-ecr-integ-stack"
+      ],
+      "assertionStack": "cdk-ecr-integ-test-grant/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkecrintegtestgrantDefaultTestDeployAssertC6198E0B"
+    }
+  }
+}
