@@ -209,6 +209,49 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+#### Node Groups with IPv6 Support
+
+Node groups are available with IPv6 configured networks.  Additional permissions are necessary in order for pods to obtain an IPv6 address.
+
+> For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
+
+```ts
+const ipv6Management = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+    resources: ['arn:aws:ec2:*:*:network-interface/*'],
+    actions: [
+        'ec2:AssignIpv6Addresses',
+        'ec2:UnassignIpv6Addresses',
+    ],
+    })],
+});
+
+const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
+  roleName: 'eksClusterNodeGroupRole',
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
+  ],
+    inlinePolicies: {
+    ipv6Management,
+  },
+});
+
+const cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_26,
+  defaultCapacity: 0,
+});
+
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  minSize: 2,
+  diskSize: 100,
+  nodeRole: eksClusterNodeGroupRole,
+});
+```
+
 #### Spot Instances Support
 
 Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using

@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
-import * as sam from '../../aws-sam';
+//import * as sam from '../../aws-sam';
 import { Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
 import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
@@ -68,20 +68,6 @@ export class ClusterResourceProvider extends NestedStack {
     // The NPM dependency proxy-agent is required in order to support proxy routing with the AWS JS SDK.
     const nodeProxyAgentLayer = new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer');
 
-    // We need AWS SDK >= 2.1051.0 to support IPv6 for EKS cluster
-    const samApp = new sam.CfnApplication(this, 'SamLayer', {
-      location: {
-        // eslint-disable-next-line @aws-cdk/no-literal-partition
-        applicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-aws-sdk-js',
-        semanticVersion: '2.578.0',
-      },
-      parameters: {
-        LayerName: `${this.node.addr}-AwsSdkJs-lambdaLayer`,
-      },
-    });
-    const layerVersionArn = samApp.getAtt('Outputs.LayerVersionArn').toString();
-    const nodeAwsSdkLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'NodeAwsSdkLayer', layerVersionArn);
-
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
@@ -112,7 +98,7 @@ export class ClusterResourceProvider extends NestedStack {
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
-      layers: [nodeProxyAgentLayer, nodeAwsSdkLayer],
+      layers: [nodeProxyAgentLayer],
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
