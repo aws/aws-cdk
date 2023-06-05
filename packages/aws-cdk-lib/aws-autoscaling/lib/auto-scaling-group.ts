@@ -20,10 +20,11 @@ import {
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
-  Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
+  Duration, FeatureFlags, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
   Token,
   Tokenization, withResolved,
 } from '../../core';
+import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from '../../cx-api';
 
 /**
  * Name tag constant
@@ -1225,7 +1226,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
-  protected readonly launchTemplate?: ec2.LaunchTemplate;
+  private readonly launchTemplate?: ec2.LaunchTemplate;
   private readonly _connections?: ec2.Connections;
   private readonly _userData?: ec2.UserData;
   private readonly _role?: iam.IRole;
