@@ -1,6 +1,6 @@
 import { Match, Template } from '../../../assertions';
 import { App, Stack } from '../../../core';
-import { behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
+import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, ThreeStackApp, TwoStackApp, behavior, sortByRunOrder } from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;
@@ -31,9 +31,9 @@ behavior('interdependent stacks are in the right order', (suite) => {
       Stages: Match.arrayWith([{
         Name: 'MyApp',
         Actions: sortByRunOrder([
-          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'Stack1.Prepare-MyApp-Stack1' }),
           Match.objectLike({ Name: 'Stack1.Deploy' }),
-          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'Stack2.Prepare-MyApp-Stack2' }),
           Match.objectLike({ Name: 'Stack2.Deploy' }),
         ]),
       }]),
