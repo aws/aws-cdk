@@ -97,7 +97,6 @@ export interface IGraphqlApi extends IResource {
    */
   addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
 
-
   /**
    * Add an EventBridge data source to this api
    * @param id The data source's id

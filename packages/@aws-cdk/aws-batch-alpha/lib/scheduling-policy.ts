@@ -2,7 +2,6 @@ import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-l
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from 'aws-cdk-lib/aws-batch';
 
-
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
  * Job Scheduler how to schedule incoming jobs.

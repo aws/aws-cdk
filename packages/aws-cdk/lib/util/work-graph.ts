@@ -165,17 +165,19 @@ export class WorkGraph {
       function startOne(x: WorkNode) {
         x.deploymentState = DeploymentState.DEPLOYING;
         active[x.type]++;
-        void fn(x).then(() => {
-          active[x.type]--;
-          graph.deployed(x);
-          start();
-        }).catch((err) => {
-          active[x.type]--;
-          // By recording the failure immediately as the queued task exits, we prevent the next
-          // queued task from starting.
-          graph.failed(x, err);
-          start();
-        });
+        void fn(x)
+          .finally(() => {
+            active[x.type]--;
+          })
+          .then(() => {
+            graph.deployed(x);
+            start();
+          }).catch((err) => {
+            // By recording the failure immediately as the queued task exits, we prevent the next
+            // queued task from starting.
+            graph.failed(x, err);
+            start();
+          });
       }
     });
   }
@@ -270,7 +272,7 @@ export class WorkGraph {
     this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
-      throw new Error(`Unable to make progress anymore among: ${this}`);
+      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${this.findCycle().join(' -> ')}`);
     }
   }
 
@@ -278,6 +280,42 @@ export class WorkGraph {
     for (const node of Object.values(this.nodes)) {
       if ([DeploymentState.QUEUED, DeploymentState.PENDING].includes(node.deploymentState)) {
         node.deploymentState = DeploymentState.SKIPPED;
+      }
+    }
+  }
+
+  /**
+   * Find cycles in a graph
+   *
+   * Not the fastest, but effective and should be rare
+   */
+  private findCycle(): string[] {
+    const seen = new Set<string>();
+    const self = this;
+    for (const nodeId of Object.keys(this.nodes)) {
+      const cycle = recurse(nodeId, [nodeId]);
+      if (cycle) { return cycle; }
+    }
+    return ['No cycle found!'];
+
+    function recurse(nodeId: string, path: string[]): string[] | undefined {
+      if (seen.has(nodeId)) {
+        return undefined;
+      }
+      try {
+        for (const dep of self.nodes[nodeId].dependencies ?? []) {
+          const index = path.indexOf(dep);
+          if (index > -1) {
+            return [...path.slice(index), dep];
+          }
+
+          const cycle = recurse(dep, [...path, dep]);
+          if (cycle) { return cycle; }
+        }
+
+        return undefined;
+      } finally {
+        seen.add(nodeId);
       }
     }
   }

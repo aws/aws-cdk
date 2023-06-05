@@ -55,7 +55,6 @@ describe('servicePrincipal', () => {
   }
 });
 
-
 describe('spot-check some service principals', () => {
   test('ssm', () => {
     // SSM has advertised in its documentation that it is regional after a certain point, but that

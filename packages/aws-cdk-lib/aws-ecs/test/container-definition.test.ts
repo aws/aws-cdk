@@ -2161,7 +2161,6 @@ describe('container definition', () => {
       // THEN
       expect(taskDefinition.defaultContainer).toEqual( container);
 
-
     });
 
     test('when the props passed in is not an essential container', () => {
