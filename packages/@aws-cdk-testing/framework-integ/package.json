@@ -29,7 +29,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/aws-batch-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "^0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
