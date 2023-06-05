@@ -249,7 +249,7 @@ describe('WorkGraph', () => {
     expect(actionedAssets).toEqual(['a-build', 'a-publish', 'A']);
   });
 
-  // Failure
+  // Failure Concurrency
   test.each([
     // Concurrency 1
     { scenario: 'A (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
@@ -319,6 +319,40 @@ describe('WorkGraph', () => {
     await expect(graph.doParallel(concurrency, callbacks)).rejects.toThrowError(expectedError);
 
     expect(actionedAssets).toStrictEqual(expectedStacks);
+  });
+
+  // Failure Graph Circular Dependencies
+  test.each([
+    {
+      scenario: 'A -> A',
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', stackDependencies: ['A'] },
+      ]),
+      expectedError: 'A -> A',
+    },
+    {
+      scenario: 'A -> B, B -> A',
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', stackDependencies: ['B'] },
+        { id: 'B', type: 'stack', stackDependencies: ['A'] },
+      ]),
+      expectedError: 'A -> B -> A',
+    },
+    {
+      scenario: 'A, B -> C, C -> D, D -> B',
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack' }, // Add a node to visit first so the infinite loop occurs deeper in the traversal callstack.
+        { id: 'B', type: 'stack', stackDependencies: ['C'] },
+        { id: 'C', type: 'stack', stackDependencies: ['D'] },
+        { id: 'D', type: 'stack', stackDependencies: ['B'] },
+      ]),
+      expectedError: 'B -> C -> D -> B',
+    },
+  ])('Failure - Graph Circular Dependencies - $scenario', async ({ toDeploy, expectedError }) => {
+    const graph = new WorkGraph();
+    addTestArtifactsToGraph(toDeploy, graph);
+
+    await expect(graph.doParallel(1, callbacks)).rejects.toThrowError(new RegExp(`Unable to make progress.*${expectedError}`));
   });
 });
 
