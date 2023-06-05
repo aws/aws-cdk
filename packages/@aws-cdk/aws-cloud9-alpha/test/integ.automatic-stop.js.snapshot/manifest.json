@@ -1,27 +1,27 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "cors-twitch-test.assets": {
+    "C9automaticStopStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cors-twitch-test.assets.json",
+        "file": "C9automaticStopStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cors-twitch-test": {
+    "C9automaticStopStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cors-twitch-test.template.json",
+        "templateFile": "C9automaticStopStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eec545187c8ac2e517efd9fbf2f13eb327409c8aea5ab3f76dd09184a47a37f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d302c7f90912c93bef6f8fda089adb33206a67ff3bdb6ce885b1f90a7fac7e25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cors-twitch-test.assets"
+          "C9automaticStopStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,160 +30,181 @@
         }
       },
       "dependencies": [
-        "cors-twitch-test.assets"
+        "C9automaticStopStack.assets"
       ],
       "metadata": {
-        "/cors-twitch-test/cors-api-test/Resource": [
+        "/C9automaticStopStack/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitest8682546E"
+            "data": "VPCB9E5F0B4"
           }
         ],
-        "/cors-twitch-test/cors-api-test/CloudWatchRole/Resource": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestCloudWatchRole9AF5A81A"
+            "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Account": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestAccount7D1D6854"
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Deployment/Resource": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb"
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/cors-twitch-test/cors-api-test/DeploymentStage.prod/Resource": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeploymentStageprod8F31F2AB"
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Endpoint": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestEndpointE63606AE"
+            "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/Resource": [
+        "/C9automaticStopStack/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitch0E3D1559"
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/GET/ApiPermission.corstwitchtestcorsapitest1E81FF74.GET..twitch": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchGETApiPermissioncorstwitchtestcorsapitest1E81FF74GETtwitchDD74718A"
+            "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/GET/ApiPermission.Test.corstwitchtestcorsapitest1E81FF74.GET..twitch": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchGETApiPermissionTestcorstwitchtestcorsapitest1E81FF74GETtwitch730CD01F"
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/GET/Resource": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchGET4270341B"
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/POST/ApiPermission.corstwitchtestcorsapitest1E81FF74.POST..twitch": [
+        "/C9automaticStopStack/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchPOSTApiPermissioncorstwitchtestcorsapitest1E81FF74POSTtwitchD6548E1B"
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/POST/ApiPermission.Test.corstwitchtestcorsapitest1E81FF74.POST..twitch": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchPOSTApiPermissionTestcorstwitchtestcorsapitest1E81FF74POSTtwitch9C9C1E14"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/POST/Resource": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchPOSTB52CFB02"
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/DELETE/ApiPermission.corstwitchtestcorsapitest1E81FF74.DELETE..twitch": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchDELETEApiPermissioncorstwitchtestcorsapitest1E81FF74DELETEtwitch2AF8A510"
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/DELETE/ApiPermission.Test.corstwitchtestcorsapitest1E81FF74.DELETE..twitch": [
+        "/C9automaticStopStack/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchDELETEApiPermissionTestcorstwitchtestcorsapitest1E81FF74DELETEtwitch0CD7A81B"
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/DELETE/Resource": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchDELETEB4C94228"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/cors-twitch-test/cors-api-test/Default/twitch/OPTIONS/Resource": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitesttwitchOPTIONSE5EEB527"
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/cors-twitch-test/handler/ServiceRole/Resource": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "handlerServiceRole187D5A5A"
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/cors-twitch-test/handler/Resource": [
+        "/C9automaticStopStack/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "handlerE1533BD5"
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/cors-twitch-test/BootstrapVersion": [
+        "/C9automaticStopStack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/C9automaticStopStack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/C9automaticStopStack/C9Env/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "C9EnvF05FC3BE"
+          }
+        ],
+        "/C9automaticStopStack/URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL"
+          }
+        ],
+        "/C9automaticStopStack/ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARN"
+          }
+        ],
+        "/C9automaticStopStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cors-twitch-test/CheckBootstrapVersion": [
+        "/C9automaticStopStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "cors-twitch-test"
+      "displayName": "C9automaticStopStack"
     },
-    "corsDefaultTestDeployAssert5CF8F851.assets": {
+    "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "corsDefaultTestDeployAssert5CF8F851.assets.json",
+        "file": "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "corsDefaultTestDeployAssert5CF8F851": {
+    "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "corsDefaultTestDeployAssert5CF8F851.template.json",
+        "templateFile": "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -191,7 +212,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "corsDefaultTestDeployAssert5CF8F851.assets"
+          "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -200,23 +221,23 @@
         }
       },
       "dependencies": [
-        "corsDefaultTestDeployAssert5CF8F851.assets"
+        "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89.assets"
       ],
       "metadata": {
-        "/cors/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cloud-9-automatic-stop-time-mintues/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cors/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cloud-9-automatic-stop-time-mintues/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cors/DefaultTest/DeployAssert"
+      "displayName": "cloud-9-automatic-stop-time-mintues/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
