@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { CloudFormationDeployments, DeployStackOptions } from './api/cloudformation-deployments';
+import { Deployments, DeployStackOptions } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { error, print, success, warning } from './logging';
 
@@ -63,7 +63,7 @@ export class ResourceImporter {
 
   constructor(
     private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly cfn: CloudFormationDeployments,
+    private readonly cfn: Deployments,
     private readonly options: ResourceImporterOptions = {}) { }
 
   /**
@@ -145,7 +145,7 @@ export class ResourceImporter {
   }
 
   /**
-   * Perform a diff between the currently running and the new template, enusre that it is valid
+   * Perform a diff between the currently running and the new template, ensure that it is valid
    * for importing and return a list of resources that are being added in the new version
    *
    * @return mapping logicalResourceId -> resourceDifference
@@ -171,7 +171,7 @@ export class ResourceImporter {
         warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
       } else {
         throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
-                        `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
+          `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
       }
     }
 
@@ -199,7 +199,7 @@ export class ResourceImporter {
   }
 
   /**
-   * Return teh current template, with the given resources added to it
+   * Return the current template, with the given resources added to it
    */
   private async currentTemplateWithAdditions(additions: ImportableResource[]): Promise<any> {
     const template = await this.currentTemplate();
@@ -397,14 +397,16 @@ function fmtdict<A>(xs: Record<string, A>) {
 }
 
 /**
- * Add a default 'Delete' policy, which is required to make the import succeed
+ * Add a default `DeletionPolicy` policy.
+ * The default value is set to 'Retain', to lower risk of unintentionally
+ * deleting stateful resources in the process of importing to CDK.
  */
 function addDefaultDeletionPolicy(resource: any): any {
   if (resource.DeletionPolicy) { return resource; }
 
   return {
     ...resource,
-    DeletionPolicy: 'Delete',
+    DeletionPolicy: 'Retain',
   };
 }
 

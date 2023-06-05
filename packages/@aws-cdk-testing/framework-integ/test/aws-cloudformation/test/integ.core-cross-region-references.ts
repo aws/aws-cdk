@@ -27,13 +27,14 @@ class ProducerStack extends Stack {
 
 interface ConsumerStackProps extends StackProps {
   readonly queues: IQueue[];
+  readonly region: string;
 }
 class ConsumerStack extends Stack {
   constructor(scope: Construct, id: string, props: ConsumerStackProps) {
     super(scope, id, {
       ...props,
       env: {
-        region: 'us-east-2',
+        region: props.region,
       },
       crossRegionReferences: true,
     });
@@ -53,24 +54,28 @@ class ConsumerStack extends Stack {
 }
 
 class TestCase extends Construct {
-  public readonly testCase: Stack;
+  public readonly testCases: Stack[] = [];
   public readonly producer: ProducerStack;
   constructor(scope: Construct, id: string) {
     super(scope, id);
     this.producer = new ProducerStack(app, 'cross-region-producer');
-    this.testCase = new ConsumerStack(app, 'cross-region-consumer', {
+    this.testCases.push(new ConsumerStack(app, 'cross-region-consumer', {
       queues: [this.producer.queue, this.producer.nestedQueue],
-    });
+      region: 'us-east-2',
+    }));
+    this.testCases.push(new ConsumerStack(app, 'cross-region-consumer2', {
+      queues: [this.producer.queue, this.producer.nestedQueue],
+      region: 'us-west-2',
+    }));
   }
 }
 const testCase1 = new TestCase(app, 'TestCase1');
 
 // THEN
 const integ = new IntegTest(app, 'cross-region-references', {
-  testCases: [testCase1.testCase],
+  testCases: testCase1.testCases,
   stackUpdateWorkflow: false,
 });
-
 
 /**
  * Test that if the references are still in use, deleting the producer

@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { Effect } from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
 import { EventBus } from '../lib';
 
@@ -585,7 +585,6 @@ describe('event bus', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
     const bus = new EventBus(stack, 'Bus');
-
 
     const statement = new iam.PolicyStatement({
       effect: Effect.ALLOW,

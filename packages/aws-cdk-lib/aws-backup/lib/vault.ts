@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
+import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnBackupVault } from './backup.generated';
 
 /**
  * A backup vault
@@ -220,7 +220,6 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
   }
 }
 
-
 /**
  * A backup vault
  */
@@ -243,8 +242,11 @@ export class BackupVault extends BackupVaultBase {
    * Import an existing backup vault by arn
    */
   public static fromBackupVaultArn(scope: Construct, id: string, backupVaultArn: string): IBackupVault {
-    const parsedArn = Stack.of(scope).splitArn(backupVaultArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const parsedArn = Stack.of(scope).splitArn(backupVaultArn, ArnFormat.COLON_RESOURCE_NAME);
 
+    if (parsedArn.arnFormat !== ArnFormat.COLON_RESOURCE_NAME) {
+      throw new Error(`Backup Vault Arn ${backupVaultArn} has the wrong format, expected ${ArnFormat.COLON_RESOURCE_NAME}.`);
+    }
     if (!parsedArn.resourceName) {
       throw new Error(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`);
     }

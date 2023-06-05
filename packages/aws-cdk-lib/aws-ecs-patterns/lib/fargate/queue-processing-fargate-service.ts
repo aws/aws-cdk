@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 

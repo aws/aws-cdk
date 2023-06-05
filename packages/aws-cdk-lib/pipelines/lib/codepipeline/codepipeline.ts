@@ -1,6 +1,13 @@
 import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 import * as cb from '../../../aws-codebuild';
 import * as cp from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
@@ -28,7 +35,6 @@ import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './c
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 import { namespaceStepOutputs } from './private/outputs';
 import { StackOutputsMap } from './stack-outputs-map';
-
 
 /**
  * Properties for a `CodePipeline`
@@ -332,8 +338,14 @@ export interface CodeBuildOptions {
    * @default - no file system locations
    */
   readonly fileSystemLocations?: cb.IFileSystemLocation[];
-}
 
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: cb.LoggingOptions;
+}
 
 /**
  * A CDK Pipeline that uses CodePipeline to deploy CDK apps
@@ -1239,7 +1251,6 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
     ret.push(tranches);
   }
-
 
   return ret;
 }

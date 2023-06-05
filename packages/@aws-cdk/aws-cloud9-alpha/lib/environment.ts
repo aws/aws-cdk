@@ -246,14 +246,13 @@ export class Owner {
     return { ownerArn: user.userArn };
   }
 
-
   /**
    * Make the Account Root User the environment owner (not recommended)
    *
    * @param accountId the AccountId to use as the environment owner.
    */
   public static accountRoot(accountId: string): Owner {
-    return { ownerArn: `arn:aws:iam::${accountId}:root` };
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:iam::${accountId}:root` };
   }
 
   /**

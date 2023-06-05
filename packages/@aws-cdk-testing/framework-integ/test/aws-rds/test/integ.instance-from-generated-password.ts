@@ -8,7 +8,7 @@ class DatabaseInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc');
+    const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
     new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_21 }),

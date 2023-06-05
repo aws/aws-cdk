@@ -75,7 +75,13 @@ and *account* of the Stack containing the VPC. If the [region and account are
 specified](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) on
 the Stack, the CLI will [look up the existing Availability
 Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#using-regions-availability-zones-describe)
-and get an accurate count. If region and account are not specified, the stack
+and get an accurate count. The result of this operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
+
+If region and account are not specified, the stack
 could be deployed anywhere and it will have to make a safe choice, limiting
 itself to 2 Availability Zones.
 
@@ -542,6 +548,25 @@ The above example will create an `IVpc` instance with three public subnets:
 | s-12345   | us-east-1a        | Subnet A    | rt-12345       | 10.0.0.0/24 |
 | s-34567   | us-east-1b        | Subnet B    | rt-34567       | 10.0.1.0/24 |
 | s-56789   | us-east-1c        | Subnet B    | rt-56789       | 10.0.2.0/24 |
+
+### Restricting access to the VPC default security group
+
+AWS Security best practices recommend that the [VPC default security group should
+not allow inbound and outbound
+traffic](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2).
+When the `@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` feature flag is set to
+`true` (default for new projects) this will be enabled by default. If you do not
+have this feature flag set you can either set the feature flag _or_ you can set
+the `restrictDefaultSecurityGroup` property to `true`.
+
+```ts
+new ec2.Vpc(this, 'VPC', {
+  restrictDefaultSecurityGroup: true,
+});
+```
+
+If you set this property to `true` and then later remove it or set it to `false`
+the default ingress/egress will be restored on the default security group.
 
 ## Allowing Connections
 
@@ -1040,7 +1065,7 @@ new ec2.Instance(this, 'Instance2', {
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinux2Image({
+  machineImage: ec2.MachineImage.latestAmazonLinux2({
     kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
   }),
 });
@@ -1072,7 +1097,10 @@ particular image parameter, the CDK provides a couple of constructs `AmazonLinux
 to use the latest `al2023` image:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
 });
@@ -1089,7 +1117,10 @@ the value in CDK context. This way the value will not change on future
 deployments unless you manually refresh the context.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023({
     cachedInContext: true, // default is false
@@ -1098,6 +1129,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 
 // or
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
@@ -1128,7 +1160,10 @@ either specify the specific latest kernel version or opt-in to using the CDK
 latest kernel version.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1139,7 +1174,10 @@ new ec2.Instance(this, 'LatestAl2023', {
 _CDK managed latest_
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
@@ -1150,6 +1188,7 @@ new ec2.Instance(this, 'LatestAl2023', {
 // or
 
 new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
   machineImage: ec2.MachineImage.latestAmazonLinux2023(), // always uses latest kernel version
 });
@@ -1514,6 +1553,34 @@ const aspect = new ec2.InstanceRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
 ```
 
+### Associating a Public IP Address with an Instance
+
+All subnets have an attribute that determines whether instances launched into that subnet are assigned a public IPv4 address. This attribute is set to true by default for default public subnets. Thus, an EC2 instance launched into a default public subnet will be assigned a public IPv4 address. Nondefault public subnets have this attribute set to false by default and any EC2 instance launched into a nondefault public subnet will not be assigned a public IPv4 address automatically. To automatically assign a public IPv4 address to an instance launched into a nondefault public subnet, you can set the `associatePublicIpAddress` property on the `Instance` construct to true. Alternatively, to not automatically assign a public IPv4 address to an instance launched into a default public subnet, you can set `associatePublicIpAddress` to false. Including this property, removing this property, or updating the value of this property on an existing instance will result in replacement of the instance.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 0,
+  maxAzs: 3,
+  subnetConfiguration: [
+    {
+      name: 'public-subnet-1',
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+    },
+  ],
+});
+
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  vpcSubnets: { subnetGroupName: 'public-subnet-1' },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  detailedMonitoring: true,
+  associatePublicIpAddress: true,
+});
+```
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
@@ -1849,3 +1916,28 @@ new ec2.Instance(this, 'Instance1', {
   ssmSessionPermissions: true,
 });
 ```
+
+## Managed Prefix Lists
+
+Create and manage customer-managed prefix lists. If you don't specify anything in this construct, it will manage IPv4 addresses.
+
+You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
+
+```ts
+new ec2.PrefixList(this, 'EmptyPrefixList', {
+  maxEntries: 100,
+});
+```
+
+`maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
+
+```ts
+new ec2.PrefixList(this, 'PrefixList', {
+  entries: [
+    { cidr: '10.0.0.1/32' },
+    { cidr: '10.0.0.2/32', description: 'sample1' },
+  ],
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)

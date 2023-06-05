@@ -1,8 +1,8 @@
+import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import { Construct } from 'constructs';
-import { ImportedTaskDefinition } from './_imported-task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -45,7 +45,6 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a ECS Anywhere cluster
    */
   readonly isExternalCompatible: boolean;
-
 
   /**
    * The networking mode to use for the containers in the task.
@@ -250,6 +249,15 @@ export interface CommonTaskDefinitionAttributes {
    * @default Permissions cannot be granted to the imported task.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The IAM role that grants containers and Fargate agents permission to make AWS API calls on your behalf.
+   *
+   * Some tasks do not have an execution role.
+   *
+   * @default - undefined
+   */
+  readonly executionRole?: iam.IRole;
 }
 
 /**
@@ -317,6 +325,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       compatibility: attrs.compatibility,
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
+      executionRole: attrs.executionRole,
     });
   }
 
@@ -746,7 +755,6 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     });
-
 
     return ret;
   }

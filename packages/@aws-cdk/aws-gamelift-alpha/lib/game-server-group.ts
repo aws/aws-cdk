@@ -5,7 +5,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 
-
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.
  * After the Auto Scaling group is created, all updates to Auto Scaling policies, including changing this policy and adding or removing other policies, is done directly on the Auto Scaling group.

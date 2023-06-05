@@ -11,10 +11,10 @@ import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
@@ -109,7 +109,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
-      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -347,7 +348,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
+  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
@@ -447,7 +448,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     const cli = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
@@ -484,7 +485,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
+        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -499,6 +500,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           execute: args.execute,
           tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
+          usePreviousParameters: args['previous-parameters'],
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
@@ -661,7 +663,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
  * Determine which version of bootstrapping
  * (legacy, or "new") should be used.
  */
-function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
   const isV1 = version.DISPLAY_VERSION.startsWith('1.');
   return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
 }

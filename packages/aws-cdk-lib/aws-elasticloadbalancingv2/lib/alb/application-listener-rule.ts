@@ -1,9 +1,9 @@
-import * as cdk from '../../../core';
 import { Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import * as cdk from '../../../core';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
@@ -235,7 +235,7 @@ export class ApplicationListenerRule extends Construct {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
       conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderActions() : [] }),
+      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
     });
 
     if (props.hostHeader) {
@@ -254,9 +254,9 @@ export class ApplicationListenerRule extends Construct {
       this.configureAction(props.action);
     }
 
-    (props.targetGroups || []).forEach((group) => {
-      this.configureAction(ListenerAction.forward([group]));
-    });
+    if (props.targetGroups) {
+      this.configureAction(ListenerAction.forward(props.targetGroups));
+    }
 
     if (props.fixedResponse) {
       this.addFixedResponse(props.fixedResponse);

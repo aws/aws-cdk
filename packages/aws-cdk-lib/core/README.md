@@ -101,7 +101,7 @@ The following synthesizers are available:
   controlling who can assume the deploy role. This is the default stack
   synthesizer in CDKv2.
 - `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
-  asset locations, and the CLI's current permissions to deploy stacks. The
+  asset locations, and the CLI's current permissions to deploy stacks. This
   is the default stack synthesizer in CDKv1.
 - `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
   CLI's current permissions.
@@ -590,7 +590,8 @@ framework designed to implement simple and slim custom resource providers. It
 currently only supports Node.js-based user handlers, represents permissions as raw
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
-timeout).
+timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -1396,6 +1397,10 @@ validate(context: ValidationContextBeta1): ValidationReportBeta1 {
   };
 }
 ```
+
+In addition to the name, plugins may optionally report their version (`version`
+property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property).
 
 Note that plugins are not allowed to modify anything in the cloud assembly. Any
 attempt to do so will result in synthesis failure.

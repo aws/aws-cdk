@@ -185,7 +185,6 @@ type AwsCallIO<T> =
 type First<T> = T extends [any, any] ? T[0] : never;
 type Second<T> = T extends [any, any] ? T[1] : never;
 
-
 export function isStackMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }

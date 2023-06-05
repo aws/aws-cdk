@@ -7,7 +7,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-default-capacity-provider');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
@@ -38,7 +38,6 @@ cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 1, weight: 1 },
   { capacityProvider: 'FARGATE_SPOT', weight: 1 },
 ]);
-
 
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,

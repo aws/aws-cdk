@@ -1,9 +1,9 @@
-import { IResource, RemovalPolicy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
+import { IResource, RemovalPolicy, Resource } from '../../core';
 
 /**
  * Non runtime options

@@ -617,4 +617,33 @@ describe('external task definition', () => {
       deviceType: 'eia2.medium',
     })).toThrow('Cannot use inference accelerators on tasks that run on External service');
   });
+
+  test('can import an External Task Definition using attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const expectTaskDefinitionArn = 'TD_ARN';
+    const expectCompatibility = ecs.Compatibility.EXTERNAL;
+    const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+    const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+    const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+
+    // WHEN
+    const taskDefinition = ecs.ExternalTaskDefinition.fromExternalTaskDefinitionAttributes(stack, 'TD_ID', {
+      taskDefinitionArn: expectTaskDefinitionArn,
+      networkMode: expectNetworkMode,
+      taskRole: expectTaskRole,
+      executionRole: expectExecutionRole,
+    });
+
+    // THEN
+    expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
+    expect(taskDefinition.compatibility).toEqual(expectCompatibility);
+    expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
+    expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
+    expect(taskDefinition.taskRole).toEqual(expectTaskRole);
+  });
 });

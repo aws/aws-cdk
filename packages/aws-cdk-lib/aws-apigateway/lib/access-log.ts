@@ -1,5 +1,5 @@
-import { ILogGroup } from '../../aws-logs';
 import { IStage } from './stage';
+import { ILogGroup } from '../../aws-logs';
 
 /**
  * Access log destination for a RestApi Stage.

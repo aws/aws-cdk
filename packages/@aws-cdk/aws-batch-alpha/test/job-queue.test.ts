@@ -3,7 +3,6 @@ import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from 'aws-cdk
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
-
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
   const stack = new Stack();
@@ -122,7 +121,7 @@ test('JobQueue name is parsed from arn', () => {
                   ':',
                   {
                     'Fn::GetAtt': [
-                      'joBBQ74605869',
+                      'joBBQ9FD52DAF',
                       'JobQueueArn',
                     ],
                   },
@@ -161,7 +160,7 @@ test('JobQueue respects schedulingPolicy', () => {
     }],
     Priority: 10,
     SchedulingPolicyArn: {
-      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+      'Fn::GetAtt': ['FairsharePolicyA0C549BE', 'Arn'],
     },
   });
 });
@@ -204,7 +203,7 @@ test('JobQueue respects addComputeEnvironment', () => {
     ],
     Priority: 10,
     SchedulingPolicyArn: {
-      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+      'Fn::GetAtt': ['FairsharePolicyA0C549BE', 'Arn'],
     },
   });
 });

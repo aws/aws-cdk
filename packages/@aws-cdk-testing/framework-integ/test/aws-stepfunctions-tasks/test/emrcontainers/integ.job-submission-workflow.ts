@@ -8,6 +8,7 @@ import {
   Classification, VirtualClusterInput, EksClusterInput, EmrContainersDeleteVirtualCluster,
   EmrContainersCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 /**
  * Stack verification steps:
@@ -22,9 +23,10 @@ import {
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-test');
+stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_22,
   defaultCapacity: 3,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
@@ -67,7 +69,6 @@ const startJobRun = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   }],
   resultPath: '$.job',
 });
-
 
 const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.job.VirtualClusterId'),
