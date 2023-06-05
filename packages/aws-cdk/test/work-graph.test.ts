@@ -9,8 +9,6 @@ const sleep = async (duration: number) => new Promise<void>((resolve) => setTime
 // a chance to start new tasks.
 const SLOW = 200;
 
-jest.setTimeout(600_000);
-
 /**
  * Repurposing unused stack attributes to create specific test scenarios
  * - stack.name          = deployment duration
