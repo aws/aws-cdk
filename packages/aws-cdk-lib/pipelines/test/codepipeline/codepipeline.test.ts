@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template, Annotations, Match } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
@@ -9,7 +9,7 @@ import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import { FileAssetApp, ModernTestGitHubNpmPipeline, PIPELINE_ENV, StageWithStackOutput, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
 
