@@ -4,7 +4,7 @@ import { initializeProject, availableInitTemplates } from '../../lib/init';
 import { warning } from '../logging';
 
 // replace this string with the path to your own noctilucent pkg
-import * as nocti from '/Users/bobertzh/work/noctilucent/noctilucent/pkg/noctilucent';
+import * as nocti from '/replace/me/with/your/path/to/noctilucent/pkg/noctilucent';
 
 export async function cliMigrate(
   inputpath: string = process.cwd() + '/../temp.txt',
