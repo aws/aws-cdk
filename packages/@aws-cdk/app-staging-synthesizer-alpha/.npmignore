@@ -12,3 +12,9 @@ coverage
 .eslintrc.js
 # exclude cdk artifacts
 **/cdk.out
+dist
+.LAST_PACKAGE
+*.tsbuildinfo
+test/
+tsconfig.json
+!.jsii
