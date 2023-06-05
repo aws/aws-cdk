@@ -14,6 +14,10 @@ export class WorkGraph {
 
   public addNodes(...nodes: WorkNode[]) {
     for (const node of nodes) {
+      if (this.nodes[node.id]) {
+        throw new Error(`Duplicate use of node id: ${node.id}`);
+      }
+
       const ld = this.lazyDependencies.get(node.id);
       if (ld) {
         for (const x of ld) {
@@ -70,6 +74,10 @@ export class WorkGraph {
       this.lazyDependencies.set(fromId, lazyDeps);
     }
     lazyDeps.push(toId);
+  }
+
+  public tryGetNode(id: string): WorkNode | undefined {
+    return this.nodes[id];
   }
 
   public node(id: string) {
@@ -198,9 +206,24 @@ export class WorkGraph {
   }
 
   public toString() {
-    return Object.entries(this.nodes).map(([id, node]) =>
-      `${id} := ${node.deploymentState} ${node.type} ${node.dependencies.size > 0 ? `(${Array.from(node.dependencies)})` : ''}`.trim(),
-    ).join(', ');
+    return [
+      'digraph D {',
+      ...Object.entries(this.nodes).flatMap(([id, node]) => renderNode(id, node)),
+      '}',
+    ].join('\n');
+
+    function renderNode(id: string, node: WorkNode): string[] {
+      const ret = [];
+      if (node.deploymentState === DeploymentState.COMPLETED) {
+        ret.push(`  "${id}" [style=filled,fillcolor=yellow];`);
+      } else {
+        ret.push(`  "${id}";`);
+      }
+      for (const dep of node.dependencies) {
+        ret.push(`  "${id}" -> "${dep}";`);
+      }
+      return ret;
+    }
   }
 
   /**
@@ -258,13 +281,7 @@ export class WorkGraph {
     }
 
     // Remove nodes from the ready pool that have already started deploying
-    for (let i = 0; i < this.readyPool.length; i++) {
-      const node = this.readyPool[i];
-      if (node.deploymentState !== DeploymentState.QUEUED) {
-        this.readyPool.splice(i, 1);
-      }
-      // FIXME: BUG
-    }
+    retainOnly(this.readyPool, (node) => node.deploymentState === DeploymentState.QUEUED);
 
     // Sort by reverse priority
     this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
@@ -318,6 +335,32 @@ export class WorkGraph {
       }
     }
   }
+
+  /**
+   * Whether the `end` node is reachable from the `start` node, following the dependency arrows
+   */
+  public reachable(start: string, end: string): boolean {
+    const seen = new Set<string>();
+    const self = this;
+    return recurse(start);
+
+    function recurse(current: string) {
+      if (seen.has(current)) {
+        return false;
+      }
+      seen.add(current);
+
+      if (current === end) {
+        return true;
+      }
+      for (const dep of self.nodes[current].dependencies) {
+        if (recurse(dep)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 }
 
 export interface WorkGraphActions {
@@ -332,4 +375,8 @@ function sum(xs: number[]) {
     ret += x;
   }
   return ret;
+}
+
+function retainOnly<A>(xs: A[], pred: (x: A) => boolean) {
+  xs.splice(0, xs.length, ...xs.filter(pred));
 }
