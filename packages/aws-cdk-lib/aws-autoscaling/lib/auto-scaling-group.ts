@@ -1320,21 +1320,35 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
       const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
 
-      launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-        imageId: imageConfig.imageId,
-        keyName: props.keyName,
-        instanceType: props.instanceType.toString(),
-        instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
-        securityGroups: securityGroupsToken,
-        iamInstanceProfile: iamProfile.ref,
-        userData: userDataToken,
-        associatePublicIpAddress: props.associatePublicIpAddress,
-        spotPrice: props.spotPrice,
-        blockDeviceMappings: (props.blockDevices !== undefined ?
-          synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
-      });
+      if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+        launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
+          imageId: imageConfig.imageId,
+          keyName: props.keyName,
+          instanceType: props.instanceType.toString(),
+          instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
+          securityGroups: securityGroupsToken,
+          iamInstanceProfile: iamProfile.ref,
+          userData: userDataToken,
+          associatePublicIpAddress: props.associatePublicIpAddress,
+          spotPrice: props.spotPrice,
+          blockDeviceMappings: (props.blockDevices !== undefined ?
+            synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
+        });
+        launchConfig.node.addDependency(this.role);
+      } else {
+        this.launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+          machineImage: props.machineImage,
+          keyName: props.keyName,
+          instanceType: props.instanceType,
+          detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
+          securityGroup: this.securityGroup,
+          role: this._role,
+          userData: this._userData,
+          spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
+          blockDevices: props.blockDevices !== undefined ? props.blockDevices : undefined,
+        });
+      }
 
-      launchConfig.node.addDependency(this.role);
       this.osType = imageConfig.osType;
     }
 
