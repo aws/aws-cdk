@@ -14,6 +14,10 @@ export class WorkGraph {
 
   public addNodes(...nodes: WorkNode[]) {
     for (const node of nodes) {
+      if (this.nodes[node.id]) {
+        throw new Error(`Duplicate use of node id: ${node.id}`);
+      }
+
       const ld = this.lazyDependencies.get(node.id);
       if (ld) {
         for (const x of ld) {
@@ -70,6 +74,10 @@ export class WorkGraph {
       this.lazyDependencies.set(fromId, lazyDeps);
     }
     lazyDeps.push(toId);
+  }
+
+  public tryGetNode(id: string): WorkNode | undefined {
+    return this.nodes[id];
   }
 
   public node(id: string) {
@@ -198,9 +206,24 @@ export class WorkGraph {
   }
 
   public toString() {
-    return Object.entries(this.nodes).map(([id, node]) =>
-      `${id} := ${node.deploymentState} ${node.type} ${node.dependencies.size > 0 ? `(${Array.from(node.dependencies)})` : ''}`.trim(),
-    ).join(', ');
+    return [
+      'digraph D {',
+      ...Object.entries(this.nodes).flatMap(([id, node]) => renderNode(id, node)),
+      '}',
+    ].join('\n');
+
+    function renderNode(id: string, node: WorkNode): string[] {
+      const ret = [];
+      if (node.deploymentState === DeploymentState.COMPLETED) {
+        ret.push(`  "${id}" [style=filled,fillcolor=yellow];`);
+      } else {
+        ret.push(`  "${id}";`);
+      }
+      for (const dep of node.dependencies) {
+        ret.push(`  "${id}" -> "${dep}";`);
+      }
+      return ret;
+    }
   }
 
   /**
@@ -244,35 +267,28 @@ export class WorkGraph {
   }
 
   private updateReadyPool() {
-    let activeCount = 0;
-    let pendingCount = 0;
-    for (const node of Object.values(this.nodes)) {
-      switch (node.deploymentState) {
-        case DeploymentState.DEPLOYING:
-          activeCount += 1;
-          break;
-        case DeploymentState.PENDING:
-          pendingCount += 1;
-          if (Array.from(node.dependencies).every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED)) {
-            node.deploymentState = DeploymentState.QUEUED;
-            this.readyPool.push(node);
-          }
-          break;
-      }
+    const activeCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.DEPLOYING).length;
+    const pendingCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.PENDING).length;
+
+    const newlyReady = Object.values(this.nodes).filter((x) =>
+      x.deploymentState === DeploymentState.PENDING &&
+      Array.from(x.dependencies).every((id) => this.node(id).deploymentState === DeploymentState.COMPLETED));
+
+    // Add newly available nodes to the ready pool
+    for (const node of newlyReady) {
+      node.deploymentState = DeploymentState.QUEUED;
+      this.readyPool.push(node);
     }
 
-    for (let i = 0; i < this.readyPool.length; i++) {
-      const node = this.readyPool[i];
-      if (node.deploymentState !== DeploymentState.QUEUED) {
-        this.readyPool.splice(i, 1);
-      }
-    }
+    // Remove nodes from the ready pool that have already started deploying
+    retainOnly(this.readyPool, (node) => node.deploymentState === DeploymentState.QUEUED);
 
     // Sort by reverse priority
     this.readyPool.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
-      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${this.findCycle().join(' -> ')}`);
+      const cycle = this.findCycle() ?? ['No cycle found!'];
+      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')}`);
     }
   }
 
@@ -289,14 +305,14 @@ export class WorkGraph {
    *
    * Not the fastest, but effective and should be rare
    */
-  private findCycle(): string[] {
+  public findCycle(): string[] | undefined {
     const seen = new Set<string>();
     const self = this;
     for (const nodeId of Object.keys(this.nodes)) {
       const cycle = recurse(nodeId, [nodeId]);
       if (cycle) { return cycle; }
     }
-    return ['No cycle found!'];
+    return undefined;
 
     function recurse(nodeId: string, path: string[]): string[] | undefined {
       if (seen.has(nodeId)) {
@@ -319,6 +335,32 @@ export class WorkGraph {
       }
     }
   }
+
+  /**
+   * Whether the `end` node is reachable from the `start` node, following the dependency arrows
+   */
+  public reachable(start: string, end: string): boolean {
+    const seen = new Set<string>();
+    const self = this;
+    return recurse(start);
+
+    function recurse(current: string) {
+      if (seen.has(current)) {
+        return false;
+      }
+      seen.add(current);
+
+      if (current === end) {
+        return true;
+      }
+      for (const dep of self.nodes[current].dependencies) {
+        if (recurse(dep)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 }
 
 export interface WorkGraphActions {
@@ -333,4 +375,8 @@ function sum(xs: number[]) {
     ret += x;
   }
   return ret;
+}
+
+function retainOnly<A>(xs: A[], pred: (x: A) => boolean) {
+  xs.splice(0, xs.length, ...xs.filter(pred));
 }
