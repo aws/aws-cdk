@@ -65,7 +65,7 @@ export interface AddListenerProps {
   /**
   * The Id of the service that this will be added to.
   */
-  readonly name: string;
+  readonly name?: string;
 
 }
 
@@ -90,9 +90,10 @@ export interface ListenerProps {
   */
   readonly port?: number | undefined
   /**
-  * The Id of the service that this will be added to.
+  * The Name of the service.
+  * @default CloudFormation provided name.
   */
-  readonly name: string;
+  readonly name?: string;
   /**
    * The service
    */
@@ -105,8 +106,8 @@ export interface ListenerProps {
 }
 
 /**
- * Create a vpcLattice service.
- * Implemented by `Service`.
+ * Create a vpcLattice Listener.
+ * Implemented by `Listener`.
  */
 export interface IListener extends core.IResource {
   /**
@@ -174,7 +175,7 @@ export interface AddRuleProps {
 
 /**
  *  This class should not be called directly.
- *   Preference is to use the .addListener() Method on an instance of LatticeService
+ *  Use the .addListener() Method on an instance of LatticeService
  *  Creates a vpcLattice Listener
  */
 export class Listener extends core.Resource implements IListener {

@@ -72,7 +72,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Grant Princopals access to the Service Network
    */
-  grantAccess(principal: iam.IPrincipal[]): void;
+  grantAccessToServiceNetwork(principal: iam.IPrincipal[]): void;
   /**
    * Add Lattice Service Policy
    */
@@ -100,9 +100,9 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Create and Add an auth policy to the Service Network
    */
-  addAuthPolicy(): void;
-
+  applyAuthPolicyToServiceNetwork(): void;
 }
+
 /**
  * The properties for the ServiceNetwork.
  */
@@ -188,7 +188,11 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   /**
    * policy document to be used.
    */
-  authPolicy: iam.PolicyDocument = new iam.PolicyDocument();
+  //authPolicy: iam.PolicyDocument = new iam.PolicyDocument();
+  /**
+   * A managed Policy that is the auth policy
+   */
+  authPolicy: iam.PolicyDocument
 
 
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
@@ -241,6 +245,9 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       });
     };
 
+    // create a managedPolicy for the lattice Service.
+    this.authPolicy = new iam.PolicyDocument();
+
     const allowExternalPrincipals = props.allowExternalPrincipals ?? false;
 
     // An AWS account ID
@@ -251,7 +258,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     // share the service network, and permit the account principals to use it
     if (props.accounts !== undefined) {
       props.accounts.forEach((account) => {
-        this.grantAccess([account]);
+        this.grantAccessToServiceNetwork([account]);
         this.share({
           name: 'Share',
           principals: [account.accountId],
@@ -263,7 +270,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     if (props.arnToShareServiceWith!== undefined) {
       props.arnToShareServiceWith.forEach((resource) => {
         //check if resource is a valid arn;
-        this.grantAccess([new iam.ArnPrincipal(resource)]);
+        this.grantAccessToServiceNetwork([new iam.ArnPrincipal(resource)]);
         this.share({
           name: 'Share',
           principals: [resource],
@@ -280,9 +287,10 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * This will give the principals access to all resources that are on this
    * service network. This is a broad permission.
    * Consider granting Access at the Service
+   * addToResourcePolicy()
    *
    */
-  public grantAccess(principals: iam.IPrincipal[]): void {
+  public grantAccessToServiceNetwork(principals: iam.IPrincipal[]): void {
 
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
@@ -295,8 +303,8 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
     this.authPolicy.addStatements(policyStatement);
   }
-
-  public addAuthPolicy(): void {
+  // addToResourcePolicy(permission)
+  public applyAuthPolicyToServiceNetwork(): void {
 
     // check to see if there are any errors with the auth policy
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
