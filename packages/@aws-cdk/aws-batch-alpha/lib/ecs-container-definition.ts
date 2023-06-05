@@ -24,7 +24,6 @@ export interface EcsVolumeOptions {
    */
   readonly containerPath: string;
 
-
   /**
    * if set, the container will have readonly access to the volume
    *
