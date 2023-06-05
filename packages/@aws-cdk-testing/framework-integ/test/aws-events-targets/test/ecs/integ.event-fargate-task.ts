@@ -34,6 +34,7 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  enableExecuteCommand: true,
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [
