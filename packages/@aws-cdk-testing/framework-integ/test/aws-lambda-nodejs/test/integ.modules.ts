@@ -40,7 +40,6 @@ const mtsEntryTestCase = new TypeScriptModuleStack(app, 'cdk-integ-lambda-nodejs
 const ctsEntryTestCase = new TypeScriptCommonJsStack(app, 'cdk-integ-lambda-nodejs-modules-cts');
 const cjsEntryTestCase = new JavaScriptCommonJsStack(app, 'cdk-integ-lambda-nodejs-modules-cjs');
 
-
 const integ = new IntegTest(app, 'LambdaModules', {
   testCases: [mtsEntryTestCase, ctsEntryTestCase, cjsEntryTestCase],
 });
