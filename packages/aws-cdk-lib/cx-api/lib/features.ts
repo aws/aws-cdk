@@ -87,6 +87,7 @@ export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:en
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const AUTOSCALING_DISABLE_LAUNCH_CONFIG = '@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -802,6 +803,23 @@ export const FLAGS: Record<string, FlagInfo> = {
       implicit dependencies will be set.
     `,
     introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AUTOSCALING_DISABLE_LAUNCH_CONFIG]: {
+    type: FlagType.BugFix,
+    summary: 'Do not create a launch configuration when creating an AutoScalingGroup',
+    detailsMd: `
+      Enable this flag to disallow creating a launch configuration when creating an AutoScalingGroup.
+      Launch Configurations have been deprecated and cannot be created in new AWS Accounts.
+      Users should provide a 'launchTemplate' or 'mixedInstancesPolicy' instead.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
+    compatibilityWithOldBehaviorMd: `
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    `,
     recommendedValue: true,
   },
 };
