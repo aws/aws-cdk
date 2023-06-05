@@ -40,7 +40,6 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-
 /* eslint-disable no-console */
 console.log = jest.fn();
 
@@ -66,7 +65,6 @@ jest.mock('https', () => {
 afterEach(() => {
   jest.clearAllMocks();
 });
-
 
 test('create event with physical resource id path', async () => {
   s3MockClient.on(S3.ListObjectsCommand).resolves({
