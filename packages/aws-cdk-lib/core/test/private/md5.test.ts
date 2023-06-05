@@ -16,7 +16,7 @@ test.each([
 });
 
 // eslint-disable-next-line jest/no-disabled-tests
-test.skip('test md5 equality for a giant string (larger than 512MB)', () => {
+test('test md5 equality for a giant string (larger than 512MB)', () => {
   const s = 'x'.repeat(515_000_000);
   expect(jsMd5(s)).toEqual(cryptoMd5(s));
 });

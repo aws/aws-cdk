@@ -428,7 +428,7 @@ describe('bucket', () => {
   // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
   // check is impossible, we skip this test.
   // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
+  test('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
     expect(() => {

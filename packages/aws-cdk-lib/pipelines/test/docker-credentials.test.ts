@@ -304,7 +304,7 @@ describe('EcrDockerCredential', () => {
 
   // This test doesn't actually work yet. See https://github.com/aws/aws-cdk/issues/16164
   // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('with non-parallel publishing', () => {
+  test('with non-parallel publishing', () => {
     const pipelines = new cdkp.CodePipeline(stack, 'Pipeline', {
       synth: new ShellStep('Build', {
         input: cdkp.CodePipelineSource.gitHub('test/test', 'test'),
