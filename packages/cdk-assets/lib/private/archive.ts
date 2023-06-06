@@ -58,18 +58,19 @@ function writeZipFile(directory: string, outputFile: string): Promise<void> {
 }
 
 /**
- * Rename the file to the target location, taking into account that we may see EPERM on Windows
- * while an Antivirus scanner still has the file open, so retry a couple of times.
+ * Rename the file to the target location, taking into account:
+ *
+ * - that we may see EPERM on Windows while an Antivirus scanner still has the
+ *   file open, so retry a couple of times.
+ * - this same function may be called in parallel and be interrupted at any point.
  */
-async function moveIntoPlace(source: string, target: string, logger: Logger) {
+async function moveIntoPlace(temporarySource: string, target: string, logger: Logger) {
   let delay = 100;
   let attempts = 5;
   while (true) {
     try {
-      if (await pathExists(target)) {
-        await fs.unlink(target);
-      }
-      await fs.rename(source, target);
+      // 'rename' is guaranteed to overwrite an existing target, as long as it is a file (not a directory)
+      await fs.rename(temporarySource, target);
       return;
     } catch (e: any) {
       if (e.code !== 'EPERM' || attempts-- <= 0) {
@@ -79,6 +80,18 @@ async function moveIntoPlace(source: string, target: string, logger: Logger) {
       await sleep(Math.floor(Math.random() * delay));
       delay *= 2;
     }
+  }
+}
+
+async function tryUnlink(target: string): Promise<boolean> {
+  try {
+    await fs.unlink(target);
+    return true;
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      return false;
+    }
+    throw e;
   }
 }
 
