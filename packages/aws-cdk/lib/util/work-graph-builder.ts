@@ -27,7 +27,7 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
-      dependencies: new Set(this.getDepIds(artifact.dependencies)),
+      dependencies: new Set(this.getDepIds(onlyStacks(artifact.dependencies))),
       stack: artifact,
       deploymentState: DeploymentState.PENDING,
       priority: WorkGraphBuilder.PRIORITIES.stack,
