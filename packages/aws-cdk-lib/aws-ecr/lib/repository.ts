@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
+import * as perm from './perms';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -366,11 +367,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'ecr:BatchCheckLayerAvailability',
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-    );
+    const ret = this.grant(grantee, ...perm.REPO_PULL_ACTIONS);
 
     iam.Grant.addToPrincipal({
       grantee,
@@ -386,13 +383,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPush(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'ecr:CompleteLayerUpload',
-      'ecr:UploadLayerPart',
-      'ecr:InitiateLayerUpload',
-      'ecr:BatchCheckLayerAvailability',
-      'ecr:PutImage',
-    );
+    const ret = this.grant(grantee, ...perm.REPO_PUSH_ACTIONS);
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
@@ -407,13 +398,18 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to pull and push images to this repository.
    */
   public grantPullPush(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee,
-      'ecr:PutImage',
-      'ecr:InitiateLayerUpload',
-      'ecr:UploadLayerPart',
-      'ecr:CompleteLayerUpload',
+    const ret = this.grant(grantee,
+      ...perm.REPO_PULL_ACTIONS,
+      ...perm.REPO_PUSH_ACTIONS,
     );
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
