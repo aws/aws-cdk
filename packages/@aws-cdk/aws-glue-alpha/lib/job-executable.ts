@@ -363,7 +363,7 @@ export class JobExecutable {
     if (config.pythonVersion === PythonVersion.THREE && config.type === JobType.RAY) {
       throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
-    if (config.runtime == null && config.type === JobType.RAY) {
+    if (config.runtime === undefined && config.type === JobType.RAY) {
       throw new Error('Runtime is required for Ray');
     }
     this.config = config;

@@ -115,7 +115,7 @@ new glue.Job(stack, 'RayJob', {
     script,
   }),
   workerType: glue.WorkerType.Z_2X,
-  workerCount: 5,
+  workerCount: 2,
   defaultArguments: {
     arg1: 'value1',
     arg2: 'value2',
