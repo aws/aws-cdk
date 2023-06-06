@@ -157,24 +157,17 @@ test('deletes all objects when the name changes on update event', async () => {
   await invokeHandler(event);
 
   // THEN
+  expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(1);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledWith({
     repositoryName: 'MyRepo',
     imageIds: [
       { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
       { imageDigest: 'ImageDigest2', imageTag: 'ImageTag2' },
     ],
   });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
-    repositoryName: 'MyRepo',
-    imageIds: [
-      { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
-      { imageDigest: 'ImageDigest2', imageTag: 'ImageTag2' },
-    ],
-  });
-  expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
 });
 
 test('deletes no images on delete event when repository has no images', async () => {
@@ -225,21 +218,8 @@ test('deletes all images on delete event', async () => {
   // THEN
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
-    repositoryName: 'MyRepo',
-    imageIds: [
-      {
-        imageTag: 'tag1',
-        imageDigest: 'sha256-1',
-      },
-      {
-        imageTag: 'tag2',
-        imageDigest: 'sha256-2',
-      },
-    ],
-  });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(1);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledWith({
     repositoryName: 'MyRepo',
     imageIds: [
       {
@@ -306,8 +286,7 @@ test('delete event where repo has many images does recurse appropriately', async
       ],
       nextToken: 'token1',
     })
-    .mockResolvedValueOnce(undefined) // batchDeleteImage() call for tagged images
-    .mockResolvedValueOnce(undefined) // batchDeleteImage() call for all images
+    .mockResolvedValueOnce(undefined) // batchDeleteImage() call
     .mockResolvedValueOnce({ // listedImages() call
       imageIds: [
         {
@@ -335,7 +314,7 @@ test('delete event where repo has many images does recurse appropriately', async
   expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
   expect(mockECRClient.listImages).toHaveBeenCalledTimes(2);
   expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(4);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
   expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
     repositoryName: 'MyRepo',
     imageIds: [
@@ -350,32 +329,6 @@ test('delete event where repo has many images does recurse appropriately', async
     ],
   });
   expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
-    repositoryName: 'MyRepo',
-    imageIds: [
-      {
-        imageTag: 'tag1',
-        imageDigest: 'sha256-1',
-      },
-      {
-        imageTag: 'tag2',
-        imageDigest: 'sha256-2',
-      },
-    ],
-  });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(3, {
-    repositoryName: 'MyRepo',
-    imageIds: [
-      {
-        imageTag: 'tag3',
-        imageDigest: 'sha256-3',
-      },
-      {
-        imageTag: 'tag4',
-        imageDigest: 'sha256-4',
-      },
-    ],
-  });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(4, {
     repositoryName: 'MyRepo',
     imageIds: [
       {
@@ -411,6 +364,61 @@ test('does nothing when the repository does not exist', async () => {
   await invokeHandler(event);
 
   expect(mockECRClient.batchDeleteImage).not.toHaveBeenCalled();
+});
+
+test('delete event where repo has tagged images and untagged images', async () => {
+  // GIVEN
+  mockAwsPromise(mockECRClient.describeRepositories, {
+    repositories: [
+      { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
+    ],
+  });
+
+  mockECRClient.promise // listedImages() call
+    .mockResolvedValueOnce({
+      imageIds: [
+        {
+          imageTag: 'tag1',
+          imageDigest: 'sha256-1',
+        },
+        {
+          imageDigest: 'sha256-2',
+        },
+      ],
+    });
+
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      RepositoryName: 'MyRepo',
+    },
+  };
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
+  expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
+  expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(2);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(1, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      {
+        imageTag: 'tag1',
+        imageDigest: 'sha256-1',
+      },
+    ],
+  });
+  expect(mockECRClient.batchDeleteImage).toHaveBeenNthCalledWith(2, {
+    repositoryName: 'MyRepo',
+    imageIds: [
+      {
+        imageDigest: 'sha256-2',
+      },
+    ],
+  });
 });
 
 // helper function to get around TypeScript expecting a complete event object,
