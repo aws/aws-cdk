@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/app-staging-synthesizer-alpha",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "Cdk synthesizer for with app-scoped staging stack",
   "main": "lib/index.js",
@@ -32,7 +32,8 @@
         ]
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.App.Staging.Synthesizer.Alpha",
+        "namespace": "Amazon.CDK.AppStagingSynthesizer.Alpha",
+        "packageId": "Amazon.CDK.AppStagingSynthesizer.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       }
     }
@@ -97,5 +98,8 @@
   "peerDependencies": {
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

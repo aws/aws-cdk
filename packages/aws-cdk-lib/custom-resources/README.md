@@ -624,6 +624,35 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 });
 ```
 
+#### Using AWS SDK for JavaScript v3
+
+`AwsCustomResource` experimentally supports AWS SDK for JavaScript v3 (NODEJS_18_X or higher). In AWS SDK for JavaScript v3, packages are installed for each service. Therefore, specify the package name for `service`. Also, `action` specifies the XxxClient operations provided in the package. This example is the same as `SSM.getParameter` in v2.
+
+```ts
+import * as regionInfo from 'aws-cdk-lib/region-info';
+
+// change custom resource default runtime
+regionInfo.Fact.register({
+  region: 'us-east-1', // your region
+  name: regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
+  value: lambda.Runtime.NODEJS_18_X.name,
+}, true);
+new AwsCustomResource(this, 'GetParameter', {
+  resourceType: 'Custom::SSMParameter',
+  onUpdate: {
+    service: '@aws-sdk/client-ssm', // 'SSM' in v2
+    action: 'GetParameterCommand', // 'getParameter' in v2
+    parameters: {
+      Name: 'foo',
+      WithDecryption: true,
+    },
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+  },
+});
+```
+
+If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.
+
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

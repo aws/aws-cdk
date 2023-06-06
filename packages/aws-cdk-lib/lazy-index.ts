@@ -220,6 +220,7 @@ Object.defineProperty(exports, 'aws_servicecatalogappregistry', { get: function 
 Object.defineProperty(exports, 'aws_servicediscovery', { get: function () { return require('./aws-servicediscovery'); } });
 Object.defineProperty(exports, 'aws_ses_actions', { get: function () { return require('./aws-ses-actions'); } });
 Object.defineProperty(exports, 'aws_ses', { get: function () { return require('./aws-ses'); } });
+Object.defineProperty(exports, 'aws_shield', { get: function () { return require('./aws-shield'); } });
 Object.defineProperty(exports, 'aws_signer', { get: function () { return require('./aws-signer'); } });
 Object.defineProperty(exports, 'aws_simspaceweaver', { get: function () { return require('./aws-simspaceweaver'); } });
 Object.defineProperty(exports, 'aws_sns_subscriptions', { get: function () { return require('./aws-sns-subscriptions'); } });
