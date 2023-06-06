@@ -5,11 +5,743 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { RemovalPolicy, Stack } from '../../core';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance,
 } from '../lib';
+
+describe('cluster new api', () => {
+  describe('errors are thrown', () => {
+    test('when old and new props are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          instanceProps: {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            vpc,
+          },
+          writer: ClusterInstance.serverlessV2('writer'),
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(/Cannot provide writer or readers if instances or instanceProps are provided/);
+    });
+
+    test('when no instances are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(/writer must be provided/);
+    });
+
+    test('when vpc prop is not provided', () => {
+      // GIVEN
+      const stack = testStack();
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          writer: ClusterInstance.serverlessV2('writer'),
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
+    });
+
+    test('when both vpc and instanceProps.vpc are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          instanceProps: {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            vpc,
+          },
+          vpc,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
+    });
+
+    test('when both vpcSubnets and instanceProps.vpcSubnets are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          instanceProps: {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+            vpc,
+          },
+          vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(/Provide either vpcSubnets or instanceProps.vpcSubnets, but not both/);
+    });
+
+    test.each([
+      [0.5, 200, /serverlessV2MaxCapacity must be >= 0.5 & <= 128/],
+      [0.5, 0, /serverlessV2MaxCapacity must be >= 0.5 & <= 128/],
+      [0, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 128/],
+      [200, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 128/],
+      [0.5, 0.5, /If serverlessV2MinCapacity === 0.5 then serverlessV2MaxCapacity must be >=1/],
+      [10.1, 12, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
+      [12, 12.1, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
+      [5, 1, /serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity/],
+    ])('when serverless capacity is incorrect', (minCapacity, maxCapacity, errorMessage) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
+          serverlessV2MaxCapacity: maxCapacity,
+          serverlessV2MinCapacity: minCapacity,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow(errorMessage);
+    });
+  });
+
+  describe('cluster options', () => {
+    test('with serverless instances', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // serverless scaling config is set
+      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 2,
+        },
+      }));
+
+      // subnets are set correctly
+      template.hasResourceProperties('AWS::RDS::DBSubnetGroup', {
+        DBSubnetGroupDescription: 'Subnets for Database database',
+        SubnetIds: [
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+          { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
+        ],
+      });
+    });
+
+    test('vpcSubnets can be provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // serverless scaling config is set
+      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 2,
+        },
+      }));
+
+      // subnets are set correctly
+      template.hasResourceProperties('AWS::RDS::DBSubnetGroup', {
+        DBSubnetGroupDescription: 'Subnets for Database database',
+        SubnetIds: [
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+          { Ref: 'VPCPublicSubnet3Subnet631C5E25' },
+        ],
+      });
+    });
+  });
+
+  describe('migrate from instanceProps', () => {
+    test('template contains no changes', () => {
+      // GIVEN
+      const stack1 = testStack();
+      const stack2 = testStack();
+
+      function createCase(stack: Stack) {
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        const pg = new ParameterGroup(stack, 'pg', {
+          engine: DatabaseClusterEngine.AURORA,
+        });
+        const sg = new ec2.SecurityGroup(stack, 'sg', {
+          vpc,
+        });
+        const instanceProps = {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+          allowMajorVersionUpgrade: true,
+          autoMinorVersionUpgrade: true,
+          deleteAutomatedBackups: true,
+          enablePerformanceInsights: true,
+          parameterGroup: pg,
+          securityGroups: [sg],
+        };
+        return instanceProps;
+      }
+      const test1 = createCase(stack1);
+      const test2 = createCase(stack2);
+      new DatabaseCluster(stack1, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        instanceProps: test1,
+        iamAuthentication: true,
+      });
+
+      new DatabaseCluster(stack2, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: test2.vpc,
+        securityGroups: test2.securityGroups,
+        writer: ClusterInstance.provisioned('Instance1', {
+          ...test2,
+          isFromLegacyInstanceProps: true,
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            ...test2,
+            isFromLegacyInstanceProps: true,
+          }),
+        ],
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const test1Template = Template.fromStack(stack1).toJSON();
+      // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
+      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
+      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
+      expect(
+        test1Template,
+      ).toEqual(Template.fromStack(stack2).toJSON());
+    });
+  });
+
+  describe('creates a writer instance', () => {
+    test('serverlessV2 writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // only the writer gets created
+      template.resourceCountIs('AWS::RDS::DBInstance', 1);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        Engine: 'aurora',
+        PromotionTier: 0,
+      });
+    });
+
+    test('serverlessV2 writer with config', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        removalPolicy: RemovalPolicy.RETAIN,
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer', {
+          allowMajorVersionUpgrade: true,
+          autoMinorVersionUpgrade: true,
+          enablePerformanceInsights: true,
+          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // only the writer gets created
+      template.resourceCountIs('AWS::RDS::DBInstance', 1);
+      template.hasResource('AWS::RDS::DBInstance', {
+        Properties: {
+          AllowMajorVersionUpgrade: true,
+          AutoMinorVersionUpgrade: true,
+          DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+          DBInstanceClass: 'db.serverless',
+          DBParameterGroupName: { Ref: 'pg749EE6ED' },
+          EnablePerformanceInsights: true,
+          Engine: 'aurora',
+          PerformanceInsightsRetentionPeriod: 7,
+          PromotionTier: 0,
+        },
+        UpdateReplacePolicy: 'Retain',
+        Type: 'AWS::RDS::DBInstance',
+      });
+    });
+
+    test('provisioned writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // only the writer gets created
+      template.resourceCountIs('AWS::RDS::DBInstance', 1);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+    });
+
+    test('provisioned writer with config', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          allowMajorVersionUpgrade: true,
+          autoMinorVersionUpgrade: true,
+          enablePerformanceInsights: true,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE ),
+          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+        }),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      // only the writer gets created
+      template.resourceCountIs('AWS::RDS::DBInstance', 1);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        AllowMajorVersionUpgrade: true,
+        AutoMinorVersionUpgrade: true,
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.c4.large',
+        DBParameterGroupName: { Ref: 'pg749EE6ED' },
+        EnablePerformanceInsights: true,
+        Engine: 'aurora',
+        PerformanceInsightsRetentionPeriod: 7,
+        PromotionTier: 0,
+      });
+    });
+  });
+
+  describe('provisioned writer with serverless readers', () => {
+    test('serverless reader in promotion tier 2 throws warning', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasWarning('*',
+        `Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
+        'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
+        'availability issues if a failover event occurs. It is recommended that at least one reader '+
+        'has `scaleWithWriter` set to true',
+      );
+    });
+
+    test('serverless reader in promotion tier 1', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        readers: [ClusterInstance.serverlessV2('reader', { scaleWithWriter: true })],
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 1,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+
+    test.each([
+      [
+        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        undefined,
+      ],
+      [
+        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+        4,
+      ],
+    ])('serverless reader cannot scale with writer, throw warning', (instanceType: ec2.InstanceType, maxCapacity?: number) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType,
+        }),
+        serverlessV2MaxCapacity: maxCapacity,
+        readers: [ClusterInstance.serverlessV2('reader', { scaleWithWriter: true })],
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: `db.${instanceType.toString()}`,
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 1,
+      });
+
+      Annotations.fromStack(stack).hasWarning('*',
+        'For high availability any serverless instances in promotion tiers 0-1 '+
+        'should be able to scale to match the provisioned instance capacity.\n'+
+        'Serverless instance reader is in promotion tier 1,\n'+
+        `But can not scale to match the provisioned writer instance (${instanceType.toString()})`,
+      );
+    });
+  });
+
+  describe('provisioned writer and readers', () => {
+    test('single reader', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          // instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        }),
+        readers: [ClusterInstance.provisioned('reader')],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+
+    test('throws warning if instance types do not match', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        }),
+        readers: [
+          ClusterInstance.provisioned('reader'),
+          ClusterInstance.provisioned('reader2', {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 0,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 2,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.xlarge',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasWarning('*',
+        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
+        'of a failover.\n'+
+        'Writer InstanceSize: m5.24xlarge\n'+
+        'Reader InstanceSizes: t3.medium, m5.xlarge',
+      );
+    });
+
+    test('does not throw warning if highest tier matches', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        }),
+        readers: [
+          ClusterInstance.provisioned('reader'),
+          ClusterInstance.provisioned('reader2', {
+            promotionTier: 1,
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 0,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 2,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 1,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+  });
+
+  describe('mixed readers', () => {
+    test('no warnings', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        }),
+        readers: [
+          ClusterInstance.serverlessV2('reader'),
+          ClusterInstance.provisioned('reader2', {
+            promotionTier: 1,
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 0,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 1,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+
+    test('throws warning if not scaling with writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
+        }),
+        readers: [
+          ClusterInstance.serverlessV2('reader'),
+          ClusterInstance.provisioned('reader2', {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE ),
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 3);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.24xlarge',
+        PromotionTier: 0,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+      });
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.m5.xlarge',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasWarning('*',
+        'There are serverlessV2 readers in tier 2. Since there are no instances in a higher tier, '+
+        'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
+        'with the writer which could lead to availability issues during failover.',
+      );
+
+      Annotations.fromStack(stack).hasWarning('*',
+        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
+        'of a failover.\n'+
+        'Writer InstanceSize: m5.24xlarge\n'+
+        'Reader InstanceSizes: m5.xlarge',
+      );
+    });
+  });
+});
 
 describe('cluster', () => {
   test('creating a Cluster also creates 2 DB Instances', () => {
