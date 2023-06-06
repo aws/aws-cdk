@@ -1,6 +1,6 @@
-import { debug, trace } from '../logging';
 import { parallelPromises } from './parallel';
 import { WorkNode, DeploymentState, StackNode, AssetBuildNode, AssetPublishNode } from './work-graph-types';
+import { debug, trace } from '../logging';
 
 export type Concurrency = number | Record<WorkNode['type'], number>;
 
