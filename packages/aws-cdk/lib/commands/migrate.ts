@@ -4,7 +4,7 @@ import { initializeProject, availableInitTemplates } from '../../lib/init';
 import { warning } from '../logging';
 
 // replace this string with the path to your own noctilucent pkg
-import * as nocti from '/replace/me/with/your/path/to/noctilucent/pkg/noctilucent';
+import * as nocti from '/Users/rmuller/Development/iph/noctilucent/pkg/noctilucent';
 
 export async function cliMigrate(
   inputpath: string = process.cwd() + '/../temp.txt',
@@ -30,27 +30,27 @@ export async function cliMigrate(
   // clear out the init'd bin/lib files to replace with our own
   delete_files(outputpath + '/lib/');
 
-  // we hardcode everything to be called noctstack still so this works for now. 
+  // we hardcode everything to be called noctstack still so this works for now.
   // Will change this to be much smarter once we can change stack name in noct
   const bin_app = `#!/usr/bin/env node
   import 'source-map-support/register';
   import * as cdk from 'aws-cdk-lib';
   import { NoctStack } from '../lib/generated_stack';
-  
+
   const app = new cdk.App();
   new NoctStack(app, 'NoctStack', {
     /* If you don't specify 'env', this stack will be environment-agnostic.
      * Account/Region-dependent features and context lookups will not work,
      * but a single synthesized template can be deployed anywhere. */
-  
+
     /* Uncomment the next line to specialize this stack for the AWS Account
      * and Region that are implied by the current CLI configuration. */
     // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-  
+
     /* Uncomment the next line if you know exactly what Account and Region you
      * want to deploy the stack to. */
     // env: { account: '123456789012', region: 'us-east-1' },
-  
+
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   });`;
   const myname = path.basename(outputpath);

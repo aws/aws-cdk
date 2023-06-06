@@ -272,10 +272,11 @@ async function parseCommandLineArguments(args: string[]) {
     )
     .command('migrate', 'Migrate a cloudformation template to cdk', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
-      .option('inputpath', { type: 'string', alias: 'i', desc: 'The path to the CloudFormation template to migrate' })
-      .option('outputpath', { type: 'string', alias: 'o', desc: 'The output path for the migrated cdk code'})
+      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
+      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
-    ) 
+    )
+    .hide('migrate')
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
       .option('force', { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false })
@@ -658,7 +659,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         }
       case 'migrate':
         const migrateLanguage = configuration.settings.get(['language']);
-        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, argv.outputpath);
+        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
       case 'version':
         return data(version.DISPLAY_VERSION);
 
