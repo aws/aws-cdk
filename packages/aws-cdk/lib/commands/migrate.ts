@@ -4,9 +4,12 @@ import { initializeProject, availableInitTemplates } from '../../lib/init';
 import { warning } from '../logging';
 import * as nocti from '../vendor/noctilucent';
 
+/** The list of languages supported by the built-in noctilucent binary. */
+export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = nocti.supported_languages();
+
 export async function cliMigrate(
   inputpath: string = process.cwd() + '/../temp.txt',
-  language?: string,
+  language = MIGRATE_SUPPORTED_LANGUAGES[0],
   generateOnly = false,
   outputpath = process.cwd(),
 ) {
@@ -16,9 +19,8 @@ export async function cliMigrate(
     throw new Error(`couldn't find template for ${type} app type, this should never happen`);
   }
 
-  if (!language || !(language == 'typescript')) {
-    language = 'typescript';
-    warning(`currently only have suppport for typescript, defaulting to --language=${language}`);
+  if (!MIGRATE_SUPPORTED_LANGUAGES.includes(language)) {
+    throw new Error(`Unsupported language for cdk migrate: ${language}. Supported languages are: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
   }
 
   await initializeProject(template, language, true, generateOnly, outputpath);
