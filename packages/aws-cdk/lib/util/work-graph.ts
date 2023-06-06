@@ -1,3 +1,5 @@
+import { debug, trace } from '../logging';
+import { parallelPromises } from './parallel';
 import { WorkNode, DeploymentState, StackNode, AssetBuildNode, AssetPublishNode } from './work-graph-types';
 
 export type Concurrency = number | Record<WorkNode['type'], number>;
@@ -215,14 +217,18 @@ export class WorkGraph {
     function renderNode(id: string, node: WorkNode): string[] {
       const ret = [];
       if (node.deploymentState === DeploymentState.COMPLETED) {
-        ret.push(`  "${id}" [style=filled,fillcolor=yellow];`);
+        ret.push(`  "${simplifyId(id)}" [style=filled,fillcolor=yellow];`);
       } else {
-        ret.push(`  "${id}";`);
+        ret.push(`  "${simplifyId(id)}";`);
       }
       for (const dep of node.dependencies) {
-        ret.push(`  "${id}" -> "${dep}";`);
+        ret.push(`  "${simplifyId(id)}" -> "${simplifyId(dep)}";`);
       }
       return ret;
+    }
+
+    function simplifyId(id: string) {
+      return id.replace(/([0-9a-f]{6})[0-9a-f]{6,}/g, '$1');
     }
   }
 
@@ -234,12 +240,8 @@ export class WorkGraph {
    */
   public removeUnavailableDependencies() {
     for (const node of Object.values(this.nodes)) {
-      const removeDeps = [];
-      for (const dep of node.dependencies) {
-        if (this.nodes[dep] === undefined) {
-          removeDeps.push(dep);
-        }
-      }
+      const removeDeps = Array.from(node.dependencies).filter((dep) => this.nodes[dep] === undefined);
+
       removeDeps.forEach((d) => {
         node.dependencies.delete(d);
       });
@@ -249,15 +251,22 @@ export class WorkGraph {
   /**
    * Remove all asset publishing steps for assets that are already published, and then build
    * that aren't used anymore.
+   *
+   * Do this in parallel, because there may be a lot of assets in an application (seen in practice: >100 assets)
    */
   public async removeUnnecessaryAssets(isUnnecessary: (x: AssetPublishNode) => Promise<boolean>) {
     const publishes = this.nodesOfType('asset-publish');
-    for (const assetNode of publishes) {
-      const unnecessary = await isUnnecessary(assetNode);
-      if (unnecessary) {
-        this.removeNode(assetNode);
-      }
+
+    const classifiedNodes = await parallelPromises(
+      8,
+      publishes.map((assetNode) => async() => [assetNode, await isUnnecessary(assetNode)] as const));
+
+    const alreadyPublished = classifiedNodes.filter(([_, unnecessary]) => unnecessary).map(([assetNode, _]) => assetNode);
+    for (const assetNode of alreadyPublished) {
+      this.removeNode(assetNode);
     }
+
+    debug(`${publishes.length} total assets, ${publishes.length - alreadyPublished.length} still need to be published`);
 
     // Now also remove any asset build steps that don't have any dependencies on them anymore
     const unusedBuilds = this.nodesOfType('asset-build').filter(build => this.dependees(build).length === 0);
@@ -288,7 +297,8 @@ export class WorkGraph {
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
       const cycle = this.findCycle() ?? ['No cycle found!'];
-      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')}`);
+      trace(`Cycle ${cycle.join(' -> ')} in graph ${this}`);
+      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')} (run with -vv for full graph)`);
     }
   }
 
