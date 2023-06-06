@@ -84,7 +84,7 @@ export interface CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - No SSH access will be possible.
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly keyName?: string;
 
@@ -197,7 +197,7 @@ export interface CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - Use subnet setting.
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly associatePublicIpAddress?: boolean;
 
@@ -208,7 +208,7 @@ export interface CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default none
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly spotPrice?: string;
 
@@ -261,7 +261,7 @@ export interface CommonAutoScalingGroupProps {
    * @see https://docs.aws.amazon.com/autoscaling/latest/userguide/as-instance-monitoring.html#enable-as-instance-metrics
    *
    * @default - Monitoring.DETAILED
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly instanceMonitoring?: Monitoring;
 
@@ -615,7 +615,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - Do not provide any instance type
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly instanceType?: ec2.InstanceType;
 
@@ -625,7 +625,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - Do not provide any machine image
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly machineImage?: ec2.IMachineImage;
 
@@ -635,7 +635,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - A SecurityGroup will be created if none is specified.
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
@@ -666,7 +666,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *    });
    *
    * @default A role will automatically be created, it can be accessed via the `role` property
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly role?: iam.IRole;
 
