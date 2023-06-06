@@ -255,6 +255,8 @@ export class WorkGraph {
    * Do this in parallel, because there may be a lot of assets in an application (seen in practice: >100 assets)
    */
   public async removeUnnecessaryAssets(isUnnecessary: (x: AssetPublishNode) => Promise<boolean>) {
+    debug('Checking for previously published assets');
+
     const publishes = this.nodesOfType('asset-publish');
 
     const classifiedNodes = await parallelPromises(
