@@ -3,7 +3,6 @@ import * as cdk from 'aws-cdk-lib/core';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
-
 const CSV_KEY = 'my-key.csv';
 
 class DistributedMapStack extends cdk.Stack {
