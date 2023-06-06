@@ -404,6 +404,13 @@ export interface LaunchTemplateProps {
    * @default false
    */
   readonly instanceMetadataTags?: boolean;
+
+  /**
+   * Whether instances should have a public IP addresses associated with them.
+   *
+   * @default - Use subnet settings
+   */
+  readonly associatePublicIpAddress?: boolean;
 }
 
 /**
@@ -684,6 +691,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
+    const networkInterfaces = props.associatePublicIpAddress !== undefined
+      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress }]
+      : undefined;
+
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
       launchTemplateData: {
@@ -714,6 +725,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         tagSpecifications: tagsToken,
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
+        networkInterfaces,
 
         // Fields not yet implemented:
         // ==========================
@@ -741,9 +753,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-tagspecifications
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
         // tagSpecification: undefined
-
-        // CDK has no abstraction for Network Interfaces yet.
-        // networkInterfaces: undefined,
 
         // CDK has no abstraction for Placement yet.
         // placement: undefined,

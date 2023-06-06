@@ -628,6 +628,25 @@ describe('LaunchTemplate', () => {
       },
     });
   });
+
+  test('Associate public IP address', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      associatePublicIpAddress: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        NetworkInterfaces: [
+          {
+            DeviceIndex: 0,
+            AssociatePublicIpAddress: true,
+          },
+        ],
+      },
+    });
+  });
 });
 
 describe('LaunchTemplate marketOptions', () => {
