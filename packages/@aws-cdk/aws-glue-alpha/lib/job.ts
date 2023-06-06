@@ -685,6 +685,7 @@ export class Job extends JobBase {
         name: executable.type.name,
         scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
+        runtime: executable.runtime,
       },
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,

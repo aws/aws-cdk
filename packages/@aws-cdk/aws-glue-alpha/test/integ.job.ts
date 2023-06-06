@@ -55,7 +55,6 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
     },
   });
   etlJob.metricSuccess();
-
   new glue.Job(stack, 'StreamingJob' + glueVersion.name, {
     jobName: 'StreamingJob' + glueVersion.name,
     executable: glue.JobExecutable.pythonStreaming({
@@ -63,7 +62,7 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       glueVersion,
       script,
     }),
-    workerType: glue.WorkerType.G_025X,
+    workerType: [glue.GlueVersion.V2_0].includes(glueVersion) ? glue.WorkerType.G_1X : glue.WorkerType.G_025X,
     workerCount: 10,
     defaultArguments: {
       arg1: 'value1',
@@ -112,10 +111,11 @@ new glue.Job(stack, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
+    runtime: glue.Runtime.RAY_TWO_FOUR,
     script,
   }),
   workerType: glue.WorkerType.Z_2X,
-  workerCount: 2,
+  workerCount: 5,
   defaultArguments: {
     arg1: 'value1',
     arg2: 'value2',

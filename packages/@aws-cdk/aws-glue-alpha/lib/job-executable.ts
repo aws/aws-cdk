@@ -88,6 +88,16 @@ export enum PythonVersion {
 }
 
 /**
+ * Runtime
+ */
+export enum Runtime {
+  /**
+   * Ray 2.4
+   */
+  RAY_TWO_FOUR = 'Ray2.4',
+}
+
+/**
  * The job type.
  *
  * If you need to use a JobType that doesn't exist as a static member, you
@@ -150,6 +160,12 @@ interface PythonExecutableProps {
 }
 
 interface SharedJobExecutableProps {
+  /**
+   * Runtime.
+   *
+   */
+  readonly runtime?: Runtime;
+
   /**
    * Glue version.
    *
@@ -347,6 +363,9 @@ export class JobExecutable {
     if (config.pythonVersion === PythonVersion.THREE && config.type === JobType.RAY) {
       throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
+    if (config.runtime == null && config.type === JobType.RAY) {
+      throw new Error('Runtime is required for Ray');
+    }
     this.config = config;
   }
 
@@ -387,6 +406,13 @@ export interface JobExecutableConfig {
    * @default - no python version specified
    */
   readonly pythonVersion?: PythonVersion;
+
+  /**
+   * The Runtime to use.
+   *
+   * @default - no runtime specified
+   */
+  readonly runtime?: Runtime;
 
   /**
    * The script that is executed by a job.

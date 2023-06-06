@@ -617,6 +617,7 @@ describe('Job', () => {
           executable: glue.JobExecutable.pythonRay({
             glueVersion: glue.GlueVersion.V3_0,
             pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
             script,
           }),
           workerType: glue.WorkerType.Z_2X,
@@ -629,6 +630,7 @@ describe('Job', () => {
           executable: glue.JobExecutable.pythonRay({
             glueVersion: glue.GlueVersion.V4_0,
             pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
             script,
           }),
           workerType: glue.WorkerType.Z_2X,
