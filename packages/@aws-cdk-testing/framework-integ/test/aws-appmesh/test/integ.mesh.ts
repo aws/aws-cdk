@@ -297,6 +297,20 @@ router.addRoute('route-7', {
   }),
 });
 
+router.addRoute('route-8', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node4,
+        weight: 10,
+      },
+    ],
+    match: {
+      port: 1234,
+    },
+  }),
+});
+
 const gateway = mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'gateway1',
@@ -426,6 +440,15 @@ gateway.addGatewayRoute('gateway1-route-grpc-2', {
         appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
       ],
       rewriteRequestHostname: false,
+    },
+  }),
+});
+
+gateway.addGatewayRoute('gateway1-route-grpc-3', {
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
+    routeTarget: virtualService,
+    match: {
+      port: 1234,
     },
   }),
 });
