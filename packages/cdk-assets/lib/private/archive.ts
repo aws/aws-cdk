@@ -64,13 +64,13 @@ function writeZipFile(directory: string, outputFile: string): Promise<void> {
  *   file open, so retry a couple of times.
  * - this same function may be called in parallel and be interrupted at any point.
  */
-async function moveIntoPlace(temporarySource: string, target: string, logger: Logger) {
+async function moveIntoPlace(source: string, target: string, logger: Logger) {
   let delay = 100;
   let attempts = 5;
   while (true) {
     try {
       // 'rename' is guaranteed to overwrite an existing target, as long as it is a file (not a directory)
-      await fs.rename(temporarySource, target);
+      await fs.rename(source, target);
       return;
     } catch (e: any) {
       if (e.code !== 'EPERM' || attempts-- <= 0) {
@@ -85,18 +85,6 @@ async function moveIntoPlace(temporarySource: string, target: string, logger: Lo
 
 function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
-}
-
-async function pathExists(x: string) {
-  try {
-    await fs.stat(x);
-    return true;
-  } catch (e: any) {
-    if (e.code === 'ENOENT') {
-      return false;
-    }
-    throw e;
-  }
 }
 
 function randomString() {
