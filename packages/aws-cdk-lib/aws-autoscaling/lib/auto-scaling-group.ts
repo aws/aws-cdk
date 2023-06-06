@@ -648,7 +648,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly userData?: ec2.UserData;
 
@@ -1345,7 +1345,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           role: this._role,
           userData: this._userData,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
-          blockDevices: props.blockDevices !== undefined ? props.blockDevices : undefined,
+          blockDevices: props.blockDevices,
         });
       }
 
