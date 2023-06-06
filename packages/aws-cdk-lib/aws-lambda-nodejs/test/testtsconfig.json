@@ -14,6 +14,7 @@
     ],
     "module": "CommonJS",
     "newLine": "lf",
+    "noEmit": true,
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
