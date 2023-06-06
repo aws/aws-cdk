@@ -2,9 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { initializeProject, availableInitTemplates } from '../../lib/init';
 import { warning } from '../logging';
-
-// replace this string with the path to your own noctilucent pkg
-import * as nocti from '/Users/rmuller/Development/iph/noctilucent/pkg/noctilucent';
+import * as nocti from '../vendor/noctilucent';
 
 export async function cliMigrate(
   inputpath: string = process.cwd() + '/../temp.txt',
@@ -54,7 +52,7 @@ export async function cliMigrate(
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   });`;
   const myname = path.basename(outputpath);
-  warning(`path name = ${myname}`)
+  warning(`path name = ${myname}`);
   fs.writeFileSync(outputpath + '/lib/' + 'generated_stack.ts', generated_app);
   fs.writeFileSync(outputpath + '/bin/' + `${myname}.ts`, bin_app);
 }
@@ -63,8 +61,8 @@ function delete_files(filepath: string) {
   fs.readdir(filepath, (err, files) => {
     if (err) throw err;
     for (const file of files) {
-      fs.unlink(filepath + file, (err) => {
-        if (err) throw err;
+      fs.unlink(filepath + file, (cause) => {
+        if (cause) throw cause;
       });
     }
   });

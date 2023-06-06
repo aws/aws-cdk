@@ -1,0 +1,3 @@
+[submodule "packages/aws-cdk/vendor/noctilucent"]
+	path = packages/aws-cdk/vendor/noctilucent
+	url = https://github.com/iph/noctilucent.git
