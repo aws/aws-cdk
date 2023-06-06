@@ -60,9 +60,9 @@ function writeZipFile(directory: string, outputFile: string): Promise<void> {
 /**
  * Rename the file to the target location, taking into account:
  *
- * - that we may see EPERM on Windows while an Antivirus scanner still has the
+ * - That we may see EPERM on Windows while an Antivirus scanner still has the
  *   file open, so retry a couple of times.
- * - this same function may be called in parallel and be interrupted at any point.
+ * - This same function may be called in parallel and be interrupted at any point.
  */
 async function moveIntoPlace(source: string, target: string, logger: Logger) {
   let delay = 100;
