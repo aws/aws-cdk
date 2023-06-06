@@ -83,18 +83,6 @@ async function moveIntoPlace(temporarySource: string, target: string, logger: Lo
   }
 }
 
-async function tryUnlink(target: string): Promise<boolean> {
-  try {
-    await fs.unlink(target);
-    return true;
-  } catch (e: any) {
-    if (e.code === 'ENOENT') {
-      return false;
-    }
-    throw e;
-  }
-}
-
 function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
 }
