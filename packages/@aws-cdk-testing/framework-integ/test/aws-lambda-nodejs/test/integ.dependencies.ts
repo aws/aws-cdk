@@ -35,10 +35,21 @@ class SdkV3TestStack extends Stack {
 
     // This function uses @aws-sdk/* but it will not be included
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
-      entry: useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts') : path.join(__dirname, 'integ-handlers/dependencies-aws-cdk-custom/index.mjs'),
+      entry: useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts') : path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/index.mjs'),
       runtime: Runtime.NODEJS_18_X,
       bundling: {
         useLambdaProvidedAwsSdk: useLambdaProvidedSdk,
+        commandHooks: !useLambdaProvidedSdk ? {
+          beforeInstall() {
+            return [];
+          },
+          afterBundling() {
+            return [];
+          },
+          beforeBundling(inputDir, _outputDir) {
+            return [`cd ${inputDir}`, 'npm install --ci'];
+          },
+        } : undefined,
       },
     });
   }
