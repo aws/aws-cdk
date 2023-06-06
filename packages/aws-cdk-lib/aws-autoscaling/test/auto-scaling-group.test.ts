@@ -7,6 +7,7 @@ import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } 
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
@@ -134,6 +135,202 @@ describe('auto scaling group', () => {
               'pri1',
             ],
           },
+        },
+      },
+    });
+  });
+
+  testDeprecated('can create launch template from deprecated launch config props', () => {
+    // GIVEN
+    const stack = getTestStack();
+    stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+    const vpc = mockVpc(stack);
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands('it me!');
+    const blockDevices = [{
+      deviceName: 'ebs',
+      mappingEnabled: true,
+      volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        deleteOnTermination: true,
+        encrypted: true,
+        volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+        iops: 5000,
+      }),
+    }, {
+      deviceName: 'ebs-snapshot',
+      volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+        volumeSize: 500,
+        deleteOnTermination: false,
+        volumeType: autoscaling.EbsDeviceVolumeType.SC1,
+      }),
+    }];
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      machineImage: new ec2.AmazonLinuxImage(),
+      keyName: 'key-name',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceMonitoring: autoscaling.Monitoring.DETAILED,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
+      userData,
+      associatePublicIpAddress: true,
+      spotPrice: '0.05',
+      blockDevices,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        'MyFleetInstanceProfile70A58496': {
+          Type: 'AWS::IAM::InstanceProfile',
+          Properties: {
+            Roles: [
+              'MockRole',
+            ],
+          },
+        },
+        'MyFleetLaunchTemplateProfileE8BFD5F7': {
+          Type: 'AWS::IAM::InstanceProfile',
+          Properties: {
+            Roles: [
+              'MockRole',
+            ],
+          },
+        },
+        'MyFleetLaunchTemplate165E2717': {
+          Type: 'AWS::EC2::LaunchTemplate',
+          Properties: {
+            LaunchTemplateData: {
+              BlockDeviceMappings: [
+                {
+                  DeviceName: 'ebs',
+                  Ebs: {
+                    DeleteOnTermination: true,
+                    Encrypted: true,
+                    Iops: 5000,
+                    VolumeSize: 15,
+                    VolumeType: 'io1',
+                  },
+                },
+                {
+                  DeviceName: 'ebs-snapshot',
+                  Ebs: {
+                    DeleteOnTermination: false,
+                    SnapshotId: 'snapshot-id',
+                    VolumeSize: 500,
+                    VolumeType: 'sc1',
+                  },
+                },
+              ],
+              IamInstanceProfile: {
+                Arn: {
+                  'Fn::GetAtt': [
+                    'MyFleetLaunchTemplateProfileE8BFD5F7',
+                    'Arn',
+                  ],
+                },
+              },
+              ImageId: {
+                Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
+              },
+              InstanceMarketOptions: {
+                MarketType: 'spot',
+                SpotOptions: {
+                  MaxPrice: '0.05',
+                },
+              },
+              InstanceType: 'm4.micro',
+              KeyName: 'key-name',
+              Monitoring: {
+                Enabled: true,
+              },
+              NetworkInterfaces: [
+                {
+                  'AssociatePublicIpAddress': true,
+                  'DeviceIndex': 0,
+                },
+              ],
+              SecurityGroupIds: [
+                'most-secure',
+              ],
+              TagSpecifications: [
+                {
+                  ResourceType: 'instance',
+                  Tags: [
+                    {
+                      Key: 'Name',
+                      Value: 'TestStack/MyFleet/LaunchTemplate',
+                    },
+                  ],
+                },
+                {
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'Name',
+                      Value: 'TestStack/MyFleet/LaunchTemplate',
+                    },
+                  ],
+                },
+              ],
+              UserData: {
+                'Fn::Base64': '#!/bin/bash\nit me!',
+              },
+            },
+            TagSpecifications: [
+              {
+                ResourceType: 'launch-template',
+                Tags: [
+                  {
+                    Key: 'Name',
+                    Value: 'TestStack/MyFleet/LaunchTemplate',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        'MyFleetASG88E55886': {
+          Type: 'AWS::AutoScaling::AutoScalingGroup',
+          Properties: {
+            MaxSize: '1',
+            MinSize: '1',
+            LaunchTemplate: {
+              LaunchTemplateId: {
+                Ref: 'MyFleetLaunchTemplate165E2717',
+              },
+              Version: {
+                'Fn::GetAtt': [
+                  'MyFleetLaunchTemplate165E2717',
+                  'LatestVersionNumber',
+                ],
+              },
+            },
+            Tags: [
+              {
+                Key: 'Name',
+                PropagateAtLaunch: true,
+                Value: 'TestStack/MyFleet',
+              },
+            ],
+            VPCZoneIdentifier: [
+              'pub1',
+            ],
+          },
+          UpdatePolicy: {
+            AutoScalingScheduledAction: {
+              IgnoreUnmodifiedGroupSizeProperties: true,
+            },
+          },
+        },
+      },
+      Parameters: {
+        'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter': {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
         },
       },
     });

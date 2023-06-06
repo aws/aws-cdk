@@ -1249,6 +1249,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     let launchConfig: CfnLaunchConfiguration | undefined = undefined;
+    let launchTemplateFromConfig: ec2.ILaunchTemplate | undefined = undefined;
     if (props.launchTemplate || props.mixedInstancesPolicy) {
       this.verifyNoLaunchConfigPropIsGiven(props);
 
@@ -1320,6 +1321,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
       const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
 
+      // generate launch template from launch config props when feature flag is set
       if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
         launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
           imageId: imageConfig.imageId,
@@ -1336,7 +1338,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         });
         launchConfig.node.addDependency(this.role);
       } else {
-        this.launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
           keyName: props.keyName,
           instanceType: props.instanceType,
@@ -1344,6 +1346,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           securityGroup: this.securityGroup,
           role: this._role,
           userData: this._userData,
+          associatePublicIpAddress: props.associatePublicIpAddress,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
         });
@@ -1423,7 +1426,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
-      ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
+      ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
