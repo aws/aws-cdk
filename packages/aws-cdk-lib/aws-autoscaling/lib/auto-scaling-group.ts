@@ -232,7 +232,7 @@ export interface CommonAutoScalingGroupProps {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
    * @default - Uses the block device mapping of the AMI
-   * @deprecated - use `launchTemplate` or `mixedInstancesPolicy`
+   * @deprecated - Use `launchTemplate` or `mixedInstancesPolicy`
    */
   readonly blockDevices?: BlockDevice[];
 
