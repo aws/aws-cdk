@@ -5,6 +5,7 @@
         "lib": ["es2019", "es2020", "dom"],
         "strict": true,
         "alwaysStrict": true,
+        "skipLibCheck": true,
         "declaration": true,
         "inlineSourceMap": true,
         "inlineSources": true,

@@ -1,6 +1,6 @@
+import { State } from './states/state';
 import * as iam from '../../aws-iam';
 import { Duration } from '../../core';
-import { State } from './states/state';
 
 /**
  * A collection of connected states

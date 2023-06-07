@@ -92,7 +92,6 @@ const api2 = new Api(testCase, 'IntegApi2', {
   path: 'items',
 });
 
-
 /**
  * Test 1
  *
@@ -151,7 +150,6 @@ secondDomain.addApiMapping(api2.restApi.deploymentStage, {
   basePath: 'orders/v2',
 });
 
-
 /**
  * Test 3
  *
@@ -176,7 +174,6 @@ new CfnRecordSet(testCase, 'Integ3DomainRecord', {
 thirdDomain.addBasePathMapping(api2.restApi, {
   basePath: 'v2',
 });
-
 
 /**
  * -------------------------------------------------------

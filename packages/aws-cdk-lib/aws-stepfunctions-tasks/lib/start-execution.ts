@@ -1,7 +1,7 @@
+import { getResourceArn } from './resource-arn-suffix';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ArnFormat, Stack } from '../../core';
-import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for StartExecution

@@ -1,9 +1,9 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as constructs from 'constructs';
 import { Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
-import * as constructs from 'constructs';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -460,7 +460,6 @@ describe('tests', () => {
     listener.addCertificates('extra', [
       importedCertificate(stack, 'cert2'),
     ]);
-
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {

@@ -1,5 +1,8 @@
 import { EOL } from 'os';
 import * as path from 'path';
+import { IConstruct, Construct } from 'constructs';
+import { CfnRepository } from './ecr.generated';
+import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -18,9 +21,6 @@ import {
   CustomResourceProvider,
   builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
-import { IConstruct, Construct } from 'constructs';
-import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -560,6 +560,8 @@ export class Repository extends RepositoryBase {
       throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
+    validateRepositoryArn();
+
     const repositoryName = repositoryArn.split('/').slice(1).join('/');
 
     class Import extends RepositoryBase {
@@ -575,6 +577,14 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id, {
       environmentFromArn: repositoryArn,
     });
+
+    function validateRepositoryArn() {
+      const splitArn = repositoryArn.split(':');
+
+      if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
+        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+      }
+    }
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {

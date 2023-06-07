@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Stack, Stage } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * Options for TarballImageAsset
