@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.serviceNetworkArnComponents = void 0;
+function serviceNetworkArnComponents(serviceNetworkName) {
+    return {
+        service: 'vpclattice',
+        resource: 'servicenetwork',
+        resourceName: serviceNetworkName,
+    };
+}
+exports.serviceNetworkArnComponents = serviceNetworkArnComponents;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VydmljZS1uZXR3b3JrLWNvbW1vbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInNlcnZpY2UtbmV0d29yay1jb21tb24udHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBRUEsU0FBZ0IsMkJBQTJCLENBQUMsa0JBQTBCO0lBQ3BFLE9BQU87UUFDTCxPQUFPLEVBQUUsWUFBWTtRQUNyQixRQUFRLEVBQUUsZ0JBQWdCO1FBQzFCLFlBQVksRUFBRSxrQkFBa0I7S0FDakMsQ0FBQztBQUNKLENBQUM7QUFORCxrRUFNQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIGNkayBmcm9tICdhd3MtY2RrLWxpYic7XG5cbmV4cG9ydCBmdW5jdGlvbiBzZXJ2aWNlTmV0d29ya0FybkNvbXBvbmVudHMoc2VydmljZU5ldHdvcmtOYW1lOiBzdHJpbmcpOiBjZGsuQXJuQ29tcG9uZW50cyB7XG4gIHJldHVybiB7XG4gICAgc2VydmljZTogJ3ZwY2xhdHRpY2UnLFxuICAgIHJlc291cmNlOiAnc2VydmljZW5ldHdvcmsnLFxuICAgIHJlc291cmNlTmFtZTogc2VydmljZU5ldHdvcmtOYW1lLFxuICB9O1xufVxuIl19
