@@ -181,7 +181,7 @@ describe('extractDependencies', () => {
 });
 
 describe('getTsconfigCompilerOptions', () => {
-  test.skip('should extract compiler options and returns as string', () => {
+  test('should extract compiler options and returns as string', () => {
     const tsconfig = path.join(__dirname, 'testtsconfig.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
@@ -193,7 +193,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--incremental false',
       '--inlineSourceMap',
       '--inlineSources',
-      '--lib es2020',
+      '--lib es2020,dom',
       '--module CommonJS',
       '--newLine lf',
       '--noEmitOnError',
@@ -214,7 +214,7 @@ describe('getTsconfigCompilerOptions', () => {
     ].join(' '));
   });
 
-  test.skip('should extract compiler options with extended config overriding', () => {
+  test('should extract compiler options with extended config overriding', () => {
     const tsconfig = path.join(__dirname, 'testtsconfig-extended.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
@@ -226,7 +226,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--incremental false',
       '--inlineSourceMap',
       '--inlineSources',
-      '--lib es2020',
+      '--lib es2020,dom',
       '--module CommonJS',
       '--newLine lf',
       '--noEmitOnError',

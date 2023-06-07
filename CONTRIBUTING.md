@@ -336,7 +336,7 @@ new features and all fixes unless there is a good reason why one is not needed.
 4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
 5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
-All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests)
+All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/integ-tests-alpha/lib/test-case.ts#L148)
 construct. Over time we will be updating all of our existing tests to use this construct. It
 allows for more control over configuring each tests as well as the ability to perform
 assertions against the deployed infrastructure.
