@@ -334,9 +334,8 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param grantee The principal to grant right to
    * @param actions The client actions to grant
    * @param conditions The conditions to grant
-   * @internal
    */
-  public _grantClient(grantee: iam.IGrantable, actions: ClientAction[], conditions?: Record<string, Record<string, unknown>>): iam.Grant {
+  private _grantClient(grantee: iam.IGrantable, actions: ClientAction[], conditions?: Record<string, Record<string, unknown>>): iam.Grant {
     this._grantedClient = true;
     return iam.Grant.addToPrincipalOrResource({
       grantee: grantee,
