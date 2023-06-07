@@ -2,7 +2,6 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
-//import * as sam from '../../aws-sam';
 import { Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
 import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
