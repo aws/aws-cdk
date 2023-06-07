@@ -613,12 +613,11 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     const fileSource = Source.data(props.source, fileData);
     const fullBucketDeploymentProps: BucketDeploymentProps = {
       prune: false,
-      extract: true,
+      extract: false,
       ...props,
       sources: [fileSource],
     };
     super(scope, id, fullBucketDeploymentProps);
-
     // sets the object key
     this.objectKey = cdk.Fn.select(0, this.objectKeys);
   }
