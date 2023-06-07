@@ -235,7 +235,6 @@ export interface EventSourceMappingOptions {
    */
   readonly kafkaConsumerGroupId?: string
 
-
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html

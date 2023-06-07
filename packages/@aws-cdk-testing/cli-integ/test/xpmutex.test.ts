@@ -30,7 +30,6 @@ test('acquire waits', async () => {
   await secondProcess;
 });
 
-
 /**
  * Poll for some condition every 10ms
  */
