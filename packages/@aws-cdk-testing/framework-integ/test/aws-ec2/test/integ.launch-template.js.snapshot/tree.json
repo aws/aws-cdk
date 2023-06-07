@@ -61,29 +61,29 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.LaunchTemplate",
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
               "version": "0.0.0"
             }
           },
-          "LTWithMachineImage": {
-            "id": "LTWithMachineImage",
-            "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage",
+          "LTWithMachineImageAndPublicIP": {
+            "id": "LTWithMachineImageAndPublicIP",
+            "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                   "aws:cdk:cloudformation:props": {
                     "launchTemplateData": {
                       "imageId": {
-                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                       },
                       "tagSpecifications": [
                         {
@@ -91,7 +91,7 @@
                           "tags": [
                             {
                               "key": "Name",
-                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
                             }
                           ]
                         },
@@ -100,14 +100,20 @@
                           "tags": [
                             {
                               "key": "Name",
-                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
                             }
                           ]
                         }
                       ],
                       "userData": {
                         "Fn::Base64": "#!/bin/bash"
-                      }
+                      },
+                      "networkInterfaces": [
+                        {
+                          "deviceIndex": 0,
+                          "associatePublicIpAddress": true
+                        }
+                      ]
                     },
                     "tagSpecifications": [
                       {
@@ -115,7 +121,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
+                            "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
                           }
                         ]
                       }
@@ -123,29 +129,29 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.LaunchTemplate",
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -153,7 +159,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-ec2-lt-metadata-1/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -161,13 +167,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-ec2-lt-metadata-1/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -184,7 +190,7 @@
                 "path": "LambdaTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -195,7 +201,7 @@
                     "id": "BootstrapVersion",
                     "path": "LambdaTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -203,25 +209,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -230,12 +236,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
