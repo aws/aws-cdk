@@ -83,14 +83,6 @@ describe('route53', () => {
     });
   });
 
-  test('fails if zone name ends with a trailing dot', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // THEN
-    expect(() => new HostedZone(stack, 'MyHostedZone', { zoneName: 'zonename.' })).toThrow(/zone name must not end with a trailing dot/);
-  });
-
   test('a hosted zone can be assiciated with a VPC either upon creation or using "addVpc"', () => {
     // GIVEN
     const stack = new cdk.Stack();

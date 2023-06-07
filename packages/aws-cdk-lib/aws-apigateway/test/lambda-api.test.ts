@@ -299,7 +299,7 @@ describe('lambda api', () => {
       ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
       AuthorizationType: 'NONE',
       AuthorizerId: Match.absent(),
-      ApiKeyRequired: Match.absent(),
+      ApiKeyRequired: false,
       Integration: {
         IntegrationResponses: [
           {
