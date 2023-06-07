@@ -630,9 +630,14 @@ describe('LaunchTemplate', () => {
   });
 
   test('Associate public IP address', () => {
+    // GIVEN
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
     // WHEN
     new LaunchTemplate(stack, 'Template', {
       associatePublicIpAddress: true,
+      securityGroup: sg,
     });
 
     // THEN
@@ -642,6 +647,46 @@ describe('LaunchTemplate', () => {
           {
             DeviceIndex: 0,
             AssociatePublicIpAddress: true,
+            Groups: [
+              {
+                'Fn::GetAtt': [
+                  'SGADB53937',
+                  'GroupId',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('Dissociate public IP address', () => {
+    // GIVEN
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      associatePublicIpAddress: false,
+      securityGroup: sg,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        NetworkInterfaces: [
+          {
+            DeviceIndex: 0,
+            AssociatePublicIpAddress: false,
+            Groups: [
+              {
+                'Fn::GetAtt': [
+                  'SGADB53937',
+                  'GroupId',
+                ],
+              },
+            ],
           },
         ],
       },
