@@ -1,5 +1,95 @@
 {
  "Resources": {
+  "MainLT4FC09097": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.micro",
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/MainLT"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/MainLT"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/MainLT"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "T4gLT8FF7D308": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t4g.micro",
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/T4gLT"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/T4gLT"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/T4gLT"
+       }
+      ]
+     }
+    ]
+   }
+  },
   "VPCB9E5F0B4": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -391,10 +481,193 @@
     }
    }
   },
-  "FleetInstanceSecurityGroupA8C3D7AD": {
+  "AsgFromLTASG089B7C3A": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "10",
+    "MinSize": "0",
+    "DesiredCapacity": "5",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "MainLT4FC09097"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "MainLT4FC09097",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "AsgWithDefaultInstanceWarmupASG7A481C66": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "1",
+    "MinSize": "1",
+    "DefaultInstanceWarmup": 5,
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "MainLT4FC09097"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "MainLT4FC09097",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "AsgFromMipASG9EFCE2FC": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "10",
+    "MinSize": "0",
+    "DesiredCapacity": "5",
+    "MixedInstancesPolicy": {
+     "InstancesDistribution": {
+      "OnDemandPercentageAboveBaseCapacity": 50
+     },
+     "LaunchTemplate": {
+      "LaunchTemplateSpecification": {
+       "LaunchTemplateId": {
+        "Ref": "MainLT4FC09097"
+       },
+       "Version": {
+        "Fn::GetAtt": [
+         "MainLT4FC09097",
+         "LatestVersionNumber"
+        ]
+       }
+      },
+      "Overrides": [
+       {
+        "InstanceType": "t3.micro"
+       },
+       {
+        "InstanceType": "t3a.micro"
+       },
+       {
+        "InstanceType": "t4g.micro",
+        "LaunchTemplateSpecification": {
+         "LaunchTemplateId": {
+          "Ref": "T4gLT8FF7D308"
+         },
+         "Version": {
+          "Fn::GetAtt": [
+           "T4gLT8FF7D308",
+           "LatestVersionNumber"
+          ]
+         }
+        }
+       }
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "AsgFromMipWithoutDistributionASG4BF292F9": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "10",
+    "MinSize": "0",
+    "DesiredCapacity": "5",
+    "MixedInstancesPolicy": {
+     "LaunchTemplate": {
+      "LaunchTemplateSpecification": {
+       "LaunchTemplateId": {
+        "Ref": "MainLT4FC09097"
+       },
+       "Version": {
+        "Fn::GetAtt": [
+         "MainLT4FC09097",
+         "LatestVersionNumber"
+        ]
+       }
+      },
+      "Overrides": [
+       {
+        "InstanceType": "t3.micro"
+       },
+       {
+        "InstanceType": "t3a.micro"
+       },
+       {
+        "InstanceType": "t4g.micro",
+        "LaunchTemplateSpecification": {
+         "LaunchTemplateId": {
+          "Ref": "T4gLT8FF7D308"
+         },
+         "Version": {
+          "Fn::GetAtt": [
+           "T4gLT8FF7D308",
+           "LatestVersionNumber"
+          ]
+         }
+        }
+       }
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-asg-integ/Fleet/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,7 +678,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-asg-integ/Fleet"
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
      }
     ],
     "VpcId": {
@@ -413,28 +686,7 @@
     }
    }
   },
-  "FleetInstanceSecurityGroupfromawscdkasgintegLBSecurityGroup33FBF9CC8076F0C574": {
-   "Type": "AWS::EC2::SecurityGroupIngress",
-   "Properties": {
-    "IpProtocol": "tcp",
-    "Description": "Load balancer to target",
-    "FromPort": 80,
-    "GroupId": {
-     "Fn::GetAtt": [
-      "FleetInstanceSecurityGroupA8C3D7AD",
-      "GroupId"
-     ]
-    },
-    "SourceSecurityGroupId": {
-     "Fn::GetAtt": [
-      "LBSecurityGroup8A41EA2B",
-      "GroupId"
-     ]
-    },
-    "ToPort": 80
-   }
-  },
-  "FleetInstanceRoleA605DB82": {
+  "AsgWithGp3BlockdeviceInstanceRoleF52FB39B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -452,121 +704,73 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-asg-integ/Fleet"
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
      }
     ]
    }
   },
-  "FleetInstanceProfileC6192A66": {
+  "AsgWithGp3BlockdeviceInstanceProfile2FC414A5": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "FleetInstanceRoleA605DB82"
+      "Ref": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
      }
     ]
    }
   },
-  "FleetLaunchTemplateProfileB169EB6D": {
-   "Type": "AWS::IAM::InstanceProfile",
+  "AsgWithGp3BlockdeviceLaunchConfig24411F5E": {
+   "Type": "AWS::AutoScaling::LaunchConfiguration",
    "Properties": {
-    "Roles": [
-     {
-      "Ref": "FleetInstanceRoleA605DB82"
-     }
-    ]
-   }
-  },
-  "FleetLaunchTemplate3FC2FEAE": {
-   "Type": "AWS::EC2::LaunchTemplate",
-   "Properties": {
-    "LaunchTemplateData": {
-     "IamInstanceProfile": {
-      "Arn": {
-       "Fn::GetAtt": [
-        "FleetLaunchTemplateProfileB169EB6D",
-        "Arn"
-       ]
-      }
-     },
-     "ImageId": {
-      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-     },
-     "InstanceType": "t2.micro",
-     "Monitoring": {
-      "Enabled": false
-     },
-     "SecurityGroupIds": [
-      {
-       "Fn::GetAtt": [
-        "FleetInstanceSecurityGroupA8C3D7AD",
-        "GroupId"
-       ]
-      }
-     ],
-     "TagSpecifications": [
-      {
-       "ResourceType": "instance",
-       "Tags": [
-        {
-         "Key": "Name",
-         "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
-        }
-       ]
-      },
-      {
-       "ResourceType": "volume",
-       "Tags": [
-        {
-         "Key": "Name",
-         "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
-        }
-       ]
-      }
-     ],
-     "UserData": {
-      "Fn::Base64": "#!/bin/bash"
-     }
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "TagSpecifications": [
+    "InstanceType": "t3.micro",
+    "BlockDeviceMappings": [
      {
-      "ResourceType": "launch-template",
-      "Tags": [
-       {
-        "Key": "Name",
-        "Value": "aws-cdk-asg-integ/Fleet/LaunchTemplate"
-       }
+      "DeviceName": "ebs",
+      "Ebs": {
+       "DeleteOnTermination": true,
+       "Encrypted": true,
+       "Throughput": 125,
+       "VolumeSize": 15,
+       "VolumeType": "gp3"
+      }
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206",
+       "GroupId"
       ]
      }
-    ]
-   }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+   ]
   },
-  "FleetASG3971DFE5": {
+  "AsgWithGp3BlockdeviceASGE82AA487": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
-    "MaxSize": "1",
-    "MinSize": "1",
-    "LaunchTemplate": {
-     "LaunchTemplateId": {
-      "Ref": "FleetLaunchTemplate3FC2FEAE"
-     },
-     "Version": {
-      "Fn::GetAtt": [
-       "FleetLaunchTemplate3FC2FEAE",
-       "LatestVersionNumber"
-      ]
-     }
+    "MaxSize": "10",
+    "MinSize": "0",
+    "DesiredCapacity": "5",
+    "LaunchConfigurationName": {
+     "Ref": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
     },
     "Tags": [
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-cdk-asg-integ/Fleet"
-     }
-    ],
-    "TargetGroupARNs": [
-     {
-      "Ref": "LBListenerTargetGroupF04FCF6D"
+      "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
      }
     ],
     "VPCZoneIdentifier": [
@@ -583,192 +787,17 @@
      "IgnoreUnmodifiedGroupSizeProperties": true
     }
    }
-  },
-  "FleetScalingPolicyAModestLoad92829613": {
-   "Type": "AWS::AutoScaling::ScalingPolicy",
-   "Properties": {
-    "AutoScalingGroupName": {
-     "Ref": "FleetASG3971DFE5"
-    },
-    "PolicyType": "TargetTrackingScaling",
-    "TargetTrackingConfiguration": {
-     "PredefinedMetricSpecification": {
-      "PredefinedMetricType": "ALBRequestCountPerTarget",
-      "ResourceLabel": {
-       "Fn::Join": [
-        "",
-        [
-         {
-          "Fn::Select": [
-           1,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Ref": "LBListener49E825B4"
-             }
-            ]
-           }
-          ]
-         },
-         "/",
-         {
-          "Fn::Select": [
-           2,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Ref": "LBListener49E825B4"
-             }
-            ]
-           }
-          ]
-         },
-         "/",
-         {
-          "Fn::Select": [
-           3,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Ref": "LBListener49E825B4"
-             }
-            ]
-           }
-          ]
-         },
-         "/",
-         {
-          "Fn::GetAtt": [
-           "LBListenerTargetGroupF04FCF6D",
-           "TargetGroupFullName"
-          ]
-         }
-        ]
-       ]
-      }
-     },
-     "TargetValue": 60
-    }
-   },
-   "DependsOn": [
-    "LBListener49E825B4",
-    "LBListenerTargetGroupF04FCF6D"
-   ]
-  },
-  "LB8A12904C": {
-   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-   "Properties": {
-    "LoadBalancerAttributes": [
-     {
-      "Key": "deletion_protection.enabled",
-      "Value": "false"
-     }
-    ],
-    "Scheme": "internet-facing",
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "LBSecurityGroup8A41EA2B",
-       "GroupId"
-      ]
-     }
-    ],
-    "Subnets": [
-     {
-      "Ref": "VPCPublicSubnet1SubnetB4246D30"
-     },
-     {
-      "Ref": "VPCPublicSubnet2Subnet74179F39"
-     }
-    ],
-    "Type": "application"
-   },
-   "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
-    "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ]
-  },
-  "LBSecurityGroup8A41EA2B": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awscdkasgintegLB91115691",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow from anyone on port 80",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "ToPort": 80
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "LBSecurityGrouptoawscdkasgintegFleetInstanceSecurityGroup3CA66C0C808D3B5C07": {
-   "Type": "AWS::EC2::SecurityGroupEgress",
-   "Properties": {
-    "GroupId": {
-     "Fn::GetAtt": [
-      "LBSecurityGroup8A41EA2B",
-      "GroupId"
-     ]
-    },
-    "IpProtocol": "tcp",
-    "Description": "Load balancer to target",
-    "DestinationSecurityGroupId": {
-     "Fn::GetAtt": [
-      "FleetInstanceSecurityGroupA8C3D7AD",
-      "GroupId"
-     ]
-    },
-    "FromPort": 80,
-    "ToPort": 80
-   }
-  },
-  "LBListener49E825B4": {
-   "Type": "AWS::ElasticLoadBalancingV2::Listener",
-   "Properties": {
-    "DefaultActions": [
-     {
-      "TargetGroupArn": {
-       "Ref": "LBListenerTargetGroupF04FCF6D"
-      },
-      "Type": "forward"
-     }
-    ],
-    "LoadBalancerArn": {
-     "Ref": "LB8A12904C"
-    },
-    "Port": 80,
-    "Protocol": "HTTP"
-   }
-  },
-  "LBListenerTargetGroupF04FCF6D": {
-   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-   "Properties": {
-    "Port": 80,
-    "Protocol": "HTTP",
-    "TargetGroupAttributes": [
-     {
-      "Key": "stickiness.enabled",
-      "Value": "false"
-     }
-    ],
-    "TargetType": "instance",
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
   }
  },
  "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2"
+  },
   "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"

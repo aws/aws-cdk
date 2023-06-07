@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1f5fb90e9f09b1ba5190d8700e60afabe512a4297d6ac4b7827e9c8b6c3db4b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f0699c7863c01ee4fb7ccca4b192b311d9d6723f012b40f36bdf25a5db22f0c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +33,30 @@
         "aws-cdk-asg-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-asg-integ/MainLT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MainLT4FC09097"
+          }
+        ],
+        "/aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-asg-integ/T4gLT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "T4gLT8FF7D308"
+          }
+        ],
+        "/aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
         "/aws-cdk-asg-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -171,70 +195,88 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/InstanceSecurityGroup/Resource": [
+        "/aws-cdk-asg-integ/AsgFromLT": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetInstanceSecurityGroupA8C3D7AD"
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/InstanceSecurityGroup/from awscdkasgintegLBSecurityGroup33FBF9CC:80": [
+        "/aws-cdk-asg-integ/AsgFromLT/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetInstanceSecurityGroupfromawscdkasgintegLBSecurityGroup33FBF9CC8076F0C574"
+            "data": "AsgFromLTASG089B7C3A"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/InstanceRole/Resource": [
+        "/aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetInstanceRoleA605DB82"
+            "data": "AsgWithDefaultInstanceWarmupASG7A481C66"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/InstanceProfile": [
+        "/aws-cdk-asg-integ/AsgFromMip": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetInstanceProfileC6192A66"
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/LaunchTemplate/Profile": [
+        "/aws-cdk-asg-integ/AsgFromMip/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchTemplateProfileB169EB6D"
+            "data": "AsgFromMipASG9EFCE2FC"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/LaunchTemplate/Resource": [
+        "/aws-cdk-asg-integ/AsgFromMipWithoutDistribution": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchTemplate3FC2FEAE"
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/ASG": [
+        "/aws-cdk-asg-integ/AsgFromMipWithoutDistribution/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetASG3971DFE5"
+            "data": "AsgFromMipWithoutDistributionASG4BF292F9"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceASGE82AA487"
           }
         ],
         "/aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-asg-integ/LB/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LBSecurityGroup8A41EA2B"
-          }
-        ],
-        "/aws-cdk-asg-integ/LB/SecurityGroup/to awscdkasgintegFleetInstanceSecurityGroup3CA66C0C:80": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LBSecurityGrouptoawscdkasgintegFleetInstanceSecurityGroup3CA66C0C808D3B5C07"
-          }
-        ],
-        "/aws-cdk-asg-integ/LB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LB8A12904C"
           }
         ],
         "/aws-cdk-asg-integ/BootstrapVersion": [
@@ -248,18 +290,56 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "FleetLaunchConfig59F79D36": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-asg-integ"
+    },
+    "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LaunchTemplateFromLaunchConfigPropsTestDefaultTestDeployAssert9F2D2DB9.assets"
+      ],
+      "metadata": {
+        "/LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

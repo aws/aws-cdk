@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66b1b9cec9c1b972779161099a4b8310affc4106b7e751a3032a397c09e1c9f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/860cd7db91613c75eb633734e022b5106bc48ce1bc1dc6fcf9e5289bec299390.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,16 @@
             "data": "FleetInstanceProfileC6192A66"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/LaunchConfig": [
+        "/aws-cdk-asg-integ/Fleet/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36"
+            "data": "FleetLaunchTemplateProfileB169EB6D"
+          }
+        ],
+        "/aws-cdk-asg-integ/Fleet/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetLaunchTemplate3FC2FEAE"
           }
         ],
         "/aws-cdk-asg-integ/Fleet/ASG": [
@@ -260,6 +266,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "FleetLaunchConfig59F79D36": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetLaunchConfig59F79D36",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-asg-integ"
@@ -280,7 +295,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e4ba6d1c10cb8a0be78abd30ef94d231f8913f1cd4b02c0b62b8626f3425c00.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92e6b9418d053cc02e1e7d72c3c1b10f8479ab3a3dcfd8f57114aeca46851baa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -482,10 +497,16 @@
             "data": "AsgInstanceProfileBCEDB827"
           }
         ],
-        "/aws-cdk-asg-atg-integ/Asg/LaunchConfig": [
+        "/aws-cdk-asg-atg-integ/Asg/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AsgLaunchConfig6D4F96BB"
+            "data": "AsgLaunchTemplateProfileE5FD9207"
+          }
+        ],
+        "/aws-cdk-asg-atg-integ/Asg/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLaunchTemplate6027899F"
           }
         ],
         "/aws-cdk-asg-atg-integ/Asg/ASG": [
@@ -534,6 +555,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "AsgLaunchConfig6D4F96BB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgLaunchConfig6D4F96BB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

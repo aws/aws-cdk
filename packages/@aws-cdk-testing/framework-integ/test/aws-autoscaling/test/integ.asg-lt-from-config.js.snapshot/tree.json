@@ -4,17 +4,175 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-role-target-hook": {
-        "id": "integ-role-target-hook",
-        "path": "integ-role-target-hook",
+      "aws-cdk-asg-integ": {
+        "id": "aws-cdk-asg-integ",
+        "path": "aws-cdk-asg-integ",
         "children": {
-          "myVpcAuto": {
-            "id": "myVpcAuto",
-            "path": "integ-role-target-hook/myVpcAuto",
+          "MainLT": {
+            "id": "MainLT",
+            "path": "aws-cdk-asg-integ/MainLT",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-role-target-hook/myVpcAuto/Resource",
+                "path": "aws-cdk-asg-integ/MainLT/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplateData": {
+                      "imageId": {
+                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                      },
+                      "instanceType": "t3.micro",
+                      "tagSpecifications": [
+                        {
+                          "resourceType": "instance",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-asg-integ/MainLT"
+                            }
+                          ]
+                        },
+                        {
+                          "resourceType": "volume",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-asg-integ/MainLT"
+                            }
+                          ]
+                        }
+                      ],
+                      "userData": {
+                        "Fn::Base64": "#!/bin/bash"
+                      }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-asg-integ/MainLT"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "T4gLT": {
+            "id": "T4gLT",
+            "path": "aws-cdk-asg-integ/T4gLT",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-asg-integ/T4gLT/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplateData": {
+                      "imageId": {
+                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                      },
+                      "instanceType": "t4g.micro",
+                      "tagSpecifications": [
+                        {
+                          "resourceType": "instance",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-asg-integ/T4gLT"
+                            }
+                          ]
+                        },
+                        {
+                          "resourceType": "volume",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-asg-integ/T4gLT"
+                            }
+                          ]
+                        }
+                      ],
+                      "userData": {
+                        "Fn::Base64": "#!/bin/bash"
+                      }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-asg-integ/T4gLT"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-arm64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "VPC": {
+            "id": "VPC",
+            "path": "aws-cdk-asg-integ/VPC",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-asg-integ/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +183,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-role-target-hook/myVpcAuto"
+                        "value": "aws-cdk-asg-integ/VPC"
                       }
                     ]
                   }
@@ -37,16 +195,16 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1",
+                "path": "aws-cdk-asg-integ/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -69,7 +227,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -81,7 +239,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/Acl",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,17 +247,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -111,15 +269,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPublicSubnet1RouteTable3D618310"
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         },
                         "subnetId": {
-                          "Ref": "myVpcAutoPublicSubnet1Subnet3516098F"
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         }
                       }
                     },
@@ -130,16 +288,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPublicSubnet1RouteTable3D618310"
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "myVpcAutoIGW08055396"
+                          "Ref": "VPCIGWB7E252D3"
                         }
                       }
                     },
@@ -150,7 +308,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/EIP",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +316,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,23 +328,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "subnetId": {
-                          "Ref": "myVpcAutoPublicSubnet1Subnet3516098F"
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "myVpcAutoPublicSubnet1EIP15D99CAF",
+                            "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,16 +362,16 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2",
+                "path": "aws-cdk-asg-integ/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -236,7 +394,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -248,7 +406,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/Acl",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,17 +414,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -278,15 +436,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPublicSubnet2RouteTable17ECF2AC"
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         },
                         "subnetId": {
-                          "Ref": "myVpcAutoPublicSubnet2Subnet297C7839"
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         }
                       }
                     },
@@ -297,16 +455,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPublicSubnet2RouteTable17ECF2AC"
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "myVpcAutoIGW08055396"
+                          "Ref": "VPCIGWB7E252D3"
                         }
                       }
                     },
@@ -317,7 +475,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/EIP",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +483,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,23 +495,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-role-target-hook/myVpcAuto/PublicSubnet2/NATGateway",
+                    "path": "aws-cdk-asg-integ/VPC/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "subnetId": {
-                          "Ref": "myVpcAutoPublicSubnet2Subnet297C7839"
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         },
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "myVpcAutoPublicSubnet2EIPA484FACE",
+                            "VPCPublicSubnet2EIP4947BC00",
                             "AllocationId"
                           ]
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PublicSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,16 +529,16 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1",
+                "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -403,7 +561,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PrivateSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -415,7 +573,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,17 +581,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PrivateSubnet1"
+                            "value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -445,15 +603,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPrivateSubnet1RouteTableDC61148B"
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         },
                         "subnetId": {
-                          "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
                         }
                       }
                     },
@@ -464,16 +622,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPrivateSubnet1RouteTableDC61148B"
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "myVpcAutoPublicSubnet1NATGatewayF3EA78A2"
+                          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
                         }
                       }
                     },
@@ -490,16 +648,16 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2",
+                "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "availabilityZone": {
                           "Fn::Select": [
@@ -522,7 +680,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PrivateSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -534,7 +692,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,17 +700,17 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/myVpcAuto/PrivateSubnet2"
+                            "value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -564,15 +722,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPrivateSubnet2RouteTableE10F6006"
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         },
                         "subnetId": {
-                          "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
                         }
                       }
                     },
@@ -583,16 +741,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-role-target-hook/myVpcAuto/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-asg-integ/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myVpcAutoPrivateSubnet2RouteTableE10F6006"
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "myVpcAutoPublicSubnet2NATGatewayF670624F"
+                          "Ref": "VPCPublicSubnet2NATGateway3C070193"
                         }
                       }
                     },
@@ -609,14 +767,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-role-target-hook/myVpcAuto/IGW",
+                "path": "aws-cdk-asg-integ/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-role-target-hook/myVpcAuto"
+                        "value": "aws-cdk-asg-integ/VPC"
                       }
                     ]
                   }
@@ -628,15 +786,15 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-role-target-hook/myVpcAuto/VPCGW",
+                "path": "aws-cdk-asg-integ/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
                     "vpcId": {
-                      "Ref": "myVpcAuto1A4B61E2"
+                      "Ref": "VPCB9E5F0B4"
                     },
                     "internetGatewayId": {
-                      "Ref": "myVpcAutoIGW08055396"
+                      "Ref": "VPCIGWB7E252D3"
                     }
                   }
                 },
@@ -651,149 +809,256 @@
               "version": "0.0.0"
             }
           },
-          "MyRole": {
-            "id": "MyRole",
-            "path": "integ-role-target-hook/MyRole",
+          "AsgFromLT": {
+            "id": "AsgFromLT",
+            "path": "aws-cdk-asg-integ/AsgFromLT",
             "children": {
-              "ImportMyRole": {
-                "id": "ImportMyRole",
-                "path": "integ-role-target-hook/MyRole/ImportMyRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/MyRole/Resource",
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-cdk-asg-integ/AsgFromLT/ASG",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "autoscaling.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
+                    "maxSize": "10",
+                    "minSize": "0",
+                    "desiredCapacity": "5",
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "MainLT4FC09097"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "MainLT4FC09097",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                   "version": "0.0.0"
                 }
-              },
-              "DefaultPolicy": {
-                "id": "DefaultPolicy",
-                "path": "integ-role-target-hook/MyRole/DefaultPolicy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-role-target-hook/MyRole/DefaultPolicy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sns:Publish",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Ref": "topic2A4FB547F"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
+              "version": "0.0.0"
+            }
+          },
+          "AsgWithDefaultInstanceWarmup": {
+            "id": "AsgWithDefaultInstanceWarmup",
+            "path": "aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup",
+            "children": {
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "maxSize": "1",
+                    "minSize": "1",
+                    "defaultInstanceWarmup": 5,
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "MainLT4FC09097"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "MainLT4FC09097",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
+              "version": "0.0.0"
+            }
+          },
+          "AsgFromMip": {
+            "id": "AsgFromMip",
+            "path": "aws-cdk-asg-integ/AsgFromMip",
+            "children": {
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-cdk-asg-integ/AsgFromMip/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "maxSize": "10",
+                    "minSize": "0",
+                    "desiredCapacity": "5",
+                    "mixedInstancesPolicy": {
+                      "instancesDistribution": {
+                        "onDemandPercentageAboveBaseCapacity": 50
+                      },
+                      "launchTemplate": {
+                        "launchTemplateSpecification": {
+                          "launchTemplateId": {
+                            "Ref": "MainLT4FC09097"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "MainLT4FC09097",
+                              "LatestVersionNumber"
+                            ]
+                          }
+                        },
+                        "overrides": [
+                          {
+                            "instanceType": "t3.micro"
+                          },
+                          {
+                            "instanceType": "t3a.micro"
+                          },
+                          {
+                            "instanceType": "t4g.micro",
+                            "launchTemplateSpecification": {
+                              "launchTemplateId": {
+                                "Ref": "T4gLT8FF7D308"
+                              },
+                              "version": {
+                                "Fn::GetAtt": [
+                                  "T4gLT8FF7D308",
+                                  "LatestVersionNumber"
+                                ]
                               }
                             }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "MyRoleDefaultPolicyA36BE1DD",
-                        "roles": [
-                          {
-                            "Ref": "MyRoleF48FFE04"
                           }
                         ]
                       }
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
               "version": "0.0.0"
             }
           },
-          "topic": {
-            "id": "topic",
-            "path": "integ-role-target-hook/topic",
+          "AsgFromMipWithoutDistribution": {
+            "id": "AsgFromMipWithoutDistribution",
+            "path": "aws-cdk-asg-integ/AsgFromMipWithoutDistribution",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/topic/Resource",
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-cdk-asg-integ/AsgFromMipWithoutDistribution/ASG",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                  "aws:cdk:cloudformation:props": {}
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "maxSize": "10",
+                    "minSize": "0",
+                    "desiredCapacity": "5",
+                    "mixedInstancesPolicy": {
+                      "launchTemplate": {
+                        "launchTemplateSpecification": {
+                          "launchTemplateId": {
+                            "Ref": "MainLT4FC09097"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "MainLT4FC09097",
+                              "LatestVersionNumber"
+                            ]
+                          }
+                        },
+                        "overrides": [
+                          {
+                            "instanceType": "t3.micro"
+                          },
+                          {
+                            "instanceType": "t3a.micro"
+                          },
+                          {
+                            "instanceType": "t4g.micro",
+                            "launchTemplateSpecification": {
+                              "launchTemplateId": {
+                                "Ref": "T4gLT8FF7D308"
+                              },
+                              "version": {
+                                "Fn::GetAtt": [
+                                  "T4gLT8FF7D308",
+                                  "LatestVersionNumber"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ]
+                  }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
               "version": "0.0.0"
             }
           },
-          "topic2": {
-            "id": "topic2",
-            "path": "integ-role-target-hook/topic2",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/topic2/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                  "aws:cdk:cloudformation:props": {}
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
-              "version": "0.0.0"
-            }
-          },
-          "ASG": {
-            "id": "ASG",
-            "path": "integ-role-target-hook/ASG",
+          "AsgWithGp3Blockdevice": {
+            "id": "AsgWithGp3Blockdevice",
+            "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "integ-role-target-hook/ASG/InstanceSecurityGroup",
+                "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-role-target-hook/ASG/InstanceSecurityGroup/Resource",
+                    "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "integ-role-target-hook/ASG/InstanceSecurityGroup",
+                        "groupDescription": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -804,11 +1069,11 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/ASG"
+                            "value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "myVpcAuto1A4B61E2"
+                          "Ref": "VPCB9E5F0B4"
                         }
                       }
                     },
@@ -825,11 +1090,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "integ-role-target-hook/ASG/InstanceRole",
+                "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "integ-role-target-hook/ASG/InstanceRole/ImportInstanceRole",
+                    "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -837,7 +1102,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-role-target-hook/ASG/InstanceRole/Resource",
+                    "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -856,7 +1121,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-role-target-hook/ASG"
+                            "value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice"
                           }
                         ]
                       }
@@ -874,13 +1139,13 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "integ-role-target-hook/ASG/InstanceProfile",
+                "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
                     "roles": [
                       {
-                        "Ref": "ASGInstanceRoleE263A41B"
+                        "Ref": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
                       }
                     ]
                   }
@@ -890,139 +1155,74 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchTemplate": {
-                "id": "LaunchTemplate",
-                "path": "integ-role-target-hook/ASG/LaunchTemplate",
-                "children": {
-                  "Profile": {
-                    "id": "Profile",
-                    "path": "integ-role-target-hook/ASG/LaunchTemplate/Profile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "ASGInstanceRoleE263A41B"
-                          }
+              "LaunchConfig": {
+                "id": "LaunchConfig",
+                "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchConfig",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "imageId": {
+                      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                    },
+                    "instanceType": "t3.micro",
+                    "blockDeviceMappings": [
+                      {
+                        "deviceName": "ebs",
+                        "ebs": {
+                          "deleteOnTermination": true,
+                          "encrypted": true,
+                          "volumeType": "gp3",
+                          "throughput": 125,
+                          "volumeSize": 15
+                        }
+                      }
+                    ],
+                    "iamInstanceProfile": {
+                      "Ref": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206",
+                          "GroupId"
                         ]
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-role-target-hook/ASG/LaunchTemplate/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
-                      "aws:cdk:cloudformation:props": {
-                        "launchTemplateData": {
-                          "iamInstanceProfile": {
-                            "arn": {
-                              "Fn::GetAtt": [
-                                "ASGLaunchTemplateProfileB99C522F",
-                                "Arn"
-                              ]
-                            }
-                          },
-                          "imageId": {
-                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-                          },
-                          "instanceType": "t2.micro",
-                          "monitoring": {
-                            "enabled": false
-                          },
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "ASGInstanceSecurityGroup0525485D",
-                                "GroupId"
-                              ]
-                            }
-                          ],
-                          "tagSpecifications": [
-                            {
-                              "resourceType": "instance",
-                              "tags": [
-                                {
-                                  "key": "Name",
-                                  "value": "integ-role-target-hook/ASG/LaunchTemplate"
-                                }
-                              ]
-                            },
-                            {
-                              "resourceType": "volume",
-                              "tags": [
-                                {
-                                  "key": "Name",
-                                  "value": "integ-role-target-hook/ASG/LaunchTemplate"
-                                }
-                              ]
-                            }
-                          ],
-                          "userData": {
-                            "Fn::Base64": "#!/bin/bash"
-                          }
-                        },
-                        "tagSpecifications": [
-                          {
-                            "resourceType": "launch-template",
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "integ-role-target-hook/ASG/LaunchTemplate"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
-                      "version": "0.0.0"
+                    ],
+                    "userData": {
+                      "Fn::Base64": "#!/bin/bash"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                   "version": "0.0.0"
                 }
               },
               "ASG": {
                 "id": "ASG",
-                "path": "integ-role-target-hook/ASG/ASG",
+                "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
-                    "maxSize": "1",
-                    "minSize": "1",
-                    "healthCheckType": "EC2",
-                    "launchTemplate": {
-                      "launchTemplateId": {
-                        "Ref": "ASGLaunchTemplate0CA92847"
-                      },
-                      "version": {
-                        "Fn::GetAtt": [
-                          "ASGLaunchTemplate0CA92847",
-                          "LatestVersionNumber"
-                        ]
-                      }
+                    "maxSize": "10",
+                    "minSize": "0",
+                    "desiredCapacity": "5",
+                    "launchConfigurationName": {
+                      "Ref": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
                     },
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-role-target-hook/ASG",
+                        "value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice",
                         "propagateAtLaunch": true
                       }
                     ],
                     "vpcZoneIdentifier": [
                       {
-                        "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
                       },
                       {
-                        "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
                       }
                     ]
                   }
@@ -1040,7 +1240,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "integ-role-target-hook/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1048,198 +1248,15 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "integ-role-target-hook/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
-          "LCHookNoRoleNoTarget": {
-            "id": "LCHookNoRoleNoTarget",
-            "path": "integ-role-target-hook/LCHookNoRoleNoTarget",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/LCHookNoRoleNoTarget/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
-                  "aws:cdk:cloudformation:props": {
-                    "autoScalingGroupName": {
-                      "Ref": "ASG46ED3070"
-                    },
-                    "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-              "version": "0.0.0"
-            }
-          },
-          "LCHookNoRoleTarget": {
-            "id": "LCHookNoRoleTarget",
-            "path": "integ-role-target-hook/LCHookNoRoleTarget",
-            "children": {
-              "Role": {
-                "id": "Role",
-                "path": "integ-role-target-hook/LCHookNoRoleTarget/Role",
-                "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "integ-role-target-hook/LCHookNoRoleTarget/Role/ImportRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-role-target-hook/LCHookNoRoleTarget/Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "autoscaling.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "integ-role-target-hook/LCHookNoRoleTarget/Role/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-role-target-hook/LCHookNoRoleTarget/Role/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sns:Publish",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "topic69831491"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "LCHookNoRoleTargetRoleDefaultPolicyFE681941",
-                            "roles": [
-                              {
-                                "Ref": "LCHookNoRoleTargetRole35B4344D"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/LCHookNoRoleTarget/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
-                  "aws:cdk:cloudformation:props": {
-                    "autoScalingGroupName": {
-                      "Ref": "ASG46ED3070"
-                    },
-                    "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-                    "notificationTargetArn": {
-                      "Ref": "topic69831491"
-                    },
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "LCHookNoRoleTargetRole35B4344D",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-              "version": "0.0.0"
-            }
-          },
-          "LCHookRoleTarget": {
-            "id": "LCHookRoleTarget",
-            "path": "integ-role-target-hook/LCHookRoleTarget",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-role-target-hook/LCHookRoleTarget/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
-                  "aws:cdk:cloudformation:props": {
-                    "autoScalingGroupName": {
-                      "Ref": "ASG46ED3070"
-                    },
-                    "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-                    "notificationTargetArn": {
-                      "Ref": "topic2A4FB547F"
-                    },
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "MyRoleF48FFE04",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-              "version": "0.0.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-role-target-hook/BootstrapVersion",
+            "path": "aws-cdk-asg-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1247,7 +1264,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-role-target-hook/CheckBootstrapVersion",
+            "path": "aws-cdk-asg-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1256,6 +1273,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LaunchTemplateFromLaunchConfigPropsTest": {
+        "id": "LaunchTemplateFromLaunchConfigPropsTest",
+        "path": "LaunchTemplateFromLaunchConfigPropsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

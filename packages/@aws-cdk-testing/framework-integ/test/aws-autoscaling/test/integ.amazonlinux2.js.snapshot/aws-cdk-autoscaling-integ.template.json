@@ -446,39 +446,95 @@
     ]
    }
   },
-  "FleetLaunchConfig59F79D36": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "FleetLaunchTemplateProfileB169EB6D": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "FleetInstanceProfileC6192A66"
-    },
-    "SecurityGroups": [
+    "Roles": [
      {
-      "Fn::GetAtt": [
-       "FleetInstanceSecurityGroupA8C3D7AD",
-       "GroupId"
+      "Ref": "FleetInstanceRoleA605DB82"
+     }
+    ]
+   }
+  },
+  "FleetLaunchTemplate3FC2FEAE": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "FleetLaunchTemplateProfileB169EB6D",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "FleetInstanceSecurityGroupA8C3D7AD",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-autoscaling-integ/Fleet/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-autoscaling-integ/Fleet/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-autoscaling-integ/Fleet/LaunchTemplate"
+       }
       ]
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
-   },
-   "DependsOn": [
-    "FleetInstanceRoleA605DB82"
-   ]
+    ]
+   }
   },
   "FleetASG3971DFE5": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "FleetLaunchConfig59F79D36"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "FleetLaunchTemplate3FC2FEAE"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "FleetLaunchTemplate3FC2FEAE",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "MaxInstanceLifetime": 604800,
     "Tags": [
