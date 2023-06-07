@@ -27,7 +27,7 @@ export enum ImageRepositoryType {
 /**
  * CPU input patterns for App Runner service
  */
-export type CPUPatternType = '256' | '512' | '1024' | '2048' | '4096' | '0.25 vCPU' | '0.5 vCPU' | '1 vCPU' | '2 vCPU' | '4 vCPU'
+export type CpuPatternType = '256' | '512' | '1024' | '2048' | '4096' | '0.25 vCPU' | '0.5 vCPU' | '1 vCPU' | '2 vCPU' | '4 vCPU'
 
 /**
  * The number of CPU units reserved for each instance of your App Runner service.
@@ -66,13 +66,13 @@ export class Cpu {
    *
    * @param unit custom CPU unit
    */
-  public static of(unit: CPUPatternType): Cpu { return new Cpu(unit); }
+  public static of(unit: CpuPatternType): Cpu { return new Cpu(unit); }
 
   /**
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: CPUPatternType) {}
+  private constructor(public readonly unit: CpuPatternType) {}
 }
 
 /**
