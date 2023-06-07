@@ -123,6 +123,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 16.x
    */
   NODEJS_16_X = 'nodejs16.x',
+
+  /**
+   * Node.js 18.x
+   */
+  NODEJS_18_X = 'nodejs18.x',
 }
 
 /**
@@ -293,7 +298,6 @@ export class CustomResourceProvider extends Construct {
       this.roleArn = Token.asString(this._role.getAtt('Arn'));
     }
 
-
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
@@ -400,5 +404,7 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs14.x';
     case CustomResourceProviderRuntime.NODEJS_16_X:
       return 'nodejs16.x';
+    case CustomResourceProviderRuntime.NODEJS_18_X:
+      return 'nodejs18.x';
   }
 }

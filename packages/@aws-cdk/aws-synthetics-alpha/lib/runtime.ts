@@ -51,7 +51,6 @@ export class Runtime {
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0', RuntimeFamily.NODEJS);
 
-
   /**
    * **Deprecated by AWS Synthetics. You can't create canaries with deprecated runtimes.**
    *
@@ -203,6 +202,19 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.9
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_9 = new Runtime('syn-nodejs-puppeteer-3.9', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-4.0` includes the following:
+   * - Lambda runtime Node.js 16.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 92.0.4512
+   *
+   * New Features:
+   * - **Dependency upgrades**: The Node.js dependency is updated to 16.x.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-4.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_4_0 = new Runtime('syn-nodejs-puppeteer-4.0', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:

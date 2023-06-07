@@ -15,7 +15,6 @@ export interface PythonFunctionProps extends FunctionOptions {
    */
   readonly entry: string;
 
-
   /**
    * The runtime environment. Only runtimes of the Python family are
    * supported.
