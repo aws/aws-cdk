@@ -140,7 +140,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can create launch template from deprecated launch config props when feature flag is set', () => {
+  test('can create launch template from launch config props when @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation is set', () => {
     // GIVEN
     const stack = getTestStack();
     stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
