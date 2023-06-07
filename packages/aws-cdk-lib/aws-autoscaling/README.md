@@ -23,7 +23,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-NOTE: Creating an `AutoScalingGroup` from a `LaunchConfiguration` has been deprecated. All new accounts created after 12-31-2023 will not be able to create new launch configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a `LaunchConfiguration` based on the following [launch configuration to launch template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
+NOTE: Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after 12-31-2023 will not be able to create new Launch Configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a Launch Configuration based on the following [launch configuration to launch template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
 * machineImage
 * keyName
 * instanceType
@@ -34,6 +34,8 @@ NOTE: Creating an `AutoScalingGroup` from a `LaunchConfiguration` has been depre
 * associatePublicIpAddress
 * spotPrice
 * blockDevices
+
+[Migrating to Launch Templates from Launch Configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html)
 
 NOTE: AutoScalingGroup has a property called `allowAllOutbound` (allowing the instances to contact the
 internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
