@@ -32,27 +32,27 @@ export class Cpu {
   /**
    * 0.25 vCPU
    */
-  public static readonly QUARTER_VCPU = Cpu.of('0.25 vCPU');
+  public static readonly QUARTER_VCPU = new Cpu('0.25 vCPU');
 
   /**
    * 0.5 vCPU
    */
-  public static readonly HALF_VCPU = Cpu.of('0.5 vCPU');
+  public static readonly HALF_VCPU = new Cpu('0.5 vCPU');
 
   /**
    * 1 vCPU
    */
-  public static readonly ONE_VCPU = Cpu.of('1 vCPU')
+  public static readonly ONE_VCPU = new Cpu('1 vCPU')
 
   /**
    * 2 vCPU
    */
-  public static readonly TWO_VCPU = Cpu.of('2 vCPU')
+  public static readonly TWO_VCPU = new Cpu('2 vCPU')
 
   /**
    * 4 vCPU
    */
-  public static readonly FOUR_VCPU = Cpu.of('4 vCPU')
+  public static readonly FOUR_VCPU = new Cpu('4 vCPU')
 
   /**
    * Custom CPU unit
@@ -63,7 +63,13 @@ export class Cpu {
    */
   public static of(unit: string): Cpu {
     const numericPattern = ['256', '512', '1024', '2048', '4096'];
-    const unitPattern = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
+    const unitPattern = [
+      Cpu.QUARTER_VCPU.unit,
+      Cpu.HALF_VCPU.unit,
+      Cpu.ONE_VCPU.unit,
+      Cpu.TWO_VCPU.unit,
+      Cpu.FOUR_VCPU.unit,
+    ];
     const allowedPattern = numericPattern.concat(unitPattern);
     const isValidValue = allowedPattern.some(
       (pattern) => pattern === unit,
@@ -89,47 +95,47 @@ export class Memory {
   /**
    * 0.5 GB(for 0.25 vCPU)
    */
-  public static readonly HALF_GB = Memory.of('0.5 GB')
+  public static readonly HALF_GB = new Memory('0.5 GB')
 
   /**
    * 1 GB(for 0.25 or 0.5 vCPU)
    */
-  public static readonly ONE_GB = Memory.of('1 GB')
+  public static readonly ONE_GB = new Memory('1 GB')
 
   /**
    * 2 GB(for 1 vCPU)
    */
-  public static readonly TWO_GB = Memory.of('2 GB')
+  public static readonly TWO_GB = new Memory('2 GB')
 
   /**
    * 3 GB(for 1 vCPU)
    */
-  public static readonly THREE_GB = Memory.of('3 GB')
+  public static readonly THREE_GB = new Memory('3 GB')
 
   /**
    * 4 GB(for 1 or 2 vCPU)
    */
-  public static readonly FOUR_GB = Memory.of('4 GB')
+  public static readonly FOUR_GB = new Memory('4 GB')
 
   /**
    * 6 GB(for 2 vCPU)
    */
-  public static readonly SIX_GB = Memory.of('6 GB')
+  public static readonly SIX_GB = new Memory('6 GB')
 
   /**
    * 8 GB(for 4 vCPU)
    */
-  public static readonly EIGHT_GB = Memory.of('8 GB')
+  public static readonly EIGHT_GB = new Memory('8 GB')
 
   /**
    * 10 GB(for 4 vCPU)
    */
-  public static readonly TEN_GB = Memory.of('10 GB')
+  public static readonly TEN_GB = new Memory('10 GB')
 
   /**
    * 12 GB(for 4 vCPU)
    */
-  public static readonly TWELVE_GB = Memory.of('12 GB')
+  public static readonly TWELVE_GB = new Memory('12 GB')
 
   /**
    * Custom Memory unit
@@ -140,7 +146,17 @@ export class Memory {
    */
   public static of(unit: string): Memory {
     const numericPattern = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
-    const unitPattern = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const unitPattern = [
+      Memory.HALF_GB.unit,
+      Memory.ONE_GB.unit,
+      Memory.TWO_GB.unit,
+      Memory.THREE_GB.unit,
+      Memory.FOUR_GB.unit,
+      Memory.SIX_GB.unit,
+      Memory.EIGHT_GB.unit,
+      Memory.TEN_GB.unit,
+      Memory.TWELVE_GB.unit,
+    ];
     const allowedPattern = numericPattern.concat(unitPattern);
     const isValidValue = allowedPattern.some(
       (pattern) => pattern === unit,
