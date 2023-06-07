@@ -132,6 +132,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
+
+  /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
    * If not defined, a default layer will be used containing the AWS CLI 1.x.
@@ -277,6 +285,14 @@ export interface ClusterAttributes {
    * throw an error
    */
   readonly clusterEncryptionConfigKeyArn?: string;
+
+  /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
 
   /**
    * Additional security groups associated with this cluster.
@@ -965,6 +981,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroupId: string;
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
+  public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
@@ -1324,6 +1341,14 @@ export class Cluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  public readonly ipFamily?: IpFamily;
+
+  /**
    * An IAM role with administrative permissions to create or update the
    * cluster. This role also has `systems:master` permissions.
    */
@@ -1489,7 +1514,7 @@ export class Cluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
-
+    this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
@@ -1543,7 +1568,7 @@ export class Cluster extends ClusterBase {
         }],
       } : {}),
       kubernetesNetworkConfig: {
-        ipFamily: props.ipFamily ?? IpFamily.IP_V4,
+        ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
       },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
@@ -2170,6 +2195,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly ipFamily?: IpFamily;
   public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
@@ -2192,6 +2218,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.ipFamily = props.ipFamily;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;

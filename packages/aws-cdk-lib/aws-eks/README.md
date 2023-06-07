@@ -211,7 +211,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 
 #### Node Groups with IPv6 Support
 
-Node groups are available with IPv6 configured networks.  Additional permissions are necessary in order for pods to obtain an IPv6 address.
+Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
 
 > For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
 

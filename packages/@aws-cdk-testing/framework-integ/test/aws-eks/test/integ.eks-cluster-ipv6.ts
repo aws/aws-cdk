@@ -16,7 +16,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 class EksClusterStack extends Stack {
 
   private cluster: eks.Cluster;
-  private nodeRole: iam.Role;
   private vpc: ec2.Vpc;
 
   constructor(scope: App, id: string, props?: StackProps) {
@@ -26,9 +25,6 @@ class EksClusterStack extends Stack {
     const mastersRole = new iam.Role(this, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
-
-    // create a node role with ipv6 permissions
-    this.nodeRole = this._create_node_role();
 
     const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
 
@@ -62,7 +58,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       vpcSubnets,
       mastersRole,
-      defaultCapacity: 0,
+      defaultCapacity: 2,
       ipFamily: eks.IpFamily.IP_V6,
       ...getClusterVersionConfig(this),
       secretsEncryptionKey,
@@ -235,7 +231,7 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng', {
       instanceTypes: [new ec2.InstanceType('t3.small')],
       minSize: 1,
-      nodeRole: this.nodeRole,
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
   private assertNodeGroupSpot() {
@@ -247,7 +243,7 @@ class EksClusterStack extends Stack {
         new ec2.InstanceType('c5d.large'),
       ],
       minSize: 3,
-      nodeRole: this.nodeRole,
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
       capacityType: eks.CapacityType.SPOT,
     });
   }
@@ -269,7 +265,7 @@ class EksClusterStack extends Stack {
     });
     this.cluster.addNodegroupCapacity('extra-ng2', {
       minSize: 1,
-      nodeRole: this.nodeRole,
+      nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
       launchTemplateSpec: {
         id: lt.ref,
         version: lt.attrDefaultVersionNumber,
@@ -281,7 +277,7 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng-arm', {
       instanceTypes: [new ec2.InstanceType('m6g.medium')],
       minSize: 1,
-      nodeRole: this.nodeRole,
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
   private assertNodeGroupGraviton3() {
@@ -289,7 +285,7 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng-arm3', {
       instanceTypes: [new ec2.InstanceType('c7g.large')],
       minSize: 1,
-      nodeRole: this.nodeRole,
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
   private assertSpotCapacity() {
@@ -337,38 +333,6 @@ class EksClusterStack extends Stack {
       selectors: [{ namespace: 'default' }],
     });
 
-  }
-
-  private _create_node_role(): iam.Role {
-
-    // Give the aws-cni ipv6 address management
-    // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role
-    const ipv6Management = new iam.PolicyDocument({
-      statements: [new iam.PolicyStatement({
-        resources: ['arn:aws:ec2:*:*:network-interface/*'],
-        actions: [
-          'ec2:AssignIpv6Addresses',
-          'ec2:UnassignIpv6Addresses',
-        ],
-      })],
-    });
-
-    const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
-      roleName: 'eksClusterNodeGroupRole',
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'),
-      ],
-      inlinePolicies: {
-        ipv6Management,
-      },
-    });
-
-    return eksClusterNodeGroupRole;
   }
 
 }

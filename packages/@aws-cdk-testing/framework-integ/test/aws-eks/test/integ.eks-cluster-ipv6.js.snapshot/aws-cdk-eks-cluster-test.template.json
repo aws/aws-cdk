@@ -28,104 +28,6 @@
     }
    }
   },
-  "eksClusterNodeGroupRoleC74BEC17": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEKS_CNI_Policy"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/CloudWatchAgentServerPolicy"
-       ]
-      ]
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "ec2:AssignIpv6Addresses",
-          "ec2:UnassignIpv6Addresses"
-         ],
-         "Effect": "Allow",
-         "Resource": "arn:aws:ec2:*:*:network-interface/*"
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "ipv6Management"
-     }
-    ],
-    "RoleName": "eksClusterNodeGroupRole"
-   }
-  },
   "SecretsKey317DCF94": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -1544,6 +1446,13 @@
        "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
+         "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
          "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
          "Arn"
         ]
@@ -1579,35 +1488,35 @@
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
-         "eksClusterNodeGroupRoleC74BEC17",
+         "ClusterNodegroupextrangNodeGroupRole23AE23D0",
          "Arn"
         ]
        },
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
-         "eksClusterNodeGroupRoleC74BEC17",
+         "ClusterNodegroupextrangspotNodeGroupRoleB53B4857",
          "Arn"
         ]
        },
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
-         "eksClusterNodeGroupRoleC74BEC17",
+         "ClusterNodegroupextrangarmNodeGroupRoleADF5749F",
          "Arn"
         ]
        },
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
-         "eksClusterNodeGroupRoleC74BEC17",
+         "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC",
          "Arn"
         ]
        },
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
        {
         "Fn::GetAtt": [
-         "eksClusterNodeGroupRoleC74BEC17",
+         "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
          "Arn"
         ]
        },
@@ -1633,6 +1542,126 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupDefaultCapacityNodeGroupRoleDefaultPolicyA9DAB860": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AssignIpv6Addresses",
+        "ec2:UnassignIpv6Addresses"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterNodegroupDefaultCapacityNodeGroupRoleDefaultPolicyA9DAB860",
+    "Roles": [
+     {
+      "Ref": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupDefaultCapacityDA0920A3": {
+   "Type": "AWS::EKS::Nodegroup",
+   "Properties": {
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "NodeRole": {
+     "Fn::GetAtt": [
+      "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
+      "Arn"
+     ]
+    },
+    "Subnets": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     }
+    ],
+    "AmiType": "AL2_x86_64",
+    "ForceUpdateEnabled": true,
+    "InstanceTypes": [
+     "m5.large"
+    ],
+    "ScalingConfig": {
+     "DesiredSize": 2,
+     "MaxSize": 2,
+     "MinSize": 2
+    }
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
   },
   "ClusterfargateprofiledefaultPodExecutionRole09952CFF": {
    "Type": "AWS::IAM::Role",
@@ -3100,6 +3129,91 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClusterNodegroupextrangNodeGroupRole23AE23D0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupextrangNodeGroupRoleDefaultPolicyC787D047": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AssignIpv6Addresses",
+        "ec2:UnassignIpv6Addresses"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterNodegroupextrangNodeGroupRoleDefaultPolicyC787D047",
+    "Roles": [
+     {
+      "Ref": "ClusterNodegroupextrangNodeGroupRole23AE23D0"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
   "ClusterNodegroupextrangF9406A09": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
@@ -3108,7 +3222,7 @@
     },
     "NodeRole": {
      "Fn::GetAtt": [
-      "eksClusterNodeGroupRoleC74BEC17",
+      "ClusterNodegroupextrangNodeGroupRole23AE23D0",
       "Arn"
      ]
     },
@@ -3135,6 +3249,91 @@
     "CIDR6"
    ]
   },
+  "ClusterNodegroupextrangspotNodeGroupRoleB53B4857": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupextrangspotNodeGroupRoleDefaultPolicyF0EB5936": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AssignIpv6Addresses",
+        "ec2:UnassignIpv6Addresses"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterNodegroupextrangspotNodeGroupRoleDefaultPolicyF0EB5936",
+    "Roles": [
+     {
+      "Ref": "ClusterNodegroupextrangspotNodeGroupRoleB53B4857"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
   "ClusterNodegroupextrangspotB327AE6B": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
@@ -3143,7 +3342,7 @@
     },
     "NodeRole": {
      "Fn::GetAtt": [
-      "eksClusterNodeGroupRoleC74BEC17",
+      "ClusterNodegroupextrangspotNodeGroupRoleB53B4857",
       "Arn"
      ]
     },
@@ -3173,6 +3372,91 @@
     "CIDR6"
    ]
   },
+  "ClusterNodegroupextrangarmNodeGroupRoleADF5749F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupextrangarmNodeGroupRoleDefaultPolicyB52D103B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AssignIpv6Addresses",
+        "ec2:UnassignIpv6Addresses"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterNodegroupextrangarmNodeGroupRoleDefaultPolicyB52D103B",
+    "Roles": [
+     {
+      "Ref": "ClusterNodegroupextrangarmNodeGroupRoleADF5749F"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
   "ClusterNodegroupextrangarm7773987A": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
@@ -3181,7 +3465,7 @@
     },
     "NodeRole": {
      "Fn::GetAtt": [
-      "eksClusterNodeGroupRoleC74BEC17",
+      "ClusterNodegroupextrangarmNodeGroupRoleADF5749F",
       "Arn"
      ]
     },
@@ -3208,6 +3492,91 @@
     "CIDR6"
    ]
   },
+  "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterNodegroupextrangarm3NodeGroupRoleDefaultPolicyC04F2FFE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:AssignIpv6Addresses",
+        "ec2:UnassignIpv6Addresses"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterNodegroupextrangarm3NodeGroupRoleDefaultPolicyC04F2FFE",
+    "Roles": [
+     {
+      "Ref": "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
   "ClusterNodegroupextrangarm327128311": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
@@ -3216,7 +3585,7 @@
     },
     "NodeRole": {
      "Fn::GetAtt": [
-      "eksClusterNodeGroupRoleC74BEC17",
+      "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC",
       "Arn"
      ]
     },
@@ -3251,7 +3620,7 @@
     },
     "NodeRole": {
      "Fn::GetAtt": [
-      "eksClusterNodeGroupRoleC74BEC17",
+      "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
       "Arn"
      ]
     },
