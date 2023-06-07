@@ -66,6 +66,13 @@ export interface HttpRouteMatch {
    * @default - do not match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
+
+  /**
+   * The port to match from the request.
+   *
+   * @default - do not match on port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -466,6 +473,7 @@ class HttpRouteSpec extends RouteSpec {
         method: this.match?.method,
         scheme: this.match?.protocol,
         queryParameters: queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
+        port: this.match?.port,
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
