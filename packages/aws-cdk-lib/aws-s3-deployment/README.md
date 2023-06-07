@@ -368,13 +368,13 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 declare const myLambdaFunction: lambda.Function;
 
 new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
-    source: 'my-file.yaml',
-    destinationBucket: destinationBucket,
-    substitutions: {
-      yyyy: myLambdaFunction.functionName,
-      placeholderText: 'mySubstitution',
-    },
-  });
+  source: 'my-file.yaml',
+  destinationBucket: destinationBucket,
+  substitutions: {
+    yyyy: myLambdaFunction.functionName,
+    placeholderText: 'mySubstitution',
+  },
+});
 ```
 
 ## Keep Files Zipped
