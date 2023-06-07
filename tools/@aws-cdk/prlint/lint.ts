@@ -183,6 +183,7 @@ export class PullRequestLinter {
     const prs = await client.search.issuesAndPullRequests({
       q: sha,
     });
+    console.log('Found PRs: ', prs);
     const foundPr = prs.data.items.find(pr => pr.state === 'open');
     if (foundPr) {
       // need to do this because the list PR response does not have
@@ -192,9 +193,9 @@ export class PullRequestLinter {
         repo,
         pull_number: foundPr.number,
       })).data;
-      const latestCommit = pr.statuses_url.split('/').pop();
+      console.log(`PR: ${foundPr.number}: `, pr);
       // only process latest commit
-      if (latestCommit === sha) {
+      if (pr.head.sha === sha) {
         return pr;
       }
     }
