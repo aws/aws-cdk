@@ -1500,6 +1500,28 @@ test('if any source has markers then all sources have markers', () => {
   });
 });
 
+test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, path.join(__dirname, 'sample-definition.yaml'));
+  expect(content).not.toContain('testMethod');
+  expect(content).toContain('changedTestMethodSuccess');
+  expect(content).not.toContain('mock');
+  expect(content).toContain('changedMockTypeSuccess');
+});
+
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
   for (const dir of assetDirs) {
