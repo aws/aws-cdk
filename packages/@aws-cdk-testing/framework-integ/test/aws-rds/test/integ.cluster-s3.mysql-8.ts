@@ -18,8 +18,8 @@ new rds.DatabaseCluster(stack, 'Database', {
   credentials: rds.Credentials.fromUsername('admin', {
     password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
   }),
-  instances: 1,
-  instanceProps: { vpc },
+  writer: rds.ClusterInstance.provisioned('Instance1', { isFromLegacyInstanceProps: true }),
+  vpc,
   s3ImportBuckets: [importExportBucket],
   s3ExportBuckets: [importExportBucket],
 });

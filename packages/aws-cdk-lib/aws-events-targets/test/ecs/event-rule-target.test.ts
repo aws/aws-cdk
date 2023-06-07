@@ -841,6 +841,41 @@ test('throws an error when trying to pass a disallowed value for propagateTags',
   }).toThrowError('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
 });
 
+test('set enableExecuteCommand', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    enableExecuteCommand: true,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          EnableExecuteCommand: true,
+        }),
+      }),
+    ],
+  });
+});
+
 test('sets tag lists', () => {
   // GIVEN
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');

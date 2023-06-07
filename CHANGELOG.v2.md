@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.82.0](https://github.com/aws/aws-cdk/compare/v2.81.0...v2.82.0) (2023-06-01)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v123.0.0 ([#25649](https://github.com/aws/aws-cdk/issues/25649)) ([d19646b](https://github.com/aws/aws-cdk/commit/d19646bf6b1713aa5defe53ce46132e4da459bc2))
+* **cfnspec:** cloudformation spec v124.0.0 ([#25753](https://github.com/aws/aws-cdk/issues/25753)) ([fb6ec6a](https://github.com/aws/aws-cdk/commit/fb6ec6a4569731f48b45b770aa306de8ad07a545))
+* **cfnspec:** cloudformation spec v124.0.0 ([#25790](https://github.com/aws/aws-cdk/issues/25790)) ([4c067c5](https://github.com/aws/aws-cdk/commit/4c067c5598ce936e36fdb182c83c0d8af94801a1))
+* **core:** support nodejs18.x for CustomResourceProviderRuntime. ([#25709](https://github.com/aws/aws-cdk/issues/25709)) ([d99733f](https://github.com/aws/aws-cdk/commit/d99733f4689f991a27ff05389271d23447c05b93)), closes [#25665](https://github.com/aws/aws-cdk/issues/25665)
+* **ecr:** validate repository arn in fromRepositoryArn ([#25302](https://github.com/aws/aws-cdk/issues/25302)) ([383cccb](https://github.com/aws/aws-cdk/commit/383cccb7ccb96162c2e72f5672e1adf0b1c03aa4))
+* **lambda:** add Runtime.RUBY_3_2 ([#25817](https://github.com/aws/aws-cdk/issues/25817)) ([33c820b](https://github.com/aws/aws-cdk/commit/33c820b2fe16e34d52e71bed7e1ef598f62f0bd2))
+* **lambda:** response payload streaming ([#25375](https://github.com/aws/aws-cdk/issues/25375)) ([9664515](https://github.com/aws/aws-cdk/commit/96645154e6da809fdbf63fc22ee3a601ceb2f998))
+* **rds:** Support Aurora I/O Optimized for Aurora database. ([#25704](https://github.com/aws/aws-cdk/issues/25704)) ([f5797b2](https://github.com/aws/aws-cdk/commit/f5797b287836655dd98cf26344f0972c3a97ef67)), closes [#25629](https://github.com/aws/aws-cdk/issues/25629)
+* **rds:** support Aurora Serverless V2 instances ([#25437](https://github.com/aws/aws-cdk/issues/25437)) ([fe5ed10](https://github.com/aws/aws-cdk/commit/fe5ed1041e1ef5a7058f22a63ba6db61ae4b8683)), closes [#20197](https://github.com/aws/aws-cdk/issues/20197)
+* **route53:** HostedZone's default period at the end should be optional  ([#25379](https://github.com/aws/aws-cdk/issues/25379)) ([cc204ca](https://github.com/aws/aws-cdk/commit/cc204caef96079d823bb3878a519d290f95cc2d4)), closes [#22406](https://github.com/aws/aws-cdk/issues/22406)
+* **stepfunctions:** add getters for context object fields ([#25646](https://github.com/aws/aws-cdk/issues/25646)) ([42b43d6](https://github.com/aws/aws-cdk/commit/42b43d613bc5d2f7cb6488ba4f42d48b72118e01)), closes [#25415](https://github.com/aws/aws-cdk/issues/25415)
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** attribute `FindingsFilterListItems` on AWS::Macie::FindingsFilter does not work ([#25778](https://github.com/aws/aws-cdk/issues/25778)) ([98fd69a](https://github.com/aws/aws-cdk/commit/98fd69ac9dcedab205dc9a8e17c789f1e4534677))
+* **ec2:** non-agnostic stack throws error with availability zones defined in VPC ([#25468](https://github.com/aws/aws-cdk/issues/25468)) ([c2a22fa](https://github.com/aws/aws-cdk/commit/c2a22faa2aa8b2f6cf62f0ee90eeb6cc6c81fb67)), closes [#21690](https://github.com/aws/aws-cdk/issues/21690)
+
 ## [2.81.0](https://github.com/aws/aws-cdk/compare/v2.80.0...v2.81.0) (2023-05-25)
 
 

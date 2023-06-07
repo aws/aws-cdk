@@ -27,7 +27,7 @@ export class WorkGraphBuilder {
     this.graph.addNodes({
       type: 'stack',
       id: `${this.idPrefix}${artifact.id}`,
-      dependencies: new Set(this.getDepIds(artifact.dependencies)),
+      dependencies: new Set(this.getDepIds(onlyStacks(artifact.dependencies))),
       stack: artifact,
       deploymentState: DeploymentState.PENDING,
       priority: WorkGraphBuilder.PRIORITIES.stack,
@@ -50,8 +50,8 @@ export class WorkGraphBuilder {
         id: buildId,
         dependencies: new Set([
           ...this.getDepIds(assetArtifact.dependencies),
-          // If we disable prebuild, then assets inherit dependencies from their parent stack
-          ...!this.prebuildAssets ? this.getDepIds(parentStack.dependencies) : [],
+          // If we disable prebuild, then assets inherit (stack) dependencies from their parent stack
+          ...!this.prebuildAssets ? this.getDepIds(onlyStacks(parentStack.dependencies)) : [],
         ]),
         parentStack,
         assetManifestArtifact: assetArtifact,
@@ -66,27 +66,35 @@ export class WorkGraphBuilder {
 
     // Always add the publish
     const publishNodeId = `${this.idPrefix}${asset.id}-publish`;
-    this.graph.addNodes({
-      type: 'asset-publish',
-      id: publishNodeId,
-      dependencies: new Set([
-        buildId,
-        // The asset publish step also depends on the stacks that the parent depends on.
-        // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
-        // is going to interfere with the progress bar of the stack deployment. We could remove this
-        // for overall faster deployments if we ever have a better method of progress displaying.
-        // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
-        // depends on this asset. To workaround this we remove these cycles once all nodes have
-        // been added to the graph.
-        ...this.getDepIds(parentStack.dependencies.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact)),
-      ]),
-      parentStack,
-      assetManifestArtifact: assetArtifact,
-      assetManifest,
-      asset,
-      deploymentState: DeploymentState.PENDING,
-      priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
-    });
+
+    const publishNode = this.graph.tryGetNode(publishNodeId);
+    if (!publishNode) {
+      this.graph.addNodes({
+        type: 'asset-publish',
+        id: publishNodeId,
+        dependencies: new Set([
+          buildId,
+        ]),
+        parentStack,
+        assetManifestArtifact: assetArtifact,
+        assetManifest,
+        asset,
+        deploymentState: DeploymentState.PENDING,
+        priority: WorkGraphBuilder.PRIORITIES['asset-publish'],
+      });
+    }
+
+    for (const inheritedDep of this.getDepIds(onlyStacks(parentStack.dependencies))) {
+      // The asset publish step also depends on the stacks that the parent depends on.
+      // This is purely cosmetic: if we don't do this, the progress printing of asset publishing
+      // is going to interfere with the progress bar of the stack deployment. We could remove this
+      // for overall faster deployments if we ever have a better method of progress displaying.
+      // Note: this may introduce a cycle if one of the parent's dependencies is another stack that
+      // depends on this asset. To workaround this we remove these cycles once all nodes have
+      // been added to the graph.
+      this.graph.addDependency(publishNodeId, inheritedDep);
+    }
+
     // This will work whether the stack node has been added yet or not
     this.graph.addDependency(`${this.idPrefix}${parentStack.id}`, publishNodeId);
   }
@@ -137,20 +145,17 @@ export class WorkGraphBuilder {
     return ids;
   }
 
+  /**
+   * We may have accidentally introduced cycles in an attempt to make the messages printed to the
+   * console not interfere with each other too much. Remove them again.
+   */
   private removeStackPublishCycles() {
-    const stacks = this.graph.nodesOfType('stack');
-    for (const stack of stacks) {
-      for (const dep of stack.dependencies) {
-        const node = this.graph.nodes[dep];
-
-        if (!node || node.type !== 'asset-publish' || !node.dependencies.has(stack.id)) {
-          continue;
+    const publishSteps = this.graph.nodesOfType('asset-publish');
+    for (const publishStep of publishSteps) {
+      for (const dep of publishStep.dependencies) {
+        if (this.graph.reachable(dep, publishStep.id)) {
+          publishStep.dependencies.delete(dep);
         }
-
-        // Delete the dependency from the asset-publish onto the stack.
-        // The publish -> stack dependencies are purely cosmetic to prevent publish output
-        // from interfering with the progress bar of the stack deployment.
-        node.dependencies.delete(stack.id);
       }
     }
   }
@@ -166,4 +171,8 @@ function stacksFromAssets(artifacts: cxapi.CloudArtifact[]) {
   }
 
   return ret;
+}
+
+function onlyStacks(artifacts: cxapi.CloudArtifact[]) {
+  return artifacts.filter(cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact);
 }

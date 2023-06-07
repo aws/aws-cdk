@@ -131,12 +131,19 @@ export class StepFunctionInvokeAction extends Action {
     }));
 
     // allow state machine executions to be inspected
+    const { account, region, partition, resourceName } = cdk.Stack.of(this.props.stateMachine)
+      .splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
+        // Make sure we use the same account, region & partition as the state machine's ARN
+        account,
+        region,
+        partition,
+        // And now the real deal...
         service: 'states',
         resource: 'execution',
-        resourceName: `${cdk.Stack.of(this.props.stateMachine).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName}:${this.props.executionNamePrefix ?? ''}*`,
+        resourceName: `${resourceName}:${this.props.executionNamePrefix ?? ''}*`,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));

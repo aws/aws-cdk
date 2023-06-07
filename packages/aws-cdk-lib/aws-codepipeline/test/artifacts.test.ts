@@ -264,7 +264,6 @@ describe('artifacts', () => {
   });
 });
 
-/* eslint-disable @aws-cdk/no-core-construct */
 function validate(construct: IConstruct): string[] {
   try {
     (construct.node.root as cdk.App).synth();
@@ -276,4 +275,3 @@ function validate(construct: IConstruct): string[] {
     return err.message.split('\n').slice(1);
   }
 }
-/* eslint-enable @aws-cdk/no-core-construct */

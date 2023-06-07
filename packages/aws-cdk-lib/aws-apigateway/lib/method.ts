@@ -213,7 +213,7 @@ export class Method extends Resource {
       restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
-      apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
+      apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,

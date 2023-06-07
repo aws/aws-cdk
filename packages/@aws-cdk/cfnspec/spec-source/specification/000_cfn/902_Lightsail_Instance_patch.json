@@ -7,7 +7,9 @@
           "op": "add",
           "path": "/AWS::Lightsail::Instance.Networking/Properties/MonthlyTransfer",
           "value": {
-            "PrimitiveType": "Integer"
+            "PrimitiveType": "Integer",
+            "UpdateType": "Mutable",
+            "Required": false
           }
         }
       ]

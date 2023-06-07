@@ -55,7 +55,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": {
+  "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -78,7 +78,7 @@
      "Ref": "corsapitest8682546E"
     },
     "DeploymentId": {
-     "Ref": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203"
+     "Ref": "corsapitestDeployment2BF1633Aec735238f184cf252b8c47cd8212eacb"
     },
     "StageName": "prod"
    },
@@ -465,6 +465,7 @@
     "RestApiId": {
      "Ref": "corsapitest8682546E"
     },
+    "ApiKeyRequired": false,
     "AuthorizationType": "NONE",
     "Integration": {
      "IntegrationResponses": [

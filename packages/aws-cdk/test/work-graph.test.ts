@@ -328,6 +328,7 @@ describe('WorkGraph', () => {
       toDeploy: createArtifacts([
         { id: 'A', type: 'stack', stackDependencies: ['A'] },
       ]),
+      expectedError: 'A -> A',
     },
     {
       scenario: 'A -> B, B -> A',
@@ -335,6 +336,7 @@ describe('WorkGraph', () => {
         { id: 'A', type: 'stack', stackDependencies: ['B'] },
         { id: 'B', type: 'stack', stackDependencies: ['A'] },
       ]),
+      expectedError: 'A -> B -> A',
     },
     {
       scenario: 'A, B -> C, C -> D, D -> B',
@@ -344,12 +346,13 @@ describe('WorkGraph', () => {
         { id: 'C', type: 'stack', stackDependencies: ['D'] },
         { id: 'D', type: 'stack', stackDependencies: ['B'] },
       ]),
+      expectedError: 'B -> C -> D -> B',
     },
-  ])('Failure - Graph Circular Dependencies - $scenario', async ({ toDeploy }) => {
+  ])('Failure - Graph Circular Dependencies - $scenario', async ({ toDeploy, expectedError }) => {
     const graph = new WorkGraph();
     addTestArtifactsToGraph(toDeploy, graph);
 
-    await expect(graph.doParallel(1, callbacks)).rejects.toThrowError(/Unable to make progress anymore/);
+    await expect(graph.doParallel(1, callbacks)).rejects.toThrowError(new RegExp(`Unable to make progress.*${expectedError}`));
   });
 });
 

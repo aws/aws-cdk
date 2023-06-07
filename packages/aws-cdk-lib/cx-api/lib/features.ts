@@ -86,6 +86,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -784,6 +785,21 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       If the flag is not set then only a single RequestValidator can be added in this way.
       Any additional RequestValidators have to be created directly with \`new RequestValidator\`.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_ALIAS_NAME_REF]: {
+    type: FlagType.BugFix,
+    summary: 'KMS Alias name and keyArn will have implicit reference to KMS Key',
+    detailsMd: `
+      This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+      when referencing key.aliasName or key.keyArn.
+
+      If the flag is not set then a raw string is passed as the Alias name and no
+      implicit dependencies will be set.
     `,
     introducedIn: { v2: 'V2·NEXT' },
     recommendedValue: true,
