@@ -23,7 +23,19 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
+NOTE: Creating an `AutoScalingGroup` from a `LaunchConfiguration` has been deprecated. All new accounts created after 12-31-2023 will not be able to create new launch configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a `LaunchConfiguration` based on the following [launch configuration to launch template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
+* machineImage
+* keyName
+* instanceType
+* instanceMonitoring
+* securityGroup
+* role
+* userData
+* associatePublicIpAddress
+* spotPrice
+* blockDevices
+
+NOTE: AutoScalingGroup has a property called `allowAllOutbound` (allowing the instances to contact the
 internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
 your instances to be able to start arbitrary connections. Alternatively, you can specify an existing security
 group to attach to the instances that are launched, rather than have the group create a new one.
@@ -42,7 +54,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-Alternatively you can create an `AutoScalingGroup` from a `LaunchTemplate`:
+Alternatively, for more control, you can create an `AutoScalingGroup` from a supplied `LaunchTemplate`:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -54,7 +66,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-To launch a mixture of Spot and on-demand instances, and/or with multiple instance types, you can create an `AutoScalingGroup` from a MixedInstancesPolicy:
+To launch a mixture of Spot and on-demand instances, and/or with multiple instance types, you can create an `AutoScalingGroup` from a `MixedInstancesPolicy`:
 
 ```ts
 declare const vpc: ec2.Vpc;

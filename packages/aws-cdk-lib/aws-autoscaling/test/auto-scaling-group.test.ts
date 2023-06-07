@@ -14,7 +14,7 @@ import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 /* eslint-disable quote-props */
 
 describe('auto scaling group', () => {
-  testDeprecated('default fleet', () => {
+  test('default fleet', () => {
     const stack = getTestStack();
     const vpc = mockVpc(stack);
 
@@ -140,7 +140,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can create launch template from deprecated launch config props', () => {
+  test('can create launch template from deprecated launch config props when feature flag is set', () => {
     // GIVEN
     const stack = getTestStack();
     stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
@@ -251,10 +251,10 @@ describe('auto scaling group', () => {
                 {
                   'AssociatePublicIpAddress': true,
                   'DeviceIndex': 0,
+                  'Groups': [
+                    'most-secure',
+                  ],
                 },
-              ],
-              SecurityGroupIds: [
-                'most-secure',
               ],
               TagSpecifications: [
                 {
@@ -336,7 +336,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can set minCapacity, maxCapacity, desiredCapacity to 0', () => {
+  test('can set minCapacity, maxCapacity, desiredCapacity to 0', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
 
@@ -356,7 +356,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('validation is not performed when using Tokens', () => {
+  test('validation is not performed when using Tokens', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
 
@@ -377,7 +377,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('userdata can be overridden by image', () => {
+  test('userdata can be overridden by image', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -398,7 +398,7 @@ describe('auto scaling group', () => {
     expect(asg.userData.render()).toEqual('#!/bin/bash\nit me!');
   });
 
-  testDeprecated('userdata can be overridden at ASG directly', () => {
+  test('userdata can be overridden at ASG directly', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -423,7 +423,7 @@ describe('auto scaling group', () => {
     expect(asg.userData.render()).toEqual('#!/bin/bash\nno me!');
   });
 
-  testDeprecated('can specify only min capacity', () => {
+  test('can specify only min capacity', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -443,7 +443,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can specify only max capacity', () => {
+  test('can specify only max capacity', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -463,7 +463,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can specify only desiredCount', () => {
+  test('can specify only desiredCount', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -484,7 +484,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can specify only defaultInstanceWarmup', () => {
+  test('can specify only defaultInstanceWarmup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -503,7 +503,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('addToRolePolicy can be used to add statements to the role policy', () => {
+  test('addToRolePolicy can be used to add statements to the role policy', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
 
@@ -533,7 +533,7 @@ describe('auto scaling group', () => {
 
   });
 
-  testDeprecated('can configure replacing update', () => {
+  test('can configure replacing update', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -562,7 +562,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure rolling update', () => {
+  test('can configure rolling update', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -592,7 +592,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure resource signals', () => {
+  test('can configure resource signals', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -617,7 +617,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure EC2 health check', () => {
+  test('can configure EC2 health check', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -636,7 +636,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure EBS health check', () => {
+  test('can configure EBS health check', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -656,7 +656,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can add Security Group to Fleet', () => {
+  test('can add Security Group to Fleet', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -681,10 +681,9 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can set tags', () => {
+  test('can set tags', () => {
     // GIVEN
     const stack = getTestStack();
-    // new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -720,7 +719,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('allows setting spot price', () => {
+  test('allows setting spot price', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -740,7 +739,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('allows association of public IP address', () => {
+  test('allows association of public IP address', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -763,7 +762,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('association of public IP address requires public subnet', () => {
+  test('association of public IP address requires public subnet', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -782,7 +781,7 @@ describe('auto scaling group', () => {
     }).toThrow();
   });
 
-  testDeprecated('allows disassociation of public IP address', () => {
+  test('allows disassociation of public IP address', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -804,7 +803,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('does not specify public IP address association by default', () => {
+  test('does not specify public IP address association by default', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -825,7 +824,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('an existing security group can be specified instead of auto-created', () => {
+  test('an existing security group can be specified instead of auto-created', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -845,7 +844,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('an existing role can be specified instead of auto-created', () => {
+  test('an existing role can be specified instead of auto-created', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -866,7 +865,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('defaultChild is available on an ASG', () => {
+  test('defaultChild is available on an ASG', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -880,7 +879,7 @@ describe('auto scaling group', () => {
     expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
   });
 
-  testDeprecated('can set blockDeviceMappings', () => {
+  test('can set blockDeviceMappings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -972,7 +971,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure maxInstanceLifetime', () => {
+  test('can configure maxInstanceLifetime', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -989,7 +988,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure maxInstanceLifetime with 0', () => {
+  test('can configure maxInstanceLifetime with 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1006,7 +1005,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('throws if maxInstanceLifetime < 1 day', () => {
+  test('throws if maxInstanceLifetime < 1 day', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1022,7 +1021,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  testDeprecated('throws if maxInstanceLifetime > 365 days', () => {
+  test('throws if maxInstanceLifetime > 365 days', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1038,7 +1037,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  testDeprecated.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
@@ -1059,7 +1058,7 @@ describe('auto scaling group', () => {
     }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
   });
 
-  testDeprecated.each([
+  test.each([
     ...Object.values(autoscaling.EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
   ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
     const stack = new cdk.Stack();
@@ -1082,7 +1081,7 @@ describe('auto scaling group', () => {
     }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
   });
 
-  testDeprecated('throws if throughput / iops ratio is greater than 0.25', () => {
+  test('throws if throughput / iops ratio is greater than 0.25', () => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
     expect(() => {
@@ -1103,7 +1102,7 @@ describe('auto scaling group', () => {
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
-  testDeprecated('can configure instance monitoring', () => {
+  test('can configure instance monitoring', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1122,7 +1121,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('instance monitoring defaults to absent', () => {
+  test('instance monitoring defaults to absent', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1140,7 +1139,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('throws if ephemeral volumeIndex < 0', () => {
+  test('throws if ephemeral volumeIndex < 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1159,7 +1158,7 @@ describe('auto scaling group', () => {
     }).toThrow(/volumeIndex must be a number starting from 0/);
   });
 
-  testDeprecated('throws if volumeType === IO1 without iops', () => {
+  test('throws if volumeType === IO1 without iops', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1182,7 +1181,7 @@ describe('auto scaling group', () => {
     }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
   });
 
-  testDeprecated('warning if iops without volumeType', () => {
+  test('warning if iops without volumeType', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1205,7 +1204,7 @@ describe('auto scaling group', () => {
     Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
-  testDeprecated('warning if iops and volumeType !== IO1', () => {
+  test('warning if iops and volumeType !== IO1', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1229,7 +1228,7 @@ describe('auto scaling group', () => {
     Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
-  testDeprecated('step scaling on metric', () => {
+  test('step scaling on metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1263,7 +1262,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('step scaling on MathExpression', () => {
+  test('step scaling on MathExpression', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1322,7 +1321,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('test GroupMetrics.all(), adds a single MetricsCollection with no Metrics specified', () => {
+  test('test GroupMetrics.all(), adds a single MetricsCollection with no Metrics specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1345,7 +1344,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('test can specify a subset of group metrics', () => {
+  test('test can specify a subset of group metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1382,7 +1381,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('test deduplication of group metrics ', () => {
+  test('test deduplication of group metrics ', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1408,7 +1407,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('allow configuring notifications', () => {
+  test('allow configuring notifications', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1451,7 +1450,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('throw if notification and notificationsTopics are both configured', () => {
+  test('throw if notification and notificationsTopics are both configured', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1471,7 +1470,7 @@ describe('auto scaling group', () => {
     }).toThrow('Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead');
   });
 
-  testDeprecated('notificationTypes default includes all non test NotificationType', () => {
+  test('notificationTypes default includes all non test NotificationType', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1505,7 +1504,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('setting notificationTopic configures all non test NotificationType', () => {
+  test('setting notificationTopic configures all non test NotificationType', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1539,7 +1538,7 @@ describe('auto scaling group', () => {
     expect(Object.values(autoscaling.ScalingEvent).length - 1).toEqual(autoscaling.ScalingEvents.ALL._types.length);
   });
 
-  testDeprecated('Can set Capacity Rebalancing via constructor property', () => {
+  test('Can set Capacity Rebalancing via constructor property', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1559,7 +1558,7 @@ describe('auto scaling group', () => {
 
   });
 
-  testDeprecated('Can protect new instances from scale-in via constructor property', () => {
+  test('Can protect new instances from scale-in via constructor property', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1579,7 +1578,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('Can protect new instances from scale-in via setter', () => {
+  test('Can protect new instances from scale-in via setter', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1829,7 +1828,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('Cannot specify both Launch Template and Launch Config', () => {
+  test('Cannot specify both Launch Template and Launch Config', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1923,7 +1922,7 @@ describe('auto scaling group', () => {
     }).toThrow('Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set');
   });
 
-  testDeprecated('Cannot be created with launch configuration without machine image', () => {
+  test('Cannot be created with launch configuration without machine image', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1936,7 +1935,7 @@ describe('auto scaling group', () => {
     }).toThrow('Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
   });
 
-  testDeprecated('Cannot be created with launch configuration without instance type', () => {
+  test('Cannot be created with launch configuration without instance type', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -2081,6 +2080,7 @@ describe('auto scaling group', () => {
   });
 
   describe('multiple target groups', () => {
+    let asg: autoscaling.AutoScalingGroup;
     let stack: cdk.Stack;
     let vpc: ec2.IVpc;
     let alb: ApplicationLoadBalancer;
@@ -2098,19 +2098,19 @@ describe('auto scaling group', () => {
         port: 80,
         open: true,
       });
-    });
 
-    testDeprecated('Adding two application target groups should succeed validation', () => {
-      const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
-      const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
-
-      listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
-
-      const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
       });
+    });
+
+    test('Adding two application target groups should succeed validation', () => {
+      const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
+      const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
+
+      listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
 
       asg.attachToApplicationTargetGroup(atg1);
       asg.attachToApplicationTargetGroup(atg2);
@@ -2118,17 +2118,11 @@ describe('auto scaling group', () => {
       expect(asg.node.validate()).toEqual([]);
     });
 
-    testDeprecated('Adding two application target groups should fail validation validate if `scaleOnRequestCount()` has been called', () => {
+    test('Adding two application target groups should fail validation validate if `scaleOnRequestCount()` has been called', () => {
       const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
       const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
 
       listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
-
-      const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-        machineImage: new ec2.AmazonLinuxImage(),
-        vpc,
-      });
 
       asg.attachToApplicationTargetGroup(atg1);
       asg.attachToApplicationTargetGroup(atg2);
@@ -2151,7 +2145,7 @@ function mockVpc(stack: cdk.Stack) {
   });
 }
 
-testDeprecated('Can set autoScalingGroupName', () => {
+test('Can set autoScalingGroupName', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = mockVpc(stack);
@@ -2170,7 +2164,7 @@ testDeprecated('Can set autoScalingGroupName', () => {
   });
 });
 
-testDeprecated('can use Vpc imported from unparseable list tokens', () => {
+test('can use Vpc imported from unparseable list tokens', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -2249,7 +2243,7 @@ test('add price-capacity-optimized', () => {
   });
 });
 
-testDeprecated('ssm permissions adds right managed policy', () => {
+test('ssm permissions adds right managed policy', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
