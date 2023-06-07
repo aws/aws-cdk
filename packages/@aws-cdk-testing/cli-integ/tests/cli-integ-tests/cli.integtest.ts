@@ -1165,6 +1165,56 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   }
 }));
 
+/**
+ * Import a resource with a notification ARN
+ */
+integTest('import resource with notification ARN', withDefaultFixture(async (fixture) => {
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  const topicName = `${fixture.stackNamePrefix}-test-topic`;
+  const createTopicResponse = await fixture.aws.sns('createTopic', { Name: topicName });
+  const topicArn = createTopicResponse.TopicArn!;
+
+  // Initial deploy with notification ARN
+  await fixture.cdkDeploy('importable-stack-with-notification', {
+    modEnv: { ORPHAN_TOPIC: '1' },
+    options: ['--outputs-file', outputsFile, '--notification-arns', topicArn],
+  });
+
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  const queueName = outputs.QueueName;
+  const queueLogicalId = outputs.QueueLogicalId;
+  fixture.log(`Setup complete, created queue ${queueName}`);
+  try {
+    // Deploy again, orphaning the queue
+    await fixture.cdkDeploy('importable-stack-with-notification', {
+      modEnv: { OMIT_TOPIC: '1' },
+    });
+
+    // Write a resource mapping file based on the ID from step one, then run an import
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+
+    await fixture.cdk(['import',
+      '--resource-mapping', mappingFile,
+      '--notification-arns', topicArn,
+      fixture.fullStackName('importable-stack-with-notification')]);
+
+    // verify that the stack we deployed has our notification ARN
+    const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: fixture.fullStackName('importable-stack-with-notification'),
+    });
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+  } finally {
+    // Cleanup
+    await fixture.cdkDestroy('importable-stack-with-notification');
+    await fixture.aws.sns('deleteTopic', {
+      TopicArn: topicArn,
+    });
+  }
+}));
+
 integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
   // GIVEN
   const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
