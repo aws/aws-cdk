@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { toCloudFormation } from './util';
@@ -2103,6 +2104,36 @@ describe('stack', () => {
         env: envConfig,
       });
     }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
+  });
+
+  test('suppress indentation when property is true', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack', { suppressTemplateIndentation: true });
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('suppress indentation when context value is true', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
   });
 });
 
