@@ -14,10 +14,9 @@ new ec2.LaunchTemplate(stack, 'LT', {
   instanceMetadataTags: true,
 });
 
-new ec2.LaunchTemplate(stack, 'LTWithMachineImage', {
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+new ec2.LaunchTemplate(stack, 'LTWithMachineImageAndPublicIP', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  associatePublicIpAddress: true,
 });
 
 new integ.IntegTest(app, 'LambdaTest', {
