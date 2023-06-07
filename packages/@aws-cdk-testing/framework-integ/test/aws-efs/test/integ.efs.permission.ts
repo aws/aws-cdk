@@ -40,7 +40,7 @@ const writeInstance = createInstance('WriteInstance', [
   'echo \'Integ Test\' | tee /mnt/efs/integ-test.txt',
 ]);
 writeInstance.instance.node.addDependency(fileSystem);
-fileSystem.grantReadWriteBeta1(writeInstance);
+fileSystem.grantReadWrite(writeInstance);
 
 const readInstance = createInstance('ReadInstance', [
   'dnf install -y amazon-efs-utils',
@@ -49,7 +49,7 @@ const readInstance = createInstance('ReadInstance', [
   `mount -t efs -o tls,iam ${fileSystem.fileSystemId} /mnt/efs`,
 ]);
 readInstance.instance.node.addDependency(fileSystem);
-fileSystem.grantReadBeta1(readInstance);
+fileSystem.grantRead(readInstance);
 
 const anonymousInstance = createInstance('AnonymousInstance', [
   'dnf install -y amazon-efs-utils',

@@ -565,7 +565,7 @@ test('Anonymous access is prohibited by default when using GrantRead', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
-  fileSystem.grantReadBeta1(clientRole);
+  fileSystem.grantRead(clientRole);
 
   // THEN
   const template = Template.fromStack(stack);
@@ -619,7 +619,7 @@ test('Anonymous access is prohibited by default when using GrantReadWrite', () =
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
-  fileSystem.grantReadWriteBeta1(clientRole);
+  fileSystem.grantReadWrite(clientRole);
 
   // THEN
   const template = Template.fromStack(stack);
@@ -676,7 +676,7 @@ test('Anonymous access is prohibited by default when using GrantRootAccess', () 
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
-  fileSystem.grantRootAccessBeta1(clientRole);
+  fileSystem.grantRootAccess(clientRole);
 
   // THEN
   const template = Template.fromStack(stack);
@@ -768,9 +768,9 @@ test('Anonymous access is allowed by allowAnonymousAccess props when using Grant
     vpc,
     allowAnonymousAccess: true,
   });
-  fileSystem.grantReadBeta1(clientRole);
-  fileSystem.grantReadWriteBeta1(clientRole);
-  fileSystem.grantRootAccessBeta1(clientRole);
+  fileSystem.grantRead(clientRole);
+  fileSystem.grantReadWrite(clientRole);
+  fileSystem.grantRootAccess(clientRole);
 
   // THEN
   const template = Template.fromStack(stack);

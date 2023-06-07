@@ -351,7 +351,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * Grant read permissions for this file system to an IAM principal.
    * @param grantee The principal to grant read to
    */
-  public grantReadBeta1(grantee: iam.IGrantable): iam.Grant {
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [ClientAction.MOUNT], {
       Bool: {
         'elasticfilesystem:AccessedViaMountTarget': 'true',
@@ -363,7 +363,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * Grant read and write permissions for this file system to an IAM principal.
    * @param grantee The principal to grant read and write to
    */
-  public grantReadWriteBeta1(grantee: iam.IGrantable): iam.Grant {
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [
       ClientAction.MOUNT,
       ClientAction.WRITE,
@@ -378,7 +378,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * As root user, grant read and write permissions for this file system to an IAM principal.
    * @param grantee The principal to grant root access to
    */
-  public grantRootAccessBeta1(grantee: iam.IGrantable): iam.Grant {
+  public grantRootAccess(grantee: iam.IGrantable): iam.Grant {
     return this._grantClient(grantee, [
       ClientAction.MOUNT,
       ClientAction.WRITE,
