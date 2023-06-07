@@ -576,7 +576,7 @@ describe('cluster', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
-        Name: 'foo.com',
+        Name: '${Token[TOKEN.3546]}',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
