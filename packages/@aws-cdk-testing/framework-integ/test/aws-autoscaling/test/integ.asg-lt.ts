@@ -2,7 +2,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 

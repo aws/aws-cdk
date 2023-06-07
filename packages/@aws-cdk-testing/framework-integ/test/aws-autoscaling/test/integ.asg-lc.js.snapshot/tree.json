@@ -1276,17 +1276,17 @@
           "version": "0.0.0"
         }
       },
-      "LaunchTemplateFromLaunchConfigPropsTest": {
-        "id": "LaunchTemplateFromLaunchConfigPropsTest",
-        "path": "LaunchTemplateFromLaunchConfigPropsTest",
+      "AsgFromLaunchConfigTest": {
+        "id": "AsgFromLaunchConfigTest",
+        "path": "AsgFromLaunchConfigTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest",
+            "path": "AsgFromLaunchConfigTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/Default",
+                "path": "AsgFromLaunchConfigTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.26"
@@ -1294,11 +1294,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert",
+                "path": "AsgFromLaunchConfigTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "AsgFromLaunchConfigTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1306,7 +1306,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "LaunchTemplateFromLaunchConfigPropsTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "AsgFromLaunchConfigTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

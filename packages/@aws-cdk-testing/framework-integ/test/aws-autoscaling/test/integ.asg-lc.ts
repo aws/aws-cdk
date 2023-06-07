@@ -96,7 +96,7 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
   vpc,
 });
 
-new IntegTest(app, 'LaunchTemplateFromLaunchConfigPropsTest', {
+new IntegTest(app, 'AsgFromLaunchConfigTest', {
   testCases: [stack],
 });
 app.synth();
