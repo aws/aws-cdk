@@ -159,10 +159,13 @@ function findLockFile(depsLockFilePath?: string): string {
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
  * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
+ * 5. A .mts file name as the defining file with id as suffix (defining-file.id.mts)
+ * 6. A .cts file name as the defining file with id as suffix (defining-file.id.cts)
+ * 7. A .cjs file name as the defining file with id as suffix (defining-file.id.cjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -189,7 +192,22 @@ function findEntry(id: string, entry?: string): string {
     return mjsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
+  const mtsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mts`);
+  if (fs.existsSync(mtsHandlerFile)) {
+    return mtsHandlerFile;
+  }
+
+  const ctsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.cts`);
+  if (fs.existsSync(ctsHandlerFile)) {
+    return ctsHandlerFile;
+  }
+
+  const cjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.cjs`);
+  if (fs.existsSync(cjsHandlerFile)) {
+    return cjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`);
 }
 
 /**

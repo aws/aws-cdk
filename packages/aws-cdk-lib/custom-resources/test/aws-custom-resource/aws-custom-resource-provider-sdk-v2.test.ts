@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
-import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
+import { handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime/aws-sdk-v2-handler';
 
 // This test performs an 'npm install' which may take longer than the default
 // 5s timeout
@@ -383,41 +383,6 @@ test('can specify apiVersion and region', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
-test('flatten correctly flattens a nested object', () => {
-  expect(flatten({
-    a: { b: 'c' },
-    d: [
-      { e: 'f' },
-      { g: 'h', i: 1, j: null, k: { l: false } },
-    ],
-  })).toEqual({
-    'a.b': 'c',
-    'd.0.e': 'f',
-    'd.1.g': 'h',
-    'd.1.i': 1,
-    'd.1.j': null,
-    'd.1.k.l': false,
-  });
-});
-
-test('flatten correctly flattens an object with buffers', () => {
-  expect(flatten({
-    body: Buffer.from('body'),
-    nested: {
-      buffer: Buffer.from('buffer'),
-      array: [
-        Buffer.from('array.0'),
-        Buffer.from('array.1'),
-      ],
-    },
-  })).toEqual({
-    'body': 'body',
-    'nested.buffer': 'buffer',
-    'nested.array.0': 'array.0',
-    'nested.array.1': 'array.1',
-  });
-});
-
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
@@ -498,4 +463,3 @@ test('invalid service name throws explicit error', async () => {
 
   expect(request.isDone()).toBeTruthy();
 });
-
