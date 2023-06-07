@@ -83,14 +83,23 @@ const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
 const test = new integ.IntegTest(app, 'ServiceConnect', {
   testCases: [stack],
 });
-const message = test.assertions.awsApiCall('ServiceDiscovery', 'listNamespaces');
-message.assertAtPath('Namespaces', integ.ExpectedResult.arrayWith([
-  {
-    Name: 'scorekeep.com',
-  },
-  {
-    Name: 'whistler.com',
-  },
-]));
+const listNamespaceCall = test.assertions.awsApiCall('ServiceDiscovery', 'listNamespaces');
+listNamespaceCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['servicediscovery:ListNamespaces'],
+  Resource: ['*'],
+});
+listNamespaceCall.expect(integ.ExpectedResult.objectLike({
+  Namespaces: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Name: 'scorekeep.com',
+      Type: 'DNS_PRIVATE',
+    }),
+    integ.Match.objectLike({
+      Name: 'whistler.com',
+      Type: 'HTTP',
+    }),
+  ]),
+}));
 
 app.synth();
