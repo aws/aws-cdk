@@ -54,7 +54,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-Alternatively, for more control, you can create an `AutoScalingGroup` from a supplied `LaunchTemplate`:
+Alternatively, to enable more advanced features, you can create an `AutoScalingGroup` from a supplied `LaunchTemplate`:
 
 ```ts
 declare const vpc: ec2.Vpc;
