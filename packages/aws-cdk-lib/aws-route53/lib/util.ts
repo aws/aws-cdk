@@ -1,6 +1,6 @@
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
+import { Stack } from '../../core';
 
 /**
  * Validates a zone name is valid by Route53 specifc naming rules,
@@ -11,9 +11,6 @@ import { IHostedZone } from './hosted-zone-ref';
  * @throws ValidationError if the name is not valid.
  */
 export function validateZoneName(zoneName: string) {
-  if (zoneName.endsWith('.')) {
-    throw new ValidationError('zone name must not end with a trailing dot');
-  }
   if (zoneName.length > 255) {
     throw new ValidationError('zone name cannot be more than 255 bytes long');
   }

@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as hooks from '../../../aws-autoscaling-hooktargets';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
 import { ICluster } from '../cluster';
 
 // Reference for the source in this package:

@@ -1,4 +1,7 @@
 import * as path from 'path';
+import { kebab as toKebabCase } from 'case';
+import { Construct } from 'constructs';
+import { ISource, SourceConfig } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -8,9 +11,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import { kebab as toKebabCase } from 'case';
-import { Construct } from 'constructs';
-import { ISource, SourceConfig } from './source';
 
 // tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
@@ -105,7 +105,6 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
-
 
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
@@ -633,6 +632,16 @@ export class CacheControl {
   public static noTransform() { return new CacheControl('no-transform'); }
 
   /**
+   * Sets 'no-store'.
+   */
+  public static noStore() { return new CacheControl('no-store'); }
+
+  /**
+   * Sets 'must-understand'.
+   */
+  public static mustUnderstand() { return new CacheControl('must-understand'); }
+
+  /**
    * Sets 'public'.
    */
   public static setPublic() { return new CacheControl('public'); }
@@ -641,6 +650,11 @@ export class CacheControl {
    * Sets 'private'.
    */
   public static setPrivate() { return new CacheControl('private'); }
+
+  /**
+   * Sets 'immutable'.
+   */
+  public static immutable() { return new CacheControl('immutable'); }
 
   /**
    * Sets 'proxy-revalidate'.
@@ -656,6 +670,16 @@ export class CacheControl {
    * Sets 's-maxage=<duration-in-seconds>'.
    */
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+
+  /**
+   * Sets 'stale-while-revalidate=<duration-in-seconds>'.
+   */
+  public static staleWhileRevalidate(t: cdk.Duration) { return new CacheControl(`stale-while-revalidate=${t.toSeconds()}`); }
+
+  /**
+   * Sets 'stale-if-error=<duration-in-seconds>'.
+   */
+  public static staleIfError(t: cdk.Duration) { return new CacheControl(`stale-if-error=${t.toSeconds()}`); }
 
   /**
    * Constructs a custom cache control key from the literal value.

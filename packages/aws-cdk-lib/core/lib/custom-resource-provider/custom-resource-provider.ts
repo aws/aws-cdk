@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import * as fse from 'fs-extra';
+import * as cxapi from '../../../cx-api';
+import { FactName } from '../../../region-info';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
@@ -13,7 +14,6 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { FactName } from '../../../region-info';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
@@ -123,6 +123,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 16.x
    */
   NODEJS_16_X = 'nodejs16.x',
+
+  /**
+   * Node.js 18.x
+   */
+  NODEJS_18_X = 'nodejs18.x',
 }
 
 /**
@@ -293,7 +298,6 @@ export class CustomResourceProvider extends Construct {
       this.roleArn = Token.asString(this._role.getAtt('Arn'));
     }
 
-
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
@@ -400,5 +404,7 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs14.x';
     case CustomResourceProviderRuntime.NODEJS_16_X:
       return 'nodejs16.x';
+    case CustomResourceProviderRuntime.NODEJS_18_X:
+      return 'nodejs18.x';
   }
 }

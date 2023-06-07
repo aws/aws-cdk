@@ -1,7 +1,7 @@
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as cdk from '../../../core';
 import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import * as cdk from '../../../core';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,

@@ -91,14 +91,43 @@ test.skip('NodejsFunction with .mjs handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler3');
 
-
   // THEN
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
   }));
 });
 
-test.skip('NodejsFunction with container env vars', () => {
+test('NodejsFunction with .mts handler', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler4');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler4.mts'), // Automatically finds .mts handler file
+  }));
+});
+
+test('NodejsFunction with .cts handler', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler5');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler5.cts'), // Automatically finds .cts handler file
+  }));
+});
+
+test('NodejsFunction with .cjs handler', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler6');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler6.cjs'), // Automatically finds .cjs handler file
+  }));
+});
+
+test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
     bundling: {

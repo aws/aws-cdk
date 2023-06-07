@@ -1,2 +1,1 @@
-// AWS::Proton Cloudformation Resources
-export * from './lib/proton.generated'
+export * from './lib';

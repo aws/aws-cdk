@@ -41,7 +41,6 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
 
-
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
 export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 /** @deprecated use `ENABLE_DIFF_NO_FAIL_CONTEXT` */
@@ -87,6 +86,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -501,6 +501,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
     detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
@@ -772,7 +773,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       To allow all ingress/egress traffic to the VPC default security group you
       can set the \`restrictDefaultSecurityGroup: false\`.
     `,
-   },
+  },
 
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID]: {
@@ -784,6 +785,21 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       If the flag is not set then only a single RequestValidator can be added in this way.
       Any additional RequestValidators have to be created directly with \`new RequestValidator\`.
+    `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_ALIAS_NAME_REF]: {
+    type: FlagType.BugFix,
+    summary: 'KMS Alias name and keyArn will have implicit reference to KMS Key',
+    detailsMd: `
+      This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+      when referencing key.aliasName or key.keyArn.
+
+      If the flag is not set then a raw string is passed as the Alias name and no
+      implicit dependencies will be set.
     `,
     introducedIn: { v2: 'V2·NEXT' },
     recommendedValue: true,
