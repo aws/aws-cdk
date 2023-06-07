@@ -11,6 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import * as cdk from '../../core';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -375,6 +376,7 @@ export class Cluster extends Resource implements ICluster {
 
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
+      this._cfnCluster.addDependency(this._defaultCloudMapNamespace.node.defaultChild as cdk.CfnResource);
       this._cfnCluster.serviceConnectDefaults = {
         namespace: options.name,
       };
