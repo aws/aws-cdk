@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "ebafa3e0d55dcb2a8441c78043bf67e5372f14faf1a14407edd630cc2f972348": {
+      "source": {
+        "path": "mesh-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ebafa3e0d55dcb2a8441c78043bf67e5372f14faf1a14407edd630cc2f972348.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

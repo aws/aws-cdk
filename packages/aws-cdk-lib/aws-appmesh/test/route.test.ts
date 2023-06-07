@@ -474,7 +474,7 @@ describe('route', () => {
       });
       const virtualNode = mesh.addVirtualNode('test-node', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http()],
+        listeners: [appmesh.VirtualNodeListener.grpc()],
       });
 
       // WHEN
@@ -495,6 +495,41 @@ describe('route', () => {
           },
         },
         RouteName: 'test-grpc-route',
+      });
+    });
+
+    test('should have http route matcher with port when specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [{ virtualNode }],
+          match: { port: 1234 },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            Match: {
+              Port: 1234,
+            },
+          },
+        },
+        RouteName: 'test-http-route',
       });
     });
 
