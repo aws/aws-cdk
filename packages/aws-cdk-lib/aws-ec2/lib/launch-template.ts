@@ -692,7 +692,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     });
 
     const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress }]
+      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress, groups: securityGroupsToken }]
       : undefined;
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
@@ -721,7 +721,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         monitoring: props?.detailedMonitoring !== undefined ? {
           enabled: props.detailedMonitoring,
         } : undefined,
-        securityGroupIds: securityGroupsToken,
+        securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
