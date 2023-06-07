@@ -72,7 +72,7 @@ class ServiceConnect extends cdk.Stack {
           port: 80,
         },
       ],
-      namespace: ns.namespaceName,
+      namespace: ns.namespaceArn,
     });
   }
 }
@@ -95,6 +95,10 @@ listNamespaceCall.expect(integ.ExpectedResult.objectLike({
       Name: 'scorekeep.com',
       Type: 'DNS_PRIVATE',
     }),
+  ]),
+}));
+listNamespaceCall.expect(integ.ExpectedResult.objectLike({
+  Namespaces: integ.Match.arrayWith([
     integ.Match.objectLike({
       Name: 'whistler.com',
       Type: 'HTTP',
