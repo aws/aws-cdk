@@ -62,10 +62,10 @@ export class Cpu {
    * @param unit custom CPU unit
    */
   public static of(unit: string): Cpu {
-    const numericPattern = ['256', '512', '1024', '2048', '4096'];
-    const unitPattern = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
-    const allowedPattern = numericPattern.concat(unitPattern);
-    const isValidValue = allowedPattern.some(
+    const numericPatterns = ['256', '512', '1024', '2048', '4096'];
+    const unitPatterns = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
       (pattern) => pattern === unit,
     );
     if (!isValidValue) {
@@ -139,10 +139,10 @@ export class Memory {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
   public static of(unit: string): Memory {
-    const numericPattern = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
-    const unitPattern = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
-    const allowedPattern = numericPattern.concat(unitPattern);
-    const isValidValue = allowedPattern.some(
+    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
+    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
       (pattern) => pattern === unit,
     );
     if (!isValidValue) {
