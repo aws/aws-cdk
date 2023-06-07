@@ -266,7 +266,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift-alpha.ClusterParameterGroup",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -302,7 +302,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -395,7 +395,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
                   "version": "0.0.0"
                 }
               },
@@ -688,7 +688,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -855,7 +855,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f24dbc80501234c95b4f320adc2d30c202d44977defc11a763044e044c699487.zip"
+                      "s3Key": "c489be586f206c8bc3e8e0228198517763b9d777fe24b665bc06cbaf0ccb2775.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -864,7 +864,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -1167,7 +1167,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift-alpha.ClusterParameterGroup",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1203,7 +1203,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1296,7 +1296,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
                   "version": "0.0.0"
                 }
               },
@@ -1589,7 +1589,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1756,7 +1756,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f24dbc80501234c95b4f320adc2d30c202d44977defc11a763044e044c699487.zip"
+                      "s3Key": "c489be586f206c8bc3e8e0228198517763b9d777fe24b665bc06cbaf0ccb2775.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1765,7 +1765,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -1803,7 +1803,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.26"
             }
           },
           "BootstrapVersion": {
@@ -1841,7 +1841,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -1861,7 +1861,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -1933,7 +1933,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.26"
                     }
                   },
                   "AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce": {
@@ -1949,7 +1949,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -2003,7 +2003,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.26"
                             }
                           }
                         },
@@ -2083,7 +2083,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.26"
         }
       }
     },
