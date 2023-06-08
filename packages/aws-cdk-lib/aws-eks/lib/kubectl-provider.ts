@@ -36,6 +36,11 @@ export interface KubectlProviderAttributes {
    * The IAM execution role of the handler. This role must be able to assume kubectlRoleArn
    */
   readonly handlerRole: iam.IRole;
+
+  /**
+   * The service token of the kubectl provider
+   */
+  readonly serviceToken: string;
 }
 
 /**
@@ -223,7 +228,7 @@ class ImportedKubectlProvider extends Construct implements IKubectlProvider {
   constructor(scope: Construct, id: string, props: KubectlProviderAttributes) {
     super(scope, id);
 
-    this.serviceToken = props.functionArn;
+    this.serviceToken = props.serviceToken;
     this.roleArn = props.kubectlRoleArn;
     this.handlerRole = props.handlerRole;
   }
