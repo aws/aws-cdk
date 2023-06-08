@@ -36,14 +36,14 @@ describe('with some stacks and assets', () => {
 
     expect(graph.node('F1:D1-publish')).toEqual(expect.objectContaining({
       type: 'asset-publish',
-      dependencies: new Set(['F1:D1-build']),
+      dependencies: new Set(['F1-build']),
     } as Partial<AssetPublishNode>));
   });
 
   test('with prebuild off, asset building inherits dependencies from their parent stack', () => {
     const graph = new WorkGraphBuilder(false).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
       dependencies: new Set(['stack0', 'stack1']),
     } as Partial<AssetBuildNode>));
@@ -52,7 +52,7 @@ describe('with some stacks and assets', () => {
   test('with prebuild on, assets only have their own dependencies', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
       dependencies: new Set(['stack0']),
     } as Partial<AssetBuildNode>));
@@ -148,7 +148,7 @@ describe('tests that use assets', () => {
 
     expect(traversal).toHaveLength(4); // 1 asset build, 1 asset publish, 2 stacks
     expect(traversal).toEqual([
-      'work-graph-builder.test.js:D1-build',
+      'work-graph-builder.test.js-build',
       'work-graph-builder.test.js:D1-publish',
       'StackA',
       'StackB',
