@@ -10,4 +10,5 @@ export * from './matches';
 export * from './enums';
 export * from './targets';
 export * from './targetgroups';
+export * from './logging';
 
