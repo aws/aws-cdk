@@ -814,7 +814,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Enable this flag to disallow creating a launch configuration when creating an AutoScalingGroup.
       Launch configurations have been deprecated and cannot be created in AWS Accounts created after
       December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
-      will now create an equivalent 'launchTemplate'. Alternativelu, users can provide an explicit 
+      will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
       'launchTemplate' or 'mixedInstancesPolicy'.
     `,
     introducedIn: { v2: 'V2·NEXT' },
