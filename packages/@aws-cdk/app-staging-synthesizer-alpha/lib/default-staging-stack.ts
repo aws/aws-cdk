@@ -111,6 +111,9 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
 
 /**
  * A default Staging Stack that implements IStagingResources.
+ *
+ * @example
+ * const defaultStagingStack = DefaultStagingStack.factory({ appId: 'my-app-id' });
  */
 export class DefaultStagingStack extends Stack implements IStagingResources {
   /**
@@ -147,9 +150,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
    * Default asset publishing role name for file (S3) assets.
    */
   private get fileRoleName() {
-    // This role name can be a maximum of 64 letters. The reason why
-    // we slice the appId and not the entire name is because this.region
-    // can be a token and we don't want to accidentally cut it off.
     return `cdk-${this.appId}-file-role-${this.region}`;
   }
 
@@ -157,9 +157,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
    * Default asset publishing role name for docker (ECR) assets.
    */
   private get imageRoleName() {
-    // This role name can be a maximum of 64 letters. The reason why
-    // we slice the appId and not the entire name is because this.region
-    // can be a token and we don't want to accidentally cut it off.
     return `cdk-${this.appId}-image-role-${this.region}`;
   }
 

@@ -1,158 +1,24 @@
-import * as AWS from 'aws-sdk';
-import { PhysicalResourceId } from '../../../lib';
-import { handler } from '../../../lib/aws-custom-resource/runtime/index';
-
-/* eslint-disable no-console */
-console.log = jest.fn();
-
-jest.mock('aws-sdk', () => {
-  return {
-    ...jest.requireActual('aws-sdk'),
-    SSM: jest.fn(() => {
-      return {
-        config: {
-          apiVersion: 'apiVersion',
-          region: 'eu-west-1',
-        },
-        getParameter: () => {
-          return {
-            promise: async () => {},
-          };
-        },
-      };
-    }),
-  };
-});
-
-jest.mock('https', () => {
-  return {
-    request: (_: any, callback: () => void) => {
-      return {
-        on: () => undefined,
-        write: () => true,
-        end: callback,
-      };
-    },
-  };
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
-test('SDK global credentials are never set', async () => {
-  // WHEN
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        action: 'getParameter',
-        assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
-        parameters: {
-          Name: 'foo',
-        },
-        physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
-      }),
-      ServiceToken: 'serviceToken',
-    },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
-
-  // THEN
-  expect(AWS.config).toBeInstanceOf(AWS.Config);
-  expect(AWS.config.credentials).toBeNull();
-});
-
-test('SDK credentials are not persisted across subsequent invocations', async () => {
-  // GIVEN
-  const mockCreds = new AWS.ChainableTemporaryCredentials();
-  jest.spyOn(AWS, 'ChainableTemporaryCredentials').mockReturnValue(mockCreds);
-
-  // WHEN
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        action: 'getParameter',
-        parameters: {
-          Name: 'foo',
-        },
-        physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
-      }),
-      ServiceToken: 'serviceToken',
-    },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
-
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        action: 'getParameter',
-        assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
-        parameters: {
-          Name: 'foo',
-        },
-        physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
-      }),
-      ServiceToken: 'serviceToken',
-    },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
-
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        action: 'getParameter',
-        parameters: {
-          Name: 'foo',
-        },
-        physicalResourceId: PhysicalResourceId.of('id'),
-        service: 'SSM',
-      }),
-      ServiceToken: 'serviceToken',
-    },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
-
-  // THEN
-  expect(AWS.SSM).toHaveBeenNthCalledWith(1, {
-    apiVersion: undefined,
-    credentials: undefined,
-    region: undefined,
+describe('index', () =>{
+  beforeEach(() => {
+    // Reset because the module is cached and does not re-read environment variables
+    jest.resetModules();
   });
-  expect(AWS.SSM).toHaveBeenNthCalledWith(2, {
-    apiVersion: undefined,
-    credentials: mockCreds,
-    region: undefined,
+  it('nodejs16.x runtime should use AWS SDK v2', async ()=> {
+    process.env.AWS_EXECUTION_ENV = 'AWS_Lambda_nodejs16.x';
+    const expected = await import('../../../lib/aws-custom-resource/runtime/aws-sdk-v2-handler');
+    const runtime = await import('../../../lib/aws-custom-resource/runtime');
+    expect(runtime.handler).toStrictEqual(expected.handler);
   });
-  expect(AWS.SSM).toHaveBeenNthCalledWith(3, {
-    apiVersion: undefined,
-    credentials: undefined,
-    region: undefined,
+  it('nodejs18.x runtime should use AWS SDK v3', async ()=> {
+    process.env.AWS_EXECUTION_ENV = 'AWS_Lambda_nodejs18.x';
+    const expected = await import('../../../lib/aws-custom-resource/runtime/aws-sdk-v3-handler');
+    const runtime = await import('../../../lib/aws-custom-resource/runtime');
+    expect(runtime.handler).toStrictEqual(expected.handler);
+  });
+  it('nodejs18.x newer runtime should use AWS SDK v3', async ()=> {
+    process.env.AWS_EXECUTION_ENV = 'AWS_Lambda_nodejs20.x';
+    const expected = await import('../../../lib/aws-custom-resource/runtime/aws-sdk-v3-handler');
+    const runtime = await import('../../../lib/aws-custom-resource/runtime');
+    expect(runtime.handler).toStrictEqual(expected.handler);
   });
 });
