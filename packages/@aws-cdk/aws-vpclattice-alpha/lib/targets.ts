@@ -3,6 +3,8 @@ import * as core from 'aws-cdk-lib';
 import {
   aws_vpclattice,
   aws_ec2 as ec2,
+  aws_lambda,
+  aws_elasticloadbalancingv2 as elbv2,
 }
   from 'aws-cdk-lib';
 
@@ -10,6 +12,128 @@ import * as constructs from 'constructs';
 import * as vpclattice from './index';
 import { Construct } from 'constructs';
 
+/**
+ * Types of Targets that are usable with vpclattice
+ */
+export enum TargetType {
+  /**
+   * Lambda Target
+   */
+  LAMBDA = 'LAMBDA',
+  /**
+   * IP Address Target
+   */
+  IP = 'IP',
+  /**
+   * EC2 Instance Targets
+   */
+  INSTANCE = 'INSTANCE',
+  /**
+   * Application Load Balancer Target
+   */
+  ALB = 'ALB'
+}
+
+/**
+ * Targets for target Groups
+ */
+export abstract class Target {
+
+  /**
+   * Lambda Target
+   * @param lambda
+   */
+  public static lambda(lambda: aws_lambda.Function[]): Target {
+
+    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = [];
+    lambda.forEach((target) => {
+      targets.push({ id: target.functionArn });
+    });
+
+    return {
+      type: TargetType.LAMBDA,
+      targets: targets,
+    };
+  };
+
+  /**
+   * IpAddress as Targets
+   * @param ipAddress
+   * @param config
+   */
+  public static ipAddress(ipAddress: string[], config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty ): Target {
+
+    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = [];
+
+    ipAddress.forEach((target) => {
+      targets.push({ id: target });
+    });
+
+    return {
+      type: TargetType.LAMBDA,
+      targets: targets,
+      config: config,
+    };
+
+  };
+
+  /**
+   * EC2 Instances as Targets
+   * @param ec2instance
+   * @param config
+   */
+  public static ec2instance(ec2instance: ec2.Instance[], config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty): Target {
+
+    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = [];
+
+    ec2instance.forEach((target) => {
+      targets.push({ id: target.instanceId });
+    });
+
+    return {
+      type: TargetType.LAMBDA,
+      targets: targets,
+      config: config,
+    };
+
+  };
+
+  /**
+   * Application Load Balancer as Targets
+   * @param alb
+   * @param config
+   */
+  public static applicationLoadBalancer(alb: elbv2.ApplicationListener[], config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty): Target {
+
+    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = [];
+
+    alb.forEach((target) => {
+      targets.push({ id: target.listenerArn });
+    });
+
+    return {
+      type: TargetType.LAMBDA,
+      targets: targets,
+      config: config,
+    };
+
+  }
+  /**
+   * The type of target
+   */
+  public abstract readonly type: TargetType;
+  /**
+   * References to the targets, ids or Arns
+   */
+  public abstract readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  /**
+   * Configuration for the TargetGroup, if it is not a lambda
+   */
+  public abstract readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty | undefined;
+
+  constructor() {};
+
+}
 /**
  * A weighted target group adds a weighting to a target group.
  * when more than one WeightedTargetGroup is provided as the action

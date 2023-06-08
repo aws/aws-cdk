@@ -11,6 +11,7 @@ import {
   ServiceNetwork,
   Service,
   TargetGroup,
+  Target,
 }
   from '../../lib/index';
 
@@ -46,7 +47,9 @@ export class LatticeTestStack extends core.Stack {
         {
           targetGroup: new TargetGroup(this, 'lambdatargets', {
             name: 'lambda1',
-            lambdaTargets: [support.helloWorld],
+            target: Target.lambda([
+              support.checkHelloWorld,
+            ]),
           }),
         },
       ],
