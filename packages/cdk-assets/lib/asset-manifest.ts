@@ -106,7 +106,10 @@ export class AssetManifest {
   }
 
   /**
-   * List of assets, splat out to destinations
+   * List of assets per destination
+   *
+   * Returns one asset for every publishable destination. Multiple asset
+   * destinations may share the same asset source.
    */
   public get entries(): IManifestEntry[] {
     return [
@@ -145,7 +148,7 @@ const ASSET_TYPES: AssetType[] = ['files', 'dockerImages'];
  */
 export interface IManifestEntry {
   /**
-   * The identifier of the asset
+   * The identifier of the asset and its destination
    */
   readonly id: DestinationIdentifier;
 
@@ -209,10 +212,16 @@ export class DockerImageManifestEntry implements IManifestEntry {
 
 /**
  * Identify an asset destination in an asset manifest
+ *
+ * When stringified, this will be a combination of the source
+ * and destination IDs.
  */
 export class DestinationIdentifier {
   /**
    * Identifies the asset, by source.
+   *
+   * The assetId will be the same between assets that represent
+   * the same physical file or image.
    */
   public readonly assetId: string;
 
