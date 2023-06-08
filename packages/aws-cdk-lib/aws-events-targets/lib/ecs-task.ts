@@ -223,9 +223,14 @@ export class EcsTask implements events.IRuleTarget {
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
-    const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType == ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
+    // throw an error if assignPublicIp is true and the subnet type is not PUBLIC
+    if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
+      throw new Error('assignPublicIp should be set to true only for PUBLIC subnets');
+    }
+
+    const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
     const launchType = this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE';
-    if (assignPublicIp == 'ENABLED' && launchType != 'FARGATE') {
+    if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
     };
 

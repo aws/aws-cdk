@@ -1027,3 +1027,30 @@ test('throw error when enable assignPublicIp for non-Fargate task', () => {
     }));
   }).toThrowError('assignPublicIp is only supported for FARGATE tasks');
 });
+
+test('throw an error when assignPublicIp is set to true for private subnets', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      assignPublicIp: true,
+    }));
+  }).toThrowError('assignPublicIp should be set to true only for PUBLIC subnets');
+});
