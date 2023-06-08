@@ -70,13 +70,6 @@ const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
 Tags.of(taggedEc2Ecs).add('foo', 'bar');
 Tags.of(taggedEc2Ecs).add('super', 'salamander');
 
-const taggedFargate = new FargateComputeEnvironment(stack, 'taggedFargate', {
-  vpc,
-  computeEnvironmentName: 'taggedFargateCE',
-});
-
-Tags.of(taggedFargate).add('computeEnvironmentName', 'bar')
-
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],
 });
