@@ -23,7 +23,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-NOTE: Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after 12-31-2023 will not be able to create new Launch Configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a Launch Configuration based on the following [launch configuration to launch template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
+Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after December 31, 2023 will not be able to create new Launch Configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a Launch Configuration based on the following [Launch Configuration to Launch Template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
 * machineImage
 * keyName
 * instanceType
@@ -34,6 +34,8 @@ NOTE: Creating an `AutoScalingGroup` from a Launch Configuration has been deprec
 * associatePublicIpAddress
 * spotPrice
 * blockDevices
+
+After the Launch Configuration is replaced with a `LaunchTemplate`, any new instances launched by the `AutoScalingGroup` will use the new `LaunchTemplate`. Existing instances are not affected. To update an existing instance, you can allow the `AutoScalingGroup` to gradually replace existing instances with new instances based on the `terminationPolicies` for the `AutoScalingGroup`. Alternatively, you can terminate them yourself and force the `AutoScalingGroup` to launch new instances to maintain the `desiredCapacity`.
 
 [Migrating to Launch Templates from Launch Configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html)
 
