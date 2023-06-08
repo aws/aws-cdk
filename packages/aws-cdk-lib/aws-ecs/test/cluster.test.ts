@@ -1035,7 +1035,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
       ServiceConnectDefaults: {
         Namespace: {
-          'Fn:GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Arn'],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Arn'],
         },
       },
     });
