@@ -778,6 +778,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
                     "type": "managed",
+                    "computeEnvironmentName": "maxPropsFargateCE",
                     "computeResources": {
                       "maxvCpus": 512,
                       "type": "FARGATE_SPOT",

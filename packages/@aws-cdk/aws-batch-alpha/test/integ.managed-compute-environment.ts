@@ -12,7 +12,6 @@ const vpc = new ec2.Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 new FargateComputeEnvironment(stack, 'minimalPropsFargate', {
   vpc,
   maxvCpus: 512,
-  computeEnvironmentName: 'minPropsFargateCE',
 });
 
 new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
