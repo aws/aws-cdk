@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "apigateway-parameterized-swagger/DefaultTest": {
+      "stacks": [
+        "test-apigateway-parameterized-swagger"
+      ],
+      "assertionStack": "apigateway-parameterized-swagger/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayparameterizedswaggerDefaultTestDeployAssert4D14AA52"
+    }
+  }
+}

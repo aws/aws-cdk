@@ -18,7 +18,7 @@ class Test extends cdk.Stack {
 
     const bucket = new Bucket(this, 'Bucket');
     const deployment = new DeployTimeSubstitutedFile(this, 'Deployment', {
-      source: path.join(__dirname, 'sample-definition.yaml'),
+      source: path.join(__dirname, 'sample-definition-substitution.yaml'),
       destinationBucket: bucket,
       substitutions: {
         testMethod: handler.functionName,
