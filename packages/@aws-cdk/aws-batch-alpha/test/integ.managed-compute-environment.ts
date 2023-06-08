@@ -21,7 +21,7 @@ new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
   replaceComputeEnvironment: true,
   spot: true,
   terminateOnUpdate: true,
-  updateTimeout: Duration.minutes(3),
+  updateTimeout: Duration.minutes(10),
   updateToLatestImageVersion: false,
 });
 
