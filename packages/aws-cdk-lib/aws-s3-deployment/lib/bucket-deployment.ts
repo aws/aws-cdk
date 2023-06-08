@@ -13,7 +13,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import { FileSystem } from "../../core";
 
 // tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
@@ -615,7 +614,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     for (const key in props.substitutions) {
       fileData = fileData.replace('{{ ' + key + ' }}', props.substitutions[key]);
     };
-    const objectKey = FileSystem.fingerprint(props.source);
+    const objectKey = cdk.FileSystem.fingerprint(props.source);
     const fileSource = Source.data(objectKey, fileData);
     const fullBucketDeploymentProps: BucketDeploymentProps = {
       prune: false,
