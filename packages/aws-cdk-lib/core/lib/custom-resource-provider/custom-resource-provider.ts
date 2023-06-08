@@ -1,11 +1,10 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import * as fse from 'fs-extra';
+import * as fs from 'fs-extra';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 import { AssetStaging } from '../asset-staging';
-import { FileAssetPackaging } from '../assets';
+import { FileAssetLocation, FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
 import { FileSystem } from '../fs';
@@ -32,6 +31,16 @@ export function builtInCustomResourceProviderNodeRuntime(scope: Construct): Cust
  *
  */
 export interface CustomResourceProviderProps {
+  /**
+   * Whether or not the code will be inlined or bundled as an asset. If specified,
+   * only the `index.js` file from the `codeDirectory` will be inlined as the lambda code.
+   *
+   * The file must not exceed 4 MB.
+   *
+   * @default - code will be bundled as an asset
+   */
+  readonly inlineCode?: boolean;
+
   /**
    * A local file system directory with the provider's code. The code will be
    * bundled into a zip asset and wired to the provider's AWS Lambda function.
@@ -231,21 +240,7 @@ export class CustomResourceProvider extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
-    const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fse.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
-
-    const staging = new AssetStaging(this, 'Staging', {
-      sourcePath: stagingDirectory,
-    });
-
-    const assetFileName = staging.relativeStagedPath(stack);
-
-    const asset = stack.synthesizer.addFileAsset({
-      fileName: assetFileName,
-      sourceHash: staging.assetHash,
-      packaging: FileAssetPackaging.ZIP_DIRECTORY,
-    });
+    const codeInfo = this.getCodeInfo(props, stack);
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
@@ -304,9 +299,11 @@ export class CustomResourceProvider extends Construct {
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Code: {
-          S3Bucket: asset.bucketName,
-          S3Key: asset.objectKey,
+        Code: codeInfo.inlineCode === true ? {
+          ZipFile: fs.readFileSync(path.join(props.codeDirectory, 'index.js'), 'utf-8'),
+        } : {
+          S3Bucket: codeInfo.asset.bucketName,
+          S3Key: codeInfo.asset.objectKey,
         },
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
@@ -322,13 +319,56 @@ export class CustomResourceProvider extends Construct {
       handler.addDependency(this._role);
     }
 
-    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
+    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) && !codeInfo.inlineCode) {
+      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, codeInfo.assetFileName);
       handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
-    this.codeHash = staging.assetHash;
+    this.codeHash = codeInfo.inlineCode ? '' : codeInfo.staging.assetHash;
+  }
+
+  /**
+   * Returns information on the code for the custom resource. If the code is to
+   * be inlined, no further information is gathered. If the code is to be uploaded
+   * as an asset, the asset gets created in this function.
+   */
+  private getCodeInfo(props: CustomResourceProviderProps, stack: Stack): {
+    inlineCode: true,
+  } | {
+    inlineCode: false,
+    staging: AssetStaging,
+    assetFileName: string,
+    asset: FileAssetLocation,
+  } {
+    if (props.inlineCode !== true) {
+      const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
+      fs.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
+      fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+
+      const staging = new AssetStaging(this, 'Staging', {
+        sourcePath: stagingDirectory,
+      });
+
+      const assetFileName = staging.relativeStagedPath(stack);
+
+      const asset = stack.synthesizer.addFileAsset({
+        fileName: assetFileName,
+        sourceHash: staging.assetHash,
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      });
+
+      return {
+        inlineCode: false,
+        staging,
+        assetFileName,
+        asset,
+      };
+    }
+
+    return {
+      inlineCode: true,
+    };
   }
 
   /**

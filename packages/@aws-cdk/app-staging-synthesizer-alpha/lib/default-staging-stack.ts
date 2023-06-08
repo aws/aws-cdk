@@ -3,6 +3,9 @@ import * as path from 'path';
 import {
   App,
   ArnFormat,
+  CustomResource,
+  CustomResourceProvider,
+  builtInCustomResourceProviderNodeRuntime,
   BootstraplessSynthesizer,
   DockerImageAssetSource,
   Duration,
@@ -11,6 +14,7 @@ import {
   RemovalPolicy,
   Stack,
   StackProps,
+  Tags,
 } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -21,6 +25,8 @@ import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 /**
  * User configurable options to the DefaultStagingStack.
@@ -353,7 +359,56 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       expiration: this.props.deployTimeFileAssetLifetime ?? Duration.days(30),
     });
 
+    this.enableAutoDeleteObjects(bucket);
+
     return stagingBucketName;
+  }
+
+  private enableAutoDeleteObjects(bucket: s3.Bucket) {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, '..', 'custom-resource-bindings', 'aws-s3', 'auto-delete-objects-handler'),
+      inlineCode: true,
+      runtime: builtInCustomResourceProviderNodeRuntime(bucket),
+      description: `Lambda function for auto-deleting objects in ${bucket.bucketName} S3 bucket.`,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    bucket.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        // list objects
+        's3:GetBucket*',
+        's3:List*',
+        's3:DeleteObject*', // and then delete them
+      ],
+      resources: [
+        bucket.bucketArn,
+        bucket.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: bucket.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (bucket.policy) {
+      customResource.node.addDependency(bucket.policy);
+    }
+
+    // We also tag the bucket to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
+    // the bucket as a side effect.
+    Tags.of(bucket).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 
   /**
