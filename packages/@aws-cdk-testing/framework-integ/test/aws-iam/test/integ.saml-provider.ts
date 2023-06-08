@@ -22,7 +22,7 @@ class TestStack extends Stack {
 const app = new App();
 
 new IntegTest(app, 'saml-provider-test', {
-  testCases: [new TestStack(app, 'cdk-saml-provider')],
+  testCases: [new TestStack(app, 'cdk-saml-provider'), new TestStack(app, 'cdk-saml-provider-cn', { env: { region: 'cn-northwest-1' } })],
 });
 
 app.synth();
