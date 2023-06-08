@@ -638,6 +638,18 @@ describe('Job', () => {
           sparkUI: { enabled: true },
         })).toThrow('Spark UI is not available for JobType.RAY');
       });
+
+      test('without runtime should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+        })).toThrow('Runtime is required for Ray');
+      });
     });
 
     test('etl job with all props should synthesize correctly', () => {

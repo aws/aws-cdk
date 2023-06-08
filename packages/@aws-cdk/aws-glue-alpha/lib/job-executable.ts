@@ -88,13 +88,31 @@ export enum PythonVersion {
 }
 
 /**
- * Runtime
+ * AWS Glue runtime determines the runtime engine of the job.
+ *
  */
-export enum Runtime {
+export class Runtime {
   /**
-   * Ray 2.4
+   * Runtime for a Glue for Ray 2.4.
    */
-  RAY_TWO_FOUR = 'Ray2.4',
+  public static readonly RAY_TWO_FOUR = new Runtime('Ray2.4');
+
+  /**
+   * Custom runtime
+   * @param runtime custom runtime
+   */
+  public static of(runtime: string): Runtime {
+    return new Runtime(runtime);
+  }
+
+  /**
+   * The name of this Runtime.
+   */
+  public readonly name: string;
+
+  private constructor(name: string) {
+    this.name = name;
+  }
 }
 
 /**
@@ -161,7 +179,7 @@ interface PythonExecutableProps {
 
 interface SharedJobExecutableProps {
   /**
-   * Runtime.
+   * Runtime. It is required for Ray jobs.
    *
    */
   readonly runtime?: Runtime;
