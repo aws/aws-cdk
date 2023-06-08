@@ -765,6 +765,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -1049,7 +1052,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5f1d549d447532171611ec67efa1334a292b218d21c7e9d518025f98758bc7bb.json"
+       "/f9aac4a86196c34b0d8ac3e17d4d9c40eb7f94e305679a4af3eba0a66ebb87b3.json"
       ]
      ]
     }
@@ -1076,7 +1079,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/64714deb08eba63eb26e0c683198b37009ff32959c307c4ae514be7bb33d8799.json"
+       "/dfdd2a4cbe474a9150aa33b25668102243db104e5296dca47cc8bee1f68338c6.json"
       ]
      ]
     },
@@ -1253,7 +1256,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
+     "S3Key": "10972873dd8a3bc33ae1cb91d834617be249fd84bed5bdbb6ffbb581650aea83.zip"
     },
     "Description": "/opt/awscli/aws"
    }
