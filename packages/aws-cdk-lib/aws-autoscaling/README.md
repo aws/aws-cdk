@@ -23,7 +23,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after December 31, 2023 will not be able to create new Launch Configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate` rather than a Launch Configuration based on the following [Launch Configuration to Launch Template mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference):
+Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after December 31, 2023 will no longer be able to create Launch Configurations. With the `@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation` feature flag set to true, `AutoScalingGroup` properties used to create a Launch Configuration will now be used to create a `LaunchTemplate` using a [Launch Configuration to `LaunchTemplate` mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference). Specifically, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate`:
 * machineImage
 * keyName
 * instanceType
@@ -37,9 +37,9 @@ Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. 
 
 After the Launch Configuration is replaced with a `LaunchTemplate`, any new instances launched by the `AutoScalingGroup` will use the new `LaunchTemplate`. Existing instances are not affected. To update an existing instance, you can allow the `AutoScalingGroup` to gradually replace existing instances with new instances based on the `terminationPolicies` for the `AutoScalingGroup`. Alternatively, you can terminate them yourself and force the `AutoScalingGroup` to launch new instances to maintain the `desiredCapacity`.
 
-Creating an `AutoScalingGroup` from a `LaunchTemplate` was added in CDK version 2.21.0.
+Support for creating an `AutoScalingGroup` from a `LaunchTemplate` was added in CDK version 2.21.0. Users on a CDK version earlier than version 2.21.0 that need to create an `AutoScalingGroup` with an account created after December 31, 2023 must update their CDK version to 2.21.0 or later. Users on CDK versions 2.21.0 up to, but not including <this_cdk_version>, must use a manually created `LaunchTemplate` to create an `AutoScalingGroup`. CDK version <this_cdk_version> or later will automatically generate a `LaunchTemplate` using the `AutoScalingGroup` properties mentioned above.
 
-[Migrating to Launch Templates from Launch Configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html)
+For additional migration information, please see: [Migrating to Launch Templates from Launch Configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html)
 
 NOTE: AutoScalingGroup has a property called `allowAllOutbound` (allowing the instances to contact the
 internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
