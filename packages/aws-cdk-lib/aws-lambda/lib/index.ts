@@ -24,6 +24,7 @@ export * from './log-retention';
 export * from './architecture';
 export * from './function-url';
 export * from './runtime-management';
+export * from './params-and-secrets-layers';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
