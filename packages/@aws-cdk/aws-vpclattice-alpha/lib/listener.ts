@@ -64,6 +64,7 @@ export interface AddListenerProps {
 
   /**
   * The Id of the service that this will be added to.
+  * @default cloudformation provided name
   */
   readonly name?: string;
 

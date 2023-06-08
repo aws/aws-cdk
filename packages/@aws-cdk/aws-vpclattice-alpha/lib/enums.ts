@@ -1,4 +1,18 @@
 /**
+ * AuthTypes
+ */
+export enum AuthType {
+  /**
+   * No Authorization
+   */
+  NONE = 'NONE',
+  /**
+   * Use IAM Policy as
+   */
+  AWS_IAM = 'AWS_IAM'
+}
+
+/**
  * HTTP/HTTPS methods
  */
 export enum Protocol {

@@ -13,12 +13,8 @@ import * as core from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import {
   Service,
+  AuthType,
 } from './index';
-
-export enum AuthType {
-  NONE = 'NONE',
-  AWS_IAM = 'AWS_IAM'
-}
 
 /**
  * Properties to share a Service Network

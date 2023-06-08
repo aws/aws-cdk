@@ -119,23 +119,29 @@ export interface LatticeServiceProps {
 
   /**
    * Listeners that will be attached to the service
+   * @default no listeners
   */
   readonly listeners?: IListener[] | undefined;
 
   /**
    * A certificate that may be used by the service
+   * @default no custom certificate is used
    */
   readonly certificate?: certificatemanager.Certificate | undefined;
   /**
    * A customDomain used by the service
+   * @default no customdomain is used
    */
   readonly customDomain?: string | undefined;
   /**
-   * A customDomain
+   * A custom hosname
+   * @default no hostname is used
    */
   readonly dnsEntry?: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
+
   /**
-   *
+   * Share Service
+   *@default no sharing of the service
    */
   readonly shares?: ShareServiceProps[]| undefined;
 
