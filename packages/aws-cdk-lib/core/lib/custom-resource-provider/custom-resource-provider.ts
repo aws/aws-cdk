@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 import { AssetStaging } from '../asset-staging';
-import { FileAssetLocation, FileAssetPackaging } from '../assets';
+import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
 import { FileSystem } from '../fs';
@@ -225,7 +225,14 @@ export class CustomResourceProvider extends Construct {
    * The hash of the lambda code backing this provider. Can be used to trigger updates
    * on code changes, even when the properties of a custom resource remain unchanged.
    */
-  public readonly codeHash: string;
+  public get codeHash(): string {
+    if (!this._codeHash) {
+      throw new Error('This custom resource uses inlineCode: true and does not have a codeHash');
+    }
+    return this._codeHash;
+  }
+
+  private _codeHash?: string;
 
   private policyStatements?: any[];
   private _role?: CfnResource;
@@ -240,7 +247,7 @@ export class CustomResourceProvider extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
-    const codeInfo = this.getCodeInfo(props, stack);
+    const { code, metadata } = this.createCodePropAndMetadata(props, stack);
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
@@ -299,12 +306,7 @@ export class CustomResourceProvider extends Construct {
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Code: codeInfo.inlineCode === true ? {
-          ZipFile: fs.readFileSync(path.join(props.codeDirectory, 'index.js'), 'utf-8'),
-        } : {
-          S3Bucket: codeInfo.asset.bucketName,
-          S3Key: codeInfo.asset.objectKey,
-        },
+        Code: code,
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
@@ -319,27 +321,20 @@ export class CustomResourceProvider extends Construct {
       handler.addDependency(this._role);
     }
 
-    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) && !codeInfo.inlineCode) {
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, codeInfo.assetFileName);
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');
+    if (metadata) {
+      Object.entries(metadata).forEach(([k, v]) => handler.addMetadata(k, v));
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
-    this.codeHash = codeInfo.inlineCode ? '' : codeInfo.staging.assetHash;
   }
 
   /**
-   * Returns information on the code for the custom resource. If the code is to
-   * be inlined, no further information is gathered. If the code is to be uploaded
-   * as an asset, the asset gets created in this function.
+   * Returns the code property for the custom resource as well as any metadata.
+   * If the code is to be uploaded as an asset, the asset gets created in this function.
    */
-  private getCodeInfo(props: CustomResourceProviderProps, stack: Stack): {
-    inlineCode: true,
-  } | {
-    inlineCode: false,
-    staging: AssetStaging,
-    assetFileName: string,
-    asset: FileAssetLocation,
+  private createCodePropAndMetadata(props: CustomResourceProviderProps, stack: Stack): {
+    code: Code,
+    metadata?: {[key: string]: string},
   } {
     if (props.inlineCode !== true) {
       const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
@@ -358,16 +353,24 @@ export class CustomResourceProvider extends Construct {
         packaging: FileAssetPackaging.ZIP_DIRECTORY,
       });
 
+      this._codeHash = staging.assetHash;
+
       return {
-        inlineCode: false,
-        staging,
-        assetFileName,
-        asset,
+        code: {
+          S3Bucket: asset.bucketName,
+          S3Key: asset.objectKey,
+        },
+        metadata: this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        } : undefined,
       };
     }
 
     return {
-      inlineCode: true,
+      code: {
+        ZipFile: fs.readFileSync(path.join(props.codeDirectory, 'index.js'), 'utf-8'),
+      },
     };
   }
 
@@ -448,3 +451,10 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs18.x';
   }
 }
+
+type Code = {
+  ZipFile: string,
+} | {
+  S3Bucket: string,
+  S3Key: string,
+};
