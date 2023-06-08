@@ -935,8 +935,12 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.ephemeralStorageSize = props.ephemeralStorageSize;
 
     // validates ephemeralStorageSize is within limits
-    if (props.ephemeralStorageSize && (props.ephemeralStorageSize.toGibibytes() > 200 || props.ephemeralStorageSize.toGibibytes() < 21)) {
-      throw new Error('Ephemeral Storage Size must be within 21 to 200 GiB.');
+    if (props.ephemeralStorageSize) {
+      if (props.ephemeralStorageSize.toGibibytes() > 200) {
+        throw new Error(`ECS Fargate container ${id} specifies ephemeralStorageSize at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+      } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
+        throw new Error(`ECS Fargate container ${id} specifies ephemeralStorageSize at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+      }
     }
   }
 

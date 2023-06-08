@@ -39,7 +39,6 @@ const defaultExpectedProps: CfnJobDefinitionProps = {
   },
 };
 
-let app: App;
 let stack: Stack;
 let pascalCaseExpectedProps: any;
 
@@ -760,7 +759,7 @@ describe('EC2 containers', () => {
 describe('Fargate containers', () => {
   // GIVEN
   beforeEach(() => {
-    app = new App();
+    const app = new App();
     stack = new Stack(app);
     pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
   });
@@ -855,7 +854,7 @@ describe('Fargate containers', () => {
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(19),
       }),
-    })).toThrow('Ephemeral Storage Size must be within 21 to 200 GiB.');
+    })).toThrow('ECS Fargate container EcsFargateContainer specifies ephemeralStorageSize at 19 < 21 GB');
 
     expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
@@ -863,6 +862,6 @@ describe('Fargate containers', () => {
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(201),
       }),
-    })).toThrow('Ephemeral Storage Size must be within 21 to 200 GiB.');
+    })).toThrow('ECS Fargate container EcsFargateContainer2 specifies ephemeralStorageSize at 201 > 200 GB');
   });
 });
