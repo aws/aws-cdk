@@ -77,17 +77,9 @@ export interface IServiceNetwork extends core.IResource {
    */
   associateVPC(props: AssociateVPCProps): void;
   /**
-   * Log To S3
+   * Add a logging Destination.
    */
-  logToS3(bucket: s3.Bucket | s3.IBucket ): void;
-  /**
-   * Send Events to Cloud Watch
-   */
-  sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup ): void;
-  /**
-   * Stream to Kinesis
-   */
-  streamToKinesis(stream: kinesis.Stream | kinesis.IStream ): void;
+  addloggingDestination(destination: LoggingDestination): void;
   /**
    * Share the ServiceNetwork
    */
@@ -201,26 +193,11 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       authType: props.authType ?? 'AWS_IAM',
     });
 
-    // log to s3
-    if (props.s3LogDestination !== undefined) {
-      props.s3LogDestination.forEach((bucket) => {
-        this.logToS3(bucket);
+    if (props.loggingDestinations !== undefined) {
+      props.loggingDestinations.forEach((destination) => {
+        this.addloggingDestination(destination);
       });
-    };
-
-    // log to cloudwatch
-    if (props.cloudwatchLogs !== undefined) {
-      props.cloudwatchLogs.forEach((log) => {
-        this.sendToCloudWatch(log);
-      });
-    };
-
-    // log to kinesis
-    if (props.kinesisStreams !== undefined) {
-      props.kinesisStreams.forEach((stream) => {
-        this.streamToKinesis(stream);
-      });
-    };
+    }
 
     // associate vpcs
     if (props.vpcs !== undefined) {
@@ -402,36 +379,15 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
 
   /**
-   * Send logs to a S3 bucket.
-   * @param bucket
+   * send logs to a destination
    */
-  public logToS3(bucket: s3.Bucket | s3.IBucket): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LoggingtoS3${bucket.bucketName}`, {
-      destinationArn: bucket.bucketArn,
-      resourceIdentifier: this.serviceNetworkArn,
-    });
-  }
-  /**
-   * Send event to Cloudwatch
-   * @param log
-   */
-  public sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LattiCloudwatch${log.logGroupName}`, {
-      destinationArn: log.logGroupArn,
-      resourceIdentifier: this.serviceNetworkArn,
-    });
-  }
+  public addloggingDestination(destination: LoggingDestination): void {
 
-  /**
-   * Stream Events to Kinesis
-   * @param stream
-   */
-  public streamToKinesis(stream: kinesis.Stream | kinesis.IStream): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LatticeKinesis${stream.streamName}`, {
-      destinationArn: stream.streamArn,
+    new aws_vpclattice.CfnAccessLogSubscription(this, `Loggingto${destination.name}`, {
+      destinationArn: destination.arn,
       resourceIdentifier: this.serviceNetworkArn,
     });
-  }
+  };
 
   /**
    * Share the The Service network using RAM

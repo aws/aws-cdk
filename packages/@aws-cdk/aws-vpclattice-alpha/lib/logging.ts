@@ -1,4 +1,3 @@
-import { Construct } from 'constructs';
 import {
   aws_s3 as s3,
   aws_logs as logs,
@@ -10,22 +9,47 @@ import {
  * Logging options
  */
 export abstract class LoggingDestination {
+
   /**
    * Construct a logging destination for a S3 Bucket
-   * @param s3Bucket
+   * @param bucket an s3 bucket
    */
-  public static s3(bucket: s3.IBucket): void {
-
+  public static s3(bucket: s3.IBucket): LoggingDestination {
+    return {
+      name: bucket.bucketName,
+      arn: bucket.bucketArn,
+    };
   }
   /**
    * Send to CLoudwatch
-   * @param s3Bucket
+   * @param logGroup
    */
-  public static cloudwatch(logGroup: logs.ILogGroup): void {}
+  public static cloudwatch(logGroup: logs.ILogGroup): LoggingDestination {
+    return {
+      name: logGroup.logGroupName,
+      arn: logGroup.logGroupArn,
+    };
+  }
 
   /**
    * Stream to Kinesis
-   * @param s3Bucket
+   * @param stream
    */
-  public static kinesis(stream: kinesis.IStream): void {}
+  public static kinesis(stream: kinesis.IStream): LoggingDestination {
+    return {
+      name: stream.streamName,
+      arn: stream.streamArn,
+    };
+  }
+
+  /**
+  * A name of the destination
+  */
+  public abstract readonly name: string;
+  /**
+   * An Arn of the destination
+   */
+  public abstract readonly arn: string;
+
+  protected constructor() {};
 }

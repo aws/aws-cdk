@@ -16,7 +16,6 @@ import {
   Protocol,
   HTTPMethods,
   MatchOperator,
-  IService,
 } from './index';
 
 interface IHttpMatchProperty {
@@ -98,7 +97,7 @@ export interface ListenerProps {
   /**
    * The Id of the service that this listener is associated with.
    */
-  readonly service: IService;
+  readonly serviceId: string;
   /**
    * the authpolicy for the service this listener is associated with
    * @default none.
