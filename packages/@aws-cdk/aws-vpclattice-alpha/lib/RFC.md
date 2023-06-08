@@ -35,7 +35,7 @@ Amazon VPC Lattice is an application networking service that consistently connec
 
 ## Example Implementation
 
-A Service is created and assocaited with a ServiceNetwork
+A Service is created and associated with a ServiceNetwork
 A Lattice Network is created, and associated with two different VPC's, VPC1 and VPC2.  
 Two lambdas are created,  lambda1 is providing a interface to an api,  lambda2 is making requests..  Lambda1 will be in VPC1, and Lambda2 in VPC2
 
@@ -142,10 +142,6 @@ The construct will implement `IServiceNetwork`.
  * Create a vpc lattice service network.
  * Implemented by `ServiceNetwork`.
  */
-e/**
- * Create a vpc lattice service network.
- * Implemented by `ServiceNetwork`.
- */
 export interface IServiceNetwork extends core.IResource {
 
   /**
@@ -189,8 +185,6 @@ export interface IServiceNetwork extends core.IResource {
    * Create and Add an auth policy to the Service Network
    */
   applyAuthPolicyToServiceNetwork(): void;
-}
-
 }
 ``` 
 All of the class functions, apart from addAuthPolicy, are convience functions that mirror the properties. 

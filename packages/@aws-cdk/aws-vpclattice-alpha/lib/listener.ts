@@ -95,7 +95,7 @@ export interface ListenerProps {
   */
   readonly name?: string;
   /**
-   * The service
+   * The Id of the service that this listener is associated with.
    */
   readonly serviceId: string;
   /**

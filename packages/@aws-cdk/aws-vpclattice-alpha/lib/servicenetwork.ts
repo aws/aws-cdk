@@ -2,9 +2,6 @@ import {
   aws_vpclattice,
   aws_iam as iam,
   aws_ec2 as ec2,
-  aws_s3 as s3,
-  aws_logs as logs,
-  aws_kinesis as kinesis,
   aws_ram as ram,
   custom_resources as cr,
 }
@@ -12,8 +9,9 @@ import {
 import * as core from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import {
-  Service,
+  IService,
   AuthType,
+  LoggingDestination,
 } from './index';
 
 /**
@@ -67,29 +65,21 @@ export interface IServiceNetwork extends core.IResource {
    */
   readonly serviceNetworkId: string;
   /**
-   * Grant Princopals access to the Service Network
+   * Grant Principals access to the Service Network
    */
   grantAccessToServiceNetwork(principal: iam.IPrincipal[]): void;
   /**
    * Add Lattice Service Policy
    */
-  addService(service: Service): void;
+  addService(service: IService): void;
   /**
    * Associate a VPC with the Service Network
    */
   associateVPC(props: AssociateVPCProps): void;
   /**
-   * Log To S3
+   * Add a logging Destination.
    */
-  logToS3(bucket: s3.Bucket | s3.IBucket ): void;
-  /**
-   * Send Events to Cloud Watch
-   */
-  sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup ): void;
-  /**
-   * Stream to Kinesis
-   */
-  streamToKinesis(stream: kinesis.Stream | kinesis.IStream ): void;
+  addloggingDestination(destination: LoggingDestination): void;
   /**
    * Share the ServiceNetwork
    */
@@ -118,28 +108,16 @@ export interface ServiceNetworkProps {
   readonly authType?: AuthType | undefined;
 
   /**
-   * S3 buckets for access logs
-   * @default no s3 logging
+   * Logging destinations
+   * @default: no logging
    */
-
-  readonly s3LogDestination?: s3.IBucket[] | undefined;
-  /**
-   * Cloudwatch Logs
-   * @default no logging to cloudwatch
-   */
-  readonly cloudwatchLogs?: logs.ILogGroup[] | undefined;
-
-  /**
-   * kinesis streams
-   * @default no streaming to Kinesis
-   */
-  readonly kinesisStreams?: kinesis.IStream[];
+  readonly loggingDestinations?: LoggingDestination[];
 
   /**
    * Lattice Services that are assocaited with this Service Network
    * @default no services are associated with the service network
    */
-  readonly services?: Service[] | undefined;
+  readonly services?: IService[] | undefined;
 
   /**
    * Vpcs that are associated with this Service Network
@@ -148,10 +126,13 @@ export interface ServiceNetworkProps {
   readonly vpcs?: ec2.IVpc[] | undefined;
 
   /**
-   * Account principals that are permitted to use this service
+   * Accounts that are permitted to use this service
+   * Must be a valid aws accound id.
+   * If accounts are external to the org, the allowExternalPrincipals prop must be true
+   * otherwise an explict deny will be applied to the auth policy first
    * @default none
    */
-  readonly accounts?: iam.AccountPrincipal[] | undefined;
+  readonly accounts?: string[] | undefined;
 
   /**
    * arnToShareWith, use this for specifying Orgs and OU's
@@ -212,26 +193,11 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       authType: props.authType ?? 'AWS_IAM',
     });
 
-    // log to s3
-    if (props.s3LogDestination !== undefined) {
-      props.s3LogDestination.forEach((bucket) => {
-        this.logToS3(bucket);
+    if (props.loggingDestinations !== undefined) {
+      props.loggingDestinations.forEach((destination) => {
+        this.addloggingDestination(destination);
       });
-    };
-
-    // log to cloudwatch
-    if (props.cloudwatchLogs !== undefined) {
-      props.cloudwatchLogs.forEach((log) => {
-        this.sendToCloudWatch(log);
-      });
-    };
-
-    // log to kinesis
-    if (props.kinesisStreams !== undefined) {
-      props.kinesisStreams.forEach((stream) => {
-        this.streamToKinesis(stream);
-      });
-    };
+    }
 
     // associate vpcs
     if (props.vpcs !== undefined) {
@@ -260,10 +226,10 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     // share the service network, and permit the account principals to use it
     if (props.accounts !== undefined) {
       props.accounts.forEach((account) => {
-        this.grantAccessToServiceNetwork([account]);
+        this.grantAccessToServiceNetwork([new iam.AccountPrincipal(account)]);
         this.share({
           name: 'Share',
-          principals: [account.accountId],
+          principals: [account],
           allowExternalPrincipals: allowExternalPrincipals,
         });
       });
@@ -376,7 +342,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * Add A lattice service to a lattice network
    * @param service
    */
-  public addService(service: Service): void {
+  public addService(service: IService): void {
     new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeService$${service.serviceId}`, {
       serviceIdentifier: service.serviceId,
       serviceNetworkIdentifier: this.serviceNetworkId,
@@ -413,36 +379,15 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
 
   /**
-   * Send logs to a S3 bucket.
-   * @param bucket
+   * send logs to a destination
    */
-  public logToS3(bucket: s3.Bucket | s3.IBucket): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LoggingtoS3${bucket.bucketName}`, {
-      destinationArn: bucket.bucketArn,
-      resourceIdentifier: this.serviceNetworkArn,
-    });
-  }
-  /**
-   * Send event to Cloudwatch
-   * @param log
-   */
-  public sendToCloudWatch(log: logs.LogGroup | logs.ILogGroup): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LattiCloudwatch${log.logGroupName}`, {
-      destinationArn: log.logGroupArn,
-      resourceIdentifier: this.serviceNetworkArn,
-    });
-  }
+  public addloggingDestination(destination: LoggingDestination): void {
 
-  /**
-   * Stream Events to Kinesis
-   * @param stream
-   */
-  public streamToKinesis(stream: kinesis.Stream | kinesis.IStream): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `LatticeKinesis${stream.streamName}`, {
-      destinationArn: stream.streamArn,
+    new aws_vpclattice.CfnAccessLogSubscription(this, `Loggingto${destination.name}`, {
+      destinationArn: destination.arn,
       resourceIdentifier: this.serviceNetworkArn,
     });
-  }
+  };
 
   /**
    * Share the The Service network using RAM

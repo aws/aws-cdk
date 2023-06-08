@@ -56,7 +56,7 @@ export interface IService extends core.IResource {
    * Add A vpc listener to the Service.
    * @param props
    */
-  addListener(props: AddListenerProps ): Listener;
+  addListener(props: AddListenerProps): Listener;
   /**
    * Share the service to other accounts via RAM
    * @param props
@@ -64,32 +64,10 @@ export interface IService extends core.IResource {
   share(props: ShareServiceProps): void;
 
   /**
-  * Create a DNS entry in R53 for the service.
-  */
-  addDNSEntry(props: aws_vpclattice.CfnService.DnsEntryProperty): void;
-
-  /**
-   * Add a certificate to the service
-   * @param certificate
-   */
-  addCertificate(certificate: certificatemanager.Certificate): void;
-
-  /**
-   * add a custom domain to the service
-   * @param domain
-   */
-  addCustomDomain(domain: string): void;
-
-  /**
-   * add a name for the service
-   * @default cloudformation will provide a name
-   */
-  addName(name: string): void;
-  /**
-   * grant access to the service
-   *
+   * Grant Access to other principals
    */
   grantAccess(principals: iam.IPrincipal[]): void;
+
   /**
    * Apply the authAuthPolicy to the Service
    */
@@ -143,7 +121,7 @@ export interface LatticeServiceProps {
    * Share Service
    *@default no sharing of the service
    */
-  readonly shares?: ShareServiceProps[]| undefined;
+  readonly shares?: ShareServiceProps[] | undefined;
 
   /**
   * Allow external principals
@@ -313,40 +291,6 @@ export class Service extends core.Resource implements IService {
   }
 
   /**
-   * Provide an ACM certificate to the service
-   * @param certificate
-   */
-  public addCertificate(certificate: core.aws_certificatemanager.Certificate): void {
-    this.certificate = certificate;
-  }
-
-  /**
-   * Add a name to the Service
-   * @param name
-   */
-  public addName(name: string): void {
-
-    // TODO:validate the name is ok
-    this.name = name;
-  }
-  /**
-   * Add a custom domain to the service
-   * @param domain the domain
-   */
-  public addCustomDomain(domain: string): void {
-
-    // TODO:validate the domain is ok
-    this.customDomain = domain;
-  }
-  /**
-   * Add a DNS entry for the service
-   * @param dnsEntry
-   */
-  public addDNSEntry(dnsEntry: aws_vpclattice.CfnService.DnsEntryProperty): void {
-
-    this.dnsEntry = dnsEntry;
-  }
-  /**
    * Adds a listener to the service.
    * @param props AddListenerProps
    * @returns Listener
@@ -415,5 +359,5 @@ export class Service extends core.Resource implements IService {
       allowExternalPrincipals: props.allowExternalPrincipals,
       principals: props.principals,
     });
-	  }
+  }
 }
