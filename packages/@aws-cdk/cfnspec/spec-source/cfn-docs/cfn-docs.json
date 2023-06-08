@@ -7140,8 +7140,8 @@
         "Description": "The pricing rule description.",
         "ModifierPercentage": "A percentage modifier applied on the public pricing rates.",
         "Name": "The name of a pricing rule.",
-        "Operation": "Operation is the specific AWS action covered by this line item. This describes the specific usage of the line item.",
-        "Scope": "The scope of pricing rule that indicates if it is globally applicable, or if it is service-specific.",
+        "Operation": "Operation is the specific AWS action covered by this line item. This describes the specific usage of the line item.\n\nIf the `Scope` attribute is set to `SKU` , this attribute indicates which operation the `PricingRule` is modifying. For example, a value of `RunInstances:0202` indicates the operation of running an Amazon EC2 instance.",
+        "Scope": "The scope of pricing rule that indicates if it's globally applicable or service-specific.",
         "Service": "If the `Scope` attribute is `SERVICE` , this attribute indicates which service the `PricingRule` is applicable for.",
         "Tags": "A map that contains tag keys and tag values that are attached to a pricing rule.",
         "Tiering": "The set of tiering configurations for the pricing rule.",
@@ -21469,7 +21469,7 @@
         "Ref": "`Ref` returns the data repository association resource ID. For example:\n\n`{\"Ref\":\"data_repository_association_logical_id\"}`\n\nReturns `dra-0123456789abcdef6` .",
         "ResourceARN": "Returns the data repository association's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-1:111122223333:association/fs-abc012345def6789a/dra-abcdef0123456789b`"
       },
-      "description": "Creates an Amazon FSx for Lustre data repository association (DRA). A data repository association is a link between a directory on the file system and an Amazon S3 bucket or prefix. You can have a maximum of 8 data repository associations on a file system. Data repository associations are supported only for file systems with the `Persistent_2` deployment type.\n\nEach data repository association must have a unique Amazon FSx file system directory and a unique S3 bucket or prefix associated with it. You can configure a data repository association for automatic import only, for automatic export only, or for both. To learn more about linking a data repository to your file system, see [Linking your file system to an S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html) .",
+      "description": "Creates an Amazon FSx for Lustre data repository association (DRA). A data repository association is a link between a directory on the file system and an Amazon S3 bucket or prefix. You can have a maximum of 8 data repository associations on a file system. Data repository associations are supported on all FSx for Lustre 2.12 and newer file systems, excluding `scratch_1` deployment type.\n\nEach data repository association must have a unique Amazon FSx file system directory and a unique S3 bucket or prefix associated with it. You can configure a data repository association for automatic import only, for automatic export only, or for both. To learn more about linking a data repository to your file system, see [Linking your file system to an S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html) .",
       "properties": {
         "BatchImportMetaDataOnCreate": "A boolean flag indicating whether an import data repository task to import metadata should run after the data repository association is created. The task runs if this flag is set to `true` .",
         "DataRepositoryPath": "The path to the Amazon S3 data repository that will be linked to the file system. The path can be an S3 bucket or prefix in the format `s3://myBucket/myPrefix/` . This path specifies where in the S3 data repository files will be imported from or exported to.",
@@ -21516,7 +21516,7 @@
         "FileSystemType": "The type of Amazon FSx file system, which can be `LUSTRE` , `WINDOWS` , `ONTAP` , or `OPENZFS` .",
         "FileSystemTypeVersion": "(Optional) For FSx for Lustre file systems, sets the Lustre version for the file system that you're creating. Valid values are `2.10` and `2.12` :\n\n- 2.10 is supported by the Scratch and Persistent_1 Lustre deployment types.\n- 2.12 is supported by all Lustre deployment types. `2.12` is required when setting FSx for Lustre `DeploymentType` to `PERSISTENT_2` .\n\nDefault value = `2.10` , except when `DeploymentType` is set to `PERSISTENT_2` , then the default is `2.12` .\n\n> If you set `FileSystemTypeVersion` to `2.10` for a `PERSISTENT_2` Lustre deployment type, the `CreateFileSystem` operation fails.",
         "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt Amazon FSx file system data. Used as follows with Amazon FSx file system types:\n\n- Amazon FSx for Lustre `PERSISTENT_1` and `PERSISTENT_2` deployment types only.\n\n`SCRATCH_1` and `SCRATCH_2` types are encrypted using the Amazon FSx service AWS KMS key for your account.\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
-        "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the Lustre `Persistent_2` deployment type.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
+        "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with a data repository association.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
         "OntapConfiguration": "The ONTAP configuration properties of the FSx for ONTAP file system that you are creating.",
         "OpenZFSConfiguration": "The Amazon FSx for OpenZFS configuration properties for the file system that you are creating.",
         "SecurityGroupIds": "A list of IDs specifying the security groups to apply to all network interfaces created for file system access. This list isn't returned in later requests to describe the file system.",
@@ -21556,16 +21556,16 @@
       "attributes": {},
       "description": "The configuration for the Amazon FSx for Lustre file system.",
       "properties": {
-        "AutoImportPolicy": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:\n\n- `NONE` - (Default) AutoImport is off. Amazon FSx only updates file and directory listings from the linked S3 bucket when the file system is created. FSx does not update file and directory listings for any new or changed objects after choosing this option.\n- `NEW` - AutoImport is on. Amazon FSx automatically imports directory listings of any new objects added to the linked S3 bucket that do not currently exist in the FSx file system.\n- `NEW_CHANGED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket and any existing objects that are changed in the S3 bucket after you choose this option.\n- `NEW_CHANGED_DELETED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.\n\nFor more information, see [Automatically import updates from your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoimport-data-repo.html) .\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
+        "AutoImportPolicy": "(Optional) When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:\n\n- `NONE` - (Default) AutoImport is off. Amazon FSx only updates file and directory listings from the linked S3 bucket when the file system is created. FSx does not update file and directory listings for any new or changed objects after choosing this option.\n- `NEW` - AutoImport is on. Amazon FSx automatically imports directory listings of any new objects added to the linked S3 bucket that do not currently exist in the FSx file system.\n- `NEW_CHANGED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket and any existing objects that are changed in the S3 bucket after you choose this option.\n- `NEW_CHANGED_DELETED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.\n\nFor more information, see [Automatically import updates from your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoimport-data-repo.html) .\n\n> This parameter is not supported for Lustre file systems with a data repository association.",
         "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
         "CopyTagsToBackups": "A Boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value. Only valid for use with `PERSISTENT_1` deployment types.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DataCompressionType": "Sets the data compression configuration for the file system. `DataCompressionType` can have the following values:\n\n- `NONE` - (Default) Data compression is turned off when the file system is created.\n- `LZ4` - Data compression is turned on with the LZ4 algorithm.\n\nFor more information, see [Lustre data compression](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html) in the *Amazon FSx for Lustre User Guide* .",
         "DeploymentType": "(Optional) Choose `SCRATCH_1` and `SCRATCH_2` deployment types when you need temporary storage and shorter-term processing of data. The `SCRATCH_2` deployment type provides in-transit encryption of data and higher burst throughput capacity than `SCRATCH_1` .\n\nChoose `PERSISTENT_1` for longer-term storage and for throughput-focused workloads that aren\u2019t latency-sensitive. `PERSISTENT_1` supports encryption of data in transit, and is available in all AWS Regions in which FSx for Lustre is available.\n\nChoose `PERSISTENT_2` for longer-term storage and for latency-sensitive workloads that require the highest levels of IOPS/throughput. `PERSISTENT_2` supports SSD storage, and offers higher `PerUnitStorageThroughput` (up to 1000 MB/s/TiB). `PERSISTENT_2` is available in a limited number of AWS Regions . For more information, and an up-to-date list of AWS Regions in which `PERSISTENT_2` is available, see [File system deployment options for FSx for Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html#lustre-deployment-types) in the *Amazon FSx for Lustre User Guide* .\n\n> If you choose `PERSISTENT_2` , and you set `FileSystemTypeVersion` to `2.10` , the `CreateFileSystem` operation fails. \n\nEncryption of data in transit is automatically turned on when you access `SCRATCH_2` , `PERSISTENT_1` and `PERSISTENT_2` file systems from Amazon EC2 instances that support automatic encryption in the AWS Regions where they are available. For more information about encryption in transit for FSx for Lustre file systems, see [Encrypting data in transit](https://docs.aws.amazon.com/fsx/latest/LustreGuide/encryption-in-transit-fsxl.html) in the *Amazon FSx for Lustre User Guide* .\n\n(Default = `SCRATCH_1` )",
         "DriveCacheType": "The type of drive cache used by `PERSISTENT_1` file systems that are provisioned with HDD storage devices. This parameter is required when storage type is HDD. Set this property to `READ` to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.\n\nThis parameter is required when `StorageType` is set to `HDD` and `DeploymentType` is `PERSISTENT_1` .",
-        "ExportPath": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. Specifies the path in the Amazon S3 bucket where the root of your Amazon FSx file system is exported. The path must use the same Amazon S3 bucket as specified in ImportPath. You can provide an optional prefix to which new and changed data is to be exported from your Amazon FSx for Lustre file system. If an `ExportPath` value is not provided, Amazon FSx sets a default export path, `s3://import-bucket/FSxLustre[creation-timestamp]` . The timestamp is in UTC format, for example `s3://import-bucket/FSxLustre20181105T222312Z` .\n\nThe Amazon S3 export bucket must be the same as the import bucket specified by `ImportPath` . If you specify only a bucket name, such as `s3://import-bucket` , you get a 1:1 mapping of file system objects to S3 bucket objects. This mapping means that the input data in S3 is overwritten on export. If you provide a custom prefix in the export path, such as `s3://import-bucket/[custom-optional-prefix]` , Amazon FSx exports the contents of your file system to that export prefix in the Amazon S3 bucket.\n\n> This parameter is not supported for file systems using the `Persistent_2` deployment type.",
-        "ImportPath": "(Optional) The path to the Amazon S3 bucket (including the optional prefix) that you're using as the data repository for your Amazon FSx for Lustre file system. The root of your FSx for Lustre file system will be mapped to the root of the Amazon S3 bucket you select. An example is `s3://import-bucket/optional-prefix` . If you specify a prefix after the Amazon S3 bucket name, only object keys with that prefix are loaded into the file system.\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
-        "ImportedFileChunkSize": "(Optional) For files imported from a data repository, this value determines the stripe count and maximum amount of data per file (in MiB) stored on a single physical disk. The maximum number of disks that a single file can be striped across is limited by the total number of disks that make up the file system.\n\nThe default chunk size is 1,024 MiB (1 GiB) and can go as high as 512,000 MiB (500 GiB). Amazon S3 objects have a maximum size of 5 TB.\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
+        "ExportPath": "(Optional) Specifies the path in the Amazon S3 bucket where the root of your Amazon FSx file system is exported. The path must use the same Amazon S3 bucket as specified in ImportPath. You can provide an optional prefix to which new and changed data is to be exported from your Amazon FSx for Lustre file system. If an `ExportPath` value is not provided, Amazon FSx sets a default export path, `s3://import-bucket/FSxLustre[creation-timestamp]` . The timestamp is in UTC format, for example `s3://import-bucket/FSxLustre20181105T222312Z` .\n\nThe Amazon S3 export bucket must be the same as the import bucket specified by `ImportPath` . If you specify only a bucket name, such as `s3://import-bucket` , you get a 1:1 mapping of file system objects to S3 bucket objects. This mapping means that the input data in S3 is overwritten on export. If you provide a custom prefix in the export path, such as `s3://import-bucket/[custom-optional-prefix]` , Amazon FSx exports the contents of your file system to that export prefix in the Amazon S3 bucket.\n\n> This parameter is not supported for file systems with a data repository association.",
+        "ImportPath": "(Optional) The path to the Amazon S3 bucket (including the optional prefix) that you're using as the data repository for your Amazon FSx for Lustre file system. The root of your FSx for Lustre file system will be mapped to the root of the Amazon S3 bucket you select. An example is `s3://import-bucket/optional-prefix` . If you specify a prefix after the Amazon S3 bucket name, only object keys with that prefix are loaded into the file system.\n\n> This parameter is not supported for Lustre file systems with a data repository association.",
+        "ImportedFileChunkSize": "(Optional) For files imported from a data repository, this value determines the stripe count and maximum amount of data per file (in MiB) stored on a single physical disk. The maximum number of disks that a single file can be striped across is limited by the total number of disks that make up the file system.\n\nThe default chunk size is 1,024 MiB (1 GiB) and can go as high as 512,000 MiB (500 GiB). Amazon S3 objects have a maximum size of 5 TB.\n\n> This parameter is not supported for Lustre file systems with a data repository association.",
         "PerUnitStorageThroughput": "Required with `PERSISTENT_1` and `PERSISTENT_2` deployment types, provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB. File system throughput capacity is calculated by multiplying \ufb01le system storage capacity (TiB) by the `PerUnitStorageThroughput` (MB/s/TiB). For a 2.4-TiB \ufb01le system, provisioning 50 MB/s/TiB of `PerUnitStorageThroughput` yields 120 MB/s of \ufb01le system throughput. You pay for the amount of throughput that you provision.\n\nValid values:\n\n- For `PERSISTENT_1` SSD storage: 50, 100, 200 MB/s/TiB.\n- For `PERSISTENT_1` HDD storage: 12, 40 MB/s/TiB.\n- For `PERSISTENT_2` SSD storage: 125, 250, 500, 1000 MB/s/TiB.",
         "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
       }
@@ -21655,7 +21655,7 @@
         "DeploymentType": "Specifies the file system deployment type, valid values are the following:\n\n- `MULTI_AZ_1` - Deploys a high availability file system that is configured for Multi-AZ redundancy to tolerate temporary Availability Zone (AZ) unavailability. You can only deploy a Multi-AZ file system in AWS Regions that have a minimum of three Availability Zones. Also supports HDD storage type\n- `SINGLE_AZ_1` - (Default) Choose to deploy a file system that is configured for single AZ redundancy.\n- `SINGLE_AZ_2` - The latest generation Single AZ file system. Specifies a file system that is configured for single AZ redundancy and supports HDD storage type.\n\nFor more information, see [Availability and Durability: Single-AZ and Multi-AZ File Systems](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html) .",
         "PreferredSubnetId": "Required when `DeploymentType` is set to `MULTI_AZ_1` . This specifies the subnet in which you want the preferred file server to be located. For in- AWS applications, we recommend that you launch your clients in the same availability zone as your preferred file server to reduce cross-availability zone data transfer costs and minimize latency.",
         "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
-        "ThroughputCapacity": "Sets the throughput capacity of an Amazon FSx file system, measured in megabytes per second (MB/s), in 2 to the *n* th increments, between 2^3 (8) and 2^11 (2048).",
+        "ThroughputCapacity": "Sets the throughput capacity of an Amazon FSx file system, measured in megabytes per second (MB/s), in 2 to the *n* th increments, between 2^3 (8) and 2^11 (2048).\n\n> To increase storage capacity, a file system must have a minimum throughput capacity of 16 MB/s.",
         "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
       }
     },
@@ -22192,19 +22192,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> If you have active fleets using the Windows Server 2012 operating system, you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support. All others must use Windows Server 2016 when creating new Windows-based builds.",
-        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
+        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "",
+      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "",
-        "Key": "",
-        "ObjectVersion": "",
-        "RoleArn": ""
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Key": "The name of the zip file that contains the build files or script files.",
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
@@ -49862,9 +49862,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "The refresh properties of a dataset.",
+      "description": "",
       "properties": {
-        "RefreshConfiguration": "The refresh configuration for a dataset."
+        "RefreshConfiguration": ""
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -49900,7 +49900,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
+        "StaticValues": ""
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -49946,9 +49946,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "The incremental refresh configuration for a dataset.",
+      "description": "",
       "properties": {
-        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
+        "LookbackWindow": ""
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50023,18 +50023,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "The lookback window setup of an incremental refresh configuration.",
+      "description": "",
       "properties": {
-        "ColumnName": "The name of the lookback window column.",
-        "Size": "The lookback window column size.",
-        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
+        "ColumnName": "",
+        "Size": "",
+        "SizeUnit": ""
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
+        "DateTimeStaticValues": "",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50051,10 +50051,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
+      "description": "",
       "properties": {
-        "NewDefaultValues": "The new default values for the parameter.",
-        "NewParameterName": "The new name for the parameter.",
+        "NewDefaultValues": "",
+        "NewParameterName": "",
         "ParameterName": ""
       }
     },
@@ -50076,9 +50076,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "The refresh configuration of a dataset.",
+      "description": "",
       "properties": {
-        "IncrementalRefresh": "The incremental refresh for the dataset."
+        "IncrementalRefresh": ""
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -55299,7 +55299,7 @@
     },
     "AWS::RDS::DBCluster.Endpoint": {
       "attributes": {},
-      "description": "Specifies the connection endpoint for the primary instance of the DB cluster.",
+      "description": "The `Endpoint` return value specifies the connection endpoint for the primary instance of the DB cluster.",
       "properties": {
         "Address": "Specifies the connection endpoint for the primary instance of the DB cluster.",
         "Port": "Specifies the port that the database engine is listening on."
@@ -56687,14 +56687,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -56702,18 +56702,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -56722,7 +56722,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -56732,15 +56732,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -62947,7 +62947,7 @@
         "AccountId": "The ID of the account that submitted the template.",
         "Ref": "`Ref` returns the ID of the account that submitted the template."
       },
-      "description": "Provides permissions for the AWS Shield Advanced Shield response team (SRT) to access your account and your resource protections, to help you mitigate potential distributed denial of service (DDoS) attacks.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "description": "Provides permissions for the AWS Shield Advanced Shield response team (SRT) to access your account and your resource protections, to help you mitigate potential distributed denial of service (DDoS) attacks.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) . \n\nSee example templates for Shield Advanced in AWS CloudFormation at [aws-samples/aws-shield-advanced-examples](https://docs.aws.amazon.com/https://github.com/aws-samples/aws-shield-advanced-examples) .",
       "properties": {
         "LogBucketList": "Authorizes the Shield Response Team (SRT) to access the specified Amazon S3 bucket containing log data such as Application Load Balancer access logs, CloudFront logs, or logs from third party sources. You can associate up to 10 Amazon S3 buckets with your subscription.\n\nUse this to share information with the SRT that's not available in AWS WAF logs.\n\nTo use the services of the SRT, you must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .",
         "RoleArn": "Authorizes the Shield Response Team (SRT) using the specified role, to access your AWS account to assist with DDoS attack mitigation during potential attacks. This enables the SRT to inspect your AWS WAF configuration and logs and to create or update AWS WAF rules and web ACLs.\n\nYou can associate only one `RoleArn` with your subscription. If you submit this update for an account that already has an associated role, the new `RoleArn` will replace the existing `RoleArn` .\n\nThis change requires the following:\n\n- You must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .\n- You must have the `iam:PassRole` permission. For more information, see [Granting a user permissions to pass a role to an AWS service](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html) .\n- The `AWSShieldDRTAccessPolicy` managed policy must be attached to the role that you specify in the request. You can access this policy in the IAM console at [AWSShieldDRTAccessPolicy](https://docs.aws.amazon.com/iam/home?#/policies/arn:aws:iam::aws:policy/service-role/AWSShieldDRTAccessPolicy) . For information, see [Adding and removing IAM identity permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html) .\n- The role must trust the service principal `drt.shield.amazonaws.com` . For information, see [IAM JSON policy elements: Principal](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html) .\n\nThe SRT will have access only to your AWS WAF and Shield resources. By submitting this request, you provide permissions to the SRT to inspect your AWS WAF and Shield configuration and logs, and to create and update AWS WAF rules and web ACLs on your behalf. The SRT takes these actions only if explicitly authorized by you."
@@ -62958,7 +62958,7 @@
         "AccountId": "The ID of the account that submitted the template.",
         "Ref": "`Ref` returns the ID of the account that submitted the template."
       },
-      "description": "Authorizes the Shield Response Team (SRT) to use email and phone to notify contacts about escalations to the SRT and to initiate proactive customer support.\n\nTo enable proactive engagement, you must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "description": "Authorizes the Shield Response Team (SRT) to use email and phone to notify contacts about escalations to the SRT and to initiate proactive customer support.\n\nTo enable proactive engagement, you must be subscribed to the [Business Support plan](https://docs.aws.amazon.com/premiumsupport/business-support/) or the [Enterprise Support plan](https://docs.aws.amazon.com/premiumsupport/enterprise-support/) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) . \n\nSee example templates for Shield Advanced in AWS CloudFormation at [aws-samples/aws-shield-advanced-examples](https://docs.aws.amazon.com/https://github.com/aws-samples/aws-shield-advanced-examples) .",
       "properties": {
         "EmergencyContactList": "The list of email addresses and phone numbers that the Shield Response Team (SRT) can use to contact you for escalations to the SRT and to initiate proactive customer support, plus any relevant notes.\n\nTo enable proactive engagement, the contact list must include at least one phone number.\n\nIf you provide more than one contact, in the notes, indicate the circumstances under which each contact should be used. Include primary and secondary contact designations, and provide the hours of availability and time zones for each contact.\n\nExample contact notes:\n\n- This is a hotline that's staffed 24x7x365. Please work with the responding analyst and they will get the appropriate person on the call.\n- Please contact the secondary phone number if the hotline doesn't respond within 5 minutes.",
         "ProactiveEngagementStatus": "Specifies whether proactive engagement is enabled or disabled.\n\nValid values:\n\n`ENABLED` - The Shield Response Team (SRT) will use email and phone to notify contacts about escalations to the SRT and to initiate proactive customer support.\n\n`DISABLED` - The SRT will not proactively notify contacts about escalations or to initiate proactive customer support."
@@ -62979,7 +62979,7 @@
         "ProtectionId": "The ID of the new protection.",
         "Ref": "`Ref` returns the ARN (Amazon Resource Name) of the protection."
       },
-      "description": "Enables AWS Shield Advanced for a specific AWS resource. The resource can be an Amazon CloudFront distribution, Amazon Route\u00a053 hosted zone, AWS Global Accelerator standard accelerator, Elastic IP Address, Application Load Balancer, or a Classic Load Balancer. You can protect Amazon EC2 instances and Network Load Balancers by association with protected Amazon EC2 Elastic IP addresses.\n\nUse this to add protection to a single resource at a time. You can add protection to multiple resources at once through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) . For more information see [Getting Started with AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/getting-started-ddos.html) and [Managing resource protections in AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "description": "Enables AWS Shield Advanced for a specific AWS resource. The resource can be an Amazon CloudFront distribution, Amazon Route\u00a053 hosted zone, AWS Global Accelerator standard accelerator, Elastic IP Address, Application Load Balancer, or a Classic Load Balancer. You can protect Amazon EC2 instances and Network Load Balancers by association with protected Amazon EC2 Elastic IP addresses.\n\nUse this to add protection to a single resource at a time. You can add protection to multiple resources at once through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) . For more information see [Getting Started with AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/getting-started-ddos.html) and [Managing resource protections in AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-manage-protected-resources.html) .\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) . \n\nSee example templates for Shield Advanced in AWS CloudFormation at [aws-samples/aws-shield-advanced-examples](https://docs.aws.amazon.com/https://github.com/aws-samples/aws-shield-advanced-examples) .",
       "properties": {
         "ApplicationLayerAutomaticResponseConfiguration": "The automatic application layer DDoS mitigation settings for the protection. This configuration determines whether Shield Advanced automatically manages rules in the web ACL in order to respond to application layer events that Shield Advanced determines to be DDoS attacks.",
         "HealthCheckArns": "The ARN (Amazon Resource Name) of the health check to associate with the protection. Health-based detection provides improved responsiveness and accuracy in attack detection and mitigation.\n\nYou can use this option with any resource type except for Route\u00a053 hosted zones.\n\nFor more information, see [Configuring health-based detection using health checks](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-health-checks.html) in the *AWS Shield Advanced Developer Guide* .",
@@ -63009,7 +63009,7 @@
         "ProtectionGroupArn": "The ARN (Amazon Resource Name) of the new protection group.",
         "Ref": "`Ref` returns the ARN (Amazon Resource Name) of the protection group."
       },
-      "description": "Creates a grouping of protected resources so they can be handled as a collective. This resource grouping improves the accuracy of detection and reduces false positives.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) .",
+      "description": "Creates a grouping of protected resources so they can be handled as a collective. This resource grouping improves the accuracy of detection and reduces false positives.\n\n> To configure this resource through AWS CloudFormation , you must be subscribed to AWS Shield Advanced . You can subscribe through the [Shield Advanced console](https://docs.aws.amazon.com/wafv2/shieldv2#/) and through the APIs. For more information, see [Subscribe to AWS Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/enable-ddos-prem.html) . \n\nSee example templates for Shield Advanced in AWS CloudFormation at [aws-samples/aws-shield-advanced-examples](https://docs.aws.amazon.com/https://github.com/aws-samples/aws-shield-advanced-examples) .",
       "properties": {
         "Aggregation": "Defines how AWS Shield combines resource data for the group in order to detect, mitigate, and report events.\n\n- Sum - Use the total traffic across the group. This is a good choice for most cases. Examples include Elastic IP addresses for EC2 instances that scale manually or automatically.\n- Mean - Use the average of the traffic across the group. This is a good choice for resources that share traffic uniformly. Examples include accelerators and load balancers.\n- Max - Use the highest traffic from each resource. This is useful for resources that don't share traffic and for resources that share that traffic in a non-uniform way. Examples include Amazon CloudFront distributions and origin resources for CloudFront distributions.",
         "Members": "The ARNs (Amazon Resource Names) of the resources to include in the protection group. You must set this when you set `Pattern` to `ARBITRARY` and you must not set it for any other `Pattern` setting.",
