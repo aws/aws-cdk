@@ -110,7 +110,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         ([name]) => {
           // Services expose a base __Client class that we don't want ever
           return name.endsWith('Client') && name !== '__Client';
-        }
+        },
       )?.[1] as {
         new (config: any): {
           send: (command: any) => Promise<any>
