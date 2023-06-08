@@ -941,6 +941,7 @@
                               "value": "my-tag-value"
                             }
                           ],
+                          "enableExecuteCommand": true,
                           "launchType": "FARGATE",
                           "networkConfiguration": {
                             "awsVpcConfiguration": {

@@ -117,6 +117,14 @@ export interface EcsTaskProps extends TargetBaseProps {
      * @default - No additional tags are applied to the task
      */
   readonly tags?: Tag[]
+
+  /**
+    * Whether or not to enable the execute command functionality for the containers in this task.
+    * If true, this enables execute command functionality on all containers in the task.
+    *
+    * @default - false
+    */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -146,7 +154,8 @@ export class EcsTask implements events.IRuleTarget {
   private readonly platformVersion?: ecs.FargatePlatformVersion;
   private readonly assignPublicIp?: boolean;
   private readonly propagateTags?: ecs.PropagatedTagSource;
-  private readonly tags?: Tag[]
+  private readonly tags?: Tag[];
+  private readonly enableExecuteCommand?: boolean;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -158,6 +167,7 @@ export class EcsTask implements events.IRuleTarget {
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
     this.assignPublicIp = props.assignPublicIp;
+    this.enableExecuteCommand = props.enableExecuteCommand;
 
     const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
     if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
@@ -209,6 +219,7 @@ export class EcsTask implements events.IRuleTarget {
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
     const propagateTags = this.propagateTags;
     const tagList = this.tags;
+    const enableExecuteCommand = this.enableExecuteCommand;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
@@ -218,7 +229,7 @@ export class EcsTask implements events.IRuleTarget {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
     };
 
-    const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList };
+    const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
 
     const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
       ? {

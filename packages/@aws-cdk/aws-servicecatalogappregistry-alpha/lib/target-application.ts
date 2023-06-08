@@ -25,7 +25,6 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
   readonly associateCrossAccountStacks?: boolean;
 }
 
-
 /**
   * Properties used to define New TargetApplication.
   */

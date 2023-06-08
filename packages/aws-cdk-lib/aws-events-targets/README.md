@@ -411,4 +411,30 @@ rule.addTarget(
     subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
   }),
 );
+declare const rule: events.Rule
+```
+
+### enable Amazon ECS Exec for ECS Task
+
+If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    command: ['echo', events.EventField.fromPath('$.detail.event')],
+  }],
+  enableExecuteCommand: true,
+}));
 ```
