@@ -171,10 +171,6 @@ export interface IServiceNetwork extends core.IResource {
    */
   readonly serviceNetworkId: string;
   /**
-   * Grant Principals access to the Service Network
-   */
-  grantAccessToServiceNetwork(principal: iam.IPrincipal[]): void;
-  /**
    * Add Lattice Service Policy
    */
   addService(service: IService): void;
@@ -187,12 +183,19 @@ export interface IServiceNetwork extends core.IResource {
    */
   addloggingDestination(destination: LoggingDestination): void;
   /**
-   * Share the ServiceNetwork
+   * Share the ServiceNetwork, Consider if it is more appropriate to do this at the service.
    */
   share(props: ShareServiceNetworkProps): void;
+
   /**
-   * Create and Add an auth policy to the Service Network
+   * Add a statement to the auth policy. This should be high level coarse policy, consider only adding
+   * statements here that have DENY effects
+   * @param statement the policy statement to add.
    */
+  addStatementToAuthPolicy(statement: iam.PolicyStatement): void;
+  /**
+  * Apply auth policy to the Service Network
+  */
   applyAuthPolicyToServiceNetwork(): void;
 }
 ``` 
@@ -234,24 +237,8 @@ export interface ServiceNetworkProps {
    * @default no vpcs are associated
    */
   readonly vpcs?: ec2.IVpc[] | undefined;
-
   /**
-   * Accounts that are permitted to use this service
-   * Must be a valid aws accound id.
-   * If accounts are external to the org, the allowExternalPrincipals prop must be true
-   * otherwise an explict deny will be applied to the auth policy first
-   * @default none
-   */
-  readonly accounts?: string[] | undefined;
-
-  /**
-   * arnToShareWith, use this for specifying Orgs and OU's
-   * @default false
-   */
-  readonly arnToShareServiceWith?: string[] | undefined;
-
-  /**
-   * Allow external principals to use the service
+   * Allow external principals
    * @default false
    */
   readonly allowExternalPrincipals?: boolean | undefined;
@@ -262,6 +249,7 @@ export interface ServiceNetworkProps {
    */
   readonly allowUnauthenticatedAccess?: boolean | undefined;
 }
+
 ```
 
 ### Service
