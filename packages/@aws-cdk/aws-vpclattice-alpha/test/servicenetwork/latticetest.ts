@@ -64,7 +64,8 @@ export class LatticeTestStack extends core.Stack {
     /**
      * Create a ServiceNetwork.
      * OPINIONATED DEFAULT: The default behavior is to create a
-     * service network that requries an IAM policy
+     * service network that requries an IAM policy, and authenticated access
+     * ( requestors must send signed requests )
      */
 
     const serviceNetwork = new ServiceNetwork(this, 'LatticeServiceNetwork', {
