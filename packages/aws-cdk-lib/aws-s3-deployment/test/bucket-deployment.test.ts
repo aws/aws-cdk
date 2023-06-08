@@ -1505,8 +1505,8 @@ test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () 
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
-    source: path.join(__dirname, 'sample-definition.yaml'),
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
     destinationBucket: bucket,
     substitutions: {
       testMethod: 'changedTestMethodSuccess',
@@ -1515,7 +1515,7 @@ test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () 
   });
 
   const result = app.synth();
-  const content = readDataFile(result, path.join(__dirname, 'sample-definition.yaml'));
+  const content = readDataFile(result, deployment.objectKey);
   expect(content).not.toContain('testMethod');
   expect(content).toContain('changedTestMethodSuccess');
   expect(content).not.toContain('mock');
