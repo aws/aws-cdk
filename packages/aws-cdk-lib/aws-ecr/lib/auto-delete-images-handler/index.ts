@@ -39,16 +39,34 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
 async function emptyRepository(params: ECR.ListImagesRequest) {
   const listedImages = await ecr.listImages(params).promise();
 
-  const imageIds = listedImages?.imageIds ?? [];
+  const imageIds: ECR.ImageIdentifier[] = [];
+  const imageIdsTagged: ECR.ImageIdentifier[] = [];
+  (listedImages.imageIds ?? []).forEach(imageId => {
+    if ('imageTag' in imageId) {
+      imageIdsTagged.push(imageId);
+    } else {
+      imageIds.push(imageId);
+    }
+  });
+
   const nextToken = listedImages.nextToken ?? null;
-  if (imageIds.length === 0) {
+  if (imageIds.length === 0 && imageIdsTagged.length === 0) {
     return;
   }
 
-  await ecr.batchDeleteImage({
-    repositoryName: params.repositoryName,
-    imageIds,
-  }).promise();
+  if (imageIdsTagged.length !== 0) {
+    await ecr.batchDeleteImage({
+      repositoryName: params.repositoryName,
+      imageIds: imageIdsTagged,
+    }).promise();
+  }
+
+  if (imageIds.length !== 0) {
+    await ecr.batchDeleteImage({
+      repositoryName: params.repositoryName,
+      imageIds: imageIds,
+    }).promise();
+  }
 
   if (nextToken) {
     await emptyRepository({
