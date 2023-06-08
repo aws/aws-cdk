@@ -80,7 +80,7 @@
   },
   "cdk-build": {
     "pre": [
-      "./scripts/airlift-custom-resource-bindings.sh"
+      "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
@@ -97,7 +97,7 @@
     "constructs": "^10.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/custom-resource-bindings": "0.0.0"
+    "@aws-cdk/custom-resource-handlers": "0.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "0.0.0",

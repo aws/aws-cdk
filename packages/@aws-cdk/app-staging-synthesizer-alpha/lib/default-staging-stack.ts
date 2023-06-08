@@ -366,7 +366,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private enableAutoDeleteObjects(bucket: s3.Bucket) {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', 'custom-resource-bindings', 'aws-s3', 'auto-delete-objects-handler'),
+      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'aws-s3', 'auto-delete-objects-handler'),
       inlineCode: true,
       runtime: builtInCustomResourceProviderNodeRuntime(bucket),
       description: `Lambda function for auto-deleting objects in ${bucket.bucketName} S3 bucket.`,

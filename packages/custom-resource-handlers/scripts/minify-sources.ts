@@ -1,13 +1,12 @@
-const esbuild = require('esbuild');
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as esbuild from 'esbuild';
 
-const entryPoints = [];
-function recFolderStructure(fileOrDir) {
+const entryPoints: string[] = [];
+function recFolderStructure(fileOrDir: string) {
   if (fs.statSync(fileOrDir).isDirectory()) {
     const items = fs.readdirSync(fileOrDir);
     for (const i of items) {
-      console.log(i);
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
@@ -18,24 +17,19 @@ function recFolderStructure(fileOrDir) {
 }
 
 const bindingsDir = path.join(__dirname, '..', 'lib');
-const testDir = path.join(__dirname, '..', 'test');
 
 recFolderStructure(bindingsDir);
-recFolderStructure(testDir);
-
-console.log(entryPoints);
 
 for (const ep of entryPoints) {
-  const test = ep.includes('.test.ts');
-  esbuild.build({
+  void esbuild.build({
     entryPoints: [ep],
     outfile: `${ep.slice(0, ep.lastIndexOf('.'))}.js`,
     format: 'cjs',
     platform: 'node',
-    minify: test ? false : true,
-    minifyWhitespace: test ? false : true,
-    minifySyntax: test ? false : true,
-    minifyIdentifiers: test ? false : true,
+    minify: true,
+    minifyWhitespace: true,
+    minifySyntax: true,
+    minifyIdentifiers: true,
     sourcemap: false,
     tsconfig: 'tsconfig.json',
   });

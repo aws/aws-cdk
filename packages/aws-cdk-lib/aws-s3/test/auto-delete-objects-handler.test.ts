@@ -6,7 +6,7 @@
 //   promise: jest.fn(),
 // };
 
-// import { handler } from '../../custom-resource-bindings/lib/aws-s3/auto-delete-objects-handler';
+// import { handler } from '../../custom-resource-handlers/lib/aws-s3/auto-delete-objects-handler';
 
 // jest.mock('aws-sdk', () => {
 //   return { S3: jest.fn(() => mockS3Client) };

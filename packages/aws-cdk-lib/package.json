@@ -36,7 +36,7 @@
       "(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
-      "./scripts/airlift-custom-resource-bindings.sh"
+      "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "post": [
       "ts-node ./scripts/verify-imports-resolve-same.ts",
@@ -138,7 +138,7 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/custom-resource-bindings": "0.0.0",
+    "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@types/aws-lambda": "^8.10.115",
     "@types/jest": "^29.5.1",
     "@types/lodash": "^4.14.194",

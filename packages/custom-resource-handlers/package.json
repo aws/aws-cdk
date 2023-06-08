@@ -1,11 +1,9 @@
 {
-  "name": "@aws-cdk/custom-resource-bindings",
+  "name": "@aws-cdk/custom-resource-handlers",
   "description": "CDK Custom Resources",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "node scripts/build-and-minify-sources.js",
+    "build": "tsc -b && ts-node scripts/minify-sources.ts",
     "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
@@ -38,7 +36,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/custom-resource-bindings"
+    "directory": "packages/custom-resource-handlers"
   },
   "keywords": [
     "aws",

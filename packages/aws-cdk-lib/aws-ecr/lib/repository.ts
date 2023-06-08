@@ -819,7 +819,7 @@ export class Repository extends RepositoryBase {
     // Use a iam policy to allow the custom resource to list & delete
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-bindings', 'lib', 'aws-ecr', 'auto-delete-images-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'lib', 'aws-ecr', 'auto-delete-images-handler'),
       runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [

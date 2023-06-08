@@ -4,7 +4,7 @@
   "packages": [
     "packages/aws-cdk-lib",
     "packages/cdk-assets",
-    "packages/custom-resource-bindings",
+    "packages/custom-resource-handlers",
     "packages/aws-cdk",
     "packages/cdk",
     "packages/@aws-cdk/*",

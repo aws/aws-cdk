@@ -1,7 +1,7 @@
 #!/bin/bash
 
 scriptdir=$(cd $(dirname $0) && pwd)
-customresourcedir=${scriptdir}/../../custom-resource-bindings
+customresourcedir=${scriptdir}/../../custom-resource-handlers
 awscdklibdir=${scriptdir}/..
 
 list_custom_resources() {
@@ -13,9 +13,9 @@ list_custom_resources() {
 cr_dirs=$(list_custom_resources)
 
 cd $awscdklibdir
-mkdir -p $awscdklibdir/custom-resource-bindings
+mkdir -p $awscdklibdir/custom-resource-handlers
 
 for dir in $cr_dirs; do
-  mkdir -p $awscdklibdir/custom-resource-bindings/$dir
-  cp $customresourcedir/$dir/index.js $awscdklibdir/custom-resource-bindings/$dir
+  mkdir -p $awscdklibdir/custom-resource-handlers/$dir
+  cp $customresourcedir/$dir/index.js $awscdklibdir/custom-resource-handlers/$dir
 done
