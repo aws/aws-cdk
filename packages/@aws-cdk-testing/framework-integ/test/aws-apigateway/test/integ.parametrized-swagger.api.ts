@@ -26,7 +26,7 @@ class Test extends cdk.Stack {
     });
 
     new apigateway.SpecRestApi(this, 'sample-api-definition', {
-      apiDefinition: apigateway.ApiDefinition.fromBucket(deployment.deployedBucket, deployment.objectKey),
+      apiDefinition: apigateway.ApiDefinition.fromBucket(deployment.bucket, deployment.objectKey),
     });
 
     function handlerCode(event: any, _: any, callback: any) {

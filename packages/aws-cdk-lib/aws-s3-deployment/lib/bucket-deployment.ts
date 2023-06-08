@@ -626,6 +626,10 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     // sets the object key
     this.objectKey = objectKey;
   }
+
+  public get bucket(): s3.IBucket {
+    return this.deployedBucket;
+  }
 }
 
 /**
