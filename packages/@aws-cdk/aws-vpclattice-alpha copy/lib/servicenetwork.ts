@@ -6,6 +6,7 @@ import {
   aws_logs as logs,
   aws_kinesis as kinesis,
   aws_ram as ram,
+  custom_resources as cr,
 }
   from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
@@ -114,7 +115,8 @@ export interface ServiceNetworkProps {
    */
   readonly name?: string
 
-  /** The type of  authentication to use with the Service Network.
+  /**
+   * The type of  authentication to use with the Service Network
    * @default 'AWS_IAM'
    */
   readonly authType?: AuthType | undefined;
@@ -124,7 +126,7 @@ export interface ServiceNetworkProps {
    * @default no s3 logging
    */
 
-  readonly s3LogDestination: s3.IBucket[] | undefined;
+  readonly s3LogDestination?: s3.IBucket[] | undefined;
   /**
    * Cloudwatch Logs
    * @default no logging to cloudwatch
@@ -165,8 +167,13 @@ export interface ServiceNetworkProps {
    * Allow external principals
    * @default false
    */
-
   readonly allowExternalPrincipals?: boolean | undefined;
+
+  /**
+   * Allow unauthenticated access
+   * @default false
+   */
+  readonly allowUnauthenticatedAccess?: boolean | undefined;
 }
 
 /**
@@ -193,7 +200,6 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    * A managed Policy that is the auth policy
    */
   authPolicy: iam.PolicyDocument
-
 
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id);
@@ -281,7 +287,56 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
     this.serviceNetworkId = serviceNetwork.attrId;
     this.serviceNetworkArn = serviceNetwork.attrArn;
-  }
+
+    if ((props.allowExternalPrincipals ?? false) == false) {
+      // add an explict deny, so that the service network cannot be used by principals
+      // that are outside of the org which this service network is deployed in
+
+      // get my orgId
+      const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
+        onCreate: {
+          service: 'Organizations',
+          action: 'describeOrganization',
+          physicalResourceId: cr.PhysicalResourceId.of('orgId'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+        }),
+      });
+
+      const orgId = orgIdCr.getResponseField('Organization.Id');
+
+      this.authPolicy.addStatements(
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'],
+          conditions: {
+            StringNotEquals: {
+              'aws:PrincipalOrgID': [orgId],
+            },
+          },
+        }),
+      );
+    };
+
+    if ((props.allowUnauthenticatedAccess ?? false) == false) {
+      // add an explict deny, so that the service network cannot be be accessed by non authenticated
+      // requestors.
+      this.authPolicy.addStatements(
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'],
+          conditions: {
+            StringNotEqualsIgnoreCase: {
+              'aws:PrincipalType': 'anonymous',
+            },
+          },
+        }),
+      );
+    };
+  };
 
   /**
    * This will give the principals access to all resources that are on this

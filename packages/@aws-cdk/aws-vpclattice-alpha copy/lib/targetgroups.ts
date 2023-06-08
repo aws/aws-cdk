@@ -33,7 +33,6 @@ enum TargetType {
   ALB = 'ALB'
 }
 
-
 /**
  * Create a vpc lattice TargetGroup.
  * Implemented by `TargetGroup`.
@@ -104,7 +103,6 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
    * The Arn of the targetGroup
    */
   readonly targetGroupArn: string
-
 
   constructor(scope: constructs.Construct, id: string, props: TargetGroupProps) {
     super(scope, id);

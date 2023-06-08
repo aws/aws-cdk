@@ -5,7 +5,6 @@ import * as vpclattice from '../lib';
 /* We allow quotes in the object keys used for CloudFormation template assertions */
 /* eslint-disable quote-props */
 
-
 describe('Example Resource', () => {
   let stack: core.Stack;
 

@@ -12,7 +12,6 @@ export enum Protocol {
   HTTPS = 'HTTPS',
 }
 
-
 /**
  * Fixed response codes
  */

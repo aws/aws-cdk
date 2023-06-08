@@ -4,6 +4,7 @@ import {
   aws_iam as iam,
   aws_certificatemanager as certificatemanager,
   aws_ram as ram,
+  custom_resources as cr,
 }
   from 'aws-cdk-lib';
 import * as constructs from 'constructs';
@@ -15,9 +16,6 @@ import {
   Protocol,
 }
   from './index';
-
-
-
 
 /**
  * Properties to Share the Service
@@ -102,7 +100,6 @@ export interface IService extends core.IResource {
   addPolicyStatement(statement: iam.PolicyStatement): void;
 }
 
-
 /**
  * Properties for a Lattice Service
  */
@@ -134,13 +131,25 @@ export interface LatticeServiceProps {
    */
   readonly customDomain?: string | undefined;
   /**
-   * A customDomain 
+   * A customDomain
    */
   readonly dnsEntry?: aws_vpclattice.CfnService.DnsEntryProperty | undefined;
   /**
-   * 
+   *
    */
-  readonly shares: ShareServiceProps[]; undefined;
+  readonly shares?: ShareServiceProps[]| undefined;
+
+  /**
+  * Allow external principals
+   * @default false
+   */
+  readonly allowExternalPrincipals?: boolean | undefined;
+
+  /**
+    * Allow unauthenticated access
+    * @default false
+    */
+  readonly allowUnauthenticatedAccess?: boolean | undefined;
 
 }
 
@@ -204,6 +213,54 @@ export class Service extends core.Resource implements IService {
     this.serviceId = service.attrId;
     this.serviceArn = service.attrArn;
 
+    if ((props.allowExternalPrincipals ?? false) == false) {
+      // add an explict deny, so that the service network cannot be used by principals
+      // that are outside of the org which this service network is deployed in
+
+      // get my orgId
+      const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
+        onCreate: {
+          service: 'Organizations',
+          action: 'describeOrganization',
+          physicalResourceId: cr.PhysicalResourceId.of('orgId'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+        }),
+      });
+
+      const orgId = orgIdCr.getResponseField('Organization.Id');
+
+      this.authPolicy.addStatements(
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'],
+          conditions: {
+            StringNotEquals: {
+              'aws:PrincipalOrgID': [orgId],
+            },
+          },
+        }),
+      );
+    };
+
+    if ((props.allowUnauthenticatedAccess ?? false) == false) {
+      // add an explict deny, so that the service network cannot be be accessed by non authenticated
+      // requestors.
+      this.authPolicy.addStatements(
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'], // as this is policy is applied on the 'service', the * applyes to all things that are in teh service.
+          conditions: {
+            StringNotEqualsIgnoreCase: {
+              'aws:PrincipalType': 'anonymous',
+            },
+          },
+        }),
+      );
+    };
   }
 
   /**
@@ -223,7 +280,6 @@ export class Service extends core.Resource implements IService {
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
     policyStatement.addResources('*');
     policyStatement.effect = iam.Effect.ALLOW;
-
 
     this.authPolicy.addStatements(policyStatement);
 
@@ -330,7 +386,6 @@ export class Service extends core.Resource implements IService {
       }
     }
 
-
     const listener = new Listener(this, `Listener-${props.name}`, {
       defaultAction: defaultAction,
       protocol: protocol,
@@ -356,5 +411,3 @@ export class Service extends core.Resource implements IService {
     });
 	  }
 }
-
-

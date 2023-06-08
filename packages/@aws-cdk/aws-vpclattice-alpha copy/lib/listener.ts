@@ -69,7 +69,6 @@ export interface AddListenerProps {
 
 }
 
-
 /**
  * Propertys to Create a Lattice Listener
  */
@@ -126,7 +125,6 @@ export interface IListener extends core.IResource {
 
 }
 
-
 /**
  * Properties to add rules to to a listener
  * One of headerMatch, PathMatch, or methodMatch can be supplied,
@@ -172,7 +170,6 @@ export interface AddRuleProps {
 
 }
 
-
 /**
  *  This class should not be called directly.
  *  Use the .addListener() Method on an instance of LatticeService
@@ -200,7 +197,6 @@ export class Listener extends core.Resource implements IListener {
    * @default none.
    */
   readonly serviceAuthPolicy?: iam.PolicyDocument | undefined;
-
 
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
@@ -374,7 +370,6 @@ export class Listener extends core.Resource implements IListener {
     if (props.allowedPrincipals && this.serviceAuthPolicy) {
       this.serviceAuthPolicy.addStatements(policyStatement);
     }
-
 
     // finally create a rule
     new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
