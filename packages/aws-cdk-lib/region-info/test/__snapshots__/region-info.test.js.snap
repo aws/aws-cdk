@@ -598,7 +598,7 @@ exports[`built-in data is correct 1`] = `
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
   "eu-south-2": {
-    "cdkMetadataResourceAvailable": false,
+    "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
     "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
@@ -608,7 +608,7 @@ exports[`built-in data is correct 1`] = `
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
-      "1.0.178.0": "arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:2",
+      "1.0.178.0": "arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:10",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
