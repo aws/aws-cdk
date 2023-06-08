@@ -46,6 +46,9 @@ class TestStack extends Stack {
         moveToColdStorageAfter: Duration.days(30),
         deleteAfter: Duration.days(120),
       }],
+      recoveryPointTags: {
+        stage: 'prod',
+      },
     }));
   }
 }
