@@ -6,7 +6,7 @@ paths:
   /pets:
     get:
       summary: Test Method
-      operationId: testMethod
+      operationId: {{ testMethod }}
       responses:
         "200":
           description: A paged array of pets
@@ -21,7 +21,7 @@ paths:
         requestTemplates:
           application/json: "{\"statusCode\": 200}"
         passthroughBehavior: when_no_match
-        type: mock
+        type: {{ mock }}
 
 components:
   schemas:
