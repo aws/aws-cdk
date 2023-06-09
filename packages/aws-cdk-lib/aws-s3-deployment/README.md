@@ -362,45 +362,8 @@ to make from placeholders in a local file which will be resolved during deployme
 is especially useful in situations like creating an API from a spec file, where users might
 want to reference other CDK resources they have created.
 
-To use substitutions, placeholders in the user's local file must be specified with double curly
-brackets and spaces. For example, if you use the placeholder 'xxxx' in the file where you want
-to replace it with the name of your CDK lambda function, it must be written as: {{ xxxx }} in the file
-to be recognized by the construct as a substitution to make.
-
-For example, if your local file `my-file.yaml` is something like this:
-
-```yaml
-openapi: "3.0.2"
-info:
-  version: 1.0.0
-  title: Test API for CDK
-paths:
-  /pets:
-    get:
-      summary: Test Method
-      operationId: xxxx
-      responses:
-        "200":
-```
-
-And you want to replace the `operationId` with your cdk lambda function name, you would have to add double brackets
-around the placeholder to be replaced in your local file like so:
-
-```yaml
-openapi: "3.0.2"
-info:
-  version: 1.0.0
-  title: Test API for CDK
-paths:
-  /pets:
-    get:
-      summary: Test Method
-      operationId: {{ xxxx }}
-      responses:
-        "200":
-```
-
-Then, you would upload the file and specify the substitutions in cdk like this:
+The syntax for template variables is `{{ variable-name }}` in your local file. Then, you would 
+specify the substitutions in CDK like this:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -411,7 +374,7 @@ new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
   source: 'my-file.yaml',
   destinationBucket: destinationBucket,
   substitutions: {
-    xxxx: myLambdaFunction.functionName,
+    variable-name: myLambdaFunction.functionName,
   },
 });
 ```
