@@ -507,44 +507,96 @@
     ]
    }
   },
-  "EcsClusterasgSpotLaunchConfig75BCA823": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "c5.xlarge",
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterasgSpotInstanceProfile0D6DD08D"
-    },
-    "SecurityGroups": [
+    "Roles": [
      {
-      "Fn::GetAtt": [
-       "EcsClusterasgSpotInstanceSecurityGroupEA17787D",
-       "GroupId"
-      ]
+      "Ref": "EcsClusterasgSpotInstanceRole84AB6F93"
      }
-    ],
-    "SpotPrice": "0.0735",
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
+    ]
+   }
+  },
+  "EcsClusterasgSpotLaunchTemplateA53AD60C": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceMarketOptions": {
+      "MarketType": "spot",
+      "SpotOptions": {
+       "MaxPrice": "0.0735"
+      }
+     },
+     "InstanceType": "c5.xlarge",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterasgSpotInstanceSecurityGroupEA17787D",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+       }
       ]
      }
-    }
-   },
-   "DependsOn": [
-    "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA",
-    "EcsClusterasgSpotInstanceRole84AB6F93"
-   ]
+    ]
+   }
   },
   "EcsClusterasgSpotASG0D77F041": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -552,8 +604,16 @@
     "MaxSize": "2",
     "MinSize": "2",
     "DesiredCapacity": "2",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterasgSpotLaunchConfig75BCA823"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterasgSpotLaunchTemplateA53AD60C"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterasgSpotLaunchTemplateA53AD60C",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -963,43 +1023,90 @@
     ]
    }
   },
-  "EcsClusterasgOdLaunchConfigD3B9E271": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterasgOdLaunchTemplateProfileDD216B77": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t3.large",
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterasgOdInstanceProfileE5B88756"
-    },
-    "SecurityGroups": [
+    "Roles": [
      {
-      "Fn::GetAtt": [
-       "EcsClusterasgOdInstanceSecurityGroup301DFBED",
-       "GroupId"
-      ]
+      "Ref": "EcsClusterasgOdInstanceRoleC8290533"
      }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    ]
+   }
+  },
+  "EcsClusterasgOdLaunchTemplate6065F652": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterasgOdLaunchTemplateProfileDD216B77",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.large",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterasgOdInstanceSecurityGroup301DFBED",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+       }
       ]
      }
-    }
-   },
-   "DependsOn": [
-    "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2",
-    "EcsClusterasgOdInstanceRoleC8290533"
-   ]
+    ]
+   }
   },
   "EcsClusterasgOdASG0E5C30EC": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -1007,8 +1114,16 @@
     "MaxSize": "2",
     "MinSize": "1",
     "DesiredCapacity": "1",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterasgOdLaunchConfigD3B9E271"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterasgOdLaunchTemplate6065F652"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterasgOdLaunchTemplate6065F652",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

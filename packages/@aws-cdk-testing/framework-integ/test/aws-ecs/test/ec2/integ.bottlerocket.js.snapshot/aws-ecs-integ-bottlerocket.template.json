@@ -497,51 +497,106 @@
     ]
    }
   },
-  "EcsClusterbottlerocketasgLaunchConfig644AD24C": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "c5.large",
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterbottlerocketasgInstanceProfile22A89B9D"
-    },
-    "SecurityGroups": [
+    "Roles": [
      {
-      "Fn::GetAtt": [
-       "EcsClusterbottlerocketasgInstanceSecurityGroupD754BC23",
-       "GroupId"
-      ]
+      "Ref": "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
      }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "\n[settings.ecs]\ncluster = \"",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        "\""
+    ]
+   }
+  },
+  "EcsClusterbottlerocketasgLaunchTemplateE141ADC4": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "c5.large",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterbottlerocketasgInstanceSecurityGroupD754BC23",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "\n[settings.ecs]\ncluster = \"",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         "\""
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate"
+       }
       ]
      }
-    }
-   },
-   "DependsOn": [
-    "EcsClusterbottlerocketasgInstanceRoleDefaultPolicy8523C598",
-    "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
-   ]
+    ]
+   }
   },
   "EcsClusterbottlerocketasgASGCB222A6E": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "MaxSize": "2",
     "MinSize": "2",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterbottlerocketasgLaunchConfig644AD24C"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterbottlerocketasgLaunchTemplateE141ADC4"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterbottlerocketasgLaunchTemplateE141ADC4",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
