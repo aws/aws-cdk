@@ -18,9 +18,7 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
 
     // THEN
@@ -48,6 +46,17 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      cacheEnabled: false,
+      cacheSize: 500,
+      httpPort: 8080,
+      logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
+      maxConnections: 1,
+      secretsManagerTimeout: cdk.Duration.seconds(10),
+      secretsManagerTtl: cdk.Duration.seconds(250),
+      parameterStoreTimeout: cdk.Duration.seconds(10),
+      parameterStoreTtl: cdk.Duration.seconds(250),
+    });
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -55,19 +64,7 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-          cacheEnabled: false,
-          cacheSize: 500,
-          httpPort: 8080,
-          logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
-          maxConnections: 1,
-          secretsManagerTimeout: cdk.Duration.seconds(10),
-          secretsManagerTtl: cdk.Duration.seconds(250),
-          parameterStoreTimeout: cdk.Duration.seconds(10),
-          parameterStoreTtl: cdk.Duration.seconds(250),
-        }),
-      },
+      paramsAndSecrets,
     });
 
     // THEN
@@ -101,9 +98,7 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
     // THEN
@@ -137,9 +132,7 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
     // THEN
@@ -184,9 +177,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
     // THEN
@@ -221,9 +212,7 @@ describe('params and secrets', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
     // THEN
@@ -260,6 +249,17 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
+      cacheEnabled: false,
+      cacheSize: 500,
+      httpPort: 8080,
+      logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
+      maxConnections: 1,
+      secretsManagerTimeout: cdk.Duration.seconds(10),
+      secretsManagerTtl: cdk.Duration.seconds(250),
+      parameterStoreTimeout: cdk.Duration.seconds(10),
+      parameterStoreTtl: cdk.Duration.seconds(250),
+    });
 
     // WHEN
     new lambda.Function (stack, 'Function', {
@@ -267,19 +267,7 @@ describe('params and secrets', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
-          cacheEnabled: false,
-          cacheSize: 500,
-          httpPort: 8080,
-          logLevel: lambda.ParamsAndSecretsLogLevel.DEBUG,
-          maxConnections: 1,
-          secretsManagerTimeout: cdk.Duration.seconds(10),
-          secretsManagerTtl: cdk.Duration.seconds(250),
-          parameterStoreTimeout: cdk.Duration.seconds(10),
-          parameterStoreTtl: cdk.Duration.seconds(250),
-        }),
-      },
+      paramsAndSecrets,
     });
 
     // THEN
@@ -316,9 +304,7 @@ describe('params and secrets', () => {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
         architecture: lambda.Architecture.ARM_64,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
-        },
+        paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       });
     }).toThrow('Parameters and Secrets Extension is not supported in region eu-central-2 for arm64 architecture');
   });
@@ -331,16 +317,14 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function (stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        secrets: [secret],
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
+    secret.grantRead(lambdaFunction);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -410,16 +394,14 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function (stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        secrets: [secret],
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
+    secret.grantRead(lambdaFunction);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -618,16 +600,14 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function (stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        parameters: [parameter],
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
+    parameter.grantRead(lambdaFunction);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -706,16 +686,14 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function (stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        parameters: [parameter],
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
+    parameter.grantRead(lambdaFunction);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -821,30 +799,32 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
-    const secret1 = new sm.Secret(stack, 'Secret1');
-    const secret2 = new sm.Secret(stack, 'Secret2');
-    const parameter1 = new ssm.StringParameter(stack, 'Parameter1', {
-      parameterName: 'name',
-      stringValue: 'value',
-    });
-    const parameter2 = new ssm.StringParameter(stack, 'Parameter2', {
-      parameterName: 'name',
-      stringValue: 'value',
-    });
+    const secrets = [
+      new sm.Secret(stack, 'Secret1'),
+      new sm.Secret(stack, 'Secret2'),
+    ];
+    const parameters = [
+      new ssm.StringParameter(stack, 'Parameter1', {
+        parameterName: 'name',
+        stringValue: 'value',
+      }),
+      new ssm.StringParameter(stack, 'Parameter2', {
+        parameterName: 'name',
+        stringValue: 'value',
+      }),
+    ];
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function (stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      paramsAndSecrets: {
-        layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
-        secrets: [secret1, secret2],
-        parameters: [parameter1, parameter2],
-      },
+      paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
+    secrets.forEach(secret => secret.grantRead(lambdaFunction));
+    parameters.forEach(parameter => parameter.grantRead(lambdaFunction));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -944,6 +924,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      cacheSize: -1,
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -952,11 +935,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            cacheSize: -1,
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: -1');
   });
@@ -966,6 +945,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      cacheSize: 1001,
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -974,11 +956,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            cacheSize: 1001,
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: 1001');
   });
@@ -988,6 +966,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      httpPort: 0,
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -996,11 +977,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            httpPort: 0,
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 0');
   });
@@ -1010,6 +987,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      httpPort: 65536,
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -1018,11 +998,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            httpPort: 65536,
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 65536');
   });
@@ -1032,6 +1008,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      maxConnections: 0,
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -1040,11 +1019,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            maxConnections: 0,
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('Maximum connections must be at least 1 - provided: 0');
   });
@@ -1054,6 +1029,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      secretsManagerTtl: cdk.Duration.seconds(301),
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -1062,11 +1040,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            secretsManagerTtl: cdk.Duration.seconds(301),
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('Maximum TTL for a cached secret is 300 seconds - provided: 301 seconds');
   });
@@ -1076,6 +1050,9 @@ describe('params and secrets', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+    const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+      parameterStoreTtl: cdk.Duration.seconds(301),
+    });
 
     // WHEN/THEN
     expect(() => {
@@ -1084,11 +1061,7 @@ describe('params and secrets', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_18_X,
-        paramsAndSecrets: {
-          layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-            parameterStoreTtl: cdk.Duration.seconds(301),
-          }),
-        },
+        paramsAndSecrets,
       });
     }).toThrow('Maximum TTL for a cached parameter is 300 seconds - provided: 301 seconds');
   });

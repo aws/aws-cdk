@@ -1,7 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
 import { IFunction } from './function-base';
-import { ISecret } from '../../aws-secretsmanager';
-import { IParameter } from '../../aws-ssm';
 import { Token, Stack, Duration } from '../../core';
 import { RegionInfo, FactName } from '../../region-info';
 
@@ -149,30 +147,6 @@ export interface ParamsAndSecretsOptions {
    * @default 300 seconds
    */
   readonly parameterStoreTtl?: Duration;
-}
-
-/**
- * Parameters and Secrets Extension configuration
- */
-export interface ParamsAndSecretsConfig {
-  /**
-   * The Parameters and Secrets Extension layer
-   */
-  readonly layerVersion: ParamsAndSecretsLayerVersion;
-
-  /**
-   * The secrets to grant lambda access to
-   *
-   * @default - No secrets
-   */
-  readonly secrets?: ISecret[];
-
-  /**
-   * The parameters to grant lambda access to
-   *
-   * @default - No parameters
-   */
-  readonly parameters?: IParameter[];
 }
 
 /**
