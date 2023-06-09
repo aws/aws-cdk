@@ -609,6 +609,9 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
   public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
+    if (!fs.existsSync(props.source)) {
+      throw new Error(`No file found at 'source' path ${props.source}`);
+    }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
     for (const key in props.substitutions) {

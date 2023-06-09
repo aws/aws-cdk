@@ -1522,6 +1522,23 @@ test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () 
   expect(content).toContain('changedMockTypeSuccess');
 });
 
+test('DeployTimeSubstitutedFile throws error when source file path is invalid', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  expect(() => {
+    new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+      source: path.join(__dirname, 'non-existant-file.yaml'),
+      destinationBucket: bucket,
+      substitutions: {
+        testMethod: 'changedTestMethodSuccess',
+        mock: 'changedMockTypeSuccess',
+      },
+    });
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+});
+
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
   for (const dir of assetDirs) {
