@@ -37,6 +37,7 @@ class SdkV3TestStack extends Stack {
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
       entry: useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts') : path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/index.mjs'),
       runtime: Runtime.NODEJS_18_X,
+      depsLockFilePath: !useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/package-lock.json') : undefined,
       bundling: {
         useLambdaProvidedAwsSdk: useLambdaProvidedSdk,
         commandHooks: !useLambdaProvidedSdk ? {
