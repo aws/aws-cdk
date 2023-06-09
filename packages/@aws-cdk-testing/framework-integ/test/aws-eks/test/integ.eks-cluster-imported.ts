@@ -194,7 +194,6 @@ class EksClusterStack extends Stack {
       skipValidation: true,
     });
   }
-
 }
 
 const app = new App();
