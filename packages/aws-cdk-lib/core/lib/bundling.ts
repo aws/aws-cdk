@@ -4,6 +4,7 @@ import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
+import { DockerCacheOption } from './assets';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -221,7 +222,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
+  protected constructor(public readonly image: string, private readonly _imageHash?: string) { }
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -334,6 +335,8 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
+      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+      ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -424,6 +427,14 @@ export class DockerImage extends BundlingDockerImage {
 
     reset(deprecated);
     return result;
+  }
+
+  private cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
   }
 }
 
@@ -572,13 +583,27 @@ export interface DockerBuildOptions {
    * @default - Build all stages defined in the Dockerfile
    */
   readonly targetStage?: string;
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from args are passed
+   */
+  readonly cacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to args are passed
+   */
+  readonly cacheTo?: DockerCacheOption;
 }
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function isSeLinux() : boolean {
+function isSeLinux(): boolean {
   if (process.platform != 'linux') {
     return false;
   }
