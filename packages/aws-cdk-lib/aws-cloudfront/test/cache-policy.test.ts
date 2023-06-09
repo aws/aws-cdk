@@ -150,7 +150,7 @@ describe('CachePolicy', () => {
       });
     });
 
-    test('accepts tokens', () => {
+    test('sorting TTLs is not performed when using Tokens', () => {
       new CachePolicy(stack, 'CachePolicy', {
         cachePolicyName: 'MyPolicy',
         minTtl: Duration.seconds(Lazy.number({ produce: () => 30 })),
