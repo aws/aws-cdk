@@ -5256,6 +5256,7 @@
     },
     "AWS::ApplicationAutoScaling::ScalableTarget": {
       "attributes": {
+        "Id": "",
         "Ref": "When the logical ID of this resource is provided to the `Ref` intrinsic function, `Ref` returns the CloudFormation-generated ID of the resource. For example: `service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs` .\n\nCloudFormation uses the following format to generate the ID: `service/ *resource_ID* | *scalable_dimension* | *service_namespace*` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "The `AWS::ApplicationAutoScaling::ScalableTarget` resource specifies a resource that Application Auto Scaling can scale, such as an AWS::DynamoDB::Table or AWS::ECS::Service resource.\n\nFor more information, see [Getting started](https://docs.aws.amazon.com/autoscaling/application/userguide/getting-started.html) in the *Application Auto Scaling User Guide* .\n\n> If the resource that you want Application Auto Scaling to scale is not yet created in your account, add a dependency on the resource when registering it as a scalable target using the [DependsOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) attribute.",
@@ -5531,6 +5532,37 @@
         "PatternSet": "The log pattern set."
       }
     },
+    "AWS::Athena::CapacityReservation": {
+      "attributes": {
+        "AllocatedDpus": "The number of data processing units currently allocated.",
+        "Arn": "The ARN of the capacity reservation.",
+        "CreationTime": "The time in UTC epoch millis when the capacity reservation was created.",
+        "LastSuccessfulAllocationTime": "The time of the most recent capacity allocation that succeeded.",
+        "Ref": "`Ref` returns the ARN of the capacity reservation.",
+        "Status": "The status of the capacity reservation."
+      },
+      "description": "Specifies a capacity reservation with the provided name and number of requested data processing units.",
+      "properties": {
+        "CapacityAssignmentConfiguration": "Assigns Athena workgroups (and hence their queries) to capacity reservations. A capacity reservation can have only one capacity assignment configuration, but the capacity assignment configuration can be made up of multiple individual assignments. Each assignment specifies how Athena queries can consume capacity from the capacity reservation that their workgroup is mapped to.",
+        "Name": "The name of the capacity reservation.",
+        "Tags": "An array of key-value pairs to apply to the capacity reservation.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "TargetDpus": "The number of data processing units requested."
+      }
+    },
+    "AWS::Athena::CapacityReservation.CapacityAssignment": {
+      "attributes": {},
+      "description": "A mapping between one or more workgroups and a capacity reservation.",
+      "properties": {
+        "WorkgroupNames": "The list of workgroup names for the capacity assignment."
+      }
+    },
+    "AWS::Athena::CapacityReservation.CapacityAssignmentConfiguration": {
+      "attributes": {},
+      "description": "Assigns Athena workgroups (and hence their queries) to capacity reservations. A capacity reservation can have only one capacity assignment configuration, but the capacity assignment configuration can be made up of multiple individual assignments. Each assignment specifies how Athena queries can consume capacity from the capacity reservation that their workgroup is mapped to.",
+      "properties": {
+        "CapacityAssignments": "The list of assignments that make up the capacity assignment configuration."
+      }
+    },
     "AWS::Athena::DataCatalog": {
       "attributes": {
         "Ref": "`Ref` returns the name of the data catalog."
@@ -5635,7 +5667,7 @@
         "CustomerContentEncryptionConfiguration": "Specifies the KMS key that is used to encrypt the user's data stores in Athena. This setting does not apply to Athena SQL workgroups.",
         "EnforceWorkGroupConfiguration": "If set to \"true\", the settings for the workgroup override client-side settings. If set to \"false\", client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
         "EngineVersion": "The engine version that all queries running on the workgroup use.",
-        "ExecutionRole": "Role used in an Apache Spark session for accessing the user's resources.",
+        "ExecutionRole": "Role used to access user resources in an Athena for Apache Spark session. This property applies only to Spark-enabled workgroups in Athena.",
         "PublishCloudWatchMetricsEnabled": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup.",
         "RequesterPaysEnabled": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries. If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
         "ResultConfiguration": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) ."
@@ -8752,7 +8784,7 @@
       "description": "Creates a new event data store.",
       "properties": {
         "AdvancedEventSelectors": "The advanced event selectors to use to select the events for the data store. You can configure up to five advanced event selectors for each event data store.\n\nFor more information about how to use advanced event selectors to log CloudTrail events, see [Log events by using advanced event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html#creating-data-event-selectors-advanced) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include AWS Config configuration items in your event data store, see [Create an event data store for AWS Config configuration items](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-eds-config) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include non- AWS events in your event data store, see [Create an integration to log events from outside AWS](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-integration) in the CloudTrail User Guide.",
-        "IngestionEnabled": "",
+        "IngestionEnabled": "Specifies whether the event data store should start ingesting live events. The default is true.",
         "KmsKeyId": "Specifies the AWS KMS key ID to use to encrypt the events delivered by CloudTrail. The value can be an alias name prefixed by `alias/` , a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\n> Disabling or deleting the KMS key, or removing CloudTrail permissions on the key, prevents CloudTrail from logging events to the event data store, and prevents users from querying the data in the event data store that was encrypted with the key. After you associate an event data store with a KMS key, the KMS key cannot be removed or changed. Before you disable or delete a KMS key that you are using with an event data store, delete or back up your event data store. \n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- `alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012`\n- `12345678-1234-1234-1234-123456789012`",
         "MultiRegionEnabled": "Specifies whether the event data store includes events from all Regions, or only from the Region in which the event data store is created.",
         "Name": "The name of the event data store.",
@@ -8801,7 +8833,7 @@
       },
       "description": "Creates a trail that specifies the settings for delivery of log data to an Amazon S3 bucket.",
       "properties": {
-        "AdvancedEventSelectors": "",
+        "AdvancedEventSelectors": "Specifies the settings for advanced event selectors. You can add advanced event selectors, and conditions for your advanced event selectors, up to a maximum of 500 values for all conditions and selectors on a trail. You can use either `AdvancedEventSelectors` or `EventSelectors` , but not both. If you apply `AdvancedEventSelectors` to a trail, any existing `EventSelectors` are overwritten. For more information about advanced event selectors, see [Logging data events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html) in the *AWS CloudTrail User Guide* .",
         "CloudWatchLogsLogGroupArn": "Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs are delivered. You must use a log group that exists in your account.\n\nNot required unless you specify `CloudWatchLogsRoleArn` .",
         "CloudWatchLogsRoleArn": "Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group. You must use a role that exists in your account.",
         "EnableLogFileValidation": "Specifies whether log file validation is enabled. The default is false.\n\n> When you disable log file integrity validation, the chain of digest files is broken after one hour. CloudTrail does not create digest files for log files that were delivered during a period in which log file integrity validation was disabled. For example, if you enable log file integrity validation at noon on January 1, disable it at noon on January 2, and re-enable it at noon on January 10, digest files will not be created for the log files delivered from noon on January 2 to noon on January 10. The same applies whenever you stop CloudTrail logging or delete a trail.",
@@ -11743,6 +11775,32 @@
         "DefaultExpirationDays": "The default number of days until the data within the domain expires.",
         "DomainName": "The unique name of the domain.",
         "Tags": "The tags used to organize, track, or control access for this resource."
+      }
+    },
+    "AWS::CustomerProfiles::EventStream": {
+      "attributes": {
+        "CreatedAt": "The timestamp of when the export was created.",
+        "DestinationDetails": "Details regarding the Kinesis stream.",
+        "DestinationDetails.Status": "The status of enabling the Kinesis stream as a destination for export.",
+        "DestinationDetails.Uri": "The StreamARN of the destination to deliver profile events to. For example, arn:aws:kinesis:region:account-id:stream/stream-name.",
+        "EventStreamArn": "A unique identifier for the event stream.",
+        "Ref": "",
+        "State": "The operational state of destination stream for export."
+      },
+      "description": "An Event Stream resource of Amazon Connect Customer Profiles.",
+      "properties": {
+        "DomainName": "The unique name of the domain.",
+        "EventStreamName": "The name of the event stream.",
+        "Tags": "The tags used to organize, track, or control access for this resource.",
+        "Uri": "The StreamARN of the destination to deliver profile events to. For example, arn:aws:kinesis:region:account-id:stream/stream-name."
+      }
+    },
+    "AWS::CustomerProfiles::EventStream.DestinationDetails": {
+      "attributes": {},
+      "description": "Details regarding the Kinesis stream.",
+      "properties": {
+        "Status": "The status of enabling the Kinesis stream as a destination for export.",
+        "Uri": "The StreamARN of the destination to deliver profile events to. For example, arn:aws:kinesis:region:account-id:stream/stream-name."
       }
     },
     "AWS::CustomerProfiles::Integration": {
@@ -30002,7 +30060,7 @@
       "description": "Provides the configuration information required for Amazon Kendra Web Crawler.",
       "properties": {
         "AuthenticationConfiguration": "Configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.",
-        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has three levels\u2014index level (the seed in this example), sections level, and subsections level\u2014and you are only interested in crawling information up to the sections level (levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
+        "CrawlDepth": "The 'depth' or number of levels from the seed level to crawl. For example, the seed URL page is depth 1 and any hyperlinks on this page that are also crawled are depth 2.",
         "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a web page or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a web page or attachment is set to 50 MB.",
         "MaxLinksPerPage": "The maximum number of URLs on a web page to include when crawling a website. This number is per web page.\n\nAs a website\u2019s web pages are crawled, any URLs the web pages link to are also crawled. URLs on a web page are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
         "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
@@ -30017,7 +30075,7 @@
       "description": "Provides the configuration information of the seed or starting point URLs to crawl.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
         "SeedUrls": "The list of seed or starting point URLs of the websites you want to crawl.\n\nThe list can include a maximum of 100 seed URLs.",
-        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2013 crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2013 crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2013 crawl the website host names with subdomains and other domains that the web pages link to.\n\nThe default mode is set to `HOST_ONLY` ."
+        "WebCrawlerMode": "You can choose one of the following modes:\n\n- `HOST_ONLY` \u2014crawl only the website host names. For example, if the seed URL is \"abc.example.com\", then only URLs with host name \"abc.example.com\" are crawled.\n- `SUBDOMAINS` \u2014crawl the website host names with subdomains. For example, if the seed URL is \"abc.example.com\", then \"a.abc.example.com\" and \"b.abc.example.com\" are also crawled.\n- `EVERYTHING` \u2014crawl the website host names with subdomains and other domains that the web pages link to.\n\nThe default mode is set to `HOST_ONLY` ."
       }
     },
     "AWS::Kendra::DataSource.WebCrawlerSiteMapsConfiguration": {
@@ -32099,6 +32157,7 @@
     },
     "AWS::Lambda::LayerVersion": {
       "attributes": {
+        "LayerVersionArn": "",
         "Ref": "`Ref` returns the ARN of the layer version, such as `arn:aws:lambda:us-west-2:123456789012:layer:my-layer:1` ."
       },
       "description": "The `AWS::Lambda::LayerVersion` resource creates a [Lambda layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) from a ZIP archive.",
@@ -38701,6 +38760,7 @@
       "description": "Creates a sequence store.",
       "properties": {
         "Description": "A description for the store.",
+        "FallbackLocation": "",
         "Name": "A name for the store.",
         "SseConfig": "Server-side encryption (SSE) settings for the store.",
         "Tags": "Tags for the store."
@@ -49862,9 +49922,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh properties of a dataset.",
       "properties": {
-        "RefreshConfiguration": ""
+        "RefreshConfiguration": "The refresh configuration for a dataset."
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -49900,7 +49960,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": ""
+        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -49946,9 +50006,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "",
+      "description": "The incremental refresh configuration for a dataset.",
       "properties": {
-        "LookbackWindow": ""
+        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50023,18 +50083,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "",
+      "description": "The lookback window setup of an incremental refresh configuration.",
       "properties": {
-        "ColumnName": "",
-        "Size": "",
-        "SizeUnit": ""
+        "ColumnName": "The name of the lookback window column.",
+        "Size": "The lookback window column size.",
+        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "",
+        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50051,10 +50111,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "",
+      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
       "properties": {
-        "NewDefaultValues": "",
-        "NewParameterName": "",
+        "NewDefaultValues": "The new default values for the parameter.",
+        "NewParameterName": "The new name for the parameter.",
         "ParameterName": ""
       }
     },
@@ -50076,9 +50136,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh configuration of a dataset.",
       "properties": {
-        "IncrementalRefresh": ""
+        "IncrementalRefresh": "The incremental refresh for the dataset."
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
