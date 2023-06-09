@@ -615,7 +615,8 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
     for (const key in props.substitutions) {
-      fileData = fileData.replace('{{ ' + key + ' }}', props.substitutions[key]);
+      const re = new RegExp(`{{\\s*${key}\\s*}}`);
+      fileData = fileData.replace(re, props.substitutions[key]);
     };
     const objectKey = cdk.FileSystem.fingerprint(props.source);
     const fileSource = Source.data(objectKey, fileData);
