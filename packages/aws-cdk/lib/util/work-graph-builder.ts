@@ -19,6 +19,7 @@ export class WorkGraphBuilder {
     'stack': 5,
   };
   private readonly graph = new WorkGraph();
+  private readonly assetBuildNodes = new Map<string, AssetBuildNode>;
 
   constructor(private readonly prebuildAssets: boolean, private readonly idPrefix = '') { }
 
@@ -38,16 +39,12 @@ export class WorkGraphBuilder {
    */
   // eslint-disable-next-line max-len
   private addAsset(parentStack: cxapi.CloudFormationStackArtifact, assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry) {
-    // Just the artifact identifier
-    const assetId = asset.id.assetId;
-    // Unique per destination where the artifact needs to go
-    const assetDestinationId = `${asset.id}`;
+    const buildId = `${this.idPrefix}${asset.id}-build`;
 
-    const buildId = `${this.idPrefix}${assetId}-build`;
-    const publishNodeId = `${this.idPrefix}${assetDestinationId}-publish`;
-
-    // Build node only gets added once because they are all the same
-    if (!this.graph.tryGetNode(buildId)) {
+    // Add the build node, but only one per "source"
+    // The genericSource includes a relative path we could make absolute to do more effective deduplication of build steps. Not doing that right now.
+    const assetBuildNodeKey = JSON.stringify(asset.genericSource);
+    if (!this.assetBuildNodes.has(assetBuildNodeKey)) {
       const node: AssetBuildNode = {
         type: 'asset-build',
         id: buildId,
@@ -63,8 +60,12 @@ export class WorkGraphBuilder {
         deploymentState: DeploymentState.PENDING,
         priority: WorkGraphBuilder.PRIORITIES['asset-build'],
       };
+      this.assetBuildNodes.set(assetBuildNodeKey, node);
       this.graph.addNodes(node);
     }
+
+    // Always add the publish
+    const publishNodeId = `${this.idPrefix}${asset.id}-publish`;
 
     const publishNode = this.graph.tryGetNode(publishNodeId);
     if (!publishNode) {

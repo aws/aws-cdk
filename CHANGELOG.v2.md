@@ -2,13 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.83.1](https://github.com/aws/aws-cdk/compare/v2.83.0...v2.83.1) (2023-06-09)
-
-
-### Bug Fixes
-
-* **cli:** assets shared between stages lead to an error ([#25907](https://github.com/aws/aws-cdk/issues/25907)) ([68ed8ca](https://github.com/aws/aws-cdk/commit/68ed8caeb7e8e17d82f77f9a618723e0af367e5a))
-
 ## [2.83.0](https://github.com/aws/aws-cdk/compare/v2.82.0...v2.83.0) (2023-06-07)
 
 
@@ -80,7 +73,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **eks:** A masters role is no longer provisioned by default. Use the `mastersRole` property to explicitly pass a role that needs cluster access. In addition, the creation role no longer allows any identity (with the appropriate `sts:AssumeRole` permissions) to assume it.
+* **eks:** A masters role is no longer provisioned by default. Use the `mastersRole` property to explicitly pass a role that needs cluster access. In addition, the creation role no longer allows any identity (with the appropriate `sts:AssumeRole` permissions) to assume it. 
 
 ### Features
 
@@ -201,7 +194,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **servicecatalogappregistry:** this change will deprecated **associateStack** and **associateAttributeGroup** in Application Construct.
+* **servicecatalogappregistry:** this change will deprecated **associateStack** and **associateAttributeGroup** in Application Construct. 
 The user who are using these two method need to update to use alternative method.
 For associateStack, the alternative method is **associateApplicationWithStack**
 For associateAttributeGroup, the alternative method is **AttributeGroup.associateWith**
