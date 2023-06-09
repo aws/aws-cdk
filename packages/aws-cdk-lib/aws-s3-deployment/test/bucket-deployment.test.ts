@@ -1539,6 +1539,24 @@ test('DeployTimeSubstitutedFile throws error when source file path is invalid', 
   }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
 });
 
+test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: { },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).toStrictEqual(assetFileFromOutput);
+});
+
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
   for (const dir of assetDirs) {
