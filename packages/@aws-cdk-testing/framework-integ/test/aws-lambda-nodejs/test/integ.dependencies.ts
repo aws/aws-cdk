@@ -30,17 +30,33 @@ class SdkV2TestStack extends Stack {
 class SdkV3TestStack extends Stack {
   public lambdaFunction: IFunction
 
-  constructor(scope: Construct, id: string, useLambdaProvidedSdk = false, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     // This function uses @aws-sdk/* but it will not be included
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
-      entry: useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts') : path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/index.mjs'),
+      entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
-      depsLockFilePath: !useLambdaProvidedSdk ? path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/package-lock.json') : undefined,
       bundling: {
-        useLambdaProvidedAwsSdk: useLambdaProvidedSdk,
-        commandHooks: !useLambdaProvidedSdk ? {
+        useLambdaProvidedAwsSdk: true,
+      },
+    });
+  }
+}
+
+class SdkV3BundledStack extends Stack {
+  public lambdaFunction: IFunction
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    // This function uses @aws-sdk/* but it will not be included
+    this.lambdaFunction = new lambda.NodejsFunction(this, 'bundled-sdk-v3', {
+      entry: path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/index.mjs'),
+      runtime: Runtime.NODEJS_18_X,
+      depsLockFilePath: path.join(__dirname, 'integ-handlers/dependencies-aws-sdk-custom/package-lock.json'),
+      bundling: {
+        commandHooks: {
           beforeInstall() {
             return [];
           },
@@ -50,7 +66,7 @@ class SdkV3TestStack extends Stack {
           beforeBundling(inputDir, _outputDir) {
             return [`cd ${inputDir}`, 'npm install --ci'];
           },
-        } : undefined,
+        },
       },
     });
   }
@@ -59,13 +75,13 @@ class SdkV3TestStack extends Stack {
 const app = new App();
 const sdkV2testCase = new SdkV2TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
 const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
-const sdkV3testCaseUseLambdaProvidedSdk = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-use-lambda-provided-sdk', true);
+const sdkV3BundledSdk = new SdkV3BundledStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled');
 
 const integ = new IntegTest(app, 'LambdaDependencies', {
-  testCases: [sdkV2testCase, sdkV3testCase, sdkV3testCaseUseLambdaProvidedSdk],
+  testCases: [sdkV2testCase, sdkV3testCase, sdkV3BundledSdk],
 });
 
-for (const testCase of [sdkV2testCase, sdkV3testCase, sdkV3testCaseUseLambdaProvidedSdk]) {
+for (const testCase of [sdkV2testCase, sdkV3testCase, sdkV3BundledSdk]) {
   const response = integ.assertions.invokeFunction({
     functionName: testCase.lambdaFunction.functionName,
   });

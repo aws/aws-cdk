@@ -4,10 +4,8 @@
     "LambdaDependencies/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-nodejs-dependencies",
-        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3",
-        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-use-lambda-provided-sdk"
+        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3"
       ],
-      "diffAssets": true,
       "assertionStack": "LambdaDependencies/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaDependenciesDefaultTestDeployAssert259C940B"
     }
