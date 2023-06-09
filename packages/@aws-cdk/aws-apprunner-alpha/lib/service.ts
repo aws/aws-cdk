@@ -25,11 +25,6 @@ export enum ImageRepositoryType {
 }
 
 /**
- * CPU input patterns for App Runner service
- */
-export type CpuPatternType = '256' | '512' | '1024' | '2048' | '4096' | '0.25 vCPU' | '0.5 vCPU' | '1 vCPU' | '2 vCPU' | '4 vCPU'
-
-/**
  * The number of CPU units reserved for each instance of your App Runner service.
  *
  */
@@ -66,19 +61,26 @@ export class Cpu {
    *
    * @param unit custom CPU unit
    */
-  public static of(unit: CpuPatternType): Cpu { return new Cpu(unit); }
+  public static of(unit: string): Cpu {
+    const numericPatterns = ['256', '512', '1024', '2048', '4096'];
+    const unitPatterns = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('CPU value is invalid');
+    };
+
+    return new Cpu(unit);
+  }
 
   /**
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: CpuPatternType) {}
+  private constructor(public readonly unit: string) {}
 }
-
-/**
- * Memory input patterns for App Runner service
- */
-export type MemoryPatternType = '512' | '1024' | '2048' | '3072' | '4096' | '6144' | '8192' | '10240' | '12288' | '0.5 GB' | '1 GB' | '2 GB' | '3 GB' | '4 GB' | '6 GB' | '8 GB' | '10 GB' | '12 GB';
 
 /**
  * The amount of memory reserved for each instance of your App Runner service.
@@ -136,13 +138,25 @@ export class Memory {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
-  public static of(unit: MemoryPatternType): Memory { return new Memory(unit); }
+  public static of(unit: string): Memory {
+    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
+    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('Memory value is invalid');
+    };
+
+    return new Memory(unit);
+  }
 
   /**
    *
    * @param unit The unit of memory.
    */
-  private constructor(public readonly unit: MemoryPatternType) { }
+  private constructor(public readonly unit: string) { }
 }
 
 /**
