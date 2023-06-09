@@ -3,7 +3,6 @@ import * as path from 'path';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import {
   App, CfnOutput, Stack, StackProps, Duration,
-  aws_lambda as lambda,
   custom_resources as cr,
   aws_iam as iam,
   aws_ec2 as ec2,
@@ -48,15 +47,13 @@ class EksClusterStack extends Stack {
 
     // import this cluster
     const kubectlProvider = this.cluster.stack.node.tryFindChild('@aws-cdk--aws-eks.KubectlProvider') as eks.KubectlProvider;
-    const kubectlHandler = kubectlProvider.node.tryFindChild('Handler') as lambda.IFunction;
     const crProvider = kubectlProvider.node.tryFindChild('Provider') as cr.Provider;
 
     // import the kubectl provider
     const importedKubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-      functionArn: kubectlHandler.functionArn,
+      functionArn: crProvider.serviceToken,
       kubectlRoleArn: this.cluster.kubectlRole!.roleArn,
       handlerRole: kubectlProvider.handlerRole,
-      serviceToken: crProvider.serviceToken,
     });
 
     this.importedCluster = eks.Cluster.fromClusterAttributes(this, 'ImportedCluster', {
@@ -140,7 +137,6 @@ class EksClusterStack extends Stack {
   }
 
   private assertSimpleCdk8sChart() {
-
     class Chart extends cdk8s.Chart {
       constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
         super(scope, ns);
@@ -158,6 +154,7 @@ class EksClusterStack extends Stack {
 
     this.importedCluster.addCdk8sChart('cdk8s-chart', chart);
   }
+
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart
     this.importedCluster.addHelmChart('dashboard', {
@@ -180,6 +177,7 @@ class EksClusterStack extends Stack {
     // apply a kubernetes manifest
     this.importedCluster.addManifest('HelloApp', ...hello.resources);
   }
+
   private assertManifestWithoutValidation() {
     // apply a kubernetes manifest
     new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
@@ -197,7 +195,6 @@ class EksClusterStack extends Stack {
 }
 
 const app = new App();
-
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {

@@ -940,7 +940,6 @@ describe('cluster', () => {
       functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
       kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
       handlerRole: handlerRole,
-      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:ProviderframeworkonEvent:1',
     });
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -960,7 +959,6 @@ describe('cluster', () => {
         functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
         kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
         handlerRole: handlerRole,
-        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:ProviderframeworkonEvent:1',
       });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -987,7 +985,6 @@ describe('cluster', () => {
         functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
         kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
         handlerRole: handlerRole,
-        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:ProviderframeworkonEvent:1',
       });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -1021,7 +1018,6 @@ describe('cluster', () => {
         functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
         kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
         handlerRole: handlerRole,
-        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:ProviderframeworkonEvent:1',
       });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {

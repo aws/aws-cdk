@@ -713,12 +713,12 @@ By default, CDK will create a new python lambda function to apply your k8s manif
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+// get the serivceToken of the custom resource provider
 const serviceToken = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  functionArn: serviceToken,
   kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
   handlerRole,
-  serviceToken,
 });
 
 const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
