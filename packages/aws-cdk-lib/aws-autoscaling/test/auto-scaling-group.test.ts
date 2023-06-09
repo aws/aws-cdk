@@ -180,6 +180,23 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('maxCapacity defaults to minCapacity when using Token', () => {
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: cdk.Lazy.number({ produce: () => 0 }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MinSize: '0',
+      MaxSize: '0',
+    });
+  });
+
   test('userdata can be overridden by image', () => {
     // GIVEN
     const stack = new cdk.Stack();
