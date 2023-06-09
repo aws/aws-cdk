@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { App, Aws, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Lazy, Stack } from '../../core';
 import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
 describe('CachePolicy', () => {
@@ -146,6 +146,23 @@ describe('CachePolicy', () => {
           MinTTL: 0,
           DefaultTTL: 34560000,
           MaxTTL: 34560000,
+        },
+      });
+    });
+
+    test('accepts tokens', () => {
+      new CachePolicy(stack, 'CachePolicy', {
+        cachePolicyName: 'MyPolicy',
+        minTtl: Duration.seconds(Lazy.number({ produce: () => 30 })),
+        defaultTtl: Duration.seconds(Lazy.number({ produce: () => 20 })),
+        maxTtl: Duration.seconds(Lazy.number({ produce: () => 10 })),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
+        CachePolicyConfig: {
+          MinTTL: 30,
+          DefaultTTL: 20,
+          MaxTTL: 10,
         },
       });
     });
