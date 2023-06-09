@@ -11,7 +11,7 @@ import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-p
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
-const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'domain.com' });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
@@ -27,7 +27,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       name: 'lb',
       idleTimeout: Duration.seconds(400),
-      domainName: 'api.example.com',
+      domainName: 'api.domain.com',
       domainZone: zone,
       listeners: [
         {
@@ -41,7 +41,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       name: 'lb2',
       idleTimeout: Duration.seconds(400),
-      domainName: 'frontend.example.com',
+      domainName: 'frontend.domain.com',
       domainZone: zone,
       listeners: [
         {
