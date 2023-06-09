@@ -382,8 +382,8 @@ new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
 Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
 construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
 the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
-In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be successfully
-replaced in the file.
+In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
+in the file.
 
 ## Keep Files Zipped
 
