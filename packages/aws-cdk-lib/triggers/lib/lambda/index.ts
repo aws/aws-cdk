@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable import/no-extraneous-dependencies
+import { AccessDeniedException } from '@aws-sdk/client-account';
 import { Lambda, InvocationResponse } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
-import { AccessDeniedException } from '@aws-sdk/client-account';
 
 export type InvokeFunction = (functionName: string, invocationType: string, timeout: number) => Promise<InvocationResponse>;
 
