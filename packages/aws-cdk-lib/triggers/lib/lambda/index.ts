@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-// eslint-disable import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import { AccessDeniedException } from '@aws-sdk/client-account';
 import { Lambda, InvocationResponse } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
