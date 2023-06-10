@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd5418f09f69877a844682e5508a9c8ba25614f4e07b96ddb56d033317ae635d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6cb7b78b13be4684bf242a2df2ff81ce2085e5a4529ea5f0ec5db983ac7fbde.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -309,10 +309,16 @@
             "data": "ClusterInferenceInstancesInstanceProfile5A1209B4"
           }
         ],
-        "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchConfig": [
+        "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesLaunchConfig03BF48FE"
+            "data": "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterInferenceInstancesLaunchTemplateA0BB0AA4"
           }
         ],
         "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/ASG": [
@@ -601,6 +607,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterInferenceInstancesLaunchConfig03BF48FE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterInferenceInstancesLaunchConfig03BF48FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -1219,73 +1219,165 @@
     ]
    }
   },
-  "ClusterInferenceInstancesLaunchConfig03BF48FE": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A": {
+   "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "inf1.2xlarge",
-    "IamInstanceProfile": {
-     "Ref": "ClusterInferenceInstancesInstanceProfile5A1209B4"
-    },
-    "SecurityGroups": [
+    "Roles": [
      {
-      "Fn::GetAtt": [
-       "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-       "GroupId"
-      ]
-     },
-     {
-      "Fn::GetAtt": [
-       "Cluster9EE0221C",
-       "ClusterSecurityGroupId"
-      ]
+      "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
      }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+    ]
+   }
+  },
+  "ClusterInferenceInstancesLaunchTemplateA0BB0AA4": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "inf1.2xlarge",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
         {
-         "Ref": "Cluster9EE0221C"
+         "Key": {
+          "Fn::Join": [
+           "",
+           [
+            "kubernetes.io/cluster/",
+            {
+             "Ref": "Cluster9EE0221C"
+            }
+           ]
+          ]
+         },
+         "Value": "owned"
         },
-        " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
         {
-         "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "Endpoint"
-         ]
-        },
-        "' --b64-cluster-ca '",
-        {
-         "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "CertificateAuthorityData"
-         ]
-        },
-        "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-inference-test --resource ClusterInferenceInstancesASGE90717C7 --region ",
-        {
-         "Ref": "AWS::Region"
+         "Key": "Name",
+         "Value": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate"
         }
        ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": {
+          "Fn::Join": [
+           "",
+           [
+            "kubernetes.io/cluster/",
+            {
+             "Ref": "Cluster9EE0221C"
+            }
+           ]
+          ]
+         },
+         "Value": "owned"
+        },
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+         {
+          "Ref": "Cluster9EE0221C"
+         },
+         " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+         {
+          "Fn::GetAtt": [
+           "Cluster9EE0221C",
+           "Endpoint"
+          ]
+         },
+         "' --b64-cluster-ca '",
+         {
+          "Fn::GetAtt": [
+           "Cluster9EE0221C",
+           "CertificateAuthorityData"
+          ]
+         },
+         "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-inference-test --resource ClusterInferenceInstancesASGE90717C7 --region ",
+         {
+          "Ref": "AWS::Region"
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": {
+         "Fn::Join": [
+          "",
+          [
+           "kubernetes.io/cluster/",
+           {
+            "Ref": "Cluster9EE0221C"
+           }
+          ]
+         ]
+        },
+        "Value": "owned"
+       },
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate"
+       }
       ]
      }
-    }
-   },
-   "DependsOn": [
-    "ClusterInferenceInstancesInstanceRole59AC6F56"
-   ]
+    ]
+   }
   },
   "ClusterInferenceInstancesASGE90717C7": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "ClusterInferenceInstancesLaunchConfig03BF48FE"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "ClusterInferenceInstancesLaunchTemplateA0BB0AA4"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -1492,7 +1584,8 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchConfig03BF48FE",
+    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+    "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
    ],
@@ -1535,7 +1628,8 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchConfig03BF48FE",
+    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+    "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
    ]
@@ -1754,7 +1848,8 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchConfig03BF48FE",
+    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+    "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
    ]
@@ -1804,7 +1899,8 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchConfig03BF48FE",
+    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+    "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterKubectlReadyBarrier200052AF",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
@@ -1874,7 +1970,8 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchConfig03BF48FE",
+    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+    "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterKubectlReadyBarrier200052AF",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3",
