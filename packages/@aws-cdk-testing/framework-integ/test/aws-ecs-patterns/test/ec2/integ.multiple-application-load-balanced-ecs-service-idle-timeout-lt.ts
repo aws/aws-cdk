@@ -5,16 +5,22 @@ import { ApplicationProtocol, SslPolicy } from 'aws-cdk-lib/aws-elasticloadbalan
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
-import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');
-stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, false);
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
-const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'domain.com' });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
+
+const cert1 = new Certificate(stack, 'cert1', {
+  domainName: 'cert1.domain.com',
+});
+const cert2 = new Certificate(stack, 'cert2', {
+  domainName: 'cert2.domain.com',
+});
 
 // Two load balancers with different idle timeouts.
 new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
@@ -28,13 +34,13 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       name: 'lb',
       idleTimeout: Duration.seconds(400),
-      domainName: 'api.example.com',
+      domainName: 'api.domain.com',
       domainZone: zone,
       listeners: [
         {
           name: 'listener',
           protocol: ApplicationProtocol.HTTPS,
-          certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+          certificate: cert1,
           sslPolicy: SslPolicy.TLS12_EXT,
         },
       ],
@@ -42,13 +48,13 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     {
       name: 'lb2',
       idleTimeout: Duration.seconds(400),
-      domainName: 'frontend.example.com',
+      domainName: 'frontend.domain.com',
       domainZone: zone,
       listeners: [
         {
           name: 'listener2',
           protocol: ApplicationProtocol.HTTPS,
-          certificate: Certificate.fromCertificateArn(stack, 'Cert2', 'helloworld'),
+          certificate: cert2,
           sslPolicy: SslPolicy.TLS12_EXT,
         },
       ],
