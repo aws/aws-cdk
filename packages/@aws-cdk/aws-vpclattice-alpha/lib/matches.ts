@@ -14,18 +14,22 @@ export interface HTTPMatch {
   * Properties to Create A HeaderMatch
   * @default no header match
   */
-  headerMatches?: HeaderMatch[] | undefined;
+  readonly headerMatches?: HeaderMatch[] | undefined;
   /**
    * Method to match against
+   * @default no header match
    */
-  method?: HTTPMethods | undefined;
+  readonly method?: HTTPMethods | undefined;
   /**
    * Properties to Create A PathMatch
    * @default no path match
    */
-  pathMatches?: PathMatch | undefined;
+  readonly pathMatches?: PathMatch | undefined;
 }
 
+/**
+ * Header Matches for creating rules
+ */
 export interface HeaderMatch {
   /**
   * the name of the header to match
@@ -64,14 +68,4 @@ export interface PathMatch {
 	 * Value to match against
 	 */
   readonly path: string,
-}
-
-/**
- * Properties to create a Method Match
- */
-export interface MethodMatch {
-  /**
-	 * An Http Method eg GET, POST, PUT, DELETE
-	 */
-  readonly httpMethod: HTTPMethods
 }
