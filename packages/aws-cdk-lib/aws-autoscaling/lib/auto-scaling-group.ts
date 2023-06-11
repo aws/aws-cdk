@@ -1282,27 +1282,27 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
-      this._role = props.role || new iam.Role(this, 'InstanceRole', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      });
-      this.grantPrincipal = this._role;
-
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
       });
+      this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+      this.securityGroups = [this.securityGroup];
+      Tags.of(this).add(NAME_TAG, this.node.path);
+
+      this._role = props.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      this.grantPrincipal = this._role;
+
+      if (props.ssmSessionPermissions) {
+        this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+      }
 
       // generate launch template from launch config props when feature flag is set
       if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
-        this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-        this.securityGroups = [this.securityGroup];
-        Tags.of(this).add(NAME_TAG, this.node.path);
-
-        if (props.ssmSessionPermissions) {
-          this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-        }
-
         const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
           roles: [this.role.roleName],
         });
@@ -1337,14 +1337,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
           securityGroup: this.securityGroup,
           role: this._role,
-          userData: props.userData,
+          userData: this._userData,
           associatePublicIpAddress: props.associatePublicIpAddress,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
         });
 
-        this._userData = launchTemplateFromConfig.userData;
-        // an error is thrown when a machineImage is not provided, thus we can say for certain that osType is defined
         this.osType = launchTemplateFromConfig.osType!;
       }
     }
