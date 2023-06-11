@@ -55,6 +55,7 @@ export class LatticeTestStack extends core.Stack {
           }),
         },
       ],
+      // the conditions for the match are effectively AND'ed together
       httpMatch: {
         pathMatches: { path: '/hello' },
         method: HTTPMethods.GET,
