@@ -5,7 +5,6 @@ import { ApplicationProtocol, SslPolicy } from 'aws-cdk-lib/aws-elasticloadbalan
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
