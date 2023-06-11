@@ -26,13 +26,16 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    */
   readonly networkMode?: NetworkMode;
 
-  /**
-   * An array of placement constraint objects to use for the task. You can
+  /*** An array of placement constraint objects to use for the task. You can
    * specify a maximum of 10 constraints per task (this limit includes
    * constraints in the task definition and those specified at run time).
    *
+   * Note: The `distinctInstances()` method is not supported when creating
+   * an `Ec2TaskDefinition`, and can only be used when creating a new service or running a
+   * task.
+   *
    * @default - No placement constraints.
-   */
+  */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
@@ -111,9 +114,29 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   }
 
   /**
+ * Validates the placement constraints to make sure they are supported.
+  * Currently, only 'memberOf' is a valid constraint for an Ec2TaskDefinition.
+  */
+  private static validatePlacementConstraints(constraints?: PlacementConstraint[]) {
+  // List of valid constraints https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html
+    const validConstraints = new Set(['memberOf']);
+
+    /// Check if any of the placement constraints are not valid
+    const invalidConstraints = constraints?.filter(constraint => {
+      return constraint.toJson().some(constraintProperty => !validConstraints.has(constraintProperty.type));
+    }) || [];
+
+    if (invalidConstraints.length > 0) {
+      throw new Error('Invalid placement constraint. Only memberOf is supported in the Ec2TaskDefinition class.');
+    }
+
+  }
+
+  /**
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
+
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EC2,
@@ -122,5 +145,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       pidMode: props.pidMode,
       inferenceAccelerators: props.inferenceAccelerators,
     });
+
+    // Validate the placement constraints
+    Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints || []);
   }
+
 }
