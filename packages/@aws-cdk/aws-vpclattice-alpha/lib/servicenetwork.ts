@@ -256,6 +256,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEquals: {
               'aws:PrincipalOrgID': [orgId],
@@ -273,6 +274,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEqualsIgnoreCase: {
               'aws:PrincipalType': 'anonymous',

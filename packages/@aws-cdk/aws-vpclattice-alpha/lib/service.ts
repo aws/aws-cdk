@@ -220,6 +220,7 @@ export class Service extends core.Resource implements IService {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEquals: {
               'aws:PrincipalOrgID': [orgId],
@@ -236,6 +237,7 @@ export class Service extends core.Resource implements IService {
         new iam.PolicyStatement({
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
+          principals: [new iam.AnyPrincipal()],
           resources: ['*'], // as this is policy is applied on the 'service', the * applyes to all things that are in teh service.
           conditions: {
             StringNotEqualsIgnoreCase: {
@@ -275,7 +277,8 @@ export class Service extends core.Resource implements IService {
     }
 
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error('policyDocument.validateForResourcePolicy() failed');
+      throw new Error(
+        `The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
     }
 
     new aws_vpclattice.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
