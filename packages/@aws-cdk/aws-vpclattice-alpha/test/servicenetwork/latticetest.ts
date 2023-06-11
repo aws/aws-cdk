@@ -50,14 +50,14 @@ export class LatticeTestStack extends core.Stack {
           targetGroup: new TargetGroup(this, 'lambdatargets', {
             name: 'lambda1',
             target: Target.lambda([
-              support.checkHelloWorld,
+              support.helloWorld,
             ]),
           }),
         },
       ],
       httpMatch: {
         pathMatches: { path: '/hello' },
-        method: HTTPMethods.PUT,
+        method: HTTPMethods.GET,
       },
       allowedPrincipals: [support.checkHelloWorld.role as iam.Role],
     });
