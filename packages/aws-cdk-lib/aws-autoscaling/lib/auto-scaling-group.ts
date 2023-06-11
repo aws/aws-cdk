@@ -1286,15 +1286,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
       });
-      this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-      this.securityGroups = [this.securityGroup];
-      Tags.of(this).add(NAME_TAG, this.node.path);
 
       this._role = props.role || new iam.Role(this, 'InstanceRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
         assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       });
-
       this.grantPrincipal = this._role;
 
       if (props.ssmSessionPermissions) {
@@ -1303,6 +1299,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
       // generate launch template from launch config props when feature flag is set
       if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+        this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+        this.securityGroups = [this.securityGroup];
+        Tags.of(this).add(NAME_TAG, this.node.path);
+
         const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
           roles: [this.role.roleName],
         });
@@ -1330,20 +1330,20 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         launchConfig.node.addDependency(this.role);
         this.osType = imageConfig.osType;
       } else {
-        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+        this.launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
           keyName: props.keyName,
           instanceType: props.instanceType,
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
           securityGroup: this.securityGroup,
           role: this._role,
-          userData: this._userData,
+          userData: props.userData,
           associatePublicIpAddress: props.associatePublicIpAddress,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
         });
 
-        this.osType = launchTemplateFromConfig.osType!;
+        this.osType = this.launchTemplate.osType!;
       }
     }
 
