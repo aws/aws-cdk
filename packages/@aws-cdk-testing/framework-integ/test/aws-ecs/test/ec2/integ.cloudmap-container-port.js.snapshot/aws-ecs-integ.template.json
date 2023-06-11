@@ -296,16 +296,6 @@
     ]
    }
   },
-  "FargateClustercapacityInstanceProfile8294296C": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "FargateClustercapacityInstanceRoleBE253D2D"
-     }
-    ]
-   }
-  },
   "FargateClustercapacityLaunchTemplateProfile4BF7EF9F": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

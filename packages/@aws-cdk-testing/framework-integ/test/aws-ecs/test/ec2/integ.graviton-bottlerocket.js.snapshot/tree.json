@@ -862,24 +862,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "InstanceProfile": {
-                    "id": "InstanceProfile",
-                    "path": "aws-ecs-integ/EcsCluster/graviton-cluster/InstanceProfile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "EcsClustergravitonclusterInstanceRole0D0E0F94"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate",

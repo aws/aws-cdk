@@ -959,24 +959,6 @@
                   "version": "0.0.0"
                 }
               },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "integ-ec2-capacity-provider/ASG/InstanceProfile",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                  "aws:cdk:cloudformation:props": {
-                    "roles": [
-                      {
-                        "Ref": "ASGInstanceRoleE263A41B"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
-                }
-              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "integ-ec2-capacity-provider/ASG/LaunchTemplate",

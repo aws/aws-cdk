@@ -497,16 +497,6 @@
     ]
    }
   },
-  "EcsClusterasgSpotInstanceProfile0D6DD08D": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "EcsClusterasgSpotInstanceRole84AB6F93"
-     }
-    ]
-   }
-  },
   "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
@@ -1006,16 +996,6 @@
      "Version": "2012-10-17"
     },
     "PolicyName": "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2",
-    "Roles": [
-     {
-      "Ref": "EcsClusterasgOdInstanceRoleC8290533"
-     }
-    ]
-   }
-  },
-  "EcsClusterasgOdInstanceProfileE5B88756": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
     "Roles": [
      {
       "Ref": "EcsClusterasgOdInstanceRoleC8290533"

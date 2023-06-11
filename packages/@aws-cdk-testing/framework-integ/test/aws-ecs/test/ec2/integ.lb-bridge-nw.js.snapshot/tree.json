@@ -865,24 +865,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "InstanceProfile": {
-                    "id": "InstanceProfile",
-                    "path": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/InstanceProfile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate",

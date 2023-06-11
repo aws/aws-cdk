@@ -487,16 +487,6 @@
     ]
    }
   },
-  "EcsClusterbottlerocketasgInstanceProfile22A89B9D": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgInstanceRole96AA2ACF"
-     }
-    ]
-   }
-  },
   "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

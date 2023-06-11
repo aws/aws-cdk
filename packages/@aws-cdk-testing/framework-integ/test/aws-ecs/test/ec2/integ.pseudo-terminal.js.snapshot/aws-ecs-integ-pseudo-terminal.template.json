@@ -497,16 +497,6 @@
     ]
    }
   },
-  "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
-     }
-    ]
-   }
-  },
   "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

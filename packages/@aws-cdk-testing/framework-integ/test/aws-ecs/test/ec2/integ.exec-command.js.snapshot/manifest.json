@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/27893c8bd814bac17fbb23daf6022df812110ecda33f4a8a62a633f8e281364c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2418c9cb0774addcd86da01bec3d35fea39cace08cd95b28df4c7fedf986e35d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,12 +213,6 @@
             "data": "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD"
           }
         ],
-        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471"
-          }
-        ],
         "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
@@ -333,10 +327,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A": [
+        "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A",
+            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

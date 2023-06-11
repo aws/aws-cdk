@@ -523,16 +523,6 @@
     ]
    }
   },
-  "EcsClustergravitonclusterInstanceProfileD1BBFAAE": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "EcsClustergravitonclusterInstanceRole0D0E0F94"
-     }
-    ]
-   }
-  },
   "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
