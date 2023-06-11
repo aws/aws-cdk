@@ -3,10 +3,10 @@ import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
-import * as s3_assets from '../../aws-s3-assets';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
+import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
@@ -646,7 +646,6 @@ export interface DefinitionConfig {
   readonly definitionS3Location?: CfnStateMachine.S3LocationProperty;
 }
 
-
 export abstract class DefinitionBody {
 
   public static fromFile(path: string, options: s3_assets.AssetOptions): DefinitionBody {
@@ -667,7 +666,7 @@ export abstract class DefinitionBody {
 
 export class FileDefinitionBody extends DefinitionBody {
 
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
 

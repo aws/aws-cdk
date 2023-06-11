@@ -112,19 +112,21 @@ test('Running a task with container override and container has explicitly set a 
         },
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides', {
-      ContainerOverrides: [
-        {
-          Environment: [
-            {
-              Name: 'SOME_KEY',
-              'Value.$': '$.SomeKey',
-            },
-          ],
-          Name: 'ExplicitContainerName',
-        },
-      ],
-    });
+    }).toStateJson()))
+    .toHaveProperty('Parameters.Overrides',
+      {
+        ContainerOverrides: [
+          {
+            Environment: [
+              {
+                Name: 'SOME_KEY',
+                'Value.$': '$.SomeKey',
+              },
+            ],
+            Name: 'ExplicitContainerName',
+          },
+        ],
+      });
 });
 
 test('Running a task without propagated tag source', () => {
