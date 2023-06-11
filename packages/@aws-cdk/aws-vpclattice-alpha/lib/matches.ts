@@ -1,11 +1,34 @@
 import {
   MatchOperator,
   PathMatchType,
+  HTTPMethods,
 }
   from './index';
+/**
+ * An HTTPMatch for creating rules
+ * At least one of headermatch, method or patchmatches must be created
+ */
+export interface HTTPMatch {
+
+  /**
+  * Properties to Create A HeaderMatch
+  * @default no header match
+  */
+  readonly headerMatches?: HeaderMatch[] | undefined;
+  /**
+   * Method to match against
+   * @default no header match
+   */
+  readonly method?: HTTPMethods | undefined;
+  /**
+   * Properties to Create A PathMatch
+   * @default no path match
+   */
+  readonly pathMatches?: PathMatch | undefined;
+}
 
 /**
- * Properties to Create A HeaderMatch
+ * Header Matches for creating rules
  */
 export interface HeaderMatch {
   /**
@@ -46,13 +69,3 @@ export interface PathMatch {
 	 */
   readonly path: string,
 }
-
-/**
- * Properties to create a Method Match
- */
-// export interface MethodMatch {
-//   /**
-// 	 * An Http Method eg GET, POST, PUT, DELETE
-// 	 */
-//   readonly httpMethod: vpclattice.HTTPMethods
-// }
