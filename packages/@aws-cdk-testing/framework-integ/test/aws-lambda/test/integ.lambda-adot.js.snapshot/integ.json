@@ -1,0 +1,13 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "Stack1",
+        "Stack2"
+      ],
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+    }
+  }
+}
