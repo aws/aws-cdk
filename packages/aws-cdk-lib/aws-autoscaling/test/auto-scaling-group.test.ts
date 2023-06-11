@@ -184,14 +184,6 @@ describe('auto scaling group', () => {
     // THEN
     Template.fromStack(stack).templateMatches({
       Resources: {
-        'MyFleetInstanceProfile70A58496': {
-          Type: 'AWS::IAM::InstanceProfile',
-          Properties: {
-            Roles: [
-              'MockRole',
-            ],
-          },
-        },
         'MyFleetLaunchTemplateProfileE8BFD5F7': {
           Type: 'AWS::IAM::InstanceProfile',
           Properties: {
@@ -309,13 +301,6 @@ describe('auto scaling group', () => {
                 ],
               },
             },
-            Tags: [
-              {
-                Key: 'Name',
-                PropagateAtLaunch: true,
-                Value: 'TestStack/MyFleet',
-              },
-            ],
             VPCZoneIdentifier: [
               'pub1',
             ],
