@@ -10,12 +10,10 @@ import { Construct } from 'constructs';
 import {
   FixedResponse,
   PathMatchType,
-  PathMatch,
-  HeaderMatch,
   WeightedTargetGroup,
   Protocol,
-  HTTPMethods,
   MatchOperator,
+  HTTPMatch,
 } from './index';
 
 interface IHttpMatchProperty {
@@ -139,30 +137,17 @@ export interface AddRuleProps {
   /**
   * the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup
   */
-
   readonly action: FixedResponse | WeightedTargetGroup[]
   /**
   * the priority of this rule, a lower priority will be processed first
+  * @default 100
   */
-
-  readonly priority: number
-  /** Properties for a header match
-  * A header match can search for multiple headers
-  * @default none
-  */
-  readonly headerMatchs?: HeaderMatch[] | undefined
+  readonly priority?: number
   /**
-  * Properties for a Path Match
-  * @default none
+  * the Matching criteria for the rule. This must contain at least one of
+  * header, method or patchMatches
   */
-  readonly pathMatch?: PathMatch | undefined
-
-  /**
-  * Properties for a method Match
-  * @default none
-  */
-  readonly methodMatch?: HTTPMethods | undefined
-
+  readonly httpMatch: HTTPMatch
   /**
    * AuthPolicy for rule
    * @default none
@@ -232,18 +217,21 @@ export class Listener extends core.Resource implements IListener {
    */
   public addListenerRule(props: AddRuleProps): void {
 
-    // conditionaly build a policy statement if principals where provided
+    // if priority is undefined set it to 100.  This should only be used if there is a single rule
+    const priority = props.priority ?? 100;
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
 
-    // add principals
+    // conditionaly build a policy statement if principals where provided
     if (props.allowedPrincipals) {
-      // add the principals
+
+      // add the action for the statement. There is only one permissiable action
+      policyStatement.addActions('vpc-lattice-svcs:Invoke');
+
+      // add principals to the statement
       props.allowedPrincipals.forEach((principal) => {
         principal.addToPrincipalPolicy(policyStatement);
       });
-      // add the action for the statement
-      policyStatement.addActions('vpc-lattice-svcs:Invoke');
-    }
+    };
 
     /**
     * Create the Action for the Rule
@@ -279,60 +267,62 @@ export class Listener extends core.Resource implements IListener {
     }
 
     /**
-    * Validate the priority and set it in teh rule
+    * Validate the priority is not already in use.
     */
-    if (props.priority in this.listenerPrioritys) {
-      throw new Error('Priority is already in use');
+    if (priority in this.listenerPrioritys) {
+      throw new Error('Priority is already in use, ensure all listerner rules have unique prioritys');
     }
-    this.listenerPrioritys.push(props.priority);
+    this.listenerPrioritys.push(priority);
 
-    // process the matching type
-    let match: IHttpMatchProperty = {};
+    // process the match
     // fail if at least one method is not selected
-    if (!(props.methodMatch || props.pathMatch || props.headerMatchs)) {
-      throw new Error('At least one of PathMatch, headerMatch, or MethodMatch must be set');
-    }
+    if (Object.keys(props.httpMatch).length < 1) {
+      throw new Error('At least one of pathMatches, headerMatches, or method must be provided');
+    };
+
+    let match: IHttpMatchProperty = {};
 
     // method match
-    if (props.methodMatch) {
-      match.method = props.methodMatch;
-      policyStatement.addCondition('StringEquals', { 'vpc-lattice-svcs:RequestMethod': props.methodMatch });
+    if (props.httpMatch.method) {
+      // set the method match for the lattice rule
+      match.method = props.httpMatch.method;
+
+      // add a policy statemenet for the Auth Rule
+      policyStatement.addCondition('StringEquals', { 'vpc-lattice-svcs:RequestMethod': props.httpMatch.method });
     }
 
     // path match
-    if (props.pathMatch) {
+    if (props.httpMatch.pathMatches) {
 
-      const pathMatchType = props.pathMatch.pathMatchType ?? PathMatchType.EXACT;
-
-      if (pathMatchType === PathMatchType.EXACT) {
+      if (props.httpMatch.pathMatches.pathMatchType === PathMatchType.EXACT) {
         match.pathMatch = {
           match: {
-            exact: props.pathMatch.path,
+            exact: props.httpMatch.pathMatches.path,
           },
-          caseSensitive: props.pathMatch.caseSensitive ?? false,
+          caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
         };
         const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
-        policyStatement.addResources(arn + props.pathMatch.path);
+        policyStatement.addResources(arn + props.httpMatch.pathMatches.path);
       };
 
-      if (pathMatchType === PathMatchType.PREFIX) {
+      if (props.httpMatch.pathMatches.pathMatchType === PathMatchType.PREFIX) {
         match.pathMatch = {
           match: {
-            prefix: props.pathMatch.path,
+            prefix: props.httpMatch.pathMatches.path,
           },
-          caseSensitive: props.pathMatch.caseSensitive ?? false,
+          caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
         };
         const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
-        policyStatement.addResources(arn + props.pathMatch.path + '*');
-      }
-    }
+        policyStatement.addResources(arn + props.httpMatch.pathMatches.path + '*');
+      };
 
+    }
     // header Match
-    if (props.headerMatchs) {
+    if (props.httpMatch.headerMatches) {
 
       let headerMatches: aws_vpclattice.CfnRule.HeaderMatchProperty[] = [];
 
-      props.headerMatchs.forEach((headerMatch) => {
+      props.httpMatch.headerMatches.forEach((headerMatch) => {
 
         if (headerMatch.matchOperator === MatchOperator.EXACT) {
           headerMatches.push({
@@ -367,7 +357,7 @@ export class Listener extends core.Resource implements IListener {
       match.headerMatches = headerMatches;
     };
 
-    // only add the policy statement if there are principals
+    // only add the policy statement if principals where provided
     if (props.allowedPrincipals && this.serviceAuthPolicy) {
       this.serviceAuthPolicy.addStatements(policyStatement);
     }
@@ -376,18 +366,9 @@ export class Listener extends core.Resource implements IListener {
     new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
       action: action,
       match: {
-        httpMatch: {
-          pathMatch: {
-            match: {
-              exact: 'exact',
-              prefix: '/',
-            },
-            caseSensitive: false,
-          },
-        },
+        httpMatch: match,
       },
-      // match: match as aws_vpclattice.CfnRule.MatchProperty,
-      priority: props.priority,
+      priority: priority,
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.serviceId,
     });

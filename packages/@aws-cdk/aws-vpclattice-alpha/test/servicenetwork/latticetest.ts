@@ -12,6 +12,7 @@ import {
   Service,
   TargetGroup,
   Target,
+  HTTPMethods,
 }
   from '../../lib/index';
 
@@ -33,6 +34,7 @@ export class LatticeTestStack extends core.Stack {
         ],
       }],
     });
+
     // add a listener to the service, using the defaults
     // - HTTPS
     // - Port 443
@@ -53,8 +55,9 @@ export class LatticeTestStack extends core.Stack {
           }),
         },
       ],
-      pathMatch: {
-        path: '/helloWorld',
+      httpMatch: {
+        pathMatches: { path: '/hello' },
+        method: HTTPMethods.PUT,
       },
       allowedPrincipals: [support.checkHelloWorld.role as iam.Role],
     });
