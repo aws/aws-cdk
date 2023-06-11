@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98cc4a35d122f9e5e83b78b0376b7110fd9dab3076669b7d41863701f73cf309.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/baf07ce0d5cb76e5ac68b780505e2fe98988284bae65cc965a161656e4097f2b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,12 +183,6 @@
             "data": "FleetInstanceRoleA605DB82"
           }
         ],
-        "/aws-cdk-autoscaling-integ/Fleet/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetInstanceProfileC6192A66"
-          }
-        ],
         "/aws-cdk-autoscaling-integ/Fleet/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
@@ -243,10 +237,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "FleetLaunchConfig59F79D36": [
+        "FleetInstanceProfileC6192A66": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36",
+            "data": "FleetInstanceProfileC6192A66",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

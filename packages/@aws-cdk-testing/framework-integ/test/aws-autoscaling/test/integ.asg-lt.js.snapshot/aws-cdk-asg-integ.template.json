@@ -709,16 +709,6 @@
     ]
    }
   },
-  "AsgWithGp3BlockdeviceInstanceProfile2FC414A5": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
-     }
-    ]
-   }
-  },
   "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

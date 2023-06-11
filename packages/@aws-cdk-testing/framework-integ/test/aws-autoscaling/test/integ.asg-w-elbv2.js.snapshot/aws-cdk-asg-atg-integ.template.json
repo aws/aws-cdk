@@ -562,16 +562,6 @@
     ]
    }
   },
-  "AsgInstanceProfileBCEDB827": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "AsgInstanceRole7946982D"
-     }
-    ]
-   }
-  },
   "AsgLaunchTemplateProfileE5FD9207": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

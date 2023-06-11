@@ -436,16 +436,6 @@
     ]
    }
   },
-  "FleetInstanceProfileC6192A66": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "FleetInstanceRoleA605DB82"
-     }
-    ]
-   }
-  },
   "FleetLaunchTemplateProfileB169EB6D": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

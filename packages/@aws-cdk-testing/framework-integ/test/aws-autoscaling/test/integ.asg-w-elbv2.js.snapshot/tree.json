@@ -773,24 +773,6 @@
                   "version": "0.0.0"
                 }
               },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "aws-cdk-asg-integ/Fleet/InstanceProfile",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                  "aws:cdk:cloudformation:props": {
-                    "roles": [
-                      {
-                        "Ref": "FleetInstanceRoleA605DB82"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
-                }
-              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "aws-cdk-asg-integ/Fleet/LaunchTemplate",
@@ -2179,24 +2161,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "aws-cdk-asg-atg-integ/Asg/InstanceProfile",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                  "aws:cdk:cloudformation:props": {
-                    "roles": [
-                      {
-                        "Ref": "AsgInstanceRole7946982D"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                   "version": "0.0.0"
                 }
               },

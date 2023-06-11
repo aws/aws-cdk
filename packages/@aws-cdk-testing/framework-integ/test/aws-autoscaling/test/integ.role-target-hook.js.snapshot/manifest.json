@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2b4f1266337c0b69a23f21e2236930effd7f5bc8fda831dad672a597240d23e0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3212822d7e4889433e5af8581da58955d174b283868532096cc777b232f34c4d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,12 +207,6 @@
             "data": "ASGInstanceRoleE263A41B"
           }
         ],
-        "/integ-role-target-hook/ASG/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7"
-          }
-        ],
         "/integ-role-target-hook/ASG/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
@@ -279,10 +273,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ASGLaunchConfigC00AF12B": [
+        "ASGInstanceProfile0A2834D7": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchConfigC00AF12B",
+            "data": "ASGInstanceProfile0A2834D7",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

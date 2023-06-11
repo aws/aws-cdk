@@ -744,24 +744,6 @@
                   "version": "0.0.0"
                 }
               },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "aws-cdk-autoscaling-integ/CapacityRebalance/InstanceProfile",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                  "aws:cdk:cloudformation:props": {
-                    "roles": [
-                      {
-                        "Ref": "CapacityRebalanceInstanceRole548A8264"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                  "version": "0.0.0"
-                }
-              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "aws-cdk-autoscaling-integ/CapacityRebalance/LaunchTemplate",

@@ -436,16 +436,6 @@
     ]
    }
   },
-  "CapacityRebalanceInstanceProfile9E43DE91": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "CapacityRebalanceInstanceRole548A8264"
-     }
-    ]
-   }
-  },
   "CapacityRebalanceLaunchTemplateProfileB8458A19": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
