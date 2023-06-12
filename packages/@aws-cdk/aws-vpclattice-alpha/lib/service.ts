@@ -35,7 +35,7 @@ export interface ShareServiceProps {
    * TO DO, this needs some work
    * @default none
    */
-  readonly principals: string[] | undefined
+  readonly accounts: string[] | undefined
 }
 
 /**
@@ -61,7 +61,7 @@ export interface IService extends core.IResource {
    * Share the service to other accounts via RAM
    * @param props
    */
-  share(props: ShareServiceProps): void;
+  shareToAccounts(props: ShareServiceProps): void;
 
   /**
    * Grant Access to other principals
@@ -220,6 +220,7 @@ export class Service extends core.Resource implements IService {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEquals: {
               'aws:PrincipalOrgID': [orgId],
@@ -236,6 +237,7 @@ export class Service extends core.Resource implements IService {
         new iam.PolicyStatement({
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
+          principals: [new iam.AnyPrincipal()],
           resources: ['*'], // as this is policy is applied on the 'service', the * applyes to all things that are in teh service.
           conditions: {
             StringNotEqualsIgnoreCase: {
@@ -275,7 +277,8 @@ export class Service extends core.Resource implements IService {
     }
 
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error('policyDocument.validateForResourcePolicy() failed');
+      throw new Error(
+        `The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
     }
 
     new aws_vpclattice.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
@@ -296,13 +299,6 @@ export class Service extends core.Resource implements IService {
    * @returns Listener
    */
   public addListener(props: AddListenerProps): Listener {
-
-    // check the the port is in range if it is specificed
-    if (props.port) {
-      if (props.port < 0 || props.port > 65535) {
-        throw new Error('Port out of range');
-      }
-    }
 
     // default to using HTTPS
     let protocol = props.protocol ?? Protocol.HTTPS;
@@ -351,13 +347,13 @@ export class Service extends core.Resource implements IService {
    * Share the service to other accounts via RAM
    * @param props SharedServiceProps
    */
-  public share(props: ShareServiceProps): void {
+  public shareToAccounts(props: ShareServiceProps): void {
 
     new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
       name: props.name,
       resourceArns: [this.serviceArn],
       allowExternalPrincipals: props.allowExternalPrincipals,
-      principals: props.principals,
+      principals: props.accounts,
     });
   }
 }

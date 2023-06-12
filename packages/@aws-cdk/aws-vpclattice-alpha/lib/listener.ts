@@ -197,6 +197,13 @@ export class Listener extends core.Resource implements IListener {
       };
     }
 
+    // check the the port is in range if it is specificed
+    if (props.port) {
+      if (props.port < 0 || props.port > 65535) {
+        throw new Error('Port out of range');
+      }
+    }
+
     const listener = new aws_vpclattice.CfnListener(this, 'Resource', {
       name: props.name,
       defaultAction: defaultAction,
@@ -294,7 +301,9 @@ export class Listener extends core.Resource implements IListener {
     // path match
     if (props.httpMatch.pathMatches) {
 
-      if (props.httpMatch.pathMatches.pathMatchType === PathMatchType.EXACT) {
+      const matchType = props.httpMatch.pathMatches.pathMatchType ?? PathMatchType.EXACT;
+
+      if (matchType === PathMatchType.EXACT) {
         match.pathMatch = {
           match: {
             exact: props.httpMatch.pathMatches.path,
@@ -305,7 +314,7 @@ export class Listener extends core.Resource implements IListener {
         policyStatement.addResources(arn + props.httpMatch.pathMatches.path);
       };
 
-      if (props.httpMatch.pathMatches.pathMatchType === PathMatchType.PREFIX) {
+      if (matchType === PathMatchType.PREFIX) {
         match.pathMatch = {
           match: {
             prefix: props.httpMatch.pathMatches.path,
@@ -324,7 +333,9 @@ export class Listener extends core.Resource implements IListener {
 
       props.httpMatch.headerMatches.forEach((headerMatch) => {
 
-        if (headerMatch.matchOperator === MatchOperator.EXACT) {
+        const matchOperator = headerMatch.matchOperator ?? MatchOperator.EXACT;
+
+        if (matchOperator === MatchOperator.EXACT) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {
@@ -333,7 +344,7 @@ export class Listener extends core.Resource implements IListener {
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
           policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue } );
-        } else if (headerMatch.matchOperator === MatchOperator.CONTAINS) {
+        } else if (matchOperator === MatchOperator.CONTAINS) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {
@@ -343,7 +354,7 @@ export class Listener extends core.Resource implements IListener {
           });
           policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `*${headerMatch.matchValue}*` });
 
-        } else if (headerMatch.matchOperator === MatchOperator.PREFIX) {
+        } else if (matchOperator === MatchOperator.PREFIX) {
           headerMatches.push({
             name: headerMatch.headername,
             match: {

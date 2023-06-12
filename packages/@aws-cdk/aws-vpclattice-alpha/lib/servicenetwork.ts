@@ -46,7 +46,46 @@ export interface AssociateVPCProps {
    * @default a security group that allows inbound 443 will be permitted.
    */
   readonly securityGroups?: ec2.SecurityGroup[] | undefined
+  /**
+   * index
+   * @default no index is used for resource names
+   */
+  readonly index?: number | undefined
+}
+/**
+ * Properties to add a logging Destination
+ */
 
+export interface AddloggingDestinationProps{
+  /**
+   * The logging destination
+   */
+  readonly destination: LoggingDestination
+  /**
+   * Index for adding multiple items
+   * @default no index is used for resources names
+   */
+  readonly index?: number | undefined,
+}
+
+// addService Props
+/**
+ * Properties to add a Service to a Service Network
+ */
+export interface AddServiceProps {
+  /**
+   * The Service to add to the Service Network
+   */
+  readonly service: IService;
+  /**
+   * The Service Network to add the Service to
+   */
+  readonly serviceNetworkId: string;
+  /**
+   * The index of the Service in the Service Network
+   * @default no index is used for resource names
+   */
+  readonly index?: number | undefined
 }
 
 /**
@@ -67,7 +106,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add Lattice Service Policy
    */
-  addService(service: IService): void;
+  addService(props: AddServiceProps): void;
   /**
    * Associate a VPC with the Service Network
    */
@@ -75,7 +114,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add a logging Destination.
    */
-  addloggingDestination(destination: LoggingDestination): void;
+  addloggingDestination(props: AddloggingDestinationProps): void;
   /**
    * Share the ServiceNetwork, Consider if it is more appropriate to do this at the service.
    */
@@ -175,28 +214,37 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     }
     // the opinionated default for the servicenetwork is to use AWS_IAM as the
     // authentication method. Provide 'NONE' to props.authType to disable.
+
+    this.authType = props.authType ?? AuthType.AWS_IAM;
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
-      authType: props.authType ?? 'AWS_IAM',
+      authType: this.authType,
     });
 
     if (props.loggingDestinations !== undefined) {
-      props.loggingDestinations.forEach((destination) => {
-        this.addloggingDestination(destination);
+      props.loggingDestinations.forEach((destination, index) => {
+        this.addloggingDestination({
+          destination: destination,
+          index: index,
+        });
       });
     }
 
     // associate vpcs
     if (props.vpcs !== undefined) {
-      props.vpcs.forEach((vpc) => {
-        this.associateVPC({ vpc: vpc });
+      props.vpcs.forEach((vpc, idx) => {
+        this.associateVPC({ vpc: vpc, index: idx });
       });
     };
 
     //associate services
     if (props.services !== undefined) {
-      props.services.forEach((service) => {
-        this.addService(service);
+      props.services.forEach((service, idx) => {
+        this.addService({
+          service: service,
+          index: idx,
+          serviceNetworkId: this.serviceNetworkId,
+        });
       });
     };
 
@@ -229,6 +277,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEquals: {
               'aws:PrincipalOrgID': [orgId],
@@ -246,6 +295,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
           effect: iam.Effect.DENY,
           actions: ['vpc-lattice-svcs:Invoke'],
           resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
           conditions: {
             StringNotEqualsIgnoreCase: {
               'aws:PrincipalType': 'anonymous',
@@ -287,12 +337,11 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
   /**
    * Add A lattice service to a lattice network
-   * @param service
    */
-  public addService(service: IService): void {
-    new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeService$${service.serviceId}`, {
-      serviceIdentifier: service.serviceId,
-      serviceNetworkIdentifier: this.serviceNetworkId,
+  public addService(props: AddServiceProps): void {
+    new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeService$${props.index}`, {
+      serviceIdentifier: props.service.serviceId,
+      serviceNetworkIdentifier: props.serviceNetworkId,
     });
   }
 
@@ -302,38 +351,23 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
    */
   public associateVPC(props: AssociateVPCProps): void {
 
-    const securityGroupIds: string[] = [];
-
-    if (props.securityGroups === undefined) {
-      const securityGroup = new ec2.SecurityGroup(this, `ServiceNetworkSecurityGroup${props.vpc.vpcId}`, {
-        vpc: props.vpc,
-        allowAllOutbound: true,
-        description: 'ServiceNetworkSecurityGroup',
-      });
-
-      securityGroup.addIngressRule(
-        ec2.Peer.ipv4(props.vpc.vpcCidrBlock),
-        ec2.Port.tcp(443),
-      );
-      securityGroupIds.push(securityGroup.securityGroupId);
-    }
-
-    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `${props.vpc.vpcId}VpcAssociation`, /* all optional props */ {
-      securityGroupIds: securityGroupIds,
-      serviceNetworkIdentifier: this.serviceNetworkId,
-      vpcIdentifier: props.vpc.vpcId,
+    new AssociateVpc(this, `AssociateVpc${props.index}`, {
+      vpc: props.vpc,
+      serviceNetworkId: this.serviceNetworkId,
+      securityGroups: props.securityGroups,
     });
-  }
+  };
 
   /**
    * send logs to a destination
    */
-  public addloggingDestination(destination: LoggingDestination): void {
+  public addloggingDestination(props: AddloggingDestinationProps): void {
 
-    new aws_vpclattice.CfnAccessLogSubscription(this, `Loggingto${destination.name}`, {
-      destinationArn: destination.arn,
+    new AccessLogSubscription(this, `loggingDestination${props.index}`, {
       resourceIdentifier: this.serviceNetworkArn,
+      destinationArn: props.destination.arn,
     });
+
   };
 
   /**
@@ -350,4 +384,88 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   }
 
 }
+/**
+ * Associate the VPC
+ */
+export interface AsscVPCProps {
+  /**
+   * VPC to associate
+   */
+  readonly vpc: ec2.IVpc;
+  /**
+   * Service Network to associate the VPC with
+   */
+  readonly serviceNetworkId: string;
+  /**
+   * SecurityGroups to use
+   * @default a sg which permits the local vpc to access the service network.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
+}
+
+/**
+ * Associate the VPC with the Service Network.
+ */
+export class AssociateVpc extends core.Resource {
+
+  constructor(scope: constructs.Construct, id: string, props: AsscVPCProps) {
+    super(scope, id);
+
+    const securityGroupIds: string[] = [];
+
+    if (props.securityGroups === undefined) {
+      const securityGroup = new ec2.SecurityGroup(this, `ServiceNetworkSecurityGroup${this.node.addr}`, {
+        vpc: props.vpc,
+        allowAllOutbound: true,
+        description: 'ServiceNetworkSecurityGroup',
+      });
+
+      securityGroup.addIngressRule(
+        ec2.Peer.ipv4(props.vpc.vpcCidrBlock),
+        ec2.Port.tcp(443),
+      );
+      securityGroupIds.push(securityGroup.securityGroupId);
+    }
+
+    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, /* all optional props */ {
+      securityGroupIds: securityGroupIds,
+      serviceNetworkIdentifier: props.serviceNetworkId,
+      vpcIdentifier: props.vpc.vpcId,
+    });
+
+  }
+};
+
+/**
+ * Props for an access Log Subscription
+ */
+export interface AccessLogSubscriptionProps {
+  /**
+   * The arn of the destination
+   */
+  readonly destinationArn: string;
+  /**
+   * The resource identifier of the service network
+   */
+  readonly resourceIdentifier: string;
+  /**
+   * The name of the destination
+   */
+}
+
+/**
+ * Create an access Log Subscription
+ */
+export class AccessLogSubscription extends core.Resource {
+
+  constructor(scope: constructs.Construct, id: string, props: AccessLogSubscriptionProps) {
+    super(scope, id);
+
+    new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${this.node.addr}`, {
+      destinationArn: props.destinationArn,
+      resourceIdentifier: props.resourceIdentifier,
+    });
+
+  }
+}
