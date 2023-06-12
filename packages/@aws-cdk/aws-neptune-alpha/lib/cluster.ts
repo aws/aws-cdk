@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib';
+import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
