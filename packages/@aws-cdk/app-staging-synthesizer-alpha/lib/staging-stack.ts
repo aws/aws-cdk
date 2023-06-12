@@ -1,4 +1,4 @@
-import { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib';
+import { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib/core';
 import { IConstruct } from 'constructs';
 
 /**

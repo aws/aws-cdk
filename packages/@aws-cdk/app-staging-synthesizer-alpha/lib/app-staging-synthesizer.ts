@@ -11,7 +11,7 @@ import {
   Stack,
   StackSynthesizer,
   Token,
-} from 'aws-cdk-lib';
+} from 'aws-cdk-lib/core';
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole, BootstrapRoles, DeploymentIdentities } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';

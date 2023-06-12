@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib';
+import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';

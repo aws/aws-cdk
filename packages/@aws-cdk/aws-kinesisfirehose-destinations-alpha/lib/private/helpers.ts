@@ -4,7 +4,7 @@ import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { DestinationS3BackupProps } from '../common';
 

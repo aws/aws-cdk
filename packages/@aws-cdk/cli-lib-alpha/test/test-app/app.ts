@@ -1,4 +1,4 @@
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 
 const app = new cdk.App();
 new cdk.Stack(app, 'AppStack1');

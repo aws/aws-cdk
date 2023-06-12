@@ -1,5 +1,5 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';

@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
 

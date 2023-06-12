@@ -1,7 +1,7 @@
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IUser } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 

@@ -1,4 +1,4 @@
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 

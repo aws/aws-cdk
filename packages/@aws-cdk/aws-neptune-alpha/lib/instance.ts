@@ -1,6 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';

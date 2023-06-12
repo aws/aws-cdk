@@ -8,7 +8,7 @@
  * see the main CONTRIBUTING.md file.
  */
 
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
 import * as er from '../lib';

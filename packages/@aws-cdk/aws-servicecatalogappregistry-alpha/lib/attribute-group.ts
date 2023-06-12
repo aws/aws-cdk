@@ -1,5 +1,5 @@
 import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';

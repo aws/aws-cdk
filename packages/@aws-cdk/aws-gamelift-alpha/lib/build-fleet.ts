@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';

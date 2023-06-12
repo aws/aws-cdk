@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';

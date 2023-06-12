@@ -8,7 +8,7 @@ import {
 } from '@aws-cdk/aws-apigatewayv2-alpha';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 
 /**
  * Lambda Proxy integration properties
