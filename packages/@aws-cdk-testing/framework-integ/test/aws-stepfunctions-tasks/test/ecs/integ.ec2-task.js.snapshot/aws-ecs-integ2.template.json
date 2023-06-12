@@ -497,16 +497,6 @@
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
-     }
-    ]
-   }
-  },
   "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {

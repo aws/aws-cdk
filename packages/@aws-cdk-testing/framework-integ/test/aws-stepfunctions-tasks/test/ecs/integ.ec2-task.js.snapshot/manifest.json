@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9de5d338364bc102da9744b75213afa7648cbc69cdf6ab1b3ec5b6cd383147c6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37398dd681d851cca5eabad1f610693e9f1438f32907faf5675346bed1c0473f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,12 +195,6 @@
             "data": "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E"
           }
         ],
-        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
-          }
-        ],
         "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
@@ -339,10 +333,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899": [
+        "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899",
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

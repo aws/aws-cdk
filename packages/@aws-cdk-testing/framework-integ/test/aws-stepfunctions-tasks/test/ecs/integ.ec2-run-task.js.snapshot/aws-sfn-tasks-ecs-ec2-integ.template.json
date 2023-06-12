@@ -497,16 +497,6 @@
     ]
    }
   },
-  "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
-     }
-    ]
-   }
-  },
   "Ec2ClusterDefaultAutoScalingGroupLaunchTemplateProfileA74899D4": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
