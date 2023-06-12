@@ -1300,7 +1300,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }
 
       // generate launch template from launch config props when feature flag is set
-      if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+      if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+          machineImage: props.machineImage,
+          keyName: props.keyName,
+          instanceType: props.instanceType,
+          detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
+          securityGroup: this.securityGroup,
+          role: this._role,
+          userData: props.userData,
+          associatePublicIpAddress: props.associatePublicIpAddress,
+          spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
+          blockDevices: props.blockDevices,
+        });
+
+        this.osType = launchTemplateFromConfig.osType!;
+        this.launchTemplate = launchTemplateFromConfig;
+      } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
 
@@ -1330,22 +1346,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
         launchConfig.node.addDependency(this.role);
         this.osType = imageConfig.osType;
-      } else {
-        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-          machineImage: props.machineImage,
-          keyName: props.keyName,
-          instanceType: props.instanceType,
-          detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
-          securityGroup: this.securityGroup,
-          role: this._role,
-          userData: props.userData,
-          associatePublicIpAddress: props.associatePublicIpAddress,
-          spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
-          blockDevices: props.blockDevices,
-        });
-
-        this.osType = launchTemplateFromConfig.osType!;
-        this.launchTemplate = launchTemplateFromConfig;
       }
     }
 
