@@ -1088,6 +1088,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
+      computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
