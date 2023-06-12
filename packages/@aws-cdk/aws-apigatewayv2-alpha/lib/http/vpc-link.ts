@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { IResource, Lazy, Names, Resource } from 'aws-cdk-lib';
+import { IResource, Lazy, Names, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnVpcLink } from 'aws-cdk-lib/aws-apigatewayv2';
 
