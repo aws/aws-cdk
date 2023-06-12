@@ -1,5 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
   App,
   ArnFormat,
@@ -11,11 +15,7 @@ import {
   RemovalPolicy,
   Stack,
   StackProps,
-} from 'aws-cdk-lib';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+} from 'aws-cdk-lib/core';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
