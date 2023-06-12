@@ -121,6 +121,51 @@
               "version": "0.0.0"
             }
           },
+          "Env": {
+            "id": "Env",
+            "path": "cdk-backup/Env",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ThirdVault": {
+            "id": "ThirdVault",
+            "path": "cdk-backup/ThirdVault",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup/ThirdVault/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
+                  "aws:cdk:cloudformation:props": {
+                    "backupVaultName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "backupVault-",
+                          {
+                            "Ref": "Env"
+                          }
+                        ]
+                      ]
+                    },
+                    "lockConfiguration": {
+                      "minRetentionDays": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_backup.CfnBackupVault",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_backup.BackupVault",
+              "version": "0.0.0"
+            }
+          },
           "Plan": {
             "id": "Plan",
             "path": "cdk-backup/Plan",
@@ -195,10 +240,7 @@
                                 "moveToColdStorageAfterDays": 30
                               }
                             }
-                          ],
-                          "recoveryPointTags": {
-                            "stage": "prod"
-                          }
+                          ]
                         }
                       ]
                     }
