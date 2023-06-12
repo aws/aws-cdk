@@ -3,7 +3,6 @@ import * as path from 'path';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
-import * as perm from './perms';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -152,6 +151,22 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
+
+  private readonly REPO_PULL_ACTIONS: string[] = [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ];
+
+  // https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push.html#image-push-iam
+  private readonly REPO_PUSH_ACTIONS: string[] = [
+    'ecr:CompleteLayerUpload',
+    'ecr:UploadLayerPart',
+    'ecr:InitiateLayerUpload',
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:PutImage',
+  ];
+
   /**
    * The name of the repository
    */
@@ -367,7 +382,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, ...perm.REPO_PULL_ACTIONS);
+    const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
 
     iam.Grant.addToPrincipal({
       grantee,
@@ -383,7 +398,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPush(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, ...perm.REPO_PUSH_ACTIONS);
+    const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
@@ -399,8 +414,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public grantPullPush(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
-      ...perm.REPO_PULL_ACTIONS,
-      ...perm.REPO_PUSH_ACTIONS,
+      ...this.REPO_PULL_ACTIONS,
+      ...this.REPO_PUSH_ACTIONS,
     );
     iam.Grant.addToPrincipal({
       grantee,
