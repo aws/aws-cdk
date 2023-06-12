@@ -25,7 +25,7 @@ export class SupportResources extends Construct {
       natGateways: 0,
     });
 
-    this.vpc2 = new ec2.Vpc(this, 'VPC1', {
+    this.vpc2 = new ec2.Vpc(this, 'VPC2', {
       ipAddresses: ec2.IpAddresses.cidr('10.10.20.0/16'),
       maxAzs: 2,
       natGateways: 0,
@@ -44,7 +44,7 @@ export class SupportResources extends Construct {
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
       vpc: this.vpc1,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       role: helloRole,
     });
 
@@ -54,7 +54,7 @@ export class SupportResources extends Construct {
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
       vpc: this.vpc2,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       role: checkRole,
     });
 
