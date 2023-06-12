@@ -15,7 +15,7 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
-import { ParamsAndSecretsConfig } from './params-and-secrets-layers';
+import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
@@ -268,7 +268,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No Parameters and Secrets Extension
    */
-  readonly paramsAndSecrets?: ParamsAndSecretsConfig;
+  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -1169,17 +1169,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return;
     }
 
-    // grant permissions to lambda execution role to allow access to provided secrets
-    props.paramsAndSecrets.secrets?.forEach(secret => {
-      secret.grantRead(this);
-    });
-
-    // grant permission to lambda execution role to allow access to provided parameters
-    props.paramsAndSecrets.parameters?.forEach(param => {
-      param.grantRead(this);
-    });
-
-    const layerVersion = props.paramsAndSecrets.layerVersion._bind(this, this);
+    const layerVersion = props.paramsAndSecrets._bind(this, this);
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
     Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }

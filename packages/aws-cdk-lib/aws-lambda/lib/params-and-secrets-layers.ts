@@ -1,9 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
-import { ISecret } from '../../aws-secretsmanager';
-import { IParameter } from '../../aws-ssm';
+import { IFunction } from './function-base';
 import { Token, Stack, Duration } from '../../core';
 import { RegionInfo, FactName } from '../../region-info';
-import * as lambda from '../lib';
 
 /**
  * Config returned from `ParamsAndSecretsVersion._bind`
@@ -152,30 +150,6 @@ export interface ParamsAndSecretsOptions {
 }
 
 /**
- * Parameters and Secrets Extension configuration
- */
-export interface ParamsAndSecretsConfig {
-  /**
-   * The Parameters and Secrets Extension layer
-   */
-  readonly layerVersion: ParamsAndSecretsLayerVersion;
-
-  /**
-   * The secrets to grant lambda access to
-   *
-   * @default - No secrets
-   */
-  readonly secrets?: ISecret[];
-
-  /**
-   * The parameters to grant lambda access to
-   *
-   * @default - No parameters
-   */
-  readonly parameters?: IParameter[];
-}
-
-/**
  * Parameters and Secrets Extension layer version
  */
 export abstract class ParamsAndSecretsLayerVersion {
@@ -187,7 +161,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
-      public _bind(_scope: Construct, _fn: lambda.IFunction): ParamsAndSecretsBindConfig {
+      public _bind(_scope: Construct, _fn: IFunction): ParamsAndSecretsBindConfig {
         return {
           arn,
           environmentVars: this.environmentVariablesFromOptions,
@@ -201,7 +175,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
-      public _bind(scope: Construct, fn: lambda.IFunction): ParamsAndSecretsBindConfig {
+      public _bind(scope: Construct, fn: IFunction): ParamsAndSecretsBindConfig {
         return {
           arn: this.getVersionArn(scope, version, fn.architecture.name),
           environmentVars: this.environmentVariablesFromOptions,
@@ -217,7 +191,7 @@ export abstract class ParamsAndSecretsLayerVersion {
    *
    * @internal
    */
-  public abstract _bind(scope: Construct, fn: lambda.IFunction): ParamsAndSecretsBindConfig;
+  public abstract _bind(scope: Construct, fn: IFunction): ParamsAndSecretsBindConfig;
 
   /**
    * Configure environment variables for Parameters and Secrets Extension based on configuration options
