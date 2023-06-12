@@ -406,6 +406,46 @@ describe('LaunchTemplate', () => {
     });
   });
 
+  describe('feature flag @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation', () => {
+    test('Given machineImage (Linux)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new AmazonLinuxImage(),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.LINUX);
+      expect(template.userData).toBeDefined();
+    });
+
+    test('Given machineImage (Windows)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.WINDOWS);
+      expect(template.userData).toBeDefined();
+    });
+  });
+
   test.each([
     [CpuCredits.STANDARD, 'standard'],
     [CpuCredits.UNLIMITED, 'unlimited'],
