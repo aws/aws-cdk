@@ -2057,8 +2057,6 @@ test('ssm permissions adds right managed policy', () => {
   // WHEN
   new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
     vpc: mockVpc(stack),
-    machineImage: new AmazonLinuxImage(),
-    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
     ssmSessionPermissions: true,
   });
 
