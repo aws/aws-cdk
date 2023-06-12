@@ -1,5 +1,5 @@
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
