@@ -35,7 +35,7 @@ export interface ShareServiceProps {
    * TO DO, this needs some work
    * @default none
    */
-  readonly principals: string[] | undefined
+  readonly accounts: string[] | undefined
 }
 
 /**
@@ -61,7 +61,7 @@ export interface IService extends core.IResource {
    * Share the service to other accounts via RAM
    * @param props
    */
-  share(props: ShareServiceProps): void;
+  shareToAccounts(props: ShareServiceProps): void;
 
   /**
    * Grant Access to other principals
@@ -300,13 +300,6 @@ export class Service extends core.Resource implements IService {
    */
   public addListener(props: AddListenerProps): Listener {
 
-    // check the the port is in range if it is specificed
-    if (props.port) {
-      if (props.port < 0 || props.port > 65535) {
-        throw new Error('Port out of range');
-      }
-    }
-
     // default to using HTTPS
     let protocol = props.protocol ?? Protocol.HTTPS;
 
@@ -354,13 +347,13 @@ export class Service extends core.Resource implements IService {
    * Share the service to other accounts via RAM
    * @param props SharedServiceProps
    */
-  public share(props: ShareServiceProps): void {
+  public shareToAccounts(props: ShareServiceProps): void {
 
     new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
       name: props.name,
       resourceArns: [this.serviceArn],
       allowExternalPrincipals: props.allowExternalPrincipals,
-      principals: props.principals,
+      principals: props.accounts,
     });
   }
 }

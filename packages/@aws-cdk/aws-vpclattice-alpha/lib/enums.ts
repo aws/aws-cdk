@@ -96,34 +96,34 @@ export enum PathMatchType {
 /**
  * Ip Address Types
  */
-export enum IpAddressType {
-  /**
-   * IPv4
-   */
-  IPV4 = 'ipv4',
-  /**
-   * Ipv6
-   */
-  IPV6 = 'ipv6'
-}
+// export enum IpAddressType {
+//   /**
+//    * IPv4
+//    */
+//   IPV4 = 'ipv4',
+//   /**
+//    * Ipv6
+//    */
+//   IPV6 = 'ipv6'
+// }
 
 /**
  * Protococol Versions
  */
-export enum ProtocolVersion {
-  /**
-   * HTTP1
-   */
-  HTTP1 = 'HTTP1',
-  /**
-   * HTTP2
-   */
-  HTTP2 = 'HTTP2',
-  /**
-   * GRPC
-   */
-  GRPC = 'GRPC'
-}
+// export enum ProtocolVersion {
+//   /**
+//    * HTTP1
+//    */
+//   HTTP1 = 'HTTP1',
+//   /**
+//    * HTTP2
+//    */
+//   HTTP2 = 'HTTP2',
+//   /**
+//    * GRPC
+//    */
+//   GRPC = 'GRPC'
+// }
 /**
  * Allows Actions
  */

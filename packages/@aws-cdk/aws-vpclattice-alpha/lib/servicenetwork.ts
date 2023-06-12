@@ -52,6 +52,22 @@ export interface AssociateVPCProps {
    */
   readonly index?: number | undefined
 }
+/**
+ * Properties to add a logging Destination
+ */
+
+export interface AddloggingDestinationProps{
+  /**
+   * The logging destination
+   */
+  readonly destination: LoggingDestination
+  /**
+   * Index for adding multiple items
+   * @default no index is used for resources names
+   */
+  readonly index?: number | undefined,
+}
+
 // addService Props
 /**
  * Properties to add a Service to a Service Network
@@ -98,7 +114,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add a logging Destination.
    */
-  addloggingDestination(destination: LoggingDestination): void;
+  addloggingDestination(props: AddloggingDestinationProps): void;
   /**
    * Share the ServiceNetwork, Consider if it is more appropriate to do this at the service.
    */
@@ -198,14 +214,19 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     }
     // the opinionated default for the servicenetwork is to use AWS_IAM as the
     // authentication method. Provide 'NONE' to props.authType to disable.
+
+    this.authType = props.authType ?? AuthType.AWS_IAM;
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
-      authType: props.authType ?? 'AWS_IAM',
+      authType: this.authType,
     });
 
     if (props.loggingDestinations !== undefined) {
-      props.loggingDestinations.forEach((destination) => {
-        this.addloggingDestination(destination);
+      props.loggingDestinations.forEach((destination, index) => {
+        this.addloggingDestination({
+          destination: destination,
+          index: index,
+        });
       });
     }
 
@@ -340,12 +361,13 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   /**
    * send logs to a destination
    */
-  public addloggingDestination(destination: LoggingDestination): void {
+  public addloggingDestination(props: AddloggingDestinationProps): void {
 
-    new aws_vpclattice.CfnAccessLogSubscription(this, `Loggingto${destination.name}`, {
-      destinationArn: destination.arn,
+    new AccessLogSubscription(this, `loggingDestination${props.index}`, {
       resourceIdentifier: this.serviceNetworkArn,
+      destinationArn: props.destination.arn,
     });
+
   };
 
   /**
@@ -414,3 +436,36 @@ export class AssociateVpc extends core.Resource {
 
   }
 };
+
+/**
+ * Props for an access Log Subscription
+ */
+export interface AccessLogSubscriptionProps {
+  /**
+   * The arn of the destination
+   */
+  readonly destinationArn: string;
+  /**
+   * The resource identifier of the service network
+   */
+  readonly resourceIdentifier: string;
+  /**
+   * The name of the destination
+   */
+}
+
+/**
+ * Create an access Log Subscription
+ */
+export class AccessLogSubscription extends core.Resource {
+
+  constructor(scope: constructs.Construct, id: string, props: AccessLogSubscriptionProps) {
+    super(scope, id);
+
+    new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${this.node.addr}`, {
+      destinationArn: props.destinationArn,
+      resourceIdentifier: props.resourceIdentifier,
+    });
+
+  }
+}

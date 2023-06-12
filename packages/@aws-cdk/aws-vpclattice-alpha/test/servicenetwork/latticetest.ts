@@ -29,7 +29,7 @@ export class LatticeTestStack extends core.Stack {
       shares: [{
         name: 'LatticeShare',
         allowExternalPrincipals: false,
-        principals: [
+        accounts: [
           '123456654321',
         ],
       }],
