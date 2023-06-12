@@ -55,7 +55,6 @@ export async function cliMigrate(
     /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   });`;
   const myname = path.basename(outputpath);
-  warning(`path name = ${myname}`);
   fs.writeFileSync(outputpath + '/lib/' + 'generated_stack.ts', generated_app);
   fs.writeFileSync(outputpath + '/bin/' + `${myname}.ts`, bin_app);
 }
