@@ -39,36 +39,22 @@ const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
 });
 cluster.addAsgCapacityProvider(cp);
 
-const metric = new cloudwatch.Metric({
-  namespace: 'CustomMetricNamespace',
-  metricName: 'ErrorCount',
-  dimensionsMap: {
-    OriginService: 'Backend',
-  },
-});
-
-const myAlarm = new cloudwatch.Alarm(stack, 'MyMetricAlarm', {
-  metric,
-  evaluationPeriods: 5,
-  threshold: 2,
-  treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-});
-
 const svc = new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,
   taskDefinition,
 });
-svc.enableDeploymentAlarms({
-  alarmNames: [myAlarm.alarmName],
-  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
-});
 
-svc.createAlarm({
-  useAsDeploymentAlarm: true,
-  alarmName: 'CPUUtilizationAlarm',
+const alarmName = 'AlarmCpuUtilization';
+new cloudwatch.Alarm(stack, 'MyMetricAlarm', {
+  alarmName,
+  metric: svc.metricCpuUtilization(),
   evaluationPeriods: 5,
   threshold: 80,
-  metric: svc.metricCpuUtilization(),
+  treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+});
+
+svc.enableDeploymentAlarms([alarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
 });
 
 new integ.IntegTest(app, 'DeploymentAlarms', {

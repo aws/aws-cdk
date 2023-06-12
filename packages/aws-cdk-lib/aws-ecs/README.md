@@ -615,9 +615,23 @@ const service = new ecs.FargateService(this, 'Service', {
 ### Deployment alarms
 
 Amazon ECS [deployment alarms]
-(https://aws.amazon.com/blogs/containers/automate-rollbacks-for-amazon-ecs-rolling-deployments-with-cloudwatch-alarms/) Given a list of alarms, ECS will conduct the deployment as normal. Then, it will monitor the alarms for a “bake time” determined by the alarm’s sampling and thresholds. If any alarm enters the “ALARM” state during the bake time, the deployment will either be fail (requiring roll-forward) or to be rolled back.
+(https://aws.amazon.com/blogs/containers/automate-rollbacks-for-amazon-ecs-rolling-deployments-with-cloudwatch-alarms/)
+allow monitoring and automatically reacting to changes during a rolling update
+by using Amazon CloudWatch metric alarms. ECS will conduct the deployment as
+normal.
+
+Amazon ECS starts monitoring the configured deployment alarms as soon as one or
+more tasks of the updated service are in a running state. The deployment process
+continues until the primary deployment is healthy and has reached the desired
+count and the active deployment has been scaled down to 0. Then, the deployment
+remains in the IN_PROGRESS state for an additional "bake time." The length the
+bake time is calculated based on the evaluation periods and period of the alarm.
+After the bake time, if none of the alarms have been activated, then Amazon ECS
+considers this to be a successful update and deletes the active deployment and
+changes the status of the primary deployment to COMPLETED.
 
 ```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const elbAlarm: cloudwatch.Alarm; 
@@ -630,16 +644,104 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-// Defining a deployment alarm on an ECS Service metric
-metricCpu = service.metricCpuUtilization();
-service.createAlarm({
-  useAsDeploymentAlarm: true,
+// Defining a deployment alarm after the service has been created
+const cpuAlarmName =  'MyCpuMetricAlarm';
+new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: cpuAlarmName,
+  metric: service.metricCpuUtilization(),
   evaluationPeriods: 2,
   threshold: 80,
-  alarmName: 'MyCpuMetricAlarm',
 });
+service.enableDeploymentAlarms([cpuAlarmName], AlarmBehavior.FAIL_ON_ALARM);
 ```
-> Note: Deployment alarms are only a feature of the ECS `deploymentController`, which is the default.
+> Note: Deployment alarms are only available when `deploymentController` is set
+> to `DeploymentControllerType.ECS`, which is the default.
+
+#### Troubleshooting circular dependencies
+
+I saw this info message during synth time. What do I do?
+
+```text
+Deployment alarm ({"Ref":"MyAlarmABC1234"}) enabled on MyEcsService may cause a
+circular dependency error when this stack deploys. The alarm name references the
+alarm's logical id, or another resource. See the 'Deployment alarms' section in
+the module README for more details.
+```
+
+If your app deploys successfully with this message, you can disregard it. But it
+indicates that you could encounter a circular dependency error when you try to
+deploy. If you want to alarm on metrics produced by the service, there will be a
+circular dependency between the service and its deployment alarms. In this case,
+there are two options to avoid the circular dependency.
+
+1. Define the physical name for the alarm. Use a defined physical name that is
+   unique within the deployment environment for the alarm name when creating the
+   alarm, and re-use the defined name. This name could be a hardcoded string, a
+   string generated based on the environment, or could reference another
+   resource that does not depend on the service.
+2. Define the physical name for the service. Then, don't use
+   `metricCpuUtilization()` or similar methods. Create the metric object
+   separately by referencing the service metrics using this name.
+
+Option 1, defining a physical name for the alarm:
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+const cpuAlarmName =  'MyCpuMetricAlarm';
+const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: cpuAlarmName,
+  metric: service.metricCpuUtilization(),
+  evaluationPeriods: 2,
+  threshold: 80,
+});
+
+// Using `myAlarm.alarmName` here will cause a circular dependency
+service.enableDeploymentAlarms([cpuAlarmName], AlarmBehavior.FAIL_ON_ALARM);
+```
+
+Option 2, defining a physical name for the service:
+```ts
+import * as cdk from 'aws-cdk-lib'
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const serviceName = 'MyFargateService';
+const service = new ecs.FargateService(this, 'Service', {
+  serviceName,
+  cluster,
+  taskDefinition,
+});
+
+const cpuMetric = new cw.Metric(
+  metricName: 'CPUUtilization'
+  namespace: 'AWS/ECS'
+  period: cdk.Duration.minutes(5),
+  statistic: 'Average',
+  dimensionsMap: {
+    ClusterName: cluster.clusterName,
+    // Using `service.serviceName` here will cause a circular dependency
+    ServiceName: serviceName,
+  },
+);
+const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: cpuAlarmName,
+  metric: cpuMetric,
+  evaluationPeriods: 2,
+  threshold: 80,
+});
+
+service.enableDeploymentAlarms([myAlarm.alarmName], AlarmBehavior.FAIL_ON_ALARM);
+```
+
+This issue only applies if the metrics to alarm on are emitted by the service
+itself. If the metrics are emitted by a different resource, that does not depend
+on the service, there will be no restrictions on the alarm name.
 
 ### Include an application/network load balancer
 

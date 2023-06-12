@@ -26,6 +26,7 @@ import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } fr
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import { RegionInfo } from '../../../region-info';
 
 /**
  * The interface for a service.
@@ -70,58 +71,42 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
- * Properties to specify an alarm with optional deployment behavior.
- */
-export interface EcsAlarmProps extends cloudwatch.AlarmProps {
-  /**
-   * Whether to use as deployment alarm
-   * @default false
-   */
-  readonly useAsDeploymentAlarm?: boolean;
-
-  /**
-   * The behavior to use when any alarm triggers during a deployment.
-   *
-   * If this has been previously specified by enableDeploymentAlarms, leaving it empty will default to that choice.
-   * @default AlarmBehavior.ROLLBACK_ON_ALARM
-   */
-  readonly alarmBehavior?: AlarmBehavior;
-}
-
-/**
  * Deployment behavior when an ECS Service Deployment Alarm is triggered
  */
 export enum AlarmBehavior {
   /**
    * ROLLBACK_ON_ALARM causes the service to roll back to the previous deployment
-   * when any configured alarm is in the 'Alarm' state. The Cloudformation stack
+   * when any deployment alarm enters the 'Alarm' state. The Cloudformation stack
    * will be rolled back and enter state "UPDATE_ROLLBACK_COMPLETE".
    */
-  ROLLBACK_ON_ALARM = 0,
+  ROLLBACK_ON_ALARM = 'ROLLBACK_ON_ALARM',
   /**
-   * FAIL_ON_ALARM causes the deployment to fail immediately. In order to restore
-   * functionality, you must roll the stack forward by pushing a new version of the
-   * ECS service.
+   * FAIL_ON_ALARM causes the deployment to fail immediately when any deployment
+   * alarm enters the 'Alarm' state. In order to restore functionality, you must
+   * roll the stack forward by pushing a new version of the ECS service.
    */
-  FAIL_ON_ALARM = 1,
+  FAIL_ON_ALARM = 'FAIL_ON_ALARM',
 }
 
 /**
- * The deployment alarms to use for the service
+ * Options for deployment alarms
  */
-export interface DeploymentAlarmConfig {
+export interface DeploymentAlarmOptions {
   /**
    * Default rollback on alarm
    * @default AlarmBehavior.ROLLBACK_ON_ALARM
    */
   readonly behavior?: AlarmBehavior;
+}
 
+/**
+ * Configuration for deployment alarms
+ */
+export interface DeploymentAlarmConfig extends DeploymentAlarmOptions {
   /**
-   * List of alarm names to monitor during deployments.
-   *
-   * To monitor alarms on ECS metrics, use createAlarm().
+   * List of alarm names to monitor during deployments
    */
-  readonly alarmNames?: string[];
+  readonly alarmNames: string[];
 }
 
 export interface EcsTarget {
@@ -562,7 +547,8 @@ export abstract class BaseService extends Resource
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
 
   /**
-   * Deployment alarms config
+   * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
+   * property.
    */
   protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
 
@@ -607,11 +593,6 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
-    if (props.deploymentAlarms) {
-      this.enableDeploymentAlarms(props.deploymentAlarms);
-    } else {
-      this.disableDeploymentAlarms();
-    }
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -692,9 +673,24 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
     }
-    this.node.addValidation({
-      validate: this.validateDeploymentAlarms.bind(this),
-    });
+
+    if (props.deploymentAlarms) {
+      if (props.deploymentAlarms.alarmNames.length === 0) {
+        throw new Error(`at least one alarm name is required when specifying deploymentAlarms, received empty array`);
+      }
+      this.deploymentAlarms = {
+        alarmNames: props.deploymentAlarms.alarmNames,
+        enable: true,
+        rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+      };
+    } else if (this.deploymentAlarmsAvailableInRegion()) {
+      this.deploymentAlarms = {
+        alarmNames: [],
+        enable: false,
+        rollback: false,
+      };
+    }
+
     this.node.defaultChild = this.resource;
   }
 
@@ -705,152 +701,48 @@ export abstract class BaseService extends Resource
    *
    * New alarms specified in subsequent calls of this function will be appended to the existing list of alarms.
    *
-   * Subsequent calls of this function will respect the Alarm Behavior you set previously, unless you specify a new
-   * `behavior`.
-   *
-   * @example
-   * declare const svc: FargateService;
-   * declare const alarm1: cloudwatch.Alarm;
-   * declare const alarm2: cloudwatch.Alarm;
-   * declare const cpuMetric: cloudwatch.Metric;
-   *
-   * svc.enableDeploymentAlarms({
-   *   behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
-   *   alarmNames: [alarm1.alarmName],
-   * });
-   *
-   * // After this call, `alarm1` and a new `cpuMetricAlarm` will cause deployments to fail instead of rollback.
-   * svc.createAlarm({
-   *   alarmName: 'cpuMetricAlarm',
-   *   behavior: AlarmBehavior.FAIL_ON_ALARM,
-   *   useAsDeploymentAlarm: true,
-   *   threshold: 80,
-   *   evaluationPeriods: 5,
-   * });
-   *
-   * // After this final call, all three alarms will cause a deployment to fail if they enter the 'Alarm' state.
-   * svc.enableDeploymentAlarms({
-   *   alarmNames: [alarm2.alarmName]
-   * });
+   * The same Alarm Behavior must be used on all deployment alarms. If you specify different AlarmBehavior values in
+   * multiple calls to this function, or the Alarm Behavior used here doesn't match the one used in the service
+   * constructor, an error will be thrown.
+   * 
+   * If the alarm's metric references the service, you cannot pass `Alarm.alarmName` here. That will cause a circular
+   * dependency between the service and its deployment alarm. See this package's README for options to alarm on service
+   * metrics, and avoid this circular dependency.
+   * 
    */
-  public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
-    const newAlarmNames = alarmConfig.alarmNames || [];
-    const newRollback = alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM;
+  public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
+    if (alarmNames.length === 0 ) {    
+      throw new Error(`at least one alarm name is required when calling enableDeploymentAlarms(), received empty array`);
+    }
 
-    if (!this.deploymentAlarms) {
-      // We're enabling deploymentAlarms for the first time.
+    alarmNames.forEach(alarmName => {
+      if (Token.isUnresolved(alarmName)) {
+        Annotations.of(this).addInfo(
+          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`
+        );
+      }
+    });
+
+    if (this.deploymentAlarms?.enable && options?.behavior) {
+      if (
+        (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
+        (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)  
+      ) {
+        throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
+      }
+    }
+
+    if (!this.deploymentAlarms?.enable) {
       this.deploymentAlarms = {
         enable: true,
-        rollback: newRollback,
-        alarmNames: newAlarmNames,
+        alarmNames: alarmNames,
+        rollback: options?.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-      return;
-    }
-
-    const oldAlarmNames = this.deploymentAlarms.alarmNames || [];
-    const alarmNames = oldAlarmNames.concat(newAlarmNames);
-
-    let rollback: boolean | IResolvable;
-    if (alarmConfig.behavior === undefined) {
-      // No new behavior was specified; fall back to what's already defined.
-      rollback = this.deploymentAlarms.rollback;
     } else {
-      rollback = newRollback;
+      // If deployment alarms have previously been enabled, we only need to add
+      // the new alarm names, since rollback behaviors can't be updated/mixed.
+      this.deploymentAlarms.alarmNames.concat(alarmNames);
     }
-
-    this.deploymentAlarms = {
-      enable: true,
-      alarmNames,
-      rollback,
-    };
-  }
-
-  private validateDeploymentAlarms(): string[] {
-    const messages = new Array<string>;
-    if (this.deploymentAlarms
-      && this.deploymentAlarms.enable
-      && this.deploymentAlarms.alarmNames.length === 0) {
-      messages.push('Specify at least one alarm using createAlarm() or enableDeploymentAlarms()');
-    }
-    return messages;
-  }
-
-  /**
-   * Disassociate existing deployment alarmNames.
-   * This function may be used to remove alarms from a service where they already exist.
-   *   *
-   * Calling enableDeploymentAlarms, then disableDeploymentAlarms, will result in the deploymentAlarms
-   * property of the deploymentConfiguration being set to falsey values:
-   * ```js
-   * {
-   *   enable: false,
-   *   rollback: false,
-   *   alarmNames: [],
-   * }
-   * ```
-   * Note: this configuration is not deployable in partitions where deploymentAlarms
-   * is not available. To deploy to GovCloud, for example, leave the deploymentAlarms
-   * property of the constructor blank and do not enable any deployment alarms through
-   * createAlarm or enableDeploymentAlarms.
-  */
-  public disableDeploymentAlarms() {
-    if (this.deploymentAlarms) {
-      this.deploymentAlarms = {
-        alarmNames: [],
-        rollback: false,
-        enable: false,
-      };
-    }
-  }
-
-  /**
-   * Create an alarm based on a metric, and optionally set deployment alarm behavior.
-   *
-   * The properties are the same as those of a cloudwatch.Alarm, with the addition of `useAsDeploymentAlarm`,
-   * an optional parameter which specifies whether ECS should interrupt a deployment when this alarm triggers,
-   * and `alarmBehavior`, an optional parameter which will set ECS' behavior when any alarm triggers during a
-   * deployment.
-   *
-   * Updating `alarmBehavior` after you have already specified an alarmBehavior in the constructor or via
-   * `enableDeploymentAlarms` will overwrite the previous behavior.
-   *
-   * @example
-   * declare const svc: FargateService;
-   * declare const metric: cloudwatch.Metric;
-   *
-   * svc.createAlarm({
-   *   useAsDeploymentAlarm: true,
-   *   alarmBehavior: AlarmBehavior.FAIL_ON_ALARM,
-   *   metric,
-   *   threshold: 5,
-   *   evaluationPeriods: 3,
-   * });
-  */
-  public createAlarm(props: EcsAlarmProps): cloudwatch.Alarm {
-    if (props.alarmBehavior && !props.useAsDeploymentAlarm) {
-      throw new Error('Cannot set alarmBehavior without enabling useAsDeploymentAlarm');
-    }
-
-    if (!props.alarmName) {
-      throw new Error('Specify a unique name for this alarm.');
-    }
-
-    // No circular references in the alarm name field!
-    if (Token.isUnresolved(props.alarmName)) {
-      throw new Error('Alarm names must be unique strings, not references to other constructs\' attributes');
-    }
-
-    const numAlarms = this.deploymentAlarms?.alarmNames.length || 0;
-    // If alarm name is not specified in props, use a roughly deterministic alarm name.
-    const metricAlarm = new cloudwatch.Alarm(this, `ManagedAlarm${numAlarms}`, props);
-
-    if (props.useAsDeploymentAlarm) {
-      this.enableDeploymentAlarms({
-        alarmNames: [props.alarmName],
-        behavior: props.alarmBehavior,
-      });
-    }
-    return metricAlarm;
   }
 
   /**
@@ -1471,6 +1363,15 @@ export abstract class BaseService extends Resource
       ],
       resources: ['*'],
     }));
+  }
+
+  private deploymentAlarmsAvailableInRegion(): boolean {
+    const unsupportedPartitions = ['aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
+    const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
+    if (currentRegion.partition) {
+      return !unsupportedPartitions.includes(currentRegion.partition);
+    }
+    return true;
   }
 }
 
