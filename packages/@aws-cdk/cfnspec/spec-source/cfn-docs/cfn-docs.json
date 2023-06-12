@@ -5714,7 +5714,7 @@
       "attributes": {},
       "description": "The `AssessmentReportsDestination` property type specifies the location in which AWS Audit Manager saves assessment reports for the given assessment.",
       "properties": {
-        "Destination": "The destination of the assessment report.",
+        "Destination": "The destination bucket where Audit Manager stores assessment reports.",
         "DestinationType": "The destination type, such as Amazon S3."
       }
     },
@@ -10819,9 +10819,9 @@
     },
     "AWS::Config::ConfigurationRecorder.RecordingGroup": {
       "attributes": {},
-      "description": "Specifies which AWS resource types AWS Config records for configuration changes. In the recording group, you specify whether you want to record all supported resource types or only specific types of resources.\n\nBy default, AWS Config records the configuration changes for all supported types of *regional resources* that AWS Config discovers in the region in which it is running. Regional resources are tied to a region and can be used only in that region. Examples of regional resources are EC2 instances and EBS volumes.\n\nYou can also have AWS Config record supported types of *global resources* . Global resources are not tied to a specific region and can be used in all regions. The global resource types that AWS Config supports include IAM users, groups, roles, and customer managed policies.\n\n> Global resource types onboarded to AWS Config recording after February 2022 will only be recorded in the service's home region for the commercial partition and AWS GovCloud (US) West for the GovCloud partition. You can view the Configuration Items for these new global resource types only in their home region and AWS GovCloud (US) West.\n> \n> Supported global resource types onboarded before February 2022 such as `AWS::IAM::Group` , `AWS::IAM::Policy` , `AWS::IAM::Role` , `AWS::IAM::User` remain unchanged, and they will continue to deliver Configuration Items in all supported regions in AWS Config . The change will only affect new global resource types onboarded after February 2022.\n> \n> To record global resource types onboarded after February 2022, enable All Supported Resource Types in the home region of the global resource type you want to record. \n\nIf you don't want AWS Config to record all resources, you can specify which types of resources it will record with the `resourceTypes` parameter.\n\nFor a list of supported resource types, see [Supported Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) .\n\nFor more information and a table of the Home Regions for Global Resource Types Onboarded after February 2022, see [Selecting Which Resources AWS Config Records](https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html) .",
+      "description": "Specifies which resource types AWS Config records for configuration changes. In the recording group, you specify whether you want to record all supported resource types or to include or exclude specific types of resources.\n\nBy default, AWS Config records configuration changes for all supported types of *Regional resources* that AWS Config discovers in the AWS Region in which it is running. Regional resources are tied to a Region and can be used only in that Region. Examples of Regional resources are Amazon EC2 instances and Amazon EBS volumes.\n\nYou can also have AWS Config record supported types of *globally recorded resources* . Globally recorded resource types are not tied to a specific Region and can be used in all Regions. The globally recorded resource types that AWS Config supports are IAM users, groups, roles, and customer managed policies. These resource types are recorded in all enabled AWS Config regions. AWS Config also supports some global resources types for Amazon Elastic Container Registry Public, AWS Global Accelerator , and Amazon Route\u00a053; however, these resource types are not globally recorded in all enabled AWS Config regions.\n\n> Global resource types onboarded to AWS Config recording after February 2022 will be recorded only in the service's home Region for the commercial partition and AWS GovCloud (US-West) for the AWS GovCloud (US) partition. You can view the Configuration Items for these new global resource types only in their home Region and AWS GovCloud (US-West). \n\nIf you don't want AWS Config to record all resources, you can specify which types of resources AWS Config records with the `resourceTypes` parameter.\n\nFor a list of supported resource types, see [Supported Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) in the *AWS Config developer guide* .\n\nFor more information and a table of the Home Regions for Global Resource Types Onboarded after February 2022, see [Selecting Which Resources AWS Config Records](https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html) in the *AWS Config developer guide* .",
       "properties": {
-        "AllSupported": "Specifies whether AWS Config records configuration changes for every supported type of regional resource.\n\nIf you set this option to `true` , when AWS Config adds support for a new type of regional resource, it starts recording resources of that type automatically.\n\nIf you set this option to `true` , you cannot enumerate a list of `resourceTypes` .",
+        "AllSupported": "Specifies whether AWS Config records configuration changes for all supported regional resource types.\n\nIf you set this field to `true` , when AWS Config adds support for a new type of regional resource, AWS Config starts recording resources of that type automatically.\n\nIf you set this field to `true` , you cannot enumerate specific resource types to record in the `resourceTypes` field of [RecordingGroup](https://docs.aws.amazon.com/config/latest/APIReference/API_RecordingGroup.html) , or to exclude in the `resourceTypes` field of [ExclusionByResourceTypes](https://docs.aws.amazon.com/config/latest/APIReference/API_ExclusionByResourceTypes.html) .",
         "IncludeGlobalResourceTypes": "Specifies whether AWS Config includes all supported types of global resources (for example, IAM resources) with the resources that it records.\n\nBefore you can set this option to `true` , you must set the `AllSupported` option to `true` .\n\nIf you set this option to `true` , when AWS Config adds support for a new type of global resource, it starts recording resources of that type automatically.\n\nThe configuration details for any global resource are the same in all regions. To prevent duplicate configuration items, you should consider customizing AWS Config in only one region to record global resources.",
         "ResourceTypes": "A comma-separated list that specifies the types of AWS resources for which AWS Config records configuration changes (for example, `AWS::EC2::Instance` or `AWS::CloudTrail::Trail` ).\n\nTo record all configuration changes, you must set the `AllSupported` option to `false` .\n\nIf you set the `AllSupported` option to false and populate the `ResourceTypes` option with values, when AWS Config adds support for a new type of resource, it will not record resources of that type unless you manually add that type to your recording group.\n\nFor a list of valid `resourceTypes` values, see the *resourceType Value* column in [Supported AWS Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) ."
       }
@@ -10910,7 +10910,7 @@
     },
     "AWS::Config::OrganizationConfigRule.OrganizationCustomRuleMetadata": {
       "attributes": {},
-      "description": "An object that specifies organization custom rule metadata such as resource type, resource ID of AWS resource, Lambda function ARN, and organization trigger types that trigger AWS Config to evaluate your AWS resources against a rule. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
+      "description": "organization custom rule metadata such as resource type, resource ID of AWS resource, Lambda function ARN, and organization trigger types that trigger AWS Config to evaluate your AWS resources against a rule. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
       "properties": {
         "Description": "The description that you provide for your organization AWS Config rule.",
         "InputParameters": "A string, in JSON format, that is passed to your organization AWS Config rule Lambda function.",
@@ -10925,7 +10925,7 @@
     },
     "AWS::Config::OrganizationConfigRule.OrganizationManagedRuleMetadata": {
       "attributes": {},
-      "description": "An object that specifies organization managed rule metadata such as resource type and ID of AWS resource along with the rule identifier. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
+      "description": "organization managed rule metadata such as resource type and ID of AWS resource along with the rule identifier. It also provides the frequency with which you want AWS Config to run evaluations for the rule if the trigger type is periodic.",
       "properties": {
         "Description": "The description that you provide for your organization AWS Config rule.",
         "InputParameters": "A string, in JSON format, that is passed to your organization AWS Config rule Lambda function.",
@@ -49922,9 +49922,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "The refresh properties of a dataset.",
+      "description": "",
       "properties": {
-        "RefreshConfiguration": "The refresh configuration for a dataset."
+        "RefreshConfiguration": ""
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -49960,7 +49960,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
+        "StaticValues": ""
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50006,9 +50006,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "The incremental refresh configuration for a dataset.",
+      "description": "",
       "properties": {
-        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
+        "LookbackWindow": ""
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50083,18 +50083,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "The lookback window setup of an incremental refresh configuration.",
+      "description": "",
       "properties": {
-        "ColumnName": "The name of the lookback window column.",
-        "Size": "The lookback window column size.",
-        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
+        "ColumnName": "",
+        "Size": "",
+        "SizeUnit": ""
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
+        "DateTimeStaticValues": "",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50111,10 +50111,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
+      "description": "",
       "properties": {
-        "NewDefaultValues": "The new default values for the parameter.",
-        "NewParameterName": "The new name for the parameter.",
+        "NewDefaultValues": "",
+        "NewParameterName": "",
         "ParameterName": ""
       }
     },
@@ -50136,9 +50136,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "The refresh configuration of a dataset.",
+      "description": "",
       "properties": {
-        "IncrementalRefresh": "The incremental refresh for the dataset."
+        "IncrementalRefresh": ""
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -58741,7 +58741,7 @@
     },
     "AWS::SES::ReceiptRule.S3Action": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action saves the received message to an Amazon Simple Storage Service (Amazon S3) bucket and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to write emails to your Amazon S3 bucket, use an AWS KMS key to encrypt your emails, or publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about granting permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\n> When you save your emails to an Amazon S3 bucket, the maximum email size (including headers) is 30 MB. Emails larger than that bounces. \n\nFor information about specifying Amazon S3 actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-s3.html) .",
+      "description": "When included in a receipt rule, this action saves the received message to an Amazon Simple Storage Service (Amazon S3) bucket and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to write emails to your Amazon S3 bucket, use an AWS KMS key to encrypt your emails, or publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about granting permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\n> When you save your emails to an Amazon S3 bucket, the maximum email size (including headers) is 40 MB. Emails larger than that bounces. \n\nFor information about specifying Amazon S3 actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-s3.html) .",
       "properties": {
         "BucketName": "The name of the Amazon S3 bucket for incoming email.",
         "KmsKeyArn": "The customer master key that Amazon SES should use to encrypt your emails before saving them to the Amazon S3 bucket. You can use the default master key or a custom master key that you created in AWS KMS as follows:\n\n- To use the default master key, provide an ARN in the form of `arn:aws:kms:REGION:ACCOUNT-ID-WITHOUT-HYPHENS:alias/aws/ses` . For example, if your AWS account ID is 123456789012 and you want to use the default master key in the US West (Oregon) Region, the ARN of the default master key would be `arn:aws:kms:us-west-2:123456789012:alias/aws/ses` . If you use the default master key, you don't need to perform any extra steps to give Amazon SES permission to use the key.\n- To use a custom master key that you created in AWS KMS, provide the ARN of the master key and ensure that you add a statement to your key's policy to give Amazon SES permission to use it. For more information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\nFor more information about key policies, see the [AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) . If you do not specify a master key, Amazon SES does not encrypt your emails.\n\n> Your mail is encrypted by Amazon SES using the Amazon S3 encryption client before the mail is submitted to Amazon S3 for storage. It is not encrypted using Amazon S3 server-side encryption. This means that you must use the Amazon S3 encryption client to decrypt the email after retrieving it from Amazon S3, as the service has no access to use your AWS KMS keys for decryption. This encryption client is currently available with the [AWS SDK for Java](https://docs.aws.amazon.com/sdk-for-java/) and [AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/) only. For more information about client-side encryption using AWS KMS master keys, see the [Amazon S3 Developer Guide](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html) .",
@@ -63294,7 +63294,7 @@
       "attributes": {},
       "description": "A structure representing a screenshot that is used as a baseline during visual monitoring comparisons made by the canary.",
       "properties": {
-        "IgnoreCoordinates": "Coordinates that define the part of a screen to ignore during screenshot comparisons. To obtain the coordinates to use here, use the CloudWatch Logs console to draw the boundaries on the screen. For more information, see {LINK}",
+        "IgnoreCoordinates": "Coordinates that define the part of a screen to ignore during screenshot comparisons. To obtain the coordinates to use here, use the CloudWatch console to draw the boundaries on the screen. For more information, see [Edit or delete a canary](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/synthetics_canaries_deletion.html) .",
         "ScreenshotName": "The name of the screenshot. This is generated the first time the canary is run after the `UpdateCanary` operation that specified for this canary to perform visual monitoring."
       }
     },
