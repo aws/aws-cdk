@@ -1,4 +1,4 @@
-import { Token } from 'aws-cdk-lib';
+import { Token } from 'aws-cdk-lib/core';
 
 /**
  * Connection endpoint of a redshift cluster

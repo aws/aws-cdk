@@ -15,6 +15,7 @@ import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
+import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { Runtime } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
@@ -259,6 +260,15 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No ADOT instrumentation
    */
   readonly adotInstrumentation?: AdotInstrumentationConfig;
+
+  /**
+   * Specify the configuration of Parameters and Secrets Extension
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+   * @see https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html
+   *
+   * @default - No Parameters and Secrets Extension
+   */
+  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -911,6 +921,8 @@ export class Function extends FunctionBase {
     this.configureLambdaInsights(props);
 
     this.configureAdotInstrumentation(props);
+
+    this.configureParamsAndSecretsExtension(props);
   }
 
   /**
@@ -1149,6 +1161,19 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
   }
 
+  /**
+   * Add a Parameters and Secrets Extension Lambda layer.
+   */
+  private configureParamsAndSecretsExtension(props: FunctionProps): void {
+    if (props.paramsAndSecrets === undefined) {
+      return;
+    }
+
+    const layerVersion = props.paramsAndSecrets._bind(this, this);
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
+    Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
+  }
+
   private renderLayers() {
     if (!this._layers || this._layers.length === 0) {
       return undefined;
@@ -1201,7 +1226,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
       return undefined;
     }
-
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');

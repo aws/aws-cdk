@@ -1,4 +1,4 @@
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import { LogLevel, MetricsLevel } from '../types';
 
 interface FlinkApplicationConfiguration extends

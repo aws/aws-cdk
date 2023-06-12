@@ -171,7 +171,6 @@ describe('Start Query Execution', () => {
       },
     });
 
-
     // THEN
     expect(stack.resolve(task.toStateJson())).not.toHaveProperty('Parameters.QueryExecutionContext');
   });
@@ -216,7 +215,7 @@ describe('Start Query Execution', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':s3:::query-results-bucket/folder',
+                  ':s3:::query-results-bucket/folder/*',
                 ],
               ],
             },

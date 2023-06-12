@@ -59,7 +59,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
     test('with secret', () => {
       // GIVEN
@@ -132,7 +131,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
   });
 
@@ -203,7 +201,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
     test('without vpc, secret must be set', () => {
       const stack = new cdk.Stack();
@@ -219,7 +216,6 @@ describe('KafkaEventSource', () => {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           }));
       }).toThrow(/secret must be set/);
-
 
     });
 
@@ -279,7 +275,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
 
       });
       test('with secret', () => {
@@ -369,7 +364,6 @@ describe('KafkaEventSource', () => {
           ],
         });
 
-
       });
       test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
@@ -392,7 +386,6 @@ describe('KafkaEventSource', () => {
             }));
         }).toThrow(/vpcSubnets must be set/);
 
-
       });
 
       test('setting vpc requires securityGroup to be set', () => {
@@ -414,7 +407,6 @@ describe('KafkaEventSource', () => {
               vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
-
 
       });
     });
@@ -669,7 +661,6 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
       const consumerGroupId = 'my-consumer-group-id';
-
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
         {
