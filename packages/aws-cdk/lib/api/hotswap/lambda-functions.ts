@@ -199,8 +199,12 @@ async function evaluateLambdaFunctionProps(
               break;
             case 'ZipFile':
               // We must create a zip package containing a file with the inline code
-              const functionCode = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
-              const functionRuntime = await evaluateCfnTemplate.evaluateCfnExpression(runtime);
+              const [functionCode, functionRuntime] = await Promise.all([
+                evaluateCfnTemplate.evaluateCfnExpression(
+                  updatedProp.newValue[newPropName]
+                ),
+                evaluateCfnTemplate.evaluateCfnExpression(runtime),
+              ]);
               if (!functionRuntime) {
                 return undefined;
               }

@@ -139,16 +139,18 @@ export class SdkProvider {
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
 
-    const chain = await AwsCliCompatible.credentialChain({
-      profile: options.profile,
-      ec2instance: options.ec2creds,
-      containerCreds: options.containerCreds,
-      httpOptions: sdkOptions.httpOptions,
-    });
-    const region = await AwsCliCompatible.region({
-      profile: options.profile,
-      ec2instance: options.ec2creds,
-    });
+    const [chain, region] = await Promise.all([
+      AwsCliCompatible.credentialChain({
+        profile: options.profile,
+        ec2instance: options.ec2creds,
+        containerCreds: options.containerCreds,
+        httpOptions: sdkOptions.httpOptions,
+      }),
+      AwsCliCompatible.region({
+        profile: options.profile,
+        ec2instance: options.ec2creds,
+      }),
+    ]);
 
     return new SdkProvider(chain, region, sdkOptions);
   }

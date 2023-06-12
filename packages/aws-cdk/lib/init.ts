@@ -199,10 +199,11 @@ export async function availableInitTemplates(): Promise<InitTemplate[]> {
     try {
       const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
       const templateNames = await listDirectory(templatesDir);
-      const templates = new Array<InitTemplate>();
-      for (const templateName of templateNames) {
-        templates.push(await InitTemplate.fromName(templatesDir, templateName));
-      }
+      const templates = Promise.all(
+        templateNames.map((templateName) => {
+          return InitTemplate.fromName(templatesDir, templateName);
+        })
+      );
       resolve(templates);
     } catch {
       resolve([]);

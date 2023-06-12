@@ -188,13 +188,10 @@ export class AssetPublishing implements IPublishProgress {
 
       const handler = this.assetHandler(asset);
 
-      if (this.buildAssets) {
-        await handler.build();
-      }
-
-      if (this.publishAssets) {
-        await handler.publish();
-      }
+      await Promise.allSettled([
+        this.buildAssets && handler.build(),
+        this.publishAsset && handler.publish(),
+      ]);
 
       if (this.aborted) {
         throw new Error('Aborted');

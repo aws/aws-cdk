@@ -11,7 +11,5 @@ export async function compileCurrentPackage(options: CDKBuildOptions, timers: Ti
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};
-  for (const script of Object.values(scripts) as any) {
-    await makeExecutable(script);
-  }
+  await Promise.all(Object.values(scripts).map(makeExecutable));
 }

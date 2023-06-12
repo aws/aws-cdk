@@ -9,13 +9,15 @@ export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtif
 
   const buildingErrors: unknown[] = [];
 
-  for (const stack of stacks) {
-    try {
-      await buildStackAssets(stack);
-    } catch (err) {
-      buildingErrors.push(err);
+  const buildStackAssetsResults = await Promise.allSettled(
+    stacks.map((stack) => buildAllStackAssets(stack))
+  );
+
+  buildStackAssetsResults.forEach((result) => {
+    if (result.status === "rejected") {
+      buildingErrors.push(result.reason);
     }
-  }
+  });
 
   if (buildingErrors.length) {
     throw Error(`Building Assets Failed: ${buildingErrors.join(', ')}`);
