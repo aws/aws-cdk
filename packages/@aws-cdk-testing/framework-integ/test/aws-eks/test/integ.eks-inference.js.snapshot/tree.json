@@ -972,6 +972,35 @@
                       "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
+                  },
+                  "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443": {
+                    "id": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ControlPlaneSecurityGroup/from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                        "fromPort": 443,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "ClusterControlPlaneSecurityGroupD274242C",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "toPort": 443
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1186,6 +1215,176 @@
                           ]
                         },
                         "toPort": 443
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC": {
+                    "id": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "-1",
+                        "description": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC",
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+                            "GroupId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443": {
+                    "id": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
+                        "fromPort": 443,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "toPort": 443
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443": {
+                    "id": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443",
+                        "fromPort": 443,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "ClusterControlPlaneSecurityGroupD274242C",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 443
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535": {
+                    "id": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535",
+                        "fromPort": 1025,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "toPort": 65535
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535": {
+                    "id": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535",
+                        "fromPort": 1025,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "ClusterControlPlaneSecurityGroupD274242C",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 65535
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC": {
+                    "id": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "-1",
+                        "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "Cluster9EE0221C",
+                            "ClusterSecurityGroupId"
+                          ]
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1584,6 +1783,33 @@
                           "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "0.0.0"
                         }
+                      },
+                      "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC": {
+                        "id": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                        "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                          "aws:cdk:cloudformation:props": {
+                            "ipProtocol": "-1",
+                            "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
+                            "groupId": {
+                              "Fn::GetAtt": [
+                                "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+                                "GroupId"
+                              ]
+                            },
+                            "sourceSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "Cluster9EE0221C",
+                                "ClusterSecurityGroupId"
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1692,24 +1918,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "InstanceProfile": {
-                    "id": "InstanceProfile",
-                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceProfile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate",
@@ -1759,6 +1967,12 @@
                                   "Fn::GetAtt": [
                                     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
                                     "GroupId"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "Cluster9EE0221C",
+                                    "ClusterSecurityGroupId"
                                   ]
                                 }
                               ],
