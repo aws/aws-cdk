@@ -10,7 +10,7 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    if (path.extname(fileOrDir) === '.ts') {
+    if (path.extname(fileOrDir) === '.ts' && !fileOrDir.includes('.d.ts') && !fileOrDir.includes('nodejs-entrypoint')) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -24,8 +24,10 @@ for (const ep of entryPoints) {
   void esbuild.build({
     entryPoints: [ep],
     outfile: `${ep.slice(0, ep.lastIndexOf('.'))}.js`,
+    external: ['aws-sdk'],
     format: 'cjs',
     platform: 'node',
+    bundle: true,
     minify: true,
     minifyWhitespace: true,
     minifySyntax: true,

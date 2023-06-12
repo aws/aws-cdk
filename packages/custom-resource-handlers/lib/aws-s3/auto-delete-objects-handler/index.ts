@@ -1,9 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { S3 } from 'aws-sdk';
+import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 const s3 = new S3();
+
+export const customResourceHandler = makeHandler(handler);
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
@@ -14,7 +17,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     case 'Delete':
       return onDelete(event.ResourceProperties?.BucketName);
   }
-}
+};
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
