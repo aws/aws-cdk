@@ -1282,6 +1282,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
+      Tags.of(this).add(NAME_TAG, this.node.path);
+
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
@@ -1301,7 +1303,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       if (!FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
-        Tags.of(this).add(NAME_TAG, this.node.path);
 
         const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
           roles: [this.role.roleName],
@@ -1330,7 +1331,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         launchConfig.node.addDependency(this.role);
         this.osType = imageConfig.osType;
       } else {
-        this.launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
           keyName: props.keyName,
           instanceType: props.instanceType,
@@ -1343,7 +1344,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           blockDevices: props.blockDevices,
         });
 
-        this.osType = this.launchTemplate.osType!;
+        this.osType = launchTemplateFromConfig.osType!;
+        this.launchTemplate = launchTemplateFromConfig;
       }
     }
 
@@ -1449,17 +1451,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * Add the security group to all instances via the launch configuration
+   * Add the security group to all instances via the launch template
    * security groups array.
    *
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    if (!this.securityGroups) {
-      throw new Error('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
+    if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+      this.launchTemplate?.connections.addSecurityGroup(securityGroup);
+    } else {
+      this.securityGroups?.push(securityGroup);
     }
-
-    this.securityGroups.push(securityGroup);
   }
 
   /**
