@@ -34,8 +34,7 @@
     "patch-package": "^6.5.1",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",
-    "typescript": "~4.9.5",
-    "constructs": "^10.0.0"
+    "typescript": "~4.9.5"
   },
   "resolutions": {
     "colors": "1.4.0",
