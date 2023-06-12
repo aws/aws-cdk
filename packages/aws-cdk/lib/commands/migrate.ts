@@ -13,6 +13,7 @@ export async function cliMigrate(
   generateOnly = false,
   outputpath = process.cwd(),
 ) {
+  warning('This is a very experimental feature, use at your own risk.');
   const type = 'default'; // "default" is the default type (and maps to 'app')
   const template = (await availableInitTemplates()).find(t => t.hasName(type!));
   if (!template) {
