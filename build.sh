@@ -45,7 +45,6 @@ while [[ "${1:-}" != "" ]]; do
     shift
 done
 
-export PATH=$(npm bin):$PATH
 export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
 # Temporary log memory for long builds (this may mess with tests that check stderr)
