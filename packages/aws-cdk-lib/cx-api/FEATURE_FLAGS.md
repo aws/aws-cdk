@@ -54,6 +54,7 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
+| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -98,7 +99,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation": true,
-    "@aws-cdk/aws-kms:aliasNameRef": true
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
   }
 }
 ```
@@ -1003,6 +1005,26 @@ intervention since they might not have the appropriate tags propagated automatic
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
+
+
+### @aws-cdk/core:includePrefixInUniqueNameGeneration
+
+*Include the stack prefix in the stack name generation process* (fix)
+
+This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+
+If the flag is set, the prefix is included in the stack name generation process.
+If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+**NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+is not viable in some productive setups.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

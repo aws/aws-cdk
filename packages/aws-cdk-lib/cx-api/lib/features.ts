@@ -86,6 +86,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const AUTOSCALING_DISABLE_LAUNCH_CONFIG = '@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation';
 
@@ -826,6 +827,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION]: {
+    type: FlagType.BugFix,
+    summary: 'Include the stack prefix in the stack name generation process',
+    detailsMd: `
+      This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+
+      If the flag is set, the prefix is included in the stack name generation process.
+      If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+      **NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+      feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+      is not viable in some productive setups.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
 };
 
 const CURRENT_MV = 'v2';
