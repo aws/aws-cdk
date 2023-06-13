@@ -376,7 +376,7 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
-        namespace: options.name,
+        namespace: sdNamespace.namespaceArn,
       };
     }
 
