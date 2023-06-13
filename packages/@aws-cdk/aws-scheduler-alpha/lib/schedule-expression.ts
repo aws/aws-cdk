@@ -1,5 +1,5 @@
-import { Duration, TimeZone } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
+import { Duration, TimeZone } from 'aws-cdk-lib/core';
 
 /**
  * ScheduleExpression for EventBridge Schedule
