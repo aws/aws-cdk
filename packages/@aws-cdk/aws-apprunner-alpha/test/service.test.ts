@@ -899,7 +899,7 @@ test('custom IAM access role and instance role are allowed', () => {
   });
 });
 
-test('cpu and memory properties are allowed', () => {
+test('cpu and memory properties as unit values are allowed', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -925,7 +925,7 @@ test('cpu and memory properties are allowed', () => {
   });
 });
 
-test('custom cpu and memory units are allowed', () => {
+test('cpu and memory properties as numeric values are allowed', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -934,14 +934,14 @@ test('custom cpu and memory units are allowed', () => {
     source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
-    cpu: apprunner.Cpu.of('Some vCPU'),
-    memory: apprunner.Memory.of('Some GB'),
+    cpu: apprunner.Cpu.of('1024'),
+    memory: apprunner.Memory.of('3072'),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     InstanceConfiguration: {
-      Cpu: 'Some vCPU',
-      Memory: 'Some GB',
+      Cpu: '1024',
+      Memory: '3072',
     },
     NetworkConfiguration: {
       EgressConfiguration: {
@@ -949,6 +949,70 @@ test('custom cpu and memory units are allowed', () => {
       },
     },
   });
+});
+
+test('invalid cpu property as unit value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1000 vCPU'),
+      memory: apprunner.Memory.of('3 GB'),
+    });
+  }).toThrow('CPU value is invalid');
+});
+
+test('invalid cpu property as numeric value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1'),
+      memory: apprunner.Memory.of('3 GB'),
+    });
+  }).toThrow('CPU value is invalid');
+});
+
+test('invalid memory property as unit value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1 vCPU'),
+      memory: apprunner.Memory.of('3000 GB'),
+    });
+  }).toThrow('Memory value is invalid');
+});
+
+test('invalid memory property as numeric value is not allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      cpu: apprunner.Cpu.of('1 vCPU'),
+      memory: apprunner.Memory.of('3'),
+    });
+  }).toThrow('Memory value is invalid');
 });
 
 test('environment variable with a prefix of AWSAPPRUNNER should throw an error', () => {
