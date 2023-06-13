@@ -113,11 +113,12 @@
     ]
   },
   "stability": "stable",
-  "maturity": "stable",
+  "maturity": "end-of-support",
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "deprecated": "AWS CDK v1 has reached End-of-Support on 2023-06-01.\nThis package is no longer being updated, and users should migrate to AWS CDK v2.\n\nFor more information on how to migrate, see https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html"
 }

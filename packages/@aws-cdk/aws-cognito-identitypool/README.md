@@ -1,24 +1,25 @@
 # Amazon Cognito Identity Pool Construct Library
-
-> **Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will**
-**be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by**
-**creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose)**
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![End-of-Support](https://img.shields.io/badge/End--of--Support-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> AWS CDK v1 has reached End-of-Support on 2023-06-01.
+> This package is no longer being updated, and users should migrate to AWS CDK v2.
+>
+> For more information on how to migrate, see the [_Migrating to AWS CDK v2_ guide][doc].
+>
+> [doc]: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
 
 ---
 
 <!--END STABILITY BANNER-->
+
+
+> **Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will**
+**be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by**
+**creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose)**
 
 [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html) enable you to grant your users access to other AWS services.
 
