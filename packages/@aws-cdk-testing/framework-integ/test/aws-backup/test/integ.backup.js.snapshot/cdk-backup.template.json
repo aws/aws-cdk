@@ -111,6 +111,9 @@
          }
         }
        ],
+       "RecoveryPointTags": {
+        "stage": "prod"
+       },
        "RuleName": "PlanRule3",
        "TargetBackupVault": {
         "Fn::GetAtt": [
