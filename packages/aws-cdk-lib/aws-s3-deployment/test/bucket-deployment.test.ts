@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
@@ -7,7 +8,6 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
@@ -220,6 +220,27 @@ test('deploy from a local .zip file', () => {
     destinationBucket: bucket,
   });
 
+});
+
+test('AWS_CA_BUNDLE is set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('test', 'test')],
+    destinationBucket: bucket,
+  });
+
+  //THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+      },
+    },
+  });
 });
 
 test('deploy from a local .zip file when efs is enabled', () => {
@@ -493,11 +514,16 @@ test('cache control type has correct values', () => {
   expect(s3deploy.CacheControl.mustRevalidate().value).toEqual('must-revalidate');
   expect(s3deploy.CacheControl.noCache().value).toEqual('no-cache');
   expect(s3deploy.CacheControl.noTransform().value).toEqual('no-transform');
+  expect(s3deploy.CacheControl.noStore().value).toEqual('no-store');
+  expect(s3deploy.CacheControl.mustUnderstand().value).toEqual('must-understand');
   expect(s3deploy.CacheControl.setPublic().value).toEqual('public');
   expect(s3deploy.CacheControl.setPrivate().value).toEqual('private');
+  expect(s3deploy.CacheControl.immutable().value).toEqual('immutable');
   expect(s3deploy.CacheControl.proxyRevalidate().value).toEqual('proxy-revalidate');
   expect(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value).toEqual('max-age=60');
   expect(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value).toEqual('s-maxage=60');
+  expect(s3deploy.CacheControl.staleWhileRevalidate(cdk.Duration.minutes(1)).value).toEqual('stale-while-revalidate=60');
+  expect(s3deploy.CacheControl.staleIfError(cdk.Duration.minutes(1)).value).toEqual('stale-if-error=60');
   expect(s3deploy.CacheControl.fromString('only-if-cached').value).toEqual('only-if-cached');
 });
 
@@ -1433,6 +1459,23 @@ test('can add sources with addSource', () => {
       {},
       {},
     ],
+  });
+});
+
+test('deploy with payload signing enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    signContent: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SignContent: true,
   });
 });
 

@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-eks-service-account-sdk-calls-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70966cef1197eaa250138ee97adb33cc0a849cfd8074fb47480dd7db4bcc4f4d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ddfd58821eabbc1539b20158af0d9892b614dca78c329cf9a9b358a7198e51c9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,10 +159,22 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/Cluster": [
+        "/aws-eks-service-account-sdk-calls-test/KubectlLayer/Resource": [
           {
-            "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.24 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v24."
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRole94549F93"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/Cluster/Role/Resource": [
@@ -201,16 +213,10 @@
             "data": "ClusterKubectlReadyBarrier200052AF"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/Resource": [
+        "/aws-eks-service-account-sdk-calls-test/Cluster/HasEcrPublic": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterMastersRole9AA35625"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterAwsAuthmanifestFE51F8AE"
+            "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -225,16 +231,10 @@
             "data": "ClusterNodegroupDefaultCapacityDA0920A3"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/Cluster/ConfigCommand": [
+        "/aws-eks-service-account-sdk-calls-test/Cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterConfigCommand43AAE40F"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/Cluster/GetTokenCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterGetTokenCommand06AE992E"
+            "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/Cluster/my-service-account/ConditionJson/Resource/Default": [
@@ -285,12 +285,6 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -301,12 +295,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
@@ -387,34 +375,28 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole771D2C89Arn"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole82EF064DArn"
+          }
+        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleFCDC14AE"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleDefaultPolicyCBD0CC91"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -427,12 +409,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsCliLayerF44AAF94"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -459,16 +435,16 @@
             "data": "awseksserviceaccountsdkcallstestawscdkawseksKubectlProviderframeworkonEvent905838A2Arn"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn": [
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawseksserviceaccountsdkcallstestCluster5552283BArn"
+            "data": "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": [
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn"
+            "data": "referencetoawseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": [
@@ -505,6 +481,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [

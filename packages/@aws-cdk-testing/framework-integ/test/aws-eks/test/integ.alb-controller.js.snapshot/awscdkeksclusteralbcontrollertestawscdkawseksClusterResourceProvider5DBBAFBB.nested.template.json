@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
+     "S3Key": "75dfa9114a30421542432dcb55212f010f591a9e3bd203ae98ba3f9bedf5bb31.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -43,29 +43,6 @@
     ]
    }
   },
-  "OnEventHandlerServiceRoleDefaultPolicyC57085D4": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksclusteralbcontrollertestClusterCreationRoleA16C24E9Arn"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-    "Roles": [
-     {
-      "Ref": "OnEventHandlerServiceRole15A26729"
-     }
-    ]
-   }
-  },
   "OnEventHandler42BEBAE0": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -73,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+     "S3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -97,7 +74,6 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
     "OnEventHandlerServiceRole15A26729"
    ]
   },
@@ -132,29 +108,6 @@
     ]
    }
   },
-  "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksclusteralbcontrollertestClusterCreationRoleA16C24E9Arn"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-    "Roles": [
-     {
-      "Ref": "IsCompleteHandlerServiceRole5810CC58"
-     }
-    ]
-   }
-  },
   "IsCompleteHandler7073F4DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -162,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+     "S3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -186,7 +139,6 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
     "IsCompleteHandlerServiceRole5810CC58"
    ]
   },
@@ -297,7 +249,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -434,7 +386,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -568,7 +520,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -720,6 +672,22 @@
   }
  },
  "Outputs": {
+  "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OnEventHandlerServiceRole15A26729",
+     "Arn"
+    ]
+   }
+  },
+  "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IsCompleteHandlerServiceRole5810CC58",
+     "Arn"
+    ]
+   }
+  },
   "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn": {
    "Value": {
     "Fn::GetAtt": [
@@ -727,11 +695,6 @@
      "Arn"
     ]
    }
-  }
- },
- "Parameters": {
-  "referencetoawscdkeksclusteralbcontrollertestClusterCreationRoleA16C24E9Arn": {
-   "Type": "String"
   }
  }
 }

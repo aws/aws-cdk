@@ -407,7 +407,7 @@
     }
    }
   },
-  "minimalPropsFargate8E9B9556": {
+  "minimalPropsFargate58449235": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
     "Type": "managed",
@@ -453,10 +453,11 @@
     }
    }
   },
-  "maximalPropsFargateA2E688D8": {
+  "maximalPropsFargate2D7D8138": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
     "Type": "managed",
+    "ComputeEnvironmentName": "maxPropsFargateCE",
     "ComputeResources": {
      "MaxvCpus": 512,
      "SecurityGroupIds": [
@@ -516,7 +517,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "minimalPropsEc2InstanceProfile635FB12D": {
@@ -649,7 +664,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "LaunchTemplateInstanceProfile81A7EF12": {
@@ -772,7 +801,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
    }
   },
   "SpotEc2InstanceProfileD921ABA1": {
@@ -838,6 +881,140 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
+    "UpdatePolicy": {}
+   }
+  },
+  "taggedCESecurityGroup82CCF59F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/taggedCE/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "foo",
+      "Value": "bar"
+     },
+     {
+      "Key": "super",
+      "Value": "salamander"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "taggedCEInstanceProfileRoleC239DAF9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "foo",
+      "Value": "bar"
+     },
+     {
+      "Key": "super",
+      "Value": "salamander"
+     }
+    ]
+   }
+  },
+  "taggedCEInstanceProfileB29F2197": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "taggedCEInstanceProfileRoleC239DAF9"
+     }
+    ]
+   }
+  },
+  "taggedCE5029E6F8": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "Type": "managed",
+    "ComputeResources": {
+     "AllocationStrategy": "BEST_FIT_PROGRESSIVE",
+     "Ec2Configuration": [
+      {
+       "ImageIdOverride": {
+        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+       },
+       "ImageType": "ECS_AL2"
+      }
+     ],
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "taggedCEInstanceProfileB29F2197",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "taggedCESecurityGroup82CCF59F",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Tags": {
+      "foo": "bar",
+      "super": "salamander"
+     },
+     "Type": "EC2",
+     "UpdateToLatestImageVersion": true
+    },
+    "ReplaceComputeEnvironment": false,
+    "State": "ENABLED",
+    "Tags": {
+     "foo": "bar",
+     "super": "salamander"
+    },
     "UpdatePolicy": {}
    }
   }

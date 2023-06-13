@@ -1,8 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cxapi from '../../cx-api';
-import { Fact, RegionInfo } from '../../region-info';
 import { Construct, Node } from 'constructs';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
+import { Fact, RegionInfo } from '../../region-info';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
@@ -1498,7 +1498,7 @@ describe('stack', () => {
       public _toCloudFormation() {
         return new PostResolveToken({
           xoo: 1234,
-        }, props => {
+        }, (props, _context) => {
           validateString(props).assertSuccess();
         });
       }
@@ -1899,7 +1899,6 @@ describe('stack', () => {
     ]);
   });
 
-
   test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
     // WHEN
     const app = new App();
@@ -2070,6 +2069,40 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, []);
     expect(stack.bundlingRequired).toBe(false);
+  });
+
+  test('account id passed in stack environment must be a string', () => {
+    // GIVEN
+    const envConfig: any = {
+      account: 11111111111,
+    };
+
+    // WHEN
+    const app = new App();
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'Stack', {
+        env: envConfig,
+      });
+    }).toThrowError('Account id of stack environment must be a \'string\' but received \'number\'');
+  });
+
+  test('region passed in stack environment must be a string', () => {
+    // GIVEN
+    const envConfig: any = {
+      region: 2,
+    };
+
+    // WHEN
+    const app = new App();
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'Stack', {
+        env: envConfig,
+      });
+    }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
   });
 });
 

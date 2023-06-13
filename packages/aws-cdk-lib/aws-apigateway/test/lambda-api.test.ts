@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
+import { LambdaRestApi } from '../lib';
 
 describe('lambda api', () => {
   test('LambdaRestApi defines a REST API with Lambda proxy integration', () => {
@@ -298,7 +299,7 @@ describe('lambda api', () => {
       ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
       AuthorizationType: 'NONE',
       AuthorizerId: Match.absent(),
-      ApiKeyRequired: Match.absent(),
+      ApiKeyRequired: false,
       Integration: {
         IntegrationResponses: [
           {
@@ -404,5 +405,34 @@ describe('lambda api', () => {
         Type: 'AWS',
       },
     });
+  });
+
+  test('setting deployOptions variable with invalid value throws validation error', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const versionAlias = lambda.Version.fromVersionAttributes(stack, 'VersionInfo', {
+      lambda: handler,
+      version: '${stageVariables.lambdaAlias}',
+    });
+
+    new LambdaRestApi(stack, 'RestApi', {
+      restApiName: 'my-test-api',
+      handler: versionAlias,
+      deployOptions: {
+        variables: {
+          functionName: '$$$',
+        },
+      },
+    });
+
+    expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/RestApi] Stage variable value $$$ does not match the regex.');
   });
 });

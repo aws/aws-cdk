@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IAlias } from './alias';
 import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
+import * as iam from '../../aws-iam';
+import { Duration, IResource, Resource } from '../../core';
 
 /**
  * The auth types for a function url
@@ -19,6 +19,25 @@ export enum FunctionUrlAuthType {
    * Bypass IAM authentication to create a public endpoint
    */
   NONE = 'NONE',
+}
+
+/**
+ * The invoke modes for a Lambda function
+ */
+export enum InvokeMode {
+  /**
+   * Default option. Lambda invokes your function using the Invoke API operation.
+   * Invocation results are available when the payload is complete.
+   * The maximum payload size is 6 MB.
+   */
+  BUFFERED = 'BUFFERED',
+
+  /**
+   * Your function streams payload results as they become available.
+   * Lambda invokes your function using the InvokeWithResponseStream API operation.
+   * The maximum response payload size is 20 MB, however, you can request a quota increase.
+   */
+  RESPONSE_STREAM = 'RESPONSE_STREAM',
 }
 
 /**
@@ -147,6 +166,13 @@ export interface FunctionUrlOptions {
    * @default - No CORS configuration.
    */
   readonly cors?: FunctionUrlCorsOptions;
+
+  /**
+   * The type of invocation mode that your Lambda function uses.
+   *
+   * @default InvokeMode.BUFFERED
+   */
+  readonly invokeMode?: InvokeMode;
 }
 
 /**
@@ -194,6 +220,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
       authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
+      invokeMode: props.invokeMode,
       targetFunctionArn: targetFunction.functionArn,
       qualifier: alias?.aliasName,
     });
@@ -229,6 +256,10 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
   }
 
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
+    if (cors.maxAge && !cors.maxAge.isUnresolved() && cors.maxAge.toSeconds() > 86400) {
+      throw new Error(`FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`);
+    }
+
     return {
       allowCredentials: cors.allowCredentials,
       allowHeaders: cors.allowedHeaders,

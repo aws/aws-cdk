@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
+import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -7,8 +9,20 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { Construct } from 'constructs';
-import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
+import { FactName } from '../../../region-info';
+
+/**
+ * The lambda runtime used by default for aws-cdk vended custom resources. Can change
+ * based on region.
+ */
+export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
+  // Runtime regional fact should always return a known runtime string that lambda.Runtime
+  // can index off, but for type safety we also default it here.
+  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
+  return runtimeName
+    ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
+    : lambda.Runtime.NODEJS_16_X;
+}
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
@@ -23,7 +37,7 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 
-  public resolve(_: cdk.IResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 
@@ -326,6 +340,13 @@ export interface AwsCustomResourceProps {
   readonly functionName?: string;
 
   /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
    * The vpc to provision the lambda function in.
    *
    * @default - the function is not provisioned inside a vpc.
@@ -409,7 +430,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: builtInCustomResourceNodeRuntime(scope),
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
@@ -440,6 +461,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
+      removalPolicy: props.removalPolicy,
       properties: {
         create: create && this.encodeJson(create),
         update: props.onUpdate && this.encodeJson(props.onUpdate),

@@ -91,7 +91,6 @@ export function parseCliArgs(args: string[] = []) {
   };
 }
 
-
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
 
@@ -144,7 +143,6 @@ export async function main(args: string[]) {
         updateWorkflow: !options.disableUpdateWorkflow,
       });
       testsSucceeded = success;
-
 
       if (options.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');

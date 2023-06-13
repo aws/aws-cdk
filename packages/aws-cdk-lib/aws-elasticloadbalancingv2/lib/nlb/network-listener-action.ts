@@ -1,8 +1,8 @@
-import { Duration } from '../../../core';
 import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
+import { Duration } from '../../../core';
+import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
 /**
@@ -65,6 +65,8 @@ export class NetworkListenerAction implements IListenerAction {
     });
   }
 
+  private _actionJson?: CfnListenerRule.ActionProperty;
+
   /**
    * Create an instance of NetworkListenerAction
    *
@@ -72,14 +74,22 @@ export class NetworkListenerAction implements IListenerAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: NetworkListenerAction) {
+  protected constructor(private readonly defaultActionJson: CfnListener.ActionProperty, protected readonly next?: NetworkListenerAction) {
   }
 
   /**
-   * Render the actions in this chain
+   * Render the listener rule actions in this chain
+   */
+  public renderRuleActions(): CfnListenerRule.ActionProperty[] {
+    const actionJson = this._actionJson ?? this.defaultActionJson as CfnListenerRule.ActionProperty;
+    return this._renumber([actionJson, ...this.next?.renderRuleActions() ?? []]);
+  }
+
+  /**
+   * Render the listener default actions in this chain
    */
   public renderActions(): CfnListener.ActionProperty[] {
-    return this.renumber([this.actionJson, ...this.next?.renderActions() ?? []]);
+    return this._renumber([this.defaultActionJson, ...this.next?.renderActions() ?? []]);
   }
 
   /**
@@ -89,6 +99,13 @@ export class NetworkListenerAction implements IListenerAction {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
+  }
+
+  private _renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
+  (actions: ActionProperty[]): ActionProperty[] {
+    if (actions.length < 2) { return actions; }
+
+    return actions.map((action, i) => ({ ...action, order: i + 1 }));
   }
 
   /**
@@ -101,9 +118,7 @@ export class NetworkListenerAction implements IListenerAction {
    * users the opportunity to override by subclassing and overriding `renderActions`.
    */
   protected renumber(actions: CfnListener.ActionProperty[]): CfnListener.ActionProperty[] {
-    if (actions.length < 2) { return actions; }
-
-    return actions.map((action, i) => ({ ...action, order: i + 1 }));
+    return this._renumber(actions);
   }
 }
 
@@ -144,8 +159,8 @@ export interface NetworkWeightedTargetGroup {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends NetworkListenerAction {
-  constructor(private readonly targetGroups: INetworkTargetGroup[], actionJson: CfnListener.ActionProperty) {
-    super(actionJson);
+  constructor(private readonly targetGroups: INetworkTargetGroup[], defaultActionJson: CfnListener.ActionProperty) {
+    super(defaultActionJson);
   }
 
   public bind(_scope: Construct, listener: INetworkListener) {

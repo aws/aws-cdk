@@ -28,12 +28,9 @@ According to the kind of project you are developing:
 You can use a classic import to get access to each service namespaces:
 
 ```ts
-import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
+import { aws_s3 as s3 } from 'aws-cdk-lib';
 
-const app = new App();
-const stack = new Stack(app, 'TestStack');
-
-new s3.Bucket(stack, 'TestBucket');
+new s3.Bucket(this, 'TestBucket');
 ```
 
 #### Barrel import
@@ -41,13 +38,9 @@ new s3.Bucket(stack, 'TestBucket');
 Alternatively, you can use "barrel" imports:
 
 ```ts
-import { App, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
-const app = new App();
-const stack = new Stack(app, 'TestStack');
-
-new Bucket(stack, 'TestBucket');
+new Bucket(this, 'TestBucket');
 ```
 
 <!--BEGIN CORE DOCUMENTATION-->
@@ -108,7 +101,7 @@ The following synthesizers are available:
   controlling who can assume the deploy role. This is the default stack
   synthesizer in CDKv2.
 - `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
-  asset locations, and the CLI's current permissions to deploy stacks. The
+  asset locations, and the CLI's current permissions to deploy stacks. This
   is the default stack synthesizer in CDKv1.
 - `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
   CLI's current permissions.
@@ -597,7 +590,8 @@ framework designed to implement simple and slim custom resource providers. It
 currently only supports Node.js-based user handlers, represents permissions as raw
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
-timeout).
+timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -930,7 +924,7 @@ The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance
 
 The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
 The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
-3 success signals to occur within 15 minutes before the status of the resource will be set to 
+3 success signals to occur within 15 minutes before the status of the resource will be set to
 `CREATE_COMPLETE`.
 
 ```ts
@@ -1328,7 +1322,7 @@ To use one or more validation plugins in your application, use the
 const app = new App({
   policyValidationBeta1: [
     // These hypothetical classes implement IValidationPlugin:
-    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginX(),
     new ThirdPartyPluginY(),
   ],
 });
@@ -1351,12 +1345,12 @@ validation.
 > secure to use.
 
 By default, the report will be printed in a human readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` 
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
 ```ts
-const app = new App({ 
-  context: { '@aws-cdk/core:validationReportJson': true }, 
+const app = new App({
+  context: { '@aws-cdk/core:validationReportJson': true },
 });
 ```
 
@@ -1403,6 +1397,10 @@ validate(context: ValidationContextBeta1): ValidationReportBeta1 {
   };
 }
 ```
+
+In addition to the name, plugins may optionally report their version (`version`
+property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property).
 
 Note that plugins are not allowed to modify anything in the cloud assembly. Any
 attempt to do so will result in synthesis failure.

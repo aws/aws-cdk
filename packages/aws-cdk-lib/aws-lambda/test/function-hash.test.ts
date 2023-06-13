@@ -1,7 +1,7 @@
 import * as path from 'path';
+import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { Template } from '../../assertions';
 import * as ssm from '../../aws-ssm';
-import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { App, CfnOutput, CfnResource, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';

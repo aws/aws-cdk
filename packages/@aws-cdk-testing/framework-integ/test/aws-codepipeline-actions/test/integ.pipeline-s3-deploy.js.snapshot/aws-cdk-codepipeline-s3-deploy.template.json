@@ -1,8 +1,59 @@
 {
  "Resources": {
+  "EnvVarEncryptKey1A7CABDB": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "sample key"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "PipelineBucketB967BD35": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "EnvVarEncryptKey1A7CABDB",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -115,7 +166,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
+     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -126,7 +177,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs16.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -370,6 +421,22 @@
        ]
       },
       {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EnvVarEncryptKey1A7CABDB",
+         "Arn"
+        ]
+       }
+      },
+      {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Resource": [
@@ -462,7 +529,13 @@
          "Extract": "false",
          "ObjectKey": "key",
          "CannedACL": "private",
-         "CacheControl": "public, max-age=43200"
+         "CacheControl": "public, max-age=43200",
+         "KMSEncryptionKeyARN": {
+          "Fn::GetAtt": [
+           "EnvVarEncryptKey1A7CABDB",
+           "Arn"
+          ]
+         }
         },
         "InputArtifacts": [
          {
@@ -515,6 +588,15 @@
      }
     ],
     "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "EnvVarEncryptKey1A7CABDB",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
      "Location": {
       "Ref": "PipelineBucketB967BD35"
      },
@@ -598,6 +680,22 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EnvVarEncryptKey1A7CABDB",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": [
@@ -765,6 +863,22 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EnvVarEncryptKey1A7CABDB",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -877,6 +991,19 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EnvVarEncryptKey1A7CABDB",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -890,7 +1017,118 @@
    }
   }
  },
+ "Mappings": {
+  "DefaultCrNodeVersionMap": {
+   "af-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs16.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs16.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs16.x"
+   },
+   "me-central-1": {
+    "value": "nodejs16.x"
+   },
+   "me-south-1": {
+    "value": "nodejs16.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-east-2": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs16.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs14.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs14.x"
+   },
+   "us-west-1": {
+    "value": "nodejs16.x"
+   },
+   "us-west-2": {
+    "value": "nodejs16.x"
+   }
+  }
+ },
  "Outputs": {
+  "ExportsOutputRefDeployBucket67E2C076D8DEC04D": {
+   "Value": {
+    "Ref": "DeployBucket67E2C076"
+   },
+   "Export": {
+    "Name": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
+   }
+  },
   "ExportsOutputRefPipelineBucketB967BD35BAE6E881": {
    "Value": {
     "Ref": "PipelineBucketB967BD35"
@@ -905,14 +1143,6 @@
    },
    "Export": {
     "Name": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineC660917DEB540586"
-   }
-  },
-  "ExportsOutputRefDeployBucket67E2C076D8DEC04D": {
-   "Value": {
-    "Ref": "DeployBucket67E2C076"
-   },
-   "Export": {
-    "Name": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
    }
   }
  },

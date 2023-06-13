@@ -1080,6 +1080,9 @@
      "Logging": {
       "AccessLog": {
        "File": {
+        "Format": {
+         "Text": "test_pattern"
+        },
         "Path": "/dev/stdout"
        }
       }
@@ -1178,6 +1181,18 @@
      "Logging": {
       "AccessLog": {
        "File": {
+        "Format": {
+         "Json": [
+          {
+           "Key": "testKey1",
+           "Value": "testValue1"
+          },
+          {
+           "Key": "testKey2",
+           "Value": "testValue2"
+          }
+         ]
+        },
         "Path": "/dev/stdout"
        }
       }
@@ -1372,6 +1387,7 @@
         "Exact": "example.com"
        },
        "Method": "POST",
+       "Port": 8080,
        "Prefix": "/",
        "QueryParameters": [
         {

@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
 
@@ -80,7 +80,6 @@ export interface IClusterParameterGroup extends IResource {
    */
   readonly clusterParameterGroupName: string;
 }
-
 
 /**
  * A cluster parameter group

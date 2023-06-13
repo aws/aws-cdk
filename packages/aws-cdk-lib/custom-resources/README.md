@@ -314,8 +314,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -344,7 +344,7 @@ This sample demonstrates the following concepts:
 
 #### S3Assert
 
-Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
 
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
@@ -513,7 +513,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
+Use the `role`, `timeout`, `logRetention`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -523,6 +523,7 @@ new cr.AwsCustomResource(this, 'Customized', {
   timeout: Duration.minutes(10), // defaults to 2 minutes
   logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs
   functionName: 'my-custom-name', // defaults to a CloudFormation generated name
+  removalPolicy: RemovalPolicy.RETAIN, // defaults to `RemovalPolicy.DESTROY`
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
   }),
@@ -533,14 +534,14 @@ Additionally, the Lambda function can be placed in a private VPC by using the `v
 and `vpcSubnets` properties.
 
 ```ts
-declare const myVpc: ec2.Vpc;
+declare const vpc: ec2.Vpc;
 new cr.AwsCustomResource(this, 'CustomizedInVpc', {
   vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_NAT },
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }
-})
+  }),
+});
 ```
 
 Note that Lambda functions in a VPC
@@ -622,6 +623,35 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
   }),
 });
 ```
+
+#### Using AWS SDK for JavaScript v3
+
+`AwsCustomResource` experimentally supports AWS SDK for JavaScript v3 (NODEJS_18_X or higher). In AWS SDK for JavaScript v3, packages are installed for each service. Therefore, specify the package name for `service`. Also, `action` specifies the XxxClient operations provided in the package. This example is the same as `SSM.getParameter` in v2.
+
+```ts
+import * as regionInfo from 'aws-cdk-lib/region-info';
+
+// change custom resource default runtime
+regionInfo.Fact.register({
+  region: 'us-east-1', // your region
+  name: regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
+  value: lambda.Runtime.NODEJS_18_X.name,
+}, true);
+new AwsCustomResource(this, 'GetParameter', {
+  resourceType: 'Custom::SSMParameter',
+  onUpdate: {
+    service: '@aws-sdk/client-ssm', // 'SSM' in v2
+    action: 'GetParameterCommand', // 'getParameter' in v2
+    parameters: {
+      Name: 'foo',
+      WithDecryption: true,
+    },
+    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+  },
+});
+```
+
+If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.
 
 ---
 

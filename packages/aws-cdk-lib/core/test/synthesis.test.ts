@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -271,6 +271,17 @@ describe('synthesis', () => {
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
     expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
+  });
+
+  test('output folder checksum is not computed by default', () => {
+    const fingerprint = jest.spyOn(cdk.FileSystem, 'fingerprint');
+    const app = new cdk.App(); // <-- no validation plugins
+    const stack = new cdk.Stack(app, 'one-stack');
+    synthesize(stack);
+
+    expect(fingerprint).not.toHaveBeenCalled();
+
+    jest.restoreAllMocks();
   });
 });
 

@@ -1,4 +1,4 @@
-import { ArnFormat, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
@@ -58,17 +58,19 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
    * Import a JobDefinition by its arn.
    */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
-    const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-
     class Import extends JobDefinitionBase implements IEcsJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
-      public readonly jobDefinitionName = jobDefinitionName;
+      public readonly jobDefinitionName = EcsJobDefinition.getJobDefinitionName(this, jobDefinitionArn);
       public readonly enabled = true;
       container = {} as any;
     }
 
     return new Import(scope, id);
+  }
+
+  private static getJobDefinitionName(scope: Construct, jobDefinitionArn: string) {
+    const resourceName = Stack.of(scope).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    return resourceName.split(':')[0];
   }
 
   readonly container: IEcsContainerDefinition
@@ -97,7 +99,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
-    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
+    this.jobDefinitionName = EcsJobDefinition.getJobDefinitionName(scope, this.jobDefinitionArn);
   }
 
   private renderPlatformCapabilities() {

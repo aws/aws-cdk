@@ -1,5 +1,8 @@
 import { EOL } from 'os';
 import * as path from 'path';
+import { IConstruct, Construct } from 'constructs';
+import { CfnRepository } from './ecr.generated';
+import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -16,11 +19,8 @@ import {
   TokenComparison,
   CustomResource,
   CustomResourceProvider,
-  CustomResourceProviderRuntime,
+  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
-import { IConstruct, Construct } from 'constructs';
-import { CfnRepository } from './ecr.generated';
-import { LifecycleRule, TagStatus } from './lifecycle';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -87,6 +87,11 @@ export interface IRepository extends IResource {
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Gran tthe given identity permissions to read images in this repository.
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
@@ -343,6 +348,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   * Grant the given identity permissions to read the images in this repository
+   */
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'ecr:DescribeRepositories',
+      'ecr:DescribeImages',
+    );
+  }
+
+  /**
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
@@ -367,7 +382,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       'ecr:PutImage',
       'ecr:InitiateLayerUpload',
       'ecr:UploadLayerPart',
-      'ecr:CompleteLayerUpload');
+      'ecr:CompleteLayerUpload',
+    );
   }
 
   /**
@@ -544,6 +560,8 @@ export class Repository extends RepositoryBase {
       throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
+    validateRepositoryArn();
+
     const repositoryName = repositoryArn.split('/').slice(1).join('/');
 
     class Import extends RepositoryBase {
@@ -559,6 +577,14 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id, {
       environmentFromArn: repositoryArn,
     });
+
+    function validateRepositoryArn() {
+      const splitArn = repositoryArn.split(':');
+
+      if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
+        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+      }
+    }
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
@@ -794,7 +820,7 @@ export class Repository extends RepositoryBase {
     // images in the repository and the ability to get all repositories to find the arn needed on delete.
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
       policyStatements: [
         {

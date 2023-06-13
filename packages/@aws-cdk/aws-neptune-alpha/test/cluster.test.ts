@@ -142,7 +142,6 @@ describe('DatabaseCluster', () => {
     });
   });
 
-
   test('can create a cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();

@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "IntegTestAlbOidc/DefaultTest": {
+      "stacks": [
+        "IntegAlbOidc"
+      ],
+      "assertionStack": "IntegTestAlbOidc/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestAlbOidcDefaultTestDeployAssert2476ECB6"
+    }
+  }
+}

@@ -1,7 +1,7 @@
-import { Template, Match, Annotations } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '../../core';
 import { Construct } from 'constructs';
+import { Template, Match, Annotations } from '../../assertions';
+import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '../../core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
 describe('isRole() returns', () => {
@@ -1166,7 +1166,18 @@ test('managed policy ARNs are deduplicated', () => {
       ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
     ],
   });
-  role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+  role.addToPrincipalPolicy(
+    new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['*'],
+    }),
+  );
+
+  for (let i = 0; i < 20; i++) {
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+  }
+
+  Annotations.fromStack(stack).hasNoWarning('/my-stack/MyRole', Match.stringLikeRegexp('.*'));
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
@@ -1182,6 +1193,26 @@ test('managed policy ARNs are deduplicated', () => {
       },
     ],
   });
+});
+
+test('too many managed policies warning', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+  });
+  role.addToPrincipalPolicy(
+    new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['*'],
+    }),
+  );
+
+  for (let i = 0; i < 20; i++) {
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(`SuperDeveloper${i}`));
+  }
+
+  Annotations.fromStack(stack).hasWarning('/my-stack/MyRole', Match.stringLikeRegexp('.*'));
 });
 
 describe('role with too large inline policy', () => {
@@ -1293,15 +1324,4 @@ test('cross-env role ARNs include path', () => {
       ],
     },
   });
-});
-
-test('fromRoleName should validate role name (only if not a token)', () => {
-  const app = new App();
-  const stack = new Stack(app, 'MyStack');
-  expect(() => {
-    Role.fromRoleName(stack, 'Invalid role name', 'arn:aws:iam::***:role/myrole');
-  }).toThrow(/does not match the IAM conventions/);
-  expect(() => {
-    Role.fromRoleName(stack, 'Token', '${Token[TOKEN.26]}');
-  }).not.toThrow();
 });

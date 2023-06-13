@@ -1,4 +1,3 @@
-import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { Construct } from 'constructs';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
@@ -6,6 +5,7 @@ import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
+import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 
 export interface IResource extends IResourceBase {
   /**

@@ -14,6 +14,7 @@ describe('metric filter', () => {
       logGroup,
       metricNamespace: 'AWS/Test',
       metricName: 'Latency',
+      filterName: 'FooBazBar',
       metricValue: '$.latency',
       filterPattern: FilterPattern.exists('$.latency'),
     });
@@ -27,6 +28,7 @@ describe('metric filter', () => {
       }],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
+      FilterName: 'FooBazBar',
     });
   });
 
@@ -83,7 +85,7 @@ describe('metric filter', () => {
         Baz: 'Qux',
         Qux: 'Quux',
       },
-    })).toThrow(/MetricFilter only supports a maximum of 3 Dimensions/);
+    })).toThrow(/MetricFilter only supports a maximum of 3 dimensions but received/);
   });
 
   test('metric filter exposes metric', () => {

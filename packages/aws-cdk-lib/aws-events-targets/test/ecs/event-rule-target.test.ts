@@ -1,11 +1,12 @@
-import { Template } from '../../../assertions';
+
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 
@@ -777,4 +778,279 @@ test('uses the specific fargate platform version', () => {
       },
     ],
   });
+});
+
+test('sets the propagate tags flag', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          PropagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+        }),
+      }),
+    ],
+  });
+});
+
+test('throws an error when trying to pass a disallowed value for propagateTags', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+      propagateTags: ecs.PropagatedTagSource.SERVICE, // propagateTags must be TASK_DEFINITION or NONE
+    }));
+  }).toThrowError('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
+});
+
+test('set enableExecuteCommand', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    enableExecuteCommand: true,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          EnableExecuteCommand: true,
+        }),
+      }),
+    ],
+  });
+});
+
+test('sets tag lists', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    tags: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          TagList: [
+            {
+              Key: 'my-tag',
+              Value: 'my-tag-value',
+            },
+          ],
+        }),
+      }),
+    ],
+  });
+});
+
+test('enable assignPublicIp for public subnet', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    assignPublicIp: true,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        EcsParameters: {
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              AssignPublicIp: 'ENABLED',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('DISABLE is set when disable assignPublicIp in a public subnet', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    assignPublicIp: false,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        EcsParameters: {
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              AssignPublicIp: 'DISABLED',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('throw error when enable assignPublicIp for non-Fargate task', () => {
+  // GIVEN
+  const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      assignPublicIp: true,
+    }));
+  }).toThrowError('assignPublicIp is only supported for FARGATE tasks');
+});
+
+test('throw an error when assignPublicIp is set to true for private subnets', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      assignPublicIp: true,
+    }));
+  }).toThrowError('assignPublicIp should be set to true only for PUBLIC subnets');
 });

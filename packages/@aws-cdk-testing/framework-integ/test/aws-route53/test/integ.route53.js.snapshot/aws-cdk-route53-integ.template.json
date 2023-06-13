@@ -274,6 +274,12 @@
     "Name": "sub.cdk.test."
    }
   },
+  "PublicZoneWithDotAE1455DD": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test"
+   }
+  },
   "CNAMEC70A2D52": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {

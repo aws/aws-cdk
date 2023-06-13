@@ -452,6 +452,117 @@
     }
    }
   },
+  "FargateClusterKubectlHandlerRole93DCDA21": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     },
+     {
+      "Fn::If": [
+       "FargateClusterHasEcrPublic3641FEA6",
+       {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+         ]
+        ]
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "eks:DescribeCluster",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FargateCluster019F03E8",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FargateClusterCreationRole8C524AD8",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0",
+    "Roles": [
+     {
+      "Ref": "FargateClusterKubectlHandlerRole93DCDA21"
+     }
+    ]
+   }
+  },
   "FargateClusterRole8E36B33A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -508,22 +619,26 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "FargateClusterKubectlHandlerRole93DCDA21",
+           "Arn"
           ]
-         ]
-        }
+         },
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn"
+          ]
+         },
+         {
+          "Fn::GetAtt": [
+           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+           "Outputs.awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn"
+          ]
+         }
+        ]
        }
       }
      ],
@@ -671,6 +786,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -749,93 +867,6 @@
     "FargateClusterCreationRole8C524AD8",
     "FargateCluster019F03E8"
    ]
-  },
-  "FargateClusterMastersRole50BAF9FD": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "FargateClusterAwsAuthmanifest1F7A5553": {
-   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn"
-     ]
-    },
-    "Manifest": {
-     "Fn::Join": [
-      "",
-      [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "FargateClusterMastersRole50BAF9FD",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "FargateClusterMastersRole50BAF9FD",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
-       {
-        "Fn::GetAtt": [
-         "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
-         "Arn"
-        ]
-       },
-       "\\\",\\\"username\\\":\\\"system:node:{{SessionName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\",\\\"system:node-proxier\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
-      ]
-     ]
-    },
-    "ClusterName": {
-     "Ref": "FargateCluster019F03E8"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "FargateClusterCreationRole8C524AD8",
-      "Arn"
-     ]
-    },
-    "Overwrite": true
-   },
-   "DependsOn": [
-    "FargateClusterKubectlReadyBarrier93746934"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "FargateClusterCoreDnsComputeTypePatch711BF1B2": {
    "Type": "Custom::AWSCDK-EKS-KubernetesPatch",
@@ -936,6 +967,47 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "FargateClusterAwsAuthmanifest1F7A5553": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn"
+     ]
+    },
+    "Manifest": {
+     "Fn::Join": [
+      "",
+      [
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{SessionName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\",\\\"system:node-proxier\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+      ]
+     ]
+    },
+    "ClusterName": {
+     "Ref": "FargateCluster019F03E8"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "FargateClusterCreationRole8C524AD8",
+      "Arn"
+     ]
+    },
+    "Overwrite": true
+   },
+   "DependsOn": [
+    "FargateClusterKubectlReadyBarrier93746934"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
@@ -955,17 +1027,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4d43e74130fa986d0dccce8d2b755a1bb2195fe9bf5e8a5531ad69bbb97acaa5.json"
+       "/e5547cbb979beb9e98d9e2275e526b894c451cc4e01d23f37b3523824a35a503.json"
       ]
      ]
-    },
-    "Parameters": {
-     "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-      "Fn::GetAtt": [
-       "FargateClusterCreationRole8C524AD8",
-       "Arn"
-      ]
-     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -990,20 +1054,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/eb2424de0291785175d9304f682a14024fef1cdabfc3246c96a6fcdebcc69500.json"
+       "/ec72a9a0e0732c8f744b78d93062b6d755628424efb2b1c8fb2c5e1dbf96df28.json"
       ]
      ]
     },
     "Parameters": {
-     "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn": {
+     "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
       "Fn::GetAtt": [
-       "FargateCluster019F03E8",
-       "Arn"
-      ]
-     },
-     "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-      "Fn::GetAtt": [
-       "FargateClusterCreationRole8C524AD8",
+       "FargateClusterKubectlHandlerRole93DCDA21",
        "Arn"
       ]
      },
@@ -1028,60 +1086,22 @@
     "FargateClusterDefaultVpcPrivateSubnet1DefaultRouteE93D7B93",
     "FargateClusterDefaultVpcPrivateSubnet1RouteTableAssociationDC34627F",
     "FargateClusterDefaultVpcPrivateSubnet2DefaultRouteABCE20FF",
-    "FargateClusterDefaultVpcPrivateSubnet2RouteTableAssociation6C0234FE"
+    "FargateClusterDefaultVpcPrivateSubnet2RouteTableAssociation6C0234FE",
+    "FargateClusterKubectlHandlerRoleDefaultPolicy3F5DBBB0",
+    "FargateClusterKubectlHandlerRole93DCDA21"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
- "Outputs": {
-  "FargateClusterConfigCommand46D4A6C7": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "FargateCluster019F03E8"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "FargateClusterMastersRole50BAF9FD",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "FargateClusterGetTokenCommand4ADED7BB": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "FargateCluster019F03E8"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "FargateClusterMastersRole50BAF9FD",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
+ "Conditions": {
+  "FargateClusterHasEcrPublic3641FEA6": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Partition"
+    },
+    "aws"
+   ]
   }
  },
  "Parameters": {

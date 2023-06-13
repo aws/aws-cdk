@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-bottlerocket-ng-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/472d22c46dfe23885a333c3b0f678fea3bb7a085b48bc37ab8f584c33d03c605.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/770a037527307396d508b10e843c512fc31d0efe2903045dedfda33d35c27e95.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,6 +171,18 @@
             "data": "KubectlLayer600207B5"
           }
         ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/Cluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRole94549F93"
+          }
+        ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
+          }
+        ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -205,6 +217,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlReadyBarrier200052AF"
+          }
+        ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/Cluster/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/Cluster/AwsAuth/manifest/Resource/Default": [
@@ -261,12 +279,6 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
-          }
-        ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -277,12 +289,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
-          }
-        ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
@@ -363,34 +369,28 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleF2D7A6FBArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleF2D7A6FBArn"
+          }
+        ],
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleE74A431FArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleE74A431FArn"
+          }
+        ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderframeworkonEventCB851FF9Arn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderframeworkonEventCB851FF9Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkeksclusterbottlerocketngtestClusterCreationRole94E8BD1EArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterbottlerocketngtestClusterCreationRole94E8BD1EArn"
-          }
-        ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
-          }
-        ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleFCDC14AE"
-          }
-        ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleDefaultPolicyCBD0CC91"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -429,16 +429,10 @@
             "data": "awscdkeksclusterbottlerocketngtestawscdkawseksKubectlProviderframeworkonEvent3ECB1FCDArn"
           }
         ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestCluster81B40D2EArn": [
+        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterbottlerocketngtestCluster81B40D2EArn"
-          }
-        ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestClusterCreationRole94E8BD1EArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterbottlerocketngtestClusterCreationRole94E8BD1EArn"
+            "data": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterbottlerocketngtestKubectlLayer779BB176Ref": [

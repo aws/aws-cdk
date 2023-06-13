@@ -1,8 +1,9 @@
-import * as iam from '../../aws-iam';
-import { RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
+import * as iam from '../../aws-iam';
+import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -197,6 +198,20 @@ export class Alias extends AliasBase {
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
       }
+    } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
+      const valueInToken = Tokenization.reverseString(aliasName).firstValue;
+
+      if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {
+        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
+      }
+
+      if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
+      }
+
+      if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+      }
     }
 
     super(scope, id, {
@@ -210,7 +225,11 @@ export class Alias extends AliasBase {
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    this.aliasName = this.getResourceNameAttribute(resource.aliasName);
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      this.aliasName = this.getResourceNameAttribute(resource.ref);
+    } else {
+      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
+    }
 
     if (props.removalPolicy) {
       resource.applyRemovalPolicy(props.removalPolicy);

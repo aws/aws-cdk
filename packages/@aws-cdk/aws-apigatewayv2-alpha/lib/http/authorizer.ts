@@ -1,4 +1,4 @@
-import { Duration, Resource } from 'aws-cdk-lib';
+import { Duration, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
@@ -257,7 +257,7 @@ function undefinedIfNoKeys<A extends { [key: string]: unknown }>(obj: A): A | un
  * Explicitly configure no authorizers on specific HTTP API routes.
  */
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
-  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+  public bind(_options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
       authorizationType: 'NONE',
     };

@@ -21,7 +21,7 @@
                     "path": "aws-cdk-eks-handlers-in-vpc-test/KubectlLayer/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.47.0"
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -29,13 +29,13 @@
                     "path": "aws-cdk-eks-handlers-in-vpc-test/KubectlLayer/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.47.0"
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.47.0"
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -56,13 +56,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                  "version": "2.47.0"
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.100"
+              "version": "2.0.195"
             }
           },
           "EksAllHandlersInVpcStack": {
@@ -92,7 +92,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                       "version": "0.0.0"
                     }
                   },
@@ -140,7 +140,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -148,7 +148,7 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -174,7 +174,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -193,7 +193,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -213,7 +213,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       },
@@ -237,7 +237,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                           "version": "0.0.0"
                         }
                       },
@@ -269,13 +269,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -323,7 +323,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -331,7 +331,7 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -357,7 +357,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -376,7 +376,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -396,7 +396,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       },
@@ -420,7 +420,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                           "version": "0.0.0"
                         }
                       },
@@ -452,13 +452,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -506,7 +506,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -514,7 +514,7 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -540,7 +540,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -559,7 +559,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -579,13 +579,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -633,7 +633,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                           "version": "0.0.0"
                         }
                       },
@@ -641,7 +641,7 @@
                         "id": "Acl",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -667,7 +667,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                           "version": "0.0.0"
                         }
                       },
@@ -686,7 +686,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                           "version": "0.0.0"
                         }
                       },
@@ -706,13 +706,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -731,7 +731,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                       "version": "0.0.0"
                     }
                   },
@@ -750,13 +750,168 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.Vpc",
+                  "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+                  "version": "0.0.0"
+                }
+              },
+              "KubectlHandlerRole": {
+                "id": "KubectlHandlerRole",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole",
+                "children": {
+                  "ImportKubectlHandlerRole": {
+                    "id": "ImportKubectlHandlerRole",
+                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::If": [
+                              "EksAllHandlersInVpcStackHasEcrPublic6DA58E3B",
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Ref": "AWS::NoValue"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "eks:DescribeCluster",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "EksAllHandlersInVpcStack9ED695D7",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "EksAllHandlersInVpcStackKubectlHandlerRoleDefaultPolicy0079A993",
+                            "roles": [
+                              {
+                                "Ref": "EksAllHandlersInVpcStackKubectlHandlerRole8F0B14B8"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -768,7 +923,7 @@
                     "id": "ImportRole",
                     "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -807,13 +962,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -841,13 +996,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -863,7 +1018,7 @@
                         "id": "ImportCreationRole",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/Resource/CreationRole/ImportCreationRole",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -879,22 +1034,26 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "EksAllHandlersInVpcStackKubectlHandlerRole8F0B14B8",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole2AACEB53Arn"
+                                        ]
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole059C26FCArn"
+                                        ]
+                                      }
+                                    ]
                                   }
                                 }
                               ],
@@ -903,7 +1062,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -980,19 +1139,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -1004,27 +1163,27 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
+                      "fqn": "aws-cdk-lib.CustomResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.2.26"
                 }
               },
               "KubectlReadyBarrier": {
                 "id": "KubectlReadyBarrier",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/KubectlReadyBarrier",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -1032,103 +1191,15 @@
                 "id": "ClusterSecurityGroup",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
-              "MastersRole": {
-                "id": "MastersRole",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/MastersRole",
-                "children": {
-                  "ImportMastersRole": {
-                    "id": "ImportMastersRole",
-                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/MastersRole/ImportMastersRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/MastersRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+              "HasEcrPublic": {
+                "id": "HasEcrPublic",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/HasEcrPublic",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "AwsAuth": {
-                "id": "AwsAuth",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth",
-                "children": {
-                  "manifest": {
-                    "id": "manifest",
-                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.AwsAuth",
+                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -1144,7 +1215,7 @@
                         "id": "ImportNodeGroupRole",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -1207,13 +1278,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -1253,35 +1324,57 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-eks.CfnNodegroup",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks.Nodegroup",
+                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
                   "version": "0.0.0"
                 }
               },
-              "ConfigCommand": {
-                "id": "ConfigCommand",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/ConfigCommand",
+              "AwsAuth": {
+                "id": "AwsAuth",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth",
+                "children": {
+                  "manifest": {
+                    "id": "manifest",
+                    "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest/Resource",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest/Resource/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "GetTokenCommand": {
-                "id": "GetTokenCommand",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/GetTokenCommand",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-eks.Cluster",
+              "fqn": "aws-cdk-lib.aws_eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -1301,7 +1394,7 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -1309,13 +1402,13 @@
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                       "version": "0.0.0"
                     }
                   },
@@ -1329,19 +1422,19 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
+                          "s3Key": "75dfa9114a30421542432dcb55212f010f591a9e3bd203ae98ba3f9bedf5bb31.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnLayerVersion",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/lambda-layer-node-proxy-agent.NodeProxyAgentLayer",
+                  "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
                   "version": "0.0.0"
                 }
               },
@@ -1357,7 +1450,7 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -1408,54 +1501,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -1467,7 +1519,7 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -1475,13 +1527,13 @@
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                       "version": "0.0.0"
                     }
                   },
@@ -1509,13 +1561,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1529,7 +1581,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1572,13 +1624,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Function",
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0"
                 }
               },
@@ -1594,7 +1646,7 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -1645,54 +1697,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-                                "roles": [
-                                  {
-                                    "Ref": "IsCompleteHandlerServiceRole5810CC58"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -1704,7 +1715,7 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -1712,13 +1723,13 @@
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                       "version": "0.0.0"
                     }
                   },
@@ -1746,13 +1757,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1766,7 +1777,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "42ee7a787eab7842c3d815365d104cacb9168fb9beb8a1bc019b0a6d7e969bee.zip"
+                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1809,13 +1820,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Function",
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0"
                 }
               },
@@ -1835,7 +1846,7 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -1886,7 +1897,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -1967,19 +1978,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -1991,7 +2002,7 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
                             }
                           },
@@ -1999,13 +2010,13 @@
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3.BucketBase",
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                           "version": "0.0.0"
                         }
                       },
@@ -2033,13 +2044,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2053,7 +2064,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2105,13 +2116,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.Function",
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
                       "version": "0.0.0"
                     }
                   },
@@ -2127,7 +2138,7 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -2178,7 +2189,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2252,19 +2263,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -2276,7 +2287,7 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
                             }
                           },
@@ -2284,13 +2295,13 @@
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3.BucketBase",
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                           "version": "0.0.0"
                         }
                       },
@@ -2318,13 +2329,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2338,7 +2349,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2387,13 +2398,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.Function",
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
                       "version": "0.0.0"
                     }
                   },
@@ -2409,7 +2420,7 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -2460,7 +2471,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2534,19 +2545,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -2558,7 +2569,7 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
                             }
                           },
@@ -2566,13 +2577,13 @@
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3.BucketBase",
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                           "version": "0.0.0"
                         }
                       },
@@ -2600,13 +2611,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                              "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                           "version": "0.0.0"
                         }
                       },
@@ -2620,7 +2631,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2669,13 +2680,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.Function",
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
                       "version": "0.0.0"
                     }
                   },
@@ -2691,7 +2702,7 @@
                             "id": "ImportRole",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -2716,7 +2727,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -2790,19 +2801,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -2810,19 +2821,35 @@
                         "id": "Resource",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.252"
+                      "version": "10.2.26"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/custom-resources.Provider",
+                  "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole059C26FCArn": {
+                "id": "awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole059C26FCArn",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole059C26FCArn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole2AACEB53Arn": {
+                "id": "awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole2AACEB53Arn",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole2AACEB53Arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -2830,15 +2857,7 @@
                 "id": "awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderframeworkonEvent5C6C2463Arn",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderframeworkonEvent5C6C2463Arn",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
-                "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -2846,7 +2865,7 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcE40EA7ACRef",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcE40EA7ACRef",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -2854,7 +2873,7 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -2862,13 +2881,13 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
+              "fqn": "aws-cdk-lib.NestedStack",
               "version": "0.0.0"
             }
           },
@@ -2898,17 +2917,11 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/323aaa33e7c7e5096218c737137719a45cde44b8c83992ede9a1b43117904f2f.json"
+                          "/9c918799cf14ea8e7c4a9cb7344b8a36a9cf317dec497f93e8b2c26de6d901a4.json"
                         ]
                       ]
                     },
                     "parameters": {
-                      "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
-                        "Fn::GetAtt": [
-                          "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
-                          "Arn"
-                        ]
-                      },
                       "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcE40EA7ACRef": {
                         "Ref": "EksAllHandlersInVpcStackDefaultVpcBE11D4AE"
                       },
@@ -2922,14 +2935,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.252"
+              "version": "10.2.26"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2940,147 +2953,6 @@
                 "id": "Handler",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "eks:DescribeCluster",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn"
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-                                "roles": [
-                                  {
-                                    "Ref": "HandlerServiceRoleFCDC14AE"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Code": {
                     "id": "Code",
                     "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
@@ -3089,7 +2961,7 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -3097,13 +2969,13 @@
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                       "version": "0.0.0"
                     }
                   },
@@ -3117,13 +2989,10 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c17e6c5822dd39738b3ba669bef4bb7c8fceaea76b51477bf94d6745d0c201c8.zip"
+                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
                         "role": {
-                          "Fn::GetAtt": [
-                            "HandlerServiceRoleFCDC14AE",
-                            "Arn"
-                          ]
+                          "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -3156,13 +3025,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Function",
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0"
                 }
               },
@@ -3178,7 +3047,7 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -3186,13 +3055,13 @@
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketBase",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                       "version": "0.0.0"
                     }
                   },
@@ -3206,19 +3075,35 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
+                          "s3Key": "10972873dd8a3bc33ae1cb91d834617be249fd84bed5bdbb6ffbb581650aea83.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnLayerVersion",
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/lambda-layer-awscli.AwsCliLayer",
+                  "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "ConditionalPolicyArn": {
+                "id": "ConditionalPolicyArn",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "conditionalPolicy": {
+                "id": "conditionalPolicy",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -3238,7 +3123,7 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -3289,7 +3174,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -3343,19 +3228,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -3367,7 +3252,7 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
                             }
                           },
@@ -3375,13 +3260,13 @@
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3.BucketBase",
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                           "version": "0.0.0"
                         }
                       },
@@ -3395,7 +3280,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -3435,19 +3320,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.Function",
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/custom-resources.Provider",
+                  "fqn": "aws-cdk-lib.custom_resources.Provider",
                   "version": "0.0.0"
                 }
               },
@@ -3455,23 +3340,15 @@
                 "id": "awscdkekshandlersinvpctestawscdkawseksKubectlProviderframeworkonEventB8D0A5E7Arn",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/awscdkekshandlersinvpctestawscdkawseksKubectlProviderframeworkonEventB8D0A5E7Arn",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn": {
-                "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn",
+              "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn": {
+                "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn",
+                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
-                "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn",
-                "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -3479,7 +3356,7 @@
                 "id": "reference-to-awscdkekshandlersinvpctestKubectlLayerAD42127BRef",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestKubectlLayerAD42127BRef",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -3487,7 +3364,7 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -3495,7 +3372,7 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
@@ -3503,13 +3380,13 @@
                 "id": "reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0ClusterSecurityGroupId",
                 "path": "aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0ClusterSecurityGroupId",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-eks.KubectlProvider",
+              "fqn": "aws-cdk-lib.aws_eks.KubectlProvider",
               "version": "0.0.0"
             }
           },
@@ -3539,20 +3416,14 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/5e5f54f81d1d2eea8b9f0e0b3d0e2390f842fce6ab429b22de2c0f940c73d848.json"
+                          "/a70613af8e84db5a4d5da3c5984c8b72497dfa77317e339bb8cc0dccd2944a53.json"
                         ]
                       ]
                     },
                     "parameters": {
-                      "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn": {
+                      "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackKubectlHandlerRole12BCDBC7Arn": {
                         "Fn::GetAtt": [
-                          "EksAllHandlersInVpcStack9ED695D7",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
-                        "Fn::GetAtt": [
-                          "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
+                          "EksAllHandlersInVpcStackKubectlHandlerRole8F0B14B8",
                           "Arn"
                         ]
                       },
@@ -3575,21 +3446,21 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
+                  "fqn": "aws-cdk-lib.CfnStack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.252"
+              "version": "10.2.26"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-eks-handlers-in-vpc-test/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -3597,13 +3468,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-eks-handlers-in-vpc-test/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -3620,7 +3491,7 @@
                 "path": "aws-cdk-eks-handlers-in-vpc/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -3631,7 +3502,7 @@
                     "id": "BootstrapVersion",
                     "path": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -3639,25 +3510,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -3666,12 +3537,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

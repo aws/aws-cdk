@@ -1,102 +1,5 @@
 {
  "Resources": {
-  "HandlerServiceRoleFCDC14AE": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "HandlerServiceRoleDefaultPolicyCBD0CC91": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "eks:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "Roles": [
-     {
-      "Ref": "HandlerServiceRoleFCDC14AE"
-     }
-    ]
-   }
-  },
   "Handler886CB40B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -104,13 +7,10 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c17e6c5822dd39738b3ba669bef4bb7c8fceaea76b51477bf94d6745d0c201c8.zip"
+     "S3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
     },
     "Role": {
-     "Fn::GetAtt": [
-      "HandlerServiceRoleFCDC14AE",
-      "Arn"
-     ]
+     "Ref": "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -140,11 +40,7 @@
       }
      ]
     }
-   },
-   "DependsOn": [
-    "HandlerServiceRoleDefaultPolicyCBD0CC91",
-    "HandlerServiceRoleFCDC14AE"
-   ]
+   }
   },
   "AwsCliLayerF44AAF94": {
    "Type": "AWS::Lambda::LayerVersion",
@@ -153,7 +49,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
+     "S3Key": "10972873dd8a3bc33ae1cb91d834617be249fd84bed5bdbb6ffbb581650aea83.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -250,7 +146,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -305,10 +201,7 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
+  "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
    "Type": "String"
   },
   "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref": {

@@ -31,7 +31,6 @@ const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
 
-
 describe('staging', () => {
   beforeAll(() => {
     // this is a way to provide a custom "docker" command for staging.
@@ -1318,7 +1317,7 @@ describe('staging with docker cp', () => {
     expect(dockerCalls).toEqual(expect.arrayContaining([
       expect.stringContaining('volume create assetInput'),
       expect.stringContaining('volume create assetOutput'),
-      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
+      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
       expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
       expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
       expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),

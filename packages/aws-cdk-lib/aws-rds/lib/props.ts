@@ -1,8 +1,8 @@
+import { IParameterGroup } from './parameter-group';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Duration, SecretValue } from '../../core';
-import { IParameterGroup } from './parameter-group';
 
 /**
  * Instance properties for database instances
@@ -529,7 +529,13 @@ export interface RotationMultiUserOptions extends CommonRotationUserOptions {
 }
 
 /**
- * The retention period for Performance Insight.
+ * The retention period for Performance Insight data, in days.
+ *
+ * Per https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-performanceinsightsretentionperiod
+ * This must be either
+ * - 7 days (the default, free tier)
+ * - month * 31, where month is a number of months from 1-23
+ * - 731 (2 years)
  */
 export enum PerformanceInsightRetention {
   /**
@@ -537,8 +543,32 @@ export enum PerformanceInsightRetention {
    */
   DEFAULT = 7,
 
+  MONTHS_1 = 31,
+  MONTHS_2 = 31 * 2,
+  MONTHS_3 = 31 * 3,
+  MONTHS_4 = 31 * 4,
+  MONTHS_5 = 31 * 5,
+  MONTHS_6 = 31 * 6,
+  MONTHS_7 = 31 * 7,
+  MONTHS_8 = 31 * 8,
+  MONTHS_9 = 31 * 9,
+  MONTHS_10 = 31 * 10,
+  MONTHS_11 = 31 * 11,
+  MONTHS_12 = 31 * 12,
+  MONTHS_13 = 31 * 13,
+  MONTHS_14 = 31 * 14,
+  MONTHS_15 = 31 * 15,
+  MONTHS_16 = 31 * 16,
+  MONTHS_17 = 31 * 17,
+  MONTHS_18 = 31 * 18,
+  MONTHS_19 = 31 * 19,
+  MONTHS_20 = 31 * 20,
+  MONTHS_21 = 31 * 21,
+  MONTHS_22 = 31 * 22,
+  MONTHS_23 = 31 * 23,
+
   /**
    * Long term retention period of 2 years.
    */
-  LONG_TERM = 731
+  LONG_TERM = 731,
 }

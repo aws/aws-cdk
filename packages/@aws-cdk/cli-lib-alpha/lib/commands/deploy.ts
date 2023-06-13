@@ -105,6 +105,27 @@ export interface DeployOptions extends SharedOptions {
    * @default StackActivityProgress.EVENTS
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
+
+  /**
+   * Whether to build/publish assets in parallel.
+   *
+   * @default false
+   */
+  readonly assetParallelism?: boolean;
+
+  /**
+   * Whether to build all assets before deploying the first stack (useful for failing Docker builds)
+   *
+   * @default true
+   */
+  readonly assetPrebuild?: boolean;
 }
 
 /**
