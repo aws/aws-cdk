@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "TokenAuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ef3f0473a2312add1b6eeec16180f638b07d97828baa8745a05728ef3a87074.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/754a99e7f6ac84befe2ba21bb29f26187bdbfcbde3b2991296ddbcfe55583312.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,7 +78,7 @@
         "/TokenAuthorizerInteg/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
+            "data": "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0"
           }
         ],
         "/TokenAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
@@ -135,10 +135,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec": [
+        "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec",
+            "data": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -163,7 +163,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52fafe59d21141477256755bcebd4385222337a65ba87eac0399ec8dc24a2702.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a24955fdbaffb6a47fa6e6e5cba21c79c9658ff33a5a2ed4225c206ec217f025.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
