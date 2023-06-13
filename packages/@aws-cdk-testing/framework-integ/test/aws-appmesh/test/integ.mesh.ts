@@ -47,7 +47,6 @@ const multiListenerVirtualService = new appmesh.VirtualService(stack, 'multi-ser
   virtualServiceName: 'multi-service.domain.local',
 });
 
-
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
   listeners: [appmesh.VirtualNodeListener.http({
