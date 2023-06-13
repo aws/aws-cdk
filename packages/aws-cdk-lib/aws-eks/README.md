@@ -16,6 +16,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Endpoint Access](#endpoint-access)
   * [ALB Controller](#alb-controller)
   * [VPC Support](#vpc-support)
+  * [IPv6 Support](#ipv6-support)
   * [Kubectl Support](#kubectl-support)
   * [ARM64 Support](#arm64-support)
   * [Masters Role](#masters-role)
@@ -205,6 +206,49 @@ cluster.addNodegroupCapacity('custom-node-group', {
       value: 'bar',
     },
   ],
+});
+```
+
+#### Node Groups with IPv6 Support
+
+Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
+
+> For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
+
+```ts
+const ipv6Management = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+    resources: ['arn:aws:ec2:*:*:network-interface/*'],
+    actions: [
+        'ec2:AssignIpv6Addresses',
+        'ec2:UnassignIpv6Addresses',
+    ],
+    })],
+});
+
+const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
+  roleName: 'eksClusterNodeGroupRole',
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
+  ],
+    inlinePolicies: {
+    ipv6Management,
+  },
+});
+
+const cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_26,
+  defaultCapacity: 0,
+});
+
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  minSize: 2,
+  diskSize: 100,
+  nodeRole: eksClusterNodeGroupRole,
 });
 ```
 
@@ -630,6 +674,37 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+### IPv6 Support
+
+You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// make an ipv6 cidr
+const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
+  vpcId: vpc.vpcId,
+  amazonProvidedIpv6CidrBlock: true,
+});
+
+// connect the ipv6 cidr to all vpc subnets
+let subnetcount = 0;
+let subnets = [...vpc.publicSubnets, ...vpc.privateSubnets];
+for ( let subnet of subnets) {
+  // Wait for the ipv6 cidr to complete
+  subnet.node.addDependency(ipv6cidr);
+  this._associate_subnet_with_v6_cidr(subnetcount, subnet);
+  subnetcount++;
+}
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  vpc: vpc,
+  ipFamily: eks.IpFamily.IP_V6,
+  vpcSubnets: [{ subnets: [...vpc.publicSubnets] }],
+});
+
+```
+
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
@@ -638,8 +713,10 @@ By default, CDK will create a new python lambda function to apply your k8s manif
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+// get the serivceToken from the custom resource provider
+const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  functionArn,
   kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
   handlerRole,
 });
