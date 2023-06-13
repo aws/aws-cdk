@@ -29,6 +29,7 @@ const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
 const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
+const TEMPLATE_BODY_MAXIMUM_SIZE = 1_000_000;
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
@@ -1074,8 +1075,20 @@ export class Stack extends Construct implements ITaggable {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
+
     const indent = this._suppressTemplateIndentation ? undefined : 1;
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, indent));
+    const templateData = JSON.stringify(template, undefined, indent);
+
+    if (templateData.length > TEMPLATE_BODY_MAXIMUM_SIZE) {
+      throw new Error(`Template size for stack '${this.node.path}' exceeds limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}`);
+    } else if (templateData.length > (TEMPLATE_BODY_MAXIMUM_SIZE * 0.8)) {
+      const msg = this._suppressTemplateIndentation ?
+        'Split resources into multiple stacks to reduce template size' :
+        'Split resources into multiple stacks or set suppressTemplateIndentation to reduce template size';
+      Annotations.of(this).addWarning(`Template size is approaching limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${msg}.`);
+    }
+
+    fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {

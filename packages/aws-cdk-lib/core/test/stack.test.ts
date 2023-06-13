@@ -2106,7 +2106,20 @@ describe('stack', () => {
     }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
   });
 
-  test('suppress indentation when property is true', () => {
+  test('indent templates when suppressTemplateIndentation is not set', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('do not indent templates when suppressTemplateIndentation is true', () => {
     const app = new App();
 
     const stack = new Stack(app, 'Stack', { suppressTemplateIndentation: true });
@@ -2119,7 +2132,7 @@ describe('stack', () => {
     expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
   });
 
-  test('suppress indentation when context value is true', () => {
+  test('do not indent templates when @aws-cdk/core:suppressTemplateIndentation is true', () => {
     const app = new App({
       context: {
         '@aws-cdk/core:suppressTemplateIndentation': true,
