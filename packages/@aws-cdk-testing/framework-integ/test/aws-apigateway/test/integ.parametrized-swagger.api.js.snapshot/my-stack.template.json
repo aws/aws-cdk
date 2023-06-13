@@ -55,7 +55,7 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:cr-owned:052c92fb",
+      "Key": "aws-cdk:cr-owned:222eea1b",
       "Value": "true"
      }
     ]
@@ -358,17 +358,6 @@
       "/"
      ]
     ]
-   }
-  },
-  "ExportsOutputFnGetAttHello4A628BD4ArnADD0C428": {
-   "Value": {
-    "Fn::GetAtt": [
-     "Hello4A628BD4",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "test-apigateway-parameterized-swagger:ExportsOutputFnGetAttHello4A628BD4ArnADD0C428"
    }
   }
  },
