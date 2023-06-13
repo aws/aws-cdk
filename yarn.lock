@@ -3858,7 +3858,16 @@ aws-sdk-mock@5.6.0:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1379.0, aws-sdk@^2.928.0:
+aws-sdk-mock@5.8.0:
+  version "5.8.0"
+  resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.8.0.tgz#2556a79010a883f4bd5a566ce63bc244cee67579"
+  integrity sha512-s0Vy4DObFmVJ6h1uTw1LGInOop77oF0JXH2N39Lv+1Wss274EowVk9odhM4Sji4mynXcM5oSu68uYqkJRviDRA==
+  dependencies:
+    aws-sdk "^2.1231.0"
+    sinon "^14.0.1"
+    traverse "^0.6.6"
+
+aws-sdk@^2.1231.0, aws-sdk@^2.1379.0, aws-sdk@^2.928.0:
   version "2.1396.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1396.0.tgz#14dc92f874aca039a329d5a96f9f894fd9159252"
   integrity sha512-5tAzB4pO9mfwb4XbDIv7wj4IsxaLI+KEAUZ8CR80sh2OdsP9AVGtMGH61dH6DQbHxCiwtLyQuoy7gZEuXv2ldQ==
@@ -11498,7 +11507,7 @@ sinon@^11.1.1:
     nise "^5.1.0"
     supports-color "^7.2.0"
 
-sinon@^14.0.2:
+sinon@^14.0.1, sinon@^14.0.2:
   version "14.0.2"
   resolved "https://registry.npmjs.org/sinon/-/sinon-14.0.2.tgz#585a81a3c7b22cf950762ac4e7c28eb8b151c46f"
   integrity sha512-PDpV0ZI3ZCS3pEqx0vpNp6kzPhHrLx72wA0G+ZLaaJjLIYeE0n8INlgaohKuGy7hP0as5tbUd23QWu5U233t+w==

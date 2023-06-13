@@ -145,7 +145,7 @@
     "@types/punycode": "^2.1.0",
     "aws-sdk": "^2.1379.0",
     "aws-sdk-client-mock": "^2.1.1",
-    "aws-sdk-mock": "5.6.0",
+    "aws-sdk-mock": "5.8.0",
     "cdk8s": "^2.7.68",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
