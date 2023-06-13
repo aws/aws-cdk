@@ -144,6 +144,13 @@ export interface VpcEndpointServiceProps {
   readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
   /**
+   * Indicates whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
+   * @default false
+   *
+   */
+  readonly contributorInsightsEnabled: boolean;
+
+  /**
    * Whether requests from service consumers to connect to the service through
    * an endpoint must be accepted.
    * @default true
