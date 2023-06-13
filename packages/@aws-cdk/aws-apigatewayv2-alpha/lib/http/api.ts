@@ -1,5 +1,5 @@
 import { Metric, MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
-import { Duration } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
