@@ -1,9 +1,9 @@
-import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
+import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as cdk from '../../core';
 
 export interface BasicStepScalingPolicyProps {
   /**

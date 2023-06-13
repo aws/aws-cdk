@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
 describe('vpc from lookup', () => {
@@ -17,7 +17,6 @@ describe('vpc from lookup', () => {
 
       }).toThrow('All arguments to Vpc.fromLookup() must be concrete');
 
-
     });
 
     test('selecting subnets by name from a looked-up VPC does not throw', () => {
@@ -31,7 +30,6 @@ describe('vpc from lookup', () => {
       vpc.selectSubnets({ subnetName: 'Bleep' });
 
       // THEN: no exception
-
 
     });
 
@@ -187,7 +185,6 @@ describe('vpc from lookup', () => {
       // THEN
       expect(subnets.subnets.length).toEqual(2);
 
-
     });
 
     test('don\'t crash when using subnetgroup name in lookup VPC', () => {
@@ -206,7 +203,6 @@ describe('vpc from lookup', () => {
       });
 
       // THEN -- no exception occurred
-
 
     });
     test('subnets in imported VPC has all expected attributes', () => {
@@ -245,7 +241,6 @@ describe('vpc from lookup', () => {
       expect(subnet.subnetId).toEqual('pub-sub-in-us-east-1a');
       expect(subnet.routeTable.routeTableId).toEqual('rt-123');
       expect(subnet.ipv4CidrBlock).toEqual('10.100.0.0/24');
-
 
       restoreContextProvider(previous);
 

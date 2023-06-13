@@ -149,6 +149,7 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   const compilerOptions = extractTsConfig(tsconfigPath);
   const excludedCompilerOptions = [
     'composite',
+    'noEmit',
     'tsBuildInfoFile',
   ];
 
@@ -191,7 +192,6 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
 
   return compilerOptionsString.trim();
 }
-
 
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
   // eslint-disable-next-line @typescript-eslint/no-require-imports

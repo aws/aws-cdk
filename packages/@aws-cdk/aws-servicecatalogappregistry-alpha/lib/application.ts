@@ -1,5 +1,5 @@
 import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
 import { AttributeGroup, IAttributeGroup } from './attribute-group';
@@ -57,12 +57,28 @@ export interface IApplication extends cdk.IResource {
   readonly applicationName?: string;
 
   /**
+   * Associate this application with an attribute group.
+   *
+   * @param attributeGroup AppRegistry attribute group
+   */
+  associateAttributeGroup(attributeGroup: IAttributeGroup): void;
+
+  /**
    * Create an attribute group and associate this application with the created attribute group.
    *
    * @param id name of the AttributeGroup construct to be created.
    * @param attributeGroupProps AppRegistry attribute group props
    */
   addAttributeGroup(id: string, attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
+
+  /**
+   * Associate this application with a CloudFormation stack.
+   *
+   * @deprecated Use `associateApplicationWithStack` instead.
+   * @param stack a CFN stack
+   */
+  associateStack(stack: cdk.Stack): void;
+
   /**
    * Associate a Cloudformation statck with the application in the given stack.
    *
@@ -113,6 +129,23 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   private readonly associatedResources: Set<string> = new Set();
 
   /**
+   * Associate an attribute group with application
+   * If the attribute group is already associated, it will ignore duplicate request.
+   *
+   * @deprecated Use `AttributeGroup.associateWith` instead.
+   */
+  public associateAttributeGroup(attributeGroup: IAttributeGroup): void {
+    if (!this.associatedAttributeGroups.has(attributeGroup.node.addr)) {
+      const hashId = this.generateUniqueHash(attributeGroup.node.addr);
+      new CfnAttributeGroupAssociation(this, `AttributeGroupAssociation${hashId}`, {
+        application: this.applicationId,
+        attributeGroup: attributeGroup.attributeGroupId,
+      });
+      this.associatedAttributeGroups.add(attributeGroup.node.addr);
+    }
+  }
+
+  /**
    * Create an attribute group and associate this application with the created attribute group.
    */
   public addAttributeGroup(id: string, props: AttributeGroupAssociationProps): IAttributeGroup {
@@ -127,6 +160,25 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
     });
     this.associatedAttributeGroups.add(attributeGroup.node.addr);
     return attributeGroup;
+  }
+
+  /**
+   * Associate a stack with the application
+   * If the resource is already associated, it will ignore duplicate request.
+   * A stack can only be associated with one application.
+   *
+   * @deprecated Use `associateApplicationWithStack` instead.
+   */
+  public associateStack(stack: cdk.Stack): void {
+    if (!this.associatedResources.has(stack.node.addr)) {
+      const hashId = this.generateUniqueHash(stack.node.addr);
+      new CfnResourceAssociation(this, `ResourceAssociation${hashId}`, {
+        application: this.applicationId,
+        resource: stack.stackId,
+        resourceType: 'CFN_STACK',
+      });
+      this.associatedResources.add(stack.node.addr);
+    }
   }
 
   /**

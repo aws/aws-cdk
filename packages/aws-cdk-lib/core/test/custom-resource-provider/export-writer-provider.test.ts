@@ -2,7 +2,6 @@ import { App, Stack, AssetStaging, CfnResource, NestedStack } from '../../lib';
 import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { toCloudFormation } from '../util';
 
-
 describe('export writer provider', () => {
   test('basic configuration', () => {
     // GIVEN
@@ -484,7 +483,6 @@ describe('export writer provider', () => {
         Prop: resource.getAtt('arn'),
       },
     });
-
 
     // THEN
     app.synth();

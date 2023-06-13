@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnElement, CfnResource, Lazy, Size, Stack } from '../../core';
 import * as apigw from '../lib';
 
@@ -933,7 +933,6 @@ describe('restapi', () => {
   });
 });
 
-
 describe('Import', () => {
   test('fromRestApiId()', () => {
     // GIVEN
@@ -1329,6 +1328,34 @@ describe('SpecRestApi', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(
         'AWS::ApiGateway::RestApi', {});
+    });
+  });
+
+  test('can override "apiKeyRequired" set in "defaultMethodOptions" at the resource level', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'myapi', {
+      defaultMethodOptions: {
+        apiKeyRequired: true,
+      },
+    });
+
+    api.root.addMethod('GET', undefined, {});
+    api.root.addMethod('POST', undefined, {
+      apiKeyRequired: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      ApiKeyRequired: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'POST',
+      ApiKeyRequired: false,
     });
   });
 });

@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../../assertions';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
@@ -8,7 +9,6 @@ import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as secretsmanager from '../../../aws-secretsmanager';
 import * as cloudmap from '../../../aws-servicediscovery';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import { App } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -572,7 +572,6 @@ describe('fargate service', () => {
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
 
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -657,7 +656,6 @@ describe('fargate service', () => {
         },
       });
     });
-
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
       // GIVEN

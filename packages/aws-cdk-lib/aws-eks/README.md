@@ -16,6 +16,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Endpoint Access](#endpoint-access)
   * [ALB Controller](#alb-controller)
   * [VPC Support](#vpc-support)
+  * [IPv6 Support](#ipv6-support)
   * [Kubectl Support](#kubectl-support)
   * [ARM64 Support](#arm64-support)
   * [Masters Role](#masters-role)
@@ -38,12 +39,12 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -208,6 +209,49 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+#### Node Groups with IPv6 Support
+
+Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
+
+> For more details visit [Configuring the Amazon VPC CNI plugin for Kubernetes to use IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-role)
+
+```ts
+const ipv6Management = new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+    resources: ['arn:aws:ec2:*:*:network-interface/*'],
+    actions: [
+        'ec2:AssignIpv6Addresses',
+        'ec2:UnassignIpv6Addresses',
+    ],
+    })],
+});
+
+const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
+  roleName: 'eksClusterNodeGroupRole',
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
+  ],
+    inlinePolicies: {
+    ipv6Management,
+  },
+});
+
+const cluster = new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_26,
+  defaultCapacity: 0,
+});
+
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  minSize: 2,
+  diskSize: 100,
+  nodeRole: eksClusterNodeGroupRole,
+});
+```
+
 #### Spot Instances Support
 
 Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
@@ -339,7 +383,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
 });
 ```
 
@@ -416,7 +460,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -509,7 +553,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_26,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -518,7 +562,7 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 
 ### Alb Controller
 
-Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/).
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/).
 
 From the docs:
 
@@ -630,6 +674,37 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+### IPv6 Support
+
+You can optionally choose to configure your cluster to use IPv6 using the [`ipFamily`](https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily) definition for your cluster.  Note that this will require the underlying subnets to have an associated IPv6 CIDR.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// make an ipv6 cidr
+const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
+  vpcId: vpc.vpcId,
+  amazonProvidedIpv6CidrBlock: true,
+});
+
+// connect the ipv6 cidr to all vpc subnets
+let subnetcount = 0;
+let subnets = [...vpc.publicSubnets, ...vpc.privateSubnets];
+for ( let subnet of subnets) {
+  // Wait for the ipv6 cidr to complete
+  subnet.node.addDependency(ipv6cidr);
+  this._associate_subnet_with_v6_cidr(subnetcount, subnet);
+  subnetcount++;
+}
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  vpc: vpc,
+  ipFamily: eks.IpFamily.IP_V6,
+  vpcSubnets: [{ subnets: [...vpc.publicSubnets] }],
+});
+
+```
+
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
@@ -638,8 +713,10 @@ By default, CDK will create a new python lambda function to apply your k8s manif
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+// get the serivceToken from the custom resource provider
+const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  functionArn,
   kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
   handlerRole,
 });
@@ -672,15 +749,15 @@ the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 The version of kubectl used must be compatible with the Kubernetes version of the
 cluster. kubectl is supported within one minor version (older or newer) of Kubernetes
 (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)).
-Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different
-version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
+Depending on which version of kubernetes you're targeting, you will need to use one of 
+the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV25Layer } from '@aws-cdk/lambda-layer-kubectl-v25';
+import { KubectlV26Layer } from '@aws-cdk/lambda-layer-kubectl-v26';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_26,
-  kubectlLayer: new KubectlV25Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV26Layer(this, 'kubectl'),
 });
 ```
 

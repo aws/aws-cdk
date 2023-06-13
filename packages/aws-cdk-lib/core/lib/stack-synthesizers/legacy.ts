@@ -1,9 +1,9 @@
-import * as cxschema from '../../../cloud-assembly-schema';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import * as cxschema from '../../../cloud-assembly-schema';
+import * as cxapi from '../../../cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';

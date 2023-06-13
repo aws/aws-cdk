@@ -1,8 +1,9 @@
-import * as cxschema from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
+/* eslint-disable import/order */
 import { Construct, Node } from 'constructs';
 import { debugModeEnabled } from './debug';
 import { Lazy } from './lazy';
+import * as cxschema from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
 
@@ -50,7 +51,6 @@ export abstract class CfnElement extends Construct {
    * (i.e. Stack.exportValue).
    */
   private _logicalIdLocked?: boolean;
-
 
   /**
    * Creates an entity and binds it to a tree.
@@ -203,7 +203,7 @@ function notTooLong(x: string) {
   return x.slice(0, 47) + '...' + x.slice(-47);
 }
 
+// These imports have to be at the end to prevent circular imports
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
 import { Token } from './token';
-

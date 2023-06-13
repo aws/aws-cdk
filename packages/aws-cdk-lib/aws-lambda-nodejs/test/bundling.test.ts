@@ -2,14 +2,13 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { version as delayVersion } from 'delay/package.json';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { AssetHashType, BundlingFileAccess, DockerImage } from '../../core';
-import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
-
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
@@ -501,7 +500,6 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
-
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isLocal: true,
@@ -750,7 +748,6 @@ test('Custom bundling volumesFrom', () => {
     }),
   });
 });
-
 
 test('Custom bundling workingDirectory', () => {
   Bundling.bundle({

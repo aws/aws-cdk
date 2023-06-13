@@ -68,6 +68,9 @@
   "aws-backup": [
     "AWS::Backup"
   ],
+  "aws-backupgateway": [
+    "AWS::BackupGateway"
+  ],
   "aws-batch": [
     "AWS::Batch"
   ],
@@ -474,6 +477,9 @@
   "aws-organizations": [
     "AWS::Organizations"
   ],
+  "aws-osis": [
+    "AWS::OSIS"
+  ],
   "aws-panorama": [
     "AWS::Panorama"
   ],
@@ -488,6 +494,9 @@
   ],
   "aws-pipes": [
     "AWS::Pipes"
+  ],
+  "aws-proton": [
+    "AWS::Proton"
   ],
   "aws-qldb": [
     "AWS::QLDB"
@@ -581,6 +590,9 @@
   ],
   "aws-ses": [
     "AWS::SES"
+  ],
+  "aws-shield": [
+    "AWS::Shield"
   ],
   "aws-signer": [
     "AWS::Signer"

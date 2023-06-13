@@ -1,5 +1,5 @@
 {
-  "$version": "120.0.0",
+  "$version": "125.0.0",
   "PropertyTypes": {
     "AWS::LakeFormation::DataCellsFilter.ColumnWildcard": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-columnwildcard.html",
@@ -858,6 +858,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-useservicelinkedrole",
           "PrimitiveType": "Boolean",
           "Required": true,
+          "UpdateType": "Mutable"
+        },
+        "WithFederation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-withfederation",
+          "PrimitiveType": "Boolean",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }

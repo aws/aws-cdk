@@ -12,6 +12,7 @@ import {
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
   CR_DEFAULT_RUNTIME_MAP,
+  PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
 import {
   AWS_REGIONS,
@@ -82,7 +83,7 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
-    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]); 
+    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]);
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
@@ -112,6 +113,12 @@ export async function main(): Promise<void> {
             ADOT_LAMBDA_LAYER_ARNS[type][version][arch][region],
           );
         }
+      }
+    }
+
+    for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
+      for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version]) {
+        registerFact(region, ['paramsAndSecretsLambdaLayer', version, arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]);
       }
     }
   }

@@ -1,9 +1,9 @@
-import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
-import { md5hash } from '../../core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
+import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
+import { md5hash } from '../../core/lib/helpers-internal';
 
 export interface DeploymentProps {
   /**
