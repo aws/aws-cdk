@@ -8040,7 +8040,7 @@ jsii-reflect@1.82.0, jsii-reflect@^1.82.0:
     oo-ascii-tree "^1.82.0"
     yargs "^16.2.0"
 
-jsii-rosetta@^1.82.0:
+jsii-rosetta@1.82.0, jsii-rosetta@^1.82.0:
   version "1.82.0"
   resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.82.0.tgz#8680af6223ada85a247731e036cf4fc3220b90e3"
   integrity sha512-3R/+fYm1gIUp6HEBzRyvHgCxKy1BZB2ZqO+0zYvgi7LEUEsvn7OBUDI7NoVe6/Bqp8DKOxzUYm4xe8jJ6Gr0og==
@@ -8077,7 +8077,26 @@ jsii-rosetta@~5.0.8:
     workerpool "^6.4.0"
     yargs "^17.7.2"
 
-jsii@1.82.0, jsii@^1.82.0:
+jsii@1.81.0, jsii@^1.81.0:
+  version "1.81.0"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-1.81.0.tgz#144daeacfa41660d04b9c695f21c17d3ffd58515"
+  integrity sha512-m5BQlNJGHFFwxUxZwagSqqMCS1wbt/0fKeEr+j7WWsG1lhu3fUxANYukUAeQEPJAPWuv0kAbqMaxj/4HSgd5RA==
+  dependencies:
+    "@jsii/check-node" "1.81.0"
+    "@jsii/spec" "^1.81.0"
+    case "^1.6.3"
+    chalk "^4"
+    fast-deep-equal "^3.1.3"
+    fs-extra "^10.1.0"
+    log4js "^6.9.1"
+    semver "^7.5.0"
+    semver-intersect "^1.4.0"
+    sort-json "^2.0.1"
+    spdx-license-list "^6.6.0"
+    typescript "~3.9.10"
+    yargs "^16.2.0"
+
+jsii@1.82.0:
   version "1.82.0"
   resolved "https://registry.npmjs.org/jsii/-/jsii-1.82.0.tgz#dbc5d61853619a0fb7653539663832ae1c2bf2a5"
   integrity sha512-EMOjpWCiRYCo5ZzndGXsSsMrBSj4sa7njzEcFWryVnXj6reVP2axwsa3AXC/xCf4/PjchESxGDbSieX7cP9A+A==
@@ -8095,25 +8114,6 @@ jsii@1.82.0, jsii@^1.82.0:
     spdx-license-list "^6.6.0"
     typescript "~3.9.10"
     yargs "^16.2.0"
-
-jsii@5.0.x:
-  version "5.0.10"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.10.tgz#0bf853e02e4c21ab88fc6c73ec2dc01a9d1156f9"
-  integrity sha512-AIcxUr+9qmv7SipMP8ZyvAT1EFlAzd9JAu+qc6SLlKvx1qxQe1O2wvcg3jOaOpdrbEHNYHXJ7VorztAtRcXX9A==
-  dependencies:
-    "@jsii/check-node" "1.82.0"
-    "@jsii/spec" "^1.82.0"
-    case "^1.6.3"
-    chalk "^4"
-    downlevel-dts "^0.11.0"
-    fast-deep-equal "^3.1.3"
-    log4js "^6.9.1"
-    semver "^7.5.1"
-    semver-intersect "^1.4.0"
-    sort-json "^2.0.1"
-    spdx-license-list "^6.6.0"
-    typescript "~5.0.4"
-    yargs "^17.7.2"
 
 jsii@~5.0.8:
   version "5.0.8"
