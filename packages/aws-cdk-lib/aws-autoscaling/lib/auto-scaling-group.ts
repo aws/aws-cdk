@@ -1352,7 +1352,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity ?? 1;
-    const maxCapacity = props.maxCapacity ?? desiredCapacity ?? Math.max(minCapacity, 1);
+    const maxCapacity = props.maxCapacity ??
+      desiredCapacity ??
+      (Token.isUnresolved(minCapacity) ? minCapacity : Math.max(minCapacity, 1));
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
