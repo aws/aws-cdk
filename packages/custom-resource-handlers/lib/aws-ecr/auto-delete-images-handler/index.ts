@@ -6,9 +6,9 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 
 const ecr = new ECR();
 
-export const customResourceHandler = makeHandler(handler);
+export const handler = makeHandler(autoDeleteHandler);
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
+export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
       break;

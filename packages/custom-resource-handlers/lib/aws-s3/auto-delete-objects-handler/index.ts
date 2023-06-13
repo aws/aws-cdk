@@ -6,9 +6,9 @@ const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 const s3 = new S3();
 
-export const customResourceHandler = makeHandler(handler);
+export const handler = makeHandler(autoDeleteHandler);
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
+export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
       return;

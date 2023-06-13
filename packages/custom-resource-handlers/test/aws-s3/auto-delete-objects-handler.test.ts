@@ -5,7 +5,7 @@ const mockS3Client = {
   promise: jest.fn(),
 };
 
-import { handler } from '../../lib/aws-s3/auto-delete-objects-handler';
+import { autoDeleteHandler } from '../../lib/aws-s3/auto-delete-objects-handler';
 
 jest.mock('aws-sdk', () => {
   return { S3: jest.fn(() => mockS3Client) };
@@ -307,7 +307,7 @@ test('does nothing when the bucket does not exist', async () => {
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
-  return handler(event as AWSLambda.CloudFormationCustomResourceEvent);
+  return autoDeleteHandler(event as AWSLambda.CloudFormationCustomResourceEvent);
 }
 
 function mockAwsPromise<A>(fn: jest.Mock<any, any>, value: A, when: 'once' | 'always' = 'always') {
