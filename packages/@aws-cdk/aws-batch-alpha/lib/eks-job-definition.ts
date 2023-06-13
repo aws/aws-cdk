@@ -1,4 +1,4 @@
-import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';

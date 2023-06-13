@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "b4b94e1885964eca81c7f59f0375c3da2e9ce1532690efad69d539c9ed62cf4c": {
+      "source": {
+        "path": "aws-ecr-integ-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b4b94e1885964eca81c7f59f0375c3da2e9ce1532690efad69d539c9ed62cf4c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

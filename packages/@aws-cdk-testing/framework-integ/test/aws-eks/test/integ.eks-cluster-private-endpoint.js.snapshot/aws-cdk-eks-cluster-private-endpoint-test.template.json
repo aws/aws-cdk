@@ -762,6 +762,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -1024,7 +1027,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6108879fd9a57e4e79f4985ba158e4e05270a3a80f110c127692ea9865735f43.json"
+       "/7e8b05bb778b7eb7c321d13487847b09bf2ae803ee73943c1f875ff5c5851470.json"
       ]
      ]
     }
@@ -1051,7 +1054,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6457a63d45f93332fe2a2f8983a417681f29eeca2d2d961b510bcb648ae5629d.json"
+       "/94037a7efc4a8fdbfd6f857d60a1c2cb0cdead96cbb9f4148170732a5a81f402.json"
       ]
      ]
     },

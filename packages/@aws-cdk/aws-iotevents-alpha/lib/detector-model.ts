@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource } from 'aws-cdk-lib';
+import { Resource, IResource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
 import { State } from './state';

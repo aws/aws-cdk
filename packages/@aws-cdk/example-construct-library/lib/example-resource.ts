@@ -11,7 +11,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 // for files that are part of this package, we do import individual classes or functions
 import { exampleResourceArnComponents } from './private/example-resource-common';

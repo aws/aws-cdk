@@ -1,4 +1,4 @@
-import { App } from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib/core';
 import { IConstruct } from 'constructs';
 
 /**

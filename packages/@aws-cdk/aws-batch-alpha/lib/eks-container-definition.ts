@@ -1,5 +1,5 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { Lazy, Size } from 'aws-cdk-lib';
+import { Lazy, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 

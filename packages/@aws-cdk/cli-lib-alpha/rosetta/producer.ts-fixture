@@ -1,5 +1,5 @@
 // Fixture with imports, but nothing else
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { AwsCdkCli, ICloudAssemblyDirectoryProducer } from '@aws-cdk/cli-lib-alpha';
 
 class MyProducer implements ICloudAssemblyDirectoryProducer {

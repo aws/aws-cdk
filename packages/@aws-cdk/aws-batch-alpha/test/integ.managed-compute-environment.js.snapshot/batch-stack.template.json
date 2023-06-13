@@ -457,6 +457,7 @@
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
     "Type": "managed",
+    "ComputeEnvironmentName": "maxPropsFargateCE",
     "ComputeResources": {
      "MaxvCpus": 512,
      "SecurityGroupIds": [

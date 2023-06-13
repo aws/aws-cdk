@@ -1,4 +1,4 @@
-import { IAspect, Stack, Stage, Annotations, Names } from 'aws-cdk-lib';
+import { IAspect, Stack, Stage, Annotations, Names } from 'aws-cdk-lib/core';
 import { IConstruct } from 'constructs';
 import { IApplication } from '../application';
 import { ApplicationAssociator } from '../application-associator';

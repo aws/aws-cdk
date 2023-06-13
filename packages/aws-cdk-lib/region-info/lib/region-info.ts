@@ -178,4 +178,14 @@ export class RegionInfo {
   public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
     return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
   }
+
+  /**
+   * The ARN of the Parameters and Secrets Lambda layer for the given lambda architecture.
+   *
+   * @param version the layer version
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public paramsAndSecretsLambdaLayerArn(version: string, architecture: string): string | undefined {
+    return Fact.find(this.name, FactName.paramsAndSecretsLambdaLayer(version, architecture));
+  }
 }

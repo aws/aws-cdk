@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import * as customresources from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseQueryHandlerProps } from './handler-props';

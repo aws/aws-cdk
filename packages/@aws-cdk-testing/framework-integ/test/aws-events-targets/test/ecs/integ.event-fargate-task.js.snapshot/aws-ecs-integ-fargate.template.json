@@ -556,6 +556,47 @@
         "Arn"
        ]
       }
+     },
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsCluster97242B84",
+        "Arn"
+       ]
+      },
+      "EcsParameters": {
+       "LaunchType": "FARGATE",
+       "NetworkConfiguration": {
+        "AwsVpcConfiguration": {
+         "AssignPublicIp": "ENABLED",
+         "SecurityGroups": [
+          {
+           "Fn::GetAtt": [
+            "TaskDefSecurityGroupD50E7CF0",
+            "GroupId"
+           ]
+          }
+         ],
+         "Subnets": [
+          {
+           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+         ]
+        }
+       },
+       "TaskCount": 1,
+       "TaskDefinitionArn": {
+        "Ref": "TaskDef54694570"
+       }
+      },
+      "Id": "Target1",
+      "Input": "{}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "TaskDefEventsRoleFB3B67B8",
+        "Arn"
+       ]
+      }
      }
     ]
    }

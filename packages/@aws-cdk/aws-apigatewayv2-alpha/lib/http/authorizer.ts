@@ -1,4 +1,4 @@
-import { Duration, Resource } from 'aws-cdk-lib';
+import { Duration, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';

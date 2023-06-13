@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as constructs from 'constructs';
 

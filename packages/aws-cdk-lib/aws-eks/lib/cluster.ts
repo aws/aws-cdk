@@ -132,6 +132,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
+
+  /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
    * If not defined, a default layer will be used containing the AWS CLI 1.x.
@@ -277,6 +285,14 @@ export interface ClusterAttributes {
    * throw an error
    */
   readonly clusterEncryptionConfigKeyArn?: string;
+
+  /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
 
   /**
    * Additional security groups associated with this cluster.
@@ -632,6 +648,14 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly secretsEncryptionKey?: kms.IKey;
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
+
+  /**
    * The CIDR block to assign Kubernetes service IP addresses from.
    *
    * @default - Kubernetes assigns addresses from either the
@@ -933,6 +957,20 @@ export enum ClusterLoggingTypes {
   SCHEDULER = 'scheduler',
 }
 
+/**
+ * EKS cluster IP family.
+ */
+export enum IpFamily {
+  /**
+   * Use IPv4 for pods and services in your cluster.
+   */
+  IP_V4 = 'ipv4',
+  /**
+   * Use IPv6 for pods and services in your cluster.
+   */
+  IP_V6 = 'ipv6',
+}
+
 abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
   public abstract readonly vpc: ec2.IVpc;
@@ -943,6 +981,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroupId: string;
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
+  public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
@@ -1302,6 +1341,14 @@ export class Cluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  public readonly ipFamily?: IpFamily;
+
+  /**
    * An IAM role with administrative permissions to create or update the
    * cluster. This role also has `systems:master` permissions.
    */
@@ -1467,7 +1514,7 @@ export class Cluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
-
+    this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
@@ -1499,6 +1546,10 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
+    if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
+      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
@@ -1516,9 +1567,10 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
-      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+      kubernetesNetworkConfig: {
+        ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
-      } : undefined,
+      },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
@@ -2143,6 +2195,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly ipFamily?: IpFamily;
   public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
@@ -2165,6 +2218,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.ipFamily = props.ipFamily;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
