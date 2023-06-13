@@ -1,14 +1,15 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
+import { DataProtectionPolicy } from './data-protection-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -98,7 +99,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * The name of this log group
    */
   public abstract readonly logGroupName: string;
-
 
   private policy?: ResourcePolicy;
 
@@ -386,6 +386,13 @@ export interface LogGroupProps {
   readonly logGroupName?: string;
 
   /**
+   * Data Protection Policy for this log group.
+   *
+   * @default - no data protection policy
+   */
+  readonly dataProtectionPolicy?: DataProtectionPolicy;
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -473,6 +480,7 @@ export class LogGroup extends LogGroupBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
+      dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -576,4 +584,11 @@ export interface MetricFilterOptions {
    * @default - No unit attached to metrics.
    */
   readonly unit?: cloudwatch.Unit;
+
+  /**
+   * The name of the metric filter.
+   *
+   * @default - Cloudformation generated name.
+   */
+  readonly filterName?: string;
 }

@@ -45,7 +45,6 @@ test('can use ssm with critical severity and performance category as alarm actio
   });
 });
 
-
 test('can use ssm with medium severity and no category as alarm action', () => {
   // GIVEN
   const stack = new Stack();

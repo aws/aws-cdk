@@ -1,8 +1,8 @@
 import { EOL } from 'os';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -383,30 +383,30 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
   });
 
-  test('logs to self, KMS encryption without key throws error', () => {
+  test('logs to self, KMS encryption without key does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to self, KMS encryption with key throws error', () => {
+  test('logs to self, KMS encryption with key does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to self, KMS key with no specific encryption specified throws error', () => {
+  test('logs to self, KMS key with no specific encryption specified does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
   testDeprecated('logs to separate bucket, UNENCRYPTED does not throw error', () => {
@@ -426,40 +426,40 @@ describe('bucket', () => {
   });
 
   // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
-  // check is impossible, we skip thist test.
+  // check is impossible, we skip this test.
   // eslint-disable-next-line jest/no-disabled-tests
   test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
   });
 
-  test('logs to separate bucket, KMS encryption without key throws error', () => {
+  test('logs to separate bucket, KMS encryption without key does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to separate bucket, KMS encryption with key throws error', () => {
+  test('logs to separate bucket, KMS encryption with key does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
+  test('logs to separate bucket, KMS key with no specific encryption specified does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
   test('bucket with versioning turned on', () => {
@@ -1092,7 +1092,6 @@ describe('bucket', () => {
 
       expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
     });
-
 
     testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
       const stack = new cdk.Stack(undefined, undefined, {
@@ -2736,6 +2735,84 @@ describe('bucket', () => {
         })]),
       }),
     });
+  });
+
+  test('Log bucket has ACL enabled when feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+    });
+
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is configured when AccessControl is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'LogDeliveryWrite',
+      OwnershipControls: {
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
+      },
+    });
+  });
+
+  test('ObjectOwnership is not configured when AccessControl="Private"', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.PRIVATE,
+    });
+
+    // Logging bucket has ACL enabled when feature flag is not set
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'mylogbucket',
+      AccessControl: 'Private',
+      OwnershipControls: Match.absent(),
+    });
+  });
+
+  test('Throws if ObjectOwnership and AccessControl do not match', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new s3.Bucket(stack, 'AccessLogs', {
+      bucketName: 'mylogbucket',
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/objectOwnership must be set to \"ObjectWriter\" when accessControl is \"LogDeliveryWrite\"/);
   });
 
   test('Defaults for an inventory bucket', () => {

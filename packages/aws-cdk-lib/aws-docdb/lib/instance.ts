@@ -1,10 +1,10 @@
-import * as ec2 from '../../aws-ec2';
-import * as cdk from '../../core';
-import { ArnFormat } from '../../core';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
+import * as ec2 from '../../aws-ec2';
+import { ArnFormat } from '../../core';
+import * as cdk from '../../core';
 
 /**
  * A database instance

@@ -6,19 +6,29 @@ import { App, ArnFormat, CustomResource, RemovalPolicy, Stack, StackProps } from
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
+    const instanceProps = {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      isFromLegacyInstanceProps: true,
+    };
     const cluster = new rds.DatabaseCluster(this, 'Cluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.provisioned('Instance1', {
+        ...instanceProps,
+      }),
+      readers: [
+        ClusterInstance.provisioned('Instance2', {
+          ...instanceProps,
+        }),
+      ],
+      vpc,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -31,10 +41,15 @@ class TestStack extends Stack {
       snapshotIdentifier: snapshoter.snapshotArn,
       snapshotCredentials: rds.SnapshotCredentials.fromGeneratedSecret('admin'),
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.provisioned('Instance1', {
+        ...instanceProps,
+      }),
+      readers: [
+        ClusterInstance.provisioned('Instance2', {
+          ...instanceProps,
+        }),
+      ],
+      vpc,
       removalPolicy: RemovalPolicy.DESTROY,
     });
     fromSnapshot.addRotationSingleUser();

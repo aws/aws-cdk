@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import * as path from 'path';
-import * as cxapi from '../../cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
@@ -12,6 +11,7 @@ import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
+import * as cxapi from '../../cx-api';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 

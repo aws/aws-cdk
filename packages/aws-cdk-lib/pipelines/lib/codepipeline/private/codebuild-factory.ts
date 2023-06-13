@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct, IDependable, Node } from 'constructs';
+import { mergeBuildSpecs } from './buildspecs';
 import * as codebuild from '../../../../aws-codebuild';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
 import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
 import { Stack, Token } from '../../../../core';
-import { Construct, IDependable, Node } from 'constructs';
-import { mergeBuildSpecs } from './buildspecs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -331,16 +331,13 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
 
-
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';
     const actionRole = this.props.actionRole
       ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
       ?? new iam.Role(options.pipeline, actionRoleCid, {
-        assumedBy: new iam.PrincipalWithConditions(new iam.AccountRootPrincipal(), {
-          Bool: { 'aws:ViaAWSService': iam.ServicePrincipal.servicePrincipalName('codepipeline.amazonaws.com') },
-        }),
+        assumedBy: options.pipeline.pipeline.role,
       });
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({

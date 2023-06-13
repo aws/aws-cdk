@@ -1,3 +1,6 @@
+import { Construct } from 'constructs';
+import * as ssm from './ssm.generated';
+import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -6,9 +9,6 @@ import {
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
-import { Construct } from 'constructs';
-import * as ssm from './ssm.generated';
-import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
 /**
  * An SSM Parameter reference.
@@ -579,7 +579,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param scope Some scope within a stack
    * @param parameterName The name of the SSM parameter
    * @param version The parameter version (required for secure strings)
-   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version.
+   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version. `SecretValue` lives in the core `aws-cdk-lib` module.
    */
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
@@ -697,7 +697,6 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
     return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
   }
-
 
   public readonly parameterArn: string;
   public readonly parameterName: string;

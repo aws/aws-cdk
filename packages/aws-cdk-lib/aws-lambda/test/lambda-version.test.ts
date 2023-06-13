@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 

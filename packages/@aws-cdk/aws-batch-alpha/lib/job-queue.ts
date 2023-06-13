@@ -1,4 +1,4 @@
-import { ArnFormat, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobQueue } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment } from './compute-environment-base';
@@ -178,7 +178,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this.enabled = props?.enabled;
     this.schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, id, {
+    const resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {

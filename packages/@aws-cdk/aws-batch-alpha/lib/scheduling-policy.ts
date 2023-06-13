@@ -1,7 +1,6 @@
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from 'aws-cdk-lib/aws-batch';
-
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -215,7 +214,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
     this.shares = props?.shares ?? [];
-    const resource = new CfnSchedulingPolicy(this, id, {
+    const resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),

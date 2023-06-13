@@ -19,7 +19,7 @@ class TestStack extends cdk.Stack {
     const queue = new Queue(this, 'HookQueue');
     this.queueUrl = queue.queueUrl;
     const group = new scaling.AutoScalingGroup(this, 'Group', {
-      vpc: new Vpc(this, 'Vpc'),
+      vpc: new Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false }),
       maxCapacity: 1,
       minCapacity: 0,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
@@ -52,7 +52,6 @@ const setDesired = integ.assertions.awsApiCall('AutoScaling', 'setDesiredCapacit
   AutoScalingGroupName: testCase.groupName,
   DesiredCapacity: 1,
 });
-
 
 const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: testCase.queueUrl,

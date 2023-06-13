@@ -13,7 +13,6 @@ import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
-
 class EksClusterStack extends Stack {
 
   private cluster: eks.Cluster;
@@ -30,7 +29,7 @@ class EksClusterStack extends Stack {
     const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
 
     // just need one nat gateway to simplify the test
-    this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     // Changing the subnets order should be supported
     const vpcSubnets: ec2.SubnetSelection[] = [

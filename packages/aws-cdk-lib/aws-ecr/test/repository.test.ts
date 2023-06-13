@@ -209,6 +209,19 @@ describe('repository', () => {
     expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
   });
 
+  test('import with arn without /repository', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'arn:aws:ecr:us-east-1:123456789012:foo-ecr-repo-name';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+  });
+
   test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -685,6 +698,32 @@ describe('repository', () => {
                 'ecr:BatchCheckLayerAvailability',
                 'ecr:GetDownloadUrlForLayer',
                 'ecr:BatchGetImage',
+              ],
+              'Effect': 'Allow',
+              'Principal': { 'AWS': '*' },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+    });
+
+    test('grant read adds appropriate permissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestRepo');
+
+      // WHEN
+      repo.grantRead(new iam.AnyPrincipal());
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:DescribeRepositories',
+                'ecr:DescribeImages',
               ],
               'Effect': 'Allow',
               'Principal': { 'AWS': '*' },

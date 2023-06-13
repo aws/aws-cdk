@@ -1,12 +1,12 @@
+import { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import * as sqs from '../../../aws-sqs';
 import * as s3 from '../../../aws-s3';
+import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
@@ -185,12 +185,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
         {
           Action: 'sts:AssumeRole',
           Principal: {
-            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123pipeline:root']] },
-          },
-          Condition: {
-            Bool: {
-              'aws:ViaAWSService': 'codepipeline.amazonaws.com',
-            },
+            AWS: { 'Fn::GetAtt': ['CdkPipelineRoleC09C4D44', 'Arn'] },
           },
         },
       ],
@@ -220,7 +215,6 @@ test('CodePipeline throws when key rotation is enabled without enabling cross ac
     }),
   }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
 });
-
 
 test('CodePipeline enables key rotation on cross account keys', ()=>{
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
