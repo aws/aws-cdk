@@ -6,6 +6,7 @@ import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceTy
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
+import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
@@ -188,12 +189,12 @@ describe('auto scaling group', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: cdk.Lazy.number({ produce: () => 0 }),
+      minCapacity: cdk.Token.asNumber(ssm.StringParameter.valueForStringParameter(stack, '/Min')),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
-      MinSize: '0',
-      MaxSize: '0',
+      MinSize: { Ref: 'SsmParameterValueMinC96584B6F00A464EAD1953AFF4B05118Parameter' },
+      MaxSize: { Ref: 'SsmParameterValueMinC96584B6F00A464EAD1953AFF4B05118Parameter' },
     });
   });
 
