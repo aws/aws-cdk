@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
-import { App, Aws, Duration, Lazy, Stack } from '../../core';
+import { StringParameter } from '../../aws-ssm';
+import { App, Aws, Duration, Lazy, Stack, Token } from '../../core';
 import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
 describe('CachePolicy', () => {
@@ -163,6 +164,23 @@ describe('CachePolicy', () => {
           MinTTL: 30,
           DefaultTTL: 20,
           MaxTTL: 10,
+        },
+      });
+    });
+
+    test('respects Tokens', () => {
+      new CachePolicy(stack, 'CachePolicy', {
+        cachePolicyName: 'MyPolicy',
+        minTtl: Duration.seconds(Token.asNumber(StringParameter.valueForStringParameter(stack, '/Min'))),
+        defaultTtl: Duration.seconds(Token.asNumber(StringParameter.valueForStringParameter(stack, '/Default'))),
+        maxTtl: Duration.seconds(Token.asNumber(StringParameter.valueForStringParameter(stack, '/Max'))),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
+        CachePolicyConfig: {
+          MinTTL: { Ref: 'SsmParameterValueMinC96584B6F00A464EAD1953AFF4B05118Parameter' },
+          DefaultTTL: { Ref: 'SsmParameterValueDefaultC96584B6F00A464EAD1953AFF4B05118Parameter' },
+          MaxTTL: { Ref: 'SsmParameterValueMaxC96584B6F00A464EAD1953AFF4B05118Parameter' },
         },
       });
     });
