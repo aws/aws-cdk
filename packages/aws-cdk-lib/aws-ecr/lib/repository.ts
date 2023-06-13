@@ -863,18 +863,17 @@ export class Repository extends RepositoryBase {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
       runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Action: [
-            'ecr:BatchDeleteImage',
-            'ecr:DescribeRepositories',
-            'ecr:ListImages',
-            'ecr:ListTagsForResource',
-          ],
-          Resource: [this._resource.attrArn],
-        },
+    });
+    
+    provider.addToRolePolicy({
+      Effect: 'Allow',
+      Action: [
+        'ecr:BatchDeleteImage',
+        'ecr:DescribeRepositories',
+        'ecr:ListImages',
+        'ecr:ListTagsForResource',
       ],
+      Resource: [this._resource.attrArn],
     });
 
     const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
