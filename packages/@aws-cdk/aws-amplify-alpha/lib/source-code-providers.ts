@@ -1,5 +1,5 @@
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
-import { SecretValue } from 'aws-cdk-lib';
+import { SecretValue } from 'aws-cdk-lib/core';
 import { App, ISourceCodeProvider, SourceCodeProviderConfig } from './app';
 
 /**
