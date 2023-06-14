@@ -1079,13 +1079,15 @@ export class Stack extends Construct implements ITaggable {
     const indent = this._suppressTemplateIndentation ? undefined : 1;
     const templateData = JSON.stringify(template, undefined, indent);
 
-    if (templateData.length > TEMPLATE_BODY_MAXIMUM_SIZE) {
-      throw new Error(`Template size for stack '${this.node.path}' exceeds limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}`);
-    } else if (templateData.length > (TEMPLATE_BODY_MAXIMUM_SIZE * 0.8)) {
-      const msg = this._suppressTemplateIndentation ?
+    if (templateData.length > (TEMPLATE_BODY_MAXIMUM_SIZE * 0.8)) {
+      const verb = templateData.length > TEMPLATE_BODY_MAXIMUM_SIZE ? 'exceeds' : 'is approaching';
+      const advice = this._suppressTemplateIndentation ?
         'Split resources into multiple stacks to reduce template size' :
         'Split resources into multiple stacks or set suppressTemplateIndentation to reduce template size';
-      Annotations.of(this).addWarning(`Template size is approaching limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${msg}.`);
+
+      const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
+
+      Annotations.of(this).addWarning(message);
     }
 
     fs.writeFileSync(outPath, templateData);
