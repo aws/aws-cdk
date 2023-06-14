@@ -527,7 +527,7 @@ export class MaturitySetting extends ValidationRule {
           return set;
         },
         new Set<string>(),
-      )
+      ),
     )
       .join('\n\n')
       .trim();
