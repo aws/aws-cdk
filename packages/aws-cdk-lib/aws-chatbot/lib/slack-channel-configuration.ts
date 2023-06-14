@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnSlackChannelConfiguration } from './chatbot.generated';
+import { LoggingLevel } from './logging-level';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -87,26 +88,6 @@ export interface SlackChannelConfigurationProps {
    * @default - The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.
    */
   readonly guardrailPolicies?: iam.IManagedPolicy[];
-}
-
-/**
- * Logging levels include ERROR, INFO, or NONE.
- */
-export enum LoggingLevel {
-  /**
-   * ERROR
-   */
-  ERROR = 'ERROR',
-
-  /**
-   * INFO
-   */
-  INFO = 'INFO',
-
-  /**
-   * NONE
-   */
-  NONE = 'NONE',
 }
 
 /**
