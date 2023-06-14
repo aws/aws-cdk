@@ -747,7 +747,6 @@ export class EndpointAccess {
      * @internal
      */
     public readonly _config: EndpointAccessConfig) {
-      iam.Role.fromRoleArn
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
       throw new Error('CIDR blocks can only be configured when public access is enabled');
     }
