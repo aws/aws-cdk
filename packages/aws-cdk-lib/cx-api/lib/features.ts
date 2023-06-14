@@ -88,6 +88,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -822,6 +823,17 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.84.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Enable this feature flag to manage mount targets of the elastic file system more align with its subnet',
+    detailsMd: `
+      If this flag is specified, Subnets of the EFS will be modifed correctly. 
+      If it is not set, exiting EFSs won't be affected.`,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: false,
   },
 
 };

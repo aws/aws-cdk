@@ -431,18 +431,34 @@ export class FileSystem extends FileSystemBase {
     const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
 
     // We now have to create the mount target for each of the mentioned subnet
-    let mountTargetCount = 0;
+
+    // we explictly use FeatureFlags to maintain backwards compatibility
+    const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID);
     this.mountTargetsAvailable = [];
-    subnets.subnetIds.forEach((subnetId: string) => {
-      const mountTarget = new CfnMountTarget(this,
-        'EfsMountTarget' + (++mountTargetCount),
-        {
-          fileSystemId: this.fileSystemId,
-          securityGroups: Array.of(securityGroup.securityGroupId),
-          subnetId,
-        });
-      this._mountTargetsAvailable.add(mountTarget);
-    });
+    if (useMountTargetOrderInsensitiveLogicalID) {
+      subnets.subnets.forEach((subnet) => {
+        const mountTarget = new CfnMountTarget(this,
+          `EfsMountTarget-${subnet.node.id}`,
+          {
+            fileSystemId: this.fileSystemId,
+            securityGroups: Array.of(securityGroup.securityGroupId),
+            subnetId: subnet.subnetId,
+          });
+        this._mountTargetsAvailable.add(mountTarget);
+      });
+    } else {
+      let mountTargetCount = 0;
+      subnets.subnetIds.forEach((subnetId: string) => {
+        const mountTarget = new CfnMountTarget(this,
+          'EfsMountTarget' + (++mountTargetCount),
+          {
+            fileSystemId: this.fileSystemId,
+            securityGroups: Array.of(securityGroup.securityGroupId),
+            subnetId,
+          });
+        this._mountTargetsAvailable.add(mountTarget);
+      });
+    }
     this.mountTargetsAvailable = this._mountTargetsAvailable;
   }
 
