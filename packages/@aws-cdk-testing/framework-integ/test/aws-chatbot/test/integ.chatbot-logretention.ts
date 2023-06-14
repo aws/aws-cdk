@@ -22,6 +22,23 @@ class ChatbotLogRetentionInteg extends cdk.Stack {
       ],
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
+
+    const microsoftTeamsChannel = new chatbot.MicrosoftTeamsChannelConfiguration(this, 'MyMicrosoftTeamsChannel', {
+      teamId: 'ABC123', // modify to your team id
+      teamsChannelId: 'DEF456', // modify to your teams channel id
+      teamsTenantId: 'GHI789', // modify to your teams tenant id
+      microsoftTeamsChannelConfigurationName: 'test-channel',
+      loggingLevel: chatbot.LoggingLevel.NONE,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    microsoftTeamsChannel.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        's3:GetObject',
+      ],
+      resources: ['arn:aws:s3:::abc/xyz/123.txt'],
+    }));
   }
 }
 

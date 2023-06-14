@@ -14,6 +14,14 @@ class ChatbotGuardrailsInteg extends cdk.Stack {
       slackChannelId: 'C0187JABUE9', // modify to your slack channel id
       guardrailPolicies: [guardrailPolicy],
     });
+
+    new chatbot.MicrosoftTeamsChannelConfiguration(this, 'MyMicrosoftTeamsChannel', {
+      teamId: 'ABC123', // modify to your team id
+      teamsChannelId: 'DEF456', // modify to your teams channel id
+      teamsTenantId: 'GHI789', // modify to your teams tenant id
+      microsoftTeamsChannelConfigurationName: 'test-channel',
+      guardrailPolicies: [guardrailPolicy],
+    });
   }
 }
 
