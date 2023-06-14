@@ -126,6 +126,8 @@ function findWorkspacePath(): string {
   }
 }
 
+const V1_EOL_MESSAGE = 'AWS CDK v1 has reached End-of-Support on 2023-06-01.\nThis package is no longer being updated, and users should migrate to AWS CDK v2.\n\nFor more information on how to migrate, see https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html';
+
 async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
@@ -147,8 +149,8 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
         console.log(`\t⚠️ Skipping (ubergen deprecated): ${packageJson.name}`);
         continue;
       }
-    } else if (packageJson.deprecated) {
-      console.log(`\t⚠️ Skipping (deprecated):         ${packageJson.name}`);
+    } else if (packageJson.deprecated && packageJson.deprecated !== V1_EOL_MESSAGE) {
+      console.log(`\t⚠️ Skipping (deprecated):         ${packageJson.name} (${packageJson.stability})`);
       continue;
     }
     result.push({
