@@ -25,7 +25,7 @@ describe('rules', () => {
     });
   });
 
-  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.', () => {
+  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
@@ -39,7 +39,7 @@ describe('rules', () => {
     }).toThrow('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
   });
 
-  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.', () => {
+  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationDate.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
@@ -53,7 +53,7 @@ describe('rules', () => {
     }).toThrow('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
   });
 
-  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.', () => {
+  test('ExpiredObjectDeleteMarker cannot be specified with TagFilters.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
