@@ -261,9 +261,6 @@ describe('cluster new api', () => {
 
       // THEN
       const test1Template = Template.fromStack(stack1).toJSON();
-      // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
-      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
-      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
       expect(
         test1Template,
       ).toEqual(Template.fromStack(stack2).toJSON());
@@ -311,6 +308,7 @@ describe('cluster new api', () => {
           autoMinorVersionUpgrade: true,
           enablePerformanceInsights: true,
           parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+          deleteAutomatedBackups: false,
         }),
       });
 
@@ -329,6 +327,7 @@ describe('cluster new api', () => {
           Engine: 'aurora',
           PerformanceInsightsRetentionPeriod: 7,
           PromotionTier: 0,
+          DeleteAutomatedBackups: false,
         },
         UpdateReplacePolicy: 'Retain',
         Type: 'AWS::RDS::DBInstance',
@@ -374,6 +373,7 @@ describe('cluster new api', () => {
           enablePerformanceInsights: true,
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE ),
           parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+          deleteAutomatedBackups: false,
         }),
         iamAuthentication: true,
       });
@@ -393,6 +393,7 @@ describe('cluster new api', () => {
         Engine: 'aurora',
         PerformanceInsightsRetentionPeriod: 7,
         PromotionTier: 0,
+        DeleteAutomatedBackups: false,
       });
     });
   });

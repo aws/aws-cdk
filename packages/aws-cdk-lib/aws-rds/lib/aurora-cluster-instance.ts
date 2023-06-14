@@ -298,6 +298,13 @@ export interface ClusterInstanceOptions {
    * @default the cluster parameter group is used
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   *  Whether to remove automated backups immediately after the DB instance is deleted for the DB instance.
+   *
+   * @default - true
+   */
+  readonly deleteAutomatedBackups?: boolean;
 }
 
 /**
@@ -495,6 +502,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
+        deleteAutomatedBackups: props.deleteAutomatedBackups,
       });
     // For instances that are part of a cluster:
     //
