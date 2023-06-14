@@ -18,11 +18,11 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.74.0",
+    "@jsii/spec": "^1.84.0",
     "camelcase": "^6.3.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.74.0",
+    "jsii-reflect": "^1.84.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
@@ -57,7 +57,7 @@
     "aws",
     "cdk"
   ],
-  "maturity": "developer-preview",
+  "maturity": "end-of-support",
   "stability": "experimental",
   "engines": {
     "node": ">= 14.15.0"
@@ -70,5 +70,6 @@
   },
   "publishConfig": {
     "tag": "latest-1"
-  }
+  },
+  "deprecated": "AWS CDK v1 has reached End-of-Support on 2023-06-01.\nThis package is no longer being updated, and users should migrate to AWS CDK v2.\n\nFor more information on how to migrate, see https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html"
 }
