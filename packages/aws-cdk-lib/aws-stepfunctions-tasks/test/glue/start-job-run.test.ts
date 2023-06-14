@@ -15,7 +15,7 @@ test('Invoke glue job with just job ARN', () => {
     glueJobName,
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -57,7 +57,7 @@ test('Invoke glue job with full properties', () => {
     notifyDelayAfter,
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -93,7 +93,7 @@ test('Invoke glue job with Timeout.at()', () => {
     taskTimeout: sfn.Timeout.at('$.timeout'),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -125,7 +125,7 @@ test('job arguments can reference state input', () => {
     arguments: sfn.TaskInput.fromJsonPathAt('$.input'),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -157,7 +157,7 @@ test('permitted role actions limited to start job run if service integration pat
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -176,7 +176,7 @@ test('permitted role actions include start, get, and stop job run if service int
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

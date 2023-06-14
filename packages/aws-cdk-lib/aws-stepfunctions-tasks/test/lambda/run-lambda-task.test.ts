@@ -29,7 +29,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -71,7 +71,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -165,7 +165,7 @@ describeDeprecated('run lambda task', () => {
       task: new tasks.RunLambdaTask(fn),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -199,7 +199,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({

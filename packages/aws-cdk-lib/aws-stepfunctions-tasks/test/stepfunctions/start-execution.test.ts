@@ -8,7 +8,7 @@ let child: sfn.StateMachine;
 beforeEach(() => {
   stack = new Stack();
   child = new sfn.StateMachine(stack, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'PassState'))),
   });
 });
 
@@ -22,7 +22,7 @@ test('Execute State Machine - Default - Request Response', () => {
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -59,7 +59,7 @@ test('Execute State Machine - Run Job', () => {
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -178,7 +178,7 @@ test('Execute State Machine - Wait For Task Token', () => {
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -226,7 +226,7 @@ test('Execute State Machine - Associate With Parent - Input Provided', () => {
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toMatchObject({
@@ -246,7 +246,7 @@ test('Execute State Machine - Associate With Parent - Input Not Provided', () =>
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   expect(stack.resolve(task.toStateJson())).toMatchObject({
