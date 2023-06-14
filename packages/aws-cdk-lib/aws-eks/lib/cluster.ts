@@ -504,8 +504,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
    *
-   * @default - a role that assumable by anyone with permissions in the same
-   * account will automatically be defined
+   * @default - no masters role.
    */
   readonly mastersRole?: iam.IRole;
 
@@ -748,6 +747,7 @@ export class EndpointAccess {
      * @internal
      */
     public readonly _config: EndpointAccessConfig) {
+      iam.Role.fromRoleArn
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
       throw new Error('CIDR blocks can only be configured when public access is enabled');
     }
