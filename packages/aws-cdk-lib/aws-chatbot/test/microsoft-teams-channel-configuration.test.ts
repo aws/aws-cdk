@@ -14,7 +14,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
   });
 
   test('created with minimal properties creates a new IAM Role', () => {
-    new chatbot.MicrosoftTeamsChannelConfiguration(stack, 'MyTeamsChannel', {
+    new chatbot.MicrosoftTeamsChannelConfiguration(stack, 'MyMicrosoftTeamsChannel', {
       teamId: 'ABC123',
       teamsChannelId: 'DEF456',
       teamsTenantId: 'GHI789',
@@ -25,7 +25,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
-          'MyMicrosoftTeamsChannelConfigurationRole1D3F23AE',
+          'MyMicrosoftTeamsChannelConfigurationRole622184A7',
           'Arn',
         ],
       },
@@ -63,7 +63,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
-          'MyMicrosoftTeamsChannelConfigurationRole1D3F23AE',
+          'MyMicrosoftTeamsChannelConfigurationRole622184A7',
           'Arn',
         ],
       },
@@ -89,7 +89,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
-          'MyMicrosoftTeamsChannelConfigurationRole1D3F23AE',
+          'MyMicrosoftTeamsChannelConfigurationRole622184A7',
           'Arn',
         ],
       },
@@ -174,7 +174,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
       teamId: 'ABC123',
       teamsChannelId: 'DEF456',
       teamsTenantId: 'GHI789',
-      microsoftTeamsChannelConfigurationName: 'Test',
+      microsoftTeamsChannelConfigurationName: 'ConfigurationName',
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
 
@@ -190,7 +190,7 @@ describe('MicrosoftTeamsChannelConfiguration', () => {
       teamId: 'ABC123',
       teamsChannelId: 'DEF456',
       teamsTenantId: 'GHI789',
-      microsoftTeamsChannelConfigurationName: 'Test',
+      microsoftTeamsChannelConfigurationName: 'ConfigurationName',
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
     const metric = microsoftTeamsChannel.metric('MetricName');
