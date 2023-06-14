@@ -191,7 +191,7 @@ capacity.scaleOnSchedule('PrescaleInTheMorning', {
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
-  minCapacity: 1
+  minCapacity: 1,
 });
 ```
 

@@ -62,6 +62,7 @@ describe('scalable target', () => {
       schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
       maxCapacity: 50,
       minCapacity: 1,
+      timeZone: 'America/Denver',
     });
 
     // THEN
@@ -74,6 +75,7 @@ describe('scalable target', () => {
           },
           Schedule: 'rate(1 minute)',
           ScheduledActionName: 'ScaleUp',
+          TimeZone: 'America/Denver',
         },
       ],
     });
@@ -112,6 +114,7 @@ describe('scalable target', () => {
       }),
       maxCapacity: 50,
       minCapacity: 1,
+      
     });
 
     // THEN

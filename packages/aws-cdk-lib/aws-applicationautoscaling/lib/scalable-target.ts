@@ -161,6 +161,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
         maxCapacity: action.maxCapacity,
         minCapacity: action.minCapacity,
       },
+      timezone: action.timeZone,
     });
   }
 
@@ -193,7 +194,7 @@ export interface ScalingSchedule {
    *
    * @default The rule is activate immediately
    */
-  readonly startTime?: Date
+  readonly startTime?: Date;
 
   /**
    * When this scheduled action expires.
@@ -225,6 +226,11 @@ export interface ScalingSchedule {
    * @default No new maximum capacity
    */
   readonly maxCapacity?: number;
+
+  /**
+   * The time zone used when referring to the date and time of a scheduled action, when the scheduled action uses an at or cron expression.
+   */
+  readonly timeZone?: string;
 }
 
 /**
