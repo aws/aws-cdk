@@ -6,7 +6,7 @@ awscdklibdir=${scriptdir}/..
 
 list_custom_resources() {
   for dir in $(ls $customresourcedir/lib); do
-    echo lib/$dir/$(ls $customresourcedir/lib/$dir)
+    [ -d $customresourcedir/lib/$dir ] && echo lib/$dir/$(ls $customresourcedir/lib/$dir)
   done
 }
 

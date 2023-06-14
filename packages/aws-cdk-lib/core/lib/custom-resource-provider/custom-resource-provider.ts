@@ -32,14 +32,14 @@ export function builtInCustomResourceProviderNodeRuntime(scope: Construct): Cust
  */
 export interface CustomResourceProviderProps {
   /**
-   * Whether or not the code will be inlined or bundled as an asset. If specified,
-   * only the `index.js` file from the `codeDirectory` will be inlined as the lambda code.
+   * Whether or not the cloudformation response wrapper (`nodejs-entrypoint.ts`) is used.
+   * If set to `true`, `nodejs-entrypoint.js` is bundled in the same asset as the custom resource
+   * and set as the entrypoint. If set to `false`, the custom resource provided is the
+   * entrypoint.
    *
-   * The file must not exceed 4 MB.
-   *
-   * @default - code will be bundled as an asset
+   * @default - `true` if `inlineCode: false` and `false` otherwise.
    */
-  readonly inlineCode?: boolean;
+  readonly useCfnResponseWrapper?: boolean;
 
   /**
    * A local file system directory with the provider's code. The code will be
@@ -247,7 +247,7 @@ export class CustomResourceProvider extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
-    const { code, metadata } = this.createCodePropAndMetadata(props, stack);
+    const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
@@ -309,7 +309,7 @@ export class CustomResourceProvider extends Construct {
         Code: code,
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
-        Handler: `${ENTRYPOINT_FILENAME}.handler`,
+        Handler: codeHandler,
         Role: this.roleArn,
         Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
@@ -334,12 +334,19 @@ export class CustomResourceProvider extends Construct {
    */
   private createCodePropAndMetadata(props: CustomResourceProviderProps, stack: Stack): {
     code: Code,
+    codeHandler: string,
     metadata?: {[key: string]: string},
   } {
-    if (props.inlineCode !== true) {
+    let codeHandler = 'index.handler';
+    const inlineCode = this.node.tryGetContext('@aws-cdk/core:inlineCustomResourceIfPossible');
+    if (!inlineCode) {
       const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
       fs.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
-      fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+
+      if (props.useCfnResponseWrapper ?? true) {
+        fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+        codeHandler = `${ENTRYPOINT_FILENAME}.handler`;
+      }
 
       const staging = new AssetStaging(this, 'Staging', {
         sourcePath: stagingDirectory,
@@ -360,6 +367,7 @@ export class CustomResourceProvider extends Construct {
           S3Bucket: asset.bucketName,
           S3Key: asset.objectKey,
         },
+        codeHandler,
         metadata: this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
@@ -371,6 +379,7 @@ export class CustomResourceProvider extends Construct {
       code: {
         ZipFile: fs.readFileSync(path.join(props.codeDirectory, 'index.js'), 'utf-8'),
       },
+      codeHandler,
     };
   }
 

@@ -3,9 +3,6 @@ import * as path from 'path';
 import {
   App,
   ArnFormat,
-  CustomResource,
-  CustomResourceProvider,
-  builtInCustomResourceProviderNodeRuntime,
   BootstraplessSynthesizer,
   DockerImageAssetSource,
   Duration,
@@ -14,7 +11,6 @@ import {
   RemovalPolicy,
   Stack,
   StackProps,
-  Tags,
 } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -25,8 +21,6 @@ import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
-const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
-const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 /**
  * User configurable options to the DefaultStagingStack.
@@ -92,6 +86,14 @@ export interface DefaultStagingStackOptions {
    * @default - up to 3 versions stored
    */
   readonly imageAssetVersionCount?: number;
+
+  /**
+   * Auto deletes objects in the staging S3 bucket and images in the
+   * staging ECR repositories.
+   *
+   * @default false
+   */
+  readonly autoDeleteStagingAssets?: boolean;
 }
 
 /**
@@ -204,6 +206,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   private imageRole?: iam.IRole;
   private didImageRole = false;
   private imageRoleManifestArn?: string;
+  private autoDelete: boolean;
 
   private readonly deployRoleArn?: string;
 
@@ -212,6 +215,9 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
     });
+
+    this.node.setContext('@aws-cdk/core:inlineCustomResourceIfPossible', true);
+    this.autoDelete = props.autoDeleteStagingAssets ?? false;
 
     this.appId = this.validateAppId(props.appId);
     this.dependencyStack = this;
@@ -322,7 +328,12 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
-      removalPolicy: RemovalPolicy.RETAIN,
+      ...(this.autoDelete ? {
+        removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      } : {
+        removalPolicy: RemovalPolicy.RETAIN,
+      }),
       encryption: s3.BucketEncryption.KMS,
       encryptionKey: key,
 
@@ -359,56 +370,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       expiration: this.props.deployTimeFileAssetLifetime ?? Duration.days(30),
     });
 
-    this.enableAutoDeleteObjects(bucket);
-
     return stagingBucketName;
-  }
-
-  private enableAutoDeleteObjects(bucket: s3.Bucket) {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', 'custom-resource-handlers', 'aws-s3', 'auto-delete-objects-handler'),
-      inlineCode: true,
-      runtime: builtInCustomResourceProviderNodeRuntime(bucket),
-      description: `Lambda function for auto-deleting objects in ${bucket.bucketName} S3 bucket.`,
-    });
-
-    // Use a bucket policy to allow the custom resource to delete
-    // objects in the bucket
-    bucket.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        // list objects
-        's3:GetBucket*',
-        's3:List*',
-        's3:DeleteObject*', // and then delete them
-      ],
-      resources: [
-        bucket.bucketArn,
-        bucket.arnForObjects('*'),
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
-
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        BucketName: bucket.bucketName,
-      },
-    });
-
-    // Ensure bucket policy is deleted AFTER the custom resource otherwise
-    // we don't have permissions to list and delete in the bucket.
-    // (add a `if` to make TS happy)
-    if (bucket.policy) {
-      customResource.node.addDependency(bucket.policy);
-    }
-
-    // We also tag the bucket to record the fact that we want it autodeleted.
-    // The custom resource will check this tag before actually doing the delete.
-    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
-    // the bucket as a side effect.
-    Tags.of(bucket).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 
   /**
@@ -430,7 +392,14 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
           description: 'Garbage collect old image versions and keep the specified number of latest versions',
           maxImageCount: this.props.imageAssetVersionCount ?? 3,
         }],
+        ...(this.autoDelete ? {
+          removalPolicy: RemovalPolicy.DESTROY,
+          autoDeleteImages: true,
+        } : {
+          removalPolicy: RemovalPolicy.RETAIN,
+        }),
       });
+
       if (this.imageRole) {
         this.stagingRepos[asset.assetName].grantPullPush(this.imageRole);
         this.stagingRepos[asset.assetName].grantRead(this.imageRole);
