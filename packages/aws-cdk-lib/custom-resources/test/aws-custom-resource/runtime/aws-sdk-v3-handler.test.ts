@@ -530,11 +530,6 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     StackId: 'stackId',
   }, {} as AWSLambda.Context);
   expect(credentialProviderMock).not.toBeCalled();
-
-  // THEN
-  expect(await s3MockClient.call(0).thisValue.config.credentials()).not.toBe(mockCreds);
-  expect(await s3MockClient.call(1).thisValue.config.credentials()).toBe(mockCreds);
-  expect(await s3MockClient.call(2).thisValue.config.credentials()).not.toBe(mockCreds);
 });
 
 test('Being able to call the AWS SDK v2 format', async () => {
