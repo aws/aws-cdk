@@ -12,7 +12,9 @@ const cachePolicy = new cloudfront.CachePolicy(stack, 'CachePolicy', {
 
 const originRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginRequestPolicy', {
   originRequestPolicyName: 'ACustomOriginRequestPolicy',
+  cookieBehavior: cloudfront.OriginRequestCookieBehavior.allowList('cookie1'),
   headerBehavior: cloudfront.OriginRequestHeaderBehavior.all('CloudFront-Forwarded-Proto'),
+  queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.denyList('querystringparam'),
 });
 
 const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
