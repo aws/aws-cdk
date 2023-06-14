@@ -1,4 +1,4 @@
-import { ArnFormat, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
