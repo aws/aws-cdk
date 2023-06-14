@@ -1580,6 +1580,53 @@ test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
   expect(assetFileFromOutput).toContain('{{ foo replacement2 }}');
 });
 
+test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      foo: 'replacement1',
+      bar: 'replacement2',
+    },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).not.toStrictEqual(assetFileFromOutput);
+  expect(assetFileFromOutput).toContain('{{ replacement1 }}');
+  expect(assetFileFromOutput).toContain('{{ foo replacement2 }}');
+});
+
+test('DeployTimeSubstitutedFile does not double substitute already replaced variables', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      foo: 'bar',
+      bar: 'zee',
+    },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).not.toStrictEqual(assetFileFromOutput);
+  expect(assetFileFromOutput).toContain('bar');
+  expect(assetFileFromOutput).not.toContain('foo');
+  expect(assetFileFromOutput).not.toContain('zee');
+});
+
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
   for (const dir of assetDirs) {

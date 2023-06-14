@@ -26,5 +26,5 @@ paths:
 components:
   schemas:
     Empty:
-      title: Empty Schema
-      type: object
+      title: {{ foo }}
+      type: {{ {{ foo }} }}
