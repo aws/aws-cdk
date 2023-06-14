@@ -5,7 +5,7 @@ AWS Chatbot is an AWS service that enables DevOps and software development teams
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-Slack Channel example:
+Slack example:
 
 ```ts
 import * as chatbot from 'aws-cdk-lib/aws-chatbot';
@@ -29,7 +29,7 @@ slackChannel.addToRolePolicy(new iam.PolicyStatement({
 slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 ```
 
-Microsoft Teams Channel example:
+Microsoft Teams example:
 
 ```ts
 import * as chatbot from 'aws-cdk-lib/aws-chatbot';
