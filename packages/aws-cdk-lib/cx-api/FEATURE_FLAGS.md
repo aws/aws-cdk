@@ -53,7 +53,7 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
-| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | V2NEXT | (fix) |
+| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 
 <!-- END table -->
 
@@ -1005,7 +1005,7 @@ is not viable in some productive setups.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.84.0 | `false` | `true` |
 
 
 <!-- END details -->
