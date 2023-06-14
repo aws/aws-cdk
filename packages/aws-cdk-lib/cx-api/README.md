@@ -183,3 +183,25 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/core:includePrefixInUniqueNameGeneration`
+
+Enable this feature flag to include the stack's prefixes to the name generation process.
+
+Not doing so can cause the name of stack to exceed 128 characters:
+- The name generation ensures it doesn't exceed 128 characters
+- Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
+
+This is a feature flag as it changes the name generated for stacks. Any CDK application deployed prior this fix will
+most likely be generated with a new name, causing the stack to be recreated with the new name, and then deleting the old one.
+For applications running on production environments this can be unmanageable.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+  }
+}
+```

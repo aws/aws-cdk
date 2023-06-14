@@ -192,7 +192,7 @@ describe('Start Query Execution', () => {
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -215,7 +215,7 @@ describe('Start Query Execution', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':s3:::query-results-bucket/folder',
+                  ':s3:::query-results-bucket/folder/*',
                 ],
               ],
             },

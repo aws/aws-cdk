@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.83.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.83.0-alpha.0...v2.83.1-alpha.0) (2023-06-09)
+
+## [2.83.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.82.0-alpha.0...v2.83.0-alpha.0) (2023-06-07)
+
+
+### Features
+
+* **cloud9:** support setting automaticStopTimeMinutes ([#25593](https://github.com/aws/aws-cdk/issues/25593)) ([437345e](https://github.com/aws/aws-cdk/commit/437345e2ca72e67714334f4b9cb7da8f23c4a970)), closes [#25592](https://github.com/aws/aws-cdk/issues/25592)
+
 ## [2.82.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.81.0-alpha.0...v2.82.0-alpha.0) (2023-06-01)
 
 
