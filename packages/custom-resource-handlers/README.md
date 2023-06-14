@@ -1,18 +1,14 @@
-# Custom Resource Bindings
+# Custom Resource Handlers
 
-<!--BEGIN STABILITY BANNER-->
+This package contains the following custom resource handlers:
 
----
+- aws-s3/auto-delete-objects-handler
+- aws-ecr/auto-delete-images-handler
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+In addition, it includes `nodejs-entrypoint.ts`, which is a wrapper that talks to
+CloudFormation for you. At build time, `nodejs-entrypoint.js` is bundled into the
+`.js` file of the custom resource handler, creating one `index.js` file. This file
+is then either copied into a CDK asset or copied as inline code directly in the
+CloudFormation template.
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
-
----
-
-<!--END STABILITY BANNER-->
-
+In the future this package will contain all custom resources and their tests.
