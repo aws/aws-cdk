@@ -324,7 +324,6 @@ function givenTaggedForDeletion() {
         Value: 'true',
       },
     ],
-
   });
 }
 

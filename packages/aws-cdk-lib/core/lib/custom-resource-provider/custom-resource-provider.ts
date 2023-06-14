@@ -16,6 +16,7 @@ import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
+export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
 
 /**
  * The lambda runtime used by default for aws-cdk vended custom resources. Can change
@@ -338,7 +339,7 @@ export class CustomResourceProvider extends Construct {
     metadata?: {[key: string]: string},
   } {
     let codeHandler = 'index.handler';
-    const inlineCode = this.node.tryGetContext('@aws-cdk/core:inlineCustomResourceIfPossible');
+    const inlineCode = this.node.tryGetContext(INLINE_CUSTOM_RESOURCE_CONTEXT);
     if (!inlineCode) {
       const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
       fs.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
