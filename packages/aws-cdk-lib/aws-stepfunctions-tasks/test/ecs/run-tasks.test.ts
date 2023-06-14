@@ -112,19 +112,21 @@ test('Running a task with container override and container has explicitly set a 
         },
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides', {
-    ContainerOverrides: [
+    }).toStateJson()))
+    .toHaveProperty('Parameters.Overrides',
       {
-        Environment: [
+        ContainerOverrides: [
           {
-            Name: 'SOME_KEY',
-            'Value.$': '$.SomeKey',
+            Environment: [
+              {
+                Name: 'SOME_KEY',
+                'Value.$': '$.SomeKey',
+              },
+            ],
+            Name: 'ExplicitContainerName',
           },
         ],
-        Name: 'ExplicitContainerName',
-      },
-    ],
-  });
+      });
 });
 
 test('Running a task without propagated tag source', () => {
@@ -235,7 +237,7 @@ test('Running a Fargate Task', () => {
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask,
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
   });
 
   // THEN
@@ -364,7 +366,7 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask,
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
   });
 
   // THEN
@@ -483,7 +485,7 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask,
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
   });
 
   // THEN
