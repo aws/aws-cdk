@@ -1,9 +1,11 @@
 # AWS::Chatbot Construct Library
 
 
-AWS Chatbot is an AWS service that enables DevOps and software development teams to use Slack chat rooms to monitor and respond to operational events in their AWS Cloud. AWS Chatbot processes AWS service notifications from Amazon Simple Notification Service (Amazon SNS), and forwards them to Slack chat rooms so teams can analyze and act on them immediately, regardless of location.
+AWS Chatbot is an AWS service that enables DevOps and software development teams to use Slack chat rooms or Microsoft Teams to monitor and respond to operational events in their AWS Cloud. AWS Chatbot processes AWS service notifications from Amazon Simple Notification Service (Amazon SNS), and forwards them to Slack chat rooms or Microsoft Teams so teams can analyze and act on them immediately, regardless of location.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+Slack Channel example:
 
 ```ts
 import * as chatbot from 'aws-cdk-lib/aws-chatbot';
@@ -27,9 +29,34 @@ slackChannel.addToRolePolicy(new iam.PolicyStatement({
 slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 ```
 
+Microsoft Teams Channel example:
+
+```ts
+import * as chatbot from 'aws-cdk-lib/aws-chatbot';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const microsoftTeamsChannel = new chatbot.MicrosoftTeamsChannelConfiguration(this, 'MyTeamsChannel', {
+  microsoftTeamsChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  teamId: 'YOUR_MICROSOFT_TEAM_ID',
+  teamsChannelId: 'YOUR_MICROSOFT_TEAMS_CHANNEL_ID',
+  teamsTenantId: 'YOUR_MICROSOFT_TEAMS_TENANT_ID',
+});
+
+microsoftTeamsChannel.addToRolePolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: [
+    's3:GetObject',
+  ],
+  resources: ['arn:aws:s3:::abc/xyz/123.txt'],
+}));
+
+microsoftTeamsChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
+```
+
 ## Log Group
 
-Slack channel configuration automatically create a log group with the name `/aws/chatbot/<configuration-name>` in `us-east-1` upon first execution with
+Channel configuration automatically create a log group with the name `/aws/chatbot/<configuration-name>` in `us-east-1` upon first execution with
 log data set to never expire.
 
 The `logRetention` property can be used to set a different expiration period. A log group will be created if not already exists.
@@ -45,5 +72,5 @@ correct log retention period (never expire, by default).
 
 ## Guardrails
 
-By default slack channel will use `AdministratorAccess` managed policy as guardrail policy.
+By default channel will use `AdministratorAccess` managed policy as guardrail policy.
 The `guardrailPolicies` property can be used to set a different set of managed policies.
