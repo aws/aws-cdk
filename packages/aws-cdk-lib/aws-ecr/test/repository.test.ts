@@ -977,7 +977,6 @@ describe('repository', () => {
     });
   });
 
-
   describe('when auto delete images is set to true', () => {
     test('permissions are correctly for multiple ecr repos', () => {
       const stack = new cdk.Stack();
@@ -1012,17 +1011,6 @@ describe('repository', () => {
                         'Arn',
                       ],
                     },
-                  ],
-                },
-                {
-                  Effect: 'Allow',
-                  Action: [
-                    'ecr:BatchDeleteImage',
-                    'ecr:DescribeRepositories',
-                    'ecr:ListImages',
-                    'ecr:ListTagsForResource',
-                  ],
-                  Resource: [
                     {
                       'Fn::GetAtt': [
                         'Repo2730A8200',
