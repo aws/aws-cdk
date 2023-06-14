@@ -187,15 +187,12 @@ export class Listener extends core.Resource implements IListener {
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
 
-    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = {};
     // the default action is a not provided, it will be set to NOT_FOUND
-    if (props.defaultAction === undefined) {
-      defaultAction = {
-        fixedResponse: {
-          statusCode: FixedResponse.NOT_FOUND,
-        },
-      };
-    }
+    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = props.defaultAction ?? {
+      fixedResponse: {
+        statusCode: FixedResponse.NOT_FOUND,
+      },
+    };
 
     // check the the port is in range if it is specificed
     if (props.port) {

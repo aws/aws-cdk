@@ -204,6 +204,7 @@ export class Service extends core.Resource implements IService {
       // get my orgId
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
         onCreate: {
+          region: 'us-east-1',
           service: 'Organizations',
           action: 'describeOrganization',
           physicalResourceId: cr.PhysicalResourceId.of('orgId'),
@@ -332,7 +333,7 @@ export class Service extends core.Resource implements IService {
       }
     }
 
-    const listener = new Listener(this, `Listener-${props.name}`, {
+    const listener = new Listener(this, `Listener-${core.Names.uniqueResourceName(this, { maxLength: 20 } )}`, {
       defaultAction: defaultAction,
       protocol: protocol,
       port: port,

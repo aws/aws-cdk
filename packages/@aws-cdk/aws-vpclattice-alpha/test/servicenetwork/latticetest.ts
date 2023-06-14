@@ -35,6 +35,9 @@ export class LatticeTestStack extends core.Stack {
       }],
     });
 
+    myLatticeService.node.addDependency(support.vpc1);
+    myLatticeService.node.addDependency(support.vpc2);
+
     // add a listener to the service, using the defaults
     // - HTTPS
     // - Port 443

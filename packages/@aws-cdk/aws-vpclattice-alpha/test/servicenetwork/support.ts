@@ -34,9 +34,30 @@ export class SupportResources extends Construct {
     const helloRole = new iam.Role(this, 'helloRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
+
+    helloRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: ['*'],
+      actions: [
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+      ],
+    }));
+
     const checkRole = new iam.Role(this, 'checkRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
+
+    checkRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: ['*'],
+      actions: [
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+      ],
+    })),
 
     this.helloWorld = new aws_lambda.Function(this, 'Helloworld', {
       runtime: aws_lambda.Runtime.PYTHON_3_10,

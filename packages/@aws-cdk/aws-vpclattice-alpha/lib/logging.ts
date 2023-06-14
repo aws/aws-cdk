@@ -8,6 +8,7 @@ import {
 /**
  * Logging options
  */
+
 export abstract class LoggingDestination {
 
   /**
@@ -18,6 +19,7 @@ export abstract class LoggingDestination {
     return {
       name: bucket.bucketName,
       arn: bucket.bucketArn,
+      addr: bucket.node.addr,
     };
   }
   /**
@@ -28,6 +30,7 @@ export abstract class LoggingDestination {
     return {
       name: logGroup.logGroupName,
       arn: logGroup.logGroupArn,
+      addr: logGroup.node.addr,
     };
   }
 
@@ -39,6 +42,7 @@ export abstract class LoggingDestination {
     return {
       name: stream.streamName,
       arn: stream.streamArn,
+      addr: stream.node.addr,
     };
   }
 
@@ -50,6 +54,10 @@ export abstract class LoggingDestination {
    * An Arn of the destination
    */
   public abstract readonly arn: string;
+  /**
+   * unique addr of the destination
+   */
+  public abstract readonly addr: string;
 
   protected constructor() {};
 }

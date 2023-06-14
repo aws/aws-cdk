@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "vpcLatticeTestStackInteg/DefaultTest": {
+      "stacks": [
+        "ServiceNetwork"
+      ],
+      "assertionStack": "vpcLatticeTestStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850"
+    }
+  }
+}
