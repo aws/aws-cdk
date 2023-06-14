@@ -18,13 +18,13 @@ export interface YarnLock {
 
 export interface ResolvedYarnPackage {
   version: string;
-  resolved: string;
-  integrity: string;
+  resolved?: string;
+  integrity?: string;
 
   /**
    * Dependency name to version range
    */
-  dependencies: Record<string, string>;
+  dependencies?: Record<string, string>;
 }
 
 export interface PackageLock extends PackageLockEntry {
