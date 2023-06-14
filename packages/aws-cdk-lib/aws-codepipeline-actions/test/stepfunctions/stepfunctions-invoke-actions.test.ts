@@ -154,7 +154,7 @@ function minimalPipeline(stack: Stack, account?: string, region?: string): codep
   const simpleStateMachine = account || region
     ? stepfunction.StateMachine.fromStateMachineArn(stack, 'SimpleStateMachine', `arn:aws:states:${region}:${account}:stateMachine:SimpleStateMachine`)
     : new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-      definition: new stepfunction.Pass(stack, 'StartState'),
+      definitionBody: stepfunction.DefinitionBody.fromChainable(new stepfunction.Pass(stack, 'StartState')),
     });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
   const sourceStage = pipeline.addStage({

@@ -91,7 +91,7 @@ test('task policies are generated', () => {
     },
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
