@@ -209,6 +209,19 @@ describe('repository', () => {
     expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
   });
 
+  test('import with arn without /repository', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const invalidArn = 'arn:aws:ecr:us-east-1:123456789012:foo-ecr-repo-name';
+
+    // THEN
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
+    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+  });
+
   test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -691,6 +704,142 @@ describe('repository', () => {
             },
           ],
           'Version': '2012-10-17',
+        },
+      });
+    });
+
+    test('grant push', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      repo.grantPush(new iam.AnyPrincipal());
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Principal': { 'AWS': '*' },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+    });
+
+    test('grant pull for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPull(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant push for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPush(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant pullpush for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPullPush(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
         },
       });
     });

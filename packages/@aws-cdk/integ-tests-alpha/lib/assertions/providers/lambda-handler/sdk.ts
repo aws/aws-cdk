@@ -29,13 +29,11 @@ export function flatten(object: object): { [key: string]: any } {
   );
 }
 
-
 export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
   protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
     // eslint-disable-next-line
     const AWS: any = require('aws-sdk');
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
-
 
     if (!Object.prototype.hasOwnProperty.call(AWS, request.service)) {
       throw Error(`Service ${request.service} does not exist in AWS SDK version ${AWS.VERSION}.`);

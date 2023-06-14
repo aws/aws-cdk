@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from 'aws-cdk-lib';
+import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
@@ -23,7 +23,6 @@ export interface EcsVolumeOptions {
    * the path on the container where this volume is mounted
    */
   readonly containerPath: string;
-
 
   /**
    * if set, the container will have readonly access to the volume

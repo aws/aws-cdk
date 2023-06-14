@@ -108,7 +108,6 @@ export interface IApplicationTargetGroupMetrics {
    */
   custom(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-
   /**
    * The number of IPv6 requests received by the target group
    *
@@ -181,7 +180,6 @@ export interface IApplicationTargetGroupMetrics {
   targetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
-
 /**
  * The metrics for a Application Load Balancer.
  */
@@ -207,7 +205,6 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
       ...props,
     }).attachTo(this.scope);
   }
-
 
   public ipv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
@@ -519,7 +516,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * The only valid statistic is Sum. Note that this represents the average not the sum.
    *
    * @default Sum over 5 minutes
-   * @deprecated Use ``ApplicationTargetGroup.metrics.ipv6RequestCount`` instead
+   * @deprecated Use `ApplicationTargetGroup.metrics.requestCountPerTarget` instead
    */
   public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metrics.requestCountPerTarget(props);

@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { Construct, IConstruct, Node } from 'constructs';
 import { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
@@ -6,7 +6,6 @@ import { ActualResult, ExpectedResult } from '../common';
 import { md5hash } from '../private/hash';
 import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
 import { IDeployAssert } from '../types';
-
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
