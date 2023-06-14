@@ -2012,14 +2012,17 @@ export class Bucket extends BucketBase {
       encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
     }
 
-    // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if encryption key is set, encryption must be set to KMS or DSSE.
+    if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
+    if (
+      props.bucketKeyEnabled &&
+      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
+    ) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2061,6 +2064,37 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
+        ],
+      };
+      return { bucketEncryption };
+    }
+
+    if (encryptionType === BucketEncryption.DSSE) {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
+        description: `Created by ${this.node.path}`,
+      });
+
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms:dsse',
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
+      };
+      return { encryptionKey, bucketEncryption };
+    }
+
+    if (encryptionType === BucketEncryption.DSSE_MANAGED) {
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
           },
         ],
       };
@@ -2129,8 +2163,12 @@ export class Bucket extends BucketBase {
     }
 
     // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
-    if (!props.serverAccessLogsBucket && props.encryption === BucketEncryption.KMS_MANAGED) {
-      throw new Error('Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets');
+    if (
+      !props.serverAccessLogsBucket &&
+      props.encryption &&
+      [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
+    ) {
+      throw new Error('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets');
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
@@ -2460,6 +2498,17 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Double server-side KMS encryption with a master key managed by KMS.
+   */
+  DSSE_MANAGED = 'DSSE_MANAGED',
+
+  /**
+   * Double server-side encryption with a KMS key managed by the user.
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  DSSE = 'DSSE',
 }
 
 /**
