@@ -64,33 +64,6 @@ cluster.addManifest('mypod', {
 });
 ```
 
-In order to interact with your cluster through `kubectl`, you can use the `aws eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
-to configure your local kubeconfig. The EKS module will define a CloudFormation output in your stack which contains the command to run. For example:
-
-```plaintext
-Outputs:
-ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
-```
-
-Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
-
-```console
-$ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
-Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
-```
-
-And now you can simply use `kubectl`:
-
-```console
-$ kubectl get all -n kube-system
-NAME                           READY   STATUS    RESTARTS   AGE
-pod/aws-node-fpmwv             1/1     Running   0          21m
-pod/aws-node-m9htf             1/1     Running   0          21m
-pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
-pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
-...
-```
-
 ## Architectural Overview
 
 The following is a qualitative diagram of the various possible components involved in the cluster deployment.
@@ -854,14 +827,36 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-If you do not specify it, a default role will be created on your behalf, that can be assumed by anyone in the account with `sts:AssumeRole` permissions for this role.
+In order to interact with your cluster through `kubectl`, you can use the `aws eks update-kubeconfig` [AWS CLI command](https://docs.aws.amazon.com/cli/latest/reference/eks/update-kubeconfig.html)
+to configure your local kubeconfig. The EKS module will define a CloudFormation output in your stack which contains the command to run. For example:
 
-This is the role you see as part of the stack outputs mentioned in the [Quick Start](#quick-start).
+```plaintext
+Outputs:
+ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
+```
+
+Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
 
 ```console
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
 ```
+
+And now you can simply use `kubectl`:
+
+```console
+$ kubectl get all -n kube-system
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/aws-node-fpmwv             1/1     Running   0          21m
+pod/aws-node-m9htf             1/1     Running   0          21m
+pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
+pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
+...
+```
+
+If you do not specify it, you won't have access to the cluster from outside of the CDK application.
+
+> Note that `cluster.addManifest` and `new KubernetesManifest` will still work.
 
 ### Encryption
 
