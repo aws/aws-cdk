@@ -114,7 +114,6 @@ describe('scalable target', () => {
       }),
       maxCapacity: 50,
       minCapacity: 1,
-      
     });
 
     // THEN
