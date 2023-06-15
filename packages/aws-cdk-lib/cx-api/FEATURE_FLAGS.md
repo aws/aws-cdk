@@ -19,6 +19,7 @@ Flags come in three types:
 | ----- | ----- | ----- | ----- |
 | [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
 | [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
+| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | V2·NEXT | (fix) |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
@@ -52,6 +53,7 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
+| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 
 <!-- END table -->
 
@@ -94,7 +96,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-redshift:columnId": true,
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
-    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
   }
 }
 ```
@@ -363,6 +367,23 @@ removing these ingress/egress rules in order to restrict access to the default s
       To allow all ingress/egress traffic to the VPC default security group you
       can set the `restrictDefaultSecurityGroup: false`.
     
+
+
+### @aws-cdk/aws-kms:aliasNameRef
+
+*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
+
+This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+when referencing key.aliasName or key.keyArn.
+
+If the flag is not set then a raw string is passed as the Alias name and no
+implicit dependencies will be set.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-route53-patters:useCertificate
@@ -965,6 +986,26 @@ intervention since they might not have the appropriate tags propagated automatic
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
+
+
+### @aws-cdk/core:includePrefixInUniqueNameGeneration
+
+*Include the stack prefix in the stack name generation process* (fix)
+
+This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+
+If the flag is set, the prefix is included in the stack name generation process.
+If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+**NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+is not viable in some productive setups.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.84.0 | `false` | `true` |
 
 
 <!-- END details -->

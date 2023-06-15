@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib';
+import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 

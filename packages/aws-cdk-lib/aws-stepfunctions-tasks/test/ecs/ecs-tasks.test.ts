@@ -78,7 +78,7 @@ describeDeprecated('ecs-tasks', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN
@@ -191,7 +191,7 @@ describeDeprecated('ecs-tasks', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN
@@ -292,7 +292,7 @@ describeDeprecated('ecs-tasks', () => {
     const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN
