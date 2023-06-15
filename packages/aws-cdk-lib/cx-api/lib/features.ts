@@ -820,7 +820,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
       is not viable in some productive setups.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.84.0' },
     recommendedValue: true,
   },
 
