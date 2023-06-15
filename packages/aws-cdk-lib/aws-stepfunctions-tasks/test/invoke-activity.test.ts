@@ -6,14 +6,14 @@ import * as tasks from '../lib';
 
 describeDeprecated('InvokeActivity', () => {
   test('Activity can be used in a Task', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
 
     // WHEN
     const activity = new sfn.Activity(stack, 'Activity');
     const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeActivity(activity) });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -29,7 +29,7 @@ describeDeprecated('InvokeActivity', () => {
   });
 
   test('Activity Task metrics and Activity metrics are the same', () => {
-  // GIVEN
+    // GIVEN
     const stack = new Stack();
     const activity = new sfn.Activity(stack, 'Activity');
     const task = new sfn.Task(stack, 'Invoke', { task: new tasks.InvokeActivity(activity) });
