@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Lazy, Resource, IResolvable } from 'aws-cdk-lib';
+import { Lazy, Resource, IResolvable } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
+import { WorkGraph } from '../lib/util/work-graph';
 import { WorkGraphBuilder } from '../lib/util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '../lib/util/work-graph-types';
 
@@ -36,14 +37,14 @@ describe('with some stacks and assets', () => {
 
     expect(graph.node('F1:D1-publish')).toEqual(expect.objectContaining({
       type: 'asset-publish',
-      dependencies: new Set(['F1:D1-build']),
+      dependencies: new Set(['F1-build']),
     } as Partial<AssetPublishNode>));
   });
 
   test('with prebuild off, asset building inherits dependencies from their parent stack', () => {
     const graph = new WorkGraphBuilder(false).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
       dependencies: new Set(['stack0', 'stack1']),
     } as Partial<AssetBuildNode>));
@@ -52,7 +53,7 @@ describe('with some stacks and assets', () => {
   test('with prebuild on, assets only have their own dependencies', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('F1-build')).toEqual(expect.objectContaining({
       type: 'asset-build',
       dependencies: new Set(['stack0']),
     } as Partial<AssetBuildNode>));
@@ -109,7 +110,7 @@ test('dependencies on unselected artifacts are silently ignored', async () => {
   }));
 });
 
-test('assets with shared contents between dependant stacks', async () => {
+describe('tests that use assets', () => {
   const files = {
     // Referencing an existing file on disk is important here.
     // It means these two assets will have the same AssetManifest
@@ -121,36 +122,97 @@ test('assets with shared contents between dependant stacks', async () => {
       },
     },
   };
+  const environment = 'aws://11111/us-east-1';
 
-  addStack(rootBuilder, 'StackA', {
-    environment: 'aws://11111/us-east-1',
-    dependencies: ['StackA.assets'],
+  test('assets with shared contents between dependant stacks', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', { files });
+
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', { files });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      'work-graph-builder.test.js-build',
+      'work-graph-builder.test.js:D1-publish',
+      'StackA',
+      'StackB',
+    ]);
   });
-  addAssets(rootBuilder, 'StackA.assets', { files });
 
-  addStack(rootBuilder, 'StackB', {
-    environment: 'aws://11111/us-east-1',
-    dependencies: ['StackB.assets', 'StackA'],
+  test('a more complex way to make a cycle', async () => {
+    // A -> B -> C | A and C share an asset. The asset will have a dependency on B, that is not a *direct* reverse dependency, and will cause a cycle.
+    addStack(rootBuilder, 'StackA', { environment, dependencies: ['StackA.assets', 'StackB'] });
+    addAssets(rootBuilder, 'StackA.assets', { files });
+
+    addStack(rootBuilder, 'StackB', { environment, dependencies: ['StackC'] });
+
+    addStack(rootBuilder, 'StackC', { environment, dependencies: ['StackC.assets'] });
+    addAssets(rootBuilder, 'StackC.assets', { files });
+
+    const assembly = rootBuilder.buildAssembly();
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+
+    // THEN
+    expect(graph.findCycle()).toBeUndefined();
   });
-  addAssets(rootBuilder, 'StackB.assets', { files });
 
-  const assembly = rootBuilder.buildAssembly();
+  test('the same asset to different destinations is only built once', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D1: { bucketName: 'bucket1', objectKey: 'key' },
+            D2: { bucketName: 'bucket2', objectKey: 'key' },
+          },
+        },
+      },
+    });
 
-  const traversal: string[] = [];
-  const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
-  await graph.doParallel(1, {
-    deployStack: async (node) => { traversal.push(node.id); },
-    buildAsset: async (node) => { traversal.push(node.id); },
-    publishAsset: async (node) => { traversal.push(node.id); },
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D3: { bucketName: 'bucket3', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      'abcdef-build',
+      'abcdef:D1-publish',
+      'abcdef:D2-publish',
+      'StackA',
+      'abcdef:D3-publish',
+      'StackB',
+    ]);
   });
-
-  expect(traversal).toHaveLength(4); // 1 asset build, 1 asset publish, 2 stacks
-  expect(traversal).toEqual([
-    'work-graph-builder.test.js:D1-build',
-    'work-graph-builder.test.js:D1-publish',
-    'StackA',
-    'StackB',
-  ]);
 });
 
 /**
@@ -230,4 +292,14 @@ function assertableNode<A extends WorkNode>(x: A) {
     ...x,
     dependencies: Array.from(x.dependencies),
   };
+}
+
+async function traverseAndRecord(graph: WorkGraph) {
+  const ret: string[] = [];
+  await graph.doParallel(1, {
+    deployStack: async (node) => { ret.push(node.id); },
+    buildAsset: async (node) => { ret.push(node.id); },
+    publishAsset: async (node) => { ret.push(node.id); },
+  });
+  return ret;
 }
