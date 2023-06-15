@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation](#aws-cdkaws-autoscalingdisabledefaultlaunchconfigcreation) | Do not create a launch configuration when creating an AutoScalingGroup | V2·NEXT | (fix) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -97,8 +98,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
-    "@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
   }
 }
@@ -329,52 +330,17 @@ Encryption can also be configured explicitly using the `encrypted` property.
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
 
 
-<<<<<<< HEAD
-### @aws-cdk/aws-apigateway:requestValidatorUniqueId
-
-*Generate a unique id for each RequestValidator added to a method* (fix)
-
-This flag allows multiple RequestValidators to be added to a RestApi when
-providing the `RequestValidatorOptions` in the `addMethod()` method.
-
-If the flag is not set then only a single RequestValidator can be added in this way.
-Any additional RequestValidators have to be created directly with `new RequestValidator`.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-
 ### @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation
 
 *Do not create a launch configuration when creating an AutoScalingGroup* (fix)
 
 Enable this flag to disallow creating a launch configuration when creating an AutoScalingGroup.
-Launch Configurations have been deprecated and cannot be created in new AWS accounts.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:**
-      If backwards compatibility needs to be maintained due to an existing autoscaling group using a launch config, set this flag to false.
-
-
-### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
-
-*Restrict access to the VPC default security group* (default)
-
-Enable this feature flag to remove the default ingress/egress rules from the
-VPC default security group.
-
-When a VPC is created, a default security group is created as well and this cannot
-be deleted. The default security group is created with ingress/egress rules that allow
-_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
-removing these ingress/egress rules in order to restrict access to the default security group.
+Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
+'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+attempt to set user data according to the OS of the machine image if explicit user data is not
+provided.
 
 
 | Since | Default | Recommended |
@@ -383,48 +349,11 @@ removing these ingress/egress rules in order to restrict access to the default s
 | V2·NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** 
-      To allow all ingress/egress traffic to the VPC default security group you
-      can set the `restrictDefaultSecurityGroup: false`.
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
     
 
 
-### @aws-cdk/aws-kms:aliasNameRef
-
-*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
-
-This flag allows an implicit dependency to be created between KMS Alias and KMS Key
-when referencing key.aliasName or key.keyArn.
-
-If the flag is not set then a raw string is passed as the Alias name and no
-implicit dependencies will be set.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-route53-patters:useCertificate
-
-*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
-
-Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
-of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
-the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
-stack.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
-
-
-=======
->>>>>>> main
 ### @aws-cdk/core:newStyleStackSynthesis
 
 *Switch to new stack synthesis method which enables CI/CD* (fix)
