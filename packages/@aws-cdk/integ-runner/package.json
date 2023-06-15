@@ -56,7 +56,7 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.1",
+    "@types/jest": "^29.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/workerpool": "^6.4.0",
     "@types/yargs": "^15.0.15",
