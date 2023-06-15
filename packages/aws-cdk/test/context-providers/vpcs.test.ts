@@ -411,7 +411,7 @@ test('Recognize public subnet by route table', async () => {
   });
 });
 
-test('Recognize private subnet by route table', async () => {
+test('Recognize private subnet by route table with NAT Gateway', async () => {
   // GIVEN
   const filter = { foo: 'bar' };
   const provider = new VpcNetworkContextProviderPlugin(mockSDK);
@@ -440,6 +440,70 @@ test('Recognize private subnet by route table', async () => {
           {
             DestinationCidrBlock: '0.0.0.0/0',
             NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    vpcId: 'vpc-1234567',
+    vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
+    availabilityZones: ['bermuda-triangle-1337'],
+    isolatedSubnetIds: undefined,
+    isolatedSubnetNames: undefined,
+    isolatedSubnetRouteTableIds: undefined,
+    privateSubnetIds: ['sub-123456'],
+    privateSubnetNames: ['Private'],
+    privateSubnetRouteTableIds: ['rtb-123456'],
+    publicSubnetIds: undefined,
+    publicSubnetNames: undefined,
+    publicSubnetRouteTableIds: undefined,
+    vpnGatewayId: undefined,
+    subnetGroups: undefined,
+  });
+});
+
+test('Recognize private subnet by route table with Transit Gateway', async () => {
+  // GIVEN
+  const filter = { foo: 'bar' };
+  const provider = new VpcNetworkContextProviderPlugin(mockSDK);
+
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx',
+          },
+          {
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            TransitGatewayId: 'tgw-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },
