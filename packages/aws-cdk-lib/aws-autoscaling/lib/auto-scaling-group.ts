@@ -1460,9 +1460,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
-      this.launchTemplate?.connections.addSecurityGroup(securityGroup);
+      this.launchTemplate?.addSecurityGroup(securityGroup);
     } else {
-      this.securityGroups?.push(securityGroup);
+      if (!this.securityGroups) {
+        throw new Error('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
+      }
+      this.securityGroups.push(securityGroup);
     }
   }
 
