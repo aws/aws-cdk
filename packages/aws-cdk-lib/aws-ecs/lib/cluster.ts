@@ -959,6 +959,13 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * @default - Automatically updated, ECS-optimized Amazon Linux 2
    */
   readonly machineImage?: ec2.IMachineImage;
+
+  /**
+   * Security group to launch the instances in.
+   *
+   * @default - A SecurityGroup will be created if none is specified.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
