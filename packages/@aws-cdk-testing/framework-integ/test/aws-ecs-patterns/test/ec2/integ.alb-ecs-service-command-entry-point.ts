@@ -4,18 +4,14 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
+import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ postCliContext: { [AUTOSCALING_DISABLE_LAUNCH_CONFIG]: false } });
 const stack = new cdk.Stack(app, 'aws-ecs-integ-alb-ec2-cmd-entrypoint');
 
 // Create VPC and ECS Cluster
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
-const asgSecurityGroup = new ec2.SecurityGroup(stack, 'AutoScalingGroupSG', {
-  vpc,
-  allowAllOutbound: true,
-});
-asgSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcpRange(32768, 65535));
 const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
   autoScalingGroup: new autoscaling.AutoScalingGroup(
     stack,
@@ -31,7 +27,7 @@ const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
 cluster.addAsgCapacityProvider(provider);
 
 // Create ALB service with Command and EntryPoint
-const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(
+new ecsPatterns.ApplicationLoadBalancedEc2Service(
   stack,
   'ALBECSServiceWithCommandEntryPoint',
   {
@@ -52,13 +48,6 @@ const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalance
     ],
   },
 );
-
-const loadBalancerSecurityGroup = new ec2.SecurityGroup(stack, 'LoadBalancerSG', {
-  vpc,
-  allowAllOutbound: true,
-});
-loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcpRange(32768, 65535));
-applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(loadBalancerSecurityGroup);
 
 new integ.IntegTest(app, 'AlbEc2ServiceWithCommandAndEntryPoint', {
   testCases: [stack],
