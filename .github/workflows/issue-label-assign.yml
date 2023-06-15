@@ -282,5 +282,5 @@ env:
             {"area":"@aws-cdk/triggers","keywords":["trigger","triggers"],"labels":["@aws-cdk/triggers"]},
             {"area":"@aws-cdk/integ-tests","keywords":["integ-tests", "integ"],"labels":["@aws-cdk/integ-tests"]},
             {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"]},
-            {"area":"@aws-cdk/app-staging-synthesizer-alpha", "keywords":["app-staging-synthesizer", "app-staging-synthesizer-alpha"],"labels":["@aws-cdk/app-staging-synthesizer-alpha"]"}
+            {"area":"@aws-cdk/app-staging-synthesizer-alpha", "keywords":["app-staging-synthesizer", "app-staging-synthesizer-alpha"],"labels":["@aws-cdk/app-staging-synthesizer-alpha"]}
           ]
