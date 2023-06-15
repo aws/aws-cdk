@@ -1,5 +1,5 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { Aws, Resource } from 'aws-cdk-lib';
+import { Aws, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';

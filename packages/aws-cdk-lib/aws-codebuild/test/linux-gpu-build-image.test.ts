@@ -57,6 +57,39 @@ describe('Linux GPU build image', () => {
         },
       });
     });
+
+    test('allows to specify a BUILD_GENERAL1_SMALL build environment', () => {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+          phases: {
+            build: { commands: ['ls'] },
+          },
+        }),
+        environment: {
+          buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
+            'my-repo', 'my-tag', '123456789012'),
+          computeType: codebuild.ComputeType.SMALL,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: {
+          ComputeType: 'BUILD_GENERAL1_SMALL',
+          Image: {
+            'Fn::Join': ['', [
+              '123456789012.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/my-repo:my-tag',
+            ]],
+          },
+        },
+      });
+    });
   });
 
   describe('ECR Repository', () => {

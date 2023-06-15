@@ -597,22 +597,24 @@ const parameter = new ssm.StringParameter(stack, 'Parameter', {
   stringValue: 'mySsmParameterValue',
 });
 
-new lambda.Function(this, 'MyFunction', {
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
+  cacheSize: 500,
+  logLevel: lamabda.ParamsAndSecretsLogLevel.DEBUG,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   architecture: lambda.Architecture.ARM_64,
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  paramsAndSecrets: {
-    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V4, {
-      cacheSize: 500,
-    }),
-    secrets: [secret],
-    parameters: [parameter],
-  },
+  paramsAndSecrets,
 });
+
+secret.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
 ```
 
-If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so -
+If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so:
 
 ```ts
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
@@ -625,19 +627,20 @@ const parameter = new ssm.StringParameter(stack, 'Parameter', {
 });
 
 const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
-new lambda.Function(this, 'MyFunction', {
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+  cacheSize: 500,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   architecture: lambda.Architecture.ARM_64,
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  paramsAndSecrets: {
-    layerVersion: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
-      cacheSize: 500,
-    }),
-    secrets: [secret],
-    parameters: [parameter],
-  },
+  paramsAndSecrets,
 });
+
+secret.grantRead(lambdaFunction);
+parameters.grantRead(lambdaFunction);
 ```
 
 ## Event Rule Target
