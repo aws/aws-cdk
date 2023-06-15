@@ -9,11 +9,7 @@ import {
   from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import {
-  AddListenerProps,
   IListener,
-  Listener,
-  FixedResponse,
-  Protocol,
 }
   from './index';
 
@@ -51,14 +47,20 @@ export interface IService extends core.IResource {
   * The Id of the Service Network
   */
   readonly serviceId: string;
-
+  /**
+   * Annon Access Allowed
+   */
+  readonly anonymousAccessAllowed: boolean;
+  /**
+   * Allow access from Principals that are not in this organisation
+   */
+  readonly externalPrincipalsAllowed: boolean;
+  /**
+   * Allow an Odd
+   */
+  readonly orgId: string | undefined;
   /**
    * Add A vpc listener to the Service.
-   * @param props
-   */
-  addListener(props: AddListenerProps): Listener;
-  /**
-   * Share the service to other accounts via RAM
    * @param props
    */
   shareToAccounts(props: ShareServiceProps): void;
@@ -148,7 +150,19 @@ export class Service extends core.Resource implements IService {
   /**
    * The Arn of the Service
    */
-  readonly serviceArn: string
+  readonly serviceArn: string;
+  /**
+   * Annon Access Allowed
+   */
+  readonly anonymousAccessAllowed: boolean;
+  /**
+   * Allow access from Principals that are not in this organisation
+   */
+  readonly externalPrincipalsAllowed: boolean;
+  /**
+   * the discovered OrgId
+   */
+  readonly orgId: string | undefined;
   /**
    * The authType of the service.
    */
@@ -174,6 +188,16 @@ export class Service extends core.Resource implements IService {
    */
   authPolicy: iam.PolicyDocument;
 
+  /**
+  * Allow external principals
+  */
+  allowExternalPrincipals: boolean | undefined;
+
+  /**
+    * Allow unauthenticated access
+    */
+  allowUnauthenticatedAccess?: boolean | undefined;
+
   constructor(scope: constructs.Construct, id: string, props: LatticeServiceProps) {
     super(scope, id);
 
@@ -196,10 +220,10 @@ export class Service extends core.Resource implements IService {
 
     this.serviceId = service.attrId;
     this.serviceArn = service.attrArn;
+    this.externalPrincipalsAllowed = props.allowExternalPrincipals ?? false;
+    this.anonymousAccessAllowed = props.allowUnauthenticatedAccess ?? false;
 
-    if ((props.allowExternalPrincipals ?? false) == false) {
-      // add an explict deny, so that the service network cannot be used by principals
-      // that are outside of the org which this service network is deployed in
+    if (this.allowExternalPrincipals === false) {
 
       // get my orgId
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
@@ -214,40 +238,9 @@ export class Service extends core.Resource implements IService {
         }),
       });
 
-      const orgId = orgIdCr.getResponseField('Organization.Id');
+      this.orgId = orgIdCr.getResponseField('Organization.Id');
 
-      this.authPolicy.addStatements(
-        new iam.PolicyStatement({
-          effect: iam.Effect.DENY,
-          actions: ['vpc-lattice-svcs:Invoke'],
-          resources: ['*'],
-          principals: [new iam.AnyPrincipal()],
-          conditions: {
-            StringNotEquals: {
-              'aws:PrincipalOrgID': [orgId],
-            },
-          },
-        }),
-      );
-    };
-
-    if ((props.allowUnauthenticatedAccess ?? false) == false) {
-      // add an explict deny, so that the service network cannot be be accessed by non authenticated
-      // requestors.
-      this.authPolicy.addStatements(
-        new iam.PolicyStatement({
-          effect: iam.Effect.DENY,
-          actions: ['vpc-lattice-svcs:Invoke'],
-          principals: [new iam.AnyPrincipal()],
-          resources: ['*'], // as this is policy is applied on the 'service', the * applyes to all things that are in teh service.
-          conditions: {
-            StringNotEqualsIgnoreCase: {
-              'aws:PrincipalType': 'anonymous',
-            },
-          },
-        }),
-      );
-    };
+    }
   }
 
   /**
@@ -273,6 +266,9 @@ export class Service extends core.Resource implements IService {
   }
   public applyAuthPolicy(): iam.PolicyDocument {
 
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(this.authPolicy));
+
     if (this.authType === 'NONE') {
       throw new Error('Can not apply a policy when authType is NONE');
     }
@@ -281,6 +277,8 @@ export class Service extends core.Resource implements IService {
       throw new Error(
         `The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
     }
+
+    // interate over all statements and add conditons.
 
     new aws_vpclattice.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
       policy: this.authPolicy.toJSON(),
@@ -294,56 +292,6 @@ export class Service extends core.Resource implements IService {
     this.authPolicy.addStatements(statement);
   }
 
-  /**
-   * Adds a listener to the service.
-   * @param props AddListenerProps
-   * @returns Listener
-   */
-  public addListener(props: AddListenerProps): Listener {
-
-    // default to using HTTPS
-    let protocol = props.protocol ?? Protocol.HTTPS;
-
-    // if its not specified, set it to the default port based on the protcol
-    let port: number;
-    switch (protocol) {
-      case Protocol.HTTP:
-        port = props.port ?? 80;
-        break;
-      case Protocol.HTTPS:
-        port = props.port ?? 443;
-        break;
-      default:
-        throw new Error('Protocol not supported');
-    }
-
-    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = {};
-    // the default action is a not found
-    if (props.defaultAction === undefined) {
-      defaultAction = {
-        fixedResponse: {
-          statusCode: FixedResponse.NOT_FOUND,
-        },
-      };
-    };
-
-    if (props.name !== undefined) {
-      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
-        throw new Error('The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.');
-      }
-    }
-
-    const listener = new Listener(this, `Listener-${core.Names.uniqueResourceName(this, { maxLength: 20 } )}`, {
-      defaultAction: defaultAction,
-      protocol: protocol,
-      port: port,
-      serviceId: this.serviceId,
-      serviceAuthPolicy: this.authPolicy,
-      name: props.name,
-    });
-
-    return listener;
-  }
   /**
    * Share the service to other accounts via RAM
    * @param props SharedServiceProps

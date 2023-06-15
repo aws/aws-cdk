@@ -13,6 +13,7 @@ import {
   TargetGroup,
   Target,
   HTTPMethods,
+  Listener,
 }
   from '../../lib/index';
 
@@ -26,6 +27,7 @@ export class LatticeTestStack extends core.Stack {
     // Create a Lattice Service
     // this will default to using IAM Authentication
     const myLatticeService = new Service(this, 'myLatticeService', {
+      allowUnauthenticatedAccess: true,
       shares: [{
         name: 'LatticeShare',
         allowExternalPrincipals: false,
@@ -43,15 +45,18 @@ export class LatticeTestStack extends core.Stack {
     // - Port 443
     // - default action of providing 404 NOT Found,
     // - cloudformation name
-    const myListener = myLatticeService.addListener({});
+
+    const myListener = new Listener(this, 'myListener', {
+      service: myLatticeService,
+    });
 
     myListener.addListenerRule({
-      name: 'thing',
-      priority: 100,
+      name: 'rule1',
+      priority: 10,
       action: [
         {
-          targetGroup: new TargetGroup(this, 'lambdatargets', {
-            name: 'lambda1',
+          targetGroup: new TargetGroup(this, 'lambdatargetsHello', {
+            name: 'hellotarget',
             target: Target.lambda([
               support.helloWorld,
             ]),
@@ -63,10 +68,29 @@ export class LatticeTestStack extends core.Stack {
         pathMatches: { path: '/hello' },
         method: HTTPMethods.GET,
       },
-      allowedPrincipals: [support.checkHelloWorld.role as iam.Role],
+      allowedPrincipals: [new iam.AnyPrincipal()],
     });
 
-    myLatticeService.applyAuthPolicy();
+    myListener.addListenerRule({
+      name: 'rule2',
+      priority: 20,
+      action: [
+        {
+          targetGroup: new TargetGroup(this, 'lambdatargetsGoodbye', {
+            name: 'goodbyetarget',
+            target: Target.lambda([
+              support.helloWorld,
+            ]),
+          }),
+        },
+      ],
+      // the conditions for the match are effectively AND'ed together
+      httpMatch: {
+        pathMatches: { path: '/hello' },
+        method: HTTPMethods.GET,
+      },
+      allowedPrincipals: [new iam.AnyPrincipal()],
+    });
 
     /**
      * Create a ServiceNetwork.
@@ -76,6 +100,7 @@ export class LatticeTestStack extends core.Stack {
      */
 
     const serviceNetwork = new ServiceNetwork(this, 'LatticeServiceNetwork', {
+      allowUnauthenticatedAccess: true,
       services: [myLatticeService],
       vpcs: [
         support.vpc1,
@@ -83,6 +108,10 @@ export class LatticeTestStack extends core.Stack {
       ],
     });
 
+    // eslint-disable-next-line no-console
+    console.log(serviceNetwork.authPolicy);
+
     serviceNetwork.applyAuthPolicyToServiceNetwork();
+    //myLatticeService.applyAuthPolicy();
   }
 }

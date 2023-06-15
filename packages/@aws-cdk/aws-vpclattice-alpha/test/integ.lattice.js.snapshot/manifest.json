@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3421149f14eb7c8ce8af964808eb984fbffac3ed2130061fe44c36dfabd804a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b126f6ab37b487c3ea565df0ecfbadbbdf3225dc7e03f1e579c1709f92284f46.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -285,16 +285,16 @@
             "data": "supportresourcesHelloworld33AB6114"
           }
         ],
-        "/ServiceNetwork/supportresources/CheckHello/SecurityGroup/Resource": [
+        "/ServiceNetwork/supportresources/Goodbye/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "supportresourcesCheckHelloSecurityGroup3FD5E510"
+            "data": "supportresourcesGoodbyeSecurityGroup8D83DB0E"
           }
         ],
-        "/ServiceNetwork/supportresources/CheckHello/Resource": [
+        "/ServiceNetwork/supportresources/Goodbye/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "supportresourcesCheckHello0E60FD92"
+            "data": "supportresourcesGoodbye40E30F7A"
           }
         ],
         "/ServiceNetwork/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -315,64 +315,34 @@
             "data": "myLatticeServiceB48AE2A4"
           }
         ],
-        "/ServiceNetwork/myLatticeService/getOrgId": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
-          }
-        ],
-        "/ServiceNetwork/myLatticeService/getOrgId/Resource/Default": [
+        "/ServiceNetwork/myListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myLatticeServicegetOrgIdA7E4A3CD"
+            "data": "myListener5A585B50"
           }
         ],
-        "/ServiceNetwork/myLatticeService/getOrgId/CustomResourcePolicy/Resource": [
+        "/ServiceNetwork/myListener/rule1-Rule": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC"
+            "data": "myListenerrule1RuleD6C7DEE9"
           }
         ],
-        "/ServiceNetwork/myLatticeService/Listener-ServicerviceA2D6D3CC/Resource": [
+        "/ServiceNetwork/myListener/rule2-Rule": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myLatticeServiceListenerServicerviceA2D6D3CCB135E241"
+            "data": "myListenerrule2Rule8ACEA5A3"
           }
         ],
-        "/ServiceNetwork/myLatticeService/Listener-ServicerviceA2D6D3CC/thing-Rule": [
+        "/ServiceNetwork/lambdatargetsHello/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myLatticeServiceListenerServicerviceA2D6D3CCthingRuleEA87E093"
+            "data": "lambdatargetsHello2848EB94"
           }
         ],
-        "/ServiceNetwork/myLatticeService/ServiceAuthPolicy": [
+        "/ServiceNetwork/lambdatargetsGoodbye/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myLatticeServiceServiceAuthPolicy11FE73CA"
-          }
-        ],
-        "/ServiceNetwork/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
-        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
-        "/ServiceNetwork/lambdatargets/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdatargets651152EB"
+            "data": "lambdatargetsGoodbye101C963F"
           }
         ],
         "/ServiceNetwork/LatticeServiceNetwork/Resource": [
@@ -433,6 +403,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatticeServiceNetworkAuthPolicy2788B62F"
+          }
+        ],
+        "/ServiceNetwork/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
         "/ServiceNetwork/BootstrapVersion": [

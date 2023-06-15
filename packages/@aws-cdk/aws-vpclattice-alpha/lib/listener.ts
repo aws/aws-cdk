@@ -14,6 +14,7 @@ import {
   Protocol,
   MatchOperator,
   HTTPMatch,
+  IService,
 } from './index';
 
 interface IHttpMatchProperty {
@@ -38,37 +39,6 @@ interface IHttpMatchProperty {
 }
 
 /**
- * Props for AddListener
- */
-export interface AddListenerProps {
-  /**
-   *  The default action that will be taken if no rules match.
-   * @default The default action will be to return 404 not found
-  */
-  readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
-
-  /**
-  * protocol that the listener will listen on
-  * @default HTTPS
-  * @see vpclattice.Protocol
-  */
-  readonly protocol?: Protocol | undefined;
-
-  /**
-  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
-  * @default 80 or 443 depending on the Protocol
-  */
-  readonly port?: number | undefined;
-
-  /**
-  * The Id of the service that this will be added to.
-  * @default cloudformation provided name
-  */
-  readonly name?: string;
-
-}
-
-/**
  * Propertys to Create a Lattice Listener
  */
 export interface ListenerProps {
@@ -79,8 +49,9 @@ export interface ListenerProps {
   readonly defaultAction?: aws_vpclattice.CfnListener.DefaultActionProperty | undefined;
   /**
   * protocol that the listener will listen on
+  * @default HTTPS
   */
-  readonly protocol: Protocol
+  readonly protocol?: Protocol | undefined;
   /**
   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
   * @default 80 or 443 depending on the Protocol
@@ -95,12 +66,7 @@ export interface ListenerProps {
   /**
    * The Id of the service that this listener is associated with.
    */
-  readonly serviceId: string;
-  /**
-   * the authpolicy for the service this listener is associated with
-   * @default none.
-   */
-  readonly serviceAuthPolicy?: iam.PolicyDocument | undefined
+  readonly service: IService;
 }
 
 /**
@@ -140,7 +106,7 @@ export interface AddRuleProps {
   readonly action: FixedResponse | WeightedTargetGroup[]
   /**
   * the priority of this rule, a lower priority will be processed first
-  * @default 100
+  * @default 50
   */
   readonly priority?: number
   /**
@@ -175,9 +141,9 @@ export class Listener extends core.Resource implements IListener {
    */
   listenerPrioritys: number[] = []
   /**
-   * The Id of the service this listener is attached to
+   * The service this listener is attached to
    */
-  readonly serviceId: string;
+  readonly service: IService;
   /**
    * Service auth Policy
    * @default none.
@@ -194,6 +160,9 @@ export class Listener extends core.Resource implements IListener {
       },
     };
 
+    // default to using HTTPS
+    let protocol = props.protocol ?? Protocol.HTTPS;
+
     // check the the port is in range if it is specificed
     if (props.port) {
       if (props.port < 0 || props.port > 65535) {
@@ -201,17 +170,33 @@ export class Listener extends core.Resource implements IListener {
       }
     }
 
+    // if its not specified, set it to the default port based on the protcol
+    let port: number;
+    if (protocol === Protocol.HTTP) {
+      port = props.port ?? 80;
+    } else if ( protocol === Protocol.HTTPS) {
+      port = props.port ?? 443;
+    } else {
+      throw new Error('Protocol not supported');
+    }
+
+    if (props.name !== undefined) {
+      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
+        throw new Error('The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.');
+      }
+    }
+
     const listener = new aws_vpclattice.CfnListener(this, 'Resource', {
       name: props.name,
       defaultAction: defaultAction,
-      protocol: props.protocol,
-      port: props.port,
-      serviceIdentifier: props.serviceId,
+      protocol: protocol,
+      port: port,
+      serviceIdentifier: props.service.serviceId,
     });
 
     this.listenerId = listener.attrId;
     this.listenerArn = listener.attrArn;
-    this.serviceId = props.serviceId;
+    this.service = props.service;
 
   }
 
@@ -221,17 +206,27 @@ export class Listener extends core.Resource implements IListener {
    */
   public addListenerRule(props: AddRuleProps): void {
 
-    // if priority is undefined set it to 100.  This should only be used if there is a single rule
-    const priority = props.priority ?? 100;
+    // if priority is undefined set it to 50.  This should only be used if there is a single rule
+    const priority = props.priority ?? 50;
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
 
     // conditionaly build a policy statement if principals where provided
     if (props.allowedPrincipals) {
 
+      // add default enforcement conditions if they have been made at the service level
+
+      if (this.service.anonymousAccessAllowed === false) {
+        policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
+      };
+      if (this.service.externalPrincipalsAllowed === false) {
+        policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
+      };
+
       // add the action for the statement. There is only one permissiable action
       policyStatement.addActions('vpc-lattice-svcs:Invoke');
 
       // add principals to the statement
+      // if needed, explicity permit all principals by using iam.AnyPrincipal();
       props.allowedPrincipals.forEach((principal) => {
         principal.addToPrincipalPolicy(policyStatement);
       });
@@ -262,7 +257,6 @@ export class Listener extends core.Resource implements IListener {
           weight: targetGroup.weight ?? 100,
         });
       });
-
       action = {
         forward: {
           targetGroups: targetGroups,
@@ -277,7 +271,10 @@ export class Listener extends core.Resource implements IListener {
       throw new Error('Priority is already in use, ensure all listerner rules have unique prioritys');
     }
     this.listenerPrioritys.push(priority);
-
+    // check to see if priority is between 1 and 100
+    if (priority < 1 || priority > 100) {
+      throw new Error('Priority must be between 1 and 100');
+    }
     // process the match
     // fail if at least one method is not selected
     if (Object.keys(props.httpMatch).length < 1) {
@@ -307,7 +304,7 @@ export class Listener extends core.Resource implements IListener {
           },
           caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
         };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
         policyStatement.addResources(arn + props.httpMatch.pathMatches.path);
       };
 
@@ -318,7 +315,7 @@ export class Listener extends core.Resource implements IListener {
           },
           caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
         };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.serviceId}`;
+        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
         policyStatement.addResources(arn + props.httpMatch.pathMatches.path + '*');
       };
 
@@ -378,7 +375,7 @@ export class Listener extends core.Resource implements IListener {
       },
       priority: priority,
       listenerIdentifier: this.listenerId,
-      serviceIdentifier: this.serviceId,
+      serviceIdentifier: this.service.serviceId,
     });
 
   }
