@@ -24,6 +24,7 @@ import {
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
+const REPO_ARN_SYMBOL = Symbol.for('@aws-cdk/aws-ecr.RepoArns');
 
 /**
  * Represents an ECR repository.
@@ -857,25 +858,33 @@ export class Repository extends RepositoryBase {
   }
 
   private enableAutoDeleteImages() {
-    // Use a iam policy to allow the custom resource to list & delete
-    // images in the repository and the ability to get all repositories to find the arn needed on delete.
+    const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
       runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Action: [
-            'ecr:BatchDeleteImage',
-            'ecr:DescribeRepositories',
-            'ecr:ListImages',
-            'ecr:ListTagsForResource',
-          ],
-          Resource: [this._resource.attrArn],
-        },
-      ],
     });
+
+    if (firstTime) {
+      const repoArns = [this._resource.attrArn];
+      (provider as any)[REPO_ARN_SYMBOL] = repoArns;
+
+      // Use a iam policy to allow the custom resource to list & delete
+      // images in the repository and the ability to get all repositories to find the arn needed on delete.
+      // We lazily produce a list of repositories associated with this custom resource provider.
+      provider.addToRolePolicy({
+        Effect: 'Allow',
+        Action: [
+          'ecr:BatchDeleteImage',
+          'ecr:DescribeRepositories',
+          'ecr:ListImages',
+          'ecr:ListTagsForResource',
+        ],
+        Resource: Lazy.list({ produce: () => repoArns }),
+      });
+    } else {
+      (provider as any)[REPO_ARN_SYMBOL].push(this._resource.attrArn);
+    }
 
     const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
       resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
