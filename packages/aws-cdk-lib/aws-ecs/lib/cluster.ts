@@ -376,7 +376,7 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
-        namespace: options.name,
+        namespace: sdNamespace.namespaceArn,
       };
     }
 
@@ -1111,7 +1111,7 @@ export interface ExecuteCommandLogConfiguration {
   readonly s3Bucket?: s3.IBucket,
 
   /**
-   * Whether or not to enable encryption on the CloudWatch logs.
+   * Whether or not to enable encryption on the S3 bucket.
    *
    * @default - encryption will be disabled.
    */
