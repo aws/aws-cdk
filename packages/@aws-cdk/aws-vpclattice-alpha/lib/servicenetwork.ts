@@ -234,12 +234,17 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       });
     };
 
-    // create a managedPolicy for the lattice Service.
+    // create a managedPolicy for the lattice ServiceNetwork.
     this.authPolicy = new iam.PolicyDocument();
 
-    if ((props.allowExternalPrincipals ?? false) == false) {
-      // add an explict deny, so that the service network cannot be used by principals
-      // that are outside of the org which this service network is deployed in
+    const statement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['vpc-lattice-svcs:Invoke'],
+      resources: ['*'],
+      principals: [new iam.AnyPrincipal()],
+    });
+
+    if ((props.allowExternalPrincipals ?? false) === false) {
 
       // get my orgId
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
@@ -256,38 +261,16 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
       const orgId = orgIdCr.getResponseField('Organization.Id');
 
-      this.authPolicy.addStatements(
-        new iam.PolicyStatement({
-          effect: iam.Effect.DENY,
-          actions: ['vpc-lattice-svcs:Invoke'],
-          resources: ['*'],
-          principals: [new iam.AnyPrincipal()],
-          conditions: {
-            StringNotEquals: {
-              'aws:PrincipalOrgID': [orgId],
-            },
-          },
-        }),
-      );
+      // add the condition that requires that the principal is from this org
+      statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] } );
+    };
+    if ((props.allowUnauthenticatedAccess ?? false) === false) {
+      // add the condition that the principal is not anonymous
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
     };
 
-    if ((props.allowUnauthenticatedAccess ?? false) == false) {
-      // add an explict deny, so that the service network cannot be be accessed by non authenticated
-      // requestors.
-      this.authPolicy.addStatements(
-        new iam.PolicyStatement({
-          effect: iam.Effect.DENY,
-          actions: ['vpc-lattice-svcs:Invoke'],
-          resources: ['*'],
-          principals: [new iam.AnyPrincipal()],
-          conditions: {
-            StringNotEqualsIgnoreCase: {
-              'aws:PrincipalType': 'anonymous',
-            },
-          },
-        }),
-      );
-    };
+    this.authPolicy.addStatements(statement);
+
   };
 
   /**
@@ -312,6 +295,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     if (this.authType !== AuthType.AWS_IAM ) {
       throw new Error(`AuthType must be ${AuthType.AWS_IAM} to add an Auth Policy`);
     }
+
     // attach the AuthPolicy to the Service Network
     new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
       policy: this.authPolicy.toJSON(),

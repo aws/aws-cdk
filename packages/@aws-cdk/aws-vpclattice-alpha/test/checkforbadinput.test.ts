@@ -63,7 +63,7 @@ describe('Listener Errors', () => {
         new Listener(stack, 'Listener', {
           protocol: Protocol.HTTPS,
           port: -1,
-          serviceId: service.serviceId,
+          service: service,
         });
       }).toThrowError('Port out of range');
     });

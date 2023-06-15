@@ -12,25 +12,29 @@ import { Construct } from 'constructs';
 export class SupportResources extends Construct {
 
   public helloWorld: core.aws_lambda.Function;
-  public checkHelloWorld: core.aws_lambda.Function;
+  public goodbyeWorld: core.aws_lambda.Function;
   public vpc1: ec2.Vpc;
   public vpc2: ec2.Vpc;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    // NOTE for the purpose of this demonstration, we are deliberately overlapping the IP Address ranges.
+    // a vpc for the helloworld lambda
     this.vpc1 = new ec2.Vpc(this, 'VPC1', {
-      ipAddresses: ec2.IpAddresses.cidr('10.10.10.0/16'),
+      ipAddresses: ec2.IpAddresses.cidr('10.10.0.0/16'),
       maxAzs: 2,
       natGateways: 0,
     });
 
+	  // a vpc for the goodbye world lambda
     this.vpc2 = new ec2.Vpc(this, 'VPC2', {
-      ipAddresses: ec2.IpAddresses.cidr('10.10.20.0/16'),
+      ipAddresses: ec2.IpAddresses.cidr('10.10.0.0/16'),
       maxAzs: 2,
       natGateways: 0,
     });
 
+    // give the hello lambda a role and permissions
     const helloRole = new iam.Role(this, 'helloRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -45,11 +49,12 @@ export class SupportResources extends Construct {
       ],
     }));
 
-    const checkRole = new iam.Role(this, 'checkRole', {
+    // give the goodbye lambda a role and permissions
+    const goodbyeRole = new iam.Role(this, 'checkRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    checkRole.addToPolicy(new iam.PolicyStatement({
+    goodbyeRole.addToPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       resources: ['*'],
       actions: [
@@ -59,9 +64,10 @@ export class SupportResources extends Construct {
       ],
     })),
 
+    // create the hello world lambda
     this.helloWorld = new aws_lambda.Function(this, 'Helloworld', {
       runtime: aws_lambda.Runtime.PYTHON_3_10,
-      handler: 'helloWorld.lambda_handler',
+      handler: 'helloworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
       vpc: this.vpc1,
@@ -69,14 +75,15 @@ export class SupportResources extends Construct {
       role: helloRole,
     });
 
-    this.checkHelloWorld = new aws_lambda.Function(this, 'CheckHello', {
+    // create the goodbye world lambda
+    this.goodbyeWorld = new aws_lambda.Function(this, 'Goodbye', {
       runtime: aws_lambda.Runtime.PYTHON_3_10,
-      handler: 'checkhelloWorld.lambda_handler',
+      handler: 'goodbyeworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
       vpc: this.vpc2,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      role: checkRole,
+      role: goodbyeRole,
     });
 
   }

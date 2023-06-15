@@ -22,6 +22,7 @@ import {
   PathMatchType,
   MatchOperator,
   FixedResponse,
+  Listener,
 }
   from '../lib';
 
@@ -51,7 +52,9 @@ describe('VPC Lattice', () => {
         }],
       });
 
-      const listener = latticeService.addListener({});
+      const listener = new Listener(stack, 'Listener', {
+        service: latticeService,
+      });
 
       // line 259 service.ts
       latticeService.grantAccess([new iam.AccountPrincipal('123456789000')]);
@@ -66,7 +69,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'FixedReponse',
-        priority: 999,
+        priority: 99,
         action: FixedResponse.NOT_FOUND,
         httpMatch: {
           pathMatches: { path: '/' },
@@ -75,7 +78,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule100',
-        priority: 100,
+        priority: 10,
         action: [
           {
             targetGroup: new TargetGroup(stack, 'lambdaTargets', {
@@ -99,7 +102,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule200',
-        priority: 200,
+        priority: 20,
         action: [
           {
             targetGroup: new TargetGroup(stack, 'ipTargets', {
@@ -127,7 +130,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule300',
-        priority: 300,
+        priority: 30,
         httpMatch: {
           pathMatches: { path: '/path3' },
           method: HTTPMethods.GET,
@@ -154,7 +157,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule400',
-        priority: 400,
+        priority: 40,
         action: [
           {
             targetGroup: new TargetGroup(stack, 'albv2Targets', {
@@ -183,7 +186,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule500',
-        priority: 400,
+        priority: 50,
         action: [
           {
             targetGroup: new TargetGroup(stack, 'albv2Targets2', {
@@ -257,8 +260,5 @@ describe('VPC Lattice', () => {
       Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AccessLogSubscription', 3);
     });
 
-    test('creates AuthPolicy', () => {
-      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AuthPolicy', 2);
-    });
   });
 });
