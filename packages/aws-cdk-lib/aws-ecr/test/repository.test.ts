@@ -976,4 +976,64 @@ describe('repository', () => {
       });
     });
   });
+
+  describe('when auto delete images is set to true', () => {
+    test('permissions are correctly for multiple ecr repos', () => {
+      const stack = new cdk.Stack();
+      new ecr.Repository(stack, 'Repo1', {
+        autoDeleteImages: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      new ecr.Repository(stack, 'Repo2', {
+        autoDeleteImages: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        Policies: [
+          {
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'ecr:BatchDeleteImage',
+                    'ecr:DescribeRepositories',
+                    'ecr:ListImages',
+                    'ecr:ListTagsForResource',
+                  ],
+                  Resource: [
+                    {
+                      'Fn::GetAtt': [
+                        'Repo1DBD717D9',
+                        'Arn',
+                      ],
+                    },
+                    {
+                      'Fn::GetAtt': [
+                        'Repo2730A8200',
+                        'Arn',
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    test('synth fails when removal policy is not DESTROY', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecr.Repository(stack, 'Repo', {
+          autoDeleteImages: true,
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+      }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+    });
+  });
 });

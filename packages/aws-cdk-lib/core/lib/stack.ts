@@ -28,6 +28,9 @@ const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
+const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
+const TEMPLATE_BODY_MAXIMUM_SIZE = 1_000_000;
+
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 const MAX_RESOURCES = 500;
@@ -172,6 +175,18 @@ export interface StackProps {
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
+
+  /**
+   * Enable this flag to suppress indentation in generated
+   * CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+  */
+  readonly suppressTemplateIndentation?: boolean;
 }
 
 /**
@@ -360,6 +375,18 @@ export class Stack extends Construct implements ITaggable {
   private readonly _stackName: string;
 
   /**
+   * Enable this flag to suppress indentation in generated
+   * CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+   */
+  private readonly _suppressTemplateIndentation: boolean;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually an `App` or a `Stage`, but could be any construct.
@@ -385,6 +412,7 @@ export class Stack extends Construct implements ITaggable {
     this._stackDependencies = { };
     this.templateOptions = { };
     this._crossRegionReferences = !!props.crossRegionReferences;
+    this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -1047,7 +1075,22 @@ export class Stack extends Construct implements ITaggable {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
+
+    const indent = this._suppressTemplateIndentation ? undefined : 1;
+    const templateData = JSON.stringify(template, undefined, indent);
+
+    if (templateData.length > (TEMPLATE_BODY_MAXIMUM_SIZE * 0.8)) {
+      const verb = templateData.length > TEMPLATE_BODY_MAXIMUM_SIZE ? 'exceeds' : 'is approaching';
+      const advice = this._suppressTemplateIndentation ?
+        'Split resources into multiple stacks to reduce template size' :
+        'Split resources into multiple stacks or set suppressTemplateIndentation to reduce template size';
+
+      const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
+
+      Annotations.of(this).addWarning(message);
+    }
+
+    fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {

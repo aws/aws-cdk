@@ -155,8 +155,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,
-      startTime: action.startTime,
-      endTime: action.endTime,
+      startTime: action.startTime?.toISOString(),
+      endTime: action.endTime?.toISOString(),
       scalableTargetAction: {
         maxCapacity: action.maxCapacity,
         minCapacity: action.minCapacity,
