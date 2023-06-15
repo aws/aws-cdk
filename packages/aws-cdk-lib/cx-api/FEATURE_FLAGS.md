@@ -17,11 +17,6 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
-| [@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation](#aws-cdkaws-autoscalingdisabledefaultlaunchconfigcreation) | Do not create a launch configuration when creating an AutoScalingGroup | V2·NEXT | (default) |
-| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
-| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | V2·NEXT | (fix) |
-| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -47,6 +42,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
+| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
@@ -54,6 +50,9 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
+| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | 2.78.0 | (fix) |
+| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | 2.78.0 | (default) |
+| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 
 <!-- END table -->
@@ -330,6 +329,7 @@ Encryption can also be configured explicitly using the `encrypted` property.
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
 
 
+<<<<<<< HEAD
 ### @aws-cdk/aws-apigateway:requestValidatorUniqueId
 
 *Generate a unique id for each RequestValidator added to a method* (fix)
@@ -423,6 +423,8 @@ stack.
 **Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
 
 
+=======
+>>>>>>> main
 ### @aws-cdk/core:newStyleStackSynthesis
 
 *Switch to new stack synthesis method which enables CI/CD* (fix)
@@ -877,6 +879,24 @@ flag on a resource-by-resource basis to enable it if necessary.
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
 
 
+### @aws-cdk/aws-route53-patters:useCertificate
+
+*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
+
+Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
+of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
+the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
+stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.61.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
+
+
 ### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
 
 *Remove CloudWatch alarms from deployment group* (fix)
@@ -1005,6 +1025,64 @@ intervention since they might not have the appropriate tags propagated automatic
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-apigateway:requestValidatorUniqueId
+
+*Generate a unique id for each RequestValidator added to a method* (fix)
+
+This flag allows multiple RequestValidators to be added to a RestApi when
+providing the `RequestValidatorOptions` in the `addMethod()` method.
+
+If the flag is not set then only a single RequestValidator can be added in this way.
+Any additional RequestValidators have to be created directly with `new RequestValidator`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.78.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
+
+*Restrict access to the VPC default security group* (default)
+
+Enable this feature flag to remove the default ingress/egress rules from the
+VPC default security group.
+
+When a VPC is created, a default security group is created as well and this cannot
+be deleted. The default security group is created with ingress/egress rules that allow
+_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
+removing these ingress/egress rules in order to restrict access to the default security group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.78.0 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To allow all ingress/egress traffic to the VPC default security group you
+      can set the `restrictDefaultSecurityGroup: false`.
+    
+
+
+### @aws-cdk/aws-kms:aliasNameRef
+
+*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
+
+This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+when referencing key.aliasName or key.keyArn.
+
+If the flag is not set then a raw string is passed as the Alias name and no
+implicit dependencies will be set.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.83.0 | `false` | `true` |
 
 
 ### @aws-cdk/core:includePrefixInUniqueNameGeneration

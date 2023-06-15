@@ -797,6 +797,18 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   }
 
   /**
+   * Add the security group to the instance.
+   *
+   * @param securityGroup: The security group to add
+   */
+  public addSecurityGroup(securityGroup: ISecurityGroup): void {
+    if (!this._connections) {
+      throw new Error('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.');
+    }
+    this._connections.addSecurityGroup(securityGroup);
+  }
+
+  /**
    * Allows specifying security group connections for the instance.
    *
    * @note Only available if you provide a securityGroup when constructing the LaunchTemplate.
