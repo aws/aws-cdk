@@ -9,34 +9,29 @@ const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
-
-const securityGroup1 = new SecurityGroup(stack, 'FirstAutoScalingGroupSG', {
+const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
   vpc,
   allowAllOutbound: true,
 });
-securityGroup1.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {
     vpc,
     instanceType: new InstanceType('t2.micro'),
     machineImage: EcsOptimizedImage.amazonLinux2(),
-    securityGroup: securityGroup1,
+    securityGroup,
   }),
   capacityProviderName: 'first-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider1);
 
-const securityGroup2 = new SecurityGroup(stack, 'SecondAutoScalingGroupSG', {
-  vpc,
-  allowAllOutbound: true,
-});
-securityGroup2.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
 const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvier', {
   autoScalingGroup: new AutoScalingGroup(stack, 'SecondAutoScalingGroup', {
     vpc,
     instanceType: new InstanceType('t3.micro'),
     machineImage: EcsOptimizedImage.amazonLinux2(),
-    securityGroup: securityGroup2,
+    securityGroup,
   }),
   capacityProviderName: 'second-capacity-provider',
 });
@@ -62,13 +57,7 @@ const applicationLoadBalancedEc2Service = new ApplicationLoadBalancedEc2Service(
     },
   ],
 });
-
-const loadBalancerSecurityGroup = new SecurityGroup(stack, 'LoadBalancerSG', {
-  vpc,
-  allowAllOutbound: true,
-});
-loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
-applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(loadBalancerSecurityGroup);
+applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(securityGroup);
 
 new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
   testCases: [stack],

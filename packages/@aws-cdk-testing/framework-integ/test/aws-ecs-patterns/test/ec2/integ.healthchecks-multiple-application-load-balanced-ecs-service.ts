@@ -63,14 +63,8 @@ const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTar
     },
   ],
 });
-
-const loadBalancerSecurityGroup = new SecurityGroup(stack, 'LoadBalancerSG', {
-  vpc,
-  allowAllOutbound: true,
-});
-loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
-applicationMultipleTargetGroupsFargateService.loadBalancers[0].connections.addSecurityGroup(loadBalancerSecurityGroup);
-applicationMultipleTargetGroupsFargateService.loadBalancers[1].connections.addSecurityGroup(loadBalancerSecurityGroup);
+applicationMultipleTargetGroupsFargateService.loadBalancers[0].connections.addSecurityGroup(securityGroup);
+applicationMultipleTargetGroupsFargateService.loadBalancers[1].connections.addSecurityGroup(securityGroup);
 
 applicationMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
   protocol: Protocol.HTTP,

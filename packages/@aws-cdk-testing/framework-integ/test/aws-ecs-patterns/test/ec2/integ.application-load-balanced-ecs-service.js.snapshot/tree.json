@@ -698,17 +698,17 @@
               "version": "0.0.0"
             }
           },
-          "FirstAutoScalingGroupSG": {
-            "id": "FirstAutoScalingGroupSG",
-            "path": "aws-ecs-integ-alb/FirstAutoScalingGroupSG",
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-ecs-integ-alb/SecurityGroup",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ-alb/FirstAutoScalingGroupSG/Resource",
+                "path": "aws-ecs-integ-alb/SecurityGroup/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                   "aws:cdk:cloudformation:props": {
-                    "groupDescription": "aws-ecs-integ-alb/FirstAutoScalingGroupSG",
+                    "groupDescription": "aws-ecs-integ-alb/SecurityGroup",
                     "securityGroupEgress": [
                       {
                         "cidrIp": "0.0.0.0/0",
@@ -917,7 +917,7 @@
                           "securityGroupIds": [
                             {
                               "Fn::GetAtt": [
-                                "FirstAutoScalingGroupSG4376CBF2",
+                                "SecurityGroupDD263621",
                                 "GroupId"
                               ]
                             }
@@ -1076,49 +1076,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.AsgCapacityProvider",
-              "version": "0.0.0"
-            }
-          },
-          "SecondAutoScalingGroupSG": {
-            "id": "SecondAutoScalingGroupSG",
-            "path": "aws-ecs-integ-alb/SecondAutoScalingGroupSG",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-ecs-integ-alb/SecondAutoScalingGroupSG/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "groupDescription": "aws-ecs-integ-alb/SecondAutoScalingGroupSG",
-                    "securityGroupEgress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "description": "Allow all outbound traffic by default",
-                        "ipProtocol": "-1"
-                      }
-                    ],
-                    "securityGroupIngress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "ipProtocol": "tcp",
-                        "fromPort": 32768,
-                        "toPort": 65535,
-                        "description": "from 0.0.0.0/0:32768-65535"
-                      }
-                    ],
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "0.0.0"
             }
           },
@@ -1298,7 +1255,7 @@
                           "securityGroupIds": [
                             {
                               "Fn::GetAtt": [
-                                "SecondAutoScalingGroupSG24972FF1",
+                                "SecurityGroupDD263621",
                                 "GroupId"
                               ]
                             }
@@ -1474,7 +1431,7 @@
                           },
                           {
                             "Fn::GetAtt": [
-                              "LoadBalancerSG4572B15E",
+                              "SecurityGroupDD263621",
                               "GroupId"
                             ]
                           }
@@ -1929,49 +1886,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedEc2Service",
-              "version": "0.0.0"
-            }
-          },
-          "LoadBalancerSG": {
-            "id": "LoadBalancerSG",
-            "path": "aws-ecs-integ-alb/LoadBalancerSG",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-ecs-integ-alb/LoadBalancerSG/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "groupDescription": "aws-ecs-integ-alb/LoadBalancerSG",
-                    "securityGroupEgress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "description": "Allow all outbound traffic by default",
-                        "ipProtocol": "-1"
-                      }
-                    ],
-                    "securityGroupIngress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "ipProtocol": "tcp",
-                        "fromPort": 32768,
-                        "toPort": 65535,
-                        "description": "from 0.0.0.0/0:32768-65535"
-                      }
-                    ],
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "0.0.0"
             }
           },

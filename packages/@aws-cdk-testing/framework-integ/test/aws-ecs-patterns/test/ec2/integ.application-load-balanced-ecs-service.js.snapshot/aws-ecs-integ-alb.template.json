@@ -411,10 +411,10 @@
     "DefaultCapacityProviderStrategy": []
    }
   },
-  "FirstAutoScalingGroupSG4376CBF2": {
+  "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ-alb/FirstAutoScalingGroupSG",
+    "GroupDescription": "aws-ecs-integ-alb/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -549,7 +549,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "FirstAutoScalingGroupSG4376CBF2",
+        "SecurityGroupDD263621",
         "GroupId"
        ]
       }
@@ -655,31 +655,6 @@
      "ManagedTerminationProtection": "ENABLED"
     },
     "Name": "first-capacity-provider"
-   }
-  },
-  "SecondAutoScalingGroupSG24972FF1": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-ecs-integ-alb/SecondAutoScalingGroupSG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:32768-65535",
-      "FromPort": 32768,
-      "IpProtocol": "tcp",
-      "ToPort": 65535
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
    }
   },
   "SecondAutoScalingGroupInstanceRoleB7DE61A1": {
@@ -795,7 +770,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "SecondAutoScalingGroupSG24972FF1",
+        "SecurityGroupDD263621",
         "GroupId"
        ]
       }
@@ -922,7 +897,7 @@
      },
      {
       "Fn::GetAtt": [
-       "LoadBalancerSG4572B15E",
+       "SecurityGroupDD263621",
        "GroupId"
       ]
      }
@@ -1169,31 +1144,6 @@
     "myServiceLBPublicListenerECSGroup17E9BBC1",
     "myServiceLBPublicListenerC78AE8A0"
    ]
-  },
-  "LoadBalancerSG4572B15E": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-ecs-integ-alb/LoadBalancerSG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:32768-65535",
-      "FromPort": 32768,
-      "IpProtocol": "tcp",
-      "ToPort": 65535
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
   }
  },
  "Parameters": {
