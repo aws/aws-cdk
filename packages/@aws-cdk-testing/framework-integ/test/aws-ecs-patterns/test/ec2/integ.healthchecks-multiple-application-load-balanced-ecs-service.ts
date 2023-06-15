@@ -43,7 +43,7 @@ const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTar
       listener: 'listener1',
     },
     {
-      containerPort: 90,
+      containerPort: 80,
       listener: 'listener2',
     },
   ],

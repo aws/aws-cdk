@@ -394,28 +394,6 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
-  "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
   "ClusterDefaultAutoScalingGroupInstanceRole9A14B384": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -497,7 +475,7 @@
     ]
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55": {
+  "ClusterDefaultAutoScalingGroupLaunchTemplateProfile845D1593": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -507,51 +485,96 @@
     ]
    }
   },
-  "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "ClusterEB0386A7"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ClusterDefaultAutoScalingGroupLaunchTemplateProfile845D1593",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "DefaultAutoScalingGroupSGD619710B",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
-   },
-   "DependsOn": [
-    "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
-    "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
-   ]
+    ]
+   }
   },
   "ClusterDefaultAutoScalingGroupASG0F98E147": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -848,6 +871,31 @@
     "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
    ]
   },
+  "DefaultAutoScalingGroupSGD619710B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/DefaultAutoScalingGroupSG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:32768-65535",
+      "FromPort": 32768,
+      "IpProtocol": "tcp",
+      "ToPort": 65535
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
   "myServicelb1FA8CBE12": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -937,7 +985,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       },
       "Type": "forward"
      }
@@ -949,10 +997,10 @@
     "Protocol": "TCP"
    }
   },
-  "myServicelb2listener2ECSTargetGroupweb90Group6841F924": {
+  "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
-    "Port": 90,
+    "Port": 80,
     "Protocol": "TCP",
     "TargetType": "instance",
     "VpcId": {
@@ -1001,11 +1049,6 @@
       "PortMappings": [
        {
         "ContainerPort": 80,
-        "HostPort": 0,
-        "Protocol": "tcp"
-       },
-       {
-        "ContainerPort": 90,
         "HostPort": 0,
         "Protocol": "tcp"
        }
@@ -1105,9 +1148,9 @@
      },
      {
       "ContainerName": "web",
-      "ContainerPort": 90,
+      "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       }
      }
     ],
@@ -1119,7 +1162,7 @@
    "DependsOn": [
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
-    "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
+    "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2AA6970EB"
    ]
   }

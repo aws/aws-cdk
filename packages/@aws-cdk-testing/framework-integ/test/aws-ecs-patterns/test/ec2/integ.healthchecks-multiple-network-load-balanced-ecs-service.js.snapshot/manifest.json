@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-nlb-healthchecks.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8deab280c1f5656d6ea2a95438a42fd20239e491556d069c17c85f53c2d3c46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/39f0c75a042fb50f37e3610996716a33b95c503fbc1611f1857954ea1ae6647f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,12 +177,6 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
-          }
-        ],
         "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -201,16 +189,16 @@
             "data": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceProfile": [
+        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
+            "data": "ClusterDefaultAutoScalingGroupLaunchTemplateProfile845D1593"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+            "data": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/ASG": [
@@ -273,6 +261,12 @@
             "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325"
           }
         ],
+        "/aws-ecs-integ-nlb-healthchecks/DefaultAutoScalingGroupSG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultAutoScalingGroupSGD619710B"
+          }
+        ],
         "/aws-ecs-integ-nlb-healthchecks/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
@@ -315,10 +309,10 @@
             "data": "myServicelb2listener2AA6970EB"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+            "data": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/myService/LoadBalancerDNSlb2": [
@@ -336,7 +330,10 @@
         "/aws-ecs-integ-nlb-healthchecks/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDef7FB8322A"
+            "data": "myServiceTaskDef7FB8322A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/myService/TaskDef/web/LogGroup/Resource": [
@@ -373,6 +370,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myServicelb2listener2ECSTargetGroupweb90Group6841F924": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -424,6 +457,12 @@
         ]
       },
       "displayName": "Integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
