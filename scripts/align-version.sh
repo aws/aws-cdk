@@ -18,6 +18,8 @@ export -f is_private
 # go to repo root
 cd ${scriptdir}/..
 
+yarn install --frozen-lockfile
+
 files="./package.json $(npx lerna ls -p -a | xargs -n1 -I@ echo @/package.json)"
 ${scriptdir}/align-version.js ${files}
 
