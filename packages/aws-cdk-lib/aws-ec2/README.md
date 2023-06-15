@@ -1868,6 +1868,24 @@ new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+And the following demonstrates how to add one or more security groups to launch template.
+
+```ts
+const sg1 = new ec2.SecurityGroup(stack, 'sg1', {
+  vpc: vpc,
+});
+const sg2 = new ec2.SecurityGroup(stack, 'sg2', {
+  vpc: vpc,
+});
+
+const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2022(),
+  securityGroup: sg1,
+});
+
+launchTemplate.addSecurityGroup(sg2);
+```
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
