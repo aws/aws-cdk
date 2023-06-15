@@ -673,7 +673,7 @@
      },
      {
       "Fn::GetAtt": [
-       "LoadBalancerSG4572B15E",
+       "MyAutoScalingGroupSGEBE6954A",
        "GroupId"
       ]
      }
@@ -784,7 +784,7 @@
      },
      {
       "Fn::GetAtt": [
-       "LoadBalancerSG4572B15E",
+       "MyAutoScalingGroupSGEBE6954A",
        "GroupId"
       ]
      }
@@ -1033,31 +1033,6 @@
     "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2AA6970EB"
    ]
-  },
-  "LoadBalancerSG4572B15E": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-ecs-integ-multiple-alb-healthchecks/LoadBalancerSG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:32768-65535",
-      "FromPort": 32768,
-      "IpProtocol": "tcp",
-      "ToPort": 65535
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
   }
  },
  "Parameters": {

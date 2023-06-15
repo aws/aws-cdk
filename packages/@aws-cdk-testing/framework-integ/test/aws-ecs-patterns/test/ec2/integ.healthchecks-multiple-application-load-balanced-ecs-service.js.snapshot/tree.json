@@ -1106,7 +1106,7 @@
                           },
                           {
                             "Fn::GetAtt": [
-                              "LoadBalancerSG4572B15E",
+                              "MyAutoScalingGroupSGEBE6954A",
                               "GroupId"
                             ]
                           }
@@ -1299,7 +1299,7 @@
                           },
                           {
                             "Fn::GetAtt": [
-                              "LoadBalancerSG4572B15E",
+                              "MyAutoScalingGroupSGEBE6954A",
                               "GroupId"
                             ]
                           }
@@ -1754,49 +1754,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs_patterns.ApplicationMultipleTargetGroupsEc2Service",
-              "version": "0.0.0"
-            }
-          },
-          "LoadBalancerSG": {
-            "id": "LoadBalancerSG",
-            "path": "aws-ecs-integ-multiple-alb-healthchecks/LoadBalancerSG",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-ecs-integ-multiple-alb-healthchecks/LoadBalancerSG/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "groupDescription": "aws-ecs-integ-multiple-alb-healthchecks/LoadBalancerSG",
-                    "securityGroupEgress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "description": "Allow all outbound traffic by default",
-                        "ipProtocol": "-1"
-                      }
-                    ],
-                    "securityGroupIngress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "ipProtocol": "tcp",
-                        "fromPort": 32768,
-                        "toPort": 65535,
-                        "description": "from 0.0.0.0/0:32768-65535"
-                      }
-                    ],
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "0.0.0"
             }
           },
