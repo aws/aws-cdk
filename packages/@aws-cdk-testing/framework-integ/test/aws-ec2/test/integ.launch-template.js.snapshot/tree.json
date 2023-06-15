@@ -238,19 +238,19 @@
               "version": "10.2.26"
             }
           },
-          "LTWithMachineImageAndPublicIP": {
-            "id": "LTWithMachineImageAndPublicIP",
-            "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP",
+          "LTWithMachineImage": {
+            "id": "LTWithMachineImage",
+            "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP/Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                   "aws:cdk:cloudformation:props": {
                     "launchTemplateData": {
                       "imageId": {
-                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                       },
                       "tagSpecifications": [
                         {
@@ -258,7 +258,7 @@
                           "tags": [
                             {
                               "key": "Name",
-                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
                             }
                           ]
                         },
@@ -267,20 +267,14 @@
                           "tags": [
                             {
                               "key": "Name",
-                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
+                              "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
                             }
                           ]
                         }
                       ],
                       "userData": {
                         "Fn::Base64": "#!/bin/bash"
-                      },
-                      "networkInterfaces": [
-                        {
-                          "deviceIndex": 0,
-                          "associatePublicIpAddress": true
-                        }
-                      ]
+                      }
                     },
                     "tagSpecifications": [
                       {
@@ -288,7 +282,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImageAndPublicIP"
+                            "value": "aws-cdk-ec2-lt-metadata-1/LTWithMachineImage"
                           }
                         ]
                       }
@@ -306,17 +300,17 @@
               "version": "10.2.26"
             }
           },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.26"
             }
           },
-          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.2.26"

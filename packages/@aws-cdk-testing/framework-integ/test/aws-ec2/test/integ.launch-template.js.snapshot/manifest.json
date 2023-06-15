@@ -78,13 +78,13 @@
         "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LTWithMachineImageAndPublicIPCE9AFBE1"
+            "data": "LTWithMachineImageAAC227A5"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
@@ -97,15 +97,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "LTWithMachineImageAAC227A5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTWithMachineImageAAC227A5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
