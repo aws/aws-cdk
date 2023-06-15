@@ -1,24 +1,12 @@
 {
-  "extends": "@nrwl/workspace/presets/npm.json",
-  "workspaceLayout": { },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare"
-        ]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
-      "implicitDependencies": ["aws-cdk-lib"],
-      "dependsOn": ["^build"],
+      "implicitDependencies": [
+        "aws-cdk-lib"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
       "inputs": [
         "{projectRoot}/**/lib/!(*.d|*.generated).ts",
         "{projectRoot}/**/test/!(*.d).ts",
@@ -28,7 +16,7 @@
         "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
       ],
       "outputs": [
-        "!{projectRoot}/**/*.integ.*.js.snapshot/*",
+        "{workspaceRoot}/!{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/**/lib/aws-custom-resource/sdk-api-metadata.json",
         "{projectRoot}/**/build-info.json",
@@ -46,7 +34,25 @@
       ]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
+    }
+  },
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "workspaceLayout": {},
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "lint",
+          "package",
+          "prepare"
+        ]
+      }
     }
   },
   "affected": {
@@ -56,5 +62,16 @@
     "@nrwl/js": {
       "analyzeSourceFiles": false
     }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "sharedGlobals": [],
+    "production": [
+      "default"
+    ]
   }
 }
