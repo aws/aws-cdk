@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { FakeModule } from './fake-module';
 import { PackageJson } from '../lib/packagejson';
 import * as rules from '../lib/rules';
-import { FakeModule } from './fake-module';
 
 describe('FeatureStabilityRule', () => {
   let fakeModule: FakeModule | undefined;

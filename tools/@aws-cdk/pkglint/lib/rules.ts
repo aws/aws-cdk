@@ -19,6 +19,35 @@ import {
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
+const V1_END_OF_SUPPORT_MARKER = [
+  'AWS CDK v1 has reached End-of-Support on 2023-06-01.',
+  'This package is no longer being updated, and users should migrate to AWS CDK v2.',
+  '',
+  'For more information on how to migrate, see https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html',
+].join('\n');
+
+export class V1EndOfSupport extends ValidationRule {
+  public readonly name = 'end-of-support';
+
+  public validate(pkg: PackageJson): void {
+    // We don't care about private packages.
+    if (pkg.json.private) {
+      return;
+    }
+
+    // We don't care about packages that are already deprecated
+    if (pkg.json.deprecated != null) {
+      return;
+    }
+
+    expectJSON(this.name, pkg, 'deprecated', V1_END_OF_SUPPORT_MARKER);
+    // If the package was already on "deprecated" maturity, don't change it...
+    if (pkg.json.maturity !== 'deprecated') {
+      expectJSON(this.name, pkg, 'maturity', 'end-of-support');
+    }
+  }
+}
+
 /**
  * Verify that the package name matches the directory name
  */
@@ -419,20 +448,20 @@ export class MaturitySetting extends ValidationRule {
       });
     }
 
-    if (pkg.json.deprecated && maturity !== 'deprecated') {
+    if (pkg.json.deprecated && (maturity !== 'deprecated' && maturity !== 'end-of-support')) {
       pkg.report({
         ruleName: this.name,
         message: `Package is deprecated, but is marked with maturity "${maturity}"`,
-        fix: () => pkg.json.maturity = 'deprecated',
+        fix: () => pkg.json.maturity = 'end-of-support',
       });
-      maturity = 'deprecated';
+      maturity = 'end-of-support';
     }
 
     const packageLevels = this.determinePackageLevels(pkg);
 
     const hasL1s = packageLevels.some(level => level === 'l1');
     const hasL2s = packageLevels.some(level => level === 'l2');
-    if (hasL2s) {
+    if (hasL2s && maturity !== 'end-of-support') {
       // validate that a package that contains L2s does not declare a 'cfn-only' maturity
       if (maturity === 'cfn-only') {
         pkg.report({
@@ -441,7 +470,7 @@ export class MaturitySetting extends ValidationRule {
           fix: () => pkg.json.maturity = 'experimental',
         });
       }
-    } else if (hasL1s) {
+    } else if (hasL1s && maturity !== 'end-of-support') {
       // validate that a package that contains only L1s declares a 'cfn-only' maturity
       if (maturity !== 'cfn-only') {
         pkg.report({
@@ -489,8 +518,17 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private readmeBadge(maturity: string, levelsPresent: string[]) {
-    const bannerContents = levelsPresent
+    // We hop through a set to remove duplicated banners (such as the EoS one).
+    const bannerContents = Array.from(levelsPresent
       .map(level => fs.readFileSync(path.join(__dirname, 'banners', `${level}.${maturity}.md`), { encoding: 'utf-8' }).trim())
+      .reduce(
+        (set, item) => {
+          set.add(item);
+          return set;
+        },
+        new Set<string>(),
+      ),
+    )
       .join('\n\n')
       .trim();
 
@@ -529,12 +567,13 @@ export class MaturitySetting extends ValidationRule {
   }
 }
 
-const MATURITY_TO_STABILITY: Record<string, string> = {
+const MATURITY_TO_STABILITY: Record<string, string | null> = {
   'cfn-only': 'experimental',
   'experimental': 'experimental',
   'developer-preview': 'experimental',
   'stable': 'stable',
   'deprecated': 'deprecated',
+  'end-of-support': null /* anything goes */,
 };
 
 /**
@@ -595,6 +634,14 @@ export class FeatureStabilityRule extends ValidationRule {
       '<!--BEGIN STABILITY BANNER-->',
       '',
       '---',
+      ...pkg.json.maturity === 'end-of-support'
+        ? [
+          '',
+          readBannerFile('l2.end-of-support.md'),
+          '',
+          '---',
+        ]
+        : [],
       '',
       `Features${' '.repeat(featuresColumnWitdh - 8)} | Stability`,
       `--------${'-'.repeat(featuresColumnWitdh - 8)}-|-----------${'-'.repeat(Math.max(0, 100 - featuresColumnWitdh - 13))}`,
