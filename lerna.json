@@ -1,6 +1,5 @@
 {
   "npmClient": "yarn",
-  "useWorkspaces": true,
   "packages": [
     "packages/aws-cdk-lib",
     "packages/cdk-assets",
@@ -22,7 +21,7 @@
     "tools/@aws-cdk/yarn-cling",
     "scripts/@aws-cdk/script-tests"
   ],
-  "rejectCycles": "true",
+  "rejectCycles": true,
   "version": "0.0.0",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
