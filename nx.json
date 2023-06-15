@@ -1,9 +1,6 @@
 {
   "targetDefaults": {
     "build": {
-      "implicitDependencies": [
-        "aws-cdk-lib"
-      ],
       "dependsOn": [
         "^build"
       ],
@@ -16,7 +13,7 @@
         "!{workspaceRoot}/**/tsconfig.tsbuildinfo"
       ],
       "outputs": [
-        "{workspaceRoot}/!{projectRoot}/**/*.integ.*.js.snapshot/*",
+        "{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/**/lib/aws-custom-resource/sdk-api-metadata.json",
         "{projectRoot}/**/build-info.json",
@@ -43,7 +40,7 @@
   "workspaceLayout": {},
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
+      "runner": "@nx/workspace/tasks-runners/default",
       "options": {
         "cacheableOperations": [
           "build",
