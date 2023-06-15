@@ -322,6 +322,37 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('can add security group to a launch template when @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation is set', () => {
+    // GIVEN
+    const stack = getTestStack();
+    stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      machineImage: new ec2.AmazonLinuxImage(),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
+      vpc,
+    });
+    autoScalingGroup.addSecurityGroup(new ec2.SecurityGroup(stack, 'AddedSG', { vpc }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        SecurityGroupIds: [
+          'most-secure',
+          {
+            'Fn::GetAtt': [
+              'AddedSG710A1221',
+              'GroupId',
+            ],
+          },
+        ],
+      },
+    });
+  });
+
   test('can set minCapacity, maxCapacity, desiredCapacity to 0', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
