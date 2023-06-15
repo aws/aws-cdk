@@ -1,5 +1,6 @@
-import { InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
+import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec2';
+import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
+import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { Protocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -10,7 +11,21 @@ const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-multiple-alb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
-cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
+const securityGroup = new SecurityGroup(stack, 'MyAutoScalingGroupSG', {
+  vpc,
+  allowAllOutbound: true,
+});
+securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+const provider = new AsgCapacityProvider(stack, 'MyProvider', {
+  autoScalingGroup: new AutoScalingGroup(stack, 'MyAutoScalingGroup', {
+    vpc,
+    instanceType: new InstanceType('t2.micro'),
+    machineImage: EcsOptimizedImage.amazonLinux2(),
+    securityGroup,
+  }),
+  capacityProviderName: 'my-capacity-provider',
+});
+cluster.addAsgCapacityProvider(provider);
 
 // Two load balancers with two listeners and two target groups.
 const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
@@ -48,6 +63,14 @@ const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTar
     },
   ],
 });
+
+const loadBalancerSecurityGroup = new SecurityGroup(stack, 'LoadBalancerSG', {
+  vpc,
+  allowAllOutbound: true,
+});
+loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+applicationMultipleTargetGroupsFargateService.loadBalancers[0].connections.addSecurityGroup(loadBalancerSecurityGroup);
+applicationMultipleTargetGroupsFargateService.loadBalancers[1].connections.addSecurityGroup(loadBalancerSecurityGroup);
 
 applicationMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
   protocol: Protocol.HTTP,
