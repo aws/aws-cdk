@@ -1,7 +1,7 @@
-import * as logs from '../../../aws-logs';
 import { Construct } from 'constructs';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
+import * as logs from '../../../aws-logs';
 import { ContainerDefinition } from '../container-definition';
 
 /**

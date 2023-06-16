@@ -1,12 +1,12 @@
+import { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import * as sqs from '../../../aws-sqs';
 import * as s3 from '../../../aws-s3';
+import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
-import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
@@ -171,7 +171,11 @@ test('Policy sizes do not exceed the maximum size', () => {
     }
   }
 
-  Annotations.fromStack(pipelineStack).hasNoWarning('*', Match.anyValue());
+  // expect template size warning, but no other warnings
+  const annotations = Annotations.fromStack(pipelineStack);
+  annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
+  const warnings = annotations.findWarning('*', Match.anyValue());
+  expect(warnings.length).toEqual(1);
 });
 
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
@@ -215,7 +219,6 @@ test('CodePipeline throws when key rotation is enabled without enabling cross ac
     }),
   }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
 });
-
 
 test('CodePipeline enables key rotation on cross account keys', ()=>{
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });

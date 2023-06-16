@@ -755,13 +755,209 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.176"
+              "version": "2.0.195"
             }
           },
           "Cluster": {
             "id": "Cluster",
             "path": "aws-cdk-eks-helm-test/Cluster",
             "children": {
+              "KubectlHandlerRole": {
+                "id": "KubectlHandlerRole",
+                "path": "aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole",
+                "children": {
+                  "ImportKubectlHandlerRole": {
+                    "id": "ImportKubectlHandlerRole",
+                    "path": "aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::If": [
+                              "ClusterHasEcrPublic8EE1114E",
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Ref": "AWS::NoValue"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-helm-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "eks:DescribeCluster",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Cluster9EE0221C",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ClusterCreationRole360249B6",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
+                            "roles": [
+                              {
+                                "Ref": "ClusterKubectlHandlerRole94549F93"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Role": {
                 "id": "Role",
                 "path": "aws-cdk-eks-helm-test/Cluster/Role",
@@ -881,22 +1077,26 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ClusterKubectlHandlerRole94549F93",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkekshelmtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole12F3DEC7Arn"
+                                        ]
+                                      },
+                                      {
+                                        "Fn::GetAtt": [
+                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                          "Outputs.awscdkekshelmtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole53C6A0AEArn"
+                                        ]
+                                      }
+                                    ]
                                   }
                                 }
                               ],
@@ -1019,7 +1219,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.26"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1035,6 +1235,14 @@
                 "path": "aws-cdk-eks-helm-test/Cluster/ClusterSecurityGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "HasEcrPublic": {
+                "id": "HasEcrPublic",
+                "path": "aws-cdk-eks-helm-test/Cluster/HasEcrPublic",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -1483,47 +1691,6 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshelmtestClusterCreationRole906A8995Arn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1567,7 +1734,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
+                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1656,47 +1823,6 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshelmtestClusterCreationRole906A8995Arn"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B",
-                                "roles": [
-                                  {
-                                    "Ref": "IsCompleteHandlerServiceRole5810CC58"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
@@ -1740,7 +1866,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b8fc42fe6d1eb6e6c39212ce770fac02511440fecfc5b69a904fe8a19f6b8e.zip"
+                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2581,7 +2707,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.9"
+                      "version": "10.2.26"
                     }
                   }
                 },
@@ -2590,19 +2716,27 @@
                   "version": "0.0.0"
                 }
               },
-              "awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn": {
-                "id": "awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn",
+              "awscdkekshelmtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole53C6A0AEArn": {
+                "id": "awscdkekshelmtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole53C6A0AEArn",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshelmtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole53C6A0AEArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn": {
-                "id": "reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn",
+              "awscdkekshelmtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole12F3DEC7Arn": {
+                "id": "awscdkekshelmtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole12F3DEC7Arn",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshelmtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole12F3DEC7Arn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn": {
+                "id": "awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
@@ -2638,17 +2772,9 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/5b02ca2b54c47e5d63d0ca0a66e23ae63d5ce9f0fd7a049c4674eece3c96073c.json"
+                          "/1f1ef4b318fbf84d688135aa31a6c00ebc3b2c495c4318d9921e0acac39ddaae.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawscdkekshelmtestClusterCreationRole906A8995Arn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
-                          "Arn"
-                        ]
-                      }
                     }
                   }
                 },
@@ -2660,7 +2786,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.9"
+              "version": "10.2.26"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2671,196 +2797,6 @@
                 "id": "Handler",
                 "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::If": [
-                                  "HasEcrPublic",
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-                                      ]
-                                    ]
-                                  },
-                                  {
-                                    "Ref": "AWS::NoValue"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "eks:DescribeCluster",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshelmtestCluster35BA672BArn"
-                                      }
-                                    },
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "referencetoawscdkekshelmtestClusterCreationRole906A8995Arn"
-                                      }
-                                    },
-                                    {
-                                      "Action": [
-                                        "s3:GetBucket*",
-                                        "s3:GetObject*",
-                                        "s3:List*"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":s3:::",
-                                              {
-                                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                              },
-                                              "/*"
-                                            ]
-                                          ]
-                                        },
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":s3:::",
-                                              {
-                                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                              }
-                                            ]
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "HandlerServiceRoleDefaultPolicyCBD0CC91",
-                                "roles": [
-                                  {
-                                    "Ref": "HandlerServiceRoleFCDC14AE"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Code": {
                     "id": "Code",
                     "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
@@ -2900,10 +2836,7 @@
                           "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
                         "role": {
-                          "Fn::GetAtt": [
-                            "HandlerServiceRoleFCDC14AE",
-                            "Arn"
-                          ]
+                          "Ref": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2986,7 +2919,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "ae425a54db1deda1936d2f7a541020d40ec5b16e8334c1c068761a8fafa0275f.zip"
+                          "s3Key": "10972873dd8a3bc33ae1cb91d834617be249fd84bed5bdbb6ffbb581650aea83.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2999,14 +2932,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "HasEcrPublic": {
-                "id": "HasEcrPublic",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/HasEcrPublic",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -3263,17 +3188,9 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkekshelmtestCluster35BA672BArn": {
-                "id": "reference-to-awscdkekshelmtestCluster35BA672BArn",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestCluster35BA672BArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn": {
-                "id": "reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterCreationRole906A8995Arn",
+              "reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": {
+                "id": "reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn",
+                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3343,20 +3260,14 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/e3a4dac33dc383e61cc901caf9c2178953ede1626a8568e3c4984ccc28a61579.json"
+                          "/3c700169736066abfafc6d584779bc9d4935d3a40b887bd07417b0c36bc0701d.json"
                         ]
                       ]
                     },
                     "parameters": {
-                      "referencetoawscdkekshelmtestCluster35BA672BArn": {
+                      "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": {
                         "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkekshelmtestClusterCreationRole906A8995Arn": {
-                        "Fn::GetAtt": [
-                          "ClusterCreationRole360249B6",
+                          "ClusterKubectlHandlerRole94549F93",
                           "Arn"
                         ]
                       },
@@ -3386,7 +3297,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.9"
+              "version": "10.2.26"
             }
           },
           "ChartAsset": {
@@ -3450,7 +3361,7 @@
                 "path": "aws-cdk-eks-helm/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -3496,7 +3407,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.26"
         }
       }
     },

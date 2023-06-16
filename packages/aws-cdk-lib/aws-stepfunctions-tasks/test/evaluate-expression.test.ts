@@ -15,7 +15,7 @@ test('Eval with Node.js', () => {
     expression: '$.a + $.b',
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -38,7 +38,7 @@ test('Eval with Node.js', () => {
     Runtime: {
       'Fn::FindInMap': [
         'DefaultCrNodeVersionMap',
-        { 'Ref': 'AWS::Region' },
+        { Ref: 'AWS::Region' },
         'value',
       ],
     },
@@ -52,7 +52,7 @@ test('expression does not contain paths', () => {
     expression: '2 + 2',
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
@@ -77,7 +77,7 @@ test('with dash and underscore in path', () => {
     expression: '$.a_b + $.c-d + $[_e]',
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
