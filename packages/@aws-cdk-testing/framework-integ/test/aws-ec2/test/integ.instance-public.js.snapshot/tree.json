@@ -497,17 +497,23 @@
                     },
                     "instanceType": "t3.nano",
                     "monitoring": true,
-                    "securityGroupIds": [
+                    "networkInterfaces": [
                       {
-                        "Fn::GetAtt": [
-                          "IntegSg68DC2C7E",
-                          "GroupId"
+                        "deviceIndex": "0",
+                        "associatePublicIpAddress": true,
+                        "subnetId": {
+                          "Ref": "VPCpublicsubnet1Subnet1Subnet39B927A0"
+                        },
+                        "groupSet": [
+                          {
+                            "Fn::GetAtt": [
+                              "IntegSg68DC2C7E",
+                              "GroupId"
+                            ]
+                          }
                         ]
                       }
                     ],
-                    "subnetId": {
-                      "Ref": "VPCpublicsubnet1Subnet1Subnet39B927A0"
-                    },
                     "tags": [
                       {
                         "key": "Name",
