@@ -13,7 +13,7 @@ export abstract class ScheduleTargetInput {
    * For passing complex values like JSON object to a target use method
    * `ScheduleTargetInput.fromObject()` instead.
    * 
-   * @param text text to use as input for the target
+   * @param text Text to use as the input for the target
    */
   public static fromText(text: string): ScheduleTargetInput {
     return new FieldAwareEventInput(text);
