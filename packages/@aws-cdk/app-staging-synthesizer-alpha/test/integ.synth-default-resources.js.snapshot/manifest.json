@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -20,7 +20,7 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/dc7275f639c45accfa2abc4842978bcb3b0c5f0b83fcde22015e344b2e008f26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/84a24ce989cf0c000ebee1bfd616e95a965eb13e58704752007b21368191978c.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
@@ -31,6 +31,12 @@
         "synthesize-default-resources.assets"
       ],
       "metadata": {
+        "/synthesize-default-resources/UsingDefaultStagingStack--synthesize-default-resources": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsingDefaultStagingStacksynthesizedefaultresources"
+          }
+        ],
         "/synthesize-default-resources/lambda-s3/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

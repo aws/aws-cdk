@@ -8,6 +8,18 @@
         "id": "synthesize-default-resources",
         "path": "synthesize-default-resources",
         "children": {
+          "UsingDefaultStagingStack--synthesize-default-resources": {
+            "id": "UsingDefaultStagingStack--synthesize-default-resources",
+            "path": "synthesize-default-resources/UsingDefaultStagingStack--synthesize-default-resources",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudFormation::WaitConditionHandle",
+              "aws:cdk:cloudformation:props": {}
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingDefaultStagingStack",
+              "version": "0.0.0"
+            }
+          },
           "lambda-s3": {
             "id": "lambda-s3",
             "path": "synthesize-default-resources/lambda-s3",
@@ -1150,7 +1162,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
           "version": "0.0.0"
         }
       },

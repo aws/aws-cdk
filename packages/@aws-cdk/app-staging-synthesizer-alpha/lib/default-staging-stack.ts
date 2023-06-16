@@ -8,6 +8,7 @@ import {
   App,
   ArnFormat,
   BootstraplessSynthesizer,
+  CfnWaitConditionHandle,
   DockerImageAssetSource,
   Duration,
   FileAssetSource,
@@ -17,10 +18,23 @@ import {
   StackProps,
 } from 'aws-cdk-lib/core';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
+import * as cxapi from 'aws-cdk-lib/cx-api';
+import { Construct } from 'constructs';
 import { BootstrapRole } from './bootstrap-roles';
 import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
+
+/**
+ * This is a dummy construct meant to signify that a stack is utilizing
+ * the DefaultStagingStack. It does not do anything, and is not meant
+ * to be created on its own.
+ */
+export class UsingDefaultStagingStack extends CfnWaitConditionHandle {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+  }
+}
 
 /**
  * User configurable options to the DefaultStagingStack.
@@ -128,6 +142,12 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
           throw new Error(`Stack ${stack.stackName} must be part of an App`);
         }
 
+        // Because we do not keep metrics in the DefaultStagingStack, we will inject
+        // a dummy construct into the stack using the DefaultStagingStack instead.
+        if (cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT) {
+          new UsingDefaultStagingStack(stack, `UsingDefaultStagingStack/${stack.stackName}`);
+        }
+
         const stackId = `StagingStack-${appId}-${context.environmentString}`;
         return new DefaultStagingStack(app, stackId, {
           ...options,
@@ -199,7 +219,10 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
+      analyticsReporting: false, // removing AWS::CDK::Metadata construct saves ~3KB
     });
+    // removing path metadata saves ~2KB
+    this.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, false);
 
     this.appId = this.validateAppId(props.appId);
     this.dependencyStack = this;
