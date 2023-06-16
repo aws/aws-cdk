@@ -1,5 +1,5 @@
 import * as path from 'path';
-// import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AppStagingSynthesizer } from '../lib';
@@ -9,7 +9,6 @@ const app = new App();
 const stack = new Stack(app, 'synthesize-default-resources', {
   synthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'default-resources',
-    autoDeleteStagingAssets: true,
   }),
 });
 
@@ -45,8 +44,8 @@ new lambda.Function(stack, 'lambda-ecr-2', {
   runtime: lambda.Runtime.FROM_IMAGE,
 });
 
-// new integ.IntegTest(app, 'integ-tests', {
-//   testCases: [stack],
-// });
+new integ.IntegTest(app, 'integ-tests', {
+  testCases: [stack],
+});
 
 app.synth();

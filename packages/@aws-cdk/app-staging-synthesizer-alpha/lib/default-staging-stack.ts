@@ -92,7 +92,7 @@ export interface DefaultStagingStackOptions {
    * Auto deletes objects in the staging S3 bucket and images in the
    * staging ECR repositories.
    *
-   * @default false
+   * @default true
    */
   readonly autoDeleteStagingAssets?: boolean;
 }
@@ -221,7 +221,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     // resources because the staging bucket necessary for custom resource assets
     // does not exist yet.
     this.node.setContext(INLINE_CUSTOM_RESOURCE_CONTEXT, true);
-    this.autoDeleteStagingAssets = props.autoDeleteStagingAssets ?? false;
+    this.autoDeleteStagingAssets = props.autoDeleteStagingAssets ?? true;
 
     this.appId = this.validateAppId(props.appId);
     this.dependencyStack = this;
