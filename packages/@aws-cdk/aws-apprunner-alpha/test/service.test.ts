@@ -822,6 +822,9 @@ test('serviceName validation', () => {
   });
 
   // THEN
+  // the serviceName should not be the resource.ref
+  expect(svc.serviceName).not.toEqual((svc.node.defaultChild as cdk.CfnResource).ref);
+  // serviceName and serviceArn should be different
   expect(svc.serviceName).not.toEqual(svc.serviceArn);
 });
 
