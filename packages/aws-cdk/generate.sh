@@ -40,4 +40,7 @@ HERE
   wasm-pack build --target nodejs                                               \
     --out-dir="${pkgroot}/lib/vendor/noctilucent"                               \
     --out-name=index                                                            
+
+  cd ../../lib/vendor/noctilucent
+  rm package.json
 )
