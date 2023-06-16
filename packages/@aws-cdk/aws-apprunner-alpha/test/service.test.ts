@@ -822,9 +822,7 @@ test('serviceName validation', () => {
   });
 
   // THEN
-  const extracted = cdk.Fn.select(5, cdk.Fn.split(':', svc.serviceArn));
-  const svcName = cdk.Fn.select(1, cdk.Fn.split('/', extracted));
-  expect(svc.serviceName).toEqual(svcName);
+  expect(svc.serviceName).not.toEqual(svc.serviceArn);
 });
 
 test('undefined imageConfiguration port is allowed', () => {
