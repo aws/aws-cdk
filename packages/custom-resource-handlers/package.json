@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/custom-resource-handlers",
   "description": "CDK Custom Resources",
+  "private": true,
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && ts-node scripts/minify-sources.ts",
@@ -61,6 +62,5 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
-  },
-  "private": true
+  }
 }
