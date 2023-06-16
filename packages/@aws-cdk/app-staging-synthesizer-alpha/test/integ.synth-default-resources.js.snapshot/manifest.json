@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -129,6 +129,30 @@
             "data": "CdkStagingBucketPolicy42BD1F92"
           }
         ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkStagingBucketAutoDeleteObjectsCustomResource800E998D"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
         "/StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -147,10 +171,34 @@
             "data": "defaultresourcesecrasset9191BD6E"
           }
         ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset/AutoDeleteImagesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesecrassetAutoDeleteImagesCustomResource7AB58D8F"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030"
+          }
+        ],
         "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset-2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultresourcesecrasset2FBE6B8A9"
+          }
+        ],
+        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset-2/AutoDeleteImagesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesecrasset2AutoDeleteImagesCustomResource1272F059"
           }
         ]
       },
