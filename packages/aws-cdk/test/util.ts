@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { MockSdkProvider } from './util/mock-sdk';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
-import { MockSdkProvider } from './util/mock-sdk';
 
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 

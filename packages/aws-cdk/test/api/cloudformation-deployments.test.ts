@@ -1,13 +1,13 @@
 jest.mock('../../lib/api/deploy-stack');
 
 import { CloudFormation } from 'aws-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;

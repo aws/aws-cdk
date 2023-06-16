@@ -1,9 +1,9 @@
 import { Writable } from 'stream';
 import * as AWS from 'aws-sdk';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
