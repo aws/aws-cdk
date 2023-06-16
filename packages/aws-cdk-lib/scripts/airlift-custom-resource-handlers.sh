@@ -1,21 +1,23 @@
 #!/bin/bash
 
 scriptdir=$(cd $(dirname $0) && pwd)
-customresourcedir=${scriptdir}/../../custom-resource-handlers
+customresourcedir=$(node -p "path.dirname(require.resolve('@aws-cdk/custom-resource-handlers/package.json'))")
 awscdklibdir=${scriptdir}/..
 
 list_custom_resources() {
-  for dir in $(ls $customresourcedir/lib); do
-    [ -d $customresourcedir/lib/$dir ] && echo lib/$dir/$(ls $customresourcedir/lib/$dir)
+  for file in $customresourcedir/lib/*/*/index.js; do
+    echo $file | rev | cut -d "/" -f -4 | rev
   done
 }
 
-cr_dirs=$(list_custom_resources)
+customresources=$(list_custom_resources)
+
+echo $customresources
 
 cd $awscdklibdir
 mkdir -p $awscdklibdir/custom-resource-handlers
 
-for dir in $cr_dirs; do
-  mkdir -p $awscdklibdir/custom-resource-handlers/$dir
-  cp $customresourcedir/$dir/index.js $awscdklibdir/custom-resource-handlers/$dir
+for cr in $customresources; do
+  mkdir -p $awscdklibdir/custom-resource-handlers/$cr
+  cp $customresourcedir/$cr $awscdklibdir/custom-resource-handlers/$cr
 done
