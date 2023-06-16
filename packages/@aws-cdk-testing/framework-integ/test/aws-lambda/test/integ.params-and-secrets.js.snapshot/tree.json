@@ -244,11 +244,11 @@
                     ],
                     "environment": {
                       "variables": {
-                        "PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED": "true",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE": "100",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT": "2773",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL": "info",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
+                        "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+                        "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "100",
+                        "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "8080",
+                        "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "debug",
+                        "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "5",
                         "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
                         "SECRETS_MANAGER_TTL": "100",
                         "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
@@ -559,11 +559,11 @@
                     ],
                     "environment": {
                       "variables": {
-                        "PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED": "true",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE": "100",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT": "2773",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL": "info",
-                        "PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
+                        "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+                        "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "100",
+                        "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "8080",
+                        "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "debug",
+                        "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "5",
                         "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
                         "SECRETS_MANAGER_TTL": "100",
                         "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
@@ -647,7 +647,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -693,7 +693,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.52"
         }
       }
     },
