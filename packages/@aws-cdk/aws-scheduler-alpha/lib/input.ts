@@ -9,9 +9,9 @@ export abstract class ScheduleTargetInput {
    * Pass text to the target, it is possible to embed `ContextAttributes` and other
    * cdk references.
    *
-   * The target input value will be a single string: the string you pass
-   * here. Do not use this method to pass a complex value like a JSON object to
-   * a target. Use `ScheduleTargetInput.fromObject()` instead.
+   * The target input value will be a single string that you pass.
+   * For passing complex values like JSON object to a target use method
+   * `ScheduleTargetInput.fromObject()` instead.
    * 
    * @param text text to use as input for the target
    */
