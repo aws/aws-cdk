@@ -873,13 +873,14 @@ export class Function extends FunctionBase {
       this.addEventSource(event);
     }
 
-    // Log retention - shouldn't always add tags
+    // Log retention
     if (props.logRetention || props.propagateTagsToLogGroup) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention ?? logs.RetentionDays.INFINITE,
         role: props.logRetentionRole,
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
+        propagateTags: props.propagateTagsToLogGroup,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }

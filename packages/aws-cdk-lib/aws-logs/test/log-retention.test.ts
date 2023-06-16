@@ -184,6 +184,113 @@ describe('log retention', () => {
     });
   });
 
+  test('propagate tags to log group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('env', 'prod');
+    cdk.Tags.of(stack).add('dept', 'eng');
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 30,
+      'Tags': [
+        {
+          'Key': 'dept',
+          'Value': 'eng',
+        },
+        {
+          'Key': 'env',
+          'Value': 'prod',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+              'logs:ListTagsLogGroup',
+              'logs:TagLogGroup',
+              'logs:UntagLogGroup',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+  });
+
+  test('do not propagate tags to log group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('env', 'prod');
+    cdk.Tags.of(stack).add('dept', 'eng');
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      'ServiceToken': {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      'LogGroupName': 'group',
+      'RetentionInDays': 30,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
+        {
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+  });
+
   describe('multiple log retention resources', () => {
     test('both removalPolicy DESTROY', () => {
       // GIVEN

@@ -47,6 +47,11 @@ export interface LogRetentionProps {
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
 
+  /**
+   * Whether tags will also be added to the corresponding Cloudwatch log group.
+   *
+   * @default false
+   */
   readonly propagateTags?: boolean;
 }
 
@@ -109,7 +114,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
-        Tags: this.tags.renderedTags, // make this conditional
+        Tags: props.propagateTags ? this.tags.renderedTags : undefined,
       },
     });
 
@@ -160,15 +165,18 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
     });
-    // Duplicate statements will be deduplicated by `PolicyDocument`
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:PutRetentionPolicy',
-        'logs:DeleteRetentionPolicy',
+    let actions = ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'];
+    if (props.propagateTags) {
+      actions = [
+        ...actions,
         'logs:ListTagsLogGroup',
         'logs:TagLogGroup',
         'logs:UntagLogGroup',
-      ],
+      ];
+    }
+    // Duplicate statements will be deduplicated by `PolicyDocument`
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions,
       // We need '*' here because we will also put a retention policy on
       // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.
