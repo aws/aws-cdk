@@ -809,6 +809,24 @@ test('import from service attributes', () => {
   expect(svc).toHaveProperty('serviceUrl');
 });
 
+test('serviceName validation', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const svc = new apprunner.Service(stack, 'CustomService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  const extracted = cdk.Fn.select(5, cdk.Fn.split(':', svc.serviceArn));
+  const svcName = cdk.Fn.select(1, cdk.Fn.split('/', extracted));
+  expect(svc.serviceName).toEqual(svcName);
+});
+
 test('undefined imageConfiguration port is allowed', () => {
   // GIVEN
   const app = new cdk.App();
