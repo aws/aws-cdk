@@ -1767,18 +1767,14 @@ describe('function', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const fn = new lambda.Function(stack, 'MyLambda', {
+    new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
-    Tags.of(fn).add('env', 'dev');
-    Tags.of(fn).add('department', 'engineering');
 
     // THEN
-    /* eslint-disable no-console */
-    console.log(JSON.stringify(Template.fromStack(stack), null, 4));
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       LogGroupName: {
         'Fn::Join': [
@@ -1792,6 +1788,151 @@ describe('function', () => {
         ],
       },
       RetentionInDays: 30,
+    });
+  });
+
+  test('specify log retention with log propagation set to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      propagateTagsToLogGroup: true,
+    });
+    Tags.of(lambdaFunction).add('env', 'prod');
+    Tags.of(lambdaFunction).add('dept', 'eng');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+      Tags: [
+        {
+          Key: 'dept',
+          Value: 'eng',
+        },
+        {
+          Key: 'env',
+          Value: 'prod',
+        },
+      ],
+    });
+  });
+
+  test('specify log retention with log propagation set to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      propagateTagsToLogGroup: false,
+    });
+    Tags.of(lambdaFunction).add('env', 'prod');
+    Tags.of(lambdaFunction).add('dept', 'eng');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+    });
+  });
+
+  test('specify log retention with log propagation undefined', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+    });
+    Tags.of(lambdaFunction).add('env', 'prod');
+    Tags.of(lambdaFunction).add('dept', 'eng');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+    });
+  });
+
+  test('specify log propagation only', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      propagateTagsToLogGroup: true,
+    });
+    Tags.of(lambdaFunction).add('env', 'prod');
+    Tags.of(lambdaFunction).add('dept', 'eng');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      Tags: [
+        {
+          Key: 'dept',
+          Value: 'eng',
+        },
+        {
+          Key: 'env',
+          Value: 'prod',
+        },
+      ],
     });
   });
 
