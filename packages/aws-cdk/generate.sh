@@ -19,11 +19,19 @@ HERE
 (
   # Check out the submodule if it's not there already
   if [ ! -f "vendor/noctilucent/Cargo.toml" ]; then
-    git submodule update --init --recursive
+    mkdir vendor
+    git -C ./vendor clone https://github.com/iph/noctilucent.git
+    git -C ./vendor/noctilucent reset --hard HEAD
+    git -C ./vendor/noctilucent git fetch && git checkout 6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1
   fi
+
+  # update the package to the pinned commit hash
+  git -C vendor/noctilucent reset --hard HEAD
+  git -C vendor/noctilucent fetch && git -C vendor/noctilucent checkout 6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1
 
   # Install wasm-pack if it's not there already
   if ! command -v wasm-pack >/dev/null 2>/dev/null; then
+    echo "installing wasm-pack, this may take a while..."
     cargo install wasm-pack
   fi
 
@@ -32,6 +40,5 @@ HERE
   cd vendor/noctilucent
   wasm-pack build --target nodejs                                               \
     --out-dir="${pkgroot}/lib/vendor/noctilucent"                               \
-    --out-name=index                                                            \
-    --features "${CDK_MIGRATE_NOCTILUCENT_FEATURES:-}"
+    --out-name=index                                                            
 )

@@ -666,7 +666,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         throw new Error('Unknown command: ' + command);
     }
   }
-
 }
 
 /**
