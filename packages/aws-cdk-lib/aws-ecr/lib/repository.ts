@@ -90,7 +90,7 @@ export interface IRepository extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Gran tthe given identity permissions to read images in this repository.
+   * Grant the given identity permissions to read images in this repository.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
@@ -98,6 +98,11 @@ export interface IRepository extends IResource {
    * Grant the given identity permissions to pull images in this repository.
    */
   grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to push images in this repository.
+   */
+  grantPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
@@ -147,6 +152,22 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
+
+  private readonly REPO_PULL_ACTIONS: string[] = [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ];
+
+  // https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push.html#image-push-iam
+  private readonly REPO_PUSH_ACTIONS: string[] = [
+    'ecr:CompleteLayerUpload',
+    'ecr:UploadLayerPart',
+    'ecr:InitiateLayerUpload',
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:PutImage',
+  ];
+
   /**
    * The name of the repository
    */
@@ -362,8 +383,23 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage');
+    const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
 
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
+  }
+
+  /**
+   * Grant the given identity permissions to use the images in this repository
+   */
+  public grantPush(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
@@ -378,13 +414,18 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to pull and push images to this repository.
    */
   public grantPullPush(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee,
-      'ecr:PutImage',
-      'ecr:InitiateLayerUpload',
-      'ecr:UploadLayerPart',
-      'ecr:CompleteLayerUpload',
+    const ret = this.grant(grantee,
+      ...this.REPO_PULL_ACTIONS,
+      ...this.REPO_PUSH_ACTIONS,
     );
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
@@ -826,7 +867,7 @@ export class Repository extends RepositoryBase {
     });
 
     if (firstTime) {
-      const repoArns = [this._resource. attrArn];
+      const repoArns = [this._resource.attrArn];
       (provider as any)[REPO_ARN_SYMBOL] = repoArns;
 
       // Use a iam policy to allow the custom resource to list & delete
