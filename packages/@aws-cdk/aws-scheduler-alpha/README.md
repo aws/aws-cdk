@@ -122,7 +122,7 @@ its respective value and deliver it to the target. See
 
 ```ts
 const text = `Attempt number: ${ContextAttribute.attemptNumber}`;
-const input = scheduler.ScheduleTargetInput.fromInput(text);
+const input = ScheduleTargetInput.fromInput(text);
 ```
 
 ### Specifying Execution Role 
