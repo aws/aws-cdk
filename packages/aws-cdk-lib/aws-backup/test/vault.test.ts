@@ -303,7 +303,7 @@ test('import from name', () => {
   }));
 });
 
-test('refer exported value for vault name', () => {
+test('specify imported value as vault name', () => {
   // WHEN
   const vaultName = Fn.importValue('VaultName');
   new BackupVault(stack, 'Vault', {
