@@ -97,7 +97,7 @@ describe('VPC Lattice', () => {
           pathMatches: { path: '/path1' },
           method: HTTPMethods.GET,
         },
-        allowedPrincipals: [new iam.AccountPrincipal('123456123456')],
+        allowUnauthenticated: true,
       });
 
       listener.addListenerRule({
@@ -126,6 +126,7 @@ describe('VPC Lattice', () => {
           method: HTTPMethods.GET,
         },
         allowedPrincipals: [new iam.AccountPrincipal('123456123456')],
+        allowExternalPrincipals: true,
       });
 
       listener.addListenerRule({

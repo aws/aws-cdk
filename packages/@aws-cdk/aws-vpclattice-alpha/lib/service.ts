@@ -193,16 +193,6 @@ export class Service extends core.Resource implements IService {
    */
   authPolicy: iam.PolicyDocument;
 
-  /**
-  * Allow external principals
-  */
-  allowExternalPrincipals: boolean | undefined;
-
-  /**
-    * Allow unauthenticated access
-    */
-  allowUnauthenticatedAccess?: boolean | undefined;
-
   constructor(scope: constructs.Construct, id: string, props: LatticeServiceProps) {
     super(scope, id);
 
@@ -228,24 +218,19 @@ export class Service extends core.Resource implements IService {
     this.externalPrincipalsAllowed = props.allowExternalPrincipals ?? false;
     this.anonymousAccessAllowed = props.allowUnauthenticatedAccess ?? false;
 
-    if (this.allowExternalPrincipals === false) {
+    const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
+      onCreate: {
+        region: 'us-east-1',
+        service: 'Organizations',
+        action: 'describeOrganization',
+        physicalResourceId: cr.PhysicalResourceId.of('orgId'),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
 
-      // get my orgId
-      const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
-        onCreate: {
-          region: 'us-east-1',
-          service: 'Organizations',
-          action: 'describeOrganization',
-          physicalResourceId: cr.PhysicalResourceId.of('orgId'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-        }),
-      });
-
-      this.orgId = orgIdCr.getResponseField('Organization.Id');
-
-    }
+    this.orgId = orgIdCr.getResponseField('Organization.Id');
   }
 
   /**

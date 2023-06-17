@@ -200,6 +200,10 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     // the opinionated default for the servicenetwork is to use AWS_IAM as the
     // authentication method. Provide 'NONE' to props.authType to disable.
 
+    if (props.allowExternalPrincipals && props.allowUnauthenticatedAccess) {
+      throw new Error('When unauthenticated access is allow, it is not possible to also control access by org');
+    }
+
     this.authType = props.authType ?? AuthType.AWS_IAM;
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,

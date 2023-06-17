@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ed425d28b75d3420569450c8dfae0624ea8c3bd529dfbbd1228978fd8e1a1ff9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6279b564885bf93f6c9f44593f41f9677b455615462139ea9eeed9191fd9d08e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -273,22 +273,10 @@
             "data": "supportresourcescheckRoleDefaultPolicy5FCF6FFE"
           }
         ],
-        "/ServiceNetwork/supportresources/Helloworld/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "supportresourcesHelloworldSecurityGroup0E20A0E1"
-          }
-        ],
         "/ServiceNetwork/supportresources/Helloworld/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "supportresourcesHelloworld33AB6114"
-          }
-        ],
-        "/ServiceNetwork/supportresources/Goodbye/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "supportresourcesGoodbyeSecurityGroup8D83DB0E"
           }
         ],
         "/ServiceNetwork/supportresources/Goodbye/Resource": [
@@ -315,10 +303,46 @@
             "data": "myLatticeServiceB48AE2A4"
           }
         ],
+        "/ServiceNetwork/myLatticeService/getOrgId": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/getOrgId/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServicegetOrgIdA7E4A3CD"
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/getOrgId/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC"
+          }
+        ],
         "/ServiceNetwork/myLatticeService/ServiceAuthPolicy": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myLatticeServiceServiceAuthPolicy11FE73CA"
+          }
+        ],
+        "/ServiceNetwork/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
         "/ServiceNetwork/myListener/Resource": [
@@ -409,24 +433,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatticeServiceNetworkAuthPolicy2788B62F"
-          }
-        ],
-        "/ServiceNetwork/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
-        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
         "/ServiceNetwork/BootstrapVersion": [

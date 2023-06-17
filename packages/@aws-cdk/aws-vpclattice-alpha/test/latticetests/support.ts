@@ -70,8 +70,6 @@ export class SupportResources extends Construct {
       handler: 'helloworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
-      vpc: this.vpc1,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       role: helloRole,
     });
 
@@ -81,8 +79,6 @@ export class SupportResources extends Construct {
       handler: 'goodbyeworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda' )),
       timeout: core.Duration.seconds(15),
-      vpc: this.vpc2,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       role: goodbyeRole,
     });
 

@@ -1264,40 +1264,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "ServiceNetwork/supportresources/Helloworld/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "ServiceNetwork/supportresources/Helloworld/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function ServiceNetworksupportresourcesHelloworld6326B463",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "supportresourcesVPC18839F4CE"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "ServiceNetwork/supportresources/Helloworld/Resource",
@@ -1318,25 +1284,7 @@
                         },
                         "handler": "helloworld.lambda_handler",
                         "runtime": "python3.10",
-                        "timeout": 15,
-                        "vpcConfig": {
-                          "subnetIds": [
-                            {
-                              "Ref": "supportresourcesVPC1IsolatedSubnet1Subnet5EBC89AB"
-                            },
-                            {
-                              "Ref": "supportresourcesVPC1IsolatedSubnet2Subnet9810FE1A"
-                            }
-                          ],
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "supportresourcesHelloworldSecurityGroup0E20A0E1",
-                                "GroupId"
-                              ]
-                            }
-                          ]
-                        }
+                        "timeout": 15
                       }
                     },
                     "constructInfo": {
@@ -1380,40 +1328,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "ServiceNetwork/supportresources/Goodbye/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "ServiceNetwork/supportresources/Goodbye/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function ServiceNetworksupportresourcesGoodbye736D1F15",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "supportresourcesVPC2422D6D3C"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "ServiceNetwork/supportresources/Goodbye/Resource",
@@ -1434,25 +1348,7 @@
                         },
                         "handler": "goodbyeworld.lambda_handler",
                         "runtime": "python3.10",
-                        "timeout": 15,
-                        "vpcConfig": {
-                          "subnetIds": [
-                            {
-                              "Ref": "supportresourcesVPC2IsolatedSubnet1Subnet9158D0D0"
-                            },
-                            {
-                              "Ref": "supportresourcesVPC2IsolatedSubnet2Subnet76FC46B7"
-                            }
-                          ],
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "supportresourcesGoodbyeSecurityGroup8D83DB0E",
-                                "GroupId"
-                              ]
-                            }
-                          ]
-                        }
+                        "timeout": 15
                       }
                     },
                     "constructInfo": {
@@ -1524,6 +1420,81 @@
                   "version": "0.0.0"
                 }
               },
+              "getOrgId": {
+                "id": "getOrgId",
+                "path": "ServiceNetwork/myLatticeService/getOrgId",
+                "children": {
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "ServiceNetwork/myLatticeService/getOrgId/Provider",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ServiceNetwork/myLatticeService/getOrgId/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "ServiceNetwork/myLatticeService/getOrgId/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CustomResourcePolicy": {
+                    "id": "CustomResourcePolicy",
+                    "path": "ServiceNetwork/myLatticeService/getOrgId/CustomResourcePolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "ServiceNetwork/myLatticeService/getOrgId/CustomResourcePolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "organizations:DescribeOrganization",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC",
+                            "roles": [
+                              {
+                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
+                  "version": "0.0.0"
+                }
+              },
               "ServiceAuthPolicy": {
                 "id": "ServiceAuthPolicy",
                 "path": "ServiceNetwork/myLatticeService/ServiceAuthPolicy",
@@ -1536,7 +1507,14 @@
                           "Action": "vpc-lattice-svcs:Invoke",
                           "Condition": {
                             "StringEquals": {
-                              "aws:PrincipalOrgID": [],
+                              "aws:PrincipalOrgID": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "myLatticeServicegetOrgIdA7E4A3CD",
+                                    "Organization.Id"
+                                  ]
+                                }
+                              ],
                               "vpc-lattice-svcs:RequestMethod": "GET"
                             }
                           },
@@ -1576,7 +1554,14 @@
                           "Action": "vpc-lattice-svcs:Invoke",
                           "Condition": {
                             "StringEquals": {
-                              "aws:PrincipalOrgID": [],
+                              "aws:PrincipalOrgID": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "myLatticeServicegetOrgIdA7E4A3CD",
+                                    "Organization.Id"
+                                  ]
+                                }
+                              ],
                               "vpc-lattice-svcs:RequestMethod": "GET"
                             }
                           },
@@ -1631,6 +1616,143 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-vpclattice-alpha.Service",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "ServiceNetwork/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -2226,143 +2348,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "ServiceNetwork/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
-          "AWS679f53fac002430cb0da5b7982bd2287": {
-            "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-                        "Arn"
-                      ]
-                    },
-                    "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    },
-                    "timeout": 120
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "ServiceNetwork/BootstrapVersion",
@@ -2429,14 +2414,14 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.52"
         }
       },
       "Tree": {

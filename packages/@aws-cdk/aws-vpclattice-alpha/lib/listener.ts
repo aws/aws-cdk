@@ -119,6 +119,16 @@ export interface AddRuleProps {
    * @default none
   */
   readonly allowedPrincipals?: iam.IPrincipal[] | undefined;
+  /**
+   * Allow UnauthenaticatedAccess in this rule
+   * @default false
+   */
+  readonly allowUnauthenticated?: boolean | undefined;
+  /**
+   * Allow ExternalPrincipals to have access to this rule
+   * @default false
+   */
+  readonly allowExternalPrincipals?: boolean | undefined;
 
 }
 
@@ -205,27 +215,35 @@ export class Listener extends core.Resource implements IListener {
    */
   public addListenerRule(props: AddRuleProps): void {
 
+    // throw an error if props.allowUnauthenticated is set as well as props.allowedPrincipals or allowExternalPrincipals
+    if (props.allowUnauthenticated && (props.allowedPrincipals || props.allowExternalPrincipals)) {
+      throw new Error('allowUnauthenticated cannot be used with allowedPrincipals or allowExternalPrincipals');
+    }
+
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+
+    if (props.allowUnauthenticated) {
+      policyStatement.addPrincipals(new iam.StarPrincipal());
+    }
+
     // if priority is undefined set it to 50.  This should only be used if there is a single rule
     const priority = props.priority ?? 50;
-    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+
     // add the action for the statement. There is only one permissiable action
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
-
-    // if specified at the service level apply anonymous external Principal Access.
-    if (this.service.anonymousAccessAllowed === false) {
-      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
-    };
-    if (this.service.externalPrincipalsAllowed === false) {
-      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
-    };
 
     // conditionaly build a policy statement if principals were provided
     if (props.allowedPrincipals) {
       // add principals to the statement
-      // if needed, explicity permit all principals by using iam.AnyPrincipal();
+      // if needed, explicity permit all principals by using iam.StarPrincipal();
       props.allowedPrincipals.forEach((principal) => {
         policyStatement.addPrincipals(principal);
       });
+    };
+
+    // add a condition to restrict access to this org if not explicity allowed
+    if ((props.allowExternalPrincipals ?? false) === false) {
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
     };
 
     /**

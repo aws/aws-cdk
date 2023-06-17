@@ -1,7 +1,7 @@
 {
   "name": "aws-vpclattice-prealpha",
   "private": false,
-  "version": "0.0.5",
+  "version": "0.2.0",
   "description": "A CDK Construct for the AWS VPC Lattice Service",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

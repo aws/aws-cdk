@@ -718,26 +718,6 @@
     ]
    }
   },
-  "supportresourcesHelloworldSecurityGroup0E20A0E1": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function ServiceNetworksupportresourcesHelloworld6326B463",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "supportresourcesVPC18839F4CE"
-    }
-   },
-   "DependsOn": [
-    "supportresourcesVPC1IsolatedSubnet1RouteTableAssociation554AB7C2",
-    "supportresourcesVPC1IsolatedSubnet2RouteTableAssociation2FCFEFB3"
-   ]
-  },
   "supportresourcesHelloworld33AB6114": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -755,51 +735,11 @@
     },
     "Handler": "helloworld.lambda_handler",
     "Runtime": "python3.10",
-    "Timeout": 15,
-    "VpcConfig": {
-     "SecurityGroupIds": [
-      {
-       "Fn::GetAtt": [
-        "supportresourcesHelloworldSecurityGroup0E20A0E1",
-        "GroupId"
-       ]
-      }
-     ],
-     "SubnetIds": [
-      {
-       "Ref": "supportresourcesVPC1IsolatedSubnet1Subnet5EBC89AB"
-      },
-      {
-       "Ref": "supportresourcesVPC1IsolatedSubnet2Subnet9810FE1A"
-      }
-     ]
-    }
+    "Timeout": 15
    },
    "DependsOn": [
     "supportresourceshelloRoleDefaultPolicyE0D968C9",
-    "supportresourceshelloRole5ADF3862",
-    "supportresourcesVPC1IsolatedSubnet1RouteTableAssociation554AB7C2",
-    "supportresourcesVPC1IsolatedSubnet2RouteTableAssociation2FCFEFB3"
-   ]
-  },
-  "supportresourcesGoodbyeSecurityGroup8D83DB0E": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function ServiceNetworksupportresourcesGoodbye736D1F15",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "supportresourcesVPC2422D6D3C"
-    }
-   },
-   "DependsOn": [
-    "supportresourcesVPC2IsolatedSubnet1RouteTableAssociation924926F4",
-    "supportresourcesVPC2IsolatedSubnet2RouteTableAssociation8551E3E6"
+    "supportresourceshelloRole5ADF3862"
    ]
   },
   "supportresourcesGoodbye40E30F7A": {
@@ -819,31 +759,11 @@
     },
     "Handler": "goodbyeworld.lambda_handler",
     "Runtime": "python3.10",
-    "Timeout": 15,
-    "VpcConfig": {
-     "SecurityGroupIds": [
-      {
-       "Fn::GetAtt": [
-        "supportresourcesGoodbyeSecurityGroup8D83DB0E",
-        "GroupId"
-       ]
-      }
-     ],
-     "SubnetIds": [
-      {
-       "Ref": "supportresourcesVPC2IsolatedSubnet1Subnet9158D0D0"
-      },
-      {
-       "Ref": "supportresourcesVPC2IsolatedSubnet2Subnet76FC46B7"
-      }
-     ]
-    }
+    "Timeout": 15
    },
    "DependsOn": [
     "supportresourcescheckRoleDefaultPolicy5FCF6FFE",
-    "supportresourcescheckRoleEC7B26D5",
-    "supportresourcesVPC2IsolatedSubnet1RouteTableAssociation924926F4",
-    "supportresourcesVPC2IsolatedSubnet2RouteTableAssociation8551E3E6"
+    "supportresourcescheckRoleEC7B26D5"
    ]
   },
   "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
@@ -1021,6 +941,119 @@
     "supportresourcesVPC2VPCGW96F29950"
    ]
   },
+  "myLatticeServicegetOrgIdA7E4A3CD": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": "{\"region\":\"us-east-1\",\"service\":\"Organizations\",\"action\":\"describeOrganization\",\"physicalResourceId\":{\"id\":\"orgId\"}}",
+    "InstallLatestAwsSdk": "false"
+   },
+   "DependsOn": [
+    "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC",
+    "supportresourcesVPC1IGWCA6B77AA",
+    "supportresourcesVPC1IsolatedSubnet1RouteTableAB36A6C5",
+    "supportresourcesVPC1IsolatedSubnet1RouteTableAssociation554AB7C2",
+    "supportresourcesVPC1IsolatedSubnet1Subnet5EBC89AB",
+    "supportresourcesVPC1IsolatedSubnet2RouteTable8878A7AC",
+    "supportresourcesVPC1IsolatedSubnet2RouteTableAssociation2FCFEFB3",
+    "supportresourcesVPC1IsolatedSubnet2Subnet9810FE1A",
+    "supportresourcesVPC1PublicSubnet1DefaultRoute914CAD15",
+    "supportresourcesVPC1PublicSubnet1RouteTableB8941B9C",
+    "supportresourcesVPC1PublicSubnet1RouteTableAssociationA020707E",
+    "supportresourcesVPC1PublicSubnet1Subnet8B1DC710",
+    "supportresourcesVPC1PublicSubnet2DefaultRouteCD671524",
+    "supportresourcesVPC1PublicSubnet2RouteTable8A7AE7EC",
+    "supportresourcesVPC1PublicSubnet2RouteTableAssociation11A8011F",
+    "supportresourcesVPC1PublicSubnet2SubnetCCD4BCCB",
+    "supportresourcesVPC18839F4CE",
+    "supportresourcesVPC1RestrictDefaultSecurityGroupCustomResourceAC31AEEA",
+    "supportresourcesVPC1VPCGWC673247F",
+    "supportresourcesVPC2IGWF3C0577A",
+    "supportresourcesVPC2IsolatedSubnet1RouteTable0564697B",
+    "supportresourcesVPC2IsolatedSubnet1RouteTableAssociation924926F4",
+    "supportresourcesVPC2IsolatedSubnet1Subnet9158D0D0",
+    "supportresourcesVPC2IsolatedSubnet2RouteTableE11CE090",
+    "supportresourcesVPC2IsolatedSubnet2RouteTableAssociation8551E3E6",
+    "supportresourcesVPC2IsolatedSubnet2Subnet76FC46B7",
+    "supportresourcesVPC2PublicSubnet1DefaultRoute61464EE9",
+    "supportresourcesVPC2PublicSubnet1RouteTableE0042590",
+    "supportresourcesVPC2PublicSubnet1RouteTableAssociationFA92A094",
+    "supportresourcesVPC2PublicSubnet1SubnetCF10E696",
+    "supportresourcesVPC2PublicSubnet2DefaultRoute30FCB267",
+    "supportresourcesVPC2PublicSubnet2RouteTable171505D5",
+    "supportresourcesVPC2PublicSubnet2RouteTableAssociation02E48837",
+    "supportresourcesVPC2PublicSubnet2Subnet66DF954E",
+    "supportresourcesVPC2422D6D3C",
+    "supportresourcesVPC2RestrictDefaultSecurityGroupCustomResource9177A5C5",
+    "supportresourcesVPC2VPCGW96F29950"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "organizations:DescribeOrganization",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "supportresourcesVPC1IGWCA6B77AA",
+    "supportresourcesVPC1IsolatedSubnet1RouteTableAB36A6C5",
+    "supportresourcesVPC1IsolatedSubnet1RouteTableAssociation554AB7C2",
+    "supportresourcesVPC1IsolatedSubnet1Subnet5EBC89AB",
+    "supportresourcesVPC1IsolatedSubnet2RouteTable8878A7AC",
+    "supportresourcesVPC1IsolatedSubnet2RouteTableAssociation2FCFEFB3",
+    "supportresourcesVPC1IsolatedSubnet2Subnet9810FE1A",
+    "supportresourcesVPC1PublicSubnet1DefaultRoute914CAD15",
+    "supportresourcesVPC1PublicSubnet1RouteTableB8941B9C",
+    "supportresourcesVPC1PublicSubnet1RouteTableAssociationA020707E",
+    "supportresourcesVPC1PublicSubnet1Subnet8B1DC710",
+    "supportresourcesVPC1PublicSubnet2DefaultRouteCD671524",
+    "supportresourcesVPC1PublicSubnet2RouteTable8A7AE7EC",
+    "supportresourcesVPC1PublicSubnet2RouteTableAssociation11A8011F",
+    "supportresourcesVPC1PublicSubnet2SubnetCCD4BCCB",
+    "supportresourcesVPC18839F4CE",
+    "supportresourcesVPC1RestrictDefaultSecurityGroupCustomResourceAC31AEEA",
+    "supportresourcesVPC1VPCGWC673247F",
+    "supportresourcesVPC2IGWF3C0577A",
+    "supportresourcesVPC2IsolatedSubnet1RouteTable0564697B",
+    "supportresourcesVPC2IsolatedSubnet1RouteTableAssociation924926F4",
+    "supportresourcesVPC2IsolatedSubnet1Subnet9158D0D0",
+    "supportresourcesVPC2IsolatedSubnet2RouteTableE11CE090",
+    "supportresourcesVPC2IsolatedSubnet2RouteTableAssociation8551E3E6",
+    "supportresourcesVPC2IsolatedSubnet2Subnet76FC46B7",
+    "supportresourcesVPC2PublicSubnet1DefaultRoute61464EE9",
+    "supportresourcesVPC2PublicSubnet1RouteTableE0042590",
+    "supportresourcesVPC2PublicSubnet1RouteTableAssociationFA92A094",
+    "supportresourcesVPC2PublicSubnet1SubnetCF10E696",
+    "supportresourcesVPC2PublicSubnet2DefaultRoute30FCB267",
+    "supportresourcesVPC2PublicSubnet2RouteTable171505D5",
+    "supportresourcesVPC2PublicSubnet2RouteTableAssociation02E48837",
+    "supportresourcesVPC2PublicSubnet2Subnet66DF954E",
+    "supportresourcesVPC2422D6D3C",
+    "supportresourcesVPC2RestrictDefaultSecurityGroupCustomResource9177A5C5",
+    "supportresourcesVPC2VPCGW96F29950"
+   ]
+  },
   "myLatticeServiceServiceAuthPolicy11FE73CA": {
    "Type": "AWS::VpcLattice::AuthPolicy",
    "Properties": {
@@ -1030,7 +1063,14 @@
        "Action": "vpc-lattice-svcs:Invoke",
        "Condition": {
         "StringEquals": {
-         "aws:PrincipalOrgID": [],
+         "aws:PrincipalOrgID": [
+          {
+           "Fn::GetAtt": [
+            "myLatticeServicegetOrgIdA7E4A3CD",
+            "Organization.Id"
+           ]
+          }
+         ],
          "vpc-lattice-svcs:RequestMethod": "GET"
         }
        },
@@ -1070,7 +1110,14 @@
        "Action": "vpc-lattice-svcs:Invoke",
        "Condition": {
         "StringEquals": {
-         "aws:PrincipalOrgID": [],
+         "aws:PrincipalOrgID": [
+          {
+           "Fn::GetAtt": [
+            "myLatticeServicegetOrgIdA7E4A3CD",
+            "Organization.Id"
+           ]
+          }
+         ],
          "vpc-lattice-svcs:RequestMethod": "GET"
         }
        },
@@ -1153,6 +1200,68 @@
     "supportresourcesVPC2422D6D3C",
     "supportresourcesVPC2RestrictDefaultSecurityGroupCustomResource9177A5C5",
     "supportresourcesVPC2VPCGW96F29950"
+   ]
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
   },
   "myListener5A585B50": {
@@ -1524,68 +1633,6 @@
      ]
     }
    }
-  },
-  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      "Arn"
-     ]
-    },
-    "Handler": "index.handler",
-    "Runtime": {
-     "Fn::FindInMap": [
-      "DefaultCrNodeVersionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
-    "Timeout": 120
-   },
-   "DependsOn": [
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-   ]
   }
  },
  "Mappings": {
