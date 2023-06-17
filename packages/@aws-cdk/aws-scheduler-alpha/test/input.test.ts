@@ -114,7 +114,7 @@ describe('schedule target input', () => {
     });
   });
 
-  test('create an input with fromObject with ContextrAttribute', () => {
+  test('create an input with fromObject with ContextAttribute', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: new targets.LambdaInvoke({
