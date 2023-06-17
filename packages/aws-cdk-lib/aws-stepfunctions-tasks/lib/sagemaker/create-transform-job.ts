@@ -282,6 +282,10 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
             }),
           ],
         }),
+        new iam.PolicyStatement({
+          actions: ['sagemaker:AddTags'],
+          resources: ['*'],
+        }),
       );
     }
 
