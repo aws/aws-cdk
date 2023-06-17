@@ -12,7 +12,7 @@ export abstract class ScheduleTargetInput {
    * The target input value will be a single string that you pass.
    * For passing complex values like JSON object to a target use method
    * `ScheduleTargetInput.fromObject()` instead.
-   * 
+   *
    * @param text Text to use as the input for the target
    */
   public static fromText(text: string): ScheduleTargetInput {
@@ -22,7 +22,7 @@ export abstract class ScheduleTargetInput {
   /**
    * Pass a JSON object to the target, it is possible to embed `ContextAttributes` and other
    * cdk references.
-   * 
+   *
    * @param obj object to use to convert to JSON to use as input for the target
    */
   public static fromObject(obj: any): ScheduleTargetInput {
@@ -64,7 +64,7 @@ class FieldAwareEventInput extends ScheduleTargetInput {
 
 /**
  * Represents a field in the event pattern
- * 
+ *
  * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-context-attributes.html
  */
 export class ContextAttribute {
@@ -101,7 +101,7 @@ export class ContextAttribute {
 
   /**
    * Escape hatch for other ContextAttribute that might be resolved in future.
-   * 
+   *
    * @param name - name will replace xxx in <aws.scheduler.xxx>
    */
   public static fromName(name: string): string {

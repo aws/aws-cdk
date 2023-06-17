@@ -1,13 +1,13 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
-import { ScheduleTargetInput } from './input';
-import { ISchedule } from './schedule';
+import { ScheduleTargetInput } from '../input';
+import { ISchedule } from '../schedule';
 
 /**
  * DISCLAIMER: WORK IN PROGRESS, INTERFACE MIGHT CHANGE
- * 
- * This unit is not yet finished. The LambaInvoke target is only implemented to be able 
+ *
+ * This unit is not yet finished. The LambaInvoke target is only implemented to be able
  * to create some sensible unit tests.
  */
 
@@ -27,8 +27,9 @@ export namespace targets {
     protected abstract addTargetActionToRole(role: iam.IRole): void;
 
     protected bindBaseTargetConfig(_schedule: ISchedule): CfnSchedule.TargetProperty {
-      if (typeof this.baseProps.role === undefined)
-        throw Error("A role is needed (for now)");
+      if (typeof this.baseProps.role === undefined) {
+        throw Error('A role is needed (for now)');
+      }
       this.addTargetActionToRole(this.baseProps.role!);
       return {
         arn: this.targetArn,

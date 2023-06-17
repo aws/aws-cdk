@@ -2,13 +2,14 @@ import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ContextAttribute, Schedule, ScheduleExpression, ScheduleTargetInput, targets } from '../lib';
+import { ContextAttribute, ScheduleExpression, ScheduleTargetInput } from '../lib';
+import { Schedule, targets } from '../lib/private';
 
 describe('schedule target input', () => {
   let stack: Stack;
   let role: iam.IRole;
   let func: lambda.IFunction;
-  const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)))
+  const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
     stack = new Stack();
@@ -45,7 +46,7 @@ describe('schedule target input', () => {
       Properties: {
         Target: {
           Input: {
-            'Fn::Join': ["", ['"', { 'Ref': 'AWS::AccountId' }, '"']]
+            'Fn::Join': ['', ['"', { Ref: 'AWS::AccountId' }, '"']],
           },
         },
       },
@@ -87,9 +88,9 @@ describe('schedule target input', () => {
           Input: {
             'Fn::Join': ['', [
               '{"test":"',
-              { 'Ref': 'AWS::AccountId' },
-              '"}'
-            ]]
+              { Ref: 'AWS::AccountId' },
+              '"}',
+            ]],
           },
         },
       },
@@ -119,18 +120,18 @@ describe('schedule target input', () => {
       target: new targets.LambdaInvoke({
         role,
         input: ScheduleTargetInput.fromObject({
-          'arn': ContextAttribute.scheduleArn,
-          'att': ContextAttribute.attemptNumber,
-          'xid': ContextAttribute.executionId,
-          'tim': ContextAttribute.scheduledTime,
-          'cus': ContextAttribute.fromName('escapehatch'),
+          arn: ContextAttribute.scheduleArn,
+          att: ContextAttribute.attemptNumber,
+          xid: ContextAttribute.executionId,
+          tim: ContextAttribute.scheduledTime,
+          cus: ContextAttribute.fromName('escapehatch'),
         }),
       }, func),
     });
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '{"arn":"<aws.scheduler.schedule-arn>",' + 
+          Input: '{"arn":"<aws.scheduler.schedule-arn>",' +
             '"att":"<aws.scheduler.attempt-number>",' +
             '"xid":"<aws.scheduler.execution-id>",' +
             '"tim":"<aws.scheduler.scheduled-time>",' +
