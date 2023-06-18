@@ -224,7 +224,9 @@ export class Listener extends core.Resource implements IListener {
 
     if (props.allowUnauthenticated) {
       policyStatement.addPrincipals(new iam.StarPrincipal());
-    }
+    } else if ((props.allowExternalPrincipals ?? false)) {
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
+    };
 
     // if priority is undefined set it to 50.  This should only be used if there is a single rule
     const priority = props.priority ?? 50;
@@ -239,11 +241,6 @@ export class Listener extends core.Resource implements IListener {
       props.allowedPrincipals.forEach((principal) => {
         policyStatement.addPrincipals(principal);
       });
-    };
-
-    // add a condition to restrict access to this org if not explicity allowed
-    if ((props.allowExternalPrincipals ?? false) === false) {
-      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
     };
 
     /**
@@ -376,8 +373,8 @@ export class Listener extends core.Resource implements IListener {
       match.headerMatches = headerMatches;
     };
 
-    // only add the policy statement if principals where provided
-    if (props.allowedPrincipals) {
+    // only add the policy statement if principals where provided, or this was unauthed allowed.
+    if (props.allowedPrincipals || props.allowUnauthenticated) {
 
       this.service.authPolicy.addStatements(policyStatement);
     }

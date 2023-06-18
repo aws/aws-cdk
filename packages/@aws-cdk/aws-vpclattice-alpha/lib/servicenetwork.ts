@@ -245,10 +245,13 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:Invoke'],
       resources: ['*'],
-      principals: [new iam.AnyPrincipal()],
+      principals: [new iam.StarPrincipal()],
     });
 
-    if ((props.allowExternalPrincipals ?? false) === false) {
+    if ((props.allowUnauthenticatedAccess ?? false) === false) {
+      // add the condition that the principal is not anonymous
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
+    } else if ((props.allowExternalPrincipals ?? false) === false ) {
 
       // get my orgId
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
@@ -267,10 +270,6 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
       // add the condition that requires that the principal is from this org
       statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] } );
-    };
-    if ((props.allowUnauthenticatedAccess ?? false) === false) {
-      // add the condition that the principal is not anonymous
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
     };
 
     this.authPolicy.addStatements(statement);

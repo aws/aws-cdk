@@ -244,13 +244,23 @@ describe('VPC Lattice', () => {
         ],
       });
 
+      new ServiceNetwork(stack, 'ServiceNetwork2', {
+        services: [latticeService],
+        allowUnauthenticatedAccess: true,
+      });
+
+      new ServiceNetwork(stack, 'ServiceNetwork3', {
+        services: [latticeService],
+        allowExternalPrincipals: true,
+      });
+
       servicenetwork.applyAuthPolicyToServiceNetwork();
       latticeService.applyAuthPolicy();
 
     });
 
     test('creates a lattice network', () => {
-      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::ServiceNetwork', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::ServiceNetwork', 3);
     });
 
     test('creates a lattice service', () => {

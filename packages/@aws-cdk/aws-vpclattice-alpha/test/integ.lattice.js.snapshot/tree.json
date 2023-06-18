@@ -1507,14 +1507,6 @@
                           "Action": "vpc-lattice-svcs:Invoke",
                           "Condition": {
                             "StringEquals": {
-                              "aws:PrincipalOrgID": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "myLatticeServicegetOrgIdA7E4A3CD",
-                                    "Organization.Id"
-                                  ]
-                                }
-                              ],
                               "vpc-lattice-svcs:RequestMethod": "GET"
                             }
                           },
@@ -1554,14 +1546,6 @@
                           "Action": "vpc-lattice-svcs:Invoke",
                           "Condition": {
                             "StringEquals": {
-                              "aws:PrincipalOrgID": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "myLatticeServicegetOrgIdA7E4A3CD",
-                                    "Organization.Id"
-                                  ]
-                                }
-                              ],
                               "vpc-lattice-svcs:RequestMethod": "GET"
                             }
                           },
@@ -2321,9 +2305,7 @@
                             }
                           },
                           "Effect": "Allow",
-                          "Principal": {
-                            "AWS": "*"
-                          },
+                          "Principal": "*",
                           "Resource": "*"
                         }
                       ],
