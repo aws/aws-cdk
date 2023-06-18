@@ -66,7 +66,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
   readonly modelClientOptions?: ModelClientOptions;
 
   /**
-   * Tags to be applied to the train job.
+   * Tags to be applied to the transform job.
    *
    * @default - No tags
    */
@@ -284,7 +284,13 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
         }),
         new iam.PolicyStatement({
           actions: ['sagemaker:AddTags'],
-          resources: ['*'],
+          resources: [
+            stack.formatArn({
+              service: 'sagemaker',
+              resource: 'transform-job',
+              resourceName: '*',
+            }),
+          ],
         }),
       );
     }
