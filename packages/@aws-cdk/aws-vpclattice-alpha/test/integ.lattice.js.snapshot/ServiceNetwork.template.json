@@ -1062,6 +1062,9 @@
       {
        "Action": "vpc-lattice-svcs:Invoke",
        "Condition": {
+        "StringNotEqualsIgnoreCase": {
+         "aws:PrincipalType": "Anonymous"
+        },
         "StringEquals": {
          "vpc-lattice-svcs:RequestMethod": "GET"
         }
@@ -1106,9 +1109,7 @@
         }
        },
        "Effect": "Allow",
-       "Principal": {
-        "AWS": "*"
-       },
+       "Principal": "*",
        "Resource": {
         "Fn::Join": [
          "",
@@ -1354,6 +1355,50 @@
     }
    }
   },
+  "myListenerrule3Rule792B157E": {
+   "Type": "AWS::VpcLattice::Rule",
+   "Properties": {
+    "Action": {
+     "Forward": {
+      "TargetGroups": [
+       {
+        "TargetGroupIdentifier": {
+         "Fn::GetAtt": [
+          "lambdatargetsGoodbye3A0FDBCC2",
+          "Id"
+         ]
+        },
+        "Weight": 100
+       }
+      ]
+     }
+    },
+    "Match": {
+     "HttpMatch": {
+      "Method": "GET",
+      "PathMatch": {
+       "CaseSensitive": true,
+       "Match": {
+        "Exact": "/toys"
+       }
+      }
+     }
+    },
+    "Priority": 30,
+    "ListenerIdentifier": {
+     "Fn::GetAtt": [
+      "myListener5A585B50",
+      "Id"
+     ]
+    },
+    "ServiceIdentifier": {
+     "Fn::GetAtt": [
+      "myLatticeServiceB48AE2A4",
+      "Id"
+     ]
+    }
+   }
+  },
   "lambdatargetsHello2848EB94": {
    "Type": "AWS::VpcLattice::TargetGroup",
    "Properties": {
@@ -1376,6 +1421,23 @@
    "Properties": {
     "Type": "LAMBDA",
     "Name": "goodbyetarget",
+    "Targets": [
+     {
+      "Id": {
+       "Fn::GetAtt": [
+        "supportresourcesHelloworld33AB6114",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "lambdatargetsGoodbye3A0FDBCC2": {
+   "Type": "AWS::VpcLattice::TargetGroup",
+   "Properties": {
+    "Type": "LAMBDA",
+    "Name": "goodbyetarget3",
     "Targets": [
      {
       "Id": {
@@ -1543,45 +1605,6 @@
     }
    }
   },
-  "LatticeServiceNetworkgetOrgId339351FA": {
-   "Type": "Custom::AWS",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": "{\"region\":\"us-east-1\",\"service\":\"Organizations\",\"action\":\"describeOrganization\",\"physicalResourceId\":{\"id\":\"orgId\"}}",
-    "InstallLatestAwsSdk": "false"
-   },
-   "DependsOn": [
-    "LatticeServiceNetworkgetOrgIdCustomResourcePolicyA598B283"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "LatticeServiceNetworkgetOrgIdCustomResourcePolicyA598B283": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "organizations:DescribeOrganization",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "LatticeServiceNetworkgetOrgIdCustomResourcePolicyA598B283",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   }
-  },
   "LatticeServiceNetworkAuthPolicy2788B62F": {
    "Type": "AWS::VpcLattice::AuthPolicy",
    "Properties": {
@@ -1589,18 +1612,6 @@
      "Statement": [
       {
        "Action": "vpc-lattice-svcs:Invoke",
-       "Condition": {
-        "StringEquals": {
-         "aws:PrincipalOrgID": [
-          {
-           "Fn::GetAtt": [
-            "LatticeServiceNetworkgetOrgId339351FA",
-            "Organization.Id"
-           ]
-          }
-         ]
-        }
-       },
        "Effect": "Allow",
        "Principal": "*",
        "Resource": "*"

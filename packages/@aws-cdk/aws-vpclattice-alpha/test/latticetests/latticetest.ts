@@ -14,6 +14,8 @@ import {
   Target,
   HTTPMethods,
   Listener,
+  RuleAccessMode,
+  ServiceNetworkAccessMode,
 }
   from '../../lib/index';
 
@@ -27,7 +29,6 @@ export class LatticeTestStack extends core.Stack {
     // Create a Lattice Service
     // this will default to using IAM Authentication
     const myLatticeService = new Service(this, 'myLatticeService', {
-      allowUnauthenticatedAccess: true,
     });
 
     myLatticeService.node.addDependency(support.vpc1);
@@ -62,6 +63,7 @@ export class LatticeTestStack extends core.Stack {
         method: HTTPMethods.GET,
       },
       allowedPrincipals: [new iam.AnyPrincipal()],
+      accessMode: RuleAccessMode.AUTHENTICATED_ONLY,
     });
 
     myListener.addListenerRule({
@@ -82,7 +84,30 @@ export class LatticeTestStack extends core.Stack {
         pathMatches: { path: '/hello' },
         method: HTTPMethods.GET,
       },
-      allowedPrincipals: [new iam.AnyPrincipal()],
+      accessMode: RuleAccessMode.UNAUTHENTICATED,
+
+    });
+
+    myListener.addListenerRule({
+      name: 'rule3',
+      priority: 30,
+      action: [
+        {
+          targetGroup: new TargetGroup(this, 'lambdatargetsGoodbye3', {
+            name: 'goodbyetarget3',
+            target: Target.lambda([
+              support.helloWorld,
+            ]),
+          }),
+        },
+      ],
+      // the conditions for the match are effectively AND'ed together
+      httpMatch: {
+        pathMatches: { path: '/toys' },
+        method: HTTPMethods.GET,
+      },
+      accessMode: RuleAccessMode.NO_STATEMENT,
+
     });
 
     /**
@@ -93,7 +118,7 @@ export class LatticeTestStack extends core.Stack {
      */
 
     const serviceNetwork = new ServiceNetwork(this, 'LatticeServiceNetwork', {
-      allowUnauthenticatedAccess: true,
+      accessmode: ServiceNetworkAccessMode.UNAUTHENTICATED,
       services: [myLatticeService],
       vpcs: [
         support.vpc1,

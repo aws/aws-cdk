@@ -23,6 +23,8 @@ import {
   MatchOperator,
   FixedResponse,
   Listener,
+  RuleAccessMode,
+  ServiceNetworkAccessMode,
 }
   from '../lib';
 
@@ -68,6 +70,7 @@ describe('VPC Lattice', () => {
       }));
 
       listener.addListenerRule({
+        accessMode: RuleAccessMode.UNAUTHENTICATED,
         name: 'FixedReponse',
         priority: 99,
         action: FixedResponse.NOT_FOUND,
@@ -97,7 +100,7 @@ describe('VPC Lattice', () => {
           pathMatches: { path: '/path1' },
           method: HTTPMethods.GET,
         },
-        allowUnauthenticated: true,
+        accessMode: RuleAccessMode.UNAUTHENTICATED,
       });
 
       listener.addListenerRule({
@@ -126,7 +129,7 @@ describe('VPC Lattice', () => {
           method: HTTPMethods.GET,
         },
         allowedPrincipals: [new iam.AccountPrincipal('123456123456')],
-        allowExternalPrincipals: true,
+        accessMode: RuleAccessMode.ORG_ONLY,
       });
 
       listener.addListenerRule({
@@ -137,6 +140,7 @@ describe('VPC Lattice', () => {
           method: HTTPMethods.GET,
         },
         allowedPrincipals: [new iam.AccountPrincipal('123456123456')],
+        accessMode: RuleAccessMode.AUTHENTICATED_ONLY,
         action: [
           {
             targetGroup: new TargetGroup(stack, 'instanceTargets', {
@@ -158,6 +162,7 @@ describe('VPC Lattice', () => {
 
       listener.addListenerRule({
         name: 'ListenerRule400',
+        accessMode: RuleAccessMode.NO_STATEMENT,
         priority: 40,
         action: [
           {
@@ -232,6 +237,8 @@ describe('VPC Lattice', () => {
       });
 
       const servicenetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
+        name: 'servicenetwork',
+        accessmode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
         services: [latticeService],
         vpcs: [
           new ec2.Vpc(stack, 'Vpc1'),
@@ -246,12 +253,12 @@ describe('VPC Lattice', () => {
 
       new ServiceNetwork(stack, 'ServiceNetwork2', {
         services: [latticeService],
-        allowUnauthenticatedAccess: true,
+        accessmode: ServiceNetworkAccessMode.ORG_ONLY,
       });
 
       new ServiceNetwork(stack, 'ServiceNetwork3', {
         services: [latticeService],
-        allowExternalPrincipals: true,
+        accessmode: ServiceNetworkAccessMode.UNAUTHENTICATED,
       });
 
       servicenetwork.applyAuthPolicyToServiceNetwork();

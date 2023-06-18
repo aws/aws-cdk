@@ -48,14 +48,6 @@ export interface IService extends core.IResource {
   */
   readonly serviceId: string;
   /**
-   * Annon Access Allowed
-   */
-  readonly anonymousAccessAllowed: boolean;
-  /**
-   * Allow access from Principals that are not in this organisation
-   */
-  readonly externalPrincipalsAllowed: boolean;
-  /**
    * Allow an Odd
    */
   readonly orgId: string | undefined;
@@ -129,19 +121,6 @@ export interface LatticeServiceProps {
    *@default no sharing of the service
    */
   readonly shares?: ShareServiceProps[] | undefined;
-
-  /**
-  * Allow external principals
-   * @default false
-   */
-  readonly allowExternalPrincipals?: boolean | undefined;
-
-  /**
-    * Allow unauthenticated access
-    * @default false
-    */
-  readonly allowUnauthenticatedAccess?: boolean | undefined;
-
 }
 
 /**
@@ -156,14 +135,6 @@ export class Service extends core.Resource implements IService {
    * The Arn of the Service
    */
   readonly serviceArn: string;
-  /**
-   * Annon Access Allowed
-   */
-  readonly anonymousAccessAllowed: boolean;
-  /**
-   * Allow access from Principals that are not in this organisation
-   */
-  readonly externalPrincipalsAllowed: boolean;
   /**
    * the discovered OrgId
    */
@@ -215,8 +186,6 @@ export class Service extends core.Resource implements IService {
 
     this.serviceId = service.attrId;
     this.serviceArn = service.attrArn;
-    this.externalPrincipalsAllowed = props.allowExternalPrincipals ?? false;
-    this.anonymousAccessAllowed = props.allowUnauthenticatedAccess ?? false;
 
     const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
       onCreate: {

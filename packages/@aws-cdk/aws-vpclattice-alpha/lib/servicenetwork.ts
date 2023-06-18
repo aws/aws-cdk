@@ -15,6 +15,24 @@ import {
 } from './index';
 
 /**
+ * AccesModes
+ */
+export enum ServiceNetworkAccessMode {
+  /**
+   * Unauthenticated Access
+   */
+  UNAUTHENTICATED = 'UNAUTHENTICATED',
+  /**
+   * Unauthenticated Access
+   */
+  AUTHENTICATED_ONLY = 'AUTHENTICATED',
+  /**
+   * THIS Org only
+   */
+  ORG_ONLY = 'ORG_ONLY',
+}
+
+/**
  * Properties to share a Service Network
  */
 export interface ShareServiceNetworkProps {
@@ -155,13 +173,7 @@ export interface ServiceNetworkProps {
    * Allow external principals
    * @default false
    */
-  readonly allowExternalPrincipals?: boolean | undefined;
-
-  /**
-   * Allow unauthenticated access
-   * @default false
-   */
-  readonly allowUnauthenticatedAccess?: boolean | undefined;
+  readonly accessmode?: ServiceNetworkAccessMode | undefined;
 }
 
 /**
@@ -192,6 +204,8 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
   constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id);
 
+    this.authType = props.authType ?? AuthType.AWS_IAM;
+
     if (props.name !== undefined) {
       if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
         throw new Error('Theservice network name must be between 3 and 63 characters long. The name can only contain alphanumeric characters and hyphens. The name must be unique to the account.');
@@ -200,11 +214,11 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
     // the opinionated default for the servicenetwork is to use AWS_IAM as the
     // authentication method. Provide 'NONE' to props.authType to disable.
 
-    if (props.allowExternalPrincipals && props.allowUnauthenticatedAccess) {
-      throw new Error('When unauthenticated access is allow, it is not possible to also control access by org');
+    // Throw an error if authType and access mode are set
+    if (props.accessmode && props.authType === AuthType.NONE) {
+      throw new Error('AccessMode can not be set if AuthType is NONE');
     }
 
-    this.authType = props.authType ?? AuthType.AWS_IAM;
     const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
       name: props.name,
       authType: this.authType,
@@ -248,12 +262,7 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
       principals: [new iam.StarPrincipal()],
     });
 
-    if ((props.allowUnauthenticatedAccess ?? false) === false) {
-      // add the condition that the principal is not anonymous
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' } );
-    } else if ((props.allowExternalPrincipals ?? false) === false ) {
-
-      // get my orgId
+    if (props.accessmode === ServiceNetworkAccessMode.ORG_ONLY) {
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
         onCreate: {
           region: 'us-east-1',
@@ -270,11 +279,14 @@ export class ServiceNetwork extends core.Resource implements IServiceNetwork {
 
       // add the condition that requires that the principal is from this org
       statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] } );
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+    } else if (props.accessmode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
+      // add the condition that requires that the principal is authenticated
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
     };
 
     this.authPolicy.addStatements(statement);
-
-  };
+  }
 
   /**
    * This will give the principals access to all resources that are on this

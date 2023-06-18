@@ -17,6 +17,28 @@ import {
   IService,
 } from './index';
 
+/**
+ * Access mode for the rule.
+ */
+export enum RuleAccessMode {
+  /**
+   * Unauthenticated Access
+   */
+  UNAUTHENTICATED = 'UNAUTHENTICATED',
+  /**
+   * Unauthenticated Access
+   */
+  AUTHENTICATED_ONLY = 'AUTHENTICATED',
+  /**
+   * THIS Org only
+   */
+  ORG_ONLY = 'ORG_ONLY',
+  /**
+   * Do not create a s
+   */
+  NO_STATEMENT = 'NO_STATEMENT'
+}
+
 interface IHttpMatchProperty {
   /**
    * The header matches. Matches incoming requests with rule based on request header value before applying rule action.
@@ -120,15 +142,10 @@ export interface AddRuleProps {
   */
   readonly allowedPrincipals?: iam.IPrincipal[] | undefined;
   /**
-   * Allow UnauthenaticatedAccess in this rule
+   * Set an access mode.
    * @default false
    */
-  readonly allowUnauthenticated?: boolean | undefined;
-  /**
-   * Allow ExternalPrincipals to have access to this rule
-   * @default false
-   */
-  readonly allowExternalPrincipals?: boolean | undefined;
+  readonly accessMode?: RuleAccessMode | undefined;
 
 }
 
@@ -215,24 +232,26 @@ export class Listener extends core.Resource implements IListener {
    */
   public addListenerRule(props: AddRuleProps): void {
 
-    // throw an error if props.allowUnauthenticated is set as well as props.allowedPrincipals or allowExternalPrincipals
-    if (props.allowUnauthenticated && (props.allowedPrincipals || props.allowExternalPrincipals)) {
-      throw new Error('allowUnauthenticated cannot be used with allowedPrincipals or allowExternalPrincipals');
-    }
-
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
-
-    if (props.allowUnauthenticated) {
-      policyStatement.addPrincipals(new iam.StarPrincipal());
-    } else if ((props.allowExternalPrincipals ?? false)) {
-      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
-    };
-
-    // if priority is undefined set it to 50.  This should only be used if there is a single rule
-    const priority = props.priority ?? 50;
 
     // add the action for the statement. There is only one permissiable action
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
+
+    if ( props.accessMode === RuleAccessMode.UNAUTHENTICATED ) {
+      policyStatement.addPrincipals(new iam.StarPrincipal());
+      if (props.allowedPrincipals) {
+        throw new Error('An unauthenticated rule cannot have allowedPrincipals');
+      }
+    };
+
+    if ( props.accessMode === RuleAccessMode.AUTHENTICATED_ONLY ) {
+      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+    };
+
+    if ( props.accessMode === RuleAccessMode.ORG_ONLY ) {
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
+      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+    };
 
     // conditionaly build a policy statement if principals were provided
     if (props.allowedPrincipals) {
@@ -247,6 +266,9 @@ export class Listener extends core.Resource implements IListener {
     * Create the Action for the Rule
     */
     let action: aws_vpclattice.CfnRule.ActionProperty;
+
+    // if priority is undefined set it to 50.  This should only be used if there is a single rule
+    const priority = props.priority ?? 50;
 
     // if the rule has a fixed response
     if (typeof (props.action) === 'number') {
@@ -373,9 +395,7 @@ export class Listener extends core.Resource implements IListener {
       match.headerMatches = headerMatches;
     };
 
-    // only add the policy statement if principals where provided, or this was unauthed allowed.
-    if (props.allowedPrincipals || props.allowUnauthenticated) {
-
+    if (props.accessMode !== RuleAccessMode.NO_STATEMENT) {
       this.service.authPolicy.addStatements(policyStatement);
     }
 

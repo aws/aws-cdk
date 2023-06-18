@@ -1506,6 +1506,9 @@
                         {
                           "Action": "vpc-lattice-svcs:Invoke",
                           "Condition": {
+                            "StringNotEqualsIgnoreCase": {
+                              "aws:PrincipalType": "Anonymous"
+                            },
                             "StringEquals": {
                               "vpc-lattice-svcs:RequestMethod": "GET"
                             }
@@ -1550,9 +1553,7 @@
                             }
                           },
                           "Effect": "Allow",
-                          "Principal": {
-                            "AWS": "*"
-                          },
+                          "Principal": "*",
                           "Resource": {
                             "Fn::Join": [
                               "",
@@ -1873,6 +1874,58 @@
                   "fqn": "aws-cdk-lib.aws_vpclattice.CfnRule",
                   "version": "0.0.0"
                 }
+              },
+              "rule3-Rule": {
+                "id": "rule3-Rule",
+                "path": "ServiceNetwork/myListener/rule3-Rule",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "action": {
+                      "forward": {
+                        "targetGroups": [
+                          {
+                            "targetGroupIdentifier": {
+                              "Fn::GetAtt": [
+                                "lambdatargetsGoodbye3A0FDBCC2",
+                                "Id"
+                              ]
+                            },
+                            "weight": 100
+                          }
+                        ]
+                      }
+                    },
+                    "match": {
+                      "httpMatch": {
+                        "method": "GET",
+                        "pathMatch": {
+                          "match": {
+                            "exact": "/toys"
+                          },
+                          "caseSensitive": true
+                        }
+                      }
+                    },
+                    "priority": 30,
+                    "listenerIdentifier": {
+                      "Fn::GetAtt": [
+                        "myListener5A585B50",
+                        "Id"
+                      ]
+                    },
+                    "serviceIdentifier": {
+                      "Fn::GetAtt": [
+                        "myLatticeServiceB48AE2A4",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnRule",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1927,6 +1980,41 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "LAMBDA",
                     "name": "goodbyetarget",
+                    "targets": [
+                      {
+                        "id": {
+                          "Fn::GetAtt": [
+                            "supportresourcesHelloworld33AB6114",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnTargetGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-vpclattice-alpha.TargetGroup",
+              "version": "0.0.0"
+            }
+          },
+          "lambdatargetsGoodbye3": {
+            "id": "lambdatargetsGoodbye3",
+            "path": "ServiceNetwork/lambdatargetsGoodbye3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ServiceNetwork/lambdatargetsGoodbye3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "LAMBDA",
+                    "name": "goodbyetarget3",
                     "targets": [
                       {
                         "id": {
@@ -2207,81 +2295,6 @@
                   "version": "0.0.0"
                 }
               },
-              "getOrgId": {
-                "id": "getOrgId",
-                "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId",
-                "children": {
-                  "Provider": {
-                    "id": "Provider",
-                    "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId/Provider",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CustomResourcePolicy": {
-                    "id": "CustomResourcePolicy",
-                    "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId/CustomResourcePolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "ServiceNetwork/LatticeServiceNetwork/getOrgId/CustomResourcePolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "organizations:DescribeOrganization",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "LatticeServiceNetworkgetOrgIdCustomResourcePolicyA598B283",
-                            "roles": [
-                              {
-                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
-                  "version": "0.0.0"
-                }
-              },
               "AuthPolicy": {
                 "id": "AuthPolicy",
                 "path": "ServiceNetwork/LatticeServiceNetwork/AuthPolicy",
@@ -2292,18 +2305,6 @@
                       "Statement": [
                         {
                           "Action": "vpc-lattice-svcs:Invoke",
-                          "Condition": {
-                            "StringEquals": {
-                              "aws:PrincipalOrgID": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "LatticeServiceNetworkgetOrgId339351FA",
-                                    "Organization.Id"
-                                  ]
-                                }
-                              ]
-                            }
-                          },
                           "Effect": "Allow",
                           "Principal": "*",
                           "Resource": "*"
