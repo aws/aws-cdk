@@ -13,7 +13,7 @@ const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramewor
 const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
 
 export type Response = AWSLambda.CloudFormationCustomResourceEvent & HandlerResponse;
-export type Handler = (event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) => Promise<HandlerResponse | void>;
+export type Handler = (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => Promise<HandlerResponse | void>;
 export type HandlerResponse = undefined | {
   Data?: any;
   PhysicalResourceId?: string;
@@ -21,9 +21,7 @@ export type HandlerResponse = undefined | {
   NoEcho?: boolean;
 };
 
-export function makeHandler(
-  userHandler: (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => Promise<void>,
-) {
+export function makeHandler(userHandler: Handler) {
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
     external.log(JSON.stringify(sanitizedEvent, undefined, 2));
