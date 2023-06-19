@@ -43,7 +43,6 @@ describe('SdkHandler', () => {
         },
       ],
     } as ListObjectsOutput;
-    // AWS.mock('S3', 'listObjects', sinon.fake.resolves(expectedResponse));
     s3Mock.on(ListObjectsCommand).resolves(expectedResponse);
     const handler = sdkHandler() as any;
     const request: AwsApiCallRequest = {
@@ -64,8 +63,6 @@ describe('SdkHandler', () => {
   describe('decode', () => {
     test('boolean true', async () => {
       // GIVEN
-      // const fake = sinon.fake.resolves({});
-      // AWS.mock('EC2', 'describeInstances', fake);
       ec2Mock.on(DescribeInstancesCommand).resolves({});
 
       const handler = sdkHandler() as any;
@@ -81,7 +78,6 @@ describe('SdkHandler', () => {
       await handler.processEvent(request);
 
       // THEN
-      // sinon.assert.calledWith(fake, { DryRun: true });
       expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { DryRun: true });
     });
 
@@ -120,7 +116,6 @@ describe('SdkHandler', () => {
         },
       ],
     } as ListObjectsOutput;
-    // AWS.mock('S3', 'listObjects', sinon.fake.resolves(responseFake));
     s3Mock.on(ListObjectsCommand).resolves(responseFake);
     const handler = sdkHandler() as any;
     const request: AwsApiCallRequest = {

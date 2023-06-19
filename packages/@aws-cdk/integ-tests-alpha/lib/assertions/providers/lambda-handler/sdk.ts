@@ -34,7 +34,7 @@ function getServiceClient(service: string): any {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pkg = require(clientPackageName);
-    return new pkg[service]();
+    return new pkg[service]({});
   } catch (e) {
     // Just import a known client module
     throw Error(`Service ${service} client package with name '${clientPackageName}' does not exist.`);
