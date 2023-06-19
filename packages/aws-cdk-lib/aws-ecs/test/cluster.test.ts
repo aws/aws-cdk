@@ -1032,7 +1032,13 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ServiceConnectDefaults: {
+        Namespace: {
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Arn'],
+        },
+      },
+    });
   });
 
   test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
@@ -1041,12 +1047,12 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    cluster.addDefaultCloudMapNamespace({
       name: 'foo',
       type: cloudmap.NamespaceType.HTTP,
     });
-    // THEN
-    expect(namespace.namespaceName).toBe('foo');
+    expect(cluster.defaultCloudMapNamespace).not.toBe(undefined);
+    expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
   });
 
   /*
@@ -1366,6 +1372,20 @@ describe('cluster', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 1);
 
+  });
+
+  test('Security groups are optonal for imported clusters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+    });
+
+    // THEN
+    expect(cluster.connections.securityGroups).toEqual([]);
   });
 
   test('Metric', () => {

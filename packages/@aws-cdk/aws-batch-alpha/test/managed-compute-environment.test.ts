@@ -5,7 +5,7 @@ import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Stack, Duration, Tags } from 'aws-cdk-lib';
 import { capitalizePropertyNames } from './utils';
 import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
+import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment } from '../lib';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
@@ -907,6 +907,32 @@ describe('ManagedEc2EksComputeEnvironment', () => {
           },
         ],
       },
+    });
+  });
+});
+
+describe('FargateComputeEnvironment', () => {
+  beforeEach(() => {
+    stack = new Stack();
+    vpc = new ec2.Vpc(stack, 'vpc');
+  });
+
+  test('respects name', () => {
+    // WHEN
+    new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
+      vpc,
+      maxvCpus: 512,
+      computeEnvironmentName: 'maxPropsFargateCE',
+      replaceComputeEnvironment: true,
+      spot: true,
+      terminateOnUpdate: true,
+      updateTimeout: Duration.minutes(30),
+      updateToLatestImageVersion: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeEnvironmentName: 'maxPropsFargateCE',
     });
   });
 });

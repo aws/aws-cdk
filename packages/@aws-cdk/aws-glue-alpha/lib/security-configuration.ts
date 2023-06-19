@@ -1,6 +1,6 @@
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
-import { Lazy, Names } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
+import { Lazy, Names } from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 
