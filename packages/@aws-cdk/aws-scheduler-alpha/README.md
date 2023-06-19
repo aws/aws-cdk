@@ -57,7 +57,9 @@ cron-based schedule you can specify a time zone in which EventBridge Scheduler e
 
 > ScheduleExpression should be used together with class Schedule, which is not yet implemented.
 
-```ts
+[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
+
+```text
 const rateBasedSchedule = new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
     target,
@@ -80,7 +82,9 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
 A one-time schedule is a schedule that invokes a target only once. You configure a one-time schedule when by specifying the time of the day, date, 
 and time zone in which EventBridge Scheduler evaluates the schedule.
 
-```ts
+[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
+
+```text
 const oneTimeSchedule = new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.at(
         new Date(2022, 10, 20, 19, 20, 23),
