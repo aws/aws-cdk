@@ -133,21 +133,34 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       const tagsOnLogGroup = await cloudwatchlogs.listTagsLogGroup({ logGroupName }).promise();
 
-      const tagsToSet: { [key: string]: string } = {};
-      const tagsToSetKeys: string[] = [];
-      tags.forEach(tag => {
-        tagsToSetKeys.push(tag.Key);
-        tagsToSet[tag.Key] = tag.Value;
-      });
-      const tagsToDelete = tagsOnLogGroup.tags
-        ? Object.keys(tagsOnLogGroup.tags).filter(key => !tagsToSetKeys.includes(key))
-        : [];
+      console.log('tagsOnLogGroup = ', tagsOnLogGroup.tags);
 
-      // don't need to unconditionally set every key-value
-      await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
-      if (tagsToDelete.length > 0) {
-        await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
+      const tagsToSet: { [key: string]: string } = {};
+      if (tagsOnLogGroup.tags) {
+        for (const tag of tags) {
+          if (tagsOnLogGroup.tags[tag.Key] === undefined || tagsOnLogGroup.tags[tag.Key] !== tag.Value) {
+            tagsToSet[tag.Key] = tag.Value;
+          }
+        }
       }
+
+      console.log('tagsToSet = ', tagsToSet);
+
+      // const tagsToSet: { [key: string]: string } = {};
+      // const tagsToSetKeys: string[] = [];
+      // tags.forEach(tag => {
+      //   tagsToSetKeys.push(tag.Key);
+      //   tagsToSet[tag.Key] = tag.Value;
+      // });
+      // const tagsToDelete = tagsOnLogGroup.tags
+      //   ? Object.keys(tagsOnLogGroup.tags).filter(key => !tagsToSetKeys.includes(key))
+      //   : [];
+
+      // // don't need to unconditionally set every key-value
+      // await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
+      // if (tagsToDelete.length > 0) {
+      //   await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
+      // }
       return;
     } catch (error: any) {
       if (error.code === 'OperationAbortedException') {
