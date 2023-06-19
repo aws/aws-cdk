@@ -144,11 +144,8 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
         }
       }
 
-      // const tagsToDelete = tagsOnLogGroup.tags
-      //   ? Object.keys(tagsOnLogGroup.tags).filter(tag => !tagsKeys.includes(tag))
-      //   : [];
       const tagsToDelete = tagsOnLogGroup.tags
-        ? [...new Set<string>([...tagsKeys, ...Object.keys(tagsOnLogGroup.tags)])]
+        ? Object.keys(tagsOnLogGroup.tags).filter(tag => !tagsKeys.includes(tag))
         : [];
       console.log('tagsToDelete = ', tagsToDelete);
 
