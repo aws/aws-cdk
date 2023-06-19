@@ -1,10 +1,12 @@
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import { App, Stack, StackProps, RemovalPolicy, Tags } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 class LogRetentionIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    Tags.of(this).add('env', 'prod');
 
     new LogRetention(this, 'MyLambda', {
       logGroupName: 'logRetentionLogGroup',
@@ -16,6 +18,7 @@ class LogRetentionIntegStack extends Stack {
       logGroupName: 'logRetentionLogGroup2',
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
+      propagateTags: true,
     });
   }
 }
