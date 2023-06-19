@@ -100,7 +100,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
     }
 
     if (props.propagateTags) {
-      provider.grantPropagateTags(props.logGroupName);
+      provider.grantPropagateTagsToLogGroup(props.logGroupName);
     }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
@@ -158,8 +158,6 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
 
   private readonly role: iam.IRole;
 
-  private canPropagateTags: boolean = false;
-
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
@@ -213,10 +211,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   /**
    * @internal
    */
-  public grantPropagateTags(logGroupName: string) {
-    if (this.canPropagateTags) {
-      return;
-    }
+  public grantPropagateTagsToLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'logs:ListTagsLogGroup',
@@ -231,7 +226,6 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
-    this.canPropagateTags = true;
   }
 
   /**
