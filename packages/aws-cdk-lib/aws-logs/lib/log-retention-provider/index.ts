@@ -133,21 +133,29 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       const tagsOnLogGroup = await cloudwatchlogs.listTagsLogGroup({ logGroupName }).promise();
 
-      console.log('tagsOnLogGroup = ', tagsOnLogGroup.tags ?? {});
-
       const tagsToSet: { [key: string]: string } = {};
+      const tagsKeys: string[] = [];
       if (tagsOnLogGroup.tags) {
         for (const tag of tags) {
           if (tagsOnLogGroup.tags[tag.Key] === undefined || tagsOnLogGroup.tags[tag.Key] !== tag.Value) {
             tagsToSet[tag.Key] = tag.Value;
           }
+          tagsKeys.push(tag.Key);
         }
       }
 
-      console.log('tagsToSet = ', tagsToSet);
+      // const tagsToDelete = tagsOnLogGroup.tags
+      //   ? Object.keys(tagsOnLogGroup.tags).filter(tag => !tagsKeys.includes(tag))
+      //   : [];
+      const tagsToDelete = tagsOnLogGroup.tags
+        ? [...new Set<string>([...tagsKeys, ...Object.keys(tagsOnLogGroup.tags)])]
+        : [];
+      console.log('tagsToDelete = ', tagsToDelete);
+
       if (Object.keys(tagsToSet).length > 0) {
         await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
       }
+      await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
       return;
     } catch (error: any) {
       if (error.code === 'OperationAbortedException') {
