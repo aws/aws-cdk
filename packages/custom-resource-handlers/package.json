@@ -27,7 +27,6 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@vercel/ncc": "^0.36.1",
     "@types/jest": "^29.5.1",
     "jest": "^29.5.0"
   },
