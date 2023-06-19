@@ -27,10 +27,13 @@ export const DEPLOY_TIME_PREFIX = 'deploy-time/';
 
 /**
  * This is a dummy construct meant to signify that a stack is utilizing
- * the DefaultStagingStack. It does not do anything, and is not meant
- * to be created on its own.
+ * the AppStagingSynthesizer. It does not do anything, and is not meant
+ * to be created on its own. This construct will be a part of the
+ * construct tree only and not the Cfn template. The construct tree is
+ * then encoded in the AWS::CDK::Metadata resource of the stack and
+ * injested in our metrics like every other construct.
  */
-export class UsingDefaultStagingStack extends CfnWaitConditionHandle {
+export class UsingAppStagingSynthesizer extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
   }
@@ -145,7 +148,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
         // Because we do not keep metrics in the DefaultStagingStack, we will inject
         // a dummy construct into the stack using the DefaultStagingStack instead.
         if (cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT) {
-          new UsingDefaultStagingStack(stack, `UsingDefaultStagingStack/${stack.stackName}`);
+          new UsingAppStagingSynthesizer(stack, `UsingDefaultStagingStack/${stack.stackName}`);
         }
 
         const stackId = `StagingStack-${appId}-${context.environmentString}`;
