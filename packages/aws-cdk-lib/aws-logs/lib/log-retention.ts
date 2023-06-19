@@ -99,6 +99,10 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       provider.grantDeleteLogGroup(props.logGroupName);
     }
 
+    if (props.propagateTags) {
+      provider.grantPropagateTags(props.logGroupName);
+    }
+
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
@@ -154,6 +158,8 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
 
   private readonly role: iam.IRole;
 
+  private canPropagateTags: boolean = false;
+
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
@@ -165,18 +171,9 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
     });
-    let actions = ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'];
-    if (props.propagateTags) {
-      actions = [
-        ...actions,
-        'logs:ListTagsLogGroup',
-        'logs:TagLogGroup',
-        'logs:UntagLogGroup',
-      ];
-    }
     // Duplicate statements will be deduplicated by `PolicyDocument`
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions,
+      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
       // We need '*' here because we will also put a retention policy on
       // the log group of the provider function. Referencing its name
       // creates a CF circular dependency.
@@ -211,6 +208,30 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         resource.addDependency(child.node.defaultChild);
       }
     });
+  }
+
+  /**
+   * @internal
+   */
+  public grantPropagateTags(logGroupName: string) {
+    if (this.canPropagateTags) {
+      return;
+    }
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:ListTagsLogGroup',
+        'logs:TagLogGroup',
+        'logs:UntagLogGroup',
+      ],
+      // only propagate tags to the specific log group.
+      resources: [cdk.Stack.of(this).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: `${logGroupName}:*`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    }));
+    this.canPropagateTags = true;
   }
 
   /**

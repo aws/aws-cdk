@@ -1795,7 +1795,6 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // WHEN
     const lambdaFunction = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
