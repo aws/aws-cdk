@@ -139,8 +139,6 @@
       "@aws-cdk/pipelines/aws-sdk/**",
       "@aws-cdk/yaml-cfn/yaml",
       "@aws-cdk/yaml-cfn/yaml/**",
-      "aws-cdk-lib/@aws-cdk/custom-resource-handlers",
-      "aws-cdk-lib/@aws-cdk/custom-resource-handlers/**",
       "aws-cdk-lib/@balena/dockerignore",
       "aws-cdk-lib/@balena/dockerignore/**",
       "aws-cdk-lib/case",
