@@ -8,7 +8,7 @@ import * as nocti from '../vendor/noctilucent';
 export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = nocti.supported_languages();
 
 export async function cliMigrate(
-  inputpath: string = process.cwd() + '/../temp.txt',
+  inputpath: string = process.cwd() + '/../template.txt',
   language = MIGRATE_SUPPORTED_LANGUAGES[0],
   generateOnly = false,
   outputpath = process.cwd(),
