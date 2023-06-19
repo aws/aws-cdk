@@ -1,3 +1,112 @@
+# CloudFormation Resource Specification v126.0.0
+
+## New Resource Types
+
+* AWS::Athena::CapacityReservation
+* AWS::CustomerProfiles::CalculatedAttributeDefinition
+
+## Attribute Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget Id (__added__)
+* AWS::Lambda::LayerVersion LayerVersionArn (__added__)
+
+## Property Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget RoleARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::LayerVersion CompatibleArchitectures.DuplicatesAllowed (__added__)
+* AWS::Lambda::LayerVersion CompatibleRuntimes.DuplicatesAllowed (__added__)
+* AWS::Omics::SequenceStore FallbackLocation (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction EndTime.PrimitiveType (__changed__)
+  * Old: Timestamp
+  * New: String
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction StartTime.PrimitiveType (__changed__)
+  * Old: Timestamp
+  * New: String
+
+# CloudFormation Resource Specification (us-west-2) v126.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v125.0.0
+
+## New Resource Types
+
+* AWS::Detective::OrganizationAdmin
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::RouteResponse RouteResponseId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.PrimitiveType (__deleted__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.ItemType (__added__)
+* AWS::ApiGatewayV2::RouteResponse ResponseParameters.Type (__added__)
+* AWS::CloudTrail::EventDataStore IngestionEnabled (__added__)
+* AWS::CloudTrail::Trail AdvancedEventSelectors (__added__)
+* AWS::EC2::NetworkInterface EnablePrimaryIpv6 (__deleted__)
+* AWS::QuickSight::DataSet DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet DatasetParameters (__added__)
+* AWS::QuickSight::DataSet RowLevelPermissionTagConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CloudTrail::Trail.AdvancedEventSelector (__added__)
+* AWS::CloudTrail::Trail.AdvancedFieldSelector (__added__)
+* AWS::QuickSight::DataSet.DataSetRefreshProperties (__added__)
+* AWS::QuickSight::DataSet.DatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DateTimeDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.DecimalDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.IncrementalRefresh (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.IntegerDatasetParameterDefaultValues (__added__)
+* AWS::QuickSight::DataSet.LookbackWindow (__added__)
+* AWS::QuickSight::DataSet.NewDefaultValues (__added__)
+* AWS::QuickSight::DataSet.OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSet.RefreshConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagConfiguration (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionTagRule (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameter (__added__)
+* AWS::QuickSight::DataSet.StringDatasetParameterDefaultValues (__added__)
+* AWS::Glue::Job.JobCommand Runtime (__added__)
+* AWS::QuickSight::DataSet.RowLevelPermissionDataSet Status (__added__)
+* AWS::QuickSight::DataSet.TransformOperation OverrideDatasetParameterOperation (__added__)
+* AWS::QuickSight::DataSource.AthenaParameters RoleArn (__added__)
+* AWS::QuickSight::DataSource.S3Parameters RoleArn (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v125.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v124.0.0
 
 ## New Resource Types
