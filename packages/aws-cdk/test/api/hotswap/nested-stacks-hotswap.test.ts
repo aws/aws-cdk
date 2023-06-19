@@ -1,6 +1,6 @@
 import { Lambda } from 'aws-sdk';
-import { testStack } from '../../util';
 import * as setup from './hotswap-test-setup';
+import { testStack } from '../../util';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;

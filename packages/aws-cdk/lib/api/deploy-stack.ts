@@ -2,6 +2,16 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
+import { ISDK, SdkProvider } from './aws-auth';
+import { CfnEvaluationException } from './evaluate-cloudformation-template';
+import { ICON } from './hotswap/common';
+import { tryHotswapDeployment } from './hotswap-deployments';
+import { ToolkitInfo } from './toolkit-info';
+import {
+  changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
+} from './util/cloudformation';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, error, print } from '../logging';
@@ -9,16 +19,6 @@ import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
-import { ISDK, SdkProvider } from './aws-auth';
-import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { tryHotswapDeployment } from './hotswap-deployments';
-import { ICON } from './hotswap/common';
-import { ToolkitInfo } from './toolkit-info';
-import {
-  changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
-} from './util/cloudformation';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 type TemplateBodyParameter = {
   TemplateBody?: string

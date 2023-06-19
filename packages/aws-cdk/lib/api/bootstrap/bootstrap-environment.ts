@@ -1,14 +1,14 @@
 import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
+import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
+import { legacyBootstrapTemplate } from './legacy-template';
 import { warning } from '../../logging';
 import { loadStructuredFile, toYAML } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
-import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
-import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
-import { legacyBootstrapTemplate } from './legacy-template';
 
 /* eslint-disable max-len */
 
