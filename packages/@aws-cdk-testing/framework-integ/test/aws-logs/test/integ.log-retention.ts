@@ -14,6 +14,8 @@ class LogRetentionIntegStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    // the order here is specifically setup to make sure the resource provider will be granted
+    // permissions to propagate tags after it has already been created
     new LogRetention(this, 'MySecondLambda', {
       logGroupName: 'logRetentionLogGroup2',
       retention: RetentionDays.ONE_DAY,
