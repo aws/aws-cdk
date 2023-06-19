@@ -1,8 +1,5 @@
 {
  "Resources": {
-  "UsingDefaultStagingStacksynthesizedefaultresources": {
-   "Type": "AWS::CloudFormation::WaitConditionHandle"
-  },
   "lambdas3ServiceRoleC9EDE33A": {
    "Type": "AWS::IAM::Role",
    "Properties": {

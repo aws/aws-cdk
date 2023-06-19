@@ -8,15 +8,11 @@
         "id": "synthesize-default-resources",
         "path": "synthesize-default-resources",
         "children": {
-          "UsingDefaultStagingStack--synthesize-default-resources": {
-            "id": "UsingDefaultStagingStack--synthesize-default-resources",
-            "path": "synthesize-default-resources/UsingDefaultStagingStack--synthesize-default-resources",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::CloudFormation::WaitConditionHandle",
-              "aws:cdk:cloudformation:props": {}
-            },
+          "UsingAppStagingSynthesizer--synthesize-default-resources": {
+            "id": "UsingAppStagingSynthesizer--synthesize-default-resources",
+            "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
             "constructInfo": {
-              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingDefaultStagingStack",
+              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
               "version": "0.0.0"
             }
           },
@@ -1179,7 +1175,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1225,7 +1221,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.52"
         }
       }
     },

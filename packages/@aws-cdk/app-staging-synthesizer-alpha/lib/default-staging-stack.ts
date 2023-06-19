@@ -8,7 +8,6 @@ import {
   App,
   ArnFormat,
   BootstraplessSynthesizer,
-  CfnWaitConditionHandle,
   DockerImageAssetSource,
   Duration,
   FileAssetSource,
@@ -148,7 +147,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
         // Because we do not keep metrics in the DefaultStagingStack, we will inject
         // a dummy construct into the stack using the DefaultStagingStack instead.
         if (cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT) {
-          new UsingAppStagingSynthesizer(stack, `UsingDefaultStagingStack/${stack.stackName}`);
+          new UsingAppStagingSynthesizer(stack, `UsingAppStagingSynthesizer/${stack.stackName}`);
         }
 
         const stackId = `StagingStack-${appId}-${context.environmentString}`;
