@@ -133,8 +133,6 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       const tagsOnLogGroup = await cloudwatchlogs.listTagsLogGroup({ logGroupName }).promise();
 
-      console.log('tagsOnLogGroup = ', tagsOnLogGroup.tags);
-
       const tagsToSet: { [key: string]: string } = {};
       if (tagsOnLogGroup.tags) {
         for (const tag of tags) {
@@ -144,7 +142,7 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
         }
       }
 
-      console.log('tagsToSet = ', tagsToSet);
+      await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
 
       // const tagsToSet: { [key: string]: string } = {};
       // const tagsToSetKeys: string[] = [];

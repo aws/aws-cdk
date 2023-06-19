@@ -14,21 +14,7 @@ const fn = new lambda.Function(stack, 'OneWeek', {
   functionName: 'OneWeekFunction',
   propagateTagsToLogGroup: true,
 });
-cdk.Tags.of(fn).add('env', 'prod');
-cdk.Tags.of(fn).add('key', 'value');
-
-new lambda.Function(stack, 'OneMonth', {
-  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
-  handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
-  logRetention: logs.RetentionDays.ONE_MONTH,
-});
-
-new lambda.Function(stack, 'OneYear', {
-  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
-  handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
-  logRetention: logs.RetentionDays.ONE_YEAR,
-});
+cdk.Tags.of(fn).add('env', 'beta');
+cdk.Tags.of(fn).add('dept', 'eng');
 
 app.synth();
