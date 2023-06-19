@@ -143,7 +143,7 @@ function getCdkRootDir(filename: string): string | undefined {
 }
 
 function isAlphaPackage(packageDir: string): boolean {
-  if (packageDir.endsWith('aws-cdk-lib/core') {
+  if (packageDir.endsWith('aws-cdk-lib/core')) {
     return false; // special case for core because it does not have a package.json  
   }
 
