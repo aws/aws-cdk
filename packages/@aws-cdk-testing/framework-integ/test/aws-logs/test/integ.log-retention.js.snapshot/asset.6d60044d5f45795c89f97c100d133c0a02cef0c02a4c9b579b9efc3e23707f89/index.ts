@@ -121,6 +121,66 @@ async function setRetentionPolicy(logGroupName: string, region?: string, options
   } while (true); // exit happens on retry count check
 }
 
+/**
+ * Tags and untags a log group. This includes adding new tags and updating existing tags.
+ *
+ * @param logGroupName the name of the log group to create
+ * @param tags the tags to propagate to the log group
+ * @param region the region of the log group
+ * @param options CloudWatch API SDK options
+ */
+async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Tags[], region?: string, options?: SdkRetryOptions) {
+  // The same as in createLogGroupSafe(), here we could end up with the race
+  // condition where a log group is either already being created or its retention
+  // policy is being updated. This would result in an OperationAbortedException,
+  // which we will try to catch and retry the command a number of times before failing
+  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
+  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  do {
+    try {
+      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
+      const tagsOnLogGroup = await cloudwatchlogs.listTagsLogGroup({ logGroupName }).promise();
+
+      const tagsToSet: { [key: string]: string } = {};
+      const tagsKeys: string[] = [];
+      if (tagsOnLogGroup.tags) {
+        for (const tag of tags) {
+          if (tagsOnLogGroup.tags[tag.Key] === undefined || tagsOnLogGroup.tags[tag.Key] !== tag.Value) {
+            tagsToSet[tag.Key] = tag.Value;
+          }
+          tagsKeys.push(tag.Key);
+        }
+      }
+
+      const tagsToDelete = tagsOnLogGroup.tags
+        ? Object.keys(tagsOnLogGroup.tags).filter(tag => !tagsKeys.includes(tag))
+        : [];
+
+      if (Object.keys(tagsToSet).length > 0) {
+        await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
+      }
+
+      if (tagsToDelete.length > 0) {
+        await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
+      }
+
+      return;
+    } catch (error: any) {
+      if (error.code === 'OperationAbortedException') {
+        if (retryCount > 0) {
+          retryCount--;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          // The log group is still being created by another execution but we are out of retries
+          throw new Error('Out of attempts to create a logGroup');
+        }
+      }
+      throw error;
+    }
+  } while (true);
+}
+
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
@@ -138,7 +198,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       // Act on the target log group
       await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      if (event.ResourceProperties.Tags !== undefined) {
+        await setLogGroupTags(logGroupName, event.ResourceProperties.Tags, logGroupRegion, retryOptions);
+      }
 
+      // propagate tags to custom resource logs
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this very function.
         // Due to the async nature of the log group creation, the log group for this function might

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyLambdaCCE802FB": {
+  "MyFirstLambdaCD500812": {
    "Type": "Custom::LogRetention",
    "Properties": {
     "ServiceToken": {
@@ -41,6 +41,12 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "env",
+      "Value": "prod"
      }
     ]
    }
@@ -103,6 +109,34 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:ListTagsLogGroup",
+        "logs:TagLogGroup",
+        "logs:UntagLogGroup"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:logRetentionLogGroup2:*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -132,21 +166,27 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "6d60044d5f45795c89f97c100d133c0a02cef0c02a4c9b579b9efc3e23707f89.zip"
     },
     "Role": {
      "Fn::GetAtt": [
       "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
       "Arn"
      ]
-    }
+    },
+    "Tags": [
+     {
+      "Key": "env",
+      "Value": "prod"
+     }
+    ]
    },
    "DependsOn": [
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ]
   },
-  "MyLambda2254B54D5": {
+  "MySecondLambda83E219F5": {
    "Type": "Custom::LogRetention",
    "Properties": {
     "ServiceToken": {
@@ -157,7 +197,13 @@
     },
     "LogGroupName": "logRetentionLogGroup2",
     "RetentionInDays": 1,
-    "RemovalPolicy": "destroy"
+    "RemovalPolicy": "destroy",
+    "Tags": [
+     {
+      "Key": "env",
+      "Value": "prod"
+     }
+    ]
    }
   }
  },

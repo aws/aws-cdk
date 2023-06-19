@@ -8,13 +8,13 @@
         "id": "aws-cdk-log-retention-integ",
         "path": "aws-cdk-log-retention-integ",
         "children": {
-          "MyLambda": {
-            "id": "MyLambda",
-            "path": "aws-cdk-log-retention-integ/MyLambda",
+          "MyFirstLambda": {
+            "id": "MyFirstLambda",
+            "path": "aws-cdk-log-retention-integ/MyFirstLambda",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-log-retention-integ/MyLambda/Resource",
+                "path": "aws-cdk-log-retention-integ/MyFirstLambda/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -99,6 +99,12 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "env",
+                            "value": "prod"
+                          }
                         ]
                       }
                     },
@@ -172,6 +178,34 @@
                                       ]
                                     }
                                   ]
+                                },
+                                {
+                                  "Action": [
+                                    "logs:ListTagsLogGroup",
+                                    "logs:TagLogGroup",
+                                    "logs:UntagLogGroup"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:logRetentionLogGroup2:*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -212,7 +246,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.52"
             }
           },
           "DefaultCrNodeVersionMap": {
@@ -223,13 +257,13 @@
               "version": "0.0.0"
             }
           },
-          "MyLambda2": {
-            "id": "MyLambda2",
-            "path": "aws-cdk-log-retention-integ/MyLambda2",
+          "MySecondLambda": {
+            "id": "MySecondLambda",
+            "path": "aws-cdk-log-retention-integ/MySecondLambda",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-log-retention-integ/MyLambda2/Resource",
+                "path": "aws-cdk-log-retention-integ/MySecondLambda/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -276,7 +310,7 @@
                 "path": "LogRetentionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -322,7 +356,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.52"
         }
       }
     },

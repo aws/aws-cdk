@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-log-retention-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,13 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-log-retention-integ.template.json",
+        "tags": {
+          "env": "prod"
+        },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/892aa6af586930abc7dcbf62bfb51e861e0eed783baa97efe2746dc435d2ebfc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/571e38edc71486e21f8b781260a84d37df4ab9f8b326c7642080c5cdfa5a0370.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +36,21 @@
         "aws-cdk-log-retention-integ.assets"
       ],
       "metadata": {
-        "/aws-cdk-log-retention-integ/MyLambda/Resource": [
+        "/aws-cdk-log-retention-integ": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "env",
+                "Value": "prod"
+              }
+            ]
+          }
+        ],
+        "/aws-cdk-log-retention-integ/MyFirstLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCCE802FB"
+            "data": "MyFirstLambdaCD500812"
           }
         ],
         "/aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
@@ -63,10 +77,10 @@
             "data": "DefaultCrNodeVersionMap"
           }
         ],
-        "/aws-cdk-log-retention-integ/MyLambda2/Resource": [
+        "/aws-cdk-log-retention-integ/MySecondLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambda2254B54D5"
+            "data": "MySecondLambda83E219F5"
           }
         ],
         "/aws-cdk-log-retention-integ/BootstrapVersion": [
@@ -79,6 +93,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLambdaCCE802FB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyLambda2254B54D5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2254B54D5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
