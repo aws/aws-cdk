@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/413e941f670ea349faa0dc783ce07d200dc768ed64083156d4a7b302564481d1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7eb6c33851e51af29433e3d514e33d3e6a831d3a0f503ea389b54ade9d63df87.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -291,6 +291,12 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
+        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -439,6 +445,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn": [
