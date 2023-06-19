@@ -12,6 +12,7 @@ const fn = new lambda.Function(stack, 'OneWeek', {
   runtime: lambda.Runtime.NODEJS_14_X,
   logRetention: logs.RetentionDays.ONE_WEEK,
   functionName: 'OneWeekFunction',
+  propagateTagsToLogGroup: true,
 });
 cdk.Tags.of(fn).add('env', 'prod');
 cdk.Tags.of(fn).add('key', 'value');
