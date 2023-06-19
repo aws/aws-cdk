@@ -27,8 +27,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Policy": {
@@ -90,14 +90,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -108,20 +108,28 @@
                     "id": "Default",
                     "path": "PipelineStack/SourceBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "PipelineStack/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
@@ -132,30 +140,30 @@
                 "id": "Staging",
                 "path": "PipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "PipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "PipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "Pipeline": {
@@ -240,14 +248,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.Key",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "ArtifactsBucketEncryptionKeyAlias": {
@@ -270,14 +278,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.Alias",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "ArtifactsBucket": {
@@ -314,8 +322,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "Policy": {
@@ -428,20 +436,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Role": {
@@ -452,8 +460,8 @@
                         "id": "ImportRole",
                         "path": "PipelineStack/Pipeline/Pipeline/Role/ImportRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "Resource": {
@@ -477,8 +485,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "DefaultPolicy": {
@@ -611,20 +619,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Resource": {
@@ -901,8 +909,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_codepipeline.CfnPipeline",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Source": {
@@ -921,8 +929,8 @@
                                 "id": "ImportCodePipelineActionRole",
                                 "path": "PipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/ImportCodePipelineActionRole",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -961,8 +969,8 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "DefaultPolicy": {
@@ -1068,20 +1076,20 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -1112,8 +1120,8 @@
                                 "id": "ImportCodePipelineActionRole",
                                 "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/ImportCodePipelineActionRole",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -1152,8 +1160,8 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "DefaultPolicy": {
@@ -1194,20 +1202,20 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           },
                           "CdkBuildProject": {
@@ -1222,8 +1230,8 @@
                                     "id": "ImportRole",
                                     "path": "PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole",
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.Resource",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   },
                                   "Resource": {
@@ -1247,8 +1255,8 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   },
                                   "DefaultPolicy": {
@@ -1419,20 +1427,20 @@
                                           }
                                         },
                                         "constructInfo": {
-                                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                          "version": "0.0.0"
+                                          "fqn": "constructs.Construct",
+                                          "version": "10.1.270"
                                         }
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -1481,14 +1489,14 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -1519,8 +1527,8 @@
                                 "id": "ImportCodePipelineActionRole",
                                 "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/ImportCodePipelineActionRole",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -1559,8 +1567,8 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "DefaultPolicy": {
@@ -1601,20 +1609,20 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -1645,8 +1653,8 @@
                                 "id": "ImportCodePipelineActionRole",
                                 "path": "PipelineStack/Pipeline/Pipeline/PreProd/UseSource/CodePipelineActionRole/ImportCodePipelineActionRole",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -1685,8 +1693,8 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "DefaultPolicy": {
@@ -1727,20 +1735,20 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           },
                           "Project": {
@@ -1755,8 +1763,8 @@
                                     "id": "ImportRole",
                                     "path": "PipelineStack/Pipeline/Pipeline/PreProd/UseSource/Project/Role/ImportRole",
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.Resource",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   },
                                   "Resource": {
@@ -1780,8 +1788,8 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   },
                                   "DefaultPolicy": {
@@ -1945,20 +1953,20 @@
                                           }
                                         },
                                         "constructInfo": {
-                                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                          "version": "0.0.0"
+                                          "fqn": "constructs.Construct",
+                                          "version": "10.1.270"
                                         }
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                      "version": "0.0.0"
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.270"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               },
                               "Resource": {
@@ -1999,14 +2007,14 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
@@ -2039,8 +2047,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "UpdatePipeline": {
@@ -2059,8 +2067,8 @@
                             "id": "ImportRole",
                             "path": "PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           },
                           "Resource": {
@@ -2084,8 +2092,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           },
                           "DefaultPolicy": {
@@ -2282,20 +2290,20 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.270"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       },
                       "Resource": {
@@ -2336,20 +2344,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.pipelines.UpdatePipelineAction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Assets": {
@@ -2368,8 +2376,8 @@
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/PreProd/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -2386,36 +2394,36 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/PreProd/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
                     "id": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "path": "PipelineStack/Pipeline/PreProd/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.pipelines.CdkStage",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.pipelines.CdkPipeline",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "PreProd": {
@@ -2430,58 +2438,58 @@
                     "id": "Resource",
                     "path": "PipelineStack/PreProd/Stack/Resource",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "PipelineStack/PreProd/Stack/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineStack/PreProd/Stack/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Stage",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "PipelineStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "PipelineStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "Tree": {
@@ -2494,8 +2502,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
     }
   }
 }

@@ -8,6 +8,7 @@ export const app = new cdk.App();
 const stack = new cdk.Stack(app, 'mesh-stack', {});
 
 const vpc = new ec2.Vpc(stack, 'vpc', {
+  restrictDefaultSecurityGroup: false,
   natGateways: 1,
 });
 
@@ -113,7 +114,7 @@ const node3 = mesh.addVirtualNode('node3', {
       },
     },
   },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
 });
 
 const node4 = mesh.addVirtualNode('node4', {
@@ -144,7 +145,9 @@ const node4 = mesh.addVirtualNode('node4', {
       },
     },
   },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
+    appmesh.LoggingFormat.fromJson(
+      { testKey1: 'testValue1', testKey2: 'testValue2' })),
 });
 
 node4.addBackend(appmesh.Backend.virtualService(
@@ -367,6 +370,7 @@ gateway.addGatewayRoute('gateway1-route-http-2', {
         appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
       ],
       rewriteRequestHostname: true,
+      port: 8080,
     },
   }),
 });

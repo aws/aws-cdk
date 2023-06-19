@@ -1,11 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
-import * as cdk from '../../core';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
+import * as cdk from '../../core';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -26,7 +26,7 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime: Runtime;
+  readonly runtime?: Runtime;
 
   /**
    * The system architecture of the lambda function
@@ -119,7 +119,7 @@ export class Bundling implements cdk.BundlingOptions {
       throw new Error('preCompilation can only be used with typescript files');
     }
 
-    if (props.format === OutputFormat.ESM
+    if (props.runtime && props.format === OutputFormat.ESM
         && (props.runtime === Runtime.NODEJS_10_X || props.runtime === Runtime.NODEJS_12_X)) {
       throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
@@ -135,7 +135,8 @@ export class Bundling implements cdk.BundlingOptions {
       {
         buildArgs: {
           ...props.buildArgs ?? {},
-          IMAGE: props.runtime.bundlingImage.image,
+          // If runtime isn't passed use regional default, lowest common denominator is node14
+          IMAGE: (props.runtime ?? Runtime.NODEJS_14_X).bundlingImage.image,
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
         platform: props.architecture.dockerPlatform,
@@ -199,7 +200,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
+      `--target=${this.props.target ?? toTarget(this.props.runtime ?? Runtime.NODEJS_14_X)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
       `--outfile="${pathJoin(options.outputDir, outFile)}"`,
@@ -406,7 +407,7 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   return args.join(' ');
 }
 
-function isSdkV2Runtime(runtime: Runtime): boolean {
+function isSdkV2Runtime(runtime?: Runtime): boolean {
   const sdkV2RuntimeList = [
     Runtime.NODEJS,
     Runtime.NODEJS_4_3,
@@ -417,5 +418,10 @@ function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_14_X,
     Runtime.NODEJS_16_X,
   ];
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  if (runtime) {
+    return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  } else {
+    // If undefined regional default is used which is node14/16
+    return true;
+  }
 }

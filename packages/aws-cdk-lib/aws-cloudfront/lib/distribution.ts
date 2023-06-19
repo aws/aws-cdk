@@ -1,9 +1,3 @@
-import * as acm from '../../aws-certificatemanager';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '../../core';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -15,6 +9,12 @@ import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn } from './private/utils';
 import { IResponseHeadersPolicy } from './response-headers-policy';
+import * as acm from '../../aws-certificatemanager';
+import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '../../core';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
  * Interface for CloudFront distributions
@@ -175,6 +175,7 @@ export interface DistributionProps {
 
   /**
    * The Amazon S3 bucket to store the access logs in.
+   * Make sure to set `objectOwnership` to `s3.ObjectOwnership.OBJECT_WRITER` in your custom bucket.
    *
    * @default - A bucket is created if `enableLogging` is true
    */
@@ -498,6 +499,8 @@ export class Distribution extends Resource implements IDistribution {
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
+      // We need set objectOwnership to OBJECT_WRITER to enable ACL, which is disabled by default.
+      objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
     });
     return {
       bucket: bucket.bucketRegionalDomainName,

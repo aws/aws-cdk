@@ -1,7 +1,7 @@
-import { SecretValue } from '../../../core';
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import { SecretValue } from '../../../core';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**

@@ -1,8 +1,9 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
+import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
+import { IResource, Resource } from '../../core';
 
 /**
  * A configuration set
@@ -152,6 +153,16 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     });
 
     this.configurationSetName = configurationSet.ref;
+  }
+
+  /**
+   * Adds an event destination to this configuration set
+   */
+  public addEventDestination(id: string, options: ConfigurationSetEventDestinationOptions): ConfigurationSetEventDestination {
+    return new ConfigurationSetEventDestination(this, id, {
+      ...options,
+      configurationSet: this,
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-all-services-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8662d9a0c24ddd076682929e683932742480ec48e502a42fa69b66a32863c925.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3ae02591b0bf9af07cec7a020d8684d4cc035c0d7daf48c157986acfe475aaa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +33,12 @@
         "aws-stepfunctions-tasks-emr-containers-all-services-test.assets"
       ],
       "metadata": {
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22."
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -171,6 +177,18 @@
             "data": "integrationtesteksclusterDefaultVpcVPCGWE4DC2204"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/KubectlHandlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterKubectlHandlerRole9A4C37D2"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -207,16 +225,10 @@
             "data": "integrationtesteksclusterKubectlReadyBarrier0D4A21B0"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/MastersRole/Resource": [
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/HasEcrPublic": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterMastersRole63B9B0BF"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/AwsAuth/manifest/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterAwsAuthmanifestAEF9C6DF"
+            "data": "integrationtesteksclusterHasEcrPublic050389DE"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -231,16 +243,10 @@
             "data": "integrationtesteksclusterNodegroupDefaultCapacity536CF32C"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/ConfigCommand": [
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterConfigCommandFA814999"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/GetTokenCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterGetTokenCommandD7B92682"
+            "data": "integrationtesteksclusterAwsAuthmanifestAEF9C6DF"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
@@ -255,12 +261,6 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
-          }
-        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -271,12 +271,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IsCompleteHandlerServiceRole5810CC58"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandlerServiceRoleDefaultPolicy8F64197B"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
@@ -357,34 +351,28 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6331E387Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6331E387Arn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole26D37EDFArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole26D37EDFArn"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderframeworkonEventCA24F7F6Arn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderframeworkonEventCA24F7F6Arn"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn"
-          }
-        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleFCDC14AE"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleDefaultPolicyCBD0CC91"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -429,16 +417,10 @@
             "data": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksKubectlProviderframeworkonEventC503FA1CArn"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtestekscluster39D48404Arn": [
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtestekscluster39D48404Arn"
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterCreationRoleF3ECEB35Arn"
+            "data": "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterDefaultVpcPrivateSubnet1Subnet07C1221DRef": [

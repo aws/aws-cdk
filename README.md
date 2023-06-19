@@ -22,7 +22,7 @@ infrastructure definition and share it without worrying about boilerplate logic.
 The CDK is available in the following languages:
 
 * JavaScript, TypeScript ([Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/))
-  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  * We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET ≥ 6.0](https://dotnet.microsoft.com/download))
@@ -73,15 +73,15 @@ in the CDK Developer Guide.
 [AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
 [AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
 
-
 ## Getting Started
 
 For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#hello_world_tutorial) in the AWS CDK [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html).
 
 ### At a glance
+
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 
-```console
+```sh
 npm i -g aws-cdk
 ```
 
@@ -89,7 +89,7 @@ npm i -g aws-cdk
 
 Initialize a project:
 
-```console
+```sh
 mkdir hello-cdk
 cd hello-cdk
 cdk init sample-app --language=typescript
@@ -115,15 +115,15 @@ export class HelloCdkStack extends cdk.Stack {
 
 Deploy this to your account:
 
-```console
+```sh
 cdk deploy
 ```
 
 Use the `cdk` command-line toolkit to interact with your project:
 
- * `cdk deploy`: deploys your app into an AWS account
- * `cdk synth`: synthesizes an AWS CloudFormation template for your app
- * `cdk diff`: compares your app with the deployed stack
+* `cdk deploy`: deploys your app into an AWS account
+* `cdk synth`: synthesizes an AWS CloudFormation template for your app
+* `cdk diff`: compares your app with the deployed stack
 
 ## Getting Help
 
@@ -132,6 +132,7 @@ The best way to interact with our team is through GitHub. You can open an [issue
 If you have a support plan with AWS Support, you can also create a new [support case](https://console.aws.amazon.com/support/home#/).
 
 You may also find help on these community resources:
+
 * Look through the [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) or [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide)
 * The #aws-cdk Slack channel in [cdk.dev](https://cdk.dev)
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
@@ -148,12 +149,13 @@ We welcome community contributions and pull requests. See
 environment and submit code.
 
 ## Metrics collection
+
 This solution collects anonymous operational metrics to help AWS improve the
 quality and features of the CDK. For more information, including how to disable
-this capability, please see the 
-[developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
+this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
 
 ## More Resources
+
 * [CDK Workshop](https://cdkworkshop.com/)
 * [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
 * Best Practices
@@ -165,14 +167,13 @@ this capability, please see the
 * **[CDK Construction Zone](https://www.twitch.tv/collections/9kCOGphNZBYVdA)** - A Twitch live coding series hosted by the CDK team, season one episodes:
   * Triggers: Join us as we implement [Triggers](https://github.com/aws/aws-cdk-rfcs/issues/71), a Construct for configuring deploy time actions. Episodes 1-3:
     * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd
-    * [S1E2](https://www.twitch.tv/videos/925801382): Triggers (part 2); **Participants:** @NetaNir, @eladb, @iliapolo 
+    * [S1E2](https://www.twitch.tv/videos/925801382): Triggers (part 2); **Participants:** @NetaNir, @eladb, @iliapolo
     * [S1E3](https://www.twitch.tv/videos/944565768): Triggers (part 3); **Participants:** @NetaNir, @eladb, @iliapolo, @RomainMuller
   * [S1E4](https://www.twitch.tv/aws/video/960287598): [Tokens](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) Deep Dive; **Participants:** @NetaNir,@rix0rrr, @iliapolo, @RomainMuller
   * [S1E5](https://www.twitch.tv/videos/981481112): [Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html) Deep Dive; **Participants:** @NetaNir, @eladb, @jogold
   * [S1E6](https://www.twitch.tv/aws/video/1005334364): [Best Practices](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/); **Participants:** @skinny85, @eladb, @rix0rrr, @alexpulver
-  * [S1E7](https://www.twitch.tv/videos/1019059654): Tips and Tricks From The CDK Team; **Participants:** All the CDK team! 
+  * [S1E7](https://www.twitch.tv/videos/1019059654): Tips and Tricks From The CDK Team; **Participants:** All the CDK team!
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
 * [License](./LICENSE)
-

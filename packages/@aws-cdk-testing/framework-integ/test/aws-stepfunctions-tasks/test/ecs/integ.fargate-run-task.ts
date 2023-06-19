@@ -3,6 +3,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 /*
  * Creates a state machine with a task state to run a job with ECS on Fargate
@@ -16,6 +17,7 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
  */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-integ');
+stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster');
 
@@ -63,6 +65,15 @@ const definition = new sfn.Pass(stack, 'Start', {
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
+  }),
+).next(
+  new tasks.EcsRunTask(stack, 'FargeateTaskWithPropagatedTag', {
+    cluster,
+    taskDefinition,
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+    propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
   }),
 );
 

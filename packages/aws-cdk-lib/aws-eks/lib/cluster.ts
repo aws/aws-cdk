@@ -1,12 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as autoscaling from '../../aws-autoscaling';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
@@ -25,6 +18,13 @@ import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import * as autoscaling from '../../aws-autoscaling';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
+import * as ssm from '../../aws-ssm';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -130,6 +130,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
@@ -277,6 +285,14 @@ export interface ClusterAttributes {
    * throw an error
    */
   readonly clusterEncryptionConfigKeyArn?: string;
+
+  /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
 
   /**
    * Additional security groups associated with this cluster.
@@ -488,8 +504,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
    *
-   * @default - a role that assumable by anyone with permissions in the same
-   * account will automatically be defined
+   * @default - no masters role.
    */
   readonly mastersRole?: iam.IRole;
 
@@ -632,6 +647,14 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly secretsEncryptionKey?: kms.IKey;
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  readonly ipFamily?: IpFamily;
+
+  /**
    * The CIDR block to assign Kubernetes service IP addresses from.
    *
    * @default - Kubernetes assigns addresses from either the
@@ -728,7 +751,6 @@ export class EndpointAccess {
       throw new Error('CIDR blocks can only be configured when public access is enabled');
     }
   }
-
 
   /**
    * Restrict public access to specific CIDR blocks.
@@ -846,11 +868,13 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.21
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
 
   /**
    * Kubernetes version 1.22
+   * @deprecated Use newer version of EKS
    *
    * When creating a `Cluster` with this version, you need to also specify the
    * `kubectlLayer` property with a `KubectlV22Layer` from
@@ -884,6 +908,15 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v25`.
    */
   public static readonly V1_25 = KubernetesVersion.of('1.25');
+
+  /**
+   * Kubernetes version 1.26
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV26Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v26`.
+   */
+  public static readonly V1_26 = KubernetesVersion.of('1.26');
 
   /**
    * Custom cluster version
@@ -923,6 +956,20 @@ export enum ClusterLoggingTypes {
   SCHEDULER = 'scheduler',
 }
 
+/**
+ * EKS cluster IP family.
+ */
+export enum IpFamily {
+  /**
+   * Use IPv4 for pods and services in your cluster.
+   */
+  IP_V4 = 'ipv4',
+  /**
+   * Use IPv6 for pods and services in your cluster.
+   */
+  IP_V6 = 'ipv6',
+}
+
 abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
   public abstract readonly vpc: ec2.IVpc;
@@ -933,6 +980,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroupId: string;
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
+  public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
@@ -1292,6 +1340,14 @@ export class Cluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - IpFamily.IP_V4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+  public readonly ipFamily?: IpFamily;
+
+  /**
    * An IAM role with administrative permissions to create or update the
    * cluster. This role also has `systems:master` permissions.
    */
@@ -1409,7 +1465,14 @@ export class Cluster extends ClusterBase {
       Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
     };
     this.version = props.version;
-    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
+
+    // since this lambda role needs to be added to the trust policy of the creation role,
+    // we must create it in this scope (instead of the KubectlProvider nested stack) to avoid
+    // a circular dependency.
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : new iam.Role(this, 'KubectlHandlerRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
 
     this.tagSubnets();
 
@@ -1450,7 +1513,7 @@ export class Cluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
-
+    this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
@@ -1482,6 +1545,10 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
+    if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
+      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
@@ -1499,9 +1566,10 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
-      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+      kubernetesNetworkConfig: {
+        ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
-      } : undefined,
+      },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
@@ -1564,6 +1632,11 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
+    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      principals: [this.kubectlLambdaRole],
+    }));
+
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
@@ -1578,21 +1651,19 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
-    // if an explicit role is not configured, define a masters role that can
-    // be assumed by anyone in the account (with sts:AssumeRole permissions of
-    // course)
-    const mastersRole = props.mastersRole ?? new iam.Role(this, 'MastersRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
+    // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
+    if (props.mastersRole) {
+      const mastersRole = props.mastersRole;
 
-    // map the IAM role to the `system:masters` group.
-    this.awsAuth.addMastersRole(mastersRole);
+      // map the IAM role to the `system:masters` group.
+      this.awsAuth.addMastersRole(mastersRole);
 
-    if (props.outputMastersRoleArn) {
-      new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+      }
+
+      commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
     }
-
-    commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     if (props.albController) {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
@@ -1609,7 +1680,7 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = props.outputConfigCommand ?? true;
+    const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -2123,6 +2194,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly ipFamily?: IpFamily;
   public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
@@ -2145,6 +2217,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.ipFamily = props.ipFamily;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;

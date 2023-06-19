@@ -4,47 +4,55 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-stepfunctions-integ": {
-        "id": "aws-stepfunctions-integ",
-        "path": "aws-stepfunctions-integ",
+      "cdk-sfn-evaluate-expression-integ": {
+        "id": "cdk-sfn-evaluate-expression-integ",
+        "path": "cdk-sfn-evaluate-expression-integ",
         "children": {
           "Sum": {
             "id": "Sum",
-            "path": "aws-stepfunctions-integ/Sum",
+            "path": "cdk-sfn-evaluate-expression-integ/Sum",
             "children": {
               "EvalFunction": {
                 "id": "EvalFunction",
-                "path": "aws-stepfunctions-integ/Sum/EvalFunction",
+                "path": "cdk-sfn-evaluate-expression-integ/Sum/EvalFunction",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EvaluateExpression",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EvaluateExpression",
               "version": "0.0.0"
             }
           },
-          "Evalda2d1181604e4a4586941a6abd7fe42d": {
-            "id": "Evalda2d1181604e4a4586941a6abd7fe42d",
-            "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d",
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "cdk-sfn-evaluate-expression-integ/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "Eval41256dc5445742738ed917bc818694e5": {
+            "id": "Eval41256dc5445742738ed917bc818694e5",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole/ImportServiceRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/ServiceRole/Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -77,45 +85,45 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code/Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Code/AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-integ/Evalda2d1181604e4a4586941a6abd7fe42d/Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -127,88 +135,336 @@
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
+                        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
                         "Arn"
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
           "Multiply": {
             "id": "Multiply",
-            "path": "aws-stepfunctions-integ/Multiply",
+            "path": "cdk-sfn-evaluate-expression-integ/Multiply",
             "children": {
               "EvalFunction": {
                 "id": "EvalFunction",
-                "path": "aws-stepfunctions-integ/Multiply/EvalFunction",
+                "path": "cdk-sfn-evaluate-expression-integ/Multiply/EvalFunction",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EvaluateExpression",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EvaluateExpression",
               "version": "0.0.0"
             }
           },
-          "Now": {
-            "id": "Now",
-            "path": "aws-stepfunctions-integ/Now",
+          "Eval2a430b68eb4b40269232ee39b71c1db8": {
+            "id": "Eval2a430b68eb4b40269232ee39b71c1db8",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8",
             "children": {
-              "EvalFunction": {
-                "id": "EvalFunction",
-                "path": "aws-stepfunctions-integ/Now/EvalFunction",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.EvaluateExpression",
-              "version": "0.0.0"
-            }
-          },
-          "Wait": {
-            "id": "Wait",
-            "path": "aws-stepfunctions-integ/Wait",
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Wait",
-              "version": "0.0.0"
-            }
-          },
-          "StateMachine": {
-            "id": "StateMachine",
-            "path": "aws-stepfunctions-integ/StateMachine",
-            "children": {
-              "Role": {
-                "id": "Role",
-                "path": "aws-stepfunctions-integ/StateMachine/Role",
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole",
                 "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-integ/StateMachine/Role/Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs16.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Now": {
+            "id": "Now",
+            "path": "cdk-sfn-evaluate-expression-integ/Now",
+            "children": {
+              "EvalFunction": {
+                "id": "EvalFunction",
+                "path": "cdk-sfn-evaluate-expression-integ/Now/EvalFunction",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EvaluateExpression",
+              "version": "0.0.0"
+            }
+          },
+          "Eval078d40d3fb4e4d5394a79c46fc11fe02": {
+            "id": "Eval078d40d3fb4e4d5394a79c46fc11fe02",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Wait": {
+            "id": "Wait",
+            "path": "cdk-sfn-evaluate-expression-integ/Wait",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Wait",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "cdk-sfn-evaluate-expression-integ/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -227,17 +483,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-integ/StateMachine/Role/DefaultPolicy",
+                    "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-integ/StateMachine/Role/DefaultPolicy/Resource",
+                        "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -249,7 +505,19 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                                        "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                         "Arn"
                                       ]
                                     },
@@ -259,7 +527,35 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                                              "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                               "Arn"
                                             ]
                                           },
@@ -281,25 +577,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-integ/StateMachine/Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -316,21 +612,21 @@
                           "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
                               "Arn"
                             ]
                           },
                           "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                              "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
                               "Arn"
                             ]
                           },
                           "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
+                              "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
                               "Arn"
                             ]
                           },
@@ -341,43 +637,97 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
           "StateMachineARN": {
             "id": "StateMachineARN",
-            "path": "aws-stepfunctions-integ/StateMachineARN",
+            "path": "cdk-sfn-evaluate-expression-integ/StateMachineARN",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-stepfunctions-integ/BootstrapVersion",
+            "path": "cdk-sfn-evaluate-expression-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
+            "path": "cdk-sfn-evaluate-expression-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EvaluateExpressionInteg": {
+        "id": "EvaluateExpressionInteg",
+        "path": "EvaluateExpressionInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EvaluateExpressionInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EvaluateExpressionInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EvaluateExpressionInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EvaluateExpressionInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EvaluateExpressionInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -386,12 +736,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

@@ -1,9 +1,9 @@
+import { mergeBuildSpecs } from './private/buildspecs';
+import { makeCodePipelineOutput } from './private/outputs';
 import * as codebuild from '../../../aws-codebuild';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { Duration } from '../../../core';
-import { mergeBuildSpecs } from './private/buildspecs';
-import { makeCodePipelineOutput } from './private/outputs';
 import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
@@ -108,6 +108,23 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
+
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: codebuild.LoggingOptions;
 }
 
 /**
@@ -197,6 +214,23 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly timeout?: Duration;
 
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuilde project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: codebuild.LoggingOptions;
+
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;
   private readonly exportedVariables = new Set<string>();
@@ -216,6 +250,8 @@ export class CodeBuildStep extends ShellStep {
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
+    this.fileSystemLocations = props.fileSystemLocations;
+    this.logging = props.logging;
   }
 
   /**

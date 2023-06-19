@@ -1,10 +1,11 @@
 import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { App, Stack } from '../../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference, builtInCustomResourceNodeRuntime } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -1238,3 +1239,63 @@ test.each([
     'InstallLatestAwsSdk': expected,
   });
 });
+
+test('default removal policy is DESTROY', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('Custom::AWS', {
+    DeletionPolicy: 'Delete',
+  });
+});
+
+test('can specify removal policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    removalPolicy: cdk.RemovalPolicy.RETAIN,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('Custom::AWS', {
+    DeletionPolicy: 'Retain',
+  });
+});
+
+describe('builtInCustomResourceNodeRuntime', () => {
+  test('returns node16 for commercial region', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1' } });
+
+    const rt = builtInCustomResourceNodeRuntime(stack);
+    expect(rt).toEqual(lambda.Runtime.NODEJS_16_X);
+  });
+
+  test('returns node14 for iso region', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-iso-east-1' } });
+
+    const rt = builtInCustomResourceNodeRuntime(stack);
+    expect(rt).toEqual(lambda.Runtime.NODEJS_14_X);
+  });
+});
+

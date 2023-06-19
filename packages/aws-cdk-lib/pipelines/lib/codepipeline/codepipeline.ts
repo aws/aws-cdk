@@ -1,12 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cb from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
-import * as cpa from '../../../aws-codepipeline-actions';
-import * as ec2 from '../../../aws-ec2';
-import * as iam from '../../../aws-iam';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -14,6 +7,14 @@ import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './c
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 import { namespaceStepOutputs } from './private/outputs';
 import { StackOutputsMap } from './stack-outputs-map';
+import * as cb from '../../../aws-codebuild';
+import * as cp from '../../../aws-codepipeline';
+import * as cpa from '../../../aws-codepipeline-actions';
+import * as ec2 from '../../../aws-ec2';
+import * as iam from '../../../aws-iam';
+import * as s3 from '../../../aws-s3';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -27,7 +28,6 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-
 
 /**
  * Properties for a `CodePipeline`
@@ -237,6 +237,13 @@ export interface CodePipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * An existing S3 Bucket to use for storing the pipeline's artifact.
+   *
+   * @default - A new S3 bucket will be created.
+   */
+  readonly artifactBucket?: s3.IBucket;
 }
 
 /**
@@ -307,8 +314,25 @@ export interface CodeBuildOptions {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
-}
 
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   * Requires a vpc to be set and privileged to be set to true.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: cb.IFileSystemLocation[];
+
+  /**
+   * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: cb.LoggingOptions;
+}
 
 /**
  * A CDK Pipeline that uses CodePipeline to deploy CDK apps
@@ -399,7 +423,6 @@ export class CodePipeline extends PipelineBase {
     return this._pipeline;
   }
 
-
   protected doBuildPipeline(): void {
     if (this._pipeline) {
       throw new Error('Pipeline already created');
@@ -423,6 +446,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.role !== undefined) {
         throw new Error('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.artifactBucket !== undefined) {
+        throw new Error('Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
@@ -435,6 +461,7 @@ export class CodePipeline extends PipelineBase {
         restartExecutionOnUpdate: true,
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
+        artifactBucket: this.props.artifactBucket,
       });
     }
 
@@ -802,7 +829,10 @@ export class CodePipeline extends PipelineBase {
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {
-        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+        privileged: (
+          assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE) ||
+          this.props.codeBuildDefaults?.buildEnvironment?.privileged
+        ),
       },
       role,
     });
@@ -1002,7 +1032,6 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
     ret.push(tranches);
   }
-
 
   return ret;
 }

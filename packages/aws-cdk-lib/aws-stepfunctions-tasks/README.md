@@ -94,7 +94,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
   expression: '`Now waiting ${$.waitSeconds} seconds...`',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   resultPath: '$.message',
 });
 
@@ -167,7 +167,7 @@ new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
-import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
 const httpApi = new apigatewayv2.HttpApi(this, 'MyHttpApi');
 
 const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API', {
@@ -298,8 +298,8 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
-declare const batchJobDefinition: batch.JobDefinition;
+import * as batch from '@aws-cdk/aws-batch-alpha';
+declare const batchJobDefinition: batch.EcsJobDefinition;
 declare const batchQueue: batch.JobQueue;
 
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
@@ -469,6 +469,7 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
       ecs.PlacementConstraint.memberOf('blieptuut'),
     ],
   }),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 
@@ -516,6 +517,7 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
   }],
   launchTarget: new tasks.EcsFargateLaunchTarget(),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 

@@ -17,6 +17,9 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
+| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
+| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | V2·NEXT | (fix) |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
@@ -40,8 +43,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
-| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
+| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
@@ -50,6 +53,7 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
+| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -90,7 +94,11 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
     "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
     "@aws-cdk/aws-redshift:columnId": true,
-    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true
+    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
+    "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
   }
 }
 ```
@@ -318,6 +326,64 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-apigateway:requestValidatorUniqueId
+
+*Generate a unique id for each RequestValidator added to a method* (fix)
+
+This flag allows multiple RequestValidators to be added to a RestApi when
+providing the `RequestValidatorOptions` in the `addMethod()` method.
+
+If the flag is not set then only a single RequestValidator can be added in this way.
+Any additional RequestValidators have to be created directly with `new RequestValidator`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
+
+*Restrict access to the VPC default security group* (default)
+
+Enable this feature flag to remove the default ingress/egress rules from the
+VPC default security group.
+
+When a VPC is created, a default security group is created as well and this cannot
+be deleted. The default security group is created with ingress/egress rules that allow
+_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
+removing these ingress/egress rules in order to restrict access to the default security group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To allow all ingress/egress traffic to the VPC default security group you
+      can set the `restrictDefaultSecurityGroup: false`.
+    
+
+
+### @aws-cdk/aws-kms:aliasNameRef
+
+*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
+
+This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+when referencing key.aliasName or key.keyArn.
+
+If the flag is not set then a raw string is passed as the Alias name and no
+implicit dependencies will be set.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-route53-patters:useCertificate
@@ -735,6 +801,23 @@ This flag disables use of that exceptions database and always uses the global se
 | 2.51.0 | `false` | `true` |
 
 
+### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
+
+*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
+
+Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+of a role using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.60.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy
 
 *Use S3 Bucket Policy instead of ACLs for Server Access Logging* (fix)
@@ -747,23 +830,6 @@ This flag uses a Bucket Policy statement to allow Server Access Log delivery, fo
 practices for S3.
 
 @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.59.0 | `false` | `true` |
-
-
-### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
-
-*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
-
-Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
-to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
-of a role using the same default policy name.
-
-This new implementation creates default policy names based on the constructs node path in their stack.
 
 
 | Since | Default | Recommended |
@@ -862,7 +928,7 @@ according to the OS of the machine image.
 *SecretTargetAttachments uses the ResourcePolicy of the attached Secret.* (fix)
 
 Enable this feature flag to make SecretTargetAttachments use the ResourcePolicy of the attached Secret.
-SecretTargetAttachments are created to connect a Secret to a target resource. 
+SecretTargetAttachments are created to connect a Secret to a target resource.
 In CDK code, they behave like regular Secret and can be used as a stand-in in most situations.
 Previously, adding to the ResourcePolicy of a SecretTargetAttachment did attempt to create a separate ResourcePolicy for the same Secret.
 However Secrets can only have a single ResourcePolicy, causing the CloudFormation deployment to fail.
@@ -920,6 +986,26 @@ intervention since they might not have the appropriate tags propagated automatic
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
+
+
+### @aws-cdk/core:includePrefixInUniqueNameGeneration
+
+*Include the stack prefix in the stack name generation process* (fix)
+
+This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+
+If the flag is set, the prefix is included in the stack name generation process.
+If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+**NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+is not viable in some productive setups.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

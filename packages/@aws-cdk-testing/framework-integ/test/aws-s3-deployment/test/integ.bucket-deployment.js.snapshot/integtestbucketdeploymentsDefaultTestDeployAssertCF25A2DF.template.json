@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjects": {
+  "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjects",
    "Properties": {
     "ServiceToken": {
@@ -18,7 +18,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1677600919513"
+    "salt": "1682954142277"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -82,7 +82,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -96,10 +96,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjects": {
+  "AssertionResultsAwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjects",
+     "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
      "assertion"
     ]
    }

@@ -1,7 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxschema from '../../cloud-assembly-schema';
-import * as cxapi from '../../cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
@@ -21,11 +19,17 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import * as cxschema from '../../cloud-assembly-schema';
+import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
+import * as cxapi from '../../cx-api';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
+
+const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
+const TEMPLATE_BODY_MAXIMUM_SIZE = 1_000_000;
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
@@ -171,6 +175,18 @@ export interface StackProps {
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
+
+  /**
+   * Enable this flag to suppress indentation in generated
+   * CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+  */
+  readonly suppressTemplateIndentation?: boolean;
 }
 
 /**
@@ -359,6 +375,18 @@ export class Stack extends Construct implements ITaggable {
   private readonly _stackName: string;
 
   /**
+   * Enable this flag to suppress indentation in generated
+   * CloudFormation templates.
+   *
+   * If not specified, the value of the `@aws-cdk/core:suppressTemplateIndentation`
+   * context key will be used. If that is not specified, then the
+   * default value `false` will be used.
+   *
+   * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
+   */
+  private readonly _suppressTemplateIndentation: boolean;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually an `App` or a `Stage`, but could be any construct.
@@ -384,6 +412,7 @@ export class Stack extends Construct implements ITaggable {
     this._stackDependencies = { };
     this.templateOptions = { };
     this._crossRegionReferences = !!props.crossRegionReferences;
+    this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -1046,7 +1075,22 @@ export class Stack extends Construct implements ITaggable {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
+
+    const indent = this._suppressTemplateIndentation ? undefined : 1;
+    const templateData = JSON.stringify(template, undefined, indent);
+
+    if (templateData.length > (TEMPLATE_BODY_MAXIMUM_SIZE * 0.8)) {
+      const verb = templateData.length > TEMPLATE_BODY_MAXIMUM_SIZE ? 'exceeds' : 'is approaching';
+      const advice = this._suppressTemplateIndentation ?
+        'Split resources into multiple stacks to reduce template size' :
+        'Split resources into multiple stacks or set suppressTemplateIndentation to reduce template size';
+
+      const message = `Template size ${verb} limit: ${templateData.length}/${TEMPLATE_BODY_MAXIMUM_SIZE}. ${advice}.`;
+
+      Annotations.of(this).addWarning(message);
+    }
+
+    fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {
@@ -1097,7 +1141,6 @@ export class Stack extends Construct implements ITaggable {
 
     return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
-
 
   /**
    * Create a CloudFormation Export for a string value
@@ -1358,6 +1401,15 @@ export class Stack extends Construct implements ITaggable {
     // in which Export/Fn::ImportValue would work is if the value are the same
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
+
+    if (env.account && typeof(env.account) !== 'string') {
+      throw new Error(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`);
+    }
+
+    if (env.region && typeof(env.region) !== 'string') {
+      throw new Error(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`);
+    }
+
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
     const region = env.region ?? containingAssembly?.region ?? Aws.REGION;
 
@@ -1424,7 +1476,11 @@ export class Stack extends Construct implements ITaggable {
   private generateStackName() {
     const assembly = Stage.of(this);
     const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
-    return `${prefix}${this.generateStackId(assembly)}`;
+    if (FeatureFlags.of(this).isEnabled(INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION)) {
+      return `${this.generateStackId(assembly, prefix)}`;
+    } else {
+      return `${prefix}${this.generateStackId(assembly)}`;
+    }
   }
 
   /**
@@ -1439,7 +1495,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined) {
+  private generateStackId(container: IConstruct | undefined, prefix: string='') {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1449,7 +1505,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('unexpected: stack id must always be defined');
     }
 
-    return makeStackName(ids);
+    return makeStackName(ids, prefix);
   }
 
   private resolveExportedValue(exportedValue: any): ResolvedExport {
@@ -1635,9 +1691,14 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[]) {
-  if (components.length === 1) { return components[0]; }
-  return makeUniqueResourceName(components, { maxLength: 128 });
+function makeStackName(components: string[], prefix: string='') {
+  if (components.length === 1) {
+    const stack_name = prefix + components[0];
+    if (stack_name.length <= 128) {
+      return stack_name;
+    }
+  }
+  return makeUniqueResourceName(components, { maxLength: 128, prefix: prefix });
 }
 
 function getCreateExportsScope(stack: Stack) {
@@ -1717,7 +1778,7 @@ import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
-import { StringSpecializer } from './stack-synthesizers/_shared';
+import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';

@@ -1,7 +1,7 @@
 import { join } from 'path';
-import * as lambda from '../../aws-lambda';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '../../core';
 import { Construct, IConstruct, Node } from 'constructs';
+import * as lambda from '../../aws-lambda';
+import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration } from '../../core';
 
 /**
  * Interface for triggers.
@@ -62,6 +62,28 @@ export interface TriggerOptions {
 }
 
 /**
+ * The invocation type to apply to a trigger. This determines whether the trigger function should await the result of the to be triggered function or not.
+ */
+export enum InvocationType {
+  /**
+   * Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if one is configured).
+   * The API response only includes a status code.
+   */
+  EVENT = 'Event',
+
+  /**
+   * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
+   * The API response includes the function response and additional data.
+   */
+  REQUEST_RESPONSE = 'RequestResponse',
+
+  /**
+   *  Validate parameter values and verify that the user or role has permission to invoke the function.
+   */
+  DRY_RUN = 'DryRun'
+}
+
+/**
  * Props for `Trigger`.
  */
 export interface TriggerProps extends TriggerOptions {
@@ -69,6 +91,20 @@ export interface TriggerProps extends TriggerOptions {
    * The AWS Lambda function of the handler to execute.
    */
   readonly handler: lambda.Function;
+
+  /**
+   * The invocation type to invoke the Lambda function with.
+   *
+   * @default RequestResponse
+   */
+  readonly invocationType?: InvocationType;
+
+  /**
+   * The timeout of the invocation call of the Lambda function to be triggered.
+   *
+   * @default Duration.minutes(2)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -80,7 +116,7 @@ export class Trigger extends Construct implements ITrigger {
 
     const handlerArn = this.determineHandlerArn(props);
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       codeDirectory: join(__dirname, 'lambda'),
     });
 
@@ -95,6 +131,8 @@ export class Trigger extends Construct implements ITrigger {
       serviceToken: provider.serviceToken,
       properties: {
         HandlerArn: handlerArn,
+        InvocationType: props.invocationType ?? 'RequestResponse',
+        Timeout: props.timeout?.toMilliseconds().toString() ?? Duration.minutes(2).toMilliseconds().toString(),
       },
     });
 

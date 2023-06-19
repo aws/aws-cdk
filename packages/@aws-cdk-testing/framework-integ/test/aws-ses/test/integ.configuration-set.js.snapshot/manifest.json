@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-ses-configuration-set-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5e5a0cd52a1de800810ecf34d36ad67935830aaeee720ee998f4157431b1f25.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd889c61b6018acea6fdd262c97b73b9af12855427e235914757eaeea73396ba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +37,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ConfigurationSet3DD38186"
+          }
+        ],
+        "/cdk-ses-configuration-set-integ/ConfigurationSet/Sns/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSetSns63B38980"
+          }
+        ],
+        "/cdk-ses-configuration-set-integ/ConfigurationSet/CloudWatch/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSetCloudWatch85E06FFB"
+          }
+        ],
+        "/cdk-ses-configuration-set-integ/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/cdk-ses-configuration-set-integ/Topic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicPolicyA1747468"
           }
         ],
         "/cdk-ses-configuration-set-integ/BootstrapVersion": [
@@ -106,6 +124,12 @@
         ]
       },
       "displayName": "ConfigurationSetInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

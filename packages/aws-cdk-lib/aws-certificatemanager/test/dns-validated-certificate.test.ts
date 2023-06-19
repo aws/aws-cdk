@@ -1,7 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { HostedZone, PublicHostedZone } from '../../aws-route53';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack, Token, Tags, RemovalPolicy, Aws } from '../../core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
@@ -35,7 +35,13 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: 'nodejs14.x',
+    Runtime: {
+      'Fn::FindInMap': [
+        'DefaultCrNodeVersionMap',
+        { Ref: 'AWS::Region' },
+        'value',
+      ],
+    },
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -237,7 +243,6 @@ testDeprecated('works with imported role', () => {
     Role: 'arn:aws:iam::account-id:role/role-name',
   });
 });
-
 
 testDeprecated('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();

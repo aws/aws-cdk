@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
@@ -6,8 +8,6 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
-import { Construct } from 'constructs';
-import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -130,6 +130,7 @@ export abstract class BaseLoadBalancer extends Resource {
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {
         ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
+        // eslint-disable-next-line @aws-cdk/no-literal-partition
         loadBalancerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188`,
         loadBalancerCanonicalHostedZoneId: 'Z3DZXE0EXAMPLE',
         loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
@@ -252,7 +253,15 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute('access_logs.s3.prefix', prefix);
 
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.grantPut(this.resourcePolicyPrincipal(), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [this.resourcePolicyPrincipal()],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        ],
+      }),
+    );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],

@@ -43,11 +43,10 @@ describe('templateUrl', () => {
     const sd = StageDeployment.fromStage(stage);
 
     // THEN
-    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-.s3.amazonaws.com/$%7BAWS::Region%7D/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json');
+    expect(sd.stacks[0].templateUrl).toBe('https://cdk-hnb659fds-assets-111-${AWS::Region}.s3.amazonaws.com/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json');
   });
 
 });
-
 
 test('"requiredAssets" contain only assets that are not the template', () => {
   // GIVEN

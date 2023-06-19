@@ -9,7 +9,7 @@ const awsCdkLibModules: string[] = [];
 export function findModulePath(fuzz: string): string {
   discoverModules();
 
-  const regex = new RegExp(`[-_/]${fuzz}$`)
+  const regex = new RegExp(`[-_/]${fuzz}($|-alpha)`)
   const matched = [
     ...modules.filter(m => regex.test(m)),
     ...(awsCdkLibModules.some(m => regex.test(m)) ? [awsCdkLibPath] : []),

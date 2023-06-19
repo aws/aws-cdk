@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-windows-ng/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-windows-ng-test"
+      ],
+      "assertionStack": "aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterwindowsngDefaultTestDeployAssert22077693"
+    }
+  }
+}

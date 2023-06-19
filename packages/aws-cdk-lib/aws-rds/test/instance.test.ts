@@ -1112,7 +1112,86 @@ describe('instance', () => {
           Effect: 'Allow',
           Action: 'rds-db:connect',
           Resource: {
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':rds:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':db:', { Ref: 'InstanceC1063A87' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                {
+                  Ref: 'InstanceSecretAttachment83BEE581',
+                },
+                ':SecretString:username::}}',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth for a specific user', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+      vpc,
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role, 'my-user');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/my-user',
+              ],
+            ],
           },
         }],
         Version: '2012-10-17',
@@ -1267,6 +1346,44 @@ describe('instance', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
+      });
+    });
+
+    test.each<keyof typeof rds.PerformanceInsightRetention>([
+      'DEFAULT',
+      'MONTHS_1',
+      'MONTHS_2',
+      'MONTHS_3',
+      'MONTHS_4',
+      'MONTHS_5',
+      'MONTHS_6',
+      'MONTHS_7',
+      'MONTHS_8',
+      'MONTHS_9',
+      'MONTHS_10',
+      'MONTHS_11',
+      'MONTHS_12',
+      'MONTHS_13',
+      'MONTHS_14',
+      'MONTHS_15',
+      'MONTHS_16',
+      'MONTHS_17',
+      'MONTHS_18',
+      'MONTHS_19',
+      'MONTHS_20',
+      'MONTHS_21',
+      'MONTHS_22',
+      'MONTHS_23',
+      'LONG_TERM',
+    ])('performance insights retention of %s', (performanceInsightRetentionKey) => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        performanceInsightRetention: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        PerformanceInsightsRetentionPeriod: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
       });
     });
 

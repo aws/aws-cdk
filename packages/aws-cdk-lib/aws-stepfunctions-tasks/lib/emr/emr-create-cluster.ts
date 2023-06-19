@@ -1,7 +1,3 @@
-import * as iam from '../../../aws-iam';
-import * as sfn from '../../../aws-stepfunctions';
-import * as cdk from '../../../core';
-import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { Construct } from 'constructs';
 import {
   ApplicationConfigPropertyToJson,
@@ -10,6 +6,10 @@ import {
   InstancesConfigPropertyToJson,
   KerberosAttributesPropertyToJson,
 } from './private/cluster-utils';
+import * as iam from '../../../aws-iam';
+import * as sfn from '../../../aws-stepfunctions';
+import * as cdk from '../../../core';
+import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -315,6 +315,22 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         new iam.PolicyStatement({
           actions: ['iam:PassRole'],
           resources: [autoScalingRole.roleArn],
+        }),
+      );
+    }
+
+    // Allow the StateMachine to tag clusters if tags are defined
+    if (this.props.tags) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['elasticmapreduce:AddTags'],
+          resources: [
+            stack.formatArn({
+              service: 'elasticmapreduce',
+              resource: 'cluster',
+              resourceName: '*',
+            }),
+          ],
         }),
       );
     }

@@ -6,16 +6,18 @@ const repoRoot = path.join(__dirname, '..', '..', '..', '..');
 describe('findModulePath', () => {
   beforeAll(() => {
     process.env.REPO_ROOT = repoRoot;
+    jest.spyOn(console, 'log').mockImplementation();
   });
 
   afterAll(() => {
     process.env.REPO_ROOT = undefined;
+    jest.resetAllMocks();
   });
 
   test('single fuzzy match', () => {
     expect(relative(findModulePath('lambda'))).toEqual('packages/aws-cdk-lib');
     expect(relative(findModulePath('s3'))).toEqual('packages/aws-cdk-lib');
-    expect(relative(findModulePath('gamelift'))).toEqual('packages/@aws-cdk/aws-gamelift');
+    expect(relative(findModulePath('gamelift'))).toEqual('packages/@aws-cdk/aws-gamelift-alpha');
     expect(relative(findModulePath('cdk-build-tools'))).toEqual('tools/@aws-cdk/cdk-build-tools');
   });
 

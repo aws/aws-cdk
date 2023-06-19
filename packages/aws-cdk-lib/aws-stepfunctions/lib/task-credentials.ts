@@ -1,5 +1,5 @@
-import * as iam from '../../aws-iam';
 import { JsonPath } from './fields';
+import * as iam from '../../aws-iam';
 
 /**
  * Specifies a target role assumed by the State Machine's execution role for invoking the task's resource.
@@ -28,7 +28,7 @@ export abstract class TaskRole {
    *
    * @example
    *
-   * TaskRole.fromRoleArnJsonPath('$.RoleArn');
+   * sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn');
    */
   public static fromRoleArnJsonPath(expression: string): TaskRole {
     return new JsonExpressionTaskRole(expression);

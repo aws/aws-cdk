@@ -1,3 +1,5 @@
+*.d.ts
+*.js
 
 .LAST_BUILD
 *.snk
@@ -6,3 +8,10 @@ junit.xml
 .nyc_output
 coverage
 nyc.config.js
+
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+
+**/*.ts.snapshot

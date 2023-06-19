@@ -1,5 +1,5 @@
 {
-  "$version": "117.0.0",
+  "$version": "126.0.0",
   "PropertyTypes": {
     "AWS::AppSync::DataSource.AuthorizationConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-datasource-authorizationconfig.html",
@@ -505,6 +505,17 @@
           "UpdateType": "Mutable"
         }
       }
+    },
+    "AWS::AppSync::SourceApiAssociation.SourceApiAssociationConfig": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-sourceapiassociation-sourceapiassociationconfig.html",
+      "Properties": {
+        "MergeType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-sourceapiassociation-sourceapiassociationconfig.html#cfn-appsync-sourceapiassociation-sourceapiassociationconfig-mergetype",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
     }
   },
   "ResourceTypes": {
@@ -838,7 +849,16 @@
         "Arn": {
           "PrimitiveType": "String"
         },
+        "GraphQLDns": {
+          "PrimitiveType": "String"
+        },
         "GraphQLUrl": {
+          "PrimitiveType": "String"
+        },
+        "RealtimeDns": {
+          "PrimitiveType": "String"
+        },
+        "RealtimeUrl": {
           "PrimitiveType": "String"
         }
       },
@@ -850,6 +870,12 @@
           "Required": false,
           "Type": "List",
           "UpdateType": "Mutable"
+        },
+        "ApiType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-apitype",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
         },
         "AuthenticationType": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-authenticationtype",
@@ -869,6 +895,12 @@
           "Type": "LogConfig",
           "UpdateType": "Mutable"
         },
+        "MergedApiExecutionRoleArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-mergedapiexecutionrolearn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "Name": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-name",
           "PrimitiveType": "String",
@@ -879,6 +911,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-openidconnectconfig",
           "Required": false,
           "Type": "OpenIDConnectConfig",
+          "UpdateType": "Mutable"
+        },
+        "OwnerContact": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-ownercontact",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "Tags": {
@@ -893,6 +931,12 @@
           "Required": false,
           "Type": "UserPoolConfig",
           "UpdateType": "Mutable"
+        },
+        "Visibility": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-visibility",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
         },
         "XrayEnabled": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-xrayenabled",
@@ -1033,6 +1077,64 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-resolver.html#cfn-appsync-resolver-typename",
           "PrimitiveType": "String",
           "Required": true,
+          "UpdateType": "Immutable"
+        }
+      }
+    },
+    "AWS::AppSync::SourceApiAssociation": {
+      "Attributes": {
+        "AssociationArn": {
+          "PrimitiveType": "String"
+        },
+        "AssociationId": {
+          "PrimitiveType": "String"
+        },
+        "LastSuccessfulMergeDate": {
+          "PrimitiveType": "String"
+        },
+        "MergedApiArn": {
+          "PrimitiveType": "String"
+        },
+        "MergedApiId": {
+          "PrimitiveType": "String"
+        },
+        "SourceApiArn": {
+          "PrimitiveType": "String"
+        },
+        "SourceApiAssociationStatus": {
+          "PrimitiveType": "String"
+        },
+        "SourceApiAssociationStatusDetail": {
+          "PrimitiveType": "String"
+        },
+        "SourceApiId": {
+          "PrimitiveType": "String"
+        }
+      },
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-sourceapiassociation.html",
+      "Properties": {
+        "Description": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-sourceapiassociation.html#cfn-appsync-sourceapiassociation-description",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "MergedApiIdentifier": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-sourceapiassociation.html#cfn-appsync-sourceapiassociation-mergedapiidentifier",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "SourceApiAssociationConfig": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-sourceapiassociation.html#cfn-appsync-sourceapiassociation-sourceapiassociationconfig",
+          "Required": false,
+          "Type": "SourceApiAssociationConfig",
+          "UpdateType": "Mutable"
+        },
+        "SourceApiIdentifier": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-sourceapiassociation.html#cfn-appsync-sourceapiassociation-sourceapiidentifier",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Immutable"
         }
       }

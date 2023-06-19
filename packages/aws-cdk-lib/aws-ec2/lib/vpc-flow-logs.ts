@@ -1,11 +1,11 @@
+import { Construct } from 'constructs';
+import { CfnFlowLog } from './ec2.generated';
+import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, CfnResource } from '../../core';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
-import { Construct } from 'constructs';
-import { CfnFlowLog } from './ec2.generated';
-import { ISubnet, IVpc } from './vpc';
 
 /**
  * A FlowLog
@@ -151,7 +151,6 @@ export interface S3DestinationOptions {
  */
 export interface DestinationOptions extends S3DestinationOptions { }
 
-
 /**
  * The destination type for the flow log
  */
@@ -249,7 +248,6 @@ class S3Destination extends FlowLogDestination {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
-        encryption: s3.BucketEncryption.UNENCRYPTED,
         removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {

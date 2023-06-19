@@ -1,7 +1,7 @@
-import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
 import { Construct } from 'constructs';
 import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
+import { IRole } from '../../../aws-iam';
+import { Resource } from '../../../core';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 
@@ -34,6 +34,15 @@ export interface ImportedTaskDefinitionProps {
    * @default Permissions cannot be granted to the imported task.
    */
   readonly taskRole?: IRole;
+
+  /**
+   * The IAM role that grants containers and Fargate agents permission to make AWS API calls on your behalf.
+   *
+   * Some tasks do not have an execution role.
+   *
+   * @default - undefined
+   */
+  readonly executionRole?: IRole;
 }
 
 /**
@@ -70,6 +79,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
     this.compatibility = props.compatibility ?? Compatibility.EC2_AND_FARGATE;
     this.taskDefinitionArn = props.taskDefinitionArn;
+    this.executionRole = props.executionRole;
     this._taskRole = props.taskRole;
     this._networkMode = props.networkMode;
   }

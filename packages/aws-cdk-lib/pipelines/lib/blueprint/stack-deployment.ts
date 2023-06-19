@@ -1,8 +1,7 @@
 import * as path from 'path';
-import { parse as parseUrl } from 'url';
-import * as cxapi from '../../../cx-api';
 import { AssetType } from './asset-type';
 import { Step } from './step';
+import * as cxapi from '../../../cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 
@@ -334,6 +333,14 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#virtual-hosted-style-access
  */
 function s3UrlFromUri(uri: string, region: string | undefined) {
-  const url = parseUrl(uri);
-  return `https://${url.hostname}.s3.${region ? `${region}.` : ''}amazonaws.com${url.path}`;
+
+  // will return something like this
+  //[
+  //  's3:',
+  //   '',
+  //  'cdk-hnb659fds-assets-111-${AWS::Region}',
+  //  '21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json'
+  // ]
+  const url = uri.split('/');
+  return `https://${url[2]}.s3.${region ? `${region}.` : ''}amazonaws.com/${url[3]}`;
 }

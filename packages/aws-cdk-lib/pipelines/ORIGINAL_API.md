@@ -207,8 +207,8 @@ library and create `Artifact` objects for the source and Cloud Assembly
 artifacts:
 
 ```ts
-import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { Construct, Stage, Stack, StackProps, StageProps } from 'aws-cdk-lib';
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 
 /**
  * Stack to hold the pipeline

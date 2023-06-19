@@ -1,5 +1,5 @@
 {
-  "$version": "117.0.0",
+  "$version": "126.0.0",
   "PropertyTypes": {
     "AWS::Lightsail::Bucket.AccessRules": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-bucket-accessrules.html",
@@ -1071,9 +1071,6 @@
         "IsAttached": {
           "PrimitiveType": "Boolean"
         },
-        "Location": {
-          "Type": "Location"
-        },
         "Location.AvailabilityZone": {
           "PrimitiveType": "String"
         },
@@ -1114,6 +1111,12 @@
           "PrimitiveType": "String",
           "Required": true,
           "UpdateType": "Immutable"
+        },
+        "Location": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-disk.html#cfn-lightsail-disk-location",
+          "Required": false,
+          "Type": "Location",
+          "UpdateType": "Mutable"
         },
         "SizeInGb": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-disk.html#cfn-lightsail-disk-sizeingb",

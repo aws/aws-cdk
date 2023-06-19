@@ -1,6 +1,6 @@
-import * as lambda from '../../aws-lambda';
 import { Construct } from 'constructs';
 import { ITrigger, Trigger, TriggerOptions } from '.';
+import * as lambda from '../../aws-lambda';
 
 /**
  * Props for `InvokeFunction`.

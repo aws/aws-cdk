@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import { Alarm, Metric, Stats } from '../lib';
 import { PairStatistic, parseStatistic, SingleStatistic } from '../lib/private/statistic';
@@ -30,14 +30,12 @@ describe('Metrics', () => {
       },
     });
 
-
   });
 
   test('can not use invalid period in Metric', () => {
     expect(() => {
       new Metric({ namespace: 'Test', metricName: 'ACount', period: cdk.Duration.seconds(20) });
     }).toThrow(/'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
-
 
   });
 
@@ -49,7 +47,6 @@ describe('Metrics', () => {
     expect(m.with({ period: cdk.Duration.minutes(10) })).toEqual(m);
 
     expect(m.with({ period: cdk.Duration.minutes(5) })).not.toEqual(m);
-
 
   });
 
@@ -65,7 +62,6 @@ describe('Metrics', () => {
       });
     }).toThrow(/Dimension value of 'null' is invalid/);
 
-
   });
 
   testDeprecated('cannot use undefined dimension value', () => {
@@ -79,7 +75,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(/Dimension value of 'undefined' is invalid/);
-
 
   });
 
@@ -98,7 +93,6 @@ describe('Metrics', () => {
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
 
-
   });
 
   test('cannot use long dimension values in dimensionsMap', () => {
@@ -115,7 +109,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
-
 
   });
 
@@ -141,7 +134,6 @@ describe('Metrics', () => {
       } );
     }).toThrow(/The maximum number of dimensions is 10, received 11/);
 
-
   });
 
   test('throws error when there are more than 10 dimensions in dimensionsMap', () => {
@@ -165,7 +157,6 @@ describe('Metrics', () => {
         },
       } );
     }).toThrow(/The maximum number of dimensions is 10, received 11/);
-
 
   });
 
@@ -207,7 +198,6 @@ describe('Metrics', () => {
       EvaluationPeriods: 1,
     });
 
-
   });
 
   test('"with" with a different dimensions property', () => {
@@ -229,7 +219,6 @@ describe('Metrics', () => {
     expect(metric.with({
       dimensionsMap: newDims,
     }).dimensions).toEqual(newDims);
-
 
   });
 
@@ -288,6 +277,7 @@ describe('Metrics', () => {
     checkParsingSingle('p99',    'p',  'percentile',     99);
     checkParsingSingle('P99',    'p',  'percentile',     99);
     checkParsingSingle('p99.99', 'p',  'percentile',     99.99);
+    checkParsingSingle('p100',   'p',  'percentile',     100);
     checkParsingSingle('tm99',   'tm', 'trimmedMean',    99);
     checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
     checkParsingSingle('tc99',   'tc', 'trimmedCount',   99);
@@ -337,8 +327,8 @@ describe('Metrics', () => {
     expect(parseStatistic('TM(10%:1500)').type).toEqual('generic');
     expect(parseStatistic('TM(10)').type).toEqual('generic');
     expect(parseStatistic('TM()').type).toEqual('generic');
-    expect(parseStatistic('TM(0.:)').type).toEqual('generic');
-    expect(parseStatistic('TM(:0.)').type).toEqual('generic');
+    expect(parseStatistic('TM(0.:)').type).toEqual('pair');
+    expect(parseStatistic('TM(:0.)').type).toEqual('pair');
     expect(parseStatistic('()').type).toEqual('generic');
     expect(parseStatistic('(:)').type).toEqual('generic');
     expect(parseStatistic('TM(:)').type).toEqual('generic');

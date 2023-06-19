@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { ContainerOverride } from '..';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { Construct } from 'constructs';
-import { ContainerOverride } from '..';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -71,6 +71,16 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
    */
   readonly launchTarget: IEcsLaunchTarget;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition to the task.
+   * An error will be received if you specify the SERVICE option when running a task.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-propagateTags
+   *
+   * @default - No tags are propagated.
+   */
+  readonly propagatedTagSource?: ecs.PropagatedTagSource;
 }
 
 /**
@@ -292,6 +302,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
+        PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };

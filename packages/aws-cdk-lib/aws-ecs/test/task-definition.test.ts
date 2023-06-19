@@ -229,6 +229,52 @@ describe('task definition', () => {
         Template.fromStack(stack);
       }).toThrow("Port mapping name 'api' cannot appear in both 'Container2' and 'Container'");
     });
+
+    test('You can specify a container ulimits using the dedicated property in ContainerDefinitionOptions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountRootPrincipal(),
+      });
+      const repo = ecr.Repository.fromRepositoryAttributes(
+        stack, 'Repo', {
+          repositoryArn: 'arn:aws:ecr:us-east-1:012345678901:repository/repo',
+          repositoryName: 'repo',
+        },
+      );
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+      });
+      // Creates policy statement before executionRole is defined
+      taskDef.grantRun(role);
+      // Defines executionRole
+      taskDef.addContainer('ECRContainer', {
+        image: ecs.ContainerImage.fromEcrRepository(repo),
+        memoryLimitMiB: 2048,
+        ulimits: [{
+          hardLimit: 128,
+          name: ecs.UlimitName.RSS,
+          softLimit: 128,
+        }],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [{
+          Ulimits: [
+            {
+              HardLimit: 128,
+              Name: 'rss',
+              SoftLimit: 128,
+            },
+          ],
+        }],
+      });
+    });
   });
 
   describe('When importing from an existing Task definition', () => {
@@ -245,7 +291,6 @@ describe('task definition', () => {
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
       expect(taskDefinition.executionRole).toEqual(undefined);
 
-
     });
 
     test('can import a Task Definition using attributes', () => {
@@ -257,6 +302,9 @@ describe('task definition', () => {
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
+      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
       // WHEN
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionAttributes(stack, 'TD_ID', {
@@ -264,15 +312,15 @@ describe('task definition', () => {
         compatibility: expectCompatibility,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
+        executionRole: expectExecutionRole,
       });
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(expectCompatibility);
-      expect(taskDefinition.executionRole).toEqual(undefined);
+      expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
-
 
     });
 
@@ -298,7 +346,6 @@ describe('task definition', () => {
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -320,7 +367,6 @@ describe('task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
 
     });
   });

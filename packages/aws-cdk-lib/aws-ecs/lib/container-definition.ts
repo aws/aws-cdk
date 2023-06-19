@@ -1,7 +1,3 @@
-import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
@@ -9,6 +5,10 @@ import { CfnTaskDefinition } from './ecs.generated';
 import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
+import * as iam from '../../aws-iam';
+import * as secretsmanager from '../../aws-secretsmanager';
+import * as ssm from '../../aws-ssm';
+import * as cdk from '../../core';
 
 /**
  * Specify the secret's version id or version stage
@@ -358,6 +358,11 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_pseudoterminal
    */
   readonly pseudoTerminal?: boolean;
+
+  /**
+   * An array of ulimits to set in the container.
+   */
+  readonly ulimits?: Ulimit[];
 }
 
 /**
@@ -537,6 +542,10 @@ export class ContainerDefinition extends Construct {
     }
 
     this.pseudoTerminal = props.pseudoTerminal;
+
+    if (props.ulimits) {
+      this.addUlimits(...props.ulimits);
+    }
   }
 
   /**
@@ -696,7 +705,6 @@ export class ContainerDefinition extends Construct {
     this._namedPorts.set(pm.name, pm);
   }
 
-
   /**
    * Set HostPort to 0 When netowork mode is Brdige
    */
@@ -709,7 +717,6 @@ export class ContainerDefinition extends Construct {
     newPM.hostPort = 0;
     return newPM;
   }
-
 
   /**
    * Whether this container definition references a specific JSON field of a secret
@@ -1163,7 +1170,6 @@ export class PortMap {
 
 }
 
-
 /**
  * ServiceConnect ValueObjectClass having by ContainerDefinition
  */
@@ -1234,7 +1240,6 @@ export enum Protocol {
    */
   UDP = 'udp',
 }
-
 
 /**
  * Service connect app protocol.

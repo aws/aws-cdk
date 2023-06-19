@@ -11,7 +11,6 @@ const stack = new Stack(app, 'aws-cdk-cloudtrail-inshights-test');
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
 const Trailbucket = new s3.Bucket(stack, 'S3', {
-  encryption: s3.BucketEncryption.UNENCRYPTED,
   removalPolicy: RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -38,7 +37,6 @@ new cloudtrail.Trail(stack, 'Trail', {
     cloudtrail.InsightType.API_ERROR_RATE,
   ],
 });
-
 
 new integ.IntegTest(app, 'aws-cdk-cloudtrail-inshights', {
   testCases: [stack],

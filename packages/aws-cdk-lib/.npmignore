@@ -5,6 +5,7 @@
 !*.d.ts
 !*.js
 test/
+**/test/**
 
 # Coverage
 coverage
@@ -30,6 +31,9 @@ tsconfig.json
 junit.xml
 
 !*.lit.ts
+
+# keep class map for cloudformation-include
+!cloudformation-include/cfn-types-2-classes.json
 
 # exclude source maps as they only work locally
 *.map
