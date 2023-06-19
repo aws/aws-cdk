@@ -252,11 +252,239 @@ describe('log retention', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':log-group:/aws/lambda/',
+                  ':log-group:group:*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      Roles: [
+        {
+          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+  });
+
+  test('propagate tags to multiple log groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('env', 'prod');
+    cdk.Tags.of(stack).add('dept', 'eng');
+
+    // WHEN
+    new LogRetention(stack, 'MyFirstLambda', {
+      logGroupName: 'first-group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: true,
+    });
+
+    new LogRetention(stack, 'MySecondLambda', {
+      logGroupName: 'second-group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: 'first-group',
+      RetentionInDays: 30,
+      Tags: [
+        {
+          Key: 'dept',
+          Value: 'eng',
+        },
+        {
+          Key: 'env',
+          Value: 'prod',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: 'second-group',
+      RetentionInDays: 30,
+      Tags: [
+        {
+          Key: 'dept',
+          Value: 'eng',
+        },
+        {
+          Key: 'env',
+          Value: 'prod',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:ListTagsLogGroup',
+              'logs:TagLogGroup',
+              'logs:UntagLogGroup',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
                   {
-                    Ref: 'MyLambda1AAFB4554',
+                    Ref: 'AWS::Partition',
                   },
-                  ':*',
+                  ':logs:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':log-group:first-group:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'logs:ListTagsLogGroup',
+              'logs:TagLogGroup',
+              'logs:UntagLogGroup',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':log-group:second-group:*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      Roles: [
+        {
+          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+        },
+      ],
+    });
+  });
+
+  // this is testing that the resource provider lambda will have it's policy document correctly
+  // updated even if the first log retention doesn't enable log propagation
+  test('propagate tags to second log group only', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('env', 'prod');
+    cdk.Tags.of(stack).add('dept', 'eng');
+
+    // WHEN
+    new LogRetention(stack, 'MyFirstLambda', {
+      logGroupName: 'first-group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: false,
+    });
+
+    new LogRetention(stack, 'MySeconLambda', {
+      logGroupName: 'second-group',
+      retention: RetentionDays.ONE_MONTH,
+      propagateTags: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: 'second-group',
+      RetentionInDays: 30,
+      Tags: [
+        {
+          Key: 'dept',
+          Value: 'eng',
+        },
+        {
+          Key: 'env',
+          Value: 'prod',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'logs:PutRetentionPolicy',
+              'logs:DeleteRetentionPolicy',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:ListTagsLogGroup',
+              'logs:TagLogGroup',
+              'logs:UntagLogGroup',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':log-group:second-group:*',
                 ],
               ],
             },

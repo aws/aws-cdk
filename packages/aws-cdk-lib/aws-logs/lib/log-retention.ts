@@ -218,7 +218,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         'logs:TagLogGroup',
         'logs:UntagLogGroup',
       ],
-      // only propagate tags to the specific log group.
+      // only propagate tags to the specific log group
       resources: [cdk.Stack.of(this).formatArn({
         service: 'logs',
         resource: 'log-group',
