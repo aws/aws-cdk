@@ -854,7 +854,7 @@ describe('Fargate containers', () => {
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(19),
       }),
-    })).toThrow('ECS Fargate container EcsFargateContainer specifies ephemeralStorageSize at 19 < 21 GB');
+    })).toThrow("ECS Fargate container 'EcsFargateContainer' specifies 'ephemeralStorageSize' at 19 < 21 GB");
 
     expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
       container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
@@ -862,6 +862,6 @@ describe('Fargate containers', () => {
         fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
         ephemeralStorageSize: Size.gibibytes(201),
       }),
-    })).toThrow('ECS Fargate container EcsFargateContainer2 specifies ephemeralStorageSize at 201 > 200 GB');
+    })).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
   });
 });
