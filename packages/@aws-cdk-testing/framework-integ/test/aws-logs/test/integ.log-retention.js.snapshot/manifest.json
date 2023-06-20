@@ -15,12 +15,12 @@
       "properties": {
         "templateFile": "aws-cdk-log-retention-integ.template.json",
         "tags": {
-          "env": "prod"
+          "env": "beta"
         },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/571e38edc71486e21f8b781260a84d37df4ab9f8b326c7642080c5cdfa5a0370.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb5c98cc40418c543e23b58fe4bda8e39f2116e11d4c9906c5c3b977995e4712.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +42,7 @@
             "data": [
               {
                 "Key": "env",
-                "Value": "prod"
+                "Value": "beta"
               }
             ]
           }
@@ -93,24 +93,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyLambdaCCE802FB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCCE802FB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyLambda2254B54D5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambda2254B54D5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -6,7 +6,7 @@ class LogRetentionIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    Tags.of(this).add('env', 'prod');
+    Tags.of(this).add('env', 'beta');
 
     new LogRetention(this, 'MyFirstLambda', {
       logGroupName: 'logRetentionLogGroup',

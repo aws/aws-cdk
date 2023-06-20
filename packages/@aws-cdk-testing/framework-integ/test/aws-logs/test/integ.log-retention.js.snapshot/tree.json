@@ -103,7 +103,7 @@
                         "tags": [
                           {
                             "key": "env",
-                            "value": "prod"
+                            "value": "beta"
                           }
                         ]
                       }
