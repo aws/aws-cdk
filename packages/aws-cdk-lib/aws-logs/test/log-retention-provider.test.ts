@@ -119,8 +119,8 @@ describe('log retention provider', () => {
         RetentionInDays: '30',
         LogGroupName: 'group',
         Tags: [
-          { dept: 'eng' },
-          { env: 'beta' },
+          { Key: 'dept', Value: 'eng' },
+          { Key: 'env', Value: 'beta' },
         ],
       },
     };
@@ -131,7 +131,6 @@ describe('log retention provider', () => {
 
     sinon.assert.calledWith(createLogGroupFake, {
       logGroupName: 'group',
-
     });
 
     sinon.assert.calledWith(putRetentionPolicyFake, {
@@ -162,6 +161,81 @@ describe('log retention provider', () => {
     sinon.assert.notCalled(untagLogGroupFake);
 
     expect(request.isDone()).toEqual(true);
+  });
+
+  test('update event with tag update and deletion', async () => {
+    const error = new Error() as NodeJS.ErrnoException;
+    error.code = 'ResourceAlreadyExistsException';
+
+    const createLogGroupFake = sinon.fake.rejects(error);
+    const putRetentionPolicyFake = sinon.fake.resolves({});
+    const deleteRetentionPolicyFake = sinon.fake.resolves({});
+    const listTagsLogGroupFake = sinon.fake.resolves({});
+    const tagLogGroupFake = sinon.fake.resolves({});
+    const untagLogGroupFake = sinon.fake.resolves({});
+
+    AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagLogGroupFake);
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Update',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        RetentionInDays: '365',
+        LogGroupName: 'group',
+        Tags: [
+          { Key: 'dept', Value: 'eng' },
+          { Key: 'env', Value: 'prod' },
+        ],
+      },
+      OldResourceProperties: {
+        ServiceToken: 'token',
+        LogGroupName: 'group',
+        RetentionInDays: '30',
+        Tags: [
+          { Key: 'dept', Value: 'eng' },
+          { Key: 'env', Value: 'beta' },
+          { Key: 'key', Value: 'value' },
+        ],
+      },
+    };
+
+    const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceUpdateEvent, context);
+
+    sinon.assert.calledWith(createLogGroupFake, {
+      logGroupName: 'group',
+    });
+
+    sinon.assert.calledWith(putRetentionPolicyFake, {
+      logGroupName: 'group',
+      retentionInDays: 365,
+    });
+
+    sinon.assert.notCalled(deleteRetentionPolicyFake);
+
+    sinon.assert.calledWith(listTagsLogGroupFake, {
+      logGroupName: 'group',
+    });
+
+    sinon.assert.calledWith(tagLogGroupFake, {
+      logGroupName: 'group',
+      tags: { env: 'prod' },
+    });
+
+    sinon.assert.calledWith(untagLogGroupFake, {
+      logGroupName: 'group',
+      tags: ['key'],
+    });
+
+    expect(request.isDone()).toEqual(true);
+
   });
 
   test('update event with new log retention', async () => {
