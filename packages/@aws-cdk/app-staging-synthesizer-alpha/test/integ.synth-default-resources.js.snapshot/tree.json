@@ -8,6 +8,14 @@
         "id": "synthesize-default-resources",
         "path": "synthesize-default-resources",
         "children": {
+          "UsingAppStagingSynthesizer--synthesize-default-resources": {
+            "id": "UsingAppStagingSynthesizer--synthesize-default-resources",
+            "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
+            "constructInfo": {
+              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
+              "version": "0.0.0"
+            }
+          },
           "lambda-s3": {
             "id": "lambda-s3",
             "path": "synthesize-default-resources/lambda-s3",

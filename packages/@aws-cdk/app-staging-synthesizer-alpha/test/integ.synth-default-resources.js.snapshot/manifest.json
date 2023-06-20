@@ -78,6 +78,15 @@
             "type": "aws:cdk:logicalId",
             "data": "lambdaecr2615DAF68"
           }
+        ],
+        "UsingDefaultStagingStacksynthesizedefaultresources": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsingDefaultStagingStacksynthesizedefaultresources",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "synthesize-default-resources"
