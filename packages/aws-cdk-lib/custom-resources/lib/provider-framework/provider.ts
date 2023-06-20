@@ -9,6 +9,7 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration } from '../../../core';
+import { builtInCustomResourceNodeRuntime } from '../aws-custom-resource';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -207,7 +208,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
         exclude: ['*.ts'],
       }),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: builtInCustomResourceNodeRuntime(this),
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,
