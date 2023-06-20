@@ -219,11 +219,11 @@ export abstract class ParamsAndSecretsLayerVersion {
     }
 
     return {
-      PARAMETERS_AND_SECRETS_EXTENSION_CACHE_ENABLED: this.options.cacheEnabled ?? true,
-      PARAMETERS_AND_SECRETS_EXTENSION_CACHE_SIZE: this.options.cacheSize ?? 1000,
-      PARAMETERS_AND_SECRETS_EXTENSION_HTTP_PORT: this.options.httpPort ?? 2773,
-      PARAMETERS_AND_SECRETS_EXTENSION_LOG_LEVEL: this.options.logLevel ?? ParamsAndSecretsLogLevel.INFO,
-      PARAMETERS_AND_SECRETS_EXTENSION_MAX_CONNECTIONS: this.options.maxConnections ?? 3,
+      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: this.options.cacheEnabled ?? true,
+      PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: this.options.cacheSize ?? 1000,
+      PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: this.options.httpPort ?? 2773,
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: this.options.logLevel ?? ParamsAndSecretsLogLevel.INFO,
+      PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: this.options.maxConnections ?? 3,
       SECRETS_MANAGER_TIMEOUT_MILLIS: this.options.secretsManagerTimeout?.toMilliseconds() ?? 0,
       SECRETS_MANAGER_TTL: this.options.secretsManagerTtl?.toSeconds() ?? 300,
       SSM_PARAMETER_STORE_TIMEOUT_MILLIS: this.options.parameterStoreTimeout?.toMilliseconds() ?? 0,
