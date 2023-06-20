@@ -1055,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ead7633a62324a863decad87865622f87327c23db4a759091be53786e35bf9a6.json"
+       "/f37ff6102d8c66c7e975e819897b6c06b204d7c8746814b63d17ac5649b36ec7.json"
       ]
      ]
     }
@@ -1082,7 +1082,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b5622c78ca471f115acfe1051418184a67b74ced69b0eb8a4b39f6c0ecfdcded.json"
+       "/04a24118ca3c7e7cfae0fd32f06442f114cc6ac1a9f4964d07bcf76bba996394.json"
       ]
      ]
     },
@@ -1856,7 +1856,15 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 900
    },
    "DependsOn": [
