@@ -389,7 +389,7 @@
                           },
                           {
                             "key": "env",
-                            "value": "beta"
+                            "value": "prod"
                           }
                         ]
                       }
@@ -430,7 +430,7 @@
                       },
                       {
                         "key": "env",
-                        "value": "beta"
+                        "value": "prod"
                       }
                     ]
                   }

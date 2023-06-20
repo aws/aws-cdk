@@ -12,6 +12,7 @@ class LogRetentionIntegStack extends Stack {
       logGroupName: 'logRetentionLogGroup',
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
+      propagateTags: false,
     });
 
     // the order here is specifically setup to make sure the resource provider will be granted

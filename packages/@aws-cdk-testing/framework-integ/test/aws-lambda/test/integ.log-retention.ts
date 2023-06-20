@@ -23,7 +23,7 @@ const oneMonthFunction = new lambda.Function(stack, 'OneMonth', {
   propagateTagsToLogGroup: true,
   functionName: 'OneMonthFunction',
 });
-cdk.Tags.of(oneMonthFunction).add('env', 'beta');
+cdk.Tags.of(oneMonthFunction).add('env', 'prod');
 cdk.Tags.of(oneMonthFunction).add('dept', 'eng');
 
 const oneYearFunction = new lambda.Function(stack, 'OneYear', {
