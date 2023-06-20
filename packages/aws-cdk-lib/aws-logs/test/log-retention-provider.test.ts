@@ -3,6 +3,7 @@ import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as provider from '../lib/log-retention-provider';
+import { Aws } from '../../core';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
@@ -94,6 +95,74 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
+  });
+
+  test('create event with tags', async () => {
+    const createLogGroupFake = sinon.fake.resolves({});
+    const putRetentionPolicyFake = sinon.fake.resolves({});
+    const deleteRetentionPolicyFake = sinon.fake.resolves({});
+    const listTagsLogGroupFake = sinon.fake.resolves({});
+    const tagLogGroupFake = sinon.fake.resolves({});
+    const untagLogGroupFake = sinon.fake.resolves({});
+
+    AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
+    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagLogGroupFake);
+
+    const event = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        RetentionInDays: '30',
+        LogGroupName: 'group',
+        Tags: [
+          { dept: 'eng' },
+          { env: 'beta' },
+        ],
+      },
+    };
+
+    const request = createRequest('SUCCESS');
+
+    await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
+
+    sinon.assert.calledWith(createLogGroupFake, {
+      logGroupName: 'group',
+
+    });
+
+    sinon.assert.calledWith(putRetentionPolicyFake, {
+      logGroupName: 'group',
+      retentionInDays: 30,
+    });
+
+    sinon.assert.calledWith(createLogGroupFake, {
+      logGroupName: '/aws/lambda/provider',
+    });
+
+    sinon.assert.calledWith(putRetentionPolicyFake, {
+      logGroupName: '/aws/lambda/provider',
+      retentionInDays: 1,
+    });
+
+    sinon.assert.notCalled(deleteRetentionPolicyFake);
+
+    sinon.assert.calledWith(listTagsLogGroupFake, {
+      logGroupName: 'group',
+    });
+
+    sinon.assert.calledWith(tagLogGroupFake, {
+      logGroupName: 'group',
+      tags: { dept: 'eng', env: 'beta' },
+    });
+
+    sinon.assert.notCalled(untagLogGroupFake);
+
+    expect(request.isDone()).toEqual(true);
   });
 
   test('update event with new log retention', async () => {
