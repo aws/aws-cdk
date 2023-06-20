@@ -1,8 +1,8 @@
-import * as ec2 from '../../../aws-ec2';
-import * as cdk from '../../../core';
 import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
+import * as ec2 from '../../../aws-ec2';
+import * as cdk from '../../../core';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -189,13 +189,13 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   public abstract readonly firstLoadBalancerFullName: string;
 
   /**
-   * Health check for the members of this target group
-   */
-  /**
    * A token representing a list of ARNs of the load balancers that route traffic to this target group
    */
   public readonly loadBalancerArns: string;
 
+  /**
+   * Health check for the members of this target group
+   */
   public healthCheck: HealthCheck;
 
   /**

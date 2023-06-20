@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../aws-codepipeline-actions';
 import { SecretValue } from '../../../core';
-import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
 export interface LegacyTestGitHubNpmPipelineExtraProps {
@@ -32,7 +32,6 @@ export class LegacyTestGitHubNpmPipeline extends cdkp.CdkPipeline {
     this.cloudAssemblyArtifact = cloudAssemblyArtifact;
   }
 }
-
 
 export class TestGitHubAction extends codepipeline_actions.GitHubSourceAction {
   constructor(sourceArtifact: codepipeline.Artifact) {

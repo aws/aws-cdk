@@ -11,7 +11,6 @@ describe('Batch job event target', () => {
   let jobQueue: batch.IJobQueue;
   let jobDefinition: batch.IJobDefinition;
 
-
   beforeEach(() => {
     stack = new Stack();
     jobQueue = new batch.JobQueue(stack, 'MyQueue', {

@@ -1,11 +1,11 @@
+import { Construct, IConstruct, Node } from 'constructs';
+import * as _ from 'lodash';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as notifications from '../../../aws-codestarnotifications';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { Construct, IConstruct, Node } from 'constructs';
-import * as _ from 'lodash';
 import * as cpactions from '../../lib';
 
 describe('Pipeline Actions', () => {
@@ -106,7 +106,6 @@ describe('Pipeline Actions', () => {
         ],
       );
 
-
     });
   });
 
@@ -178,7 +177,6 @@ describe('Pipeline Actions', () => {
           },
         ],
       );
-
 
     });
   });

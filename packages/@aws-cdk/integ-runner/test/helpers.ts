@@ -48,7 +48,6 @@ export class MockCdkProvider {
     return this.mocks as Required<MockCdkMocks>;
   }
 
-
   /**
    * Run a test of the testSnapshot method
    * @param integTestFile This name is used to determined the expected (committed) snapshot

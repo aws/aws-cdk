@@ -1,5 +1,5 @@
 import { join } from 'path';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 
@@ -67,7 +67,6 @@ describe('fromCloudAssemblyDirectoryProducer', () => {
     expect(testEnv.mock.calls[0][0]).not.toHaveProperty('CDK_DEBUG');
   });
 });
-
 
 describe('fromDirectory', () => {
   const cdk = AwsCdkCli.fromCdkAppDirectory(join(__dirname, 'test-app'));

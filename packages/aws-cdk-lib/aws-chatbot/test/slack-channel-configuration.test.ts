@@ -254,7 +254,7 @@ describe('SlackChannelConfiguration', () => {
 
   test('should throw error if ARN invalid', () => {
     expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/my-slack')).toThrow(
-      /The ARN of a Slack integration must be in the form: arn:aws:chatbot:{region}:{account}:chat-configuration\/slack-channel\/{slackChannelName}/,
+      /The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration\/slack-channel\/<slackChannelName>/,
     );
   });
 

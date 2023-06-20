@@ -1,6 +1,6 @@
-import { IResource } from '../../core';
 import { IDependable } from 'constructs';
 import { IConnectable } from './connections';
+import { IResource } from '../../core';
 
 /**
  * A client VPN endpoint

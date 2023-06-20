@@ -1,9 +1,9 @@
-import { IResource, Lazy, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
+import { IResource, Lazy, Resource } from '../../core';
 
 /**
  * A backup plan
@@ -192,6 +192,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       enableContinuousBackup: rule.props.enableContinuousBackup,
       targetBackupVault: vault.backupVaultName,
       copyActions: rule.props.copyActions?.map(this.planCopyActions),
+      recoveryPointTags: rule.props.recoveryPointTags,
     });
   }
 
