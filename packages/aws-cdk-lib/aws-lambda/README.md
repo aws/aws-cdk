@@ -934,7 +934,7 @@ See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocat
 Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
 log data set to never expire.
 
-The `logRetention` property can be used to set a different expiration period.
+The `logRetention` property can be used to set a different expiration period. In addition to this, `Tags` can be propagated to the `logGroup` by setting the `propagateTagsToLogGroup` property to true.
 
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
