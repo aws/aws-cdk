@@ -213,7 +213,7 @@ exports[`built-in data is correct 1`] = `
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
   "ap-south-2": {
-    "cdkMetadataResourceAvailable": true,
+    "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
     "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
@@ -598,7 +598,7 @@ exports[`built-in data is correct 1`] = `
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
   "eu-south-2": {
-    "cdkMetadataResourceAvailable": true,
+    "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
     "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
