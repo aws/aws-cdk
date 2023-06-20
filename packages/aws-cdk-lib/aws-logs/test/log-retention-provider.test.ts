@@ -170,7 +170,7 @@ describe('log retention provider', () => {
     const createLogGroupFake = sinon.fake.rejects(error);
     const putRetentionPolicyFake = sinon.fake.resolves({});
     const deleteRetentionPolicyFake = sinon.fake.resolves({});
-    const listTagsLogGroupFake = sinon.fake.resolves({});
+    const listTagsLogGroupFake = sinon.fake.resolves({ tags: { dept: 'eng', env: 'beta', key: 'value' } });
     const tagLogGroupFake = sinon.fake.resolves({});
     const untagLogGroupFake = sinon.fake.resolves({});
 
@@ -197,11 +197,6 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         LogGroupName: 'group',
         RetentionInDays: '30',
-        Tags: [
-          { Key: 'dept', Value: 'eng' },
-          { Key: 'env', Value: 'beta' },
-          { Key: 'key', Value: 'value' },
-        ],
       },
     };
 
