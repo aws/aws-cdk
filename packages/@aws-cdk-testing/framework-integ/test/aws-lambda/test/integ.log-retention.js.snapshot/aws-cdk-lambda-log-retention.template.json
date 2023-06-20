@@ -124,30 +124,56 @@
         "logs:UntagLogGroup"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":logs:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":log-group:/aws/lambda/",
-          {
-           "Ref": "OneMonth64E966BF"
-          },
-          ":*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/lambda/",
+           {
+            "Ref": "OneMonth64E966BF"
+           },
+           ":*"
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/lambda/",
+           {
+            "Ref": "OneYearA82EBDA9"
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -327,7 +353,7 @@
     "Tags": [
      {
       "Key": "dept",
-      "Value": "sales"
+      "Value": "ops"
      }
     ]
    }
@@ -350,7 +376,7 @@
     "Tags": [
      {
       "Key": "dept",
-      "Value": "sales"
+      "Value": "ops"
      }
     ]
    },
@@ -378,7 +404,13 @@
       ]
      ]
     },
-    "RetentionInDays": 365
+    "RetentionInDays": 365,
+    "Tags": [
+     {
+      "Key": "dept",
+      "Value": "ops"
+     }
+    ]
    }
   }
  },

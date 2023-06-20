@@ -34,6 +34,6 @@ const oneYearFunction = new lambda.Function(stack, 'OneYear', {
   functionName: 'OneYearFunction',
   propagateTagsToLogGroup: true,
 });
-cdk.Tags.of(oneYearFunction).add('dept', 'sales');
+cdk.Tags.of(oneYearFunction).add('dept', 'ops');
 
 app.synth();

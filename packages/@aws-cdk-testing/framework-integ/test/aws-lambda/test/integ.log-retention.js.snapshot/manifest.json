@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/faf991159f2139c24c0814fce31b8841e9b1d66b27abd1b47a06ea3574f432e1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d12a6e5ecc07a25810f510bbf0fdd67c8f4bd925c37d638b032e95fa243f997c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,10 +42,7 @@
         "/aws-cdk-lambda-log-retention/OneWeek/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OneWeekFE56F6A4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "OneWeekFE56F6A4"
           }
         ],
         "/aws-cdk-lambda-log-retention/OneWeek/LogRetention/Resource": [
@@ -87,10 +84,7 @@
         "/aws-cdk-lambda-log-retention/OneMonth/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OneMonth64E966BF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "OneMonth64E966BF"
           }
         ],
         "/aws-cdk-lambda-log-retention/OneMonth/LogRetention/Resource": [
@@ -108,10 +102,7 @@
         "/aws-cdk-lambda-log-retention/OneYear/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OneYearA82EBDA9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "OneYearA82EBDA9"
           }
         ],
         "/aws-cdk-lambda-log-retention/OneYear/LogRetention/Resource": [
