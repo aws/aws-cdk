@@ -228,6 +228,7 @@
     "./aws-ce": "./aws-ce/index.js",
     "./aws-certificatemanager": "./aws-certificatemanager/index.js",
     "./aws-chatbot": "./aws-chatbot/index.js",
+    "./aws-cleanrooms": "./aws-cleanrooms/index.js",
     "./aws-cloud9": "./aws-cloud9/index.js",
     "./aws-cloudformation": "./aws-cloudformation/index.js",
     "./aws-cloudfront": "./aws-cloudfront/index.js",
