@@ -48,7 +48,7 @@
       "/bin/bash ./scripts/minify-sources.sh"
     ],
     "post": [
-      "ts-node ./scripts/verify-stripped-exp.ts"
+      "npx ts-node ./scripts/verify-stripped-exp.ts"
     ]
   },
   "pkglint": {
