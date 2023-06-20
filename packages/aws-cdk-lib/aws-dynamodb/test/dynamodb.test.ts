@@ -24,7 +24,15 @@ import {
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
-jest.mock('../../custom-resources');
+jest.mock('../../custom-resources', () => {
+  const autoMock = jest.createMockFromModule('../../custom-resources');
+  const { builtInCustomResourceNodeRuntime } = jest.requireActual('../../custom-resources');
+  return {
+    // @ts-ignore
+    ...autoMock,
+    builtInCustomResourceNodeRuntime,
+  };
+});
 
 /* eslint-disable quote-props */
 
