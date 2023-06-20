@@ -55,6 +55,7 @@ jest.mock('../lib/logging', () => ({
 
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
@@ -62,7 +63,6 @@ import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
