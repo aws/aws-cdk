@@ -1,7 +1,7 @@
 #!/bin/bash
 
 scriptdir=$(cd $(dirname $0) && pwd)
-customresourcedir=${scriptdir}/../../../custom-resource-handlers
+customresourcedir=$(node -p "path.dirname(require.resolve('@aws-cdk/custom-resource-handlers/package.json'))")
 packagedir=${scriptdir}/..
 
 cd ${packagedir}
