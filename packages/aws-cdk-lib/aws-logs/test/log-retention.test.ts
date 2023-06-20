@@ -150,23 +150,23 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
+      'PolicyDocument': {
+        'Statement': [
           {
-            Action: [
+            'Action': [
               'logs:PutRetentionPolicy',
               'logs:DeleteRetentionPolicy',
             ],
-            Effect: 'Allow',
-            Resource: '*',
+            'Effect': 'Allow',
+            'Resource': '*',
           },
         ],
-        Version: '2012-10-17',
+        'Version': '2012-10-17',
       },
-      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-      Roles: [
+      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      'Roles': [
         {
-          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
     });
