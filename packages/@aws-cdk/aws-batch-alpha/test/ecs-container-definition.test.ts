@@ -8,7 +8,7 @@ import * as efs from 'aws-cdk-lib/aws-efs';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { Size, Stack, App } from 'aws-cdk-lib';
+import { Size, Stack } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
@@ -759,8 +759,7 @@ describe('EC2 containers', () => {
 describe('Fargate containers', () => {
   // GIVEN
   beforeEach(() => {
-    const app = new App();
-    stack = new Stack(app);
+    stack = new Stack();
     pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
   });
 
