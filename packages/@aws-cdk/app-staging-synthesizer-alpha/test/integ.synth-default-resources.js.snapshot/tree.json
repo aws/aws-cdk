@@ -8,6 +8,14 @@
         "id": "synthesize-default-resources",
         "path": "synthesize-default-resources",
         "children": {
+          "UsingAppStagingSynthesizer--synthesize-default-resources": {
+            "id": "UsingAppStagingSynthesizer--synthesize-default-resources",
+            "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
+            "constructInfo": {
+              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
+              "version": "0.0.0"
+            }
+          },
           "lambda-s3": {
             "id": "lambda-s3",
             "path": "synthesize-default-resources/lambda-s3",
@@ -1150,7 +1158,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
           "version": "0.0.0"
         }
       },
@@ -1167,7 +1175,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1213,7 +1221,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.52"
         }
       }
     },
