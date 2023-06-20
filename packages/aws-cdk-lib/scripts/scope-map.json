@@ -92,6 +92,9 @@
   "aws-chatbot": [
     "AWS::Chatbot"
   ],
+  "aws-cleanrooms": [
+    "AWS::CleanRooms"
+  ],
   "aws-cloud9": [
     "AWS::Cloud9"
   ],

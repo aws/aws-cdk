@@ -186,7 +186,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.52"
                 }
               },
               "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128": {
@@ -278,7 +278,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.52"
                 }
               },
               "Replicaeu-west-2": {
@@ -526,7 +526,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "s3Key": "5a7f3302fd1dfc742444432a2241181566528964eb1e6046d3a5068b6ed04fe0.zip"
+                          "s3Key": "dd1fc9a927cd28334a7c7f1625e7804720b41a7d1f429f1f72a7d71883e80118.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -535,7 +535,7 @@
                           ]
                         },
                         "handler": "index.onEventHandler",
-                        "runtime": "nodejs14.x",
+                        "runtime": "nodejs16.x",
                         "timeout": 300
                       }
                     },
@@ -621,7 +621,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "s3Key": "5a7f3302fd1dfc742444432a2241181566528964eb1e6046d3a5068b6ed04fe0.zip"
+                          "s3Key": "dd1fc9a927cd28334a7c7f1625e7804720b41a7d1f429f1f72a7d71883e80118.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -630,7 +630,7 @@
                           ]
                         },
                         "handler": "index.isCompleteHandler",
-                        "runtime": "nodejs14.x",
+                        "runtime": "nodejs16.x",
                         "timeout": 30
                       }
                     },
@@ -862,7 +862,7 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "runtime": "nodejs16.x",
                             "timeout": 900
                           }
                         },
@@ -1080,7 +1080,7 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs14.x",
+                            "runtime": "nodejs16.x",
                             "timeout": 900
                           }
                         },
@@ -1298,7 +1298,7 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs14.x",
+                            "runtime": "nodejs16.x",
                             "timeout": 900
                           }
                         },
@@ -1451,7 +1451,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.9"
+                      "version": "10.2.52"
                     }
                   }
                 },
@@ -1520,7 +1520,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/f6ae264496749d2292e17e35a350434ed392e44c0065cfe1b72f909ba2d6e3ba.json"
+                          "/afe5e8386d739f3eea84006eca838823c962e82a7bb04566c5a325d3723f5323.json"
                         ]
                       ]
                     },
@@ -1539,7 +1539,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.9"
+              "version": "10.2.52"
             }
           },
           "BootstrapVersion": {
@@ -1577,7 +1577,7 @@
                 "path": "cdk-dynamodb-global-20191121-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1623,7 +1623,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.52"
         }
       }
     },

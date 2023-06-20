@@ -33,6 +33,7 @@ export * as aws_cassandra from './aws-cassandra';
 export * as aws_ce from './aws-ce';
 export * as aws_certificatemanager from './aws-certificatemanager';
 export * as aws_chatbot from './aws-chatbot';
+export * as aws_cleanrooms from './aws-cleanrooms';
 export * as aws_cloud9 from './aws-cloud9';
 export * as aws_cloudformation from './aws-cloudformation';
 export * as aws_cloudfront from './aws-cloudfront';
