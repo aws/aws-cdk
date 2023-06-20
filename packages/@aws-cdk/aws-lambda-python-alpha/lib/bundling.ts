@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
+import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume, ILocalBundling } from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
@@ -73,6 +73,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly bundlingFileAccess?: BundlingFileAccess;
+  public readonly local?: ILocalBundling;
 
   constructor(props: BundlingProps) {
     const {
@@ -114,6 +115,7 @@ export class Bundling implements CdkBundlingOptions {
     this.securityOpt = props.securityOpt;
     this.network = props.network;
     this.bundlingFileAccess = props.bundlingFileAccess;
+    this.local = props.local;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

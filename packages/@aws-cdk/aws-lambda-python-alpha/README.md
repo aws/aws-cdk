@@ -233,6 +233,36 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
+## Local bundling
+
+Use `local` to specify a local bundling provider. The provider implements a
+method `tryBundle()` which should return `true` if local bundling was performed.
+If `false` is returned, Docker bundling will be done:
+
+ ```ts
+import * as cdk from 'aws-cdk-lib';
+
+class MyBundle implements cdk.ILocalBundling {
+  public tryBundle(outputDir: string, options: cdk.BundlingOptions) {
+    const canRunLocally = true // replace with actual logic
+    if (canRunLocally) {
+      // perform local bundling here
+      return true;
+    }
+    return false;
+  }
+}
+
+const entry = '/path/to/function';
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    local: new MyBundle()
+  },
+});
+```
+
 ## Command hooks
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:

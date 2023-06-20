@@ -554,3 +554,25 @@ test('with command hooks', () => {
     }),
   }));
 });
+
+test('Local bundling is used', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+
+  const local = {
+    tryBundle() {
+      return true;
+    },
+  };
+
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    local,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      local,
+    }),
+  }));
+});

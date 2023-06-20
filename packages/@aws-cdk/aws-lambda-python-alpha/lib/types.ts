@@ -1,4 +1,4 @@
-import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from 'aws-cdk-lib/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions, ILocalBundling } from 'aws-cdk-lib/core';
 
 /**
  * Options for bundling
@@ -98,6 +98,17 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   */
+  readonly local?: ILocalBundling;
 }
 
 /**
