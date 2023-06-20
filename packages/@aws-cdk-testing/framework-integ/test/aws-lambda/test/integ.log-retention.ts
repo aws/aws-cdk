@@ -15,7 +15,7 @@ new lambda.Function(stack, 'OneWeek', {
 
 // propagating tags to log group here is testing that the lambda resource provider is updated
 // with correct permissions - otherwise the integ test will fail here
-const fn = new lambda.Function(stack, 'OneMonth', {
+const oneMonthFunction = new lambda.Function(stack, 'OneMonth', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
@@ -23,15 +23,17 @@ const fn = new lambda.Function(stack, 'OneMonth', {
   propagateTagsToLogGroup: true,
   functionName: 'OneMonthFunction',
 });
-cdk.Tags.of(fn).add('env', 'beta');
-cdk.Tags.of(fn).add('dept', 'eng');
+cdk.Tags.of(oneMonthFunction).add('env', 'beta');
+cdk.Tags.of(oneMonthFunction).add('dept', 'eng');
 
-new lambda.Function(stack, 'OneYear', {
+const oneYearFunction = new lambda.Function(stack, 'OneYear', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
   logRetention: logs.RetentionDays.ONE_YEAR,
   functionName: 'OneYearFunction',
+  propagateTagsToLogGroup: true,
 });
+cdk.Tags.of(oneYearFunction).add('dept', 'sales');
 
 app.synth();

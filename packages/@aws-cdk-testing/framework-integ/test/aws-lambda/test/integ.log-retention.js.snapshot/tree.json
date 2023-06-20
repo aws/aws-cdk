@@ -55,16 +55,6 @@
                               ]
                             ]
                           }
-                        ],
-                        "tags": [
-                          {
-                            "key": "dept",
-                            "value": "eng"
-                          },
-                          {
-                            "key": "env",
-                            "value": "beta"
-                          }
                         ]
                       }
                     },
@@ -94,19 +84,8 @@
                         "Arn"
                       ]
                     },
-                    "functionName": "OneWeekFunction",
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x",
-                    "tags": [
-                      {
-                        "key": "dept",
-                        "value": "eng"
-                      },
-                      {
-                        "key": "env",
-                        "value": "beta"
-                      }
-                    ]
+                    "runtime": "nodejs14.x"
                   }
                 },
                 "constructInfo": {
@@ -242,13 +221,42 @@
                                 {
                                   "Action": [
                                     "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
                                     "logs:ListTagsLogGroup",
-                                    "logs:PutRetentionPolicy",
                                     "logs:TagLogGroup",
                                     "logs:UntagLogGroup"
                                   ],
                                   "Effect": "Allow",
-                                  "Resource": "*"
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/",
+                                        {
+                                          "Ref": "OneMonth64E966BF"
+                                        },
+                                        ":*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -347,6 +355,16 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "dept",
+                            "value": "eng"
+                          },
+                          {
+                            "key": "env",
+                            "value": "beta"
+                          }
                         ]
                       }
                     },
@@ -376,8 +394,19 @@
                         "Arn"
                       ]
                     },
+                    "functionName": "OneMonthFunction",
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs14.x",
+                    "tags": [
+                      {
+                        "key": "dept",
+                        "value": "eng"
+                      },
+                      {
+                        "key": "env",
+                        "value": "beta"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -464,6 +493,12 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "dept",
+                            "value": "sales"
+                          }
                         ]
                       }
                     },
@@ -493,8 +528,15 @@
                         "Arn"
                       ]
                     },
+                    "functionName": "OneYearFunction",
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs14.x",
+                    "tags": [
+                      {
+                        "key": "dept",
+                        "value": "sales"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
