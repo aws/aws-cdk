@@ -1,2 +1,2 @@
 // AWS::CleanRooms Cloudformation Resources
-export * from './../../cleanrooms.generated';
+export * from './cleanrooms.generated';
