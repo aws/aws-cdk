@@ -30,12 +30,12 @@ class TestStack extends Stack {
     });
 
     const localCode = `
-    from http import HTTPStatus
+from http import HTTPStatus
 
-    def handler(event, context):
-      print('No dependencies')
-      return HTTPStatus.OK.value
-    `;
+def handler(event, context):
+  print('No dependencies')
+  return HTTPStatus.OK.value
+`;
 
     const localFunction = new lambda.PythonFunction(this, 'local_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
