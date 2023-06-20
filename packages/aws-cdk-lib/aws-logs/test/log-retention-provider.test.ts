@@ -3,7 +3,6 @@ import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import * as provider from '../lib/log-retention-provider';
-import { Aws } from '../../core';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
