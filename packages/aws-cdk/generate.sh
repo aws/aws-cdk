@@ -20,8 +20,6 @@ HERE
   # Check out the submodule if it's not there already
   if [ ! -f "vendor/noctilucent/Cargo.toml" ]; then
     git -C ./vendor clone https://github.com/iph/noctilucent.git
-    git -C ./vendor/noctilucent reset --hard HEAD
-    git -C ./vendor/noctilucent git fetch && git checkout 6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1
   fi
 
   # update the package to the pinned commit hash
