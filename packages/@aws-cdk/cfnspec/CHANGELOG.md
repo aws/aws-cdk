@@ -1,3 +1,54 @@
+# CloudFormation Resource Specification v127.0.0
+
+## New Resource Types
+
+* AWS::CleanRooms::Collaboration
+* AWS::CleanRooms::ConfiguredTable
+* AWS::CleanRooms::ConfiguredTableAssociation
+* AWS::CleanRooms::Membership
+* AWS::CustomerProfiles::EventStream
+* AWS::MediaConnect::Bridge
+* AWS::MediaConnect::BridgeOutput
+* AWS::MediaConnect::BridgeSource
+* AWS::MediaConnect::Gateway
+* AWS::RDS::CustomDBEngineVersion
+* AWS::SecurityHub::AutomationRule
+* AWS::SecurityHub::Standard
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::Channel Preset (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction EndTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::ApplicationAutoScaling::ScalableTarget.ScheduledAction StartTime.PrimitiveType (__changed__)
+  * Old: String
+  * New: Timestamp
+* AWS::DynamoDB::Table.TimeToLiveSpecification AttributeName.Required (__changed__)
+  * Old: true
+  * New: false
+
+# CloudFormation Resource Specification (us-west-2) v127.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v126.0.0
 
 ## New Resource Types

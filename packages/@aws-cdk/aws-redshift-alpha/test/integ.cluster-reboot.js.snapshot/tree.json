@@ -647,7 +647,15 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "DefaultCrNodeVersionMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -876,6 +884,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "aws-cdk-redshift-cluster-create/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1548,7 +1564,15 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "DefaultCrNodeVersionMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -1780,6 +1804,14 @@
               "version": "0.0.0"
             }
           },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "aws-cdk-redshift-cluster-update/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-redshift-cluster-update/Exports",
@@ -1803,7 +1835,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.52"
             }
           },
           "BootstrapVersion": {
@@ -1841,7 +1873,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1861,7 +1893,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.52"
                             }
                           }
                         },
@@ -1933,7 +1965,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.52"
                     }
                   },
                   "AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce": {
@@ -1949,7 +1981,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.52"
                             }
                           }
                         },
@@ -2003,7 +2035,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.52"
                             }
                           }
                         },
@@ -2083,7 +2115,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.52"
         }
       }
     },
