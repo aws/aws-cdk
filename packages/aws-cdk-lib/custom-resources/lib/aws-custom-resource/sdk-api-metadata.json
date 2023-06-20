@@ -1307,5 +1307,12 @@
   "paymentcryptographydata": {
     "prefix": "payment-cryptography-data",
     "name": "PaymentCryptographyData"
+  },
+  "codegurusecurity": {
+    "prefix": "codeguru-security",
+    "name": "CodeGuruSecurity"
+  },
+  "verifiedpermissions": {
+    "name": "VerifiedPermissions"
   }
 }
