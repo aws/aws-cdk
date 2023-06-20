@@ -617,7 +617,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the stack in a region other than us-east-1 then you must also set \`crossRegionReferences=true\` on the
       stack.
       `,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: '2.61.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property',
   },
@@ -768,7 +768,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       _all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
       removing these ingress/egress rules in order to restrict access to the default security group.
     `,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: '2.78.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: `
       To allow all ingress/egress traffic to the VPC default security group you
@@ -787,7 +787,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If the flag is not set then only a single RequestValidator can be added in this way.
       Any additional RequestValidators have to be created directly with \`new RequestValidator\`.
     `,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: '2.78.0' },
     recommendedValue: true,
   },
 
@@ -802,7 +802,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If the flag is not set then a raw string is passed as the Alias name and no
       implicit dependencies will be set.
     `,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: '2.83.0' },
     recommendedValue: true,
   },
 
@@ -820,7 +820,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
       is not viable in some productive setups.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.84.0' },
     recommendedValue: true,
   },
 
