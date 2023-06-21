@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-msk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0230859429222f75f9de60f31496539edc4f83e5adb84de16f8ef69c83327082.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3a4e36b491a4148f3c14c5b1aa2ce7468bba5c91ca268b9a85a9ddb8710613e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -510,7 +510,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83641d92419bd3438409bf1cbcfba15e216c23225c08b735d15a2787a7bb6b6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97cb8cb3980ea219ddf763ae83a20525c6dae04dba093f63b2d579cd2e2ed432.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -527,16 +527,16 @@
         "MskLoggingDefaultTestDeployAssertC2F074AF.assets"
       ],
       "metadata": {
-        "/MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default/Default": [
+        "/MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2"
+            "data": "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f"
           }
         ],
-        "/MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertionResults": [
+        "/MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3listObjectsV2"
+            "data": "AssertionResultsAwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f"
           }
         ],
         "/MskLogging/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

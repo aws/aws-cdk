@@ -3,7 +3,8 @@
   "testCases": {
     "integ-tests/DefaultTest": {
       "stacks": [
-        "synthesize-default-resources"
+        "synthesize-default-resources",
+        "StagingStack-default-resources-ACCOUNT-REGION"
       ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
