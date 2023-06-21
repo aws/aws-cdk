@@ -384,6 +384,10 @@
                         ],
                         "tags": [
                           {
+                            "key": "dept",
+                            "value": "sales"
+                          },
+                          {
                             "key": "env",
                             "value": "prod"
                           }
@@ -420,6 +424,10 @@
                     "handler": "index.handler",
                     "runtime": "nodejs14.x",
                     "tags": [
+                      {
+                        "key": "dept",
+                        "value": "sales"
+                      },
                       {
                         "key": "env",
                         "value": "prod"
@@ -515,7 +523,7 @@
                         "tags": [
                           {
                             "key": "dept",
-                            "value": "sales"
+                            "value": "eng"
                           }
                         ]
                       }
@@ -552,7 +560,7 @@
                     "tags": [
                       {
                         "key": "dept",
-                        "value": "sales"
+                        "value": "eng"
                       }
                     ]
                   }

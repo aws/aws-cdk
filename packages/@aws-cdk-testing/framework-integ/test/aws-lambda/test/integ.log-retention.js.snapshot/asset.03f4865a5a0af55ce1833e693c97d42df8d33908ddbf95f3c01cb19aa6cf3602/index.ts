@@ -196,7 +196,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       // Act on the target log group
       await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
-      if (event.ResourceProperties.PropagateTags) {
+      if (event.ResourceProperties.PropagateTags === 'true') {
         await setLogGroupTags(logGroupName, event.ResourceProperties.Tags ?? [], logGroupRegion, retryOptions);
       }
 

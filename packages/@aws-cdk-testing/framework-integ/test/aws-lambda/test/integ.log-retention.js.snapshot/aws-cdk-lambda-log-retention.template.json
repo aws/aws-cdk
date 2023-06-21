@@ -203,7 +203,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c8b9e2f8be1153c00b24ae690ff22e78f380cbd52025575418fb840e6a6c78a.zip"
+     "S3Key": "03f4865a5a0af55ce1833e693c97d42df8d33908ddbf95f3c01cb19aa6cf3602.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -248,6 +248,10 @@
     ],
     "Tags": [
      {
+      "Key": "dept",
+      "Value": "sales"
+     },
+     {
       "Key": "env",
       "Value": "prod"
      }
@@ -270,6 +274,10 @@
     "Handler": "index.handler",
     "Runtime": "nodejs14.x",
     "Tags": [
+     {
+      "Key": "dept",
+      "Value": "sales"
+     },
      {
       "Key": "env",
       "Value": "prod"
@@ -303,6 +311,10 @@
     "RetentionInDays": 30,
     "PropagateTags": true,
     "Tags": [
+     {
+      "Key": "dept",
+      "Value": "sales"
+     },
      {
       "Key": "env",
       "Value": "prod"
@@ -342,7 +354,7 @@
     "Tags": [
      {
       "Key": "dept",
-      "Value": "sales"
+      "Value": "eng"
      }
     ]
    }
@@ -365,7 +377,7 @@
     "Tags": [
      {
       "Key": "dept",
-      "Value": "sales"
+      "Value": "eng"
      }
     ]
    },
@@ -398,7 +410,7 @@
     "Tags": [
      {
       "Key": "dept",
-      "Value": "sales"
+      "Value": "eng"
      }
     ]
    }
