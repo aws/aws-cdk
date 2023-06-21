@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsV2": {
+  "AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
@@ -31,7 +31,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1682378109117"
+    "salt": "1687299832658"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -129,10 +129,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsV2": {
+  "AssertionResultsAwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2",
+     "AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062",
      "assertion"
     ]
    }
