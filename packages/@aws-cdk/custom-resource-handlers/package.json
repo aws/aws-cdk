@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc -b && node scripts/minify-sources.js",
+    "build": "npx tsc -b && node scripts/minify-sources.js",
     "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
