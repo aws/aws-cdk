@@ -118,7 +118,8 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
-        Tags: props.propagateTags ? this.tags.renderedTags : undefined,
+        PropagateTags: props.propagateTags,
+        Tags: this.tags.renderedTags,
       },
     });
 
