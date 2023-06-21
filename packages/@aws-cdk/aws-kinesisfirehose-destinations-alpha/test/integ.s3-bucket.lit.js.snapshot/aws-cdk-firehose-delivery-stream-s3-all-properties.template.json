@@ -112,11 +112,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "f26622ca3477134f226bcbfd161988e8b7bfd0eb4a33cac70da555408ccfbdb7.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
@@ -826,6 +826,9 @@
    "ap-south-1": {
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27/27"
+   },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
    },
@@ -857,7 +860,7 @@
     "FirehoseCidrBlock": "15.161.135.128/27"
    },
    "eu-south-2": {
-    "FirehoseCidrBlock": "18.100.71.96/27"
+    "FirehoseCidrBlock": "18.100.194.0/26/27"
    },
    "eu-west-1": {
     "FirehoseCidrBlock": "52.19.239.192/27"

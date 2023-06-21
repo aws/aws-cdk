@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { Construct, IConstruct, Node } from 'constructs';
 import { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
@@ -6,7 +6,6 @@ import { ActualResult, ExpectedResult } from '../common';
 import { md5hash } from '../private/hash';
 import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
 import { IDeployAssert } from '../types';
-
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 
@@ -59,7 +58,12 @@ export class DeployAssert extends Construct implements IDeployAssert {
   }
 
   public awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall {
-    return new AwsApiCall(this.scope, `AwsApiCall${service}${api}`, {
+    let hash = '';
+    try {
+      hash = md5hash(this.scope.resolve(parameters));
+    } catch {}
+
+    return new AwsApiCall(this.scope, `AwsApiCall${service}${api}${hash}`, {
       api,
       service,
       parameters,

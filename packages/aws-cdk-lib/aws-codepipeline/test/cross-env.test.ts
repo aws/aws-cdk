@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Stack, App, Stage as CdkStage } from '../../core';
-import { Construct } from 'constructs';
-import { FakeBuildAction } from './fake-build-action';
-import { FakeSourceAction } from './fake-source-action';
 import * as codepipeline from '../lib';
 
 describe.each([

@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "artifacts": {
     "stack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c292a4e3a2a62cd3f3134971757eb866dc5224bc69f7109ec27d12ab882f2345.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7eabaa659955f076359ed72f88d929cfe7651a904b6038ae0f3b3215ab36ac6c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -217,6 +217,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ECSFargateJobDefn327BE725"
+          }
+        ],
+        "/stack/EcsDockerContainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDockerContainerExecutionRole7AA53A24"
+          }
+        ],
+        "/stack/EcsDockerContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDockerContainerExecutionRoleDefaultPolicyF58C2301"
+          }
+        ],
+        "/stack/ECSDockerJobDefn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSDockerJobDefnF388CFCF"
           }
         ],
         "/stack/BootstrapVersion": [

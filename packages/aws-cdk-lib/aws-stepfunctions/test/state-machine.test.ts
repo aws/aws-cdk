@@ -1,13 +1,13 @@
+import { FakeTask } from './private/fake-task';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { FakeTask } from './private/fake-task';
 import * as sfn from '../lib';
 
 describe('State Machine', () => {
-  test('Instantiate Default State Machine', () => {
+  test('Instantiate Default State Machine with deprecated definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -24,6 +24,66 @@ describe('State Machine', () => {
     });
   }),
 
+  test('Instantiate Default State Machine with string definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+    });
+  }),
+
+  test('Instantiate fails with old and new definition specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // FAIL
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+        definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass2'))),
+      });
+    }).toThrowError('Cannot specify definition and definitionBody at the same time');
+  }),
+
+  test('Instantiate fails with no definition specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // FAIL
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+      });
+    }).toThrowError('You need to specify either definition or definitionBody');
+  }),
+
+  test('Instantiate Default State Machine', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+    });
+  }),
+
   test('Instantiate Standard State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -31,7 +91,7 @@ describe('State Machine', () => {
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
     });
 
@@ -51,7 +111,7 @@ describe('State Machine', () => {
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
@@ -72,7 +132,7 @@ describe('State Machine', () => {
     const createStateMachine = (name: string) => {
       new sfn.StateMachine(stack, name + 'StateMachine', {
         stateMachineName: name,
-        definition: sfn.Chain.start(new sfn.Pass(stack, name + 'Pass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, name + 'Pass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     };
@@ -98,7 +158,7 @@ describe('State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const newStateMachine = new sfn.StateMachine(stack, 'dummyStateMachineToken', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'dummyStateMachineTokenPass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'dummyStateMachineTokenPass'))),
     });
 
     // WHEN
@@ -109,7 +169,7 @@ describe('State Machine', () => {
     expect(() => {
       new sfn.StateMachine(stack, 'TokenTest-StateMachine', {
         stateMachineName: nameContainingToken,
-        definition: sfn.Chain.start(new sfn.Pass(stack, 'TokenTest-StateMachinePass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'TokenTest-StateMachinePass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
@@ -117,7 +177,7 @@ describe('State Machine', () => {
     expect(() => {
       new sfn.StateMachine(stack, 'ValidNameTest-StateMachine', {
         stateMachineName: validName,
-        definition: sfn.Chain.start(new sfn.Pass(stack, 'ValidNameTest-StateMachinePass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'ValidNameTest-StateMachinePass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
@@ -131,7 +191,7 @@ describe('State Machine', () => {
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       logs: {
         destination: logGroup,
         level: sfn.LogLevel.FATAL,
@@ -188,7 +248,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       tracingEnabled: true,
     });
 
@@ -229,7 +289,7 @@ describe('State Machine', () => {
 
     // WHEN
     const sm = new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
     });
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(sm);
@@ -289,7 +349,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stateMachineStack, 'MyStateMachine', {
-      definition: new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } })),
     });
 
     // THEN
@@ -346,7 +406,7 @@ describe('State Machine', () => {
     // WHEN
     const role = iam.Role.fromRoleName(stack, 'Role', 'example-role');
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } })),
     });
 
     // THEN
@@ -410,7 +470,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } })),
     });
 
     // THEN
@@ -510,7 +570,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new sfn.Pass(stack, 'Pass'),
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 

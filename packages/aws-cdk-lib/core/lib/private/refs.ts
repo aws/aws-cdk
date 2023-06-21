@@ -2,12 +2,12 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
-import * as cxapi from '../../../cx-api';
 import { IConstruct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
+import * as cxapi from '../../../cx-api';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
@@ -37,7 +37,6 @@ export function resolveReferences(scope: IConstruct): void {
   }
 }
 
-
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
@@ -64,7 +63,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
   }
-
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
@@ -233,11 +231,11 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
 
   // get or create the export writer
   const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
-  const exportReader = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
+  const exportWriter = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
     region: importStack.region,
   });
 
-  const exported = exportReader.exportValue(exportName, reference, importStack);
+  const exported = exportWriter.exportValue(exportName, reference, importStack);
   if (importStack.nestedStackParent) {
     return createNestedStackParameter(importStack, (exported as CfnReference), exported);
   }

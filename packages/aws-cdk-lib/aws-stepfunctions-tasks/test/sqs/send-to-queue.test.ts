@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import * as tasks from '../../lib';
 

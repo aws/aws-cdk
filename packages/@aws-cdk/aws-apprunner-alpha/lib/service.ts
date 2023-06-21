@@ -3,8 +3,8 @@ import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as cdk from 'aws-cdk-lib';
-import { Lazy } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
+import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
@@ -61,7 +61,19 @@ export class Cpu {
    *
    * @param unit custom CPU unit
    */
-  public static of(unit: string) { return new Cpu(unit); }
+  public static of(unit: string): Cpu {
+    const numericPatterns = ['256', '512', '1024', '2048', '4096'];
+    const unitPatterns = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('CPU value is invalid');
+    };
+
+    return new Cpu(unit);
+  }
 
   /**
    *
@@ -69,7 +81,6 @@ export class Cpu {
    */
   private constructor(public readonly unit: string) {}
 }
-
 
 /**
  * The amount of memory reserved for each instance of your App Runner service.
@@ -127,7 +138,19 @@ export class Memory {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
-  public static of(unit: string) { return new Memory(unit); }
+  public static of(unit: string): Memory {
+    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
+    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('Memory value is invalid');
+    };
+
+    return new Memory(unit);
+  }
 
   /**
    *
@@ -1018,7 +1041,6 @@ export class Service extends cdk.Resource {
 
   /**
    * The name of the service.
-   * @attribute
    */
   readonly serviceName: string;
 
@@ -1083,7 +1105,15 @@ export class Service extends cdk.Resource {
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
     this.serviceStatus = resource.attrStatus;
-    this.serviceName = resource.ref;
+    /**
+     * Cloudformaton does not return the serviceName attribute so we extract it from the serviceArn.
+     * The ARN comes with this format:
+     * arn:aws:apprunner:us-east-1:123456789012:service/SERVICE_NAME/SERVICE_ID
+     */
+    // First, get the last element by splitting with ':'
+    const resourceFullName = cdk.Fn.select(5, cdk.Fn.split(':', this.serviceArn));
+    // Now, split the resourceFullName with '/' to get the serviceName
+    this.serviceName = cdk.Fn.select(1, cdk.Fn.split('/', resourceFullName));
   }
 
   /**

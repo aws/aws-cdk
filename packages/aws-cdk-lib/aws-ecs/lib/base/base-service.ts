@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -18,8 +20,6 @@ import {
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
-import { Construct } from 'constructs';
-import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';

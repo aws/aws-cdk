@@ -2,15 +2,17 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
-import { Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from 'aws-cdk-lib/aws-rds';
+import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const params = new ParameterGroup(stack, 'Params', {
-  engine: DatabaseClusterEngine.AURORA,
+  engine: DatabaseClusterEngine.auroraMysql({
+    version: AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
   description: 'A nice parameter group',
   parameters: {
     character_set_database: 'utf8mb4',
@@ -19,14 +21,25 @@ const params = new ParameterGroup(stack, 'Params', {
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
 
+const instanceProps = {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  isFromLegacyInstanceProps: true,
+};
 const cluster = new DatabaseCluster(stack, 'Database', {
-  engine: DatabaseClusterEngine.AURORA,
+  engine: DatabaseClusterEngine.auroraMysql({
+    version: AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
   credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    vpc,
-  },
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  vpc,
+  writer: ClusterInstance.provisioned('Instance1', {
+    ...instanceProps,
+  }),
+  readers: [
+    ClusterInstance.provisioned('Instance2', {
+      ...instanceProps,
+    }),
+  ],
   parameterGroup: params,
   storageEncryptionKey: kmsKey,
 });

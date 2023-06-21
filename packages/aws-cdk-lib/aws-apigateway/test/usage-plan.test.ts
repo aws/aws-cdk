@@ -224,7 +224,6 @@ describe('usage plan', () => {
       });
     });
 
-
     test('imported', () => {
       // GIVEN
       const stack = new cdk.Stack();

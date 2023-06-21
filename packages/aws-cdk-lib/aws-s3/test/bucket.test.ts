@@ -99,6 +99,34 @@ describe('bucket', () => {
     });
   });
 
+  test('bucket with DSSE_MANAGED encryption', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.DSSE_MANAGED,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'aws:kms:dsse',
+                  },
+                },
+              ],
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
   test('valid bucket names', () => {
     const stack = new cdk.Stack();
 
@@ -223,7 +251,17 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+  });
+
+  test('fails if encryption key is used with dsse managed encryption', () => {
+    const stack = new cdk.Stack();
+    const myKey = new kms.Key(stack, 'MyKey');
+
+    expect(() => new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.DSSE_MANAGED,
+      encryptionKey: myKey,
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   testDeprecated('fails if encryption key is used with encryption set to UNENCRYPTED', () => {
@@ -233,7 +271,7 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('fails if encryption key is used with encryption set to S3_MANAGED', () => {
@@ -243,7 +281,7 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('encryptionKey can specify kms key', () => {
@@ -267,6 +305,34 @@ describe('bucket', () => {
                 ],
               },
               'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('dsse encryptionKey can specify kms key', () => {
+    const stack = new cdk.Stack();
+
+    const encryptionKey = new kms.Key(stack, 'MyKey', { description: 'hello, world' });
+
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.DSSE });
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms:dsse',
             },
           },
         ],
@@ -353,15 +419,34 @@ describe('bucket', () => {
     });
   });
 
+  test.each([s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'BucketKeyEnabled': true,
+            'ServerSideEncryptionByDefault': Match.objectLike({
+              'SSEAlgorithm': 'aws:kms:dsse',
+            }),
+          },
+        ],
+      },
+    });
+  });
+
   test('throws error if bucketKeyEnabled is set, but encryption is not KMS', () => {
     const stack = new cdk.Stack();
 
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: UNENCRYPTED)");
 
   });
 
@@ -383,30 +468,30 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).toThrow(/Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets/);
   });
 
-  test('logs to self, KMS encryption without key throws error', () => {
+  test('logs to self, KMS encryption without key does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to self, KMS encryption with key throws error', () => {
+  test('logs to self, KMS encryption with key does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to self, KMS key with no specific encryption specified throws error', () => {
+  test('logs to self, KMS key with no specific encryption specified does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
   testDeprecated('logs to separate bucket, UNENCRYPTED does not throw error', () => {
@@ -426,40 +511,40 @@ describe('bucket', () => {
   });
 
   // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
-  // check is impossible, we skip thist test.
+  // check is impossible, we skip this test.
   // eslint-disable-next-line jest/no-disabled-tests
   test.skip('logs to separate bucket, KMS_MANAGED encryption throws error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
   });
 
-  test('logs to separate bucket, KMS encryption without key throws error', () => {
+  test('logs to separate bucket, KMS encryption without key does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to separate bucket, KMS encryption with key throws error', () => {
+  test('logs to separate bucket, KMS encryption with key does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
-  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
+  test('logs to separate bucket, KMS key with no specific encryption specified does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
+    }).not.toThrowError();
   });
 
   test('bucket with versioning turned on', () => {
@@ -1092,7 +1177,6 @@ describe('bucket', () => {
 
       expect(bucket.bucketWebsiteUrl).toEqual('http://mybucket.s3-website.cn-north-1.amazonaws.com.cn');
     });
-
 
     testDeprecated('new bucketWebsiteUrl format with explicit bucketWebsiteNewUrlFormat', () => {
       const stack = new cdk.Stack(undefined, undefined, {

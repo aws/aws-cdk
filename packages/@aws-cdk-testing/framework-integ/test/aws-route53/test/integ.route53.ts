@@ -6,7 +6,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-route53-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 1 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 1, restrictDefaultSecurityGroup: false });
 
 const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
   zoneName: 'cdk.local', vpc,
@@ -19,6 +19,11 @@ const publicSubZone = new PublicHostedZone(stack, 'PublicSubZone', {
   zoneName: 'sub.cdk.test',
 });
 publicZone.addDelegation(publicSubZone);
+
+new PublicHostedZone(stack, 'PublicZoneWithDot', {
+  zoneName: 'cdk.test',
+  addTrailingDot: false,
+});
 
 new TxtRecord(privateZone, 'TXT', {
   zone: privateZone,

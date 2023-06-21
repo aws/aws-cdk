@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-redshift-cluster-create.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93a411da5664a42e1702532262aa281227dd5fc1f136148d06a42addd7c763c0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa153c457ceb57146deae5f6d91a65fbb7eda7034bdfb7d29642f54a42d1179e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -154,6 +154,12 @@
             "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5"
           }
         ],
+        "/aws-cdk-redshift-cluster-create/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-cdk-redshift-cluster-create/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -185,7 +191,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a23231417fb67ed1d1d3f790c75060c7ca5f2b45a1e8b532dcaf9d8d40171cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/725c1e271cd408c79250e85b99e86b50dd934bb4e7c77aad60d32d2796786443.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -323,6 +329,12 @@
             "data": "SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5"
           }
         ],
+        "/aws-cdk-redshift-cluster-update/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
         "/aws-cdk-redshift-cluster-update/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -366,7 +378,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02ba7e5975057b784436be8170fb2b40a050d51601ba1ed065a7339ea2cd67ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7af51e31f844efdd915cb7219af8614e165f08e68619227b1f0bd5112afc9e20.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -383,16 +395,16 @@
         "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34.assets"
       ],
       "metadata": {
-        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters/Default/Default": [
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallRedshiftdescribeClusters"
+            "data": "AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a"
           }
         ],
-        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters/AssertionResults": [
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallRedshiftdescribeClusters"
+            "data": "AssertionResultsAwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a"
           }
         ],
         "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -407,16 +419,28 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters/Default/Default": [
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallRedshiftdescribeClusterParameters"
+            "data": "AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce"
           }
         ],
-        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters/AssertionResults": [
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallRedshiftdescribeClusterParameters"
+            "data": "AssertionResultsAwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce"
+          }
+        ],
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7"
+          }
+        ],
+        "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7"
           }
         ],
         "/aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/BootstrapVersion": [
