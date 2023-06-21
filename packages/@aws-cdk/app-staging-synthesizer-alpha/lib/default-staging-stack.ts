@@ -15,6 +15,7 @@ import {
   RemovalPolicy,
   Stack,
   StackProps,
+  INLINE_CUSTOM_RESOURCE_CONTEXT,
 } from 'aws-cdk-lib/core';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
@@ -102,6 +103,14 @@ export interface DefaultStagingStackOptions {
    * @default - up to 3 versions stored
    */
   readonly imageAssetVersionCount?: number;
+
+  /**
+   * Auto deletes objects in the staging S3 bucket and images in the
+   * staging ECR repositories.
+   *
+   * @default true
+   */
+  readonly autoDeleteStagingAssets?: boolean;
 }
 
 /**
@@ -214,6 +223,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   private imageRole?: iam.IRole;
   private didImageRole = false;
   private imageRoleManifestArn?: string;
+  private autoDeleteStagingAssets: boolean;
 
   private readonly deployRoleArn?: string;
 
@@ -225,6 +235,12 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     });
     // removing path metadata saves ~2KB
     this.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, false);
+
+    // For all resources under the default staging stack, we want to inline custom
+    // resources because the staging bucket necessary for custom resource assets
+    // does not exist yet.
+    this.node.setContext(INLINE_CUSTOM_RESOURCE_CONTEXT, true);
+    this.autoDeleteStagingAssets = props.autoDeleteStagingAssets ?? true;
 
     this.appId = this.validateAppId(props.appId);
     this.dependencyStack = this;
@@ -335,7 +351,12 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
-      removalPolicy: RemovalPolicy.RETAIN,
+      ...(this.autoDeleteStagingAssets ? {
+        removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      } : {
+        removalPolicy: RemovalPolicy.RETAIN,
+      }),
       encryption: s3.BucketEncryption.KMS,
       encryptionKey: key,
 
@@ -394,7 +415,14 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
           description: 'Garbage collect old image versions and keep the specified number of latest versions',
           maxImageCount: this.props.imageAssetVersionCount ?? 3,
         }],
+        ...(this.autoDeleteStagingAssets ? {
+          removalPolicy: RemovalPolicy.DESTROY,
+          autoDeleteImages: true,
+        } : {
+          removalPolicy: RemovalPolicy.RETAIN,
+        }),
       });
+
       if (this.imageRole) {
         this.stagingRepos[asset.assetName].grantPullPush(this.imageRole);
         this.stagingRepos[asset.assetName].grantRead(this.imageRole);
