@@ -38,13 +38,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "fqn": "aws-cdk-lib.aws_apprunner.CfnService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "fqn": "@aws-cdk/aws-apprunner-alpha.Service",
               "version": "0.0.0"
             }
           },
@@ -52,7 +52,39 @@
             "id": "URL1",
             "path": "integ-apprunner-ecr-public/URL1",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ServiceName": {
+            "id": "ServiceName",
+            "path": "integ-apprunner-ecr-public/ServiceName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ServiceId": {
+            "id": "ServiceId",
+            "path": "integ-apprunner-ecr-public/ServiceId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ServiceStatus": {
+            "id": "ServiceStatus",
+            "path": "integ-apprunner-ecr-public/ServiceStatus",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ServiceArn": {
+            "id": "ServiceArn",
+            "path": "integ-apprunner-ecr-public/ServiceArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -60,7 +92,7 @@
             "id": "BootstrapVersion",
             "path": "integ-apprunner-ecr-public/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -68,13 +100,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-apprunner-ecr-public/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -83,12 +115,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.2.52"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
