@@ -699,7 +699,8 @@
     }
    },
    "DependsOn": [
-    "ns7AAD7A1A"
+    "ns7AAD7A1A",
+    "TaskDefTaskRole1EDB4A67"
    ]
   },
   "svctwoSecurityGroup7B696927": {
@@ -718,7 +719,8 @@
     }
    },
    "DependsOn": [
-    "ns7AAD7A1A"
+    "ns7AAD7A1A",
+    "TaskDefTaskRole1EDB4A67"
    ]
   }
  },
