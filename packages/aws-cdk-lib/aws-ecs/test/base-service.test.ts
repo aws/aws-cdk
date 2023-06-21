@@ -1,5 +1,6 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as ecs from '../lib';
@@ -53,6 +54,10 @@ describe('When import an ECS Service', () => {
     taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     });
+    taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: ['test:SpecialName'],
+      resources: ['*'],
+    }));
 
     // WHEN
     new ecs.FargateService(stack, 'FargateService', {
@@ -62,7 +67,10 @@ describe('When import an ECS Service', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::ECS::Service', {
-      DependsOn: ['FargateTaskDefTaskRole0B257552'],
+      DependsOn: [
+        'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        'FargateTaskDefTaskRole0B257552',
+      ],
     });
   });
 });
