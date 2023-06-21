@@ -589,6 +589,9 @@ export class Deployments {
 
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     await publisher.buildEntry(asset);
+    if (publisher.hasFailures) {
+      throw new Error(`Failed to build asset ${asset.id}`);
+    }
   }
 
   /**
@@ -601,6 +604,9 @@ export class Deployments {
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     await publisher.publishEntry(asset);
+    if (publisher.hasFailures) {
+      throw new Error(`Failed to publish asset ${asset.id}`);
+    }
   }
 
   /**

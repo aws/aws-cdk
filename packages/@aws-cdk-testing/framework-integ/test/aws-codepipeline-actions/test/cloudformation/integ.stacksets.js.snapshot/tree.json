@@ -605,13 +605,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.54"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.54"
                 }
               },
               "Cfn": {
@@ -679,7 +679,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/StackSet/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.54"
                             }
                           },
                           "DefaultPolicy": {
@@ -909,7 +909,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.54"
                     }
                   },
                   "Instances": {
@@ -973,7 +973,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/Instances/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.54"
                             }
                           },
                           "DefaultPolicy": {
@@ -1050,13 +1050,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.54"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.54"
                 }
               }
             },
@@ -1118,7 +1118,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.54"
         }
       }
     },

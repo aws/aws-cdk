@@ -355,6 +355,36 @@ The value in `topic.topicArn` is a deploy-time value. It only gets resolved
 during deployment by placing a marker in the generated source file and
 substituting it when its deployed to the destination with the actual value.
 
+### Substitutions from Templated Files
+
+The `DeployTimeSubstitutedFile` construct allows you to specify substitutions
+to make from placeholders in a local file which will be resolved during deployment. This
+is especially useful in situations like creating an API from a spec file, where users might
+want to reference other CDK resources they have created.
+
+The syntax for template variables is `{{ variable-name }}` in your local file. Then, you would 
+specify the substitutions in CDK like this:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const myLambdaFunction: lambda.Function;
+
+new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
+  source: 'my-file.yaml',
+  destinationBucket: destinationBucket,
+  substitutions: {
+    variable-name: myLambdaFunction.functionName,
+  },
+});
+```
+
+Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
+In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
+in the file.
+
 ## Keep Files Zipped
 
 By default, files are zipped, then extracted into the destination bucket.

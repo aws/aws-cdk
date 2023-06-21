@@ -1374,6 +1374,20 @@ describe('cluster', () => {
 
   });
 
+  test('Security groups are optonal for imported clusters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+    });
+
+    // THEN
+    expect(cluster.connections.securityGroups).toEqual([]);
+  });
+
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -683,12 +683,12 @@
       },
       "description": "The AWS::AmplifyUIBuilder::Component resource specifies a component within an Amplify app. A component is a user interface (UI) element that you can customize. Use `ComponentChild` to configure an instance of a `Component` . A `ComponentChild` instance inherits the configuration of the main `Component` .",
       "properties": {
-        "AppId": "",
+        "AppId": "The unique ID of the Amplify app associated with the component.",
         "BindingProperties": "The information to connect a component's properties to data at runtime. You can't specify `tags` as a valid property for `bindingProperties` .",
         "Children": "A list of the component's `ComponentChild` instances.",
         "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
-        "EnvironmentName": "",
+        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Events": "Describes the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
@@ -817,10 +817,10 @@
     },
     "AWS::AmplifyUIBuilder::Component.FormBindingElement": {
       "attributes": {},
-      "description": "",
+      "description": "Describes how to bind a component property to form data.",
       "properties": {
-        "Element": "",
-        "Property": ""
+        "Element": "The name of the component to retrieve a value from.",
+        "Property": "The property to retrieve a value from."
       }
     },
     "AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter": {
@@ -864,7 +864,7 @@
         "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Fields": "The configuration information for the form's fields.",
         "FormActionType": "Specifies whether to perform a create or update action on the form.",
-        "LabelDecorator": "",
+        "LabelDecorator": "Specifies an icon or decoration to display on the form.",
         "Name": "The name of the form.",
         "SchemaVersion": "The schema version of the form.",
         "SectionalElements": "The configuration information for the visual helper elements for the form. These elements are not associated with any data.",
@@ -891,8 +891,8 @@
         "DefaultCountryCode": "The default country code for a phone number.",
         "DefaultValue": "The default value for the field.",
         "DescriptiveText": "The text to display to describe the field.",
-        "FileUploaderConfig": "",
-        "IsArray": "",
+        "FileUploaderConfig": "The configuration for the file uploader field.",
+        "IsArray": "Specifies whether to render the field as an array. This property is ignored if the `dataSourceType` for the form is a Data Store.",
         "MaxValue": "The maximum value to display for the field.",
         "MinValue": "The minimum value to display for the field.",
         "Name": "The name of the field.",
@@ -909,9 +909,9 @@
       "attributes": {},
       "description": "The `FieldPosition` property specifies the field position.",
       "properties": {
-        "Below": "",
-        "Fixed": "",
-        "RightOf": ""
+        "Below": "The field position is below the field specified by the string.",
+        "Fixed": "The field position is fixed and doesn't change in relation to other fields.",
+        "RightOf": "The field position is to the right of the field specified by the string."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FieldValidationConfiguration": {
@@ -926,14 +926,14 @@
     },
     "AWS::AmplifyUIBuilder::Form.FileUploaderFieldConfig": {
       "attributes": {},
-      "description": "",
+      "description": "Describes the configuration for the file uploader field.",
       "properties": {
-        "AcceptedFileTypes": "",
-        "AccessLevel": "",
-        "IsResumable": "",
-        "MaxFileCount": "",
-        "MaxSize": "",
-        "ShowThumbnails": ""
+        "AcceptedFileTypes": "The file types that are allowed to be uploaded by the file uploader. Provide this information in an array of strings specifying the valid file extensions.",
+        "AccessLevel": "The access level to assign to the uploaded files in the Amazon S3 bucket where they are stored. The valid values for this property are `private` , `protected` , or `public` . For detailed information about the permissions associated with each access level, see [File access levels](https://docs.aws.amazon.com/https://docs.amplify.aws/lib/storage/configureaccess/q/platform/js/) in the *Amplify documentation* .",
+        "IsResumable": "Allows the file upload operation to be paused and resumed. The default value is `false` .\n\nWhen `isResumable` is set to `true` , the file uploader uses a multipart upload to break the files into chunks before upload. The progress of the upload isn't continuous, because the file uploader uploads a chunk at a time.",
+        "MaxFileCount": "Specifies the maximum number of files that can be selected to upload. The default value is an unlimited number of files.",
+        "MaxSize": "The maximum file size in bytes that the file uploader will accept. The default value is an unlimited file size.",
+        "ShowThumbnails": "Specifies whether to display or hide the image preview after selecting a file for upload. The default value is `true` to display the image preview."
       }
     },
     "AWS::AmplifyUIBuilder::Form.FormButton": {
@@ -983,15 +983,15 @@
       "attributes": {},
       "description": "The `FormStyleConfig` property specifies the configuration settings for the form's style properties.",
       "properties": {
-        "TokenReference": "",
-        "Value": ""
+        "TokenReference": "A reference to a design token to use to bind the form's style properties to an existing theme.",
+        "Value": "The value of the style setting."
       }
     },
     "AWS::AmplifyUIBuilder::Form.SectionalElement": {
       "attributes": {},
       "description": "The `SectionalElement` property specifies the configuration information for a visual helper element for a form. A sectional element can be a header, a text block, or a divider. These elements are static and not associated with any data.",
       "properties": {
-        "Excluded": "",
+        "Excluded": "Excludes a sectional element that was generated by default for a specified data model.",
         "Level": "Specifies the size of the font for a `Heading` sectional element. Valid values are `1 | 2 | 3 | 4 | 5 | 6` .",
         "Orientation": "Specifies the orientation for a `Divider` sectional element. Valid values are `horizontal` or `vertical` .",
         "Position": "Specifies the position of the text in a field for a `Text` sectional element.",
@@ -1021,8 +1021,8 @@
       },
       "description": "The AWS::AmplifyUIBuilder::Theme resource specifies a theme within an Amplify app. A theme is a collection of style settings that apply globally to the components associated with the app.",
       "properties": {
-        "AppId": "",
-        "EnvironmentName": "",
+        "AppId": "The unique ID for the Amplify app associated with the theme.",
+        "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Name": "The name of the theme.",
         "Overrides": "Describes the properties that can be overriden to customize a theme.",
         "Tags": "One or more key-value pairs to use when tagging the theme.",
@@ -7602,6 +7602,166 @@
         "UserRoleRequired": "Enables use of a user role requirement in your chat configuration."
       }
     },
+    "AWS::CleanRooms::Collaboration": {
+      "attributes": {
+        "Arn": "Returns the Amazon Resource Name (ARN) of the specified collaboration.\n\nExample: `arn:aws:cleanrooms:us-east-1:111122223333:collaboration/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "CollaborationIdentifier": "Returns the unique identifier of the specified collaboration.\n\nExample: `a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "Ref": "`Ref` returns the `CollaborationIdentifier` , such as `a1b2c3d4-5678-90ab-cdef-EXAMPLE11111` . For example:\n\n`{ \"Ref\": \"MyCollaboration\" }`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates a new collaboration.",
+      "properties": {
+        "CreatorDisplayName": "A display name of the collaboration creator.",
+        "CreatorMemberAbilities": "The abilities granted to the collaboration creator.",
+        "DataEncryptionMetadata": "The settings for client-side encryption for cryptographic computing.",
+        "Description": "A description of the collaboration provided by the collaboration owner.",
+        "Members": "A list of initial members, not including the creator. This list is immutable.",
+        "Name": "A human-readable identifier provided by the collaboration owner. Display names are not unique.",
+        "QueryLogStatus": "An indicator as to whether query logging has been enabled or disabled for the collaboration.",
+        "Tags": "An optional label that you can assign to a resource when you create it. Each tag consists of a key and an optional value, both of which you define. When you use tagging, you can also use tag-based access control in IAM policies to control access to this resource."
+      }
+    },
+    "AWS::CleanRooms::Collaboration.DataEncryptionMetadata": {
+      "attributes": {},
+      "description": "The settings for client-side encryption for cryptographic computing.",
+      "properties": {
+        "AllowCleartext": "Indicates whether encrypted tables can contain cleartext data (true) or are to cryptographically process every column (false).",
+        "AllowDuplicates": "Indicates whether Fingerprint columns can contain duplicate entries (true) or are to contain only non-repeated values (false).",
+        "AllowJoinsOnColumnsWithDifferentNames": "Indicates whether Fingerprint columns can be joined on any other Fingerprint column with a different name (true) or can only be joined on Fingerprint columns of the same name (false).",
+        "PreserveNulls": "Indicates whether NULL values are to be copied as NULL to encrypted tables (true) or cryptographically processed (false)."
+      }
+    },
+    "AWS::CleanRooms::Collaboration.MemberSpecification": {
+      "attributes": {},
+      "description": "Basic metadata used to construct a new member.",
+      "properties": {
+        "AccountId": "The identifier used to reference members of the collaboration. Currently only supports AWS account ID.",
+        "DisplayName": "The member's display name.",
+        "MemberAbilities": "The abilities granted to the collaboration member."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable": {
+      "attributes": {
+        "Arn": "Returns the Amazon Resource Name (ARN) of the specified configured table.\n\nExample: `arn:aws:cleanrooms:us-east-1:111122223333:configuredtable/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "ConfiguredTableIdentifier": "Returns the unique identifier of the specified configured table.\n\nExample: `a1b2c3d4-5678-90ab-cdef-EXAMPLE33333`",
+        "Ref": "`Ref` returns the resource name. For example:\n\n`{\"Ref\": \"MyConfiguredTable\"}`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates a new configured table resource.",
+      "properties": {
+        "AllowedColumns": "The columns within the underlying AWS Glue table that can be utilized within collaborations.",
+        "AnalysisMethod": "The analysis method for the configured table. The only valid value is currently `DIRECT_QUERY`.",
+        "AnalysisRules": "The entire created analysis rule.",
+        "Description": "A description for the configured table.",
+        "Name": "A name for the configured table.",
+        "TableReference": "The AWS Glue table that this configured table represents.",
+        "Tags": "An optional label that you can assign to a resource when you create it. Each tag consists of a key and an optional value, both of which you define. When you use tagging, you can also use tag-based access control in IAM policies to control access to this resource."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.AggregateColumn": {
+      "attributes": {},
+      "description": "Column in configured table that can be used in aggregate function in query.",
+      "properties": {
+        "ColumnNames": "Column names in configured table of aggregate columns.",
+        "Function": "Aggregation function that can be applied to aggregate column in query."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.AggregationConstraint": {
+      "attributes": {},
+      "description": "Constraint on query output removing output rows that do not meet a minimum number of distinct values of a specified column.",
+      "properties": {
+        "ColumnName": "Column in aggregation constraint for which there must be a minimum number of distinct values in an output row for it to be in the query output.",
+        "Minimum": "The minimum number of distinct values that an output row must be an aggregation of. Minimum threshold of distinct values for a specified column that must exist in an output row for it to be in the query output.",
+        "Type": "The type of aggregation the constraint allows. The only valid value is currently `COUNT_DISTINCT`."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.AnalysisRule": {
+      "attributes": {},
+      "description": "A specification about how data from the configured table can be used in a query.",
+      "properties": {
+        "Policy": "A policy that describes the associated data usage limitations.",
+        "Type": "The type of analysis rule. Valid values are `AGGREGATION` and `LIST`."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.AnalysisRuleAggregation": {
+      "attributes": {},
+      "description": "Enables query structure and specified queries that produce aggregate statistics.",
+      "properties": {
+        "AggregateColumns": "The columns that query runners are allowed to use in aggregation queries.",
+        "DimensionColumns": "The columns that query runners are allowed to select, group by, or filter by.",
+        "JoinColumns": "Columns in configured table that can be used in join statements and/or as aggregate columns. They can never be outputted directly.",
+        "JoinRequired": "Control that requires member who runs query to do a join with their configured table and/or other configured table in query.",
+        "OutputConstraints": "Columns that must meet a specific threshold value (after an aggregation function is applied to it) for each output row to be returned.",
+        "ScalarFunctions": "Set of scalar functions that are allowed to be used on dimension columns and the output of aggregation of metrics."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.AnalysisRuleList": {
+      "attributes": {},
+      "description": "A type of analysis rule that enables row-level analysis.",
+      "properties": {
+        "JoinColumns": "Columns that can be used to join a configured table with the table of the member who can query and other members' configured tables.",
+        "ListColumns": "Columns that can be listed in the output."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.ConfiguredTableAnalysisRulePolicy": {
+      "attributes": {},
+      "description": "Controls on the query specifications that can be run on a configured table.",
+      "properties": {
+        "V1": "Controls on the query specifications that can be run on a configured table."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.ConfiguredTableAnalysisRulePolicyV1": {
+      "attributes": {},
+      "description": "Controls on the query specifications that can be run on a configured table.",
+      "properties": {
+        "Aggregation": "Analysis rule type that enables only aggregation queries on a configured table.",
+        "List": "Analysis rule type that enables only list queries on a configured table."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.GlueTableReference": {
+      "attributes": {},
+      "description": "A reference to a table within an AWS Glue data catalog.",
+      "properties": {
+        "DatabaseName": "The name of the database the AWS Glue table belongs to.",
+        "TableName": "The name of the AWS Glue table."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTable.TableReference": {
+      "attributes": {},
+      "description": "A pointer to the dataset that underlies this table. Currently, this can only be an AWS Glue table.",
+      "properties": {
+        "Glue": "If present, a reference to the AWS Glue table referred to by this table reference."
+      }
+    },
+    "AWS::CleanRooms::ConfiguredTableAssociation": {
+      "attributes": {
+        "Arn": "Returns the Amazon Resource Name (ARN) of the specified configured table association.\n\nExample: `arn:aws:cleanrooms:us-east-1:111122223333:configuredtable/a1b2c3d4-5678-90ab-cdef-EXAMPLE33333`",
+        "ConfiguredTableAssociationIdentifier": "Returns the unique identifier of the specified configured table association.\n\nExample: `a1b2c3d4-5678-90ab-cdef-EXAMPLE33333`",
+        "Ref": "`Ref` returns the `ConfiguredTableAssociation` and the ID of the Membership. For example: `c1baf760-935e-4b2d-b36e-af8daaeb6e48|81a97460-2c40-46ce-a2fd-4ccda7398b2c`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates a configured table association. A configured table association links a configured table with a collaboration.",
+      "properties": {
+        "ConfiguredTableIdentifier": "A unique identifier for the configured table to be associated to. Currently accepts a configured table ID.",
+        "Description": "A description of the configured table association.",
+        "MembershipIdentifier": "The unique ID for the membership this configured table association belongs to.",
+        "Name": "The name of the configured table association, in lowercase. The table is identified by this name when running protected queries against the underlying data.",
+        "RoleArn": "The service will assume this role to access catalog metadata and query the table.",
+        "Tags": "An optional label that you can assign to a resource when you create it. Each tag consists of a key and an optional value, both of which you define. When you use tagging, you can also use tag-based access control in IAM policies to control access to this resource."
+      }
+    },
+    "AWS::CleanRooms::Membership": {
+      "attributes": {
+        "Arn": "Returns the Amazon Resource Name (ARN) of the specified membership.\n\nExample: `arn:aws:cleanrooms:us-east-1:111122223333:membership/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "CollaborationArn": "Returns the Amazon Resource Name (ARN) of the specified collaboration.\n\nExample: `arn:aws:cleanrooms:us-east-1:111122223333:collaboration/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "CollaborationCreatorAccountId": "Returns the unique identifier of the specified collaboration creator account.\n\nExample: `a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`",
+        "MembershipIdentifier": "Returns the unique identifier of the specified membership.\n\nExample: `a1b2c3d4-5678-90ab-cdef-EXAMPLE22222`",
+        "Ref": "`Ref` returns the `MembershipId` , such as `a1b2c3d4-5678-90ab-cdef-EXAMPLE11111` . For example:\n\n`{ \"Ref\": \"MyMembership\" }`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates a membership for a specific collaboration identifier and joins the collaboration.",
+      "properties": {
+        "CollaborationIdentifier": "The unique ID for the associated collaboration.",
+        "QueryLogStatus": "An indicator as to whether query logging has been enabled or disabled for the collaboration.",
+        "Tags": "An optional label that you can assign to a resource when you create it. Each tag consists of a key and an optional value, both of which you define. When you use tagging, you can also use tag-based access control in IAM policies to control access to this resource."
+      }
+    },
     "AWS::Cloud9::EnvironmentEC2": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the development environment, such as `arn:aws:cloud9:us-east-2:123456789012:environment:2bc3642873c342e485f7e0c561234567` .",
@@ -8808,7 +8968,7 @@
       "properties": {
         "EndsWith": "An operator that includes events that match the last few characters of the event record field specified as the value of `Field` .",
         "Equals": "An operator that includes events that match the exact value of the event record field specified as the value of `Field` . This is the only valid operator that you can use with the `readOnly` , `eventCategory` , and `resources.type` fields.",
-        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::DynamoDB::Table`\n- `AWS::Lambda::Function`\n- `AWS::S3::Object`\n- `AWS::CloudTrail::Channel`\n- `AWS::CodeWhisperer::Profile`\n- `AWS::Cognito::IdentityPool`\n- `AWS::DynamoDB::Stream`\n- `AWS::EC2::Snapshot`\n- `AWS::EMRWAL::Workspace`\n- `AWS::FinSpace::Environment`\n- `AWS::Glue::Table`\n- `AWS::GuardDuty::Detector`\n- `AWS::KendraRanking::ExecutionPlan`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n- `AWS::S3::AccessPoint`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::S3Outposts::Object`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen resources.type equals `AWS::CodeWhisperer::Profile` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:codewhisperer:<region>:<account_ID>:profile/<profile_ID>`\n\nWhen resources.type equals `AWS::Cognito::IdentityPool` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cognito-identity:<region>:<account_ID>:identitypool/<identity_pool_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::EMRWAL::Workspace` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:emrwal:<region>::workspace/<workspace_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::GuardDuty::Detector` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:guardduty:<region>:<account_ID>:detector/<detector_ID>`\n\nWhen `resources.type` equals `AWS::KendraRanking::ExecutionPlan` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:kendra-ranking:<region>:<account_ID>:rescore-execution-plan/<rescore_execution_plan_ID>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`",
+        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::DynamoDB::Table`\n- `AWS::Lambda::Function`\n- `AWS::S3::Object`\n- `AWS::CloudTrail::Channel`\n- `AWS::CodeWhisperer::Profile`\n- `AWS::Cognito::IdentityPool`\n- `AWS::DynamoDB::Stream`\n- `AWS::EC2::Snapshot`\n- `AWS::EMRWAL::Workspace`\n- `AWS::FinSpace::Environment`\n- `AWS::Glue::Table`\n- `AWS::GuardDuty::Detector`\n- `AWS::KendraRanking::ExecutionPlan`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n- `AWS::S3::AccessPoint`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::S3Outposts::Object`\n- `AWS::VerifiedPermissions::PolicyStore`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen resources.type equals `AWS::CodeWhisperer::Profile` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:codewhisperer:<region>:<account_ID>:profile/<profile_ID>`\n\nWhen resources.type equals `AWS::Cognito::IdentityPool` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cognito-identity:<region>:<account_ID>:identitypool/<identity_pool_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::EMRWAL::Workspace` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:emrwal:<region>::workspace/<workspace_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::GuardDuty::Detector` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:guardduty:<region>:<account_ID>:detector/<detector_ID>`\n\nWhen `resources.type` equals `AWS::KendraRanking::ExecutionPlan` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:kendra-ranking:<region>:<account_ID>:rescore-execution-plan/<rescore_execution_plan_ID>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`\n\nWhen resources.type equals `AWS::VerifiedPermissions::PolicyStore` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:verifiedpermissions:<region>:<account_ID>:policy-store/<policy_store_UUID>`",
         "NotEndsWith": "An operator that excludes events that match the last few characters of the event record field specified as the value of `Field` .",
         "NotEquals": "An operator that excludes events that match the exact value of the event record field specified as the value of `Field` .",
         "NotStartsWith": "An operator that excludes events that match the first few characters of the event record field specified as the value of `Field` .",
@@ -8865,7 +9025,7 @@
       "properties": {
         "EndsWith": "An operator that includes events that match the last few characters of the event record field specified as the value of `Field` .",
         "Equals": "An operator that includes events that match the exact value of the event record field specified as the value of `Field` . This is the only valid operator that you can use with the `readOnly` , `eventCategory` , and `resources.type` fields.",
-        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::DynamoDB::Table`\n- `AWS::Lambda::Function`\n- `AWS::S3::Object`\n- `AWS::CloudTrail::Channel`\n- `AWS::CodeWhisperer::Profile`\n- `AWS::Cognito::IdentityPool`\n- `AWS::DynamoDB::Stream`\n- `AWS::EC2::Snapshot`\n- `AWS::EMRWAL::Workspace`\n- `AWS::FinSpace::Environment`\n- `AWS::Glue::Table`\n- `AWS::GuardDuty::Detector`\n- `AWS::KendraRanking::ExecutionPlan`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n- `AWS::S3::AccessPoint`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::S3Outposts::Object`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen resources.type equals `AWS::CodeWhisperer::Profile` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:codewhisperer:<region>:<account_ID>:profile/<profile_ID>`\n\nWhen resources.type equals `AWS::Cognito::IdentityPool` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cognito-identity:<region>:<account_ID>:identitypool/<identity_pool_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::EMRWAL::Workspace` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:emrwal:<region>::workspace/<workspace_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::GuardDuty::Detector` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:guardduty:<region>:<account_ID>:detector/<detector_ID>`\n\nWhen `resources.type` equals `AWS::KendraRanking::ExecutionPlan` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:kendra-ranking:<region>:<account_ID>:rescore-execution-plan/<rescore_execution_plan_ID>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`",
+        "Field": "A field in a CloudTrail event record on which to filter events to be logged. For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to \ufb01lter in or \ufb01lter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this \ufb01eld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This \ufb01eld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::DynamoDB::Table`\n- `AWS::Lambda::Function`\n- `AWS::S3::Object`\n- `AWS::CloudTrail::Channel`\n- `AWS::CodeWhisperer::Profile`\n- `AWS::Cognito::IdentityPool`\n- `AWS::DynamoDB::Stream`\n- `AWS::EC2::Snapshot`\n- `AWS::EMRWAL::Workspace`\n- `AWS::FinSpace::Environment`\n- `AWS::Glue::Table`\n- `AWS::GuardDuty::Detector`\n- `AWS::KendraRanking::ExecutionPlan`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n- `AWS::S3::AccessPoint`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::S3Outposts::Object`\n- `AWS::VerifiedPermissions::PolicyStore`\n\nYou can have only one `resources.type` \ufb01eld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speci\ufb01ed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen resources.type equals `AWS::CodeWhisperer::Profile` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:codewhisperer:<region>:<account_ID>:profile/<profile_ID>`\n\nWhen resources.type equals `AWS::Cognito::IdentityPool` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cognito-identity:<region>:<account_ID>:identitypool/<identity_pool_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::EMRWAL::Workspace` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:emrwal:<region>::workspace/<workspace_name>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::GuardDuty::Detector` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:guardduty:<region>:<account_ID>:detector/<detector_ID>`\n\nWhen `resources.type` equals `AWS::KendraRanking::ExecutionPlan` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:kendra-ranking:<region>:<account_ID>:rescore-execution-plan/<rescore_execution_plan_ID>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don\u2019t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`\n\nWhen resources.type equals `AWS::VerifiedPermissions::PolicyStore` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:verifiedpermissions:<region>:<account_ID>:policy-store/<policy_store_UUID>`",
         "NotEndsWith": "An operator that excludes events that match the last few characters of the event record field specified as the value of `Field` .",
         "NotEquals": "An operator that excludes events that match the exact value of the event record field specified as the value of `Field` .",
         "NotStartsWith": "An operator that excludes events that match the first few characters of the event record field specified as the value of `Field` .",
@@ -10727,7 +10887,7 @@
         "ConfigRuleId": "The ID of the AWS Config rule, such as `config-rule-a1bzhi` .",
         "Ref": "`Ref` returns the rule name, such as `mystack-MyConfigRule-12ABCFPXHV4OV` ."
       },
-      "description": "Adds or updates an AWS Config rule to evaluate if your AWS resources comply with your desired configurations. For information on how many AWS Config rules you can have per account, see [*Service Limits*](https://docs.aws.amazon.com/config/latest/developerguide/configlimits.html) in the *AWS Config Developer Guide* .\n\nThere are two types of rules: *AWS Config Managed Rules* and *AWS Config Custom Rules* . You can use the `ConfigRule` resource to create both AWS Config Managed Rules and AWS Config Custom Rules.\n\nAWS Config Managed Rules are predefined, customizable rules created by AWS Config . For a list of managed rules, see [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html) . If you are adding an AWS Config managed rule, you must specify the rule's identifier for the `SourceIdentifier` key.\n\nAWS Config Custom Rules are rules that you create from scratch. There are two ways to create AWS Config custom rules: with Lambda functions ( [AWS Lambda Developer Guide](https://docs.aws.amazon.com/config/latest/developerguide/gettingstarted-concepts.html#gettingstarted-concepts-function) ) and with Guard ( [Guard GitHub Repository](https://docs.aws.amazon.com/https://github.com/aws-cloudformation/cloudformation-guard) ), a policy-as-code language. AWS Config custom rules created with AWS Lambda are called *AWS Config Custom Lambda Rules* and AWS Config custom rules created with Guard are called *AWS Config Custom Policy Rules* .\n\nIf you are adding a new AWS Config Custom Lambda rule, you first need to create an AWS Lambda function that the rule invokes to evaluate your resources. When you use the `ConfigRule` resource to add a Custom Lambda rule to AWS Config , you must specify the Amazon Resource Name (ARN) that AWS Lambda assigns to the function. You specify the ARN in the `SourceIdentifier` key. This key is part of the `Source` object, which is part of the `ConfigRule` object.\n\nFor any new AWS Config rule that you add, specify the `ConfigRuleName` in the `ConfigRule` object. Do not specify the `ConfigRuleArn` or the `ConfigRuleId` . These values are generated by AWS Config for new rules.\n\nIf you are updating a rule that you added previously, you can specify the rule by `ConfigRuleName` , `ConfigRuleId` , or `ConfigRuleArn` in the `ConfigRule` data type that you use in this request.\n\nFor more information about developing and using AWS Config rules, see [Evaluating Resources with AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html) in the *AWS Config Developer Guide* .",
+      "description": "> You must first create and start the AWS Config configuration recorder in order to create AWS Config managed rules with AWS CloudFormation . For more information, see [Managing the Configuration Recorder](https://docs.aws.amazon.com/config/latest/developerguide/stop-start-recorder.html) . \n\nAdds or updates an AWS Config rule to evaluate if your AWS resources comply with your desired configurations. For information on how many AWS Config rules you can have per account, see [*Service Limits*](https://docs.aws.amazon.com/config/latest/developerguide/configlimits.html) in the *AWS Config Developer Guide* .\n\nThere are two types of rules: *AWS Config Managed Rules* and *AWS Config Custom Rules* . You can use the `ConfigRule` resource to create both AWS Config Managed Rules and AWS Config Custom Rules.\n\nAWS Config Managed Rules are predefined, customizable rules created by AWS Config . For a list of managed rules, see [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html) . If you are adding an AWS Config managed rule, you must specify the rule's identifier for the `SourceIdentifier` key.\n\nAWS Config Custom Rules are rules that you create from scratch. There are two ways to create AWS Config custom rules: with Lambda functions ( [AWS Lambda Developer Guide](https://docs.aws.amazon.com/config/latest/developerguide/gettingstarted-concepts.html#gettingstarted-concepts-function) ) and with Guard ( [Guard GitHub Repository](https://docs.aws.amazon.com/https://github.com/aws-cloudformation/cloudformation-guard) ), a policy-as-code language. AWS Config custom rules created with AWS Lambda are called *AWS Config Custom Lambda Rules* and AWS Config custom rules created with Guard are called *AWS Config Custom Policy Rules* .\n\nIf you are adding a new AWS Config Custom Lambda rule, you first need to create an AWS Lambda function that the rule invokes to evaluate your resources. When you use the `ConfigRule` resource to add a Custom Lambda rule to AWS Config , you must specify the Amazon Resource Name (ARN) that AWS Lambda assigns to the function. You specify the ARN in the `SourceIdentifier` key. This key is part of the `Source` object, which is part of the `ConfigRule` object.\n\nFor any new AWS Config rule that you add, specify the `ConfigRuleName` in the `ConfigRule` object. Do not specify the `ConfigRuleArn` or the `ConfigRuleId` . These values are generated by AWS Config for new rules.\n\nIf you are updating a rule that you added previously, you can specify the rule by `ConfigRuleName` , `ConfigRuleId` , or `ConfigRuleArn` in the `ConfigRule` data type that you use in this request.\n\nFor more information about developing and using AWS Config rules, see [Evaluating Resources with AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html) in the *AWS Config Developer Guide* .",
       "properties": {
         "ConfigRuleName": "A name for the AWS Config rule. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .",
         "Description": "The description that you provide for the AWS Config rule.",
@@ -11512,7 +11672,7 @@
       "description": "The security key for the instance.\n\n> Only two security keys are allowed per Amazon Connect instance.",
       "properties": {
         "InstanceId": "The Amazon Resource Name (ARN) of the instance.\n\n*Minimum* : `1`\n\n*Maximum* : `100`",
-        "Key": "A valid security key in PEM format.\n\n*Minimum* : `1`\n\n*Maximum* : `1024`"
+        "Key": "A valid security key in PEM format. For example:\n\n`\"-----BEGIN PUBLIC KEY-----\\ [a lot of characters] ----END PUBLIC KEY-----\"`\n\n*Minimum* : `1`\n\n*Maximum* : `1024`"
       }
     },
     "AWS::Connect::TaskTemplate": {
@@ -14476,7 +14636,7 @@
       "attributes": {},
       "description": "Represents the settings used to enable or disable Time to Live (TTL) for the specified table.",
       "properties": {
-        "AttributeName": "The name of the TTL attribute used to store the expiration time for items in the table.\n\n> - To update this property, you must first disable TTL and then enable TTL with the new attribute name.",
+        "AttributeName": "The name of the TTL attribute used to store the expiration time for items in the table.\n\n> - The `AttributeName` property is required when enabling the TTL, or when TTL is already enabled.\n> - To update this property, you must first disable TTL and then enable TTL with the new attribute name.",
         "Enabled": "Indicates whether TTL is to be enabled (true) or disabled (false) on the table."
       }
     },
@@ -15068,7 +15228,7 @@
         "ResourceDiscoveryAssociationCount": "The number of resource discovery associations.",
         "ScopeCount": "The number of scopes."
       },
-      "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+      "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .\n\nThere are AWS Identity and Access Management (IAM) permissions required to fully manage an IPAM in CloudFormation. For more information, see [Example policy](https://docs.aws.amazon.com//vpc/latest/ipam/iam-ipam-policy-examples.html) in the *Amazon VPC IPAM User Guide* .",
       "properties": {
         "DefaultResourceDiscoveryAssociationId": "The IPAM's default resource discovery association ID.",
         "DefaultResourceDiscoveryId": "The IPAM's default resource discovery ID.",
@@ -15236,7 +15396,7 @@
         "IamInstanceProfile": "The name of an IAM instance profile. To create a new IAM instance profile, use the [AWS::IAM::InstanceProfile](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-instanceprofile.html) resource.",
         "ImageId": "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template.",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
-        "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nDefault: `m1.small`",
+        "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nWhen you change your EBS-backed instance type, instance restart or replacement behavior depends on the instance type compatibility between the old and new types. An instance that's backed by an instance store volume is always replaced. For more information, see [Change the instance type](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html) in the *Amazon EC2 User Guide* .\n\nDefault: `m1.small`",
         "Ipv6AddressCount": "The number of IPv6 addresses to associate with the primary network interface. Amazon EC2 chooses the IPv6 addresses from the range of your subnet. You cannot specify this option and the option to assign specific IPv6 addresses in the same request. You can specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
         "Ipv6Addresses": "The IPv6 addresses from the range of the subnet to associate with the primary network interface. You cannot specify this option and the option to assign a number of IPv6 addresses in the same request. You cannot specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
         "KernelId": "The ID of the kernel.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [PV-GRUB](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
@@ -15414,6 +15574,20 @@
       "properties": {
         "Device": "The device name (for example, `/dev/sdh` or `xvdh` ).",
         "VolumeId": "The ID of the EBS volume. The volume and instance must be within the same Availability Zone."
+      }
+    },
+    "AWS::EC2::InstanceConnectEndpoint": {
+      "attributes": {
+        "Id": "The ID of the EC2 Instance Connect Endpoint.",
+        "Ref": ""
+      },
+      "description": "Creates an EC2 Instance Connect Endpoint.\n\nAn EC2 Instance Connect Endpoint allows you to connect to an instance, without requiring the instance to have a public IPv4 address. For more information, see [Connect to your instances without requiring a public IPv4 address using EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Connect-using-EC2-Instance-Connect-Endpoint.html) in the *Amazon EC2 User Guide* .",
+      "properties": {
+        "ClientToken": "Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.",
+        "PreserveClientIp": "Indicates whether your client's IP address is preserved as the source. The value is `true` or `false` .\n\n- If `true` , your client's IP address is used when you connect to a resource.\n- If `false` , the elastic network interface IP address is used when you connect to a resource.\n\nDefault: `true`",
+        "SecurityGroupIds": "One or more security groups to associate with the endpoint. If you don't specify a security group, the default security group for your VPC will be associated with the endpoint.",
+        "SubnetId": "The ID of the subnet in which to create the EC2 Instance Connect Endpoint.",
+        "Tags": "The tags to apply to the EC2 Instance Connect Endpoint during creation."
       }
     },
     "AWS::EC2::InternetGateway": {
@@ -16899,7 +17073,7 @@
     },
     "AWS::EC2::SubnetNetworkAclAssociation": {
       "attributes": {
-        "AssociationId": "Returns the value of this object's [SubnetId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet-network-acl-assoc.html) property.",
+        "AssociationId": "Returns the value of this object's AssociationId property.",
         "Ref": "`Ref` returns the ID of the subnet network ACL association."
       },
       "description": "Associates a subnet with a network ACL. For more information, see [ReplaceNetworkAclAssociation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-ReplaceNetworkAclAssociation.html) in the *Amazon EC2 API Reference* .\n\nWhen `AWS::EC2::SubnetNetworkAclAssociation` resources are created during create or update operations, AWS CloudFormation adopts existing resources that share the same key properties (the properties that contribute to uniquely identify the resource). However, if the operation fails and rolls back, AWS CloudFormation deletes the previously out-of-band resources. You can protect against this behavior by using `Retain` deletion policies. For more information, see [DeletionPolicy Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html) .",
@@ -17517,7 +17691,7 @@
     },
     "AWS::EC2::VerifiedAccessInstance.VerifiedAccessLogs": {
       "attributes": {},
-      "description": "Describes the destinations for Verified Access logs.",
+      "description": "Describes the options for Verified Access logs.",
       "properties": {
         "CloudWatchLogs": "CloudWatch Logs logging destination.",
         "KinesisDataFirehose": "Kinesis logging destination.",
@@ -18479,9 +18653,9 @@
         "FileSystemTags": "Use to create one or more tags associated with the file system. Each tag is a user-defined key-value pair. Name your file system on creation by including a `\"Key\":\"Name\",\"Value\":\"{value}\"` key-value pair. Each key must be unique. For more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference Guide* .",
         "KmsKeyId": "The ID of the AWS KMS key to be used to protect the encrypted file system. This parameter is only required if you want to use a nondefault KMS key . If this parameter is not specified, the default KMS key for Amazon EFS is used. This ID can be in one of the following formats:\n\n- Key ID - A unique identifier of the key, for example `1234abcd-12ab-34cd-56ef-1234567890ab` .\n- ARN - An Amazon Resource Name (ARN) for the key, for example `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab` .\n- Key alias - A previously created display name for a key, for example `alias/projectKey1` .\n- Key alias ARN - An ARN for a key alias, for example `arn:aws:kms:us-west-2:444455556666:alias/projectKey1` .\n\nIf `KmsKeyId` is specified, the `Encrypted` parameter must be set to true.",
         "LifecyclePolicies": "An array of `LifecyclePolicy` objects that define the file system's `LifecycleConfiguration` object. A `LifecycleConfiguration` object informs EFS lifecycle management and intelligent tiering of the following:\n\n- When to move files in the file system from primary storage to the IA storage class.\n- When to move files that are in IA storage to primary storage.\n\n> Amazon EFS requires that each `LifecyclePolicy` object have only a single transition. This means that in a request body, `LifecyclePolicies` needs to be structured as an array of `LifecyclePolicy` objects, one object for each transition, `TransitionToIA` , `TransitionToPrimaryStorageClass` . See the example requests in the following section for more information.",
-        "PerformanceMode": "The performance mode of the file system. We recommend `generalPurpose` performance mode for most file systems. File systems using the `maxIO` performance mode can scale to higher levels of aggregate throughput and operations per second with a tradeoff of slightly higher latencies for most file operations. The performance mode can't be changed after the file system has been created.\n\n> The `maxIO` mode is not supported on file systems using One Zone storage classes.",
-        "ProvisionedThroughputInMibps": "The throughput, measured in MiB/s, that you want to provision for a file system that you're creating. Valid values are 1-1024. Required if `ThroughputMode` is set to `provisioned` . The upper limit for throughput is 1024 MiB/s. To increase this limit, contact AWS Support . For more information, see [Amazon EFS quotas that you can increase](https://docs.aws.amazon.com/efs/latest/ug/limits.html#soft-limits) in the *Amazon EFS User Guide* .",
-        "ThroughputMode": "Specifies the throughput mode for the file system. The mode can be `bursting` , `provisioned` , or `elastic` . If you set `ThroughputMode` to `provisioned` , you must also set a value for `ProvisionedThroughputInMibps` . After you create the file system, you can decrease your file system's throughput in Provisioned Throughput mode or change between the throughput modes, with certain time restrictions. For more information, see [Specifying throughput with provisioned mode](https://docs.aws.amazon.com/efs/latest/ug/performance.html#provisioned-throughput) in the *Amazon EFS User Guide* .\n\nDefault is `bursting` ."
+        "PerformanceMode": "The performance mode of the file system. We recommend `generalPurpose` performance mode for most file systems. File systems using the `maxIO` performance mode can scale to higher levels of aggregate throughput and operations per second with a tradeoff of slightly higher latencies for most file operations. The performance mode can't be changed after the file system has been created.\n\n> The `maxIO` mode is not supported on file systems using One Zone storage classes. \n\nDefault is `generalPurpose` .",
+        "ProvisionedThroughputInMibps": "The throughput, measured in MiBps, that you want to provision for a file system that you're creating. Valid values are 1-1024. Required if `ThroughputMode` is set to `provisioned` . The upper limit for throughput is 1024 MiB/s. To increase this limit, contact AWS Support . For more information, see [Amazon EFS quotas that you can increase](https://docs.aws.amazon.com/efs/latest/ug/limits.html#soft-limits) in the *Amazon EFS User Guide* .",
+        "ThroughputMode": "Specifies the throughput mode for the file system. The mode can be `bursting` , `provisioned` , or `elastic` . If you set `ThroughputMode` to `provisioned` , you must also set a value for `ProvisionedThroughputInMibps` . After you create the file system, you can decrease your file system's throughput in Provisioned Throughput mode or change between the throughput modes, with certain time restrictions. For more information, see [Specifying throughput with provisioned mode](https://docs.aws.amazon.com/efs/latest/ug/performance.html#provisioned-throughput) in the *Amazon EFS User Guide* .\n\nDefault is `elastic` ."
       }
     },
     "AWS::EFS::FileSystem.BackupPolicy": {
@@ -18533,7 +18707,7 @@
         "ClusterName": "The name of the cluster.",
         "ConfigurationValues": "The configuration values that you provided.",
         "PreserveOnDelete": "Specifying this option preserves the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on. If an IAM account is associated with the add-on, it isn't removed.",
-        "ResolveConflicts": "How to resolve field value conflicts for an Amazon EKS add-on. Conflicts are handled based on the value you choose:\n\n- *None* \u2013 If the self-managed version of the add-on is installed on your cluster, Amazon EKS doesn't change the value. Creation of the add-on might fail.\n- *Overwrite* \u2013 If the self-managed version of the add-on is installed on your cluster and the Amazon EKS default value is different than the existing value, Amazon EKS changes the value to the Amazon EKS default value.\n- *Preserve* \u2013 Not supported. You can set this value when updating an add-on though. For more information, see [UpdateAddon](https://docs.aws.amazon.com/eks/latest/APIReference/API_UpdateAddon.html) .\n\nIf you don't currently have the self-managed version of the add-on installed on your cluster, the Amazon EKS add-on is installed. Amazon EKS sets all values to default values, regardless of the option that you specify.",
+        "ResolveConflicts": "How to resolve field value conflicts for an Amazon EKS add-on. Conflicts are handled based on the value you choose:\n\n- *None* \u2013 If the self-managed version of the add-on is installed on your cluster, Amazon EKS doesn't change the value. Creation of the add-on might fail.\n- *Overwrite* \u2013 If the self-managed version of the add-on is installed on your cluster and the Amazon EKS default value is different than the existing value, Amazon EKS changes the value to the Amazon EKS default value.\n- *Preserve* \u2013 This is similar to the NONE option. If the self-managed version of the add-on is installed on your cluster Amazon EKS doesn't change the add-on resource properties. Creation of the add-on might fail if conflicts are detected. This option works differently during the update operation. For more information, see [UpdateAddon](https://docs.aws.amazon.com/eks/latest/APIReference/API_UpdateAddon.html) .\n\nIf you don't currently have the self-managed version of the add-on installed on your cluster, the Amazon EKS add-on is installed. Amazon EKS sets all values to default values, regardless of the option that you specify.",
         "ServiceAccountRoleArn": "The Amazon Resource Name (ARN) of an existing IAM role to bind to the add-on's service account. The role must be assigned the IAM permissions required by the add-on. If you don't specify an existing IAM role, then the add-on uses the permissions assigned to the node IAM role. For more information, see [Amazon EKS node IAM role](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) in the *Amazon EKS User Guide* .\n\n> To specify an existing IAM role, you must have an IAM OpenID Connect (OIDC) provider created for your cluster. For more information, see [Enabling IAM roles for service accounts on your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html) in the *Amazon EKS User Guide* .",
         "Tags": "The metadata that you apply to the add-on to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define. Add-on tags do not propagate to any other resources associated with the cluster."
       }
@@ -18709,7 +18883,7 @@
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `cluster-name/nodegroup_name` ."
       },
-      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) .\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. For more information, see [Managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .\n\n> Windows AMI types are only supported for commercial Regions that support Windows Amazon EKS.",
+      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster.\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. For more information, see [Managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .\n\n> Windows AMI types are only supported for commercial Regions that support Windows Amazon EKS.",
       "properties": {
         "AmiType": "The AMI type for your node group. If you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. If your launch template uses a Windows custom AMI, then add `eks:kube-proxy-windows` to your Windows nodes `rolearn` in the `aws-auth` `ConfigMap` . For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "CapacityType": "The capacity type of your managed node group.",
@@ -21639,7 +21813,7 @@
       "attributes": {},
       "description": "The configuration for this Amazon FSx for NetApp ONTAP file system.",
       "properties": {
-        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
+        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `30` .",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the FSx for ONTAP file system deployment type to use in creating the file system.\n\n- `MULTI_AZ_1` - (Default) A high availability file system configured for Multi-AZ redundancy to tolerate temporary Availability Zone (AZ) unavailability.\n- `SINGLE_AZ_1` - A file system configured for Single-AZ redundancy.\n\nFor information about the use cases for Multi-AZ and Single-AZ deployments, refer to [Choosing a file system deployment type](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/high-availability-AZ.html) .",
         "DiskIopsConfiguration": "The SSD IOPS configuration for the FSx for ONTAP file system.",
@@ -21655,7 +21829,7 @@
       "attributes": {},
       "description": "The OpenZFS configuration for the file system that's being created.",
       "properties": {
-        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
+        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `30` .",
         "CopyTagsToBackups": "A Boolean value indicating whether tags for the file system should be copied to backups. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "CopyTagsToVolumes": "A Boolean value indicating whether tags for the file system should be copied to volumes. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to volumes where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to volumes. If you specify one or more tags when creating the volume, no tags are copied from the file system, regardless of this value.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
@@ -21707,7 +21881,7 @@
         "ActiveDirectoryId": "The ID for an existing AWS Managed Microsoft Active Directory (AD) instance that the file system should join when it's created. Required if you are joining the file system to an existing AWS Managed Microsoft AD.",
         "Aliases": "An array of one or more DNS alias names that you want to associate with the Amazon FSx file system. Aliases allow you to use existing DNS names to access the data in your Amazon FSx file system. You can associate up to 50 aliases with a file system at any time.\n\nFor more information, see [Working with DNS Aliases](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-dns-aliases.html) and [Walkthrough 5: Using DNS aliases to access your file system](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/walkthrough05-file-system-custom-CNAME.html) , including additional steps you must take to be able to access your file system using a DNS alias.\n\nAn alias name has to meet the following requirements:\n\n- Formatted as a fully-qualified domain name (FQDN), `hostname.domain` , for example, `accounting.example.com` .\n- Can contain alphanumeric characters, the underscore (_), and the hyphen (-).\n- Cannot start or end with a hyphen.\n- Can start with a numeric.\n\nFor DNS alias names, Amazon FSx stores alphabetical characters as lowercase letters (a-z), regardless of how you specify them: as uppercase letters, lowercase letters, or the corresponding letters in escape codes.",
         "AuditLogConfiguration": "The configuration that Amazon FSx for Windows File Server uses to audit and log user accesses of files, folders, and file shares on the Amazon FSx for Windows File Server file system.",
-        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
+        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `30` .",
         "CopyTagsToBackups": "A boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the file system deployment type, valid values are the following:\n\n- `MULTI_AZ_1` - Deploys a high availability file system that is configured for Multi-AZ redundancy to tolerate temporary Availability Zone (AZ) unavailability. You can only deploy a Multi-AZ file system in AWS Regions that have a minimum of three Availability Zones. Also supports HDD storage type\n- `SINGLE_AZ_1` - (Default) Choose to deploy a file system that is configured for single AZ redundancy.\n- `SINGLE_AZ_2` - The latest generation Single AZ file system. Specifies a file system that is configured for single AZ redundancy and supports HDD storage type.\n\nFor more information, see [Availability and Durability: Single-AZ and Multi-AZ File Systems](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html) .",
@@ -24589,8 +24763,8 @@
       },
       "description": "Creates a Dataflow Endpoint Group request.\n\nDataflow endpoint groups contain a list of endpoints. When the name of a dataflow endpoint group is specified in a mission profile, the Ground Station service will connect to the endpoints and flow data during a contact.\n\nFor more information about dataflow endpoint groups, see [Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflowendpointgroups.html) .",
       "properties": {
-        "ContactPostPassDurationSeconds": "",
-        "ContactPrePassDurationSeconds": "",
+        "ContactPostPassDurationSeconds": "Amount of time, in seconds, after a contact ends that the Ground Station Dataflow Endpoint Group will be in a `POSTPASS` state. A Ground Station Dataflow Endpoint Group State Change event will be emitted when the Dataflow Endpoint Group enters and exits the `POSTPASS` state.",
+        "ContactPrePassDurationSeconds": "Amount of time, in seconds, before a contact starts that the Ground Station Dataflow Endpoint Group will be in a `PREPASS` state. A Ground Station Dataflow Endpoint Group State Change event will be emitted when the Dataflow Endpoint Group enters and exits the `PREPASS` state.",
         "EndpointDetails": "List of Endpoint Details, containing address and port for each endpoint.",
         "Tags": "Tags assigned to a resource."
       }
@@ -25147,9 +25321,10 @@
         "InsecureIngest": "Whether the channel allows insecure RTMP ingest.\n\n*Default* : `false`",
         "LatencyMode": "Channel latency mode. Valid values:\n\n- `NORMAL` : Use NORMAL to broadcast and deliver live video up to Full HD.\n- `LOW` : Use LOW for near real-time interactions with viewers.\n\n> In the  console, `LOW` and `NORMAL` correspond to `Ultra-low` and `Standard` , respectively. \n\n*Default* : `LOW`",
         "Name": "Channel name.",
+        "Preset": "An optional transcode preset for the channel. This is selectable only for `ADVANCED_HD` and `ADVANCED_SD` channel types. For those channel types, the default preset is `HIGHER_BANDWIDTH_DELIVERY` . For other channel types ( `BASIC` and `STANDARD` ), `preset` is the empty string (\"\").",
         "RecordingConfigurationArn": "The ARN of a RecordingConfiguration resource. An empty string indicates that recording is disabled for the channel. A RecordingConfiguration ARN indicates that recording is enabled using the specified recording configuration. See the [RecordingConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-recordingconfiguration.html) resource for more information and an example.\n\n*Default* : \"\" (empty string, recording is disabled)",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "Type": "The channel type, which determines the allowable resolution and bitrate. *If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.* Valid values:\n\n- `STANDARD` : Video is transcoded: multiple qualities are generated from the original input to automatically give viewers the best experience for their devices and network conditions. Transcoding allows higher playback quality across a range of download speeds. Resolution can be up to 1080p and bitrate can be up to 8.5 Mbps. Audio is transcoded only for renditions 360p and below; above that, audio is passed through.\n- `BASIC` : Video is transmuxed: Amazon IVS delivers the original input to viewers. The viewer\u2019s video-quality choice is limited to the original input. Resolution can be up to 1080p and bitrate can be up to 1.5 Mbps for 480p and up to 3.5 Mbps for resolutions between 480p and 1080p.\n\n*Default* : `STANDARD`"
+        "Type": "The channel type, which determines the allowable resolution and bitrate. *If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.* Valid values:\n\n- `STANDARD` : Video is transcoded: multiple qualities are generated from the original input to automatically give viewers the best experience for their devices and network conditions. Transcoding allows higher playback quality across a range of download speeds. Resolution can be up to 1080p and bitrate can be up to 8.5 Mbps. Audio is transcoded only for renditions 360p and below; above that, audio is passed through.\n- `BASIC` : Video is transmuxed: Amazon IVS delivers the original input to viewers. The viewer\u2019s video-quality choice is limited to the original input. Resolution can be up to 1080p and bitrate can be up to 1.5 Mbps for 480p and up to 3.5 Mbps for resolutions between 480p and 1080p.\n- `ADVANCED_SD` : Video is transcoded; multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions. Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at SD quality (480p). You can select an optional transcode preset (see below). Audio for all renditions is transcoded, and an audio-only rendition is available.\n- `ADVANCED_HD` : Video is transcoded; multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions. Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at HD quality (720p). You can select an optional transcode preset (see below). Audio for all renditions is transcoded, and an audio-only rendition is available.\n\nOptional *transcode presets* (available for the `ADVANCED` types) allow you to trade off available download bandwidth and video quality, to optimize the viewing experience. There are two presets:\n\n- *Constrained bandwidth delivery* uses a lower bitrate for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads)\n- *Higher bandwidth delivery* uses a higher bitrate for each quality level. Use it if you have high download bandwidth and/or complex video content (e.g., flashes and quick scene changes).\n\n*Default* : `STANDARD`"
       }
     },
     "AWS::IVS::PlaybackKeyPair": {
@@ -25813,7 +25988,7 @@
         "FirstObservedAt": "Details on the date and time a finding was first seen used to filter findings.",
         "InspectorScore": "The Amazon Inspector score to filter on.",
         "LastObservedAt": "Details on the date and time a finding was last seen used to filter findings.",
-        "NetworkProtocol": "Details on the ingress source addresses used to filter findings.",
+        "NetworkProtocol": "Details on network protocol used to filter findings.",
         "PortRange": "Details on the port ranges used to filter findings.",
         "RelatedVulnerabilities": "Details on the related vulnerabilities used to filter findings.",
         "ResourceId": "Details on the resource IDs used to filter findings.",
@@ -34899,6 +35074,167 @@
         "InstanceType": "The Amazon Managed Blockchain instance type for the node."
       }
     },
+    "AWS::MediaConnect::Bridge": {
+      "attributes": {
+        "BridgeArn": "The Amazon Resource Name (ARN) of the bridge.",
+        "BridgeState": "The current status of the bridge. Possible values are: ACTIVE or STANDBY.",
+        "Ref": "`Ref` returns the bridge ARN. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:bridge:1-23aBC45dEF67hiJ8-12AbC34DE5fG:BasketballArenaIngress\" }`"
+      },
+      "description": "The AWS::MediaConnect::Bridge resource defines a connection between your data center\u2019s gateway instances and the cloud. For each bridge, you specify the type of bridge, transport protocol to use, and details for any outputs and failover.",
+      "properties": {
+        "EgressGatewayBridge": "Create a bridge with the egress bridge type. An egress bridge is a cloud-to-ground bridge. The content comes from an existing MediaConnect flow and is delivered to your premises.",
+        "IngressGatewayBridge": "Create a bridge with the ingress bridge type. An ingress bridge is a ground-to-cloud bridge. The content originates at your premises and is delivered to the cloud.",
+        "Name": "The network output name. This name is used to reference the output and must be unique among outputs in this bridge.",
+        "Outputs": "The outputs that you want to add to this bridge.",
+        "PlacementArn": "The bridge placement Amazon Resource Number (ARN).",
+        "SourceFailoverConfig": "The settings for source failover.",
+        "Sources": "The sources that you want to add to this bridge."
+      }
+    },
+    "AWS::MediaConnect::Bridge.BridgeFlowSource": {
+      "attributes": {},
+      "description": "The source of the bridge. A flow source originates in MediaConnect as an existing cloud flow.",
+      "properties": {
+        "FlowArn": "The ARN of the cloud flow used as a source of this bridge.",
+        "FlowVpcInterfaceAttachment": "The name of the VPC interface attachment to use for this source.",
+        "Name": "The name of the flow source."
+      }
+    },
+    "AWS::MediaConnect::Bridge.BridgeNetworkOutput": {
+      "attributes": {},
+      "description": "The output of the bridge. A network output is delivered to your premises.",
+      "properties": {
+        "IpAddress": "The network output IP Address.",
+        "Name": "The network output name.",
+        "NetworkName": "The network output's gateway network name.",
+        "Port": "The network output port.",
+        "Protocol": "The network output protocol.",
+        "Ttl": "The network output TTL."
+      }
+    },
+    "AWS::MediaConnect::Bridge.BridgeNetworkSource": {
+      "attributes": {},
+      "description": "The source of the bridge. A network source originates at your premises.",
+      "properties": {
+        "MulticastIp": "The network source multicast IP.",
+        "Name": "The name of the network source. This name is used to reference the source and must be unique among sources in this bridge.",
+        "NetworkName": "The network source's gateway network name.",
+        "Port": "The network source port.",
+        "Protocol": "The network source protocol."
+      }
+    },
+    "AWS::MediaConnect::Bridge.BridgeOutput": {
+      "attributes": {},
+      "description": "The output of the bridge.",
+      "properties": {
+        "NetworkOutput": "The output of the bridge. A network output is delivered to your premises."
+      }
+    },
+    "AWS::MediaConnect::Bridge.BridgeSource": {
+      "attributes": {},
+      "description": "The bridge's source.",
+      "properties": {
+        "FlowSource": "The source of the bridge. A flow source originates in MediaConnect as an existing cloud flow.",
+        "NetworkSource": "The source of the bridge. A network source originates at your premises."
+      }
+    },
+    "AWS::MediaConnect::Bridge.EgressGatewayBridge": {
+      "attributes": {},
+      "description": "Create a bridge with the egress bridge type. An egress bridge is a cloud-to-ground bridge. The content comes from an existing MediaConnect flow and is delivered to your premises.",
+      "properties": {
+        "MaxBitrate": "The maximum expected bitrate (in bps) of the egress bridge."
+      }
+    },
+    "AWS::MediaConnect::Bridge.FailoverConfig": {
+      "attributes": {},
+      "description": "The settings for source failover.",
+      "properties": {
+        "FailoverMode": "The type of failover you choose for this flow. MERGE combines the source streams into a single stream, allowing graceful recovery from any single-source loss. FAILOVER allows switching between different streams.",
+        "SourcePriority": "The priority you want to assign to a source. You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
+        "State": "The state of source failover on the flow. If the state is inactive, the flow can have only one source. If the state is active, the flow can have one or two sources."
+      }
+    },
+    "AWS::MediaConnect::Bridge.IngressGatewayBridge": {
+      "attributes": {},
+      "description": "Create a bridge with the ingress bridge type. An ingress bridge is a ground-to-cloud bridge. The content originates at your premises and is delivered to the cloud.",
+      "properties": {
+        "MaxBitrate": "The maximum expected bitrate (in bps) of the ingress bridge.",
+        "MaxOutputs": "The maximum number of outputs on the ingress bridge."
+      }
+    },
+    "AWS::MediaConnect::Bridge.SourcePriority": {
+      "attributes": {},
+      "description": "The priority you want to assign to a source. You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
+      "properties": {
+        "PrimarySource": "The name of the source you choose as the primary source for this flow."
+      }
+    },
+    "AWS::MediaConnect::Bridge.VpcInterfaceAttachment": {
+      "attributes": {},
+      "description": "The VPC interface that you want to send your output to.",
+      "properties": {
+        "VpcInterfaceName": "The name of the VPC interface that you want to send your output to."
+      }
+    },
+    "AWS::MediaConnect::BridgeOutput": {
+      "attributes": {
+        "Ref": "`Ref` returns the bridge ARN and the bridge name. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:bridge:1-23aBC45dEF67hiJ8-12AbC34DE5fG:BasketballArenaIngress|Output:PrimaryOutput1\" }`"
+      },
+      "description": "Adds outputs to an existing bridge.",
+      "properties": {
+        "BridgeArn": "The ARN of the bridge that you want to describe.",
+        "Name": "The network output name. This name is used to reference the output and must be unique among outputs in this bridge.",
+        "NetworkOutput": "Add a network output to an existing bridge."
+      }
+    },
+    "AWS::MediaConnect::BridgeOutput.BridgeNetworkOutput": {
+      "attributes": {},
+      "description": "The output of the bridge. A network output is delivered to your premises.",
+      "properties": {
+        "IpAddress": "The network output IP Address.",
+        "NetworkName": "The network output's gateway network name.",
+        "Port": "The network output port.",
+        "Protocol": "The network output protocol.",
+        "Ttl": "The network output TTL."
+      }
+    },
+    "AWS::MediaConnect::BridgeSource": {
+      "attributes": {
+        "Ref": "`Ref` returns the bridge ARN and bridge name. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:bridge:1-23aBC45dEF67hiJ8-12AbC34DE5fG:BasketballArenaIngress|Source:PrimarySource1\" }`"
+      },
+      "description": "Adds sources to an existing bridge.",
+      "properties": {
+        "BridgeArn": "The ARN of the bridge that you want to describe.",
+        "FlowSource": "Add a flow source to an existing bridge.",
+        "Name": "The name of the network source. This name is used to reference the source and must be unique among sources in this bridge.",
+        "NetworkSource": "Add a network source to an existing bridge."
+      }
+    },
+    "AWS::MediaConnect::BridgeSource.BridgeFlowSource": {
+      "attributes": {},
+      "description": "The source of the bridge. A flow source originates in MediaConnect as an existing cloud flow.",
+      "properties": {
+        "FlowArn": "The ARN of the cloud flow used as a source of this bridge.",
+        "FlowVpcInterfaceAttachment": "The name of the VPC interface attachment to use for this source."
+      }
+    },
+    "AWS::MediaConnect::BridgeSource.BridgeNetworkSource": {
+      "attributes": {},
+      "description": "The source of the bridge. A network source originates at your premises.",
+      "properties": {
+        "MulticastIp": "The network source multicast IP.",
+        "NetworkName": "The network source's gateway network name.",
+        "Port": "The network source port.",
+        "Protocol": "The network source protocol."
+      }
+    },
+    "AWS::MediaConnect::BridgeSource.VpcInterfaceAttachment": {
+      "attributes": {},
+      "description": "The VPC interface that you want to send your output to.",
+      "properties": {
+        "VpcInterfaceName": "The name of the VPC interface that you want to send your output to."
+      }
+    },
     "AWS::MediaConnect::Flow": {
       "attributes": {
         "FlowArn": "The Amazon Resource Name (ARN) of the flow.",
@@ -34906,7 +35242,7 @@
         "Ref": "`Ref` returns the flow ARN. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:flow:1-23aBC45dEF67hiJ8-12AbC34DE5fG:BasketballGame\" }`",
         "Source.IngestIp": "The IP address that the flow listens on for incoming content.",
         "Source.SourceArn": "The ARN of the source.",
-        "Source.SourceIngestPort": "The port that the flow will be listening on for incoming content."
+        "Source.SourceIngestPort": "The port that the flow listens on for incoming content. If the protocol of the source is Zixi, the port must be set to 2088."
       },
       "description": "The AWS::MediaConnect::Flow resource defines a connection between one or more video sources and one or more outputs. For each flow, you specify the transport protocol to use, encryption information, and details for any outputs or entitlements that you want. AWS Elemental MediaConnect returns an ingest endpoint where you can send your live video as a single unicast stream. The service replicates and distributes the video to every output that you specify, whether inside or outside the AWS Cloud. You can also set up entitlements on a flow to allow other AWS accounts to access your content.",
       "properties": {
@@ -34958,7 +35294,7 @@
         "SenderControlPort": "The port that the flow uses to send outbound requests to initiate connection with the sender.",
         "SenderIpAddress": "The IP address that the flow communicates with to initiate connection with the sender.",
         "SourceArn": "The ARN of the source.",
-        "SourceIngestPort": "The port that the flow will be listening on for incoming content.",
+        "SourceIngestPort": "The port that the flow listens on for incoming content. If the protocol of the source is Zixi, the port must be set to 2088.",
         "SourceListenerAddress": "Source IP or domain name for SRT-caller protocol.",
         "SourceListenerPort": "Source port for SRT-caller protocol.",
         "StreamId": "The stream ID that you want to use for the transport. This parameter applies only to Zixi-based streams.",
@@ -35049,7 +35385,7 @@
         "IngestIp": "The IP address that the flow listens on for incoming content.",
         "Ref": "`Ref` returns the source ARN. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:source:2-3aBC45dEF67hiJ89-c34de5fG678h:AwardsShowSource\" }`",
         "SourceArn": "The ARN of the source.",
-        "SourceIngestPort": ""
+        "SourceIngestPort": "The port that the flow listens on for incoming content. If the protocol of the source is Zixi, the port must be set to 2088."
       },
       "description": "The AWS::MediaConnect::FlowSource resource is used to add additional sources to an existing flow. Adding an additional source requires Failover to be enabled. When you enable Failover, the additional source must use the same protocol as the existing source. A source is the external video content that includes configuration information (encryption and source type) and a network address. Each flow has at least one source. A standard source comes from a source other than another AWS Elemental MediaConnect flow, such as an on-premises encoder.",
       "properties": {
@@ -35099,6 +35435,27 @@
         "RoleArn": "The Amazon Resource Name (ARN) of the role that you created when you set up MediaConnect as a trusted service.",
         "SecurityGroupIds": "The VPC security groups that you want MediaConnect to use for your VPC configuration. You must include at least one security group in the request.",
         "SubnetId": "The subnet IDs that you want to use for your VPC interface.\n\nA range of IP addresses in your VPC. When you create your VPC, you specify a range of IPv4 addresses for the VPC in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16. This is the primary CIDR block for your VPC. When you create a subnet for your VPC, you specify the CIDR block for the subnet, which is a subset of the VPC CIDR block.\n\nThe subnets that you use across all VPC interfaces on the flow must be in the same Availability Zone as the flow."
+      }
+    },
+    "AWS::MediaConnect::Gateway": {
+      "attributes": {
+        "GatewayArn": "The Amazon Resource Name (ARN) of the gateway.",
+        "GatewayState": "The current state of the gateway. Possible values are: CREATING, ACTIVE, UPDATING, ERROR, DELETING, DELETED.",
+        "Ref": "`Ref` returns the gateway ARN. For example:\n\n`{ \"Ref\": \"arn:aws:mediaconnect:us-east-1:111122223333:gateway:1-23aBC45dEF67hiJ8-12AbC34DE5fG:WestOffice\" }`"
+      },
+      "description": "The AWS::MediaConnect::Gateway resource is used to create a new gateway. AWS Elemental MediaConnect Gateway is a feature of MediaConnect that allows the deployment of on-premises resources for transporting live video to and from the AWS Cloud. MediaConnect Gateway allows you to contribute live video to the AWS Cloud from on-premises hardware, as well as distribute live video from the AWS Cloud to your local data center.",
+      "properties": {
+        "EgressCidrBlocks": "The range of IP addresses that are allowed to contribute content or initiate output requests for flows communicating with this gateway. These IP addresses should be in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+        "Name": "The name of the gateway. This name can not be modified after the gateway is created.",
+        "Networks": "The list of networks that you want to add."
+      }
+    },
+    "AWS::MediaConnect::Gateway.GatewayNetwork": {
+      "attributes": {},
+      "description": "The network settings for a gateway.",
+      "properties": {
+        "CidrBlock": "A unique IP address range to use for this network. These IP addresses should be in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+        "Name": "The name of the network. This name is used to reference the network and must be unique among networks in this gateway."
       }
     },
     "AWS::MediaConvert::JobTemplate": {
@@ -38584,7 +38941,7 @@
     },
     "AWS::OSIS::Pipeline": {
       "attributes": {
-        "IngestEndpointUrls": "The ingestion endpoints for the pipeline that you can send data to. For example, `my-pipeline-123456789012.us-east-1.osis.amazonaws.com` .",
+        "IngestEndpointUrls": "A list of the ingestion endpoints for the pipeline that you can send data to. Currently, only a single ingestion endpoint is supported for a pipeline. For example, `my-pipeline-123456789012.us-east-1.osis.amazonaws.com` .",
         "PipelineArn": "The Amazon Resource Name (ARN) of the pipeline.",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-abc1d2efg3h4` . For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
         "VpcEndpoints": "The VPC interface endpoints that have access to the pipeline."
@@ -39955,7 +40312,7 @@
         "AdditionalTreatments": "An array of requests that defines additional treatments for the campaign, in addition to the default treatment for the campaign.",
         "ApplicationId": "The unique identifier for the Amazon Pinpoint application that the campaign is associated with.",
         "CampaignHook": "Specifies the Lambda function to use as a code hook for a campaign.",
-        "CustomDeliveryConfiguration": "",
+        "CustomDeliveryConfiguration": "The delivery configuration settings for sending the treatment through a custom channel. This object is required if the `MessageConfiguration` object for the treatment specifies a `CustomMessage` object.",
         "Description": "A custom description of the campaign.",
         "HoldoutPercent": "The allocated percentage of users (segment members) who shouldn't receive messages from the campaign.",
         "IsPaused": "Specifies whether to pause the campaign. A paused campaign doesn't run unless you resume it by changing this value to `false` . If you restart a campaign, the campaign restarts from the beginning and not at the point you paused it. If a campaign is running it will complete and then pause. Pause only pauses or skips the next run for a recurring future scheduled campaign. A campaign scheduled for immediate can't be paused.",
@@ -39967,7 +40324,7 @@
         "SegmentId": "The unique identifier for the segment to associate with the campaign.",
         "SegmentVersion": "The version of the segment to associate with the campaign.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "TemplateConfiguration": "",
+        "TemplateConfiguration": "The message template to use for the treatment.",
         "TreatmentDescription": "A custom description of the default treatment for the campaign.",
         "TreatmentName": "A custom name of the default treatment for the campaign, if the campaign has multiple treatments. A *treatment* is a variation of a campaign that's used for A/B testing."
       }
@@ -39982,9 +40339,9 @@
     },
     "AWS::Pinpoint::Campaign.CampaignCustomMessage": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the contents of a message that's sent through a custom channel to recipients of a campaign.",
       "properties": {
-        "Data": ""
+        "Data": "The raw, JSON-formatted string to use as the payload for the message. The maximum size is 5 KB."
       }
     },
     "AWS::Pinpoint::Campaign.CampaignEmailMessage": {
@@ -40037,10 +40394,10 @@
     },
     "AWS::Pinpoint::Campaign.CustomDeliveryConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the delivery configuration settings for sending a campaign or campaign treatment through a custom channel. This object is required if you use the `CampaignCustomMessage` object to define the message to send for the campaign or campaign treatment.",
       "properties": {
-        "DeliveryUri": "",
-        "EndpointTypes": ""
+        "DeliveryUri": "The destination to send the campaign or treatment to. This value can be one of the following:\n\n- The name or Amazon Resource Name (ARN) of an AWS Lambda function to invoke to handle delivery of the campaign or treatment.\n- The URL for a web application or service that supports HTTPS and can receive the message. The URL has to be a full URL, including the HTTPS protocol.",
+        "EndpointTypes": "The types of endpoints to send the campaign or treatment to. Each valid value maps to a type of channel that you can associate with an endpoint by using the `ChannelType` property of an endpoint."
       }
     },
     "AWS::Pinpoint::Campaign.DefaultButtonConfiguration": {
@@ -40111,7 +40468,7 @@
         "Daily": "The maximum number of messages that a campaign can send to a single endpoint during a 24-hour period. The maximum value is 100.",
         "MaximumDuration": "The maximum amount of time, in seconds, that a campaign can attempt to deliver a message after the scheduled start time for the campaign. The minimum value is 60 seconds.",
         "MessagesPerSecond": "The maximum number of messages that a campaign can send each second. The minimum value is 1. The maximum value is 20,000.",
-        "Session": "",
+        "Session": "The maximum number of messages that the campaign can send per user session.",
         "Total": "The maximum number of messages that a campaign can send to a single endpoint during the course of the campaign. The maximum value is 100."
       }
     },
@@ -40140,7 +40497,7 @@
         "ADMMessage": "The message that the campaign sends through the ADM (Amazon Device Messaging) channel. If specified, this message overrides the default message.",
         "APNSMessage": "The message that the campaign sends through the APNs (Apple Push Notification service) channel. If specified, this message overrides the default message.",
         "BaiduMessage": "The message that the campaign sends through the Baidu (Baidu Cloud Push) channel. If specified, this message overrides the default message.",
-        "CustomMessage": "",
+        "CustomMessage": "The message that the campaign sends through a custom channel, as specified by the delivery configuration ( `CustomDeliveryConfiguration` ) settings for the campaign. If specified, this message overrides the default message.",
         "DefaultMessage": "The default message that the campaign sends through all the channels that are configured for the campaign.",
         "EmailMessage": "The message that the campaign sends through the email channel. If specified, this message overrides the default message.",
         "GCMMessage": "The message that the campaign sends through the GCM channel, which enables Amazon Pinpoint to send push notifications through the Firebase Cloud Messaging (FCM), formerly Google Cloud Messaging (GCM), service. If specified, this message overrides the default message.",
@@ -40195,31 +40552,31 @@
     },
     "AWS::Pinpoint::Campaign.Template": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the name and version of the message template to use for the message.",
       "properties": {
-        "Name": "",
-        "Version": ""
+        "Name": "The name of the message template to use for the message. If specified, this value must match the name of an existing message template.",
+        "Version": "The unique identifier for the version of the message template to use for the message. If specified, this value must match the identifier for an existing template version. To retrieve a list of versions and version identifiers for a template, use the [Template Versions](https://docs.aws.amazon.com/pinpoint/latest/apireference/templates-template-name-template-type-versions.html) resource.\n\nIf you don't specify a value for this property, Amazon Pinpoint uses the *active version* of the template. The *active version* is typically the version of a template that's been most recently reviewed and approved for use, depending on your workflow. It isn't necessarily the latest version of a template."
       }
     },
     "AWS::Pinpoint::Campaign.TemplateConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the message template to use for the message, for each type of channel.",
       "properties": {
-        "EmailTemplate": "",
-        "PushTemplate": "",
-        "SMSTemplate": "",
-        "VoiceTemplate": ""
+        "EmailTemplate": "The email template to use for the message.",
+        "PushTemplate": "The push notification template to use for the message.",
+        "SMSTemplate": "The SMS template to use for the message.",
+        "VoiceTemplate": "The voice template to use for the message. This object isn't supported for campaigns."
       }
     },
     "AWS::Pinpoint::Campaign.WriteTreatmentResource": {
       "attributes": {},
       "description": "Specifies the settings for a campaign treatment. A *treatment* is a variation of a campaign that's used for A/B testing of a campaign.",
       "properties": {
-        "CustomDeliveryConfiguration": "",
+        "CustomDeliveryConfiguration": "The delivery configuration settings for sending the treatment through a custom channel. This object is required if the `MessageConfiguration` object for the treatment specifies a `CustomMessage` object.",
         "MessageConfiguration": "The message configuration settings for the treatment.",
         "Schedule": "The schedule settings for the treatment.",
         "SizePercent": "The allocated percentage of users (segment members) to send the treatment to.",
-        "TemplateConfiguration": "",
+        "TemplateConfiguration": "The message template to use for the treatment.",
         "TreatmentDescription": "A custom description of the treatment.",
         "TreatmentName": "A custom name for the treatment."
       }
@@ -40280,7 +40637,7 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the message template."
       },
-      "description": "Creates a message template that you can use to send in-app messages. A message template is a set of content and settings that you can define, save, and reuse in messages for any of your Amazon Pinpoint applications.",
+      "description": "Creates a message template that you can use to send in-app messages. A message template is a set of content and settings that you can define, save, and reuse in messages for any of your Amazon Pinpoint applications. The In-App channel is unavailable in AWS GovCloud (US).",
       "properties": {
         "Content": "An object that contains information about the content of an in-app message, including its title and body text, text colors, background colors, images, buttons, and behaviors.",
         "CustomConfig": "Custom data, in the form of key-value pairs, that is included in an in-app messaging payload.",
@@ -40505,7 +40862,7 @@
       "attributes": {},
       "description": "Specifies the dimension settings for a segment.",
       "properties": {
-        "Attributes": "One or more custom attributes to use as criteria for the segment.",
+        "Attributes": "One or more custom attributes to use as criteria for the segment. For more information see [AttributeDimension](https://docs.aws.amazon.com/pinpoint/latest/apireference/apps-application-id-segments.html#apps-application-id-segments-model-attributedimension)",
         "Behavior": "The behavior-based criteria, such as how recently users have used your app, for the segment.",
         "Demographic": "The demographic-based criteria, such as device platform, for the segment.",
         "Location": "The location-based criteria, such as region or GPS coordinates, for the segment.",
@@ -49922,9 +50279,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh properties of a dataset.",
       "properties": {
-        "RefreshConfiguration": ""
+        "RefreshConfiguration": "The refresh configuration for a dataset."
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -49960,7 +50317,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": ""
+        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50006,9 +50363,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "",
+      "description": "The incremental refresh configuration for a dataset.",
       "properties": {
-        "LookbackWindow": ""
+        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50083,18 +50440,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "",
+      "description": "The lookback window setup of an incremental refresh configuration.",
       "properties": {
-        "ColumnName": "",
-        "Size": "",
-        "SizeUnit": ""
+        "ColumnName": "The name of the lookback window column.",
+        "Size": "The lookback window column size.",
+        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "",
+        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50111,10 +50468,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "",
+      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
       "properties": {
-        "NewDefaultValues": "",
-        "NewParameterName": "",
+        "NewDefaultValues": "The new default values for the parameter.",
+        "NewParameterName": "The new name for the parameter.",
         "ParameterName": ""
       }
     },
@@ -50136,9 +50493,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh configuration of a dataset.",
       "properties": {
-        "IncrementalRefresh": ""
+        "IncrementalRefresh": "The incremental refresh for the dataset."
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -55281,6 +55638,24 @@
         "Tags": "Specifies one or more tags to attach to the resource share itself. It doesn't attach the tags to the resources associated with the resource share."
       }
     },
+    "AWS::RDS::CustomDBEngineVersion": {
+      "attributes": {
+        "DBEngineVersionArn": "The ARN of the custom engine version.",
+        "Ref": ""
+      },
+      "description": "Creates a custom DB engine version (CEV).",
+      "properties": {
+        "DatabaseInstallationFilesS3BucketName": "The name of an Amazon S3 bucket that contains database installation files for your CEV. For example, a valid bucket name is `my-custom-installation-files` .",
+        "DatabaseInstallationFilesS3Prefix": "The Amazon S3 directory that contains the database installation files for your CEV. For example, a valid bucket name is `123456789012/cev1` . If this setting isn't specified, no prefix is assumed.",
+        "Description": "An optional description of your CEV.",
+        "Engine": "The database engine to use for your custom engine version (CEV).\n\nValid values:\n\n- `custom-oracle-ee`\n- `custom-oracle-ee-cdb`",
+        "EngineVersion": "The name of your CEV. The name format is `major version.customized_string` . For example, a valid CEV name is `19.my_cev1` . This setting is required for RDS Custom for Oracle, but optional for Amazon RDS. The combination of `Engine` and `EngineVersion` is unique per customer per Region.\n\n*Constraints:* Minimum length is 1. Maximum length is 60.\n\n*Pattern:* `^[a-z0-9_.-]{1,60$` }",
+        "KMSKeyId": "The AWS KMS key identifier for an encrypted CEV. A symmetric encryption KMS key is required for RDS Custom, but optional for Amazon RDS.\n\nIf you have an existing symmetric encryption KMS key in your account, you can use it with RDS Custom. No further action is necessary. If you don't already have a symmetric encryption KMS key in your account, follow the instructions in [Creating a symmetric encryption KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html#create-symmetric-cmk) in the *AWS Key Management Service Developer Guide* .\n\nYou can choose the same symmetric encryption key when you create a CEV and a DB instance, or choose different keys.",
+        "Manifest": "The CEV manifest, which is a JSON document that describes the installation .zip files stored in Amazon S3. Specify the name/value pairs in a file or a quoted string. RDS Custom applies the patches in the order in which they are listed.\n\nThe following JSON fields are valid:\n\n- **MediaImportTemplateVersion** - Version of the CEV manifest. The date is in the format `YYYY-MM-DD` .\n- **databaseInstallationFileNames** - Ordered list of installation files for the CEV.\n- **opatchFileNames** - Ordered list of OPatch installers used for the Oracle DB engine.\n- **psuRuPatchFileNames** - The PSU and RU patches for this CEV.\n- **OtherPatchFileNames** - The patches that are not in the list of PSU and RU patches. Amazon RDS applies these patches after applying the PSU and RU patches.\n\nFor more information, see [Creating the CEV manifest](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/custom-cev.html#custom-cev.preparing.manifest) in the *Amazon RDS User Guide* .",
+        "Status": "A value that indicates the status of a custom engine version (CEV).",
+        "Tags": "A list of tags. For more information, see [Tagging Amazon RDS Resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Tagging.html) in the *Amazon RDS User Guide.*"
+      }
+    },
     "AWS::RDS::DBCluster": {
       "attributes": {
         "DBClusterArn": "The Amazon Resource Name (ARN) for the DB cluster.",
@@ -56747,14 +57122,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -56762,18 +57137,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -56782,7 +57157,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -56792,15 +57167,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -56874,7 +57249,7 @@
         "ResourcePath": "The path, if any, that you want Amazon Route 53 to request when performing health checks. The path can be any value for which your endpoint will return an HTTP status code of 2xx or 3xx when the endpoint is healthy, for example, the file /docs/route53-health-check.html. You can also include query string parameters, for example, `/welcome.html?language=jp&login=y` .",
         "RoutingControlArn": "",
         "SearchString": "If the value of Type is `HTTP_STR_MATCH` or `HTTPS_STR_MATCH` , the string that you want Amazon Route 53 to search for in the response body from the specified resource. If the string appears in the response body, Route 53 considers the resource healthy.\n\nRoute 53 considers case when searching for `SearchString` in the response body.",
-        "Type": "The type of health check that you want to create, which indicates how Amazon Route 53 determines whether an endpoint is healthy.\n\n> You can't change the value of `Type` after you create a health check. \n\nYou can create the following types of health checks:\n\n- *HTTP* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP status code of 200 or greater and less than 400.\n- *HTTPS* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an HTTP status code of 200 or greater and less than 400.\n\n> If you specify `HTTPS` for the value of `Type` , the endpoint must support TLS v1.0 or later.\n- *HTTP_STR_MATCH* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and searches the first 5,120 bytes of the response body for the string that you specify in `SearchString` .\n- *HTTPS_STR_MATCH* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an `HTTPS` request and searches the first 5,120 bytes of the response body for the string that you specify in `SearchString` .\n- *TCP* : Route 53 tries to establish a TCP connection.\n- *CLOUDWATCH_METRIC* : The health check is associated with a CloudWatch alarm. If the state of the alarm is `OK` , the health check is considered healthy. If the state is `ALARM` , the health check is considered unhealthy. If CloudWatch doesn't have sufficient data to determine whether the state is `OK` or `ALARM` , the health check status depends on the setting for `InsufficientDataHealthStatus` : `Healthy` , `Unhealthy` , or `LastKnownStatus` .\n- *CALCULATED* : For health checks that monitor the status of other health checks, Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and compares that number with the value of `HealthThreshold` .\n- *RECOVERY_CONTROL* : The health check is assocated with a Route53 Application Recovery Controller routing control. If the routing control state is `ON` , the health check is considered healthy. If the state is `OFF` , the health check is considered unhealthy.\n\nFor more information, see [How Route 53 Determines Whether an Endpoint Is Healthy](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html) in the *Amazon Route 53 Developer Guide* ."
+        "Type": "The type of health check that you want to create, which indicates how Amazon Route 53 determines whether an endpoint is healthy.\n\n> You can't change the value of `Type` after you create a health check. \n\nYou can create the following types of health checks:\n\n- *HTTP* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP status code of 200 or greater and less than 400.\n- *HTTPS* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an HTTP status code of 200 or greater and less than 400.\n\n> If you specify `HTTPS` for the value of `Type` , the endpoint must support TLS v1.0 or later.\n- *HTTP_STR_MATCH* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and searches the first 5,120 bytes of the response body for the string that you specify in `SearchString` .\n- *HTTPS_STR_MATCH* : Route 53 tries to establish a TCP connection. If successful, Route 53 submits an `HTTPS` request and searches the first 5,120 bytes of the response body for the string that you specify in `SearchString` .\n- *TCP* : Route 53 tries to establish a TCP connection.\n- *CLOUDWATCH_METRIC* : The health check is associated with a CloudWatch alarm. If the state of the alarm is `OK` , the health check is considered healthy. If the state is `ALARM` , the health check is considered unhealthy. If CloudWatch doesn't have sufficient data to determine whether the state is `OK` or `ALARM` , the health check status depends on the setting for `InsufficientDataHealthStatus` : `Healthy` , `Unhealthy` , or `LastKnownStatus` .\n\n> Route 53 supports CloudWatch alarms with the following features:\n> \n> - Standard-resolution metrics. High-resolution metrics aren't supported. For more information, see [High-Resolution Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/publishingMetrics.html#high-resolution-metrics) in the *Amazon CloudWatch User Guide* .\n> - Statistics: Average, Minimum, Maximum, Sum, and SampleCount. Extended statistics aren't supported.\n- *CALCULATED* : For health checks that monitor the status of other health checks, Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and compares that number with the value of `HealthThreshold` .\n- *RECOVERY_CONTROL* : The health check is assocated with a Route53 Application Recovery Controller routing control. If the routing control state is `ON` , the health check is considered healthy. If the state is `OFF` , the health check is considered unhealthy.\n\nFor more information, see [How Route 53 Determines Whether an Endpoint Is Healthy](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html) in the *Amazon Route 53 Developer Guide* ."
       }
     },
     "AWS::Route53::HealthCheck.HealthCheckTag": {
@@ -57498,7 +57873,7 @@
         "AccelerateConfiguration": "Configures the transfer acceleration state for an Amazon S3 bucket. For more information, see [Amazon S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) in the *Amazon S3 User Guide* .",
         "AccessControl": "A canned access control list (ACL) that grants predefined permissions to the bucket. For more information about canned ACLs, see [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) in the *Amazon S3 User Guide* .\n\nBe aware that the syntax for this property differs from the information provided in the *Amazon S3 User Guide* . The AccessControl property is case-sensitive and must be one of the following values: Private, PublicRead, PublicReadWrite, AuthenticatedRead, LogDeliveryWrite, BucketOwnerRead, BucketOwnerFullControl, or AwsExecRead.",
         "AnalyticsConfigurations": "Specifies the configuration and any analyses for the analytics filter of an Amazon S3 bucket.",
-        "BucketEncryption": "Specifies default encryption for a bucket using server-side encryption with Amazon S3-managed keys (SSE-S3) or AWS KMS-managed keys (SSE-KMS) bucket. For information about the Amazon S3 default encryption feature, see [Amazon S3 Default Encryption for S3 Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) in the *Amazon S3 User Guide* .",
+        "BucketEncryption": "Specifies default encryption for a bucket using server-side encryption with Amazon S3-managed keys (SSE-S3), AWS KMS-managed keys (SSE-KMS), or dual-layer server-side encryption with KMS-managed keys (DSSE-KMS). For information about the Amazon S3 default encryption feature, see [Amazon S3 Default Encryption for S3 Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) in the *Amazon S3 User Guide* .",
         "BucketName": "A name for the bucket. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the bucket name. The bucket name must contain only lowercase letters, numbers, periods (.), and dashes (-) and must follow [Amazon S3 bucket restrictions and limitations](https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html) . For more information, see [Rules for naming Amazon S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html#bucketnamingrules) in the *Amazon S3 User Guide* .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you need to replace the resource, specify a new name.",
         "CorsConfiguration": "Describes the cross-origin access configuration for objects in an Amazon S3 bucket. For more information, see [Enabling Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) in the *Amazon S3 User Guide* .",
         "IntelligentTieringConfigurations": "Defines how Amazon S3 handles Intelligent-Tiering storage.",
@@ -57550,7 +57925,7 @@
     },
     "AWS::S3::Bucket.BucketEncryption": {
       "attributes": {},
-      "description": "Specifies default encryption for a bucket using server-side encryption with Amazon S3-managed keys (SSE-S3) or AWS KMS-managed keys (SSE-KMS) bucket. For information about the Amazon S3 default encryption feature, see [Amazon S3 Default Encryption for S3 Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) in the *Amazon S3 User Guide* .",
+      "description": "Specifies default encryption for a bucket using server-side encryption with Amazon S3-managed keys (SSE-S3), AWS KMS-managed keys (SSE-KMS), or dual-layer server-side encryption with KMS-managed keys (DSSE-KMS). For information about the Amazon S3 default encryption feature, see [Amazon S3 Default Encryption for S3 Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) in the *Amazon S3 User Guide* .",
       "properties": {
         "ServerSideEncryptionConfiguration": "Specifies the default server-side-encryption configuration."
       }
@@ -57604,7 +57979,7 @@
       "properties": {
         "BucketAccountId": "The account ID that owns the destination S3 bucket. If no account ID is provided, the owner is not validated before exporting data.\n\n> Although this value is optional, we strongly recommend that you set it to help prevent problems if the destination bucket ownership changes.",
         "BucketArn": "The Amazon Resource Name (ARN) of the bucket to which data is exported.",
-        "Format": "Specifies the file format used when exporting data to Amazon S3.\n\n*Allowed values* : `CSV` | `ORC` | `Parquet`",
+        "Format": "Specifies the file format used when exporting data to Amazon S3.",
         "Prefix": "The prefix to use when exporting data. The prefix is prepended to all results."
       }
     },
@@ -57698,7 +58073,7 @@
     },
     "AWS::S3::Bucket.NoncurrentVersionExpiration": {
       "attributes": {},
-      "description": "Specifies when noncurrent object versions expire. Upon expiration, Amazon S3 permanently deletes the noncurrent object versions. You set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request that Amazon S3 delete noncurrent object versions at a specific period in the object's lifetime.",
+      "description": "Specifies when noncurrent object versions expire. Upon expiration, Amazon S3 permanently deletes the noncurrent object versions. You set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request that Amazon S3 delete noncurrent object versions at a specific period in the object's lifetime. For more information about setting a lifecycle rule configuration, see [AWS::S3::Bucket Rule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-lifecycleconfig-rule.html) .",
       "properties": {
         "NewerNoncurrentVersions": "Specifies how many noncurrent versions Amazon S3 will retain. If there are this many more recent noncurrent versions, Amazon S3 will take the associated action. For more information about noncurrent versions, see [Lifecycle configuration elements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html) in the *Amazon S3 User Guide* .",
         "NoncurrentDays": "Specifies the number of days an object is noncurrent before Amazon S3 can perform the associated action. For information about the noncurrent days calculations, see [How Amazon S3 Calculates When an Object Became Noncurrent](https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#non-current-days-calculations) in the *Amazon S3 User Guide* ."
@@ -57920,7 +58295,7 @@
       "attributes": {},
       "description": "Describes the default server-side encryption to apply to new objects in the bucket. If a PUT Object request doesn't specify any server-side encryption, this default encryption will be applied. If you don't specify a customer managed key at configuration, Amazon S3 automatically creates an AWS KMS key in your AWS account the first time that you add an object encrypted with SSE-KMS to a bucket. By default, Amazon S3 uses this KMS key for SSE-KMS. For more information, see [PUT Bucket encryption](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTencryption.html) in the *Amazon S3 API Reference* .",
       "properties": {
-        "KMSMasterKeyID": "KMS key ID to use for the default encryption. This parameter is allowed if SSEAlgorithm is aws:kms.\n\nYou can specify the key ID or the Amazon Resource Name (ARN) of the CMK. However, if you are using encryption with cross-account operations, you must use a fully qualified CMK ARN. For more information, see [Using encryption for cross-account operations](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html#bucket-encryption-update-bucket-policy) .\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n\n> Amazon S3 only supports symmetric KMS keys and not asymmetric KMS keys. For more information, see [Using Symmetric and Asymmetric Keys](https://docs.aws.amazon.com//kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide* .",
+        "KMSMasterKeyID": "KMS key ID to use for the default encryption. This parameter is allowed if SSEAlgorithm is aws:kms.\n\nYou can specify the key ID, key alias, or the Amazon Resource Name (ARN) of the CMK. However, if you are using encryption with cross-account operations, you must use a fully qualified CMK ARN. For more information, see [Using encryption for cross-account operations](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html#bucket-encryption-update-bucket-policy) .\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n\n> Amazon S3 only supports symmetric KMS keys and not asymmetric KMS keys. For more information, see [Using Symmetric and Asymmetric Keys](https://docs.aws.amazon.com//kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide* .",
         "SSEAlgorithm": "Server-side encryption algorithm to use for the default encryption."
       }
     },
@@ -58041,7 +58416,7 @@
       "description": "A bucket associated with a specific Region when creating Multi-Region Access Points.",
       "properties": {
         "Bucket": "The name of the associated bucket for the Region.",
-        "BucketAccountId": ""
+        "BucketAccountId": "The AWS account ID that owns the Amazon S3 bucket that's associated with this Multi-Region Access Point."
       }
     },
     "AWS::S3::MultiRegionAccessPointPolicy": {
@@ -62501,6 +62876,165 @@
         "TargetType": "A string that defines the type of service or database associated with the secret. This value instructs Secrets Manager how to update the secret with the details of the service or database. This value must be one of the following:\n\n- AWS::RDS::DBInstance\n- AWS::RDS::DBCluster\n- AWS::Redshift::Cluster\n- AWS::DocDB::DBInstance\n- AWS::DocDB::DBCluster"
       }
     },
+    "AWS::SecurityHub::AutomationRule": {
+      "attributes": {
+        "CreatedAt": "A timestamp that indicates when the rule was created.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "CreatedBy": "The principal that created the rule. For example, `arn:aws:sts::123456789012:assumed-role/Developer-Role/JaneDoe` .",
+        "Ref": "`Ref` returns `RuleArn` . For example, `arn:aws:securityhub:us-east-1:123456789012:automation-rule/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111` .",
+        "RuleArn": "The Amazon Resource Name (ARN) of the automation rule that you create. For example, `arn:aws:securityhub:us-east-1:123456789012:automation-rule/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111` .",
+        "UpdatedAt": "A timestamp that indicates when the rule was most recently updated.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` ."
+      },
+      "description": "The `AWS::SecurityHub::AutomationRule` resource specifies an automation rule based on input parameters. For more information, see [Automation rules](https://docs.aws.amazon.com/securityhub/latest/userguide/automation-rules.html) in the *AWS Security Hub User Guide* .",
+      "properties": {
+        "Actions": "One or more actions to update finding fields if a finding matches the defined criteria of the rule.",
+        "Criteria": "A set of [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) finding field attributes and corresponding expected values that Security Hub uses to filter findings. If a finding matches the conditions specified in this parameter, Security Hub applies the rule action to the finding.",
+        "Description": "A description of the rule.",
+        "IsTerminal": "Specifies whether a rule is the last to be applied with respect to a finding that matches the rule criteria. This is useful when a finding matches the criteria for multiple rules, and each rule has different actions. If the value of this field is set to `true` for a rule, Security Hub applies the rule action to a finding that matches the rule criteria and won't evaluate other rules for the finding. The default value of this field is `false` .",
+        "RuleName": "The name of the rule.",
+        "RuleOrder": "An integer ranging from 1 to 1000 that represents the order in which the rule action is applied to findings. Security Hub applies rules with lower values for this parameter first.",
+        "RuleStatus": "Whether the rule is active after it is created. If this parameter is equal to `ENABLED` , Security Hub will apply the rule to findings and finding updates after the rule is created.",
+        "Tags": "User-defined tags that help you label the purpose of a rule."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.AutomationRulesAction": {
+      "attributes": {},
+      "description": "One or more actions to update finding fields if a finding matches the defined criteria of the rule.",
+      "properties": {
+        "FindingFieldsUpdate": "Specifies that the automation rule action is an update to a finding field.",
+        "Type": "Specifies that the rule action should update the `Types` finding field. The `Types` finding field provides one or more finding types in the format of namespace/category/classifier that classify a finding. For more information, see [Types taxonomy for ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-type-taxonomy.html) in the *AWS Security Hub User Guide* ."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.AutomationRulesFindingFieldsUpdate": {
+      "attributes": {},
+      "description": "Identifies the finding fields that the automation rule action will update when a finding matches the defined criteria.",
+      "properties": {
+        "Confidence": "The rule action will update the `Confidence` field of a finding.",
+        "Criticality": "The rule action will update the `Criticality` field of a finding.",
+        "Note": "The rule action will update the `Note` field of a finding.",
+        "RelatedFindings": "The rule action will update the `RelatedFindings` field of a finding.",
+        "Severity": "The rule action will update the `Severity` field of a finding.",
+        "Types": "The rule action will update the `Types` field of a finding.",
+        "UserDefinedFields": "The rule action will update the `UserDefinedFields` field of a finding.",
+        "VerificationState": "The rule action will update the `VerificationState` field of a finding.",
+        "Workflow": "The rule action will update the `Workflow` field of a finding."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.AutomationRulesFindingFilters": {
+      "attributes": {},
+      "description": "The criteria that determine which findings a rule applies to.",
+      "properties": {
+        "AwsAccountId": "The AWS account ID in which a finding was generated.",
+        "CompanyName": "The name of the company for the product that generated the finding. For control-based findings, the company is AWS .",
+        "ComplianceAssociatedStandardsId": "The unique identifier of a standard in which a control is enabled. This field consists of the resource portion of the Amazon Resource Name (ARN) returned for a standard in the [DescribeStandards](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_DescribeStandards.html) API response.",
+        "ComplianceSecurityControlId": "The security control ID for which a finding was generated. Security control IDs are the same across standards.",
+        "ComplianceStatus": "The result of a security check. This field is only used for findings generated from controls.",
+        "Confidence": "The likelihood that a finding accurately identifies the behavior or issue that it was intended to identify. `Confidence` is scored on a 0\u2013100 basis using a ratio scale. A value of `0` means 0 percent confidence, and a value of `100` means 100 percent confidence. For example, a data exfiltration detection based on a statistical deviation of network traffic has low confidence because an actual exfiltration hasn't been verified. For more information, see [Confidence](https://docs.aws.amazon.com/securityhub/latest/userguide/asff-top-level-attributes.html#asff-confidence) in the *AWS Security Hub User Guide* .",
+        "CreatedAt": "A timestamp that indicates when this finding record was created.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "Criticality": "The level of importance that is assigned to the resources that are associated with a finding. `Criticality` is scored on a 0\u2013100 basis, using a ratio scale that supports only full integers. A score of `0` means that the underlying resources have no criticality, and a score of `100` is reserved for the most critical resources. For more information, see [Criticality](https://docs.aws.amazon.com/securityhub/latest/userguide/asff-top-level-attributes.html#asff-criticality) in the *AWS Security Hub User Guide* .",
+        "Description": "A finding's description.",
+        "FirstObservedAt": "A timestamp that indicates when the potential security issue captured by a finding was first observed by the security findings product.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "GeneratorId": "The identifier for the solution-specific component that generated a finding.",
+        "Id": "The product-specific identifier for a finding.",
+        "LastObservedAt": "A timestamp that indicates when the potential security issue captured by a finding was most recently observed by the security findings product.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "NoteText": "The text of a user-defined note that's added to a finding.",
+        "NoteUpdatedAt": "The timestamp of when the note was updated. Uses the date-time format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://www.rfc-editor.org/rfc/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "NoteUpdatedBy": "The principal that created a note.",
+        "ProductArn": "The Amazon Resource Name (ARN) for a third-party product that generated a finding in Security Hub.",
+        "ProductName": "Provides the name of the product that generated the finding. For control-based findings, the product name is Security Hub.",
+        "RecordState": "Provides the current state of a finding.",
+        "RelatedFindingsId": "The product-generated identifier for a related finding.",
+        "RelatedFindingsProductArn": "The ARN for the product that generated a related finding.",
+        "ResourceDetailsOther": "Custom fields and values about the resource that a finding pertains to.",
+        "ResourceId": "The identifier for the given resource type. For AWS resources that are identified by Amazon Resource Names (ARNs), this is the ARN. For AWS resources that lack ARNs, this is the identifier as defined by the AWS service that created the resource. For non- AWS resources, this is a unique identifier that is associated with the resource.",
+        "ResourcePartition": "The partition in which the resource that the finding pertains to is located. A partition is a group of AWS Regions . Each AWS account is scoped to one partition.",
+        "ResourceRegion": "The AWS Region where the resource that a finding pertains to is located.",
+        "ResourceTags": "A list of AWS tags associated with a resource at the time the finding was processed.",
+        "ResourceType": "A finding's title.",
+        "SeverityLabel": "The severity value of the finding.",
+        "SourceUrl": "Provides a URL that links to a page about the current finding in the finding product.",
+        "Title": "A finding's title.",
+        "Type": "One or more finding types in the format of namespace/category/classifier that classify a finding. For a list of namespaces, classifiers, and categories, see [Types taxonomy for ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-type-taxonomy.html) in the *AWS Security Hub User Guide* .",
+        "UpdatedAt": "A timestamp that indicates when the finding record was most recently updated.\n\nUses the `date-time` format specified in [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc3339#section-5.6) . The value cannot contain spaces. For example, `2020-03-22T13:22:13.933Z` .",
+        "UserDefinedFields": "A list of user-defined name and value string pairs added to a finding.",
+        "VerificationState": "Provides the veracity of a finding.",
+        "WorkflowStatus": "Provides information about the status of the investigation into a finding."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.DateFilter": {
+      "attributes": {},
+      "description": "A date filter for querying findings.",
+      "properties": {
+        "DateRange": "A date range for the date filter.",
+        "End": "A timestamp that provides the end date for the date filter.\n\nA correctly formatted example is `2020-05-21T20:16:34.724Z` . The value cannot contain spaces, and date and time should be separated by `T` . For more information, see [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://www.rfc-editor.org/rfc/rfc3339#section-5.6) .",
+        "Start": "A timestamp that provides the start date for the date filter.\n\nA correctly formatted example is `2020-05-21T20:16:34.724Z` . The value cannot contain spaces, and date and time should be separated by `T` . For more information, see [RFC 3339 section 5.6, Internet Date/Time Format](https://docs.aws.amazon.com/https://www.rfc-editor.org/rfc/rfc3339#section-5.6) ."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.DateRange": {
+      "attributes": {},
+      "description": "A date range for the date filter.",
+      "properties": {
+        "Unit": "A date range unit for the date filter.",
+        "Value": "A date range value for the date filter."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.MapFilter": {
+      "attributes": {},
+      "description": "A map filter for querying findings. Each map filter provides the field to check, the value to look for, and the comparison operator.",
+      "properties": {
+        "Comparison": "The condition to apply to the key value when querying for findings with a map filter.\n\nTo search for values that exactly match the filter value, use `EQUALS` . For example, for the `ResourceTags` field, the filter `Department EQUALS Security` matches findings that have the value `Security` for the tag `Department` .\n\nTo search for values other than the filter value, use `NOT_EQUALS` . For example, for the `ResourceTags` field, the filter `Department NOT_EQUALS Finance` matches findings that do not have the value `Finance` for the tag `Department` .\n\n`EQUALS` filters on the same field are joined by `OR` . A finding matches if it matches any one of those filters.\n\n`NOT_EQUALS` filters on the same field are joined by `AND` . A finding matches only if it matches all of those filters.\n\nYou cannot have both an `EQUALS` filter and a `NOT_EQUALS` filter on the same field.",
+        "Key": "The key of the map filter. For example, for `ResourceTags` , `Key` identifies the name of the tag. For `UserDefinedFields` , `Key` is the name of the field.",
+        "Value": "The value for the key in the map filter. Filter values are case sensitive. For example, one of the values for a tag called `Department` might be `Security` . If you provide `security` as the filter value, then there is no match."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.NoteUpdate": {
+      "attributes": {},
+      "description": "The updated note.",
+      "properties": {
+        "Text": "The updated note text.",
+        "UpdatedBy": "The principal that updated the note."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.NumberFilter": {
+      "attributes": {},
+      "description": "A number filter for querying findings.",
+      "properties": {
+        "Eq": "The equal-to condition to be applied to a single field when querying for findings.",
+        "Gte": "The greater-than-equal condition to be applied to a single field when querying for findings.",
+        "Lte": "The less-than-equal condition to be applied to a single field when querying for findings."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.RelatedFinding": {
+      "attributes": {},
+      "description": "Provides details about a list of findings that the current finding relates to.",
+      "properties": {
+        "Id": "The product-generated identifier for a related finding.",
+        "ProductArn": "The Amazon Resource Name (ARN) for the product that generated a related finding."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.SeverityUpdate": {
+      "attributes": {},
+      "description": "Updates to the severity information for a finding.",
+      "properties": {
+        "Label": "The severity value of the finding. The allowed values are the following.\n\n- `INFORMATIONAL` - No issue was found.\n- `LOW` - The issue does not require action on its own.\n- `MEDIUM` - The issue must be addressed but not urgently.\n- `HIGH` - The issue must be addressed as a priority.\n- `CRITICAL` - The issue must be remediated immediately to avoid it escalating.",
+        "Normalized": "The normalized severity for the finding. This attribute is to be deprecated in favor of `Label` .\n\nIf you provide `Normalized` and do not provide `Label` , `Label` is set automatically as follows.\n\n- 0 - `INFORMATIONAL`\n- 1\u201339 - `LOW`\n- 40\u201369 - `MEDIUM`\n- 70\u201389 - `HIGH`\n- 90\u2013100 - `CRITICAL`",
+        "Product": "The native severity as defined by the AWS service or integrated partner product that generated the finding."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.StringFilter": {
+      "attributes": {},
+      "description": "A string filter for querying findings.",
+      "properties": {
+        "Comparison": "The condition to apply to a string value when querying for findings. To search for values that contain the filter criteria value, use one of the following comparison operators:\n\n- To search for values that exactly match the filter value, use `EQUALS` .\n\nFor example, the filter `ResourceType EQUALS AwsEc2SecurityGroup` only matches findings that have a resource type of `AwsEc2SecurityGroup` .\n- To search for values that start with the filter value, use `PREFIX` .\n\nFor example, the filter `ResourceType PREFIX AwsIam` matches findings that have a resource type that starts with `AwsIam` . Findings with a resource type of `AwsIamPolicy` , `AwsIamRole` , or `AwsIamUser` would all match.\n\n`EQUALS` and `PREFIX` filters on the same field are joined by `OR` . A finding matches if it matches any one of those filters.\n\nTo search for values that do not contain the filter criteria value, use one of the following comparison operators:\n\n- To search for values that do not exactly match the filter value, use `NOT_EQUALS` .\n\nFor example, the filter `ResourceType NOT_EQUALS AwsIamPolicy` matches findings that have a resource type other than `AwsIamPolicy` .\n- To search for values that do not start with the filter value, use `PREFIX_NOT_EQUALS` .\n\nFor example, the filter `ResourceType PREFIX_NOT_EQUALS AwsIam` matches findings that have a resource type that does not start with `AwsIam` . Findings with a resource type of `AwsIamPolicy` , `AwsIamRole` , or `AwsIamUser` would all be excluded from the results.\n\n`NOT_EQUALS` and `PREFIX_NOT_EQUALS` filters on the same field are joined by `AND` . A finding matches only if it matches all of those filters.\n\nFor filters on the same field, you cannot provide both an `EQUALS` filter and a `NOT_EQUALS` or `PREFIX_NOT_EQUALS` filter. Combining filters in this way always returns an error, even if the provided filter values would return valid results.\n\nYou can combine `PREFIX` filters with `NOT_EQUALS` or `PREFIX_NOT_EQUALS` filters for the same field. Security Hub first processes the `PREFIX` filters, then the `NOT_EQUALS` or `PREFIX_NOT_EQUALS` filters.\n\nFor example, for the following filter, Security Hub first identifies findings that have resource types that start with either `AwsIAM` or `AwsEc2` . It then excludes findings that have a resource type of `AwsIamPolicy` and findings that have a resource type of `AwsEc2NetworkInterface` .\n\n- `ResourceType PREFIX AwsIam`\n- `ResourceType PREFIX AwsEc2`\n- `ResourceType NOT_EQUALS AwsIamPolicy`\n- `ResourceType NOT_EQUALS AwsEc2NetworkInterface`",
+        "Value": "The string filter value. Filter values are case sensitive. For example, the product name for control-based findings is `Security Hub` . If you provide `security hub` as the filter text, then there is no match."
+      }
+    },
+    "AWS::SecurityHub::AutomationRule.WorkflowUpdate": {
+      "attributes": {},
+      "description": "Used to update information about the investigation into the finding.",
+      "properties": {
+        "Status": "The status of the investigation into the finding. The workflow status is specific to an individual finding. It does not affect the generation of new findings. For example, setting the workflow status to `SUPPRESSED` or `RESOLVED` does not prevent a new finding for the same issue.\n\nThe allowed values are the following.\n\n- `NEW` - The initial state of a finding, before it is reviewed.\n\nSecurity Hub also resets `WorkFlowStatus` from `NOTIFIED` or `RESOLVED` to `NEW` in the following cases:\n\n- The record state changes from `ARCHIVED` to `ACTIVE` .\n- The compliance status changes from `PASSED` to either `WARNING` , `FAILED` , or `NOT_AVAILABLE` .\n- `NOTIFIED` - Indicates that you notified the resource owner about the security issue. Used when the initial reviewer is not the resource owner, and needs intervention from the resource owner.\n- `RESOLVED` - The finding was reviewed and remediated and is now considered resolved.\n- `SUPPRESSED` - Indicates that you reviewed the finding and do not believe that any action is needed. The finding is no longer updated."
+      }
+    },
     "AWS::SecurityHub::Hub": {
       "attributes": {
         "Ref": "`Ref` returns the `HubArn` for the hub resource created, such as `arn:aws:securityhub:us-east-1:12345678910:hub/default` ."
@@ -62508,6 +63042,25 @@
       "description": "The `AWS::SecurityHub::Hub` resource represents the implementation of the AWS Security Hub service in your account. One hub resource is created for each Region in which you enable Security Hub .\n\nThe CIS AWS Foundations Benchmark standard and the Foundational Security Best Practices standard are also enabled in each Region where you enable Security Hub .",
       "properties": {
         "Tags": "The tags to add to the hub resource."
+      }
+    },
+    "AWS::SecurityHub::Standard": {
+      "attributes": {
+        "Ref": "`Ref` returns `StandardsSubscriptionArn` for the standard that you enable, such as `arn:aws:securityhub:us-east-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0` .",
+        "StandardsSubscriptionArn": "The ARN of a resource that represents your subscription to a supported standard."
+      },
+      "description": "The `AWS::SecurityHub::Standard` resource specifies the enablement of a security standard. The standard is identified by the `StandardsArn` property. To view a list of Security Hub standards and their Amazon Resource Names (ARNs), use the [`DescribeStandards`](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_DescribeStandards.html) API operation.\n\nYou must create a separate `AWS::SecurityHub::Standard` resource for each standard that you want to enable.\n\nFor more information about Security Hub standards, see [Security Hub standards reference](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference.html) in the *AWS Security Hub User Guide* .",
+      "properties": {
+        "DisabledStandardsControls": "Specifies whether a control is enabled or disabled in a specified standard.",
+        "StandardsArn": "The ARN of the standard that you want to enable. To view a list of available Security Hub standards and their ARNs, use the [`DescribeStandards`](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_DescribeStandards.html) API operation."
+      }
+    },
+    "AWS::SecurityHub::Standard.StandardsControl": {
+      "attributes": {},
+      "description": "Provides details about an individual security control. For a list of Security Hub controls, see [Security Hub controls reference](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-controls-reference.html) in the *AWS Security Hub User Guide* .",
+      "properties": {
+        "Reason": "A user-defined reason for changing a control's enablement status in a specified standard.",
+        "StandardsControlArn": "The Amazon Resource Name (ARN) of the control."
       }
     },
     "AWS::ServiceCatalog::AcceptedPortfolioShare": {
@@ -64679,7 +65232,7 @@
       "properties": {
         "LogDestinationConfigs": "The logging destination configuration that you want to associate with the web ACL.\n\n> You can associate one logging destination to a web ACL.",
         "LoggingFilter": "Filtering that specifies which web requests are kept in the logs and which are dropped. You can filter on the rule action and on the web request labels that were applied by matching rules during web ACL evaluation.",
-        "RedactedFields": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the logs will be `REDACTED` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , `Method` , and `JsonBody` .",
+        "RedactedFields": "The parts of the request that you want to keep out of the logs.\n\nFor example, if you redact the `SingleHeader` field, the `HEADER` field in the logs will be `REDACTED` for all rules that use the `SingleHeader` `FieldToMatch` setting.\n\nRedaction applies only to the component that's specified in the rule's `FieldToMatch` setting, so the `SingleHeader` redaction doesn't apply to rules that use the `Headers` `FieldToMatch` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , and `Method` .",
         "ResourceArn": "The Amazon Resource Name (ARN) of the web ACL that you want to associate with `LogDestinationConfigs` ."
       }
     },
@@ -64862,7 +65415,7 @@
     },
     "AWS::WAFv2::RuleGroup.CookieMatchPattern": {
       "attributes": {},
-      "description": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": {\"KeyToInclude1\", \"KeyToInclude2\", \"KeyToInclude3\"} }`",
+      "description": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": [ \"session-id-time\", \"session-id\" ] }`",
       "properties": {
         "All": "Inspect all cookies.",
         "ExcludedCookies": "Inspect only the cookies whose keys don't match any of the strings specified here.",
@@ -64873,7 +65426,7 @@
       "attributes": {},
       "description": "Inspect the cookies in the web request. You can specify the parts of the cookies to inspect and you can narrow the set of cookies to inspect by including or excluding specific keys.\n\nThis is used to indicate the web request component to inspect, in the `FieldToMatch` specification.\n\nExample JSON: `\"Cookies\": { \"MatchPattern\": { \"All\": {} }, \"MatchScope\": \"KEY\", \"OversizeHandling\": \"MATCH\" }`",
       "properties": {
-        "MatchPattern": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": {\"KeyToInclude1\", \"KeyToInclude2\", \"KeyToInclude3\"} }`",
+        "MatchPattern": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": [ \"session-id-time\", \"session-id\" ] }`",
         "MatchScope": "The parts of the cookies to inspect with the rule inspection criteria. If you specify `All` , AWS WAF inspects both keys and values.",
         "OversizeHandling": "What AWS WAF should do if the cookies of the request are more numerous or larger than AWS WAF can inspect. AWS WAF does not support inspecting the entire contents of request cookies when they exceed 8 KB (8192 bytes) or 200 total cookies. The underlying host service forwards a maximum of 200 cookies and at most 8 KB of cookie contents to AWS WAF .\n\nThe options for oversize handling are the following:\n\n- `CONTINUE` - Inspect the available cookies normally, according to the rule inspection criteria.\n- `MATCH` - Treat the web request as matching the rule statement. AWS WAF applies the rule action to the request.\n- `NO_MATCH` - Treat the web request as not matching the rule statement."
       }
@@ -64951,7 +65504,7 @@
     },
     "AWS::WAFv2::RuleGroup.HeaderMatchPattern": {
       "attributes": {},
-      "description": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": {\"KeyToExclude1\", \"KeyToExclude2\"} }`",
+      "description": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": [ \"KeyToExclude1\", \"KeyToExclude2\" ] }`",
       "properties": {
         "All": "Inspect all headers.",
         "ExcludedHeaders": "Inspect only the headers whose keys don't match any of the strings specified here.",
@@ -64962,7 +65515,7 @@
       "attributes": {},
       "description": "Inspect all headers in the web request. You can specify the parts of the headers to inspect and you can narrow the set of headers to inspect by including or excluding specific keys.\n\nThis is used to indicate the web request component to inspect, in the `FieldToMatch` specification.\n\nIf you want to inspect just the value of a single header, use the `SingleHeader` `FieldToMatch` setting instead.\n\nExample JSON: `\"Headers\": { \"MatchPattern\": { \"All\": {} }, \"MatchScope\": \"KEY\", \"OversizeHandling\": \"MATCH\" }`",
       "properties": {
-        "MatchPattern": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": {\"KeyToExclude1\", \"KeyToExclude2\"} }`",
+        "MatchPattern": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": [ \"KeyToExclude1\", \"KeyToExclude2\" ] }`",
         "MatchScope": "The parts of the headers to match with the rule inspection criteria. If you specify `All` , AWS WAF inspects both keys and values.",
         "OversizeHandling": "What AWS WAF should do if the headers of the request are more numerous or larger than AWS WAF can inspect. AWS WAF does not support inspecting the entire contents of request headers when they exceed 8 KB (8192 bytes) or 200 total headers. The underlying host service forwards a maximum of 200 headers and at most 8 KB of header contents to AWS WAF .\n\nThe options for oversize handling are the following:\n\n- `CONTINUE` - Inspect the available headers normally, according to the rule inspection criteria.\n- `MATCH` - Treat the web request as matching the rule statement. AWS WAF applies the rule action to the request.\n- `NO_MATCH` - Treat the web request as not matching the rule statement."
       }
@@ -65283,7 +65836,7 @@
     },
     "AWS::WAFv2::WebACL.CookieMatchPattern": {
       "attributes": {},
-      "description": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": {\"KeyToInclude1\", \"KeyToInclude2\", \"KeyToInclude3\"} }`",
+      "description": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": [ \"session-id-time\", \"session-id\" ] }`",
       "properties": {
         "All": "Inspect all cookies.",
         "ExcludedCookies": "Inspect only the cookies whose keys don't match any of the strings specified here.",
@@ -65294,7 +65847,7 @@
       "attributes": {},
       "description": "Inspect the cookies in the web request. You can specify the parts of the cookies to inspect and you can narrow the set of cookies to inspect by including or excluding specific keys.\n\nThis is used to indicate the web request component to inspect, in the `FieldToMatch` specification.\n\nExample JSON: `\"Cookies\": { \"MatchPattern\": { \"All\": {} }, \"MatchScope\": \"KEY\", \"OversizeHandling\": \"MATCH\" }`",
       "properties": {
-        "MatchPattern": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": {\"KeyToInclude1\", \"KeyToInclude2\", \"KeyToInclude3\"} }`",
+        "MatchPattern": "The filter to use to identify the subset of cookies to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedCookies` , or `ExcludedCookies` .\n\nExample JSON: `\"MatchPattern\": { \"IncludedCookies\": [ \"session-id-time\", \"session-id\" ] }`",
         "MatchScope": "The parts of the cookies to inspect with the rule inspection criteria. If you specify `All` , AWS WAF inspects both keys and values.",
         "OversizeHandling": "What AWS WAF should do if the cookies of the request are more numerous or larger than AWS WAF can inspect. AWS WAF does not support inspecting the entire contents of request cookies when they exceed 8 KB (8192 bytes) or 200 total cookies. The underlying host service forwards a maximum of 200 cookies and at most 8 KB of cookie contents to AWS WAF .\n\nThe options for oversize handling are the following:\n\n- `CONTINUE` - Inspect the available cookies normally, according to the rule inspection criteria.\n- `MATCH` - Treat the web request as matching the rule statement. AWS WAF applies the rule action to the request.\n- `NO_MATCH` - Treat the web request as not matching the rule statement."
       }
@@ -65394,7 +65947,7 @@
     },
     "AWS::WAFv2::WebACL.HeaderMatchPattern": {
       "attributes": {},
-      "description": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": {\"KeyToExclude1\", \"KeyToExclude2\"} }`",
+      "description": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": [ \"KeyToExclude1\", \"KeyToExclude2\" ] }`",
       "properties": {
         "All": "Inspect all headers.",
         "ExcludedHeaders": "Inspect only the headers whose keys don't match any of the strings specified here.",
@@ -65405,7 +65958,7 @@
       "attributes": {},
       "description": "Inspect all headers in the web request. You can specify the parts of the headers to inspect and you can narrow the set of headers to inspect by including or excluding specific keys.\n\nThis is used to indicate the web request component to inspect, in the `FieldToMatch` specification.\n\nIf you want to inspect just the value of a single header, use the `SingleHeader` `FieldToMatch` setting instead.\n\nExample JSON: `\"Headers\": { \"MatchPattern\": { \"All\": {} }, \"MatchScope\": \"KEY\", \"OversizeHandling\": \"MATCH\" }`",
       "properties": {
-        "MatchPattern": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": {\"KeyToExclude1\", \"KeyToExclude2\"} }`",
+        "MatchPattern": "The filter to use to identify the subset of headers to inspect in a web request.\n\nYou must specify exactly one setting: either `All` , `IncludedHeaders` , or `ExcludedHeaders` .\n\nExample JSON: `\"MatchPattern\": { \"ExcludedHeaders\": [ \"KeyToExclude1\", \"KeyToExclude2\" ] }`",
         "MatchScope": "The parts of the headers to match with the rule inspection criteria. If you specify `All` , AWS WAF inspects both keys and values.",
         "OversizeHandling": "What AWS WAF should do if the headers of the request are more numerous or larger than AWS WAF can inspect. AWS WAF does not support inspecting the entire contents of request headers when they exceed 8 KB (8192 bytes) or 200 total headers. The underlying host service forwards a maximum of 200 headers and at most 8 KB of header contents to AWS WAF .\n\nThe options for oversize handling are the following:\n\n- `CONTINUE` - Inspect the available headers normally, according to the rule inspection criteria.\n- `MATCH` - Treat the web request as matching the rule statement. AWS WAF applies the rule action to the request.\n- `NO_MATCH` - Treat the web request as not matching the rule statement."
       }
@@ -65546,9 +66099,9 @@
       "attributes": {},
       "description": "The criteria for inspecting login requests, used by the ATP rule group to validate credentials usage.\n\nThis is part of the `AWSManagedRulesATPRuleSet` configuration in `ManagedRuleGroupConfig` .\n\nIn these settings, you specify how your application accepts login attempts by providing the request payload type and the names of the fields within the request body where the username and password are provided.",
       "properties": {
-        "PasswordField": "Details about your login page password field.\n\nHow you specify this depends on the payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"login\": { \"username\": \"THE_USERNAME\", \"password\": \"THE_PASSWORD\" } }` , the username field specification is `/login/username` and the password field specification is `/login/password` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with input elements named `username1` and `password1` , the username field specification is `username1` and the password field specification is `password1` .",
+        "PasswordField": "The name of the field in the request payload that contains your customer's password.\n\nHow you specify this depends on the request inspection payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"form\": { \"password\": \"THE_PASSWORD\" } }` , the password field specification is `/form/password` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with the input element named `password1` , the password field specification is `password1` .",
         "PayloadType": "The payload type for your login endpoint, either JSON or form encoded.",
-        "UsernameField": "Details about your login page username field.\n\nHow you specify this depends on the payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"login\": { \"username\": \"THE_USERNAME\", \"password\": \"THE_PASSWORD\" } }` , the username field specification is `/login/username` and the password field specification is `/login/password` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with input elements named `username1` and `password1` , the username field specification is `username1` and the password field specification is `password1` ."
+        "UsernameField": "The name of the field in the request payload that contains your customer's username.\n\nHow you specify this depends on the request inspection payload type.\n\n- For JSON payloads, specify the field name in JSON pointer syntax. For information about the JSON Pointer syntax, see the Internet Engineering Task Force (IETF) documentation [JavaScript Object Notation (JSON) Pointer](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) .\n\nFor example, for the JSON payload `{ \"form\": { \"username\": \"THE_USERNAME\" } }` , the username field specification is `/form/username` .\n- For form encoded payload types, use the HTML form names.\n\nFor example, for an HTML form with the input element named `username1` , the username field specification is `username1`"
       }
     },
     "AWS::WAFv2::WebACL.ResponseInspection": {

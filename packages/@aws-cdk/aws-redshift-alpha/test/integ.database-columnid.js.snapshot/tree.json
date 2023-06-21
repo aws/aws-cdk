@@ -1093,7 +1093,15 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": "nodejs14.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "DefaultCrNodeVersionMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
@@ -1135,7 +1143,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               }
             },
@@ -1368,7 +1376,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1414,7 +1422,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.52"
         }
       }
     },

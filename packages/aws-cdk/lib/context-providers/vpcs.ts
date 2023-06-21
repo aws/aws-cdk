@@ -74,6 +74,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
       if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
       if (type === undefined && routeTables.hasRouteToNatGateway(subnet.SubnetId)) { type = SubnetType.Private; }
+      if (type === undefined && routeTables.hasRouteToTransitGateway(subnet.SubnetId)) { type = SubnetType.Private; }
       if (type === undefined) { type = SubnetType.Isolated; }
 
       if (!isValidSubnetType(type)) {
@@ -174,6 +175,15 @@ class RouteTables {
     const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
     return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
+  }
+
+  /**
+   * Whether the given subnet has a route to a Transit Gateway
+   */
+  public hasRouteToTransitGateway(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
+
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.TransitGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
   }
 
   /**

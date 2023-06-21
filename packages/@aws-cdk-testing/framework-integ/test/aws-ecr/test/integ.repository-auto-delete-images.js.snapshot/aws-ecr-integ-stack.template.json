@@ -89,11 +89,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9064d7af3a637d340a1e36aada4ccade64a383701b3b15008043e12bbea5a67e.zip"
+     "S3Key": "c53a64f66d176e80ac4d2616ae5871fc10a577e1a38860149ff02fb0646359d0.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",

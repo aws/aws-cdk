@@ -21,7 +21,18 @@ export function printStackDiff(
   context: number,
   stream?: cfnDiff.FormatStream): number {
 
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  // detect and filter out mangled characters from the diff
+  let filteredChangesCount = 0;
+  if (diff.differenceCount && !strict) {
+    const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
+    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
+    filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
+    if (filteredChangesCount > 0) {
+      diff = mangledDiff;
+    }
+  }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
   if (diff.resources && !strict) {
@@ -40,6 +51,9 @@ export function printStackDiff(
     }, context);
   } else {
     print(chalk.green('There were no differences'));
+  }
+  if (filteredChangesCount > 0) {
+    print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
   return diff.differenceCount;

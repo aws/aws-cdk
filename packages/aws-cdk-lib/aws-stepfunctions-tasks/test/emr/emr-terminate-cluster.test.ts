@@ -46,7 +46,7 @@ test('task policies are generated', () => {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN

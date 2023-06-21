@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/762c866f8bdeec1473be9fca31d2ee01062010997c7177d189d2895477381b82.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/045a75ca0adafe009a8b930e89cb638c525a6bae5a53e08c5507c045043ec469.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -630,10 +630,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangF9406A09",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangF9406A09"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/Resource": [
@@ -651,10 +648,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-spot/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangspotB327AE6B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangspotB327AE6B"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/Resource": [
@@ -672,10 +666,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangarm7773987A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangarm7773987A"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/Resource": [
@@ -693,19 +684,13 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangarm327128311",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangarm327128311"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrang2F1FB0D40",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrang2F1FB0D40"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/manifest-HelloApp/Resource/Default": [
@@ -1090,15 +1075,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "eksClusterNodeGroupRoleC74BEC17": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "eksClusterNodeGroupRoleC74BEC17",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
