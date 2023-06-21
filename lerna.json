@@ -3,6 +3,7 @@
   "packages": [
     "packages/aws-cdk-lib",
     "packages/cdk-assets",
+    "packages/cdk-bogus",
     "packages/aws-cdk",
     "packages/cdk",
     "packages/@aws-cdk/*",
