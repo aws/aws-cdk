@@ -15,12 +15,12 @@
       "properties": {
         "templateFile": "aws-cdk-log-retention-integ.template.json",
         "tags": {
-          "env": "beta"
+          "env": "prod"
         },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb5c98cc40418c543e23b58fe4bda8e39f2116e11d4c9906c5c3b977995e4712.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3739e19448253af6f2099a9991460f40f92832421c56f5c0605523c757aa9ad4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +42,7 @@
             "data": [
               {
                 "Key": "env",
-                "Value": "beta"
+                "Value": "prod"
               }
             ]
           }
