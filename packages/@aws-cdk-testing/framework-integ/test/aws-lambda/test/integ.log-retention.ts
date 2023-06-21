@@ -20,11 +20,10 @@ const oneMonthFunction = new lambda.Function(stack, 'OneMonth', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
   logRetention: logs.RetentionDays.ONE_MONTH,
-  propagateTagsToLogGroup: true,
   functionName: 'OneMonthFunction',
+  propagateTagsToLogGroup: true,
 });
 cdk.Tags.of(oneMonthFunction).add('env', 'prod');
-cdk.Tags.of(oneMonthFunction).add('dept', 'eng');
 
 const oneYearFunction = new lambda.Function(stack, 'OneYear', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
@@ -34,6 +33,6 @@ const oneYearFunction = new lambda.Function(stack, 'OneYear', {
   functionName: 'OneYearFunction',
   propagateTagsToLogGroup: true,
 });
-cdk.Tags.of(oneYearFunction).add('dept', 'ops');
+cdk.Tags.of(oneYearFunction).add('dept', 'sales');
 
 app.synth();
