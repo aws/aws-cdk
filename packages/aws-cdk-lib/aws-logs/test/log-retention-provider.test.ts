@@ -118,6 +118,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
+        PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
           { Key: 'env', Value: 'beta' },
@@ -188,6 +189,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '365',
         LogGroupName: 'group',
+        PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
           { Key: 'env', Value: 'prod' },
