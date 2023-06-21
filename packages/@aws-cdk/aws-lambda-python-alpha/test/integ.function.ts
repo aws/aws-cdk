@@ -1,7 +1,6 @@
 // disabling update workflow because we don't want to include the assets in the snapshot
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
-import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
@@ -27,32 +26,6 @@ class TestStack extends Stack {
 
     new CfnOutput(this, 'DefaultFunctionArn', {
       value: defaultFunction.functionArn,
-    });
-
-    const localCode = `
-from http import HTTPStatus
-
-def handler(event, context):
-  print('No dependencies')
-  return HTTPStatus.OK.value
-`;
-
-    const localFunction = new lambda.PythonFunction(this, 'local_handler', {
-      entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
-      bundling: {
-        local: {
-          tryBundle(outputDir) {
-            fs.writeFileSync(path.join(outputDir, 'index.py'), localCode);
-            return true;
-          },
-        },
-      },
-    });
-    this.functionNames.push(localFunction.functionName);
-
-    new CfnOutput(this, 'LocalFunctionArn', {
-      value: localFunction.functionArn,
     });
 
     const functionWithExcludes = new lambda.PythonFunction(this, 'my_handler_excludes', {
