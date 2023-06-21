@@ -283,7 +283,7 @@
                 "path": "aws-cdk-cloudtrail-inshights/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.54"
                 }
               },
               "DeployAssert": {
@@ -329,7 +329,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.54"
         }
       }
     },
