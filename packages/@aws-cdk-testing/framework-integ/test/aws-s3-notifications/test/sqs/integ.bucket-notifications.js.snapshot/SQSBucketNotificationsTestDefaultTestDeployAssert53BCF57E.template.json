@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSpurgeQueue": {
+  "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4": {
    "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
    "Properties": {
     "ServiceToken": {
@@ -17,7 +17,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1682378088180"
+    "salt": "1687299827228"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -101,7 +101,7 @@
     }
    }
   },
-  "AwsApiCallS3putObject": {
+  "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
    "Type": "Custom::DeployAssert@SdkCallS3putObject",
    "Properties": {
     "ServiceToken": {
@@ -120,15 +120,15 @@
      "Body": "Some content"
     },
     "flattenResponse": "false",
-    "salt": "1682378088181"
+    "salt": "1687299827228"
    },
    "DependsOn": [
-    "AwsApiCallSQSpurgeQueue"
+    "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSQSreceiveMessage": {
+  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -151,20 +151,20 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1682378088181"
+    "salt": "1687299827228"
    },
    "DependsOn": [
-    "AwsApiCallS3putObject"
+    "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage",
+     "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
      "assertion"
     ]
    }

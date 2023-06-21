@@ -1,7 +1,6 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import * as fse from 'fs-extra';
+import * as fs from 'fs-extra';
 import * as cxapi from '../../../cx-api';
 import { FactName } from '../../../region-info';
 import { AssetStaging } from '../asset-staging';
@@ -17,6 +16,7 @@ import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
+export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
 
 /**
  * The lambda runtime used by default for aws-cdk vended custom resources. Can change
@@ -32,6 +32,16 @@ export function builtInCustomResourceProviderNodeRuntime(scope: Construct): Cust
  *
  */
 export interface CustomResourceProviderProps {
+  /**
+   * Whether or not the cloudformation response wrapper (`nodejs-entrypoint.ts`) is used.
+   * If set to `true`, `nodejs-entrypoint.js` is bundled in the same asset as the custom resource
+   * and set as the entrypoint. If set to `false`, the custom resource provided is the
+   * entrypoint.
+   *
+   * @default - `true` if `inlineCode: false` and `false` otherwise.
+   */
+  readonly useCfnResponseWrapper?: boolean;
+
   /**
    * A local file system directory with the provider's code. The code will be
    * bundled into a zip asset and wired to the provider's AWS Lambda function.
@@ -216,7 +226,14 @@ export class CustomResourceProvider extends Construct {
    * The hash of the lambda code backing this provider. Can be used to trigger updates
    * on code changes, even when the properties of a custom resource remain unchanged.
    */
-  public readonly codeHash: string;
+  public get codeHash(): string {
+    if (!this._codeHash) {
+      throw new Error('This custom resource uses inlineCode: true and does not have a codeHash');
+    }
+    return this._codeHash;
+  }
+
+  private _codeHash?: string;
 
   private policyStatements?: any[];
   private _role?: CfnResource;
@@ -231,21 +248,7 @@ export class CustomResourceProvider extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
-    const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fse.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
-
-    const staging = new AssetStaging(this, 'Staging', {
-      sourcePath: stagingDirectory,
-    });
-
-    const assetFileName = staging.relativeStagedPath(stack);
-
-    const asset = stack.synthesizer.addFileAsset({
-      fileName: assetFileName,
-      sourceHash: staging.assetHash,
-      packaging: FileAssetPackaging.ZIP_DIRECTORY,
-    });
+    const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
@@ -304,13 +307,10 @@ export class CustomResourceProvider extends Construct {
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Code: {
-          S3Bucket: asset.bucketName,
-          S3Key: asset.objectKey,
-        },
+        Code: code,
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
-        Handler: `${ENTRYPOINT_FILENAME}.handler`,
+        Handler: codeHandler,
         Role: this.roleArn,
         Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
@@ -322,13 +322,66 @@ export class CustomResourceProvider extends Construct {
       handler.addDependency(this._role);
     }
 
-    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');
+    if (metadata) {
+      Object.entries(metadata).forEach(([k, v]) => handler.addMetadata(k, v));
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
-    this.codeHash = staging.assetHash;
+  }
+
+  /**
+   * Returns the code property for the custom resource as well as any metadata.
+   * If the code is to be uploaded as an asset, the asset gets created in this function.
+   */
+  private createCodePropAndMetadata(props: CustomResourceProviderProps, stack: Stack): {
+    code: Code,
+    codeHandler: string,
+    metadata?: {[key: string]: string},
+  } {
+    let codeHandler = 'index.handler';
+    const inlineCode = this.node.tryGetContext(INLINE_CUSTOM_RESOURCE_CONTEXT);
+    if (!inlineCode) {
+      const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
+      fs.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
+
+      if (props.useCfnResponseWrapper ?? true) {
+        fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+        codeHandler = `${ENTRYPOINT_FILENAME}.handler`;
+      }
+
+      const staging = new AssetStaging(this, 'Staging', {
+        sourcePath: stagingDirectory,
+      });
+
+      const assetFileName = staging.relativeStagedPath(stack);
+
+      const asset = stack.synthesizer.addFileAsset({
+        fileName: assetFileName,
+        sourceHash: staging.assetHash,
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      });
+
+      this._codeHash = staging.assetHash;
+
+      return {
+        code: {
+          S3Bucket: asset.bucketName,
+          S3Key: asset.objectKey,
+        },
+        codeHandler,
+        metadata: this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        } : undefined,
+      };
+    }
+
+    return {
+      code: {
+        ZipFile: fs.readFileSync(path.join(props.codeDirectory, 'index.js'), 'utf-8'),
+      },
+      codeHandler,
+    };
   }
 
   /**
@@ -408,3 +461,10 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs18.x';
   }
 }
+
+type Code = {
+  ZipFile: string,
+} | {
+  S3Bucket: string,
+  S3Key: string,
+};

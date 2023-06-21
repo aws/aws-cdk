@@ -121,6 +121,12 @@ describe(AppStagingSynthesizer, () => {
     expect(depStack.stackName).toEqual(`StagingStack-${APP_ID}`);
   });
 
+  test('stack has dummy construct for metrics', () => {
+    // WHEN
+    const dummyConstruct = stack.node.tryFindChild(`UsingAppStagingSynthesizer/${stack.stackName}`);
+    expect(dummyConstruct).toBeDefined();
+  });
+
   test('add file asset', () => {
     // WHEN
     const location = stack.synthesizer.addFileAsset({
