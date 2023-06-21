@@ -412,8 +412,7 @@ export class Nodegroup extends Resource implements INodegroup {
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
         ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @aws-cdk/no-literal-partition
-          resources: ['arn:aws:ec2:*:*:network-interface/*'],
+          resources: ['*'],
           actions: [
             'ec2:AssignIpv6Addresses',
             'ec2:UnassignIpv6Addresses',

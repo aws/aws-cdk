@@ -1612,7 +1612,7 @@
         "ec2:UnassignIpv6Addresses"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -3198,7 +3198,7 @@
         "ec2:UnassignIpv6Addresses"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -3318,7 +3318,7 @@
         "ec2:UnassignIpv6Addresses"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -3441,7 +3441,7 @@
         "ec2:UnassignIpv6Addresses"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -3561,7 +3561,7 @@
         "ec2:UnassignIpv6Addresses"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:network-interface/*"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -4134,7 +4134,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/8816ae99181649599b5bab24457bff7e2e2cf99a02980a17d6b8ed5bfe3e3f59.json"
+       "/549774cafdec9cb0534b1265160439be68aa73a319590af1fbe6dc852cc5ea59.json"
       ]
      ]
     }
