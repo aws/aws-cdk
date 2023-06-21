@@ -9,7 +9,7 @@ class LogRetentionIntegStack extends Stack {
     Tags.of(this).add('env', 'prod');
 
     new LogRetention(this, 'MyFirstLambda', {
-      logGroupName: 'logRetentionLogGroup',
+      logGroupName: 'logRetentionLogGroup1',
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
       propagateTags: false,
