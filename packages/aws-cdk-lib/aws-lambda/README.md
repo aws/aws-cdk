@@ -934,7 +934,72 @@ See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocat
 Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
 log data set to never expire.
 
-The `logRetention` property can be used to set a different expiration period. In addition to this, `Tags` can be propagated to the `logGroup` by setting the `propagateTagsToLogGroup` property to true.
+The `logRetention` property can be used to set a different expiration period. In addition to this, `Tags` applied to a lambda `Function` can be propagated to the associated `logGroup` by setting the `propagateTagsToLogGroup` property to true on the `Function` construct. `Tags` that don't already exist on the `logGroup` for the `Function` will be added as new `Tags` when `propagateTagsToLogGroup` is set to true. As an example, consider the following `Function` and assume that the associated `logGroup` has no `Tags`:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  logRetention: logs.RetentionDays.ONE_MONTH,
+  functionName: 'MyFunction',
+  propagateTagsToLogGroup: true,
+});
+cdk.Tags.of(oneMonthFunction).add('env', 'prod');
+```
+
+In the above example, a `Tag` with a key of 'env' and a value of 'prod' would be propagated as a new `Tag` on the `logGroup` for the `Function`. To update `Tags` on the `logGroup` for a `Function`, simply update the value of the key for the `Tag` to be updated. As an example, consider the following `Function` and assume that the associated `logGroup` has a `Tag` with a key of 'env' and a value of 'prod':
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  logRetention: logs.RetentionDays.ONE_MONTH,
+  functionName: 'MyFunction',
+  propagateTagsToLogGroup: true,
+});
+cdk.Tags.of(oneMonthFunction).add('env', 'beta');
+```
+
+In the above example, the existing `logGroup` `Tag` with the key 'env' would be updated to now have a value of 'beta'. To remove `Tags` on the `logGroup` for a `Function`, simply remove the `Tag` from the associated `Function`. This can be accomplished by not having an add `Tags` statement or, if the tag is being passed down from a parent node, simply use a remove `Tags` statement. As an example, consider the following `Function` and assume that the associated `logGroup` has a `Tag` with a key of 'env' and a value of 'beta':
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+new lambda.Function(this, 'MyFunction', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  logRetention: logs.RetentionDays.ONE_MONTH,
+  functionName: 'MyFunction',
+  propagateTagsToLogGroup: true,  // Note: propagateTagsToLogGroup is set to true
+});
+```
+
+or, alternatively
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+cdk.Tags.of(this).add('env', 'beta');
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  logRetention: logs.RetentionDays.ONE_MONTH,
+  functionName: 'MyFunction',
+  propagateTagsToLogGroup: true,
+});
+cdk.Tags.of(lambdaFunction).remove('env');
+```
+
+In the above example, all `Tags` would be removed from the `logGroup` associated with the `Function` including the `Tag` with the key 'env' and the value 'beta'.
 
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
@@ -942,7 +1007,7 @@ It is possible to obtain the function's log group as a `logs.ILogGroup` by calli
 By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
 allows you to customize the maximum number of retries and base backoff duration.
 
-*Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
+*Note* that, if either `logRetention` is set , `logGroup` property is called, or `propagateTagsToLogGroup` is set, a [CloudFormation custom
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
 to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
 correct log retention period (never expire, by default).
