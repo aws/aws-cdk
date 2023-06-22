@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "PipelineWithAllPrepareNodesFirstStack"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+    }
+  }
+}
