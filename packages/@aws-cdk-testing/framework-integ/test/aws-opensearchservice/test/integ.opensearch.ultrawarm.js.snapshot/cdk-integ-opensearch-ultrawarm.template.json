@@ -9,6 +9,7 @@
      "DedicatedMasterType": "r5.large.search",
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
+     "MultiAZWithStandbyEnabled": false,
      "WarmCount": 2,
      "WarmEnabled": true,
      "WarmType": "ultrawarm1.medium.search",
