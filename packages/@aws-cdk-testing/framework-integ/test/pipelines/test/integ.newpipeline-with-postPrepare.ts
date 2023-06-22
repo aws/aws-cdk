@@ -12,16 +12,17 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new pipelines.CodePipeline(this, 'PipelineWithPostPrepare', {
-      synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub(
-          'rix0rrr/cdk-pipelines-demo',
-          'main',
-        ),
-        commands: ['npm ci', 'npm run build', 'npx cdk synth'],
-      }),
-      allPrepareNodesFirst: true,
-    });
+    const pipeline = new pipelines.CodePipeline(
+      this,
+      'PipelineWithPostPrepare',
+      {
+        synth: new pipelines.ShellStep('Synth', {
+          input: pipelines.CodePipelineSource.gitHub('Nico-DB/aws-cdk', 'main'),
+          commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+        }),
+        allPrepareNodesFirst: true,
+      },
+    );
 
     pipeline.addStage(new AppStage(this, 'Beta'), {
       postPrepare: [new pipelines.ManualApprovalStep('Approval0')],

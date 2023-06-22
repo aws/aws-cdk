@@ -827,7 +827,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prepare",
+        "Name": "Prepare-Beta-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
