@@ -564,6 +564,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   protected readonly tags: TagManager;
 
+  /**
+   * Instance profile ARN generated when creating a launch template from an auto scaling group
+   */
+  private iamInstanceProfileArn?: string;
+
   // =============================================
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
@@ -584,9 +589,23 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
     this.role = props.role;
     this._grantPrincipal = this.role;
-    const iamProfile: iam.CfnInstanceProfile | undefined = this.role ? new iam.CfnInstanceProfile(this, 'Profile', {
-      roles: [this.role!.roleName],
-    }) : undefined;
+
+    const iamInstanceProfileArn = Lazy.string({
+      produce: () => {
+        if (this.iamInstanceProfileArn) {
+          return this.iamInstanceProfileArn;
+        }
+
+        if (this.role) {
+          const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
+            roles: [this.role.roleName],
+          });
+          return iamProfile.getAtt('Arn').toString();
+        }
+
+        return undefined;
+      },
+    });
 
     if (props.securityGroup) {
       this._connections = new Connections({ securityGroups: [props.securityGroup] });
@@ -711,9 +730,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         hibernationOptions: props?.hibernationConfigured !== undefined ? {
           configured: props.hibernationConfigured,
         } : undefined,
-        iamInstanceProfile: iamProfile !== undefined ? {
-          arn: iamProfile.getAtt('Arn').toString(),
-        } : undefined,
+        iamInstanceProfile: iamInstanceProfileArn ? { arn: iamInstanceProfileArn } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
@@ -798,6 +815,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     } else {
       return undefined;
     }
+  }
+
+  /**
+   * @internal
+   */
+  public addIamInstanceProfileArn(iamInstanceProfileArn: string) {
+    this.iamInstanceProfileArn = iamInstanceProfileArn;
   }
 
   /**

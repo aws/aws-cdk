@@ -1295,6 +1295,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
       this.grantPrincipal = this._role;
 
+      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+        roles: [this.role.roleName],
+      });
+
       if (props.ssmSessionPermissions) {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
       }
@@ -1314,16 +1318,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           blockDevices: props.blockDevices,
         });
 
-        launchTemplateFromConfig.node.addDependency(this.role);
+        launchTemplateFromConfig.addIamInstanceProfileArn(iamProfile.ref);
         this.osType = launchTemplateFromConfig.osType!;
         this.launchTemplate = launchTemplateFromConfig;
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
-
-        const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-          roles: [this.role.roleName],
-        });
 
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
