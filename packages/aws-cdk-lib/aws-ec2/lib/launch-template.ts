@@ -762,6 +762,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       tagSpecifications: ltTagsToken,
     });
 
+    if (this.role) {
+      resource.node.addDependency(this.role);
+    }
+
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.defaultVersionNumber = resource.attrDefaultVersionNumber;
