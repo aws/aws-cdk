@@ -328,7 +328,6 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
   function THEN_codePipelineExpectation() {
     Template.fromStack(pipelineStack).resourceCountIs('AWS::SNS::Topic', 1);
 
-
     Template.fromStack(pipelineStack).hasResourceProperties(
       'AWS::CodePipeline::Pipeline',
       {

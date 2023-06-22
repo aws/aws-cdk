@@ -114,7 +114,6 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
-
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
