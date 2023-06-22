@@ -384,6 +384,21 @@ each([testedOpenSearchVersions]).test('can use tokens in capacity configuration'
   });
 });
 
+each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in capacity configuration', (engineVersion) => {
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      multiAzWithStandbyEnabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
+    },
+  });
+});
+
 each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
 
   test('slowSearchLogEnabled should create a custom log group', () => {

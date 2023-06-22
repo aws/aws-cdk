@@ -73,6 +73,14 @@ export interface CapacityConfig {
    */
   readonly warmInstanceType?: string;
 
+  /**
+   * Indicates whether Multi-AZ with Standby deployment option is enabled.
+   * For more information, see [Multi-AZ with Standby]
+   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
+   *
+   * @default - false
+   */
+  readonly multiAzWithStandbyEnabled?: boolean;
 }
 
 /**
@@ -1215,6 +1223,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
+    const multiAzWithStandbyEnabled = props.capacity?.multiAzWithStandbyEnabled ?? false;
+
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
 
@@ -1556,6 +1566,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           : undefined,
         instanceCount,
         instanceType,
+        multiAzWithStandbyEnabled,
         warmEnabled: warmEnabled
           ? warmEnabled
           : undefined,
