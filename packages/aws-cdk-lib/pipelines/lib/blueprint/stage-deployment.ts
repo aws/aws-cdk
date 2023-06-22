@@ -155,7 +155,6 @@ export class StageDeployment {
    */
   public readonly prepareStep?: boolean;
 
-
   private constructor(
     /** The stacks deployed in this stage */
     public readonly stacks: StackDeployment[],
