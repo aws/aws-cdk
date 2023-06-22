@@ -820,7 +820,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       attempt to set user data according to the OS of the machine image if explicit user data is not
       provided.
     `,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: 'V2NEXT' },
     compatibilityWithOldBehaviorMd: `
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.

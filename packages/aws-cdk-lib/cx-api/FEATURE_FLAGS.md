@@ -17,7 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation](#aws-cdkaws-autoscalingdisabledefaultlaunchconfigcreation) | Do not create a launch configuration when creating an AutoScalingGroup | V2·NEXT | (fix) |
+| [@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation](#aws-cdkaws-autoscalingdisabledefaultlaunchconfigcreation) | Do not create a launch configuration when creating an AutoScalingGroup | V2NEXT | (fix) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -346,7 +346,7 @@ provided.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
