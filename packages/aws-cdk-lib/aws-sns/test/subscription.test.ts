@@ -261,7 +261,6 @@ describe('Subscription', () => {
 
   });
 
-
   test.each(
     [
       SubscriptionProtocol.LAMBDA,

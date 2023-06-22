@@ -108,6 +108,13 @@ export interface HttpGatewayRouteMatch {
    * @default true
    */
   readonly rewriteRequestHostname?: boolean;
+
+  /**
+   * The port number to match on.
+   *
+   * @default - no default port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -302,6 +309,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
         queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
+        port: this.match?.port,
       },
       action: {
         target: {

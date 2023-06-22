@@ -104,7 +104,6 @@ behavior('can add steps to wave', (suite) => {
   });
 });
 
-
 behavior('script validation steps can use stack outputs as environment variables', (suite) => {
   suite.legacy(() => {
     // GIVEN
@@ -794,7 +793,6 @@ behavior('can run scripts with magic environment variables', (suite) => {
     });
   }
 });
-
 
 /**
  * Some shared setup for legacy API tests

@@ -1,8 +1,8 @@
+import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 /* eslint-disable quote-props */
@@ -75,7 +75,6 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'TRIM_HORIZON',
     });
 
-
   });
 
   test('specific tumblingWindowInSeconds', () => {
@@ -107,7 +106,6 @@ describe('KinesisEventSource', () => {
       'TumblingWindowInSeconds': 60,
     });
 
-
   });
 
   test('specific batch size', () => {
@@ -137,7 +135,6 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('fails if batch size < 1', () => {
@@ -151,7 +148,6 @@ describe('KinesisEventSource', () => {
       batchSize: 0,
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
-
 
   });
 
@@ -167,7 +163,6 @@ describe('KinesisEventSource', () => {
       startingPosition: lambda.StartingPosition.LATEST,
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
 
-
   });
 
   test('accepts if batch size is a token', () => {
@@ -181,7 +176,6 @@ describe('KinesisEventSource', () => {
       batchSize: cdk.Lazy.number({ produce: () => 10 }),
       startingPosition: lambda.StartingPosition.LATEST,
     }));
-
 
   });
 
@@ -212,7 +206,6 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'LATEST',
     });
 
-
   });
 
   test('contains eventSourceMappingId after lambda binding', () => {
@@ -232,6 +225,23 @@ describe('KinesisEventSource', () => {
 
   });
 
+  test('contains eventSourceMappingArn after lambda binding', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(eventSource.eventSourceMappingArn).toBeDefined();
+
+  });
+
   test('eventSourceMappingId throws error before binding to lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -242,6 +252,19 @@ describe('KinesisEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
+
+  });
+
+  test('eventSourceMappingArn throws error before binding to lambda', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    });
+
+    // WHEN/THEN
+    expect(() => eventSource.eventSourceMappingArn).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
 
   });
 

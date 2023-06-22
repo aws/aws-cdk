@@ -11,7 +11,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-ecs-integ-fargate');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -34,6 +34,7 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  enableExecuteCommand: true,
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [
@@ -41,6 +42,13 @@ rule.addTarget(new targets.EcsTask({
     ],
   }],
   deadLetterQueue,
+  propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  tags: [
+    {
+      key: 'my-tag',
+      value: 'my-tag-value',
+    },
+  ],
 }));
 
 new integ.IntegTest(app, 'EcsFargateTest', {

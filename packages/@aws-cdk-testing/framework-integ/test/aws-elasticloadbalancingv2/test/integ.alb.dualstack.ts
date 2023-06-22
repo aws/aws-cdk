@@ -24,6 +24,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
 });
 
@@ -42,7 +43,6 @@ const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
   new Error('Couldnt find an internet gateway'),
 );
-
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   vpc,

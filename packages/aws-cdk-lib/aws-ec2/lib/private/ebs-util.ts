@@ -1,5 +1,5 @@
-import { Annotations } from '../../../core';
 import { Construct } from 'constructs';
+import { Annotations } from '../../../core';
 import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
 
@@ -50,7 +50,6 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     } else {
       finalEbs = undefined;
     }
-
 
     const noDevice = mappingEnabled === false ? noDeviceValue : undefined;
     return { deviceName, ebs: finalEbs, virtualName, noDevice } as any;

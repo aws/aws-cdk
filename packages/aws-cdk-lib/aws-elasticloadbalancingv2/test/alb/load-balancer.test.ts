@@ -5,7 +5,6 @@ import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
-
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
     // GIVEN
@@ -293,14 +292,7 @@ describe('tests', () => {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: [
-                's3:PutObject',
-                's3:PutObjectLegalHold',
-                's3:PutObjectRetention',
-                's3:PutObjectTagging',
-                's3:PutObjectVersionTagging',
-                's3:Abort*',
-              ],
+              Action: 's3:PutObject',
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
@@ -363,14 +355,7 @@ describe('tests', () => {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: [
-                's3:PutObject',
-                's3:PutObjectLegalHold',
-                's3:PutObjectRetention',
-                's3:PutObjectTagging',
-                's3:PutObjectVersionTagging',
-                's3:Abort*',
-              ],
+              Action: 's3:PutObject',
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {

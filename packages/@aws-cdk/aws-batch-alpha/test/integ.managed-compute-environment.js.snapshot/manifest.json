@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92e3686a4cf14b25f29c1bc4064f971225ac3779979e003ea457f368f4ac439f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ebdcdec29ca32bb55c4daa83140fbc6af6c8a2663beb1c1a833a3d4c6ee12c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,10 +177,10 @@
             "data": "minimalPropsFargateSecurityGroupA8D5CDD1"
           }
         ],
-        "/batch-stack/minimalPropsFargate/minimalPropsFargate": [
+        "/batch-stack/minimalPropsFargate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "minimalPropsFargate8E9B9556"
+            "data": "minimalPropsFargate58449235"
           }
         ],
         "/batch-stack/maximalPropsFargate/SecurityGroup/Resource": [
@@ -189,10 +189,10 @@
             "data": "maximalPropsFargateSecurityGroup94D64250"
           }
         ],
-        "/batch-stack/maximalPropsFargate/maximalPropsFargate": [
+        "/batch-stack/maximalPropsFargate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "maximalPropsFargateA2E688D8"
+            "data": "maximalPropsFargate2D7D8138"
           }
         ],
         "/batch-stack/minimalPropsEc2/SecurityGroup/Resource": [
@@ -289,6 +289,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SpotEc2A0470C83"
+          }
+        ],
+        "/batch-stack/taggedCE/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCESecurityGroup82CCF59F"
+          }
+        ],
+        "/batch-stack/taggedCE/InstanceProfileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCEInstanceProfileRoleC239DAF9"
+          }
+        ],
+        "/batch-stack/taggedCE/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCEInstanceProfileB29F2197"
+          }
+        ],
+        "/batch-stack/taggedCE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taggedCE5029E6F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/batch-stack/BootstrapVersion": [

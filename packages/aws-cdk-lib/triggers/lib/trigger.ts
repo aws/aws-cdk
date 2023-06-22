@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { Construct, IConstruct, Node } from 'constructs';
 import * as lambda from '../../aws-lambda';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration } from '../../core';
+import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration } from '../../core';
 
 /**
  * Interface for triggers.
@@ -66,14 +66,14 @@ export interface TriggerOptions {
  */
 export enum InvocationType {
   /**
-   * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
-   * The API response includes the function response and additional data.
+   * Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if one is configured).
+   * The API response only includes a status code.
    */
   EVENT = 'Event',
 
   /**
-   * Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if one is configured).
-   * The API response only includes a status code.
+   * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
+   * The API response includes the function response and additional data.
    */
   REQUEST_RESPONSE = 'RequestResponse',
 
@@ -116,7 +116,7 @@ export class Trigger extends Construct implements ITrigger {
 
     const handlerArn = this.determineHandlerArn(props);
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       codeDirectory: join(__dirname, 'lambda'),
     });
 

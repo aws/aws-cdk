@@ -1,5 +1,3 @@
-import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -9,6 +7,8 @@ import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
+import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -295,11 +295,23 @@ export class Rule extends Resource implements IRule {
   }
 
   protected validateRule() {
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
+    const errors: string[] = [];
+
+    const name = this.physicalName;
+    if (name !== undefined && !Token.isUnresolved(name)) {
+      if (name.length < 1 || name.length > 64) {
+        errors.push(`Event rule name must be between 1 and 64 characters. Received: ${name}`);
+      }
+      if (!/^[\.\-_A-Za-z0-9]+$/.test(name)) {
+        errors.push(`Event rule name ${name} can contain only letters, numbers, periods, hyphens, or underscores with no spaces.`);
+      }
     }
 
-    return [];
+    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+      errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
+    }
+
+    return errors;
   }
 
   private renderTargets() {
@@ -426,7 +438,6 @@ export class Rule extends Resource implements IRule {
 
     return role;
   }
-
 
   /**
    * Whether two string probably contain the same environment dimension (region or account)

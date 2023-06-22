@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallS3putObject": {
-   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+  "AwsApiCallS3getObject132afe15f6b0866b1b0b18d4081f0330": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,17 +10,24 @@
      ]
     },
     "service": "S3",
-    "api": "putObject",
+    "api": "getObject",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
      },
-     "Key": "key",
-     "Body": "HelloWorld"
+     "Key": "key"
     },
     "flattenResponse": "false",
-    "salt": "1664823975013"
+    "salt": "1684406090555"
    },
+   "DependsOn": [
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForIsCompleteProviderInvoke821ABA06",
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForC3FB32C5",
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905",
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForTimeoutProviderInvoke2F043504",
+    "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -52,9 +59,36 @@
        "Statement": [
         {
          "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "kms:Decrypt"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
           "s3:PutObject"
          ],
          "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "kms:GenerateDataKey"
+         ],
          "Resource": [
           "*"
          ]
@@ -76,15 +110,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -100,7 +125,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -112,7 +137,31 @@
     }
    }
   },
-  "AwsApiCallCodePipelinegetPipelineState": {
+  "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+     },
+     "Key": "key",
+     "Body": "HelloWorld"
+    },
+    "flattenResponse": "false",
+    "salt": "1684406090555"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e": {
    "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipelineState",
    "Properties": {
     "ServiceToken": {
@@ -125,7 +174,7 @@
     "api": "getPipelineState",
     "expected": "{\"$ObjectLike\":{\"stageStates\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"stageName\":\"Deploy\",\"latestExecution\":{\"$ObjectLike\":{\"status\":\"Succeeded\"}}}}]}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallCodePipelinegetPipelineStateWaitFor68BABF78"
+     "Ref": "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForC3FB32C5"
     },
     "parameters": {
      "name": {
@@ -133,12 +182,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1664823975013"
+    "salt": "1684406090556"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCodePipelinegetPipelineStateWaitForIsCompleteProviderInvokeB83E9F2C": {
+  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForIsCompleteProviderInvoke821ABA06": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -150,13 +199,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47",
+      "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCodePipelinegetPipelineStateWaitForTimeoutProviderInvoke96D2C126": {
+  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForTimeoutProviderInvoke2F043504": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -168,13 +217,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47",
+      "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47": {
+  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -219,7 +268,7 @@
     ]
    }
   },
-  "AwsApiCallCodePipelinegetPipelineStateWaitFor68BABF78": {
+  "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForC3FB32C5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -246,13 +295,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47",
+      "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47"
+    "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -304,7 +353,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -346,7 +395,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -357,44 +406,13 @@
      ]
     }
    }
-  },
-  "AwsApiCallS3getObject": {
-   "Type": "Custom::DeployAssert@SdkCallS3getObject",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3",
-    "api": "getObject",
-    "parameters": {
-     "Bucket": {
-      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
-     },
-     "Key": "key"
-    },
-    "flattenResponse": "false",
-    "salt": "1664823975015"
-   },
-   "DependsOn": [
-    "AwsApiCallCodePipelinegetPipelineState",
-    "AwsApiCallCodePipelinegetPipelineStateWaitForIsCompleteProviderInvokeB83E9F2C",
-    "AwsApiCallCodePipelinegetPipelineStateWaitFor68BABF78",
-    "AwsApiCallCodePipelinegetPipelineStateWaitForRoleDF2D0D47",
-    "AwsApiCallCodePipelinegetPipelineStateWaitForTimeoutProviderInvoke96D2C126",
-    "AwsApiCallS3putObject"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCodePipelinegetPipelineState": {
+  "AssertionResultsAwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCodePipelinegetPipelineState",
+     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
      "assertion"
     ]
    }

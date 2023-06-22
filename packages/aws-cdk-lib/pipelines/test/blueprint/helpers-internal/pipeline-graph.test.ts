@@ -293,7 +293,6 @@ describe('options for other engines', () => {
   });
 });
 
-
 describe('with app with output', () => {
   let blueprint: Blueprint;
   let myApp: AppWithOutput;

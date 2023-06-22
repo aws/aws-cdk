@@ -1,9 +1,9 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as certificatemanager from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import {
   CfnDistribution,
@@ -126,7 +126,6 @@ describe('web distribution', () => {
         },
       },
     );
-
 
   });
 
@@ -407,9 +406,7 @@ added the ellipsis so a user would know there was more to r...`,
       },
     });
 
-
   });
-
 
   testDeprecated('distribution with trusted signers on default distribution', () => {
     const stack = new cdk.Stack();
@@ -831,7 +828,6 @@ added the ellipsis so a user would know there was more to r...`,
       },
     });
 
-
   });
 
   test('distribution with resolvable lambda-association', () => {
@@ -880,7 +876,6 @@ added the ellipsis so a user would know there was more to r...`,
       },
     });
 
-
   });
 
   test('associate a lambda with removable env vars', () => {
@@ -917,7 +912,6 @@ added the ellipsis so a user would know there was more to r...`,
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: Match.absent(),
     });
-
 
   });
 
@@ -956,7 +950,6 @@ added the ellipsis so a user would know there was more to r...`,
 
     expect(() => app.synth()).toThrow(/KEY/);
 
-
   });
 
   test('throws when associating a lambda with includeBody and a response event type', () => {
@@ -987,7 +980,6 @@ added the ellipsis so a user would know there was more to r...`,
         ],
       });
     }).toThrow(/'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
-
 
   });
 
@@ -1080,7 +1072,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
       test('imported certificate fromCertificateArn', () => {
         const stack = new cdk.Stack();
@@ -1107,7 +1098,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
 
       });
       test('advanced usage', () => {
@@ -1143,7 +1133,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
     });
     describe('iamCertificate', () => {
@@ -1168,7 +1157,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
 
       });
       test('advanced usage', () => {
@@ -1198,7 +1186,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
     });
     describe('cloudFrontDefaultCertificate', () => {
@@ -1223,7 +1210,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
       test('aliases are set', () => {
         const stack = new cdk.Stack();
@@ -1246,7 +1232,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
     });
     describe('errors', () => {
@@ -1265,7 +1250,6 @@ added the ellipsis so a user would know there was more to r...`,
           });
         }).toThrow(/You cannot set both aliasConfiguration and viewerCertificate properties/);
 
-
       });
       test('throws if invalid security policy for SSL method', () => {
         const stack = new cdk.Stack();
@@ -1283,7 +1267,6 @@ added the ellipsis so a user would know there was more to r...`,
             }),
           });
         }).toThrow(/TLSv1.1_2016 is not compabtible with sslMethod vip./);
-
 
       });
       // FIXME https://github.com/aws/aws-cdk/issues/4724
@@ -1312,7 +1295,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
 
       });
     });
@@ -1480,7 +1462,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
       test('denylist', () => {
         const stack = new cdk.Stack();
@@ -1556,7 +1537,6 @@ added the ellipsis so a user would know there was more to r...`,
           },
         });
 
-
       });
     });
     describe('error', () => {
@@ -1569,7 +1549,6 @@ added the ellipsis so a user would know there was more to r...`,
           GeoRestriction.denylist();
         }).toThrow(/Should provide at least 1 location/);
 
-
       });
       test('throws if locations format is wrong', () => {
         expect(() => {
@@ -1579,7 +1558,6 @@ added the ellipsis so a user would know there was more to r...`,
         expect(() => {
           GeoRestriction.denylist('us');
         }).toThrow(/Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
-
 
       });
     });
@@ -1744,7 +1722,6 @@ added the ellipsis so a user would know there was more to r...`,
 
     expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
     expect(dist.distributionId).toEqual('012345ABCDEF');
-
 
   });
 });

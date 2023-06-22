@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
+import * as iam from '../../aws-iam';
+import * as secretsmanager from '../../aws-secretsmanager';
 
 /**
  * The options passed to `IInstanceEngine.bind`.
@@ -374,7 +374,6 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_11 = MariaDbEngineVersion.of('10.6.11', '10.6');
   /** Version "10.6.12". */
   public static readonly VER_10_6_12 = MariaDbEngineVersion.of('10.6.12', '10.6');
-
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -1051,6 +1050,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_18 = PostgresEngineVersion.of('11.18', '11', { s3Import: true, s3Export: true });
   /** Version "11.19". */
   public static readonly VER_11_19 = PostgresEngineVersion.of('11.19', '11', { s3Import: true, s3Export: true });
+  /** Version "11.20". */
+  public static readonly VER_11_20 = PostgresEngineVersion.of('11.20', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -1080,6 +1081,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_13 = PostgresEngineVersion.of('12.13', '12', { s3Import: true, s3Export: true });
   /** Version "12.14". */
   public static readonly VER_12_14 = PostgresEngineVersion.of('12.14', '12', { s3Import: true, s3Export: true });
+  /** Version "12.15". */
+  public static readonly VER_12_15 = PostgresEngineVersion.of('12.15', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -1103,6 +1106,8 @@ export class PostgresEngineVersion {
   public static readonly VER_13_9 = PostgresEngineVersion.of('13.9', '13', { s3Import: true, s3Export: true });
   /** Version "13.10". */
   public static readonly VER_13_10 = PostgresEngineVersion.of('13.10', '13', { s3Import: true, s3Export: true });
+  /** Version "13.11". */
+  public static readonly VER_13_11 = PostgresEngineVersion.of('13.11', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
@@ -1120,11 +1125,15 @@ export class PostgresEngineVersion {
   public static readonly VER_14_6 = PostgresEngineVersion.of('14.6', '14', { s3Import: true, s3Export: true });
   /** Version "14.7". */
   public static readonly VER_14_7 = PostgresEngineVersion.of('14.7', '14', { s3Import: true, s3Export: true });
+  /** Version "14.8". */
+  public static readonly VER_14_8 = PostgresEngineVersion.of('14.8', '14', { s3Import: true, s3Export: true });
 
   /** Version "15" (only a major version, without a specific minor version). */
   public static readonly VER_15 = PostgresEngineVersion.of('15', '15', { s3Import: true, s3Export: true });
   /** Version "15.2". */
   public static readonly VER_15_2 = PostgresEngineVersion.of('15.2', '15', { s3Import: true, s3Export: true });
+  /** Version "15.3". */
+  public static readonly VER_15_3 = PostgresEngineVersion.of('15.3', '15', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -1768,7 +1777,6 @@ export class SqlServerEngineVersion {
   /** Version "15.00.4236.7.v1". */
   public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
 
-
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
    *
@@ -1825,6 +1833,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
         s3Import: 'S3_INTEGRATION',
         s3Export: 'S3_INTEGRATION',
       },
+      engineFamily: 'SQLSERVER',
     });
   }
 

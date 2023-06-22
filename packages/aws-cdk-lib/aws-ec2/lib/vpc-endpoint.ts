@@ -1,6 +1,3 @@
-import * as iam from '../../aws-iam';
-import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
@@ -9,6 +6,9 @@ import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds, flatten } from './util';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import * as iam from '../../aws-iam';
+import * as cxschema from '../../cloud-assembly-schema';
+import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
 
 /**
  * A VPC endpoint.
@@ -266,6 +266,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APP_MESH = new InterfaceVpcEndpointAwsService('appmesh-envoy-management');
   public static readonly APP_RUNNER = new InterfaceVpcEndpointAwsService('apprunner');
   public static readonly APP_RUNNER_REQUESTS = new InterfaceVpcEndpointAwsService('apprunner.requests');
+  public static readonly APP_SYNC = new InterfaceVpcEndpointAwsService('appsync-api');
   public static readonly APPLICATION_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('mgn');
   public static readonly APPSTREAM_API = new InterfaceVpcEndpointAwsService('appstream.api');
   public static readonly APPSTREAM_STREAMING = new InterfaceVpcEndpointAwsService('appstream.streaming');
@@ -514,19 +515,20 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    */
   private getDefaultEndpointPrefix(name: string, region: string) {
     const VPC_ENDPOINT_SERVICE_EXCEPTIONS: { [region: string]: string[] } = {
-      'cn-north-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
-        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
-        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
-        'iotsitewise.api', 'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring',
-        'rds', 'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime',
-        'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'synthetics', 'transcribe',
-        'transcribestreaming', 'transfer', 'xray'],
-      'cn-northwest-1': ['application-autoscaling', 'athena', 'autoscaling', 'awsconnector', 'cassandra',
-        'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr',
-        'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'imagebuilder',
-        'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data', 's3',
-        'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'servicecatalog', 'sms', 'sqs',
-        'states', 'sts', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'workspaces', 'xray'],
+      'cn-north-1': ['application-autoscaling', 'appmesh-envoy-management', 'athena', 'autoscaling', 'awsconnector',
+        'backup', 'batch', 'cassandra', 'cloudcontrolapi', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms',
+        'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'eks', 'elasticache', 'elasticbeanstalk', 'elasticfilesystem',
+        'elasticfilesystem-fips', 'emr-containers', 'execute-api', 'fsx', 'imagebuilder', 'iot.data', 'iotsitewise.api',
+        'iotsitewise.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'rds', 'redshift', 'redshift-data',
+        's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub', 'servicecatalog',
+        'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer', 'xray'],
+      'cn-northwest-1': ['account', 'application-autoscaling', 'appmesh-envoy-management', 'athena', 'autoscaling', 'awsconnector',
+        'backup', 'batch', 'cassandra', 'cloudcontrolapi', 'cloudformation', 'codedeploy-commands-secure', 'databrew', 'dms', 'ebs', 'ec2',
+        'ecr.api', 'ecr.dkr', 'eks', 'elasticache', 'elasticbeanstalk', 'elasticfilesystem', 'elasticfilesystem-fips', 'emr-containers',
+        'execute-api', 'fsx', 'imagebuilder', 'iot.data', 'kinesis-streams', 'lambda', 'license-manager', 'monitoring', 'polly', 'rds',
+        'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
+        'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
+        'workspaces', 'xray'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';

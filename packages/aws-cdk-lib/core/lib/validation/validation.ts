@@ -47,6 +47,14 @@ export interface IPolicyValidationPluginBeta1 {
   readonly version?: string;
 
   /**
+   * The list of rule IDs that the plugin will evaluate. Used for analytics
+   * purposes.
+   *
+   * @default - No rule is reported
+   */
+  readonly ruleIds?: string[];
+
+  /**
    * The method that will be called by the CDK framework to perform
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations

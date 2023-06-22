@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "mesh-stack": {
         "id": "mesh-stack",
         "path": "mesh-stack",
@@ -39,7 +31,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -83,7 +75,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "mesh-stack/vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -113,7 +105,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -132,7 +124,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -152,7 +144,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -172,7 +164,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -200,13 +192,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -250,7 +242,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "mesh-stack/vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -280,7 +272,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -299,7 +291,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -319,13 +311,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -369,7 +361,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -377,8 +369,8 @@
                     "id": "Acl",
                     "path": "mesh-stack/vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -399,7 +391,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -418,7 +410,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -438,13 +430,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -488,7 +480,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -496,8 +488,8 @@
                     "id": "Acl",
                     "path": "mesh-stack/vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -518,7 +510,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -537,7 +529,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -557,13 +549,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -582,7 +574,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -601,13 +593,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -628,13 +620,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-servicediscovery.CfnPrivateDnsNamespace",
+                  "fqn": "aws-cdk-lib.aws_servicediscovery.CfnPrivateDnsNamespace",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
+              "fqn": "aws-cdk-lib.aws_servicediscovery.PrivateDnsNamespace",
               "version": "0.0.0"
             }
           },
@@ -653,7 +645,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnMesh",
                   "version": "0.0.0"
                 }
               },
@@ -687,7 +679,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualRouter",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualRouter",
                       "version": "0.0.0"
                     }
                   },
@@ -747,13 +739,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -813,13 +805,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -872,13 +864,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -934,13 +926,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1070,13 +1062,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1139,13 +1131,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1196,13 +1188,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1268,13 +1260,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1334,13 +1326,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   },
@@ -1400,19 +1392,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.Route",
+                      "fqn": "aws-cdk-lib.aws_appmesh.Route",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualRouter",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualRouter",
                   "version": "0.0.0"
                 }
               },
@@ -1473,13 +1465,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualNode",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualNode",
                   "version": "0.0.0"
                 }
               },
@@ -1547,13 +1539,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualNode",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualNode",
                   "version": "0.0.0"
                 }
               },
@@ -1612,7 +1604,10 @@
                           "logging": {
                             "accessLog": {
                               "file": {
-                                "path": "/dev/stdout"
+                                "path": "/dev/stdout",
+                                "format": {
+                                  "text": "test_pattern"
+                                }
                               }
                             }
                           }
@@ -1621,13 +1616,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualNode",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualNode",
                   "version": "0.0.0"
                 }
               },
@@ -1729,7 +1724,19 @@
                           "logging": {
                             "accessLog": {
                               "file": {
-                                "path": "/dev/stdout"
+                                "path": "/dev/stdout",
+                                "format": {
+                                  "json": [
+                                    {
+                                      "key": "testKey1",
+                                      "value": "testValue1"
+                                    },
+                                    {
+                                      "key": "testKey2",
+                                      "value": "testValue2"
+                                    }
+                                  ]
+                                }
                               }
                             }
                           }
@@ -1738,13 +1745,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualNode",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualNode",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualNode",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualNode",
                   "version": "0.0.0"
                 }
               },
@@ -1785,7 +1792,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                      "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualGateway",
                       "version": "0.0.0"
                     }
                   },
@@ -1834,13 +1841,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -1953,7 +1960,8 @@
                                       },
                                       "name": "query-field"
                                     }
-                                  ]
+                                  ],
+                                  "port": 8080
                                 },
                                 "action": {
                                   "target": {
@@ -1987,13 +1995,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -2042,13 +2050,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -2104,13 +2112,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -2161,13 +2169,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -2221,13 +2229,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -2361,25 +2369,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appmesh.CfnGatewayRoute",
+                          "fqn": "aws-cdk-lib.aws_appmesh.CfnGatewayRoute",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appmesh.GatewayRoute",
+                      "fqn": "aws-cdk-lib.aws_appmesh.GatewayRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+                  "fqn": "aws-cdk-lib.aws_appmesh.VirtualGateway",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.Mesh",
+              "fqn": "aws-cdk-lib.aws_appmesh.Mesh",
               "version": "0.0.0"
             }
           },
@@ -2402,13 +2410,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnMesh",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnMesh",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.Mesh",
+              "fqn": "aws-cdk-lib.aws_appmesh.Mesh",
               "version": "0.0.0"
             }
           },
@@ -2444,13 +2452,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualService",
               "version": "0.0.0"
             }
           },
@@ -2475,13 +2483,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualService",
               "version": "0.0.0"
             }
           },
@@ -2506,13 +2514,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualService",
               "version": "0.0.0"
             }
           },
@@ -2537,13 +2545,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualService",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualService",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualService",
               "version": "0.0.0"
             }
           },
@@ -2595,13 +2603,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualGateway",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualGateway",
               "version": "0.0.0"
             }
           },
@@ -2677,26 +2685,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appmesh.CfnVirtualGateway",
+                  "fqn": "aws-cdk-lib.aws_appmesh.CfnVirtualGateway",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appmesh.VirtualGateway",
+              "fqn": "aws-cdk-lib.aws_appmesh.VirtualGateway",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "mesh-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "mesh-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

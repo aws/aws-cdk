@@ -44,6 +44,7 @@ module.exports = {
     '@aws-cdk/no-core-construct': ['error'],
     '@aws-cdk/no-qualified-construct': ['error'],
     '@aws-cdk/invalid-cfn-imports': ['error'],
+    '@aws-cdk/no-literal-partition': ['error'],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -115,7 +116,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
 
     // No multiple empty lines
-    'no-multiple-empty-lines': ['error'],
+    'no-multiple-empty-lines': ['error', { 'max': 1 }],
 
     // Max line lengths
     'max-len': ['error', {
