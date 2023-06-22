@@ -5,7 +5,6 @@ import * as cxapi from '../../../cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 
-
 /**
  * Properties for a `StackDeployment`
  */
