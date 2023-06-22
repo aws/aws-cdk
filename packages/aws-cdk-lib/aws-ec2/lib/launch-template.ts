@@ -820,7 +820,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   /**
    * @internal
    */
-  public addIamInstanceProfileArn(iamInstanceProfileArn: string) {
+  public _addIamInstanceProfileArn(iamInstanceProfileArn: string) {
     this.iamInstanceProfileArn = iamInstanceProfileArn;
   }
 

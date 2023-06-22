@@ -1318,7 +1318,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           blockDevices: props.blockDevices,
         });
 
-        launchTemplateFromConfig.addIamInstanceProfileArn(iamProfile.ref);
+        launchTemplateFromConfig._addIamInstanceProfileArn(iamProfile.getAtt('Arn').toString());
         this.osType = launchTemplateFromConfig.osType!;
         this.launchTemplate = launchTemplateFromConfig;
       } else {
