@@ -1314,6 +1314,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           blockDevices: props.blockDevices,
         });
 
+        launchTemplateFromConfig.node.addDependency(this.role);
         this.osType = launchTemplateFromConfig.osType!;
         this.launchTemplate = launchTemplateFromConfig;
       } else {
