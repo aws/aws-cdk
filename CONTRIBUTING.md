@@ -336,7 +336,7 @@ new features and all fixes unless there is a good reason why one is not needed.
 4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
 5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
-All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests)
+All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/integ-tests-alpha/lib/test-case.ts#L148)
 construct. Over time we will be updating all of our existing tests to use this construct. It
 allows for more control over configuring each tests as well as the ability to perform
 assertions against the deployed infrastructure.
@@ -1095,7 +1095,7 @@ automatically, and we have to use a feature flag:
 Adding a new flag looks as follows:
 
 1. Define a new const under
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/lib/features.ts)
    with the name of the context key that enables this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
@@ -1106,12 +1106,12 @@ Adding a new flag looks as follows:
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts). In
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/lib/features.ts). In
    your description, be sure to cover the following:
    - Consciously pick the type of feature flag. Can the flag be removed in a future major version, or not?
    - Motivate why the feature flag exists. What is the change to existing infrastructure and why is it not safe?
    - In case of a "default change flag", describe what the user needs to do to restore the old behavior.
-4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
+4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/cx-api/README.md) file.
 5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
    ```ts
    const myFeatureFlag = { [cxapi.MY_FEATURE_FLAG]: true };
@@ -1124,7 +1124,7 @@ Adding a new flag looks as follows:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/feature-flags.ts
 
 ## Versioning and Release
 

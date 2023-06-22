@@ -171,7 +171,11 @@ test('Policy sizes do not exceed the maximum size', () => {
     }
   }
 
-  Annotations.fromStack(pipelineStack).hasNoWarning('*', Match.anyValue());
+  // expect template size warning, but no other warnings
+  const annotations = Annotations.fromStack(pipelineStack);
+  annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
+  const warnings = annotations.findWarning('*', Match.anyValue());
+  expect(warnings.length).toEqual(1);
 });
 
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
