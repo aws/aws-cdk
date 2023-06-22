@@ -126,7 +126,7 @@ its respective value and deliver it to the target. See
 
 ```ts
 const text = `Attempt number: ${ContextAttribute.attemptNumber}`;
-const input = ScheduleTargetInput.fromInput(text);
+const input = ScheduleTargetInput.fromText(text);
 ```
 
 ### Specifying Execution Role 
