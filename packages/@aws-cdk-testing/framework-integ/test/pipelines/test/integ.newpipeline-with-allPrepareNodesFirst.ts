@@ -12,14 +12,12 @@ class PipelineStack extends Stack {
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub(
-          'rix0rrr/cdk-pipelines-demo',
-          'main',
-        ),
+        input: pipelines.CodePipelineSource.gitHub('Nico-DB/aws-cdk', 'main'),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
       }),
       allPrepareNodesFirst: true,
     });
+
 
     pipeline.addStage(new AppStage(this, 'Beta'), {
     });
