@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dada4d20a4749bdb7f4f9e99c358291f62f50a15e977a81f4d2c87652d1d25c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c025f0892c8fd125937e0121740375f4763f136ef3c8837623dd539f1d95155c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,10 +201,10 @@
             "data": "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAutoScalingGroupLaunchTemplateProfile12A2031E"
+            "data": "MyAutoScalingGroupInstanceProfile729989CC"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate/Resource": [
@@ -327,136 +327,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ClusterDefaultAutoScalingGroupInstanceRole9A14B384": [
+        "MyAutoScalingGroupLaunchTemplateProfile12A2031E": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLaunchTemplateProfile845D1593": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchTemplateProfile845D1593",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupASG0F98E147": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupASG0F98E147",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8D73113EF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8D73113EF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DefaultAutoScalingGroupSGD619710B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultAutoScalingGroupSGD619710B",
+            "data": "MyAutoScalingGroupLaunchTemplateProfile12A2031E",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
