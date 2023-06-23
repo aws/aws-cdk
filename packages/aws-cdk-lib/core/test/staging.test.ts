@@ -1257,8 +1257,10 @@ describe('staging', () => {
         command: [DockerStubCommand.MULTIPLE_FILES],
         outputType: BundlingOutput.ARCHIVED,
       },
-    })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
+    })).toThrow(/Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`/);
   });
+
+  // TODO test here hoegertn
 });
 
 describe('staging with docker cp', () => {
