@@ -32,7 +32,7 @@
     "stripDeprecated": true,
     "compressAssembly": true,
     "pre": [
-      "yarn --silent ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
+      "ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
       "(cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)"
@@ -48,7 +48,7 @@
       "/bin/bash ./scripts/minify-sources.sh"
     ],
     "post": [
-      "yarn --silent ts-node ./scripts/verify-stripped-exp.ts"
+      "ts-node ./scripts/verify-stripped-exp.ts"
     ]
   },
   "pkglint": {
@@ -160,7 +160,7 @@
     "ts-mock-imports": "^1.3.8",
     "ts-node": "^10.9.1",
     "sinon": "^9.2.4",
-    "typescript": "~5.0.4",
+    "typescript": "~5.1.3",
     "typescript-json-schema": "^0.56.0"
   },
   "peerDependencies": {
