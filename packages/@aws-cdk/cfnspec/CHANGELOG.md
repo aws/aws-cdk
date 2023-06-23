@@ -1,3 +1,106 @@
+# CloudFormation Resource Specification v128.1.0
+
+## New Resource Types
+
+* AWS::Glue::DataQualityRuleset
+* AWS::Organizations::Organization
+* AWS::StepFunctions::StateMachineAlias
+* AWS::StepFunctions::StateMachineVersion
+
+## Attribute Changes
+
+* AWS::ApiGateway::GatewayResponse Id (__deleted__)
+* AWS::EC2::NetworkAclEntry Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html
+* AWS::EC2::NetworkAclEntry Id (__deleted__)
+* AWS::EC2::VPNGatewayRoutePropagation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+* AWS::EC2::VPNGatewayRoutePropagation Id (__deleted__)
+* AWS::EC2::VolumeAttachment Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html
+
+## Property Changes
+
+* AWS::ApiGateway::GatewayResponse ResponseParameters.DuplicatesAllowed (__added__)
+* AWS::ApiGateway::GatewayResponse ResponseTemplates.DuplicatesAllowed (__added__)
+* AWS::Cassandra::Keyspace ReplicationSpecification (__added__)
+* AWS::EC2::NetworkAclEntry CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-cidrblock
+* AWS::EC2::NetworkAclEntry Egress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-egress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-egress
+* AWS::EC2::NetworkAclEntry Icmp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-icmp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-icmp
+* AWS::EC2::NetworkAclEntry Ipv6CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+* AWS::EC2::NetworkAclEntry NetworkAclId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-networkaclid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-networkaclid
+* AWS::EC2::NetworkAclEntry PortRange.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-portrange
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-portrange
+* AWS::EC2::NetworkAclEntry Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-protocol
+* AWS::EC2::NetworkAclEntry RuleAction.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ruleaction
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ruleaction
+* AWS::EC2::NetworkAclEntry RuleNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-rulenumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-rulenumber
+* AWS::EC2::VPNGatewayRoutePropagation RouteTableIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-routetableids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-routetableids
+* AWS::EC2::VPNGatewayRoutePropagation VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-vpngatewayid
+* AWS::EC2::VolumeAttachment Device.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-device
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-device
+* AWS::EC2::VolumeAttachment Device.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::VolumeAttachment InstanceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-instanceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-instanceid
+* AWS::EC2::VolumeAttachment VolumeId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volumeattachment.html#cfn-ec2-ebs-volumeattachment-volumeid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volumeattachment.html#cfn-ec2-volumeattachment-volumeid
+* AWS::MediaConnect::FlowSource GatewayBridgeSource (__added__)
+* AWS::SecurityHub::Hub AutoEnableControls (__added__)
+* AWS::SecurityHub::Hub ControlFindingGenerator (__added__)
+* AWS::SecurityHub::Hub EnableDefaultStandards (__added__)
+* AWS::Transfer::Server StructuredLogDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::Cassandra::Keyspace.ReplicationSpecification (__added__)
+* AWS::MediaConnect::Flow.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::Flow.VpcInterfaceAttachment (__added__)
+* AWS::MediaConnect::FlowSource.GatewayBridgeSource (__added__)
+* AWS::MediaConnect::FlowSource.VpcInterfaceAttachment (__added__)
+* AWS::Transfer::Server.StructuredLogDestination (__added__)
+* AWS::FSx::StorageVirtualMachine.ActiveDirectoryConfiguration NetBiosName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration DomainName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration FileSystemAdministratorsGroup.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration OrganizationalUnitDistinguishedName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MediaConnect::Flow.Source GatewayBridgeSource (__added__)
+
+
 # CloudFormation Resource Specification v127.0.0
 
 ## New Resource Types
