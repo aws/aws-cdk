@@ -935,4 +935,12 @@ describe('FargateComputeEnvironment', () => {
       ComputeEnvironmentName: 'maxPropsFargateCE',
     });
   });
+
+  test('can be imported from arn', () => {
+    // WHEN
+    const ce = FargateComputeEnvironment.fromFargateComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+
+    // THEN
+    expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+  });
 });
