@@ -185,7 +185,7 @@ describe('auto scaling group', () => {
     // THEN
     Template.fromStack(stack).templateMatches({
       Resources: {
-        'MyFleetLaunchTemplateProfileE8BFD5F7': {
+        'MyFleetInstanceProfile70A58496': {
           Type: 'AWS::IAM::InstanceProfile',
           Properties: {
             Roles: [
@@ -221,7 +221,7 @@ describe('auto scaling group', () => {
               IamInstanceProfile: {
                 Arn: {
                   'Fn::GetAtt': [
-                    'MyFleetLaunchTemplateProfileE8BFD5F7',
+                    'MyFleetInstanceProfile70A58496',
                     'Arn',
                   ],
                 },
