@@ -1270,9 +1270,7 @@
       }
     },
     "AWS::ApiGateway::GatewayResponse": {
-      "attributes": {
-        "Id": "The ID for the gateway response. For example: `abc123` ."
-      },
+      "attributes": {},
       "description": "The `AWS::ApiGateway::GatewayResponse` resource creates a gateway response for your API. For more information, see [API Gateway Responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/customize-gateway-responses.html#api-gateway-gatewayResponse-definition) in the *API Gateway Developer Guide* .",
       "properties": {
         "ResponseParameters": "Response parameters (paths, query strings and headers) of the GatewayResponse as a string-to-string map of key-value pairs.",
@@ -4305,6 +4303,23 @@
         "Provider": "The App Mesh object that is acting as the provider for a virtual service. You can specify a single virtual node or virtual router."
       }
     },
+    "AWS::AppRunner::AutoScalingConfiguration": {
+      "attributes": {
+        "AutoScalingConfigurationArn": "The Amazon Resource Name (ARN) of this auto scaling configuration.",
+        "AutoScalingConfigurationRevision": "The revision of this auto scaling configuration. It's unique among all the active configurations that share the same `AutoScalingConfigurationName` .",
+        "Latest": "It's set to true for the configuration with the highest `Revision` among all configurations that share the same `AutoScalingConfigurationName` . It's set to false otherwise. App Runner temporarily doubles the number of provisioned instances during deployments, to maintain the same capacity for both old and new code.",
+        "Ref": "",
+        "Status": "The current state of the auto scaling configuration. If the status of the configuration revision is `ACTIVE` , your auto scaling configuration exists. If the status of a configuration revision is `INACTIVE` , your auto scaling configuration was deleted and can't be used. Inactive configuration revisions are permanently removed some time after they are deleted."
+      },
+      "description": "Specify an AWS App Runner Automatic Scaling configuration by using the `AWS::AppRunner::AutoScalingConfiguration` resource in an AWS CloudFormation template. \n\nThe `AWS::AppRunner::AutoScalingConfiguration` resource is an AWS App Runner resource type that specifies an App Runner automatic scaling configuration.\n\nApp Runner requires this resource to set non-default auto scaling settings for instances used to process the web requests. You can share an auto scaling configuration across multiple services.\n\nCreate multiple revisions of a configuration by calling this action multiple times using the same `AutoScalingConfigurationName` . The call returns incremental `AutoScalingConfigurationRevision` values. When you create a service and configure an auto scaling configuration resource, the service uses the latest active revision of the auto scaling configuration by default. You can optionally configure the service to use a specific revision.\n\nConfigure a higher `MinSize` to increase the spread of your App Runner service over more Availability Zones in the AWS Region . The tradeoff is a higher minimal cost.\n\nConfigure a lower `MaxSize` to control your cost. The tradeoff is lower responsiveness during peak demand.",
+      "properties": {
+        "AutoScalingConfigurationName": "The customer-provided auto scaling configuration name. It can be used in multiple revisions of a configuration.",
+        "MaxConcurrency": "The maximum number of concurrent requests that an instance processes. If the number of concurrent requests exceeds this limit, App Runner scales the service up.",
+        "MaxSize": "The maximum number of instances that a service scales up to. At most `MaxSize` instances actively serve traffic for your service.",
+        "MinSize": "The minimum number of instances that App Runner provisions for a service. The service always has at least `MinSize` provisioned instances. Some of them actively serve traffic. The rest of them (provisioned and inactive instances) are a cost-effective compute capacity reserve and are ready to be quickly activated. You pay for memory usage of all the provisioned instances. You pay for CPU usage of only the active subset.\n\nApp Runner temporarily doubles the number of provisioned instances during deployments, to maintain the same capacity for both old and new code.",
+        "Tags": "A list of metadata items that you can associate with your auto scaling configuration resource. A tag is a key-value pair."
+      }
+    },
     "AWS::AppRunner::ObservabilityConfiguration": {
       "attributes": {
         "Latest": "It's set to `true` for the configuration with the highest `Revision` among all configurations that share the same `ObservabilityConfigurationName` . It's set to `false` otherwise.",
@@ -4370,7 +4385,7 @@
         "BuildCommand": "The command App Runner runs to build your application.",
         "Port": "The port that your application listens to in the container.\n\nDefault: `8080`",
         "Runtime": "A runtime environment type for building and running an App Runner service. It represents a programming language runtime.",
-        "RuntimeEnvironmentSecrets": "",
+        "RuntimeEnvironmentSecrets": "An array of key-value pairs representing the secrets and parameters that get referenced to your service as an environment variable. The supported values are either the full Amazon Resource Name (ARN) of the AWS Secrets Manager secret or the full ARN of the parameter in the AWS Systems Manager Parameter Store.\n\n> - If the AWS Systems Manager Parameter Store parameter exists in the same AWS Region as the service that you're launching, you can use either the full ARN or name of the secret. If the parameter exists in a different Region, then the full ARN must be specified.\n> - Currently, cross account referencing of AWS Systems Manager Parameter Store parameter is not supported.",
         "RuntimeEnvironmentVariables": "The environment variables that are available to your running AWS App Runner service. An array of key-value pairs.",
         "StartCommand": "The command App Runner runs to start your application."
       }
@@ -4416,7 +4431,7 @@
       "description": "Describes the configuration that AWS App Runner uses to run an App Runner service using an image pulled from a source image repository.",
       "properties": {
         "Port": "The port that your application listens to in the container.\n\nDefault: `8080`",
-        "RuntimeEnvironmentSecrets": "",
+        "RuntimeEnvironmentSecrets": "An array of key-value pairs representing the secrets and parameters that get referenced to your service as an environment variable. The supported values are either the full Amazon Resource Name (ARN) of the AWS Secrets Manager secret or the full ARN of the parameter in the AWS Systems Manager Parameter Store.\n\n> - If the AWS Systems Manager Parameter Store parameter exists in the same AWS Region as the service that you're launching, you can use either the full ARN or name of the secret. If the parameter exists in a different Region, then the full ARN must be specified.\n> - Currently, cross account referencing of AWS Systems Manager Parameter Store parameter is not supported.",
         "RuntimeEnvironmentVariables": "Environment variables that are available to your running App Runner service. An array of key-value pairs.",
         "StartCommand": "An optional command that App Runner runs to start the application in the source image. If specified, this command overrides the Docker image\u2019s default start command."
       }
@@ -7464,7 +7479,16 @@
       "description": "You can use the `AWS::Cassandra::Keyspace` resource to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "KeyspaceName": "The name of the keyspace to be created. The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+        "ReplicationSpecification": "",
         "Tags": "A list of key-value pair tags to be attached to the resource."
+      }
+    },
+    "AWS::Cassandra::Keyspace.ReplicationSpecification": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "RegionList": "",
+        "ReplicationStrategy": ""
       }
     },
     "AWS::Cassandra::Table": {
@@ -10979,7 +11003,7 @@
     },
     "AWS::Config::ConfigurationRecorder.RecordingGroup": {
       "attributes": {},
-      "description": "Specifies which resource types AWS Config records for configuration changes. In the recording group, you specify whether you want to record all supported resource types or to include or exclude specific types of resources.\n\nBy default, AWS Config records configuration changes for all supported types of *Regional resources* that AWS Config discovers in the AWS Region in which it is running. Regional resources are tied to a Region and can be used only in that Region. Examples of Regional resources are Amazon EC2 instances and Amazon EBS volumes.\n\nYou can also have AWS Config record supported types of *globally recorded resources* . Globally recorded resource types are not tied to a specific Region and can be used in all Regions. The globally recorded resource types that AWS Config supports are IAM users, groups, roles, and customer managed policies. These resource types are recorded in all enabled AWS Config regions. AWS Config also supports some global resources types for Amazon Elastic Container Registry Public, AWS Global Accelerator , and Amazon Route\u00a053; however, these resource types are not globally recorded in all enabled AWS Config regions.\n\n> Global resource types onboarded to AWS Config recording after February 2022 will be recorded only in the service's home Region for the commercial partition and AWS GovCloud (US-West) for the AWS GovCloud (US) partition. You can view the Configuration Items for these new global resource types only in their home Region and AWS GovCloud (US-West). \n\nIf you don't want AWS Config to record all resources, you can specify which types of resources AWS Config records with the `resourceTypes` parameter.\n\nFor a list of supported resource types, see [Supported Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) in the *AWS Config developer guide* .\n\nFor more information and a table of the Home Regions for Global Resource Types Onboarded after February 2022, see [Selecting Which Resources AWS Config Records](https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html) in the *AWS Config developer guide* .",
+      "description": "Specifies which resource types AWS Config records for configuration changes. In the recording group, you specify whether you want to record all supported resource types or to include or exclude specific types of resources.\n\nBy default, AWS Config records configuration changes for all supported types of *Regional resources* that AWS Config discovers in the AWS Region in which it is running. Regional resources are tied to a Region and can be used only in that Region. Examples of Regional resources are Amazon EC2 instances and Amazon EBS volumes.\n\nYou can also have AWS Config record supported types of *globally recorded resources* . Globally recorded resource types are not tied to a specific Region and can be used in all Regions. The globally recorded resource types that AWS Config supports are IAM users, groups, roles, and customer managed policies. These resource types are recorded in all enabled AWS Config regions where AWS Config was available before February 2022 (which excludes Asia Pacific (Hyderabad), Asia Pacific (Melbourne), Europe (Spain), Europe (Zurich), Israel (Tel Aviv), and Middle East (UAE)). AWS Config also supports some global resources types for Amazon Elastic Container Registry Public, AWS Global Accelerator , and Amazon Route\u00a053; however, these resource types are not globally recorded in all enabled AWS Config regions.\n\n> Global resource types onboarded to AWS Config recording after February 2022 will be recorded only in the service's home Region for the commercial partition and AWS GovCloud (US-West) for the AWS GovCloud (US) partition. You can view the Configuration Items for these new global resource types only in their home Region and AWS GovCloud (US-West). \n\nIf you don't want AWS Config to record all resources, you can specify which types of resources AWS Config records with the `resourceTypes` parameter.\n\nFor a list of supported resource types, see [Supported Resource Types](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources) in the *AWS Config developer guide* .\n\nFor more information and a table of the Home Regions for Global Resource Types Onboarded after February 2022, see [Selecting Which Resources AWS Config Records](https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html) in the *AWS Config developer guide* .",
       "properties": {
         "AllSupported": "Specifies whether AWS Config records configuration changes for all supported regional resource types.\n\nIf you set this field to `true` , when AWS Config adds support for a new type of regional resource, AWS Config starts recording resources of that type automatically.\n\nIf you set this field to `true` , you cannot enumerate specific resource types to record in the `resourceTypes` field of [RecordingGroup](https://docs.aws.amazon.com/config/latest/APIReference/API_RecordingGroup.html) , or to exclude in the `resourceTypes` field of [ExclusionByResourceTypes](https://docs.aws.amazon.com/config/latest/APIReference/API_ExclusionByResourceTypes.html) .",
         "IncludeGlobalResourceTypes": "Specifies whether AWS Config includes all supported types of global resources (for example, IAM resources) with the resources that it records.\n\nBefore you can set this option to `true` , you must set the `AllSupported` option to `true` .\n\nIf you set this option to `true` , when AWS Config adds support for a new type of global resource, it starts recording resources of that type automatically.\n\nThe configuration details for any global resource are the same in all regions. To prevent duplicate configuration items, you should consider customizing AWS Config in only one region to record global resources.",
@@ -15576,20 +15600,6 @@
         "VolumeId": "The ID of the EBS volume. The volume and instance must be within the same Availability Zone."
       }
     },
-    "AWS::EC2::InstanceConnectEndpoint": {
-      "attributes": {
-        "Id": "The ID of the EC2 Instance Connect Endpoint.",
-        "Ref": ""
-      },
-      "description": "Creates an EC2 Instance Connect Endpoint.\n\nAn EC2 Instance Connect Endpoint allows you to connect to an instance, without requiring the instance to have a public IPv4 address. For more information, see [Connect to your instances without requiring a public IPv4 address using EC2 Instance Connect Endpoint](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Connect-using-EC2-Instance-Connect-Endpoint.html) in the *Amazon EC2 User Guide* .",
-      "properties": {
-        "ClientToken": "Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.",
-        "PreserveClientIp": "Indicates whether your client's IP address is preserved as the source. The value is `true` or `false` .\n\n- If `true` , your client's IP address is used when you connect to a resource.\n- If `false` , the elastic network interface IP address is used when you connect to a resource.\n\nDefault: `true`",
-        "SecurityGroupIds": "One or more security groups to associate with the endpoint. If you don't specify a security group, the default security group for your VPC will be associated with the endpoint.",
-        "SubnetId": "The ID of the subnet in which to create the EC2 Instance Connect Endpoint.",
-        "Tags": "The tags to apply to the EC2 Instance Connect Endpoint during creation."
-      }
-    },
     "AWS::EC2::InternetGateway": {
       "attributes": {
         "InternetGatewayId": "The ID of the internet gateway.",
@@ -16095,7 +16105,6 @@
     },
     "AWS::EC2::NetworkAclEntry": {
       "attributes": {
-        "Id": "The ID of the network ACL entry.",
         "Ref": "`Ref` returns the resource name."
       },
       "description": "Specifies an entry, known as a rule, in a network ACL with a rule number you specify. Each network ACL has a set of numbered ingress rules and a separate set of numbered egress rules.\n\nFor information about the protocol value, see [Protocol Numbers](https://docs.aws.amazon.com/https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) on the Internet Assigned Numbers Authority (IANA) website.",
@@ -17573,7 +17582,6 @@
     },
     "AWS::EC2::VPNGatewayRoutePropagation": {
       "attributes": {
-        "Id": "The ID of the VPN gateway.",
         "Ref": "`Ref` returns the ID of the VPN gateway."
       },
       "description": "Enables a virtual private gateway (VGW) to propagate routes to the specified route table of a VPC.\n\nIf you reference a VPN gateway that is in the same template as your VPN gateway route propagation, you must explicitly declare a dependency on the VPN gateway attachment. The `AWS::EC2::VPNGatewayRoutePropagation` resource cannot use the VPN gateway until it has successfully attached to the VPC. Add a [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) in the `AWS::EC2::VPNGatewayRoutePropagation` resource to explicitly declare a dependency on the VPN gateway attachment.",
@@ -22424,19 +22432,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> If you have active fleets using the Windows Server 2012 operating system, you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support. All others must use Windows Server 2016 when creating new Windows-based builds.",
-        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
+        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "",
+      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "",
-        "Key": "",
-        "ObjectVersion": "",
-        "RoleArn": ""
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Key": "The name of the zip file that contains the build files or script files.",
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
@@ -23022,6 +23030,28 @@
       "properties": {
         "CatalogEncryptionMode": "The encryption-at-rest mode for encrypting Data Catalog data.",
         "SseAwsKmsKeyId": "The ID of the AWS KMS key to use for encryption at rest."
+      }
+    },
+    "AWS::Glue::DataQualityRuleset": {
+      "attributes": {
+        "Ref": ""
+      },
+      "description": "The `AWS::Glue::DataQualityRuleset` resource specifies a data quality ruleset with DQDL rules applied to a specified AWS Glue table. For more information, see AWS Glue Data Quality in the AWS Glue Developer Guide.",
+      "properties": {
+        "ClientToken": "Used for idempotency and is recommended to be set to a random ID (such as a UUID) to avoid creating or starting multiple instances of the same resource.",
+        "Description": "A description of the data quality ruleset.",
+        "Name": "The name of the data quality ruleset.",
+        "Ruleset": "A Data Quality Definition Language (DQDL) ruleset. For more information see the AWS Glue Developer Guide.",
+        "Tags": "A list of tags applied to the data quality ruleset.",
+        "TargetTable": "An object representing an AWS Glue table."
+      }
+    },
+    "AWS::Glue::DataQualityRuleset.DataQualityTargetTable": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "DatabaseName": "",
+        "TableName": ""
       }
     },
     "AWS::Glue::Database": {
@@ -25193,7 +25223,7 @@
         "Ref": "For example:\n\n`{ \"Ref\": \"RootRole\" }`\n\nFor the `AWS::IAM::Role` resource with the logical ID `RootRole` , `Ref` will return the role name.",
         "RoleId": "Returns the stable and unique string identifying the role. For example, `AIDAJQABLZS4A3QDU576Q` .\n\nFor more information about IDs, see [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html) in the *IAM User Guide* ."
       },
-      "description": "Creates a new role for your AWS account . For more information about roles, see [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/WorkingWithRoles.html) . For information about quotas for role names and the number of roles you can create, see [IAM and AWS STS quotas](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html) in the *IAM User Guide* .",
+      "description": "Creates a new role for your AWS account .\n\nFor more information about roles, see [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) in the *IAM User Guide* . For information about quotas for role names and the number of roles you can create, see [IAM and AWS STS quotas](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html) in the *IAM User Guide* .",
       "properties": {
         "AssumeRolePolicyDocument": "The trust policy that is associated with this role. Trust policies define which entities can assume the role. You can associate only one trust policy with a role. For an example of a policy that can be used to assume a role, see [Template Examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#aws-resource-iam-role--examples) . For more information about the elements that you can use in an IAM policy, see [IAM Policy Elements Reference](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html) in the *IAM User Guide* .",
         "Description": "A description of the role that you provide.",
@@ -35277,6 +35307,14 @@
         "State": "The state of source failover on the flow. If the state is inactive, the flow can have only one source. If the state is active, the flow can have one or two sources."
       }
     },
+    "AWS::MediaConnect::Flow.GatewayBridgeSource": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "BridgeArn": "",
+        "VpcInterfaceAttachment": ""
+      }
+    },
     "AWS::MediaConnect::Flow.Source": {
       "attributes": {},
       "description": "The details of the sources of the flow.\n\nIf you are creating a flow with a VPC source, you must first create the flow with a temporary standard source by doing the following:\n\n- Use CloudFormation to create a flow with a standard source that uses the flow\u2019s public IP address.\n- Use CloudFormation to create the VPC interface to add to this flow. This can also be done as part of the previous step.\n- After CloudFormation has created the flow and the VPC interface, update the source to point to the VPC interface that you created.",
@@ -35284,6 +35322,7 @@
         "Decryption": "The type of encryption that is used on the content ingested from the source.",
         "Description": "A description of the source. This description is not visible outside of the current AWS account.",
         "EntitlementArn": "The ARN of the entitlement that allows you to subscribe to content that comes from another AWS account. The entitlement is set by the content originator and the ARN is generated as part of the originator\u2019s flow.",
+        "GatewayBridgeSource": "",
         "IngestIp": "The IP address that the flow listens on for incoming content.",
         "IngestPort": "The port that the flow listens on for incoming content. If the protocol of the source is Zixi, the port must be set to 2088.",
         "MaxBitrate": "The maximum bitrate for RIST, RTP, and RTP-FEC streams.",
@@ -35307,6 +35346,13 @@
       "description": "The priority you want to assign to a source. You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
       "properties": {
         "PrimarySource": "The name of the source you choose as the primary source for this flow."
+      }
+    },
+    "AWS::MediaConnect::Flow.VpcInterfaceAttachment": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "VpcInterfaceName": ""
       }
     },
     "AWS::MediaConnect::FlowEntitlement": {
@@ -35393,6 +35439,7 @@
         "Description": "A description of the source. This description is not visible outside of the current AWS account.",
         "EntitlementArn": "The ARN of the entitlement that allows you to subscribe to the flow. The entitlement is set by the content originator, and the ARN is generated as part of the originator's flow.",
         "FlowArn": "The Amazon Resource Name (ARN) of the flow this source is connected to. The flow must have Failover enabled to add an additional source.",
+        "GatewayBridgeSource": "",
         "IngestPort": "The port that the flow listens on for incoming content. If the protocol of the source is Zixi, the port must be set to 2088.",
         "MaxBitrate": "The maximum bitrate for RIST, RTP, and RTP-FEC streams.",
         "MaxLatency": "The maximum latency in milliseconds. This parameter applies only to RIST-based, Zixi-based, and Fujitsu-based streams.",
@@ -35421,6 +35468,21 @@
         "RoleArn": "The Amazon Resource Name (ARN) of the role that you created during setup (when you set up MediaConnect as a trusted entity).",
         "SecretArn": "The ARN of the secret that you created in AWS Secrets Manager to store the encryption key.",
         "Url": "The URL from the API Gateway proxy that you set up to talk to your key server. This parameter is required for SPEKE encryption and is not valid for static key encryption."
+      }
+    },
+    "AWS::MediaConnect::FlowSource.GatewayBridgeSource": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "BridgeArn": "",
+        "VpcInterfaceAttachment": ""
+      }
+    },
+    "AWS::MediaConnect::FlowSource.VpcInterfaceAttachment": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "VpcInterfaceName": ""
       }
     },
     "AWS::MediaConnect::FlowVpcInterface": {
@@ -39873,6 +39935,21 @@
         "Tags": "A list of tags that you want to attach to the newly created account. For each tag in the list, you must specify both a tag key and a value. You can set the value to an empty string, but you can't set it to `null` . For more information about tagging, see [Tagging AWS Organizations resources](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_tagging.html) in the AWS Organizations User Guide.\n\n> If any one of the tags is not valid or if you exceed the maximum allowed number of tags for an account, then the entire request fails and the account is not created."
       }
     },
+    "AWS::Organizations::Organization": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of an organization.",
+        "Id": "The unique identifier (ID) of an organization.",
+        "ManagementAccountArn": "The Amazon Resource Name (ARN) of the account that is designated as the management account for the organization.",
+        "ManagementAccountEmail": "The email address that is associated with the AWS account that is designated as the management account for the organization.",
+        "ManagementAccountId": "The unique identifier (ID) of the management account of an organization.",
+        "Ref": "`Ref` returns the `AccountId` . For example: `123456789012` .",
+        "RootId": "The unique identifier (ID) for the root."
+      },
+      "description": "Creates an AWS organization. The account whose user is calling the [`CreateOrganization`](https://docs.aws.amazon.com/organizations/latest/APIReference/API_CreateOrganization.html) operation automatically becomes the [management account](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html#account) of the new organization.\n\nThis operation must be called using credentials from the account that is to become the new organization's management account. The principal must also have the [relevant IAM permissions](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_create.html) .\n\n> - If you delete an organization, you can't recover it. If you created any policies inside of the organization, they're also deleted and you can't recover them.\n> - You can delete an organization only after you remove all member accounts from the organization. If you created some of your member accounts using AWS Organizations , you might be blocked from removing those accounts. You can remove a member account only if it has all the information that's required to operate as a standalone AWS account. For more information about how to provide that information and then remove the account, see [Leaving an organization as a member account](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_remove.html#orgs_manage_accounts_leave-as-member) in the *AWS Organizations User Guide* .\n> - If you closed a member account before you remove it from the organization, it enters a 'suspended' state for a period of time and you can't remove the account from the organization until it is finally closed. This can take up to 90 days and can prevent you from deleting the organization until all member accounts are completely closed.\n> \n> For more information, see [Deleting the organization by removing the management account](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_delete.html) in the *AWS Organizations User Guide* .",
+      "properties": {
+        "FeatureSet": "Specifies the feature set supported by the new organization. Each feature set supports different levels of functionality.\n\n- `ALL`  In addition to all the features supported by the consolidated billing feature set, the management account gains access to advanced features that give you more control over accounts in your organization. By default or if you set the `FeatureSet` property to `ALL` , the new organization is created with all features enabled and service control policies automatically enabled in the [root](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html#root) . For more information, see [All features](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html#feature-set-all) in the *AWS Organizations User Guide* .\n- `CONSOLIDATED_BILLING`  All member accounts have their bills consolidated to and paid by the management account. For more information, see [Consolidated billing](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html#feature-set-cb-only) in the *AWS Organizations User Guide.*\n\nThe consolidated billing feature subset isn't available for organizations in the AWS GovCloud (US) Region.\n\nFeature set `ALL` provides the following advanced features:\n\n- Apply any [policy type](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies.html#orgs-policy-types) to any member account in the organization.\n- Apply [service control policies (SCPs)](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html) to member accounts that restrict the services and actions that users (including the root user) and roles in an account can access. Using SCPs you can prevent member accounts from leaving the organization.\n- Enable [integration with supported AWS services](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_integrate_services_list.html) to let those services provide functionality across all of the accounts in your organization.\n\nIf you don't specify this property, the default value is `ALL` ."
+      }
+    },
     "AWS::Organizations::OrganizationalUnit": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of this OU. For example: `arn:aws:organizations::111111111111:ou/o-exampleorgid/ou-examplerootid111-exampleouid111` .",
@@ -41461,7 +41538,7 @@
     },
     "AWS::Pipes::Pipe.PipeTargetKinesisStreamParameters": {
       "attributes": {},
-      "description": "The parameters for using a Kinesis stream as a source.",
+      "description": "The parameters for using a Kinesis stream as a target.",
       "properties": {
         "PartitionKey": "Determines which shard in the stream the data record is assigned to. Partition keys are Unicode strings with a maximum length limit of 256 characters for each key. Amazon Kinesis Data Streams uses the partition key as input to a hash function that maps the partition key and associated data to a specific shard. Specifically, an MD5 hash function is used to map partition keys to 128-bit integer values and to map associated data records to shards. As a result of this hashing mechanism, all data records with the same partition key map to the same shard within the stream."
       }
@@ -41483,11 +41560,11 @@
         "EventBridgeEventBusParameters": "The parameters for using an EventBridge event bus as a target.",
         "HttpParameters": "These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.",
         "InputTemplate": "Valid JSON text passed to the target. In this case, nothing from the event itself is passed to the target. For more information, see [The JavaScript Object Notation (JSON) Data Interchange Format](https://docs.aws.amazon.com/http://www.rfc-editor.org/rfc/rfc7159.txt) .\n\nTo remove an input template, specify an empty string.",
-        "KinesisStreamParameters": "The parameters for using a Kinesis stream as a source.",
+        "KinesisStreamParameters": "The parameters for using a Kinesis stream as a target.",
         "LambdaFunctionParameters": "The parameters for using a Lambda function as a target.",
         "RedshiftDataParameters": "These are custom parameters to be used when the target is a Amazon Redshift cluster to invoke the Amazon Redshift Data API BatchExecuteStatement.",
         "SageMakerPipelineParameters": "The parameters for using a SageMaker pipeline as a target.",
-        "SqsQueueParameters": "The parameters for using a Amazon SQS stream as a source.",
+        "SqsQueueParameters": "The parameters for using a Amazon SQS stream as a target.",
         "StepFunctionStateMachineParameters": "The parameters for using a Step Functions state machine as a target."
       }
     },
@@ -41512,7 +41589,7 @@
     },
     "AWS::Pipes::Pipe.PipeTargetSqsQueueParameters": {
       "attributes": {},
-      "description": "The parameters for using a Amazon SQS stream as a source.",
+      "description": "The parameters for using a Amazon SQS stream as a target.",
       "properties": {
         "MessageDeduplicationId": "This parameter applies only to FIFO (first-in-first-out) queues.\n\nThe token used for deduplication of sent messages.",
         "MessageGroupId": "The FIFO message group ID to use as the target."
@@ -57122,14 +57199,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57137,18 +57214,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57157,7 +57234,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57167,15 +57244,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -63037,11 +63114,14 @@
     },
     "AWS::SecurityHub::Hub": {
       "attributes": {
-        "Ref": "`Ref` returns the `HubArn` for the hub resource created, such as `arn:aws:securityhub:us-east-1:12345678910:hub/default` ."
+        "Ref": "`Ref` returns the `HubArn` for the hub resource created, such as `arn:aws:securityhub:us-east-1:123456789012:hub/default` ."
       },
-      "description": "The `AWS::SecurityHub::Hub` resource represents the implementation of the AWS Security Hub service in your account. One hub resource is created for each Region in which you enable Security Hub .\n\nThe CIS AWS Foundations Benchmark standard and the Foundational Security Best Practices standard are also enabled in each Region where you enable Security Hub .",
+      "description": "The `AWS::SecurityHub::Hub` resource specifies the enablement of the AWS Security Hub service in your AWS account . The service is enabled in the current AWS Region or the specified Region. You create a separate `Hub` resource in each Region in which you want to enable Security Hub .\n\nWhen you use this resource to enable Security Hub , default security standards are enabled. To disable default standards, set the `EnableDefaultStandards` property to `false` . You can use the [`AWS::SecurityHub::Standard`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-securityhub-standard.html) resource to enable additional standards.\n\nWhen you use this resource to enable Security Hub , new controls are automatically enabled for your enabled standards. To disable automatic enablement of new controls, set the `AutoEnableControls` property to `false` .\n\nYou must create an `AWS::SecurityHub::Hub` resource for an account before you can create other types of Security Hub resources for the account through AWS CloudFormation . Use a [DependsOn attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) , such as `\"DependsOn\": \"Hub\"` , to ensure that you've created an `AWS::SecurityHub::Hub` resource before creating other Security Hub resources for an account.",
       "properties": {
-        "Tags": "The tags to add to the hub resource."
+        "AutoEnableControls": "Whether to automatically enable new controls when they are added to standards that are enabled.\n\nBy default, this is set to `true` , and new controls are enabled automatically. To not automatically enable new controls, set this to `false` .",
+        "ControlFindingGenerator": "Specifies whether an account has consolidated control findings turned on or off. If the value for this field is set to `SECURITY_CONTROL` , Security Hub generates a single finding for a control check even when the check applies to multiple enabled standards.\n\nIf the value for this field is set to `STANDARD_CONTROL` , Security Hub generates separate findings for a control check when the check applies to multiple enabled standards.\n\nThe value for this field in a member account matches the value in the administrator account. For accounts that aren't part of an organization, the default value of this field is `SECURITY_CONTROL` if you enabled Security Hub on or after February 23, 2023.",
+        "EnableDefaultStandards": "Whether to enable the security standards that Security Hub has designated as automatically enabled. If you don't provide a value for `EnableDefaultStandards` , it is set to `true` , and the designated standards are automatically enabled in each AWS Region where you enable Security Hub . If you don't want to enable the designated standards, set `EnableDefaultStandards` to `false` .\n\nCurrently, the automatically enabled standards are the Center for Internet Security (CIS) AWS Foundations Benchmark v1.2.0 and AWS Foundational Security Best Practices (FSBP).",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
     "AWS::SecurityHub::Standard": {
@@ -63692,7 +63772,7 @@
     },
     "AWS::StepFunctions::Activity": {
       "attributes": {
-        "Arn": "",
+        "Arn": "Returns the ARN of the resource.",
         "Name": "Returns the name of the activity. For example:\n\n`{ \"Fn::GetAtt\": [\"MyActivity\", \"Name\"] }`\n\nReturns a value similar to the following:\n\n`myActivity`\n\nFor more information about using `Fn::GetAtt` , see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) .",
         "Ref": "When you provide the logical ID of this resource to the `Ref` intrinsic function, `Ref` returns the ARN of the created activity. For example:\n\n`{ \"Ref\": \"MyActivity\" }`\n\nReturns a value similar to the following:\n\n`arn:aws:states:us-east-1:111122223333:activity:myActivity`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
@@ -63712,17 +63792,17 @@
     },
     "AWS::StepFunctions::StateMachine": {
       "attributes": {
-        "Arn": "",
+        "Arn": "Returns the ARN of the resource.",
         "Name": "Returns the name of the state machine. For example:\n\n`{ \"Fn::GetAtt\": [\"MyStateMachine\", \"Name\"] }`\n\nReturns the name of your state machine:\n\n`HelloWorld-StateMachine`\n\nIf you did not specify the name it will be similar to the following:\n\n`MyStateMachine-1234abcdefgh`\n\nFor more information about using `Fn::GetAtt` , see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) .",
         "Ref": "When you provide the logical ID of this resource to the Ref intrinsic function, Ref returns the ARN of the created state machine. For example:\n\n`{ \"Ref\": \"MyStateMachine\" }`\n\nReturns a value similar to the following:\n\n`arn:aws:states:us-east-1:111122223333:stateMachine:HelloWorld-StateMachine`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
-        "StateMachineRevisionId": ""
+        "StateMachineRevisionId": "Identifier for a state machine revision, which is an immutable, read-only snapshot of a state machine\u2019s definition and configuration."
       },
       "description": "Provisions a state machine. A state machine consists of a collection of states that can do work ( `Task` states), determine to which states to transition next ( `Choice` states), stop an execution with an error ( `Fail` states), and so on. State machines are specified using a JSON-based, structured language.",
       "properties": {
-        "Definition": "The Amazon States Language definition of the state machine. The state machine definition must be in JSON or YAML, and the format of the object must match the format of your AWS Step Functions template file. See [Amazon States Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) .",
+        "Definition": "The Amazon States Language definition of the state machine. The state machine definition must be in JSON or YAML, and the format of the object must match the format of your CloudFormation template file. See [Amazon States Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) .",
         "DefinitionS3Location": "The name of the S3 bucket where the state machine definition is stored. The state machine definition must be a JSON or YAML file.",
         "DefinitionString": "The Amazon States Language definition of the state machine. The state machine definition must be in JSON. See [Amazon States Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) .",
-        "DefinitionSubstitutions": "A map (string to string) that specifies the mappings for placeholder variables in the state machine definition. This enables the customer to inject values obtained at runtime, for example from intrinsic functions, in the state machine definition. Variables can be template parameter names, resource logical IDs, resource attributes, or a variable in a key-value map.",
+        "DefinitionSubstitutions": "A map (string to string) that specifies the mappings for placeholder variables in the state machine definition. This enables the customer to inject values obtained at runtime, for example from intrinsic functions, in the state machine definition. Variables can be template parameter names, resource logical IDs, resource attributes, or a variable in a key-value map.\n\nSubstitutions must follow the syntax: `${key_name}` or `${variable_1,variable_2,...}` .",
         "LoggingConfiguration": "Defines what execution history events are logged and where they are logged.\n\n> By default, the `level` is set to `OFF` . For more information see [Log Levels](https://docs.aws.amazon.com/step-functions/latest/dg/cloudwatch-log-level.html) in the AWS Step Functions User Guide.",
         "RoleArn": "The Amazon Resource Name (ARN) of the IAM role to use for this state machine.",
         "StateMachineName": "The name of the state machine.\n\nA name must *not* contain:\n\n- white space\n- brackets `< > { } [ ]`\n- wildcard characters `? *`\n- special characters `\" # % \\ ^ | ~ ` $ & , ; : /`\n- control characters ( `U+0000-001F` , `U+007F-009F` )\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
@@ -63747,7 +63827,7 @@
     },
     "AWS::StepFunctions::StateMachine.LoggingConfiguration": {
       "attributes": {},
-      "description": "Defines what execution history events are logged and where they are logged.\n\n> By default, the `level` is set to `OFF` . For more information see [Log Levels](https://docs.aws.amazon.com/step-functions/latest/dg/cloudwatch-log-level.html) in the AWS Step Functions User Guide.",
+      "description": "Defines what execution history events are logged and where they are logged.\n\nStep Functions provides the log levels \u2014 `OFF` , `ALL` , `ERROR` , and `FATAL` . No event types log when set to `OFF` and all event types do when set to `ALL` .\n\n> By default, the `level` is set to `OFF` . For more information see [Log Levels](https://docs.aws.amazon.com/step-functions/latest/dg/cloudwatch-log-level.html) in the AWS Step Functions User Guide.",
       "properties": {
         "Destinations": "An array of objects that describes where your execution history events will be logged. Limited to size 1. Required, if your log level is not set to `OFF` .",
         "IncludeExecutionData": "Determines whether execution data is included in your log. When set to `false` , data is excluded.",
@@ -63776,6 +63856,50 @@
       "description": "Selects whether or not the state machine's AWS X-Ray tracing is enabled. To configure your state machine to send trace data to X-Ray, set `Enabled` to `true` .",
       "properties": {
         "Enabled": "When set to `true` , X-Ray tracing is enabled."
+      }
+    },
+    "AWS::StepFunctions::StateMachineAlias": {
+      "attributes": {
+        "Arn": "Returns the ARN of the state machine alias. For example, `arn:aws:states:us-east-1:123456789012:stateMachine:myStateMachine:PROD` .",
+        "Ref": "When you provide the logical ID of this resource to the `Ref` intrinsic function, `Ref` returns the ARN of the created state machine alias. For example,\n\n`{ \"Ref\": \"PROD\" }` \n\nReturns the ARN of the created state machine alias as shown in the following example.\n\n`arn:aws:states:us-east-1:123456789012:stateMachine:myStateMachine:PROD`\n\nFor more information about using `Ref` , see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Represents a state machine [alias](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-alias.html) . An alias routes traffic to one or two versions of the same state machine.\n\nYou can create up to 100 aliases for each state machine.",
+      "properties": {
+        "DeploymentPreference": "The settings that enable gradual state machine deployments. These settings include [Alarms](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachinealias-deploymentpreference.html#cfn-stepfunctions-statemachinealias-deploymentpreference-alarms) , [Interval](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachinealias-deploymentpreference.html#cfn-stepfunctions-statemachinealias-deploymentpreference-interval) , [Percentage](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachinealias-deploymentpreference.html#cfn-stepfunctions-statemachinealias-deploymentpreference-percentage) , [StateMachineVersionArn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachinealias-deploymentpreference.html#cfn-stepfunctions-statemachinealias-deploymentpreference-statemachineversionarn) , and [Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachinealias-deploymentpreference.html#cfn-stepfunctions-statemachinealias-deploymentpreference-type) .\n\nCloudFormation automatically shifts traffic from the version an alias currently points to, to a new state machine version that you specify.\n\n> `RoutingConfiguration` and `DeploymentPreference` are mutually exclusive properties. You must define only one of these properties. \n\nBased on the type of deployment you want to perform, you can specify one of the following settings:\n\n- `LINEAR` - Shifts traffic to the new version in equal increments with an equal number of seconds between each increment.\n\nFor example, if you specify the increment percent as `20` with an interval of `600` seconds, this deployment increases traffic by 20 percent every 600 seconds until the new version receives 100 percent of the traffic. This deployment immediately rolls back the new version if any Amazon CloudWatch alarms are triggered.\n- `ALL_AT_ONCE` - Shifts 100 percent of traffic to the new version immediately. CloudFormation monitors the new version and rolls it back automatically to the previous version if any CloudWatch alarms are triggered.\n- `CANARY` - Shifts traffic in two increments.\n\nIn the first increment, a small percentage of traffic, for example, 10 percent is shifted to the new version. In the second increment, before a specified time interval in seconds gets over, the remaining traffic is shifted to the new version. The shift to the new version for the remaining traffic takes place only if no CloudWatch alarms are triggered during the specified time interval.",
+        "Description": "An optional description of the state machine alias.",
+        "Name": "The name of the state machine alias. If you don't provide a name, it uses an automatically generated name based on the logical ID.",
+        "RoutingConfiguration": "The routing configuration of an alias. Routing configuration splits [StartExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) requests between one or two versions of the same state machine.\n\nUse `RoutingConfiguration` if you want to explicitly set the alias [weights](https://docs.aws.amazon.com/step-functions/latest/apireference/API_RoutingConfigurationListItem.html#StepFunctions-Type-RoutingConfigurationListItem-weight) . Weight is the percentage of traffic you want to route to a state machine version.\n\n> `RoutingConfiguration` and `DeploymentPreference` are mutually exclusive properties. You must define only one of these properties."
+      }
+    },
+    "AWS::StepFunctions::StateMachineAlias.DeploymentPreference": {
+      "attributes": {},
+      "description": "Enables gradual state machine deployments. CloudFormation automatically shifts traffic from the version the alias currently points to, to a new state machine version that you specify.",
+      "properties": {
+        "Alarms": "A list of Amazon CloudWatch alarms to be monitored during the deployment. The deployment fails and rolls back if any of these alarms go into the `ALARM` state.",
+        "Interval": "The time in minutes between each traffic shifting increment.",
+        "Percentage": "The percentage of traffic to shift to the new version in each increment.",
+        "StateMachineVersionArn": "The Amazon Resource Name (ARN) of the [`AWS::StepFunctions::StateMachineVersion`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachineversion.html) resource that will be the final version to which the alias points to when the traffic shifting is complete.\n\nWhile performing gradual deployments, you can only provide a single state machine version ARN. To explicitly set version weights in a CloudFormation template, use `RoutingConfiguration` instead.",
+        "Type": "The type of deployment you want to perform. You can specify one of the following types:\n\n- `LINEAR` - Shifts traffic to the new version in equal increments with an equal number of seconds between each increment.\n\nFor example, if you specify the increment percent as `20` with an interval of `600` seconds, this deployment increases traffic by 20 percent every 600 seconds until the new version receives 100 percent of the traffic. This deployment immediately rolls back the new version if any CloudWatch alarms are triggered.\n- `ALL_AT_ONCE` - Shifts 100 percent of traffic to the new version immediately. CloudFormation monitors the new version and rolls it back automatically to the previous version if any CloudWatch alarms are triggered.\n- `CANARY` - Shifts traffic in two increments.\n\nIn the first increment, a small percentage of traffic, for example, 10 percent is shifted to the new version. In the second increment, before a specified time interval in seconds gets over, the remaining traffic is shifted to the new version. The shift to the new version for the remaining traffic takes place only if no CloudWatch alarms are triggered during the specified time interval."
+      }
+    },
+    "AWS::StepFunctions::StateMachineAlias.RoutingConfigurationVersion": {
+      "attributes": {},
+      "description": "The state machine version to which you want to route the execution traffic.",
+      "properties": {
+        "StateMachineVersionArn": "The Amazon Resource Name (ARN) that identifies one or two state machine versions defined in the routing configuration.\n\nIf you specify the ARN of a second version, it must belong to the same state machine as the first version.",
+        "Weight": "The percentage of traffic you want to route to the state machine version. The sum of the weights in the routing configuration must be equal to 100."
+      }
+    },
+    "AWS::StepFunctions::StateMachineVersion": {
+      "attributes": {
+        "Arn": "Returns the ARN of the state machine version. For example, `arn:aws:states:us-east-1:123456789012:stateMachine:myStateMachine:1` .",
+        "Ref": "When you provide the logical ID of this resource to the `Ref` intrinsic function, `Ref` returns the ARN of the published state machine version. For example, `arn:aws:states:us-east-1:123456789012:stateMachine:myStateMachine:1.`\n\nFor more information about using `Ref` , see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Represents a state machine [version](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-version.html) . A published version uses the latest state machine [*revision*](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-version.html) . A revision is an immutable, read-only snapshot of a state machine\u2019s definition and configuration.\n\nYou can publish up to 1000 versions for each state machine.\n\n> Before you delete a version, make sure that version's ARN isn't being referenced in any long-running workflows or application code outside of the stack.",
+      "properties": {
+        "Description": "An optional description of the state machine version.",
+        "StateMachineArn": "The Amazon Resource Name (ARN) of the state machine.",
+        "StateMachineRevisionId": "Identifier for a state machine revision, which is an immutable, read-only snapshot of a state machine\u2019s definition and configuration.\n\nOnly publish the state machine version if the current state machine's revision ID matches the specified ID. Use this option to avoid publishing a version if the state machine has changed since you last updated it.\n\nTo specify the initial state machine revision, set the value as `INITIAL` ."
       }
     },
     "AWS::SupportApp::AccountAlias": {
@@ -64224,6 +64348,7 @@
         "ProtocolDetails": "The protocol settings that are configured for your server.\n\n- To indicate passive mode (for FTP and FTPS protocols), use the `PassiveIp` parameter. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n- To ignore the error that is generated when the client attempts to use the `SETSTAT` command on a file that you are uploading to an Amazon S3 bucket, use the `SetStatOption` parameter. To have the AWS Transfer Family server ignore the `SETSTAT` command and upload files without needing to make any changes to your SFTP client, set the value to `ENABLE_NO_OP` . If you set the `SetStatOption` parameter to `ENABLE_NO_OP` , Transfer Family generates a log entry to Amazon CloudWatch Logs, so that you can determine when the client is making a `SETSTAT` call.\n- To determine whether your AWS Transfer Family server resumes recent, negotiated sessions through a unique session ID, use the `TlsSessionResumptionMode` parameter.\n- `As2Transports` indicates the transport method for the AS2 messages. Currently, only HTTP is supported.",
         "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n- `AS2` (Applicability Statement 2): used for transporting structured business-to-business data\n\n> - If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> - If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be either `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> - If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set any of the supported identity types: `SERVICE_MANAGED` , `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `AS2` , then the `EndpointType` must be `VPC` , and domain must be Amazon S3.",
         "SecurityPolicyName": "Specifies the name of the security policy that is attached to the server.",
+        "StructuredLogDestinations": "Specifies the log groups to which your server logs are sent.\n\nTo specify a log group, you must provide the ARN for an existing log group. In this case, the format of the log group is as follows:\n\n`arn:aws:logs:region-name:amazon-account-id:log-group:log-group-name:*`\n\nFor example, `arn:aws:logs:us-east-1:111122223333:log-group:mytestgroup:*`\n\nIf you have previously specified a log group for a server, you can clear it, and in effect turn off structured logging, by providing an empty value for this parameter in an `update-server` call. For example:\n\n`update-server --server-id s-1234567890abcdef0 --structured-log-destinations`",
         "Tags": "Key-value pairs that can be used to group and search for servers.",
         "WorkflowDetails": "Specifies the workflow ID for the workflow to assign and the execution role that's used for executing the workflow.\n\nIn addition to a workflow to execute when a file is uploaded completely, `WorkflowDetails` can also contain a workflow ID (and execution role) for a workflow to execute on partial upload. A partial upload occurs when a file is open when the session disconnects."
       }
@@ -64269,6 +64394,11 @@
         "SetStatOption": "Use the `SetStatOption` to ignore the error that is generated when the client attempts to use `SETSTAT` on a file you are uploading to an S3 bucket.\n\nSome SFTP file transfer clients can attempt to change the attributes of remote files, including timestamp and permissions, using commands, such as `SETSTAT` when uploading the file. However, these commands are not compatible with object storage systems, such as Amazon S3. Due to this incompatibility, file uploads from these clients can result in errors even when the file is otherwise successfully uploaded.\n\nSet the value to `ENABLE_NO_OP` to have the Transfer Family server ignore the `SETSTAT` command, and upload files without needing to make any changes to your SFTP client. While the `SetStatOption` `ENABLE_NO_OP` setting ignores the error, it does generate a log entry in Amazon CloudWatch Logs, so you can determine when the client is making a `SETSTAT` call.\n\n> If you want to preserve the original timestamp for your file, and modify other file attributes using `SETSTAT` , you can use Amazon EFS as backend storage with Transfer Family.",
         "TlsSessionResumptionMode": "A property used with Transfer Family servers that use the FTPS protocol. TLS Session Resumption provides a mechanism to resume or share a negotiated secret key between the control and data connection for an FTPS session. `TlsSessionResumptionMode` determines whether or not the server resumes recent, negotiated sessions through a unique session ID. This property is available during `CreateServer` and `UpdateServer` calls. If a `TlsSessionResumptionMode` value is not specified during `CreateServer` , it is set to `ENFORCED` by default.\n\n- `DISABLED` : the server does not process TLS session resumption client requests and creates a new TLS session for each request.\n- `ENABLED` : the server processes and accepts clients that are performing TLS session resumption. The server doesn't reject client data connections that do not perform the TLS session resumption client processing.\n- `ENFORCED` : the server processes and accepts clients that are performing TLS session resumption. The server rejects client data connections that do not perform the TLS session resumption client processing. Before you set the value to `ENFORCED` , test your clients.\n\n> Not all FTPS clients perform TLS session resumption. So, if you choose to enforce TLS session resumption, you prevent any connections from FTPS clients that don't perform the protocol negotiation. To determine whether or not you can use the `ENFORCED` value, you need to test your clients."
       }
+    },
+    "AWS::Transfer::Server.StructuredLogDestination": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
     },
     "AWS::Transfer::Server.WorkflowDetail": {
       "attributes": {},
