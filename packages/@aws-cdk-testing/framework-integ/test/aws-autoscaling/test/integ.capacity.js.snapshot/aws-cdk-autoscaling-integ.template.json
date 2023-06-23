@@ -436,7 +436,7 @@
     ]
    }
   },
-  "ASG1LaunchTemplateProfileB8B67C6F": {
+  "ASG1InstanceProfile46E7155F": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -453,7 +453,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ASG1LaunchTemplateProfileB8B67C6F",
+        "ASG1InstanceProfile46E7155F",
         "Arn"
        ]
       }
@@ -508,7 +508,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "ASG1InstanceRole302737AC"
+   ]
   },
   "ASG1ASG3ED0FE1E": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -593,7 +596,7 @@
     ]
    }
   },
-  "ASG2LaunchTemplateProfileBAB9923E": {
+  "ASG2InstanceProfile46CEEEAC": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -610,7 +613,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ASG2LaunchTemplateProfileBAB9923E",
+        "ASG2InstanceProfile46CEEEAC",
         "Arn"
        ]
       }
@@ -665,7 +668,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "ASG2InstanceRoleDB32A2CA"
+   ]
   },
   "ASG2ASGF0E3E6D2": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -754,7 +760,7 @@
     ]
    }
   },
-  "ASG3LaunchTemplateProfileBF2C0F81": {
+  "ASG3InstanceProfile6546A906": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -771,7 +777,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ASG3LaunchTemplateProfileBF2C0F81",
+        "ASG3InstanceProfile6546A906",
         "Arn"
        ]
       }
@@ -826,7 +832,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "ASG3InstanceRoleD1F2C1B7"
+   ]
   },
   "ASG3ASGBF1E9D0E": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

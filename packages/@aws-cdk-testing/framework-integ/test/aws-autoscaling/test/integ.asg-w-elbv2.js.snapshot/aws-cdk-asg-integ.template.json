@@ -457,7 +457,7 @@
     ]
    }
   },
-  "FleetLaunchTemplateProfileB169EB6D": {
+  "FleetInstanceProfileC6192A66": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -474,7 +474,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "FleetLaunchTemplateProfileB169EB6D",
+        "FleetInstanceProfileC6192A66",
         "Arn"
        ]
       }
@@ -529,7 +529,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "FleetInstanceRoleA605DB82"
+   ]
   },
   "FleetASG3971DFE5": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

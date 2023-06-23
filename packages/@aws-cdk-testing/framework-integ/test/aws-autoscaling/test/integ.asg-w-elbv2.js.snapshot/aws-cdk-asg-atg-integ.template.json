@@ -562,7 +562,7 @@
     ]
    }
   },
-  "AsgLaunchTemplateProfileE5FD9207": {
+  "AsgInstanceProfileBCEDB827": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -579,7 +579,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "AsgLaunchTemplateProfileE5FD9207",
+        "AsgInstanceProfileBCEDB827",
         "Arn"
        ]
       }
@@ -634,7 +634,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "AsgInstanceRole7946982D"
+   ]
   },
   "AsgASGD1D7B4E2": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

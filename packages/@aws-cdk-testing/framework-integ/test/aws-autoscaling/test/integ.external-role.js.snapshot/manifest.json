@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90c7eaf82b069c2ca2c4ae956974bb5f14c9b79335fec4c9cc58a32826077311.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b842cf2ecd291d48564b31ea02794eb3c2b24f5903f5c9b1b654408cab6ed168.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,10 +183,10 @@
             "data": "ASGInstanceSecurityGroup0525485D"
           }
         ],
-        "/integ-iam-external-role/ASG/LaunchTemplate/Profile": [
+        "/integ-iam-external-role/ASG/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplateProfileB99C522F"
+            "data": "ASGInstanceProfile0A2834D7"
           }
         ],
         "/integ-iam-external-role/ASG/LaunchTemplate/Resource": [
@@ -219,10 +219,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ASGInstanceProfile0A2834D7": [
+        "ASGLaunchTemplateProfileB99C522F": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7",
+            "data": "ASGLaunchTemplateProfileB99C522F",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fc73cac742550c4e7eaa8784e3dff017e59b7a873b4159b550e4321f3a681ef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90f7b1e1cb546dc3e1ef90379951d252529357a88b4578259531ae4f08ebfab8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -255,10 +255,10 @@
             "data": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
           }
         ],
-        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate/Profile": [
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4"
+            "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate/Resource": [
@@ -291,10 +291,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AsgWithGp3BlockdeviceInstanceProfile2FC414A5": [
+        "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5",
+            "data": "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

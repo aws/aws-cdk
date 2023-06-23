@@ -4,6 +4,7 @@
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
+     "IamInstanceProfile": {},
      "ImageId": {
       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
      },
@@ -49,6 +50,7 @@
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
+     "IamInstanceProfile": {},
      "ImageId": {
       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
      },
@@ -709,7 +711,7 @@
     ]
    }
   },
-  "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4": {
+  "AsgWithGp3BlockdeviceInstanceProfile2FC414A5": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -738,7 +740,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "AsgWithGp3BlockdeviceLaunchTemplateProfile041B8EB4",
+        "AsgWithGp3BlockdeviceInstanceProfile2FC414A5",
         "Arn"
        ]
       }
@@ -793,7 +795,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+   ]
   },
   "AsgWithGp3BlockdeviceASGE82AA487": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

@@ -436,7 +436,7 @@
     ]
    }
   },
-  "CapacityRebalanceLaunchTemplateProfileB8458A19": {
+  "CapacityRebalanceInstanceProfile9E43DE91": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -453,7 +453,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "CapacityRebalanceLaunchTemplateProfileB8458A19",
+        "CapacityRebalanceInstanceProfile9E43DE91",
         "Arn"
        ]
       }
@@ -508,7 +508,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "CapacityRebalanceInstanceRole548A8264"
+   ]
   },
   "CapacityRebalanceASG95E8B60F": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
