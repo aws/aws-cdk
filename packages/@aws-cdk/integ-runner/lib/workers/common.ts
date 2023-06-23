@@ -161,6 +161,13 @@ export interface IntegTestOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * true if running in watch mode
+   *
+   * @default false
+   */
+  readonly watch?: boolean;
 }
 
 /**
