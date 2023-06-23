@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37398dd681d851cca5eabad1f610693e9f1438f32907faf5675346bed1c0473f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3be3861b160a5c4b786a665bc563d4af7f3789d729e9568e720d7e14d398b6c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E"
           }
         ],
-        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B"
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
           }
         ],
         "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
@@ -333,10 +333,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B": [
+        "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B",
+            "data": "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
