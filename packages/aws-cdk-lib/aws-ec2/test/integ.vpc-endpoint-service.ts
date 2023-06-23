@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
   constructor(scope:cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:384434886796:loadbalancer/net/Test/testLB');
+    const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:384434886796:loadbalancer/net/testLB/375ce67ab066a353');
     new ec2.VpcEndpointService(this, 'vpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [lb],
       acceptanceRequired: true,
@@ -28,6 +28,6 @@ class TestStack extends cdk.Stack {
 
 }
 
-new TestStack(app, 'TestStack');
+new TestStack(app, 'TestStackLoadBalancer');
 
 app.synth();
