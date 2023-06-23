@@ -441,7 +441,7 @@
     ]
    }
   },
-  "GroupLaunchTemplateProfile087E2517": {
+  "GroupInstanceProfileA2F3B693": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -458,7 +458,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "GroupLaunchTemplateProfile087E2517",
+        "GroupInstanceProfileA2F3B693",
         "Arn"
        ]
       }
@@ -513,7 +513,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "GroupInstanceRole918A2AF7"
+   ]
   },
   "GroupASG3C6DFE3B": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

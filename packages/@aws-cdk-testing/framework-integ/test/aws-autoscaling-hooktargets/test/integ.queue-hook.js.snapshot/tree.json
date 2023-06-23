@@ -766,28 +766,28 @@
                   "version": "0.0.0"
                 }
               },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "integ-autoscalinghook-queue/Group/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "GroupInstanceRole918A2AF7"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "version": "0.0.0"
+                }
+              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "integ-autoscalinghook-queue/Group/LaunchTemplate",
                 "children": {
-                  "Profile": {
-                    "id": "Profile",
-                    "path": "integ-autoscalinghook-queue/Group/LaunchTemplate/Profile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "GroupInstanceRole918A2AF7"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-autoscalinghook-queue/Group/LaunchTemplate/Resource",
@@ -798,7 +798,7 @@
                           "iamInstanceProfile": {
                             "arn": {
                               "Fn::GetAtt": [
-                                "GroupLaunchTemplateProfile087E2517",
+                                "GroupInstanceProfileA2F3B693",
                                 "Arn"
                               ]
                             }
@@ -1096,7 +1096,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -1134,7 +1134,7 @@
                 "path": "queue-hook-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1154,7 +1154,7 @@
                             "path": "queue-hook-test/DefaultTest/DeployAssert/AwsApiCallAutoScalingsetDesiredCapacity8d10985ccf5843cdfedb03afd84a535c/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.52"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -1218,7 +1218,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   },
                   "AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff": {
@@ -1234,7 +1234,7 @@
                             "path": "queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.52"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -1274,7 +1274,7 @@
                                 "path": "queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.52"
+                                  "version": "10.2.55"
                                 }
                               },
                               "Invoke": {
@@ -1300,7 +1300,7 @@
                                 "path": "queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.52"
+                                  "version": "10.2.55"
                                 }
                               },
                               "Invoke": {
@@ -1384,7 +1384,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1418,7 +1418,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   },
                   "AwsApiCallAutoScalingcompleteLifecycleAction3b6f4a6668cc6de418d82d437885ddfb": {
@@ -1434,7 +1434,7 @@
                             "path": "queue-hook-test/DefaultTest/DeployAssert/AwsApiCallAutoScalingcompleteLifecycleAction3b6f4a6668cc6de418d82d437885ddfb/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.52"
+                              "version": "10.2.55"
                             }
                           }
                         },
@@ -1506,7 +1506,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },
