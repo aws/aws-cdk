@@ -1115,7 +1115,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.54"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -1215,7 +1215,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
+                      "s3Key": "4d8215259ea7ff53d0938a2da38847d4f2ad793311ce02594e231231697ef181.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2565,27 +2565,27 @@
                 "path": "MskLogging/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.54"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "MskLogging/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallS3listObjectsV2": {
-                    "id": "AwsApiCallS3listObjectsV2",
-                    "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2",
+                  "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f": {
+                    "id": "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f",
+                    "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider",
+                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
+                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.54"
                             }
                           }
                         },
@@ -2596,11 +2596,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default",
+                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default/Default",
+                            "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -2614,7 +2614,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertionResults",
+                        "path": "MskLogging/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -2657,7 +2657,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.54"
                     }
                   },
                   "BootstrapVersion": {
@@ -2699,7 +2699,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.54"
         }
       }
     },
