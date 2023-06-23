@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8d5217c1cb0d9ec63a091ff2051506fc0658c45e02961367bafc21b10e9dedf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7641822da2d37714dfcd9add931c62615df598ca6673955c8bd06a960359b352.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -351,10 +351,10 @@
             "data": "ClusterInferenceInstancesInstanceRole59AC6F56"
           }
         ],
-        "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Profile": [
+        "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A"
+            "data": "ClusterInferenceInstancesInstanceProfile5A1209B4"
           }
         ],
         "/aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Resource": [
@@ -663,10 +663,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ClusterInferenceInstancesInstanceProfile5A1209B4": [
+        "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesInstanceProfile5A1209B4",
+            "data": "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

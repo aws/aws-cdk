@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.223"
+              "version": "2.0.229"
             }
           },
           "Cluster": {
@@ -1178,7 +1178,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1918,28 +1918,28 @@
                       "version": "0.0.0"
                     }
                   },
+                  "InstanceProfile": {
+                    "id": "InstanceProfile",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/InstanceProfile",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                      "aws:cdk:cloudformation:props": {
+                        "roles": [
+                          {
+                            "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate",
                     "children": {
-                      "Profile": {
-                        "id": "Profile",
-                        "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Profile",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                          "aws:cdk:cloudformation:props": {
-                            "roles": [
-                              {
-                                "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/LaunchTemplate/Resource",
@@ -1950,7 +1950,7 @@
                               "iamInstanceProfile": {
                                 "arn": {
                                   "Fn::GetAtt": [
-                                    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+                                    "ClusterInferenceInstancesInstanceProfile5A1209B4",
                                     "Arn"
                                   ]
                                 }
@@ -3368,7 +3368,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   }
                 },
@@ -3447,7 +3447,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "version": "10.2.55"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3580,7 +3580,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "cff916937906abb9c99e0ecbb4accbc091c734ce975c7ff64b3f4bfae4372b9c.zip"
+                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3937,7 +3937,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/7f8dd0a5e102f74e8061430434dc313feefb077c65c8c3095893bcc40f11f8c6.json"
+                          "/f37511692b5c2a8f3a3b5dd10e1fc0671449c1d75bfd28605acc3a8e426dd50f.json"
                         ]
                       ]
                     },
@@ -3974,7 +3974,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "version": "10.2.55"
             }
           },
           "awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController": {
@@ -4484,7 +4484,7 @@
                 "path": "aws-cdk-eks-cluster-interence/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -4530,7 +4530,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },

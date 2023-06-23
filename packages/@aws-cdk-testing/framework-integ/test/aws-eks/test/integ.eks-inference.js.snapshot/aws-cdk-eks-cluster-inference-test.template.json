@@ -1371,7 +1371,7 @@
     ]
    }
   },
-  "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A": {
+  "ClusterInferenceInstancesInstanceProfile5A1209B4": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -1388,7 +1388,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
+        "ClusterInferenceInstancesInstanceProfile5A1209B4",
         "Arn"
        ]
       }
@@ -1519,7 +1519,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "ClusterInferenceInstancesInstanceRole59AC6F56"
+   ]
   },
   "ClusterInferenceInstancesASGE90717C7": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -1647,7 +1650,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7f8dd0a5e102f74e8061430434dc313feefb077c65c8c3095893bcc40f11f8c6.json"
+       "/f37511692b5c2a8f3a3b5dd10e1fc0671449c1d75bfd28605acc3a8e426dd50f.json"
       ]
      ]
     },
@@ -1734,6 +1737,7 @@
    },
    "DependsOn": [
     "ClusterInferenceInstancesASGE90717C7",
+    "ClusterInferenceInstancesInstanceProfile5A1209B4",
     "ClusterInferenceInstancesInstanceRole59AC6F56",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50102565535161321E6",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D5044357063ABC",
@@ -1742,7 +1746,6 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
     "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
@@ -1778,6 +1781,7 @@
    },
    "DependsOn": [
     "ClusterInferenceInstancesASGE90717C7",
+    "ClusterInferenceInstancesInstanceProfile5A1209B4",
     "ClusterInferenceInstancesInstanceRole59AC6F56",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50102565535161321E6",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D5044357063ABC",
@@ -1786,7 +1790,6 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
     "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
@@ -1998,6 +2001,7 @@
    },
    "DependsOn": [
     "ClusterInferenceInstancesASGE90717C7",
+    "ClusterInferenceInstancesInstanceProfile5A1209B4",
     "ClusterInferenceInstancesInstanceRole59AC6F56",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50102565535161321E6",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D5044357063ABC",
@@ -2006,7 +2010,6 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
     "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
     "ClusterNodegroupDefaultCapacityDA0920A3"
@@ -2049,6 +2052,7 @@
    },
    "DependsOn": [
     "ClusterInferenceInstancesASGE90717C7",
+    "ClusterInferenceInstancesInstanceProfile5A1209B4",
     "ClusterInferenceInstancesInstanceRole59AC6F56",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50102565535161321E6",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D5044357063ABC",
@@ -2057,7 +2061,6 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
     "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterKubectlReadyBarrier200052AF",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -2120,6 +2123,7 @@
     "awscdkeksclusterinferencetestClusterEBBBA1ACAlbControlleralbsaRole836823A9",
     "ClusterAwsAuthmanifestFE51F8AE",
     "ClusterInferenceInstancesASGE90717C7",
+    "ClusterInferenceInstancesInstanceProfile5A1209B4",
     "ClusterInferenceInstancesInstanceRole59AC6F56",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50102565535161321E6",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D5044357063ABC",
@@ -2128,7 +2132,6 @@
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F44333DD9D3A",
     "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26FALLTRAFFICE41AF78F",
     "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-    "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
     "ClusterInferenceInstancesLaunchTemplateA0BB0AA4",
     "ClusterKubectlReadyBarrier200052AF",
     "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
