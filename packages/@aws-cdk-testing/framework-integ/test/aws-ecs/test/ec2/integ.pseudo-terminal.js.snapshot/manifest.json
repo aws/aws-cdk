@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3920d6a2d972f2d5f392e70987ef5b298622cd22b89873a3cb7faa910851491a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0026f36201f1946b9a59b3c3b965e5bbadf9b83ade054a9a8b08fa6206497660.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
           }
         ],
-        "/aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20"
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
           }
         ],
         "/aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
@@ -309,10 +309,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": [
+        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

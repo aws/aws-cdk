@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53bf96a5f8b27ca4e4bc35b662ffdc722097134aacca5e51ba47228e4275e09b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6156adc5e94052a67460bd0e7561176c2091a0c1e48d3cc5d4198fad8289578a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "EcsClustergravitonclusterInstanceRoleDefaultPolicyB89DB33F"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate/Profile": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0"
+            "data": "EcsClustergravitonclusterInstanceProfileD1BBFAAE"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate/Resource": [
@@ -285,10 +285,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClustergravitonclusterInstanceProfileD1BBFAAE": [
+        "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterInstanceProfileD1BBFAAE",
+            "data": "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

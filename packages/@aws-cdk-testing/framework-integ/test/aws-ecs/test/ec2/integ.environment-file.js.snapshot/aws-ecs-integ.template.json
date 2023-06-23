@@ -648,7 +648,7 @@
     ]
    }
   },
-  "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": {
+  "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -665,7 +665,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
+        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
         "Arn"
        ]
       }
@@ -731,7 +731,11 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
+    "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
+   ]
   },
   "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -1173,7 +1177,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "10972873dd8a3bc33ae1cb91d834617be249fd84bed5bdbb6ffbb581650aea83.zip"
+     "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
     },
     "Description": "/opt/awscli/aws"
    }

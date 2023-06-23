@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6eb9b0edadc595ed0dec7a0b9c41322fb5460a592c608754ca37378b44dc9af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f2be65694a1fafc2378527b1b68facf8885c2f24c024808cd344935dc9f1c04.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
           }
         ],
-        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20"
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
           }
         ],
         "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
@@ -309,10 +309,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": [
+        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

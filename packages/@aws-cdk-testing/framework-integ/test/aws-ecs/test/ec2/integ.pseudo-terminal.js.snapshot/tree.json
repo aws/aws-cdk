@@ -836,28 +836,28 @@
                       "version": "0.0.0"
                     }
                   },
+                  "InstanceProfile": {
+                    "id": "InstanceProfile",
+                    "path": "aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/InstanceProfile",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                      "aws:cdk:cloudformation:props": {
+                        "roles": [
+                          {
+                            "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate",
                     "children": {
-                      "Profile": {
-                        "id": "Profile",
-                        "path": "aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                          "aws:cdk:cloudformation:props": {
-                            "roles": [
-                              {
-                                "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-pseudo-terminal/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource",
@@ -868,7 +868,7 @@
                               "iamInstanceProfile": {
                                 "arn": {
                                   "Fn::GetAtt": [
-                                    "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
+                                    "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
                                     "Arn"
                                   ]
                                 }
@@ -1268,7 +1268,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.26"
+                      "version": "10.2.55"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1676,7 +1676,7 @@
                 "path": "PseudoTerminal/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1722,7 +1722,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.55"
         }
       }
     },

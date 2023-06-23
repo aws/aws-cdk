@@ -497,7 +497,7 @@
     ]
    }
   },
-  "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6": {
+  "EcsClusterasgSpotInstanceProfile0D6DD08D": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -514,7 +514,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6",
+        "EcsClusterasgSpotInstanceProfile0D6DD08D",
         "Arn"
        ]
       }
@@ -586,7 +586,11 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA",
+    "EcsClusterasgSpotInstanceRole84AB6F93"
+   ]
   },
   "EcsClusterasgSpotASG0D77F041": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -1003,7 +1007,7 @@
     ]
    }
   },
-  "EcsClusterasgOdLaunchTemplateProfileDD216B77": {
+  "EcsClusterasgOdInstanceProfileE5B88756": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -1020,7 +1024,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "EcsClusterasgOdLaunchTemplateProfileDD216B77",
+        "EcsClusterasgOdInstanceProfileE5B88756",
         "Arn"
        ]
       }
@@ -1086,7 +1090,11 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2",
+    "EcsClusterasgOdInstanceRoleC8290533"
+   ]
   },
   "EcsClusterasgOdASG0E5C30EC": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

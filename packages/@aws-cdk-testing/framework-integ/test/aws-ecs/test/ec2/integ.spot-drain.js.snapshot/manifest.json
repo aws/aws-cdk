@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a6417286a0699770a658f5bd564b7a217fe4de81bb8494b9ca5721a7d5ccefa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63b63537a562a06c4620b1dcc12145bc848c8b6d12e8c18dcea8713088bc5f7c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,10 +201,10 @@
             "data": "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6"
+            "data": "EcsClusterasgSpotInstanceProfile0D6DD08D"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate/Resource": [
@@ -297,10 +297,10 @@
             "data": "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdLaunchTemplateProfileDD216B77"
+            "data": "EcsClusterasgOdInstanceProfileE5B88756"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate/Resource": [
@@ -405,19 +405,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterasgSpotInstanceProfile0D6DD08D": [
+        "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotInstanceProfile0D6DD08D",
+            "data": "EcsClusterasgSpotLaunchTemplateProfile9BAC92E6",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "EcsClusterasgOdInstanceProfileE5B88756": [
+        "EcsClusterasgOdLaunchTemplateProfileDD216B77": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdInstanceProfileE5B88756",
+            "data": "EcsClusterasgOdLaunchTemplateProfileDD216B77",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

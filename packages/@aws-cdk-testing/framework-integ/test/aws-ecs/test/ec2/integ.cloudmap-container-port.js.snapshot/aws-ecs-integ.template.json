@@ -296,7 +296,7 @@
     ]
    }
   },
-  "FargateClustercapacityLaunchTemplateProfile4BF7EF9F": {
+  "FargateClustercapacityInstanceProfile8294296C": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
@@ -313,7 +313,7 @@
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "FargateClustercapacityLaunchTemplateProfile4BF7EF9F",
+        "FargateClustercapacityInstanceProfile8294296C",
         "Arn"
        ]
       }
@@ -379,7 +379,11 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "FargateClustercapacityInstanceRoleDefaultPolicy90B38927",
+    "FargateClustercapacityInstanceRoleBE253D2D"
+   ]
   },
   "FargateClustercapacityASGE4034F96": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",

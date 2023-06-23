@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7f132a3104952279f663dc692e4751b6bd3c3e00e772dc2660bbd012481903c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23efb012af109a2b701accba88ab31415b5012b2ff3ce7c0de38ee461130c4a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,10 +183,10 @@
             "data": "EcsClusterbottlerocketasgInstanceRoleDefaultPolicy8523C598"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate/Profile": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11"
+            "data": "EcsClusterbottlerocketasgInstanceProfile22A89B9D"
           }
         ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LaunchTemplate/Resource": [
@@ -273,10 +273,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterbottlerocketasgInstanceProfile22A89B9D": [
+        "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgInstanceProfile22A89B9D",
+            "data": "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

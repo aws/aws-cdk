@@ -1,7 +1,7 @@
 {
   "version": "32.0.0",
   "files": {
-    "d6eb9b0edadc595ed0dec7a0b9c41322fb5460a592c608754ca37378b44dc9af": {
+    "6f2be65694a1fafc2378527b1b68facf8885c2f24c024808cd344935dc9f1c04": {
       "source": {
         "path": "aws-ecs-integ-appmesh-proxy.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d6eb9b0edadc595ed0dec7a0b9c41322fb5460a592c608754ca37378b44dc9af.json",
+          "objectKey": "6f2be65694a1fafc2378527b1b68facf8885c2f24c024808cd344935dc9f1c04.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

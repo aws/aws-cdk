@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d7cb4b0728dee2e3b5001c549eedd8e8760513d089cef51c339bd7539686f1d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cb0eab281aa2492f3770ddce7ef2ed95512a795264dfc2212350d1e04c24584.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -231,10 +231,10 @@
             "data": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Profile": [
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20"
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
           }
         ],
         "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
@@ -381,10 +381,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": [
+        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
