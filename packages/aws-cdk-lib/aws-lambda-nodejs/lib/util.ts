@@ -149,6 +149,7 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   const compilerOptions = extractTsConfig(tsconfigPath);
   const excludedCompilerOptions = [
     'composite',
+    'charset',
     'noEmit',
     'tsBuildInfoFile',
   ];

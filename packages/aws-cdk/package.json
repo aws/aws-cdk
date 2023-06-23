@@ -35,7 +35,8 @@
       },
       "resources": {
         "../../node_modules/vm2/lib/bridge.js": "lib/bridge.js",
-        "../../node_modules/vm2/lib/setup-sandbox.js": "lib/setup-sandbox.js"
+        "../../node_modules/vm2/lib/setup-sandbox.js": "lib/setup-sandbox.js",
+        "lib/vendor/noctilucent/index_bg.wasm": "lib/index_bg.wasm"
       },
       "allowedLicenses": [
         "Apache-2.0",

@@ -186,7 +186,6 @@ describe('getTsconfigCompilerOptions', () => {
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
       '--alwaysStrict',
-      '--charset utf8',
       '--declaration',
       '--declarationMap false',
       '--experimentalDecorators',
@@ -219,7 +218,6 @@ describe('getTsconfigCompilerOptions', () => {
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
       '--alwaysStrict',
-      '--charset utf8',
       '--declaration',
       '--declarationMap false',
       '--experimentalDecorators',
