@@ -1,7 +1,7 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "files": {
-    "c5e4b3fdc029dffe8d5e11805c28ded5095f0380e1e59b89ff0daf336f9422d1": {
+    "e99a6f8e62137cf08fddb41365bc14fa859168f87256c4c5237ff685d9e6815b": {
       "source": {
         "path": "aws-ecs-integ-multiple-alb-healthchecks.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c5e4b3fdc029dffe8d5e11805c28ded5095f0380e1e59b89ff0daf336f9422d1.json",
+          "objectKey": "e99a6f8e62137cf08fddb41365bc14fa859168f87256c4c5237ff685d9e6815b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
