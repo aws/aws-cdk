@@ -70,6 +70,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
         },
         ...(this.options.volumes ?? []),
       ],
+      network: this.options.network,
     });
   }
 }
