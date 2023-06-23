@@ -4,7 +4,6 @@
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
-     "IamInstanceProfile": {},
      "ImageId": {
       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
      },
@@ -50,7 +49,6 @@
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
-     "IamInstanceProfile": {},
      "ImageId": {
       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
      },

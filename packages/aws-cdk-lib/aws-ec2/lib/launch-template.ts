@@ -590,17 +590,17 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.role = props.role;
     this._grantPrincipal = this.role;
 
-    const iamInstanceProfileArn = Lazy.string({
+    const iamInstanceProfileToken = Lazy.any({
       produce: () => {
         if (this.iamInstanceProfileArn) {
-          return this.iamInstanceProfileArn;
+          return { arn: this.iamInstanceProfileArn };
         }
 
         if (this.role) {
           const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
             roles: [this.role.roleName],
           });
-          return iamProfile.getAtt('Arn').toString();
+          return { arn: iamProfile.getAtt('Arn').toString() };
         }
 
         return undefined;
@@ -730,7 +730,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         hibernationOptions: props?.hibernationConfigured !== undefined ? {
           configured: props.hibernationConfigured,
         } : undefined,
-        iamInstanceProfile: iamInstanceProfileArn ? { arn: iamInstanceProfileArn } : undefined,
+        iamInstanceProfile: iamInstanceProfileToken,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
