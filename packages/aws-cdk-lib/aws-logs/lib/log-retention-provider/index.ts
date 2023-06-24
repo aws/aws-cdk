@@ -203,7 +203,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         await setLogGroupTags(logGroupArn, event.ResourceProperties.Tags ?? [], logGroupRegion, retryOptions);
       }
 
-      // propagate tags to custom resource logs
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this very function.
         // Due to the async nature of the log group creation, the log group for this function might
