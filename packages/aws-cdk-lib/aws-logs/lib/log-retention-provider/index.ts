@@ -124,12 +124,12 @@ async function setRetentionPolicy(logGroupName: string, region?: string, options
 /**
  * Tags and untags a log group. This includes adding new tags and updating existing tags.
  *
- * @param logGroupName the name of the log group to create
+ * @param logGroupArn the ARN of the log group to create
  * @param tags the tags to propagate to the log group
  * @param region the region of the log group
  * @param options CloudWatch API SDK options
  */
-async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Tags[], region?: string, options?: SdkRetryOptions) {
+async function setLogGroupTags(logGroupArn: string, tags: AWS.CloudWatchLogs.Tags[], region?: string, options?: SdkRetryOptions) {
   // The same as in createLogGroupSafe(), here we could end up with the race
   // condition where a log group is either already being created or its retention
   // policy is being updated. This would result in an OperationAbortedException,
@@ -139,7 +139,7 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
   do {
     try {
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-      const tagsOnLogGroup = (await cloudwatchlogs.listTagsLogGroup({ logGroupName }).promise()).tags ?? {};
+      const tagsOnLogGroup = (await cloudwatchlogs.listTagsForResource({ resourceArn: logGroupArn }).promise()).tags ?? {};
 
       const tagsToSet: { [key: string]: string } = {};
       const tagsKeys: string[] = [];
@@ -155,11 +155,11 @@ async function setLogGroupTags(logGroupName: string, tags: AWS.CloudWatchLogs.Ta
         : [];
 
       if (Object.keys(tagsToSet).length > 0) {
-        await cloudwatchlogs.tagLogGroup({ logGroupName, tags: tagsToSet }).promise();
+        await cloudwatchlogs.tagResource({ resourceArn: logGroupArn, tags: tagsToSet }).promise();
       }
 
       if (tagsToDelete.length > 0) {
-        await cloudwatchlogs.untagLogGroup({ logGroupName, tags: tagsToDelete }).promise();
+        await cloudwatchlogs.untagResource({ resourceArn: logGroupArn, tagKeys: tagsToDelete }).promise();
       }
 
       return;
@@ -186,6 +186,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;
 
+    // The ARN of the target log group
+    const logGroupArn = event.ResourceProperties.LogGroupArn;
+
     // The region of the target log group
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
@@ -197,7 +200,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
       if (event.ResourceProperties.PropagateTags === 'true') {
-        await setLogGroupTags(logGroupName, event.ResourceProperties.Tags ?? [], logGroupRegion, retryOptions);
+        await setLogGroupTags(logGroupArn, event.ResourceProperties.Tags ?? [], logGroupRegion, retryOptions);
       }
 
       // propagate tags to custom resource logs
