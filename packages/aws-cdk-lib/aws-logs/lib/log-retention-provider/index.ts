@@ -142,16 +142,16 @@ async function setLogGroupTags(logGroupArn: string, tags: AWS.CloudWatchLogs.Tag
       const tagsOnLogGroup = (await cloudwatchlogs.listTagsForResource({ resourceArn: logGroupArn }).promise()).tags ?? {};
 
       const tagsToSet: { [key: string]: string } = {};
-      const tagsKeys: string[] = [];
+      const tagKeys: string[] = [];
       for (const tag of tags) {
         if (tagsOnLogGroup[tag.Key] === undefined || tagsOnLogGroup[tag.Key] !== tag.Value) {
           tagsToSet[tag.Key] = tag.Value;
         }
-        tagsKeys.push(tag.Key);
+        tagKeys.push(tag.Key);
       }
 
       const tagsToDelete = tagsOnLogGroup
-        ? Object.keys(tagsOnLogGroup).filter(tag => !tagsKeys.includes(tag))
+        ? Object.keys(tagsOnLogGroup).filter(tag => !tagKeys.includes(tag))
         : [];
 
       if (Object.keys(tagsToSet).length > 0) {

@@ -107,9 +107,9 @@ describe('log retention provider', () => {
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
-    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsForResourceFake);
-    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagResourceFake);
-    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagResourceFake);
+    AWS.mock('CloudWatchLogs', 'listTagsForResource', listTagsForResourceFake);
+    AWS.mock('CloudWatchLogs', 'tagResource', tagResourceFake);
+    AWS.mock('CloudWatchLogs', 'untagResource', untagResourceFake);
 
     const event = {
       ...eventCommon,
@@ -179,9 +179,9 @@ describe('log retention provider', () => {
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
-    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsForResourceFake);
-    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagResourceFake);
-    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagResourceFake);
+    AWS.mock('CloudWatchLogs', 'listTagsForResource', listTagsForResourceFake);
+    AWS.mock('CloudWatchLogs', 'tagResource', tagResourceFake);
+    AWS.mock('CloudWatchLogs', 'untagResource', untagResourceFake);
 
     const event = {
       ...eventCommon,
@@ -231,7 +231,7 @@ describe('log retention provider', () => {
 
     sinon.assert.calledWith(untagResourceFake, {
       resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
-      tags: ['key'],
+      tagKeys: ['key'],
     });
 
     expect(request.isDone()).toEqual(true);
