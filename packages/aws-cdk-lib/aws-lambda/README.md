@@ -949,7 +949,7 @@ const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   functionName: 'MyFunction',
   propagateTagsToLogGroup: true,
 });
-cdk.Tags.of(oneMonthFunction).add('env', 'prod');
+cdk.Tags.of(lambdaFunction).add('env', 'prod');
 ```
 
 In the above example, a `Tag` with a key of 'env' and a value of 'prod' would be propagated as a new `Tag` on the `logGroup` for the `Function`. To update `Tags` on the `logGroup` for a `Function`, simply update the value of the key for the `Tag` to be updated. As an example, consider the following `Function` and assume that the associated `logGroup` has a `Tag` with a key of 'env' and a value of 'prod':
@@ -965,7 +965,7 @@ const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   functionName: 'MyFunction',
   propagateTagsToLogGroup: true,
 });
-cdk.Tags.of(oneMonthFunction).add('env', 'beta');
+cdk.Tags.of(lambdaFunction).add('env', 'beta');
 ```
 
 In the above example, the existing `logGroup` `Tag` with the key 'env' would be updated to now have a value of 'beta'. To remove `Tags` on the `logGroup` for a `Function`, simply remove the `Tag` from the associated `Function`. This can be accomplished by not having an add `Tags` statement for the `Tag` to removed, or if the tag is being passed down from a parent node, simply use a remove `Tags` statement. As an example, consider the following `Function` and assume that the associated `logGroup` has a `Tag` with a key of 'env' and a value of 'beta':
