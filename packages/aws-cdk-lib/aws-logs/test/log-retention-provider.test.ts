@@ -100,16 +100,16 @@ describe('log retention provider', () => {
     const createLogGroupFake = sinon.fake.resolves({});
     const putRetentionPolicyFake = sinon.fake.resolves({});
     const deleteRetentionPolicyFake = sinon.fake.resolves({});
-    const listTagsLogGroupFake = sinon.fake.resolves({});
-    const tagLogGroupFake = sinon.fake.resolves({});
-    const untagLogGroupFake = sinon.fake.resolves({});
+    const listTagsForResourceFake = sinon.fake.resolves({});
+    const tagResourceFake = sinon.fake.resolves({});
+    const untagResourceFake = sinon.fake.resolves({});
 
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
-    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsLogGroupFake);
-    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagLogGroupFake);
-    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsForResourceFake);
+    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagResourceFake);
+    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagResourceFake);
 
     const event = {
       ...eventCommon,
@@ -118,6 +118,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
         PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
@@ -150,16 +151,16 @@ describe('log retention provider', () => {
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
-    sinon.assert.calledWith(listTagsLogGroupFake, {
-      logGroupName: 'group',
+    sinon.assert.calledWith(listTagsForResourceFake, {
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
     });
 
-    sinon.assert.calledWith(tagLogGroupFake, {
-      logGroupName: 'group',
+    sinon.assert.calledWith(tagResourceFake, {
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
       tags: { dept: 'eng', env: 'beta' },
     });
 
-    sinon.assert.notCalled(untagLogGroupFake);
+    sinon.assert.notCalled(untagResourceFake);
 
     expect(request.isDone()).toEqual(true);
   });
@@ -171,16 +172,16 @@ describe('log retention provider', () => {
     const createLogGroupFake = sinon.fake.rejects(error);
     const putRetentionPolicyFake = sinon.fake.resolves({});
     const deleteRetentionPolicyFake = sinon.fake.resolves({});
-    const listTagsLogGroupFake = sinon.fake.resolves({ tags: { dept: 'eng', env: 'beta', key: 'value' } });
-    const tagLogGroupFake = sinon.fake.resolves({});
-    const untagLogGroupFake = sinon.fake.resolves({});
+    const listTagsForResourceFake = sinon.fake.resolves({ tags: { dept: 'eng', env: 'beta', key: 'value' } });
+    const tagResourceFake = sinon.fake.resolves({});
+    const untagResourceFake = sinon.fake.resolves({});
 
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', putRetentionPolicyFake);
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', deleteRetentionPolicyFake);
-    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsLogGroupFake);
-    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagLogGroupFake);
-    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagLogGroupFake);
+    AWS.mock('CloudWatchLogs', 'listTagsLogGroup', listTagsForResourceFake);
+    AWS.mock('CloudWatchLogs', 'tagLogGroup', tagResourceFake);
+    AWS.mock('CloudWatchLogs', 'untagLogGroup', untagResourceFake);
 
     const event = {
       ...eventCommon,
@@ -189,6 +190,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '365',
         LogGroupName: 'group',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
         PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
@@ -198,6 +200,7 @@ describe('log retention provider', () => {
       OldResourceProperties: {
         ServiceToken: 'token',
         LogGroupName: 'group',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
         RetentionInDays: '30',
       },
     };
@@ -217,17 +220,17 @@ describe('log retention provider', () => {
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
-    sinon.assert.calledWith(listTagsLogGroupFake, {
-      logGroupName: 'group',
+    sinon.assert.calledWith(listTagsForResourceFake, {
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
     });
 
-    sinon.assert.calledWith(tagLogGroupFake, {
-      logGroupName: 'group',
+    sinon.assert.calledWith(tagResourceFake, {
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
       tags: { env: 'prod' },
     });
 
-    sinon.assert.calledWith(untagLogGroupFake, {
-      logGroupName: 'group',
+    sinon.assert.calledWith(untagResourceFake, {
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
       tags: ['key'],
     });
 
