@@ -103,14 +103,25 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       provider.grantPropagateTagsToLogGroup(props.logGroupName);
     }
 
+    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
+    this.logGroupArn = cdk.Stack.of(this).formatArn({
+      region: props.logGroupRegion,
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: `${props.logGroupName}:*`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
-    const resource = new cdk.CfnResource(this, 'Resource', {
+    new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
+        LogGroupArn: this.logGroupArn,
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
@@ -121,17 +132,6 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         PropagateTags: props.propagateTags,
         Tags: this.tags.renderedTags,
       },
-    });
-
-    const logGroupName = resource.getAtt('LogGroupName').toString();
-    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
-    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
-    this.logGroupArn = cdk.Stack.of(this).formatArn({
-      region: props.logGroupRegion,
-      service: 'logs',
-      resource: 'log-group',
-      resourceName: `${logGroupName}:*`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
