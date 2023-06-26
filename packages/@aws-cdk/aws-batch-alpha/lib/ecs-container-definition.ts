@@ -880,6 +880,13 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -903,6 +910,13 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -911,11 +925,22 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
+  public readonly ephemeralStorageSize?: Size;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
+    this.ephemeralStorageSize = props.ephemeralStorageSize;
+
+    // validates ephemeralStorageSize is within limits
+    if (props.ephemeralStorageSize) {
+      if (props.ephemeralStorageSize.toGibibytes() > 200) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+      } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+      }
+    }
   }
 
   /**
@@ -924,6 +949,9 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
+      ephemeralStorage: this.ephemeralStorageSize? {
+        sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
+      } : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },
