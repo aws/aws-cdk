@@ -1805,7 +1805,7 @@ export class SqlServerEngineVersion {
   /** Version "15.00.4236.7.v1". */
   public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
   /** Version "15.00.4312.2.v1". */
-  public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.0.4312.2.v1', '15.00');
+  public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.00.4312.2.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
