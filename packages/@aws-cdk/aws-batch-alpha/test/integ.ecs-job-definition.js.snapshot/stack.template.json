@@ -535,7 +535,7 @@
      ],
      "Secrets": [
       {
-       "Name": "mySecretEnvVar",
+       "Name": "MY_SECRET_ENV_VAR",
        "ValueFrom": {
         "Ref": "mySecretE4D0A59C"
        }

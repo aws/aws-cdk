@@ -848,8 +848,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSJobDefn": {
@@ -894,7 +894,7 @@
                       ],
                       "secrets": [
                         {
-                          "name": "mySecretEnvVar",
+                          "name": "MY_SECRET_ENV_VAR",
                           "valueFrom": {
                             "Ref": "mySecretE4D0A59C"
                           }
@@ -948,7 +948,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1001,8 +1001,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsFargateContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSFargateJobDefn": {
@@ -1086,7 +1086,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1235,8 +1235,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSDockerJobDefn": {
@@ -1287,7 +1287,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

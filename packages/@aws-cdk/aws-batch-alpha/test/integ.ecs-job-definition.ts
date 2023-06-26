@@ -42,7 +42,7 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
       softLimit: 10,
     }],
     secrets: {
-      mySecretEnvVar: new Secret(stack, 'mySecret'),
+      MY_SECRET_ENV_VAR: new Secret(stack, 'mySecret'),
     },
   }),
 });
