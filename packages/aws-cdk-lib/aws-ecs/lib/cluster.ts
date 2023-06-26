@@ -376,7 +376,7 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
-        namespace: options.name,
+        namespace: sdNamespace.namespaceArn,
       };
     }
 
@@ -765,8 +765,10 @@ export interface ClusterAttributes {
 
   /**
    * The security groups associated with the container instances registered to the cluster.
+   *
+   * @default - no security groups
    */
-  readonly securityGroups: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Specifies whether the cluster has EC2 instance capacity.
