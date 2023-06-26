@@ -43,7 +43,7 @@ class StackUnderTest extends Stack {
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.LATEST),
-        execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
+        execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
