@@ -154,10 +154,13 @@ async function setLogGroupTags(logGroupArn: string, tags: AWS.CloudWatchLogs.Tag
         ? Object.keys(tagsOnLogGroup).filter(tag => !tagKeys.includes(tag))
         : [];
 
-      if (Object.keys(tagsToSet).length > 0) {
+      const tagsToSetLength = Object.keys(tagsToSet).length;
+      // tagResource throws if tags has no key-value pairs and we can only set up to 50 tags
+      if (tagsToSetLength > 0 && tagsToSetLength <= 50) {
         await cloudwatchlogs.tagResource({ resourceArn: logGroupArn, tags: tagsToSet }).promise();
       }
 
+      // untagResource throws if tagKeys is empty
       if (tagsToDelete.length > 0) {
         await cloudwatchlogs.untagResource({ resourceArn: logGroupArn, tagKeys: tagsToDelete }).promise();
       }
