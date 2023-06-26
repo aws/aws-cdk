@@ -86,7 +86,10 @@ export class LogRetention extends Construct implements cdk.ITaggable {
    */
   public readonly logGroupArn: string;
 
-  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Custom::LogRetention');
+  /**
+   * Tags for the LogGroup.
+   */
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Logs::LogGroup');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -99,6 +102,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       provider.grantDeleteLogGroup(props.logGroupName);
     }
 
+    // if propagateTags is true, add ListTagGroup, TagLogGroup, and UntagLogGroup actions
     if (props.propagateTags) {
       provider.grantPropagateTagsToLogGroup(props.logGroupName);
     }
