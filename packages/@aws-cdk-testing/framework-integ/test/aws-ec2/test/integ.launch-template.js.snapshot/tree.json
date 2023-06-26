@@ -8,6 +8,125 @@
         "id": "aws-cdk-ec2-lt-metadata-1",
         "path": "aws-cdk-ec2-lt-metadata-1",
         "children": {
+          "MyVpc": {
+            "id": "MyVpc",
+            "path": "aws-cdk-ec2-lt-metadata-1/MyVpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/MyVpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "MyVpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.26"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
+            }
+          },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
+            }
+          },
+          "sg1": {
+            "id": "sg1",
+            "path": "aws-cdk-ec2-lt-metadata-1/sg1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/sg1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-cdk-ec2-lt-metadata-1/sg1",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "MyVpcF9F0CA6F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
+            }
+          },
           "LT": {
             "id": "LT",
             "path": "aws-cdk-ec2-lt-metadata-1/LT",
@@ -19,6 +138,20 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                   "aws:cdk:cloudformation:props": {
                     "launchTemplateData": {
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "sg15CEFF4E3",
+                            "GroupId"
+                          ]
+                        },
+                        {
+                          "Fn::GetAtt": [
+                            "sg2860DD91F",
+                            "GroupId"
+                          ]
+                        }
+                      ],
                       "tagSpecifications": [
                         {
                           "resourceType": "instance",
@@ -61,14 +194,48 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.LaunchTemplate",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
+            }
+          },
+          "sg2": {
+            "id": "sg2",
+            "path": "aws-cdk-ec2-lt-metadata-1/sg2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-lt-metadata-1/sg2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-cdk-ec2-lt-metadata-1/sg2",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "MyVpcF9F0CA6F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           },
           "LTWithMachineImage": {
@@ -123,52 +290,52 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnLaunchTemplate",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.LaunchTemplate",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-ec2-lt-metadata-1/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-ec2-lt-metadata-1/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.26"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.26"
         }
       },
       "LambdaTest": {
@@ -184,7 +351,7 @@
                 "path": "LambdaTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.2.26"
                 }
               },
               "DeployAssert": {
@@ -195,33 +362,33 @@
                     "id": "BootstrapVersion",
                     "path": "LambdaTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.26"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.26"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.26"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -230,13 +397,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.26"
     }
   }
 }

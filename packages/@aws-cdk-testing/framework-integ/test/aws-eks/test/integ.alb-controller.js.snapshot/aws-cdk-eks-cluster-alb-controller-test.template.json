@@ -730,6 +730,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -1052,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cb351f8e9fa7b7bd9e0bb7a035015854c5d0818651994724c77b2c1a68a4b723.json"
+       "/f37ff6102d8c66c7e975e819897b6c06b204d7c8746814b63d17ac5649b36ec7.json"
       ]
      ]
     }
@@ -1079,7 +1082,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/0a61ba4da9f8b612f45ba4397e75e2656a2db13ecc893028c349c8abcd9ce0f0.json"
+       "/04a24118ca3c7e7cfae0fd32f06442f114cc6ac1a9f4964d07bcf76bba996394.json"
       ]
      ]
     },
@@ -1853,7 +1856,15 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "DefaultCrNodeVersionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 900
    },
    "DependsOn": [
