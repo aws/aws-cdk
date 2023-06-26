@@ -952,7 +952,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "FrontendServiceCloudmapService6FE76C06": {
    "Type": "AWS::ServiceDiscovery::Service",
@@ -982,7 +985,10 @@
       "Id"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "FrontendServiceSecurityGroup85470DEC": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -998,7 +1004,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {

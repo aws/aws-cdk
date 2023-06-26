@@ -1369,7 +1369,10 @@
     "TaskDefinition": {
      "Ref": "Task79114B6B"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskTaskRoleE98524A1"
+   ]
   }
  },
  "Parameters": {
