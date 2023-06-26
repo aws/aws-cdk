@@ -349,7 +349,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string] : secretsmanager.ISecret };
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -466,7 +466,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string] : secretsmanager.ISecret };
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -497,7 +497,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: { [envVarName: string] : secretsmanager.ISecret };
+  public readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -560,7 +560,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
           name,
           valueFrom: secret.secretArn,
         };
-      }): undefined,
+      }) : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
