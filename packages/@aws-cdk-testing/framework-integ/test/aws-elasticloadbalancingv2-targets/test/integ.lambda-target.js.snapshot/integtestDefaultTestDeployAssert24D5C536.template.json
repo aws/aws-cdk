@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "HttpApiCallc5e2beec0ed716e95fd6628a8bb7c2f1": {
+  "HttpApiCalle3f6a93bca1f1b655dbed0f0a1ca02ed": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -14,29 +14,17 @@
       "Fn::Join": [
        "",
        [
-        "https://",
+        "http://",
         {
-         "Fn::ImportValue": "LambdaApiIntegrationOptionsStack:ExportsOutputReflambdarestapiF559E4F2E351BC88"
-        },
-        ".execute-api.",
-        {
-         "Ref": "AWS::Region"
-        },
-        ".",
-        {
-         "Ref": "AWS::URLSuffix"
-        },
-        "/",
-        {
-         "Fn::ImportValue": "LambdaApiIntegrationOptionsStack:ExportsOutputReflambdarestapiDeploymentStageprodA05F84EA6A0E534F"
-        },
-        "/"
+         "Fn::ImportValue": "TestStack:ExportsOutputFnGetAttLB8A12904CDNSName5EFD7323"
+        }
        ]
       ]
-     }
+     },
+     "fetchOptions": {}
     },
-    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello\"}}}",
-    "salt": "1687520682509"
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"headers\":{\"content-type\":[\"application/json\"]},\"body\":{\"message\":\"Hello from Lambda\"}}}",
+    "salt": "1687525536356"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -85,10 +73,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsHttpApiCallc5e2beec0ed716e95fd6628a8bb7c2f1": {
+  "AssertionResultsHttpApiCalle3f6a93bca1f1b655dbed0f0a1ca02ed": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCallc5e2beec0ed716e95fd6628a8bb7c2f1",
+     "HttpApiCalle3f6a93bca1f1b655dbed0f0a1ca02ed",
      "assertion"
     ]
    }
