@@ -1236,7 +1236,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "TablePrivileges": {
@@ -1486,13 +1486,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1892,7 +1892,15 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": "nodejs14.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "DefaultCrNodeVersionMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
@@ -1934,7 +1942,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "TablePrivileges": {
@@ -2134,7 +2142,15 @@
                                       }
                                     },
                                     "handler": "framework.onEvent",
-                                    "runtime": "nodejs14.x",
+                                    "runtime": {
+                                      "Fn::FindInMap": [
+                                        "DefaultCrNodeVersionMap",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        "value"
+                                      ]
+                                    },
                                     "timeout": 900
                                   }
                                 },
@@ -2176,13 +2192,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -2438,7 +2454,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -2482,7 +2498,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -2528,7 +2544,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },
