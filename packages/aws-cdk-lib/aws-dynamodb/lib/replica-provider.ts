@@ -60,7 +60,7 @@ export class ReplicaProvider extends NestedStack {
     // Issues UpdateTable API calls
     this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: cr.builtInCustomResourceNodeRuntime(this),
       handler: 'index.onEventHandler',
       timeout: Duration.minutes(5),
     });
@@ -68,7 +68,7 @@ export class ReplicaProvider extends NestedStack {
     // Checks if table is back to `ACTIVE` state
     this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: cr.builtInCustomResourceNodeRuntime(this),
       handler: 'index.isCompleteHandler',
       timeout: Duration.seconds(30),
     });

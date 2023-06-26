@@ -112,11 +112,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "f26622ca3477134f226bcbfd161988e8b7bfd0eb4a33cac70da555408ccfbdb7.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
@@ -530,7 +530,6 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true,
     "DeleteLambdaResourcesOnCanaryDeletion": true,
     "RunConfig": {
      "EnvironmentVariables": {
@@ -559,7 +558,8 @@
        ]
       }
      }
-    }
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "ZipAssetArtifactsBucket8D4ED76C": {
@@ -953,7 +953,6 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -981,7 +980,8 @@
        ]
       }
      }
-    }
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "SynNodejsPuppeteer40ArtifactsBucket30A9D9DC": {
@@ -1178,7 +1178,6 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1206,7 +1205,8 @@
        ]
       }
      }
-    }
+    },
+    "StartCanaryAfterCreation": true
    }
   },
   "SynPythonSelenium13ArtifactsBucket084C41C8": {
@@ -1403,7 +1403,6 @@
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
-    "StartCanaryAfterCreation": true,
     "RunConfig": {
      "EnvironmentVariables": {
       "URL": {
@@ -1431,7 +1430,8 @@
        ]
       }
      }
-    }
+    },
+    "StartCanaryAfterCreation": true
    }
   }
  },

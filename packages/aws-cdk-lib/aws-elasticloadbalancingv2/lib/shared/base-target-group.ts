@@ -189,13 +189,13 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   public abstract readonly firstLoadBalancerFullName: string;
 
   /**
-   * Health check for the members of this target group
-   */
-  /**
    * A token representing a list of ARNs of the load balancers that route traffic to this target group
    */
   public readonly loadBalancerArns: string;
 
+  /**
+   * Health check for the members of this target group
+   */
   public healthCheck: HealthCheck;
 
   /**
