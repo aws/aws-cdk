@@ -1403,7 +1403,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefinitionB36D86D9"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   },
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1419,7 +1422,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   }
  },
  "Mappings": {

@@ -1066,7 +1066,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                   "version": "0.0.0"
                 }
               },
@@ -1391,7 +1391,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.1.270"
                 }
               },
               "LifecycleHookDrainHook": {
@@ -1676,7 +1676,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.1.270"
         }
       }
     },

@@ -993,7 +993,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "LBSecurityGroup8A41EA2B": {
    "Type": "AWS::EC2::SecurityGroup",

@@ -804,7 +804,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "ServiceCloudmapService046058A4": {
    "Type": "AWS::ServiceDiscovery::Service",
@@ -833,7 +836,10 @@
       "Id"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {
