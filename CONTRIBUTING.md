@@ -64,6 +64,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
+- [Rust >= 1.68, rustup >= 1.25.2](https://www.rust-lang.org/tools/install)
 
 First fork the repository, and then run the following commands to clone the repository locally.
 
