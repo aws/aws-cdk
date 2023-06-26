@@ -1552,43 +1552,6 @@
               "version": "0.0.0"
             }
           },
-          "MyMetricAlarm": {
-            "id": "MyMetricAlarm",
-            "path": "integ-deployment-alarms/MyMetricAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-deployment-alarms/MyMetricAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 5,
-                    "dimensions": [
-                      {
-                        "name": "OriginService",
-                        "value": "Backend"
-                      }
-                    ],
-                    "metricName": "ErrorCount",
-                    "namespace": "CustomMetricNamespace",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 2,
-                    "treatMissingData": "notBreaching"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
           "EC2Service": {
             "id": "EC2Service",
             "path": "integ-deployment-alarms/EC2Service",
@@ -1608,10 +1571,7 @@
                       "alarms": {
                         "enable": true,
                         "alarmNames": [
-                          {
-                            "Ref": "MyMetricAlarmF8571CCA"
-                          },
-                          "CPUUtilizationAlarm"
+                          "AlarmCpuUtilization"
                         ],
                         "rollback": false
                       }
@@ -1628,58 +1588,59 @@
                   "fqn": "aws-cdk-lib.aws_ecs.CfnService",
                   "version": "0.0.0"
                 }
-              },
-              "ManagedAlarm1": {
-                "id": "ManagedAlarm1",
-                "path": "integ-deployment-alarms/EC2Service/ManagedAlarm1",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-deployment-alarms/EC2Service/ManagedAlarm1/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 5,
-                        "alarmName": "CPUUtilizationAlarm",
-                        "dimensions": [
-                          {
-                            "name": "ClusterName",
-                            "value": {
-                              "Ref": "EC2CPClusterD5F0FD32"
-                            }
-                          },
-                          {
-                            "name": "ServiceName",
-                            "value": {
-                              "Fn::GetAtt": [
-                                "EC2Service5392EF94",
-                                "Name"
-                              ]
-                            }
-                          }
-                        ],
-                        "metricName": "CPUUtilization",
-                        "namespace": "AWS/ECS",
-                        "period": 300,
-                        "statistic": "Average",
-                        "threshold": 80
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+              "version": "0.0.0"
+            }
+          },
+          "MyMetricAlarm": {
+            "id": "MyMetricAlarm",
+            "path": "integ-deployment-alarms/MyMetricAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-deployment-alarms/MyMetricAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 5,
+                    "alarmName": "AlarmCpuUtilization",
+                    "dimensions": [
+                      {
+                        "name": "ClusterName",
+                        "value": {
+                          "Ref": "EC2CPClusterD5F0FD32"
+                        }
+                      },
+                      {
+                        "name": "ServiceName",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "EC2Service5392EF94",
+                            "Name"
+                          ]
+                        }
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "0.0.0"
-                    }
+                    ],
+                    "metricName": "CPUUtilization",
+                    "namespace": "AWS/ECS",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 80,
+                    "treatMissingData": "notBreaching"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },

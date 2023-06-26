@@ -922,25 +922,6 @@
     "DefaultCapacityProviderStrategy": []
    }
   },
-  "MyMetricAlarmF8571CCA": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 5,
-    "Dimensions": [
-     {
-      "Name": "OriginService",
-      "Value": "Backend"
-     }
-    ],
-    "MetricName": "ErrorCount",
-    "Namespace": "CustomMetricNamespace",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 2,
-    "TreatMissingData": "notBreaching"
-   }
-  },
   "EC2Service5392EF94": {
    "Type": "AWS::ECS::Service",
    "Properties": {
@@ -950,10 +931,7 @@
     "DeploymentConfiguration": {
      "Alarms": {
       "AlarmNames": [
-       {
-        "Ref": "MyMetricAlarmF8571CCA"
-       },
-       "CPUUtilizationAlarm"
+       "AlarmCpuUtilization"
       ],
       "Enable": true,
       "Rollback": false
@@ -969,12 +947,12 @@
     }
    }
   },
-  "EC2ServiceManagedAlarm14D6F0E17": {
+  "MyMetricAlarmF8571CCA": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "EvaluationPeriods": 5,
-    "AlarmName": "CPUUtilizationAlarm",
+    "AlarmName": "AlarmCpuUtilization",
     "Dimensions": [
      {
       "Name": "ClusterName",
@@ -996,7 +974,8 @@
     "Namespace": "AWS/ECS",
     "Period": 300,
     "Statistic": "Average",
-    "Threshold": 80
+    "Threshold": 80,
+    "TreatMissingData": "notBreaching"
    }
   }
  },

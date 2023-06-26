@@ -1,7 +1,7 @@
 {
   "version": "31.0.0",
   "files": {
-    "c5379c9d4d59b89822098caf9ecba93840c4ce16b7aa2b9a2e422778d891b406": {
+    "17f0ccf38a53361f8e468a95b481665e108b96a74a065707d886fa41295e326e": {
       "source": {
         "path": "integ-deployment-alarms.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c5379c9d4d59b89822098caf9ecba93840c4ce16b7aa2b9a2e422778d891b406.json",
+          "objectKey": "17f0ccf38a53361f8e468a95b481665e108b96a74a065707d886fa41295e326e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
