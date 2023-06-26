@@ -441,6 +441,7 @@
    "Properties": {
     "HealthCheckIntervalSeconds": 250,
     "HealthCheckProtocol": "TCP",
+    "HealthCheckTimeoutSeconds": 100,
     "Port": 443,
     "Protocol": "TCP",
     "Targets": [
