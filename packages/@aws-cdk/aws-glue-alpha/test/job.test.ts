@@ -14,6 +14,10 @@ describe('WorkerType', () => {
 
   test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
 
+  test('.G_4X should set the name correctly', () => expect(glue.WorkerType.G_4X.name).toEqual('G.4X'));
+
+  test('.G_8X should set the name correctly', () => expect(glue.WorkerType.G_8X.name).toEqual('G.8X'));
+
   test('.G_025X should set the name correctly', () => expect(glue.WorkerType.G_025X.name).toEqual('G.025X'));
 
   test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X.name).toEqual('Z.2X'));
@@ -55,7 +59,6 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
   });
-
 
   describe('new', () => {
     const className = 'com.amazon.test.ClassName';
@@ -634,7 +637,6 @@ describe('Job', () => {
         })).toThrow('Spark UI is not available for JobType.RAY');
       });
     });
-
 
     test('etl job with all props should synthesize correctly', () => {
       new glue.Job(stack, 'Job', {

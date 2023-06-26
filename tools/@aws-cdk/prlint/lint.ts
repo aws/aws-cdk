@@ -8,7 +8,6 @@ import { Endpoints } from "@octokit/types";
 export type GitHubPr =
   Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
 
-
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
 /**
@@ -184,6 +183,7 @@ export class PullRequestLinter {
     const prs = await client.search.issuesAndPullRequests({
       q: sha,
     });
+    console.log('Found PRs: ', prs);
     const foundPr = prs.data.items.find(pr => pr.state === 'open');
     if (foundPr) {
       // need to do this because the list PR response does not have
@@ -193,9 +193,9 @@ export class PullRequestLinter {
         repo,
         pull_number: foundPr.number,
       })).data;
-      const latestCommit = pr.statuses_url.split('/').pop();
+      console.log(`PR: ${foundPr.number}: `, pr);
       // only process latest commit
-      if (latestCommit === sha) {
+      if (pr.head.sha === sha) {
         return pr;
       }
     }
@@ -205,7 +205,6 @@ export class PullRequestLinter {
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
   private readonly issueParams: { owner: string, repo: string, issue_number: number };
-
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
@@ -533,7 +532,6 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
 };
-
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.README);

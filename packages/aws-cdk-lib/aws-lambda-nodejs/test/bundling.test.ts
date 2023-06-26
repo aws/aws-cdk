@@ -10,7 +10,6 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -234,7 +233,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
+          '--main-fields=module,main --inject:./my-shim.js',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
         ].join(' '),
       ],
@@ -501,7 +500,6 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
-
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isLocal: true,
@@ -750,7 +748,6 @@ test('Custom bundling volumesFrom', () => {
     }),
   });
 });
-
 
 test('Custom bundling workingDirectory', () => {
   Bundling.bundle({

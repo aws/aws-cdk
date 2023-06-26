@@ -16,7 +16,6 @@ import * as redshift from '../lib';
 
 const app = new cdk.App();
 
-
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string },
 }

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { addStackArtifactToAssembly, contentHash, resolvedOr } from './_shared';
+import { addStackArtifactToAssembly, contentHash } from './_shared';
 import { IStackSynthesizer, ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
@@ -8,6 +8,7 @@ import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, Fi
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
+import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 
 /**
@@ -298,6 +299,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
     fileName: stack.templateFile,
     packaging: FileAssetPackaging.FILE,
     sourceHash,
+    deployTime: true,
   };
 }
 
