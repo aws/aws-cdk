@@ -187,8 +187,8 @@ describe('new style synthesis', () => {
     expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
   });
-  
-   test('nested Stack uses the lookup role ARN of the parent stack', () => {
+
+  test('nested Stack uses the lookup role ARN of the parent stack', () => {
     // GIVEN
     const myapp = new App();
     const mystack = new Stack(myapp, 'mystack', {
@@ -203,8 +203,7 @@ describe('new style synthesis', () => {
 
     // THEN
     expect(nestedStack.synthesizer.lookupRole).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
-    
-    
+
   });
 
   test('add file asset', () => {

@@ -18,7 +18,7 @@ export class NestedStackSynthesizer extends StackSynthesizer {
   public get bootstrapQualifier(): string | undefined {
     return this.parentDeployment.bootstrapQualifier;
   }
-  
+
   public get lookupRole(): string | undefined {
     return this.parentDeployment.lookupRole;
   }
