@@ -51,9 +51,7 @@ export interface IDeployAssert {
    * @example
    * declare const app: App;
    * declare const integ: IntegTest;
-   * const call = integ.assertions.httpApiCall({
-   *   url: 'https://example.com/test',
-   * });
+   * const call = integ.assertions.httpApiCall('https://example.com/test');
    * call.expect(ExpectedResult.objectLike({
    *   Message: 'Hello World!',
    * }));
