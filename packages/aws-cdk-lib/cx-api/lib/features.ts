@@ -87,6 +87,7 @@ export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:en
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -803,6 +804,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2·NEXT' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_DENY_ANONYMOUS_ACCESS]: {
+    type: FlagType.ApiDefault,
+    summary: 'EFS denies anonymous clients accesses',
+    detailsMd: `
+      This flag adds the file system policy that denies anonymous clients
+      access to \`efs.FileSystem\`.
+
+      If this flag is not set, \`efs.FileSystem\` will allow all anonymous clients
+      that can access over the network.`,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
   },
 };
 

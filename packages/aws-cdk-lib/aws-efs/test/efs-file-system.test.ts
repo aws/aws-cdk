@@ -2,7 +2,8 @@ import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { RemovalPolicy, Size, Stack, Tags } from '../../core';
+import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
+import * as cxapi from '../../cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
@@ -561,7 +562,7 @@ test('imported file system can not add statements to file system policy', () => 
   });
 });
 
-test('Anonymous access is prohibited by default when using GrantRead', () => {
+test('anonymous access is prohibited by default when using GrantRead', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
@@ -615,7 +616,7 @@ test('Anonymous access is prohibited by default when using GrantRead', () => {
   });
 });
 
-test('Anonymous access is prohibited by default when using GrantReadWrite', () => {
+test('anonymous access is prohibited by default when using GrantReadWrite', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
@@ -672,7 +673,7 @@ test('Anonymous access is prohibited by default when using GrantReadWrite', () =
   });
 });
 
-test('Anonymous access is prohibited by default when using GrantRootAccess', () => {
+test('anonymous access is prohibited by default when using GrantRootAccess', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', { vpc });
@@ -730,7 +731,7 @@ test('Anonymous access is prohibited by default when using GrantRootAccess', () 
   });
 });
 
-test('Anonymous access is prohibited by the allowAnonymousAccess props even when GrantXXX is not used', () => {
+test('anonymous access is prohibited by the allowAnonymousAccess props even when GrantXXX is not used', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
@@ -761,7 +762,7 @@ test('Anonymous access is prohibited by the allowAnonymousAccess props even when
   });
 });
 
-test('Anonymous access is allowed by allowAnonymousAccess props when using GrantXxx', () => {
+test('anonymous access is allowed by allowAnonymousAccess props when using GrantXxx', () => {
   // WHEN
   const clientRole = new iam.Role(stack, 'ClientRole', { assumedBy: new iam.AnyPrincipal() });
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
@@ -777,5 +778,42 @@ test('Anonymous access is allowed by allowAnonymousAccess props when using Grant
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
   template.hasResourceProperties('AWS::EFS::FileSystem', {
     FileSystemPolicy: Match.absent(),
+  });
+});
+
+test('anonymous access is prohibited by the @aws-cdk/aws-efs:denyAnonymousAccess feature flag', () => {
+  // WHEN
+  const app = new App({
+    context: {
+      [cxapi.EFS_DENY_ANONYMOUS_ACCESS]: true,
+    },
+  });
+  const customStack = new Stack(app);
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customStack, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  // THEN
+  Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemPolicy: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientRootAccess',
+          ],
+          Condition: {
+            Bool: {
+              'elasticfilesystem:AccessedViaMountTarget': 'true',
+            },
+          },
+        },
+      ],
+    },
   });
 });

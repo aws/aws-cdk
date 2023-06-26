@@ -242,7 +242,8 @@ export interface FileSystemProps {
   /**
    * Allow access from anonymous client that doesn't use IAM authentication.
    *
-   * @default false when using `grantRead`, `grantWrite` or `grantRootAccess`, otherwise true
+   * @default false when using `grantRead`, `grantWrite`, `grantRootAccess`
+   * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
    */
   readonly allowAnonymousAccess?: boolean;
 }
@@ -492,7 +493,9 @@ export class FileSystem extends FileSystemBase {
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
       fileSystemPolicy: Lazy.any({
         produce: () => {
-          const allowAnonymousAccess = props.allowAnonymousAccess ?? !this._grantedClient;
+          const denyAnonymousAccessFlag = FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
+          const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
+          const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
             this.addToResourcePolicy(new iam.PolicyStatement({
               principals: [new iam.AnyPrincipal()],
