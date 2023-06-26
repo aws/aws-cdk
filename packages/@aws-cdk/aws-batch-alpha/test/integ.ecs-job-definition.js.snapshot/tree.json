@@ -775,6 +775,30 @@
               "version": "0.0.0"
             }
           },
+          "mySecret": {
+            "id": "mySecret",
+            "path": "stack/mySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/mySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
           "myContainer": {
             "id": "myContainer",
             "path": "stack/myContainer",
@@ -866,6 +890,14 @@
                         {
                           "type": "GPU",
                           "value": "12"
+                        }
+                      ],
+                      "secrets": [
+                        {
+                          "name": "mySecretEnvVar",
+                          "valueFrom": {
+                            "Ref": "mySecretE4D0A59C"
+                          }
                         }
                       ],
                       "mountPoints": [
@@ -1066,22 +1098,22 @@
                 "id": "Staging",
                 "path": "stack/dockerImageAsset/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Repository": {
                 "id": "Repository",
                 "path": "stack/dockerImageAsset/Repository",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
+              "version": "0.0.0"
             }
           },
           "EcsDockerContainer": {
@@ -1096,8 +1128,8 @@
                     "id": "ImportExecutionRole",
                     "path": "stack/EcsDockerContainer/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1121,8 +1153,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1185,26 +1217,26 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSDockerJobDefn": {
@@ -1249,14 +1281,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -1294,7 +1326,7 @@
                 "path": "BatchEcsJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1340,7 +1372,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.52"
         }
       }
     },

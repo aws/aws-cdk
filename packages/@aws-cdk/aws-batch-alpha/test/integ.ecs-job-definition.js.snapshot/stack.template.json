@@ -465,6 +465,14 @@
     }
    }
   },
+  "mySecretE4D0A59C": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "myContainerExecutionRoleEBACF86C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -523,6 +531,14 @@
       {
        "Type": "GPU",
        "Value": "12"
+      }
+     ],
+     "Secrets": [
+      {
+       "Name": "mySecretEnvVar",
+       "ValueFrom": {
+        "Ref": "mySecretE4D0A59C"
+       }
       }
      ],
      "Ulimits": [
