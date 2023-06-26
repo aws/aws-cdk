@@ -35,7 +35,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "foo"
+     "ZipFile": "exports.handler = async function(event) {\n        return {\n          body: JSON.stringify({\n            message: 'Hello',\n          }),\n          statusCode: 200,\n          headers: { 'Content-Type': '*/*' }\n        };\n      }"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -44,7 +44,7 @@
      ]
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "myfnServiceRole7822DC24"
@@ -416,6 +416,22 @@
       "/"
      ]
     ]
+   }
+  },
+  "ExportsOutputReflambdarestapiF559E4F2E351BC88": {
+   "Value": {
+    "Ref": "lambdarestapiF559E4F2"
+   },
+   "Export": {
+    "Name": "LambdaApiIntegrationOptionsStack:ExportsOutputReflambdarestapiF559E4F2E351BC88"
+   }
+  },
+  "ExportsOutputReflambdarestapiDeploymentStageprodA05F84EA6A0E534F": {
+   "Value": {
+    "Ref": "lambdarestapiDeploymentStageprodA05F84EA"
+   },
+   "Export": {
+    "Name": "LambdaApiIntegrationOptionsStack:ExportsOutputReflambdarestapiDeploymentStageprodA05F84EA6A0E534F"
    }
   }
  },
