@@ -7479,16 +7479,16 @@
       "description": "You can use the `AWS::Cassandra::Keyspace` resource to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
         "KeyspaceName": "The name of the keyspace to be created. The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
-        "ReplicationSpecification": "",
-        "Tags": "A list of key-value pair tags to be attached to the resource."
+        "ReplicationSpecification": "Specifies the `ReplicationStrategy` of a keyspace. The options are:\n\n- `SINGLE_REGION` for a single Region keyspace (optional) or\n- `MULTI_REGION` for a multi-Region keyspace\n\nIf no `ReplicationStrategy` is provided, the default is `SINGLE_REGION` . If you choose `MULTI_REGION` , you must also provide a `RegionList` with the AWS Regions that the keyspace is replicated in.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
     "AWS::Cassandra::Keyspace.ReplicationSpecification": {
       "attributes": {},
-      "description": "",
+      "description": "You can use `ReplicationSpecification` to configure the `ReplicationStrategy` of a keyspace in Amazon Keyspaces.\n\nThe `ReplicationSpecification` property is `CreateOnly` and cannot be changed after the keyspace has been created. This property applies automatically to all tables in the keyspace.\n\nFor more information, see [Multi-Region Replication](https://docs.aws.amazon.com/keyspaces/latest/devguide/multiRegion-replication.html) in the *Amazon Keyspaces Developer Guide* .",
       "properties": {
-        "RegionList": "",
-        "ReplicationStrategy": ""
+        "RegionList": "Specifies the AWS Regions that the keyspace is replicated in. You must specify at least two and up to six Regions, including the Region that the keyspace is being created in.",
+        "ReplicationStrategy": "The options are:\n\n- `SINGLE_REGION` (optional)\n- `MULTI_REGION`\n\nIf no value is specified, the default is `SINGLE_REGION` . If `MULTI_REGION` is specified, `RegionList` is required."
       }
     },
     "AWS::Cassandra::Table": {
@@ -7507,7 +7507,7 @@
         "PointInTimeRecoveryEnabled": "Specifies if point-in-time recovery is enabled or disabled for the table. The options are `PointInTimeRecoveryEnabled=true` and `PointInTimeRecoveryEnabled=false` . If not specified, the default is `PointInTimeRecoveryEnabled=false` .",
         "RegularColumns": "One or more columns that are not part of the primary key - that is, columns that are *not* defined as partition key columns or clustering key columns.\n\nYou can add regular columns to existing tables by adding them to the template.",
         "TableName": "The name of the table to be created. The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacing this resource. You can perform updates that require no interruption or some interruption. If you must replace the resource, specify a new name. \n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
-        "Tags": "A list of key-value pair tags to be attached to the resource."
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
     "AWS::Cassandra::Table.BillingMode": {
@@ -23177,7 +23177,7 @@
       "attributes": {},
       "description": "Specifies code executed when a job is run.",
       "properties": {
-        "Name": "The name of the job command. For an Apache Spark ETL job, this must be `glueetl` . For a Python shell job, it must be `pythonshell` . For an Apache Spark streaming ETL job, this must be `gluestreaming` .",
+        "Name": "The name of the job command. For an Apache Spark ETL job, this must be `glueetl` . For a Python shell job, it must be `pythonshell` . For an Apache Spark streaming ETL job, this must be `gluestreaming` . For a Ray job, this must be `glueray` .",
         "PythonVersion": "The Python version being used to execute a Python shell job. Allowed values are 3 or 3.9. Version 2 is deprecated.",
         "Runtime": "In Ray jobs, Runtime is used to specify the versions of Ray, Python and additional libraries available in your environment. This field is not used in other job types. For supported runtime environment values, see [Working with Ray jobs](https://docs.aws.amazon.com/glue/latest/dg/ray-jobs-section.html) in the AWS Glue Developer Guide.",
         "ScriptLocation": "Specifies the Amazon Simple Storage Service (Amazon S3) path to a script that executes a job (required)."
@@ -57199,14 +57199,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57214,18 +57214,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57234,7 +57234,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57244,15 +57244,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -62964,9 +62964,9 @@
       "description": "The `AWS::SecurityHub::AutomationRule` resource specifies an automation rule based on input parameters. For more information, see [Automation rules](https://docs.aws.amazon.com/securityhub/latest/userguide/automation-rules.html) in the *AWS Security Hub User Guide* .",
       "properties": {
         "Actions": "One or more actions to update finding fields if a finding matches the defined criteria of the rule.",
-        "Criteria": "A set of [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) finding field attributes and corresponding expected values that Security Hub uses to filter findings. If a finding matches the conditions specified in this parameter, Security Hub applies the rule action to the finding.",
+        "Criteria": "A set of [AWS Security Finding Format](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) finding field attributes and corresponding expected values that Security Hub uses to filter findings. If a rule is enabled and a finding matches the conditions specified in this parameter, Security Hub applies the rule action to the finding.",
         "Description": "A description of the rule.",
-        "IsTerminal": "Specifies whether a rule is the last to be applied with respect to a finding that matches the rule criteria. This is useful when a finding matches the criteria for multiple rules, and each rule has different actions. If the value of this field is set to `true` for a rule, Security Hub applies the rule action to a finding that matches the rule criteria and won't evaluate other rules for the finding. The default value of this field is `false` .",
+        "IsTerminal": "Specifies whether a rule is the last to be applied with respect to a finding that matches the rule criteria. This is useful when a finding matches the criteria for multiple rules, and each rule has different actions. If the value of this field is set to `true` for a rule, Security Hub applies the rule action to a finding that matches the rule criteria and doesn't evaluate other rules for the finding. The default value of this field is `false` .",
         "RuleName": "The name of the rule.",
         "RuleOrder": "An integer ranging from 1 to 1000 that represents the order in which the rule action is applied to findings. Security Hub applies rules with lower values for this parameter first.",
         "RuleStatus": "Whether the rule is active after it is created. If this parameter is equal to `ENABLED` , Security Hub will apply the rule to findings and finding updates after the rule is created.",
@@ -62978,21 +62978,21 @@
       "description": "One or more actions to update finding fields if a finding matches the defined criteria of the rule.",
       "properties": {
         "FindingFieldsUpdate": "Specifies that the automation rule action is an update to a finding field.",
-        "Type": "Specifies that the rule action should update the `Types` finding field. The `Types` finding field provides one or more finding types in the format of namespace/category/classifier that classify a finding. For more information, see [Types taxonomy for ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-type-taxonomy.html) in the *AWS Security Hub User Guide* ."
+        "Type": "Specifies that the rule action should update the `Types` finding field. The `Types` finding field classifies findings in the format of namespace/category/classifier. For more information, see [Types taxonomy for ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-type-taxonomy.html) in the *AWS Security Hub User Guide* ."
       }
     },
     "AWS::SecurityHub::AutomationRule.AutomationRulesFindingFieldsUpdate": {
       "attributes": {},
-      "description": "Identifies the finding fields that the automation rule action will update when a finding matches the defined criteria.",
+      "description": "Identifies the finding fields that the automation rule action updates when a finding matches the defined criteria.",
       "properties": {
-        "Confidence": "The rule action will update the `Confidence` field of a finding.",
-        "Criticality": "The rule action will update the `Criticality` field of a finding.",
+        "Confidence": "The rule action updates the `Confidence` field of a finding.",
+        "Criticality": "The rule action updates the `Criticality` field of a finding.",
         "Note": "The rule action will update the `Note` field of a finding.",
         "RelatedFindings": "The rule action will update the `RelatedFindings` field of a finding.",
         "Severity": "The rule action will update the `Severity` field of a finding.",
-        "Types": "The rule action will update the `Types` field of a finding.",
-        "UserDefinedFields": "The rule action will update the `UserDefinedFields` field of a finding.",
-        "VerificationState": "The rule action will update the `VerificationState` field of a finding.",
+        "Types": "The rule action updates the `Types` field of a finding.",
+        "UserDefinedFields": "The rule action updates the `UserDefinedFields` field of a finding.",
+        "VerificationState": "The rule action updates the `VerificationState` field of a finding.",
         "Workflow": "The rule action will update the `Workflow` field of a finding."
       }
     },
@@ -65349,7 +65349,7 @@
         "Description": "A description of the IP set that helps with identification.",
         "IPAddressVersion": "The version of the IP addresses, either `IPV4` or `IPV6` .",
         "Name": "The name of the IP set. You cannot change the name of an `IPSet` after you create it.",
-        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, or an AWS App Runner service. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
+        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
         "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS WAF APIs or command line interface. With AWS CloudFormation , you can only add tags to AWS WAF resources during resource creation."
       }
     },
@@ -65451,7 +65451,7 @@
         "Description": "A description of the set that helps with identification.",
         "Name": "The name of the set. You cannot change the name after you create the set.",
         "RegularExpressionList": "The regular expression patterns in the set.",
-        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, or an AWS App Runner service. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
+        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
         "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS WAF APIs or command line interface. With AWS CloudFormation , you can only add tags to AWS WAF resources during resource creation."
       }
     },
@@ -65471,7 +65471,7 @@
         "Description": "A description of the rule group that helps with identification.",
         "Name": "The name of the rule group. You cannot change the name of a rule group after you create it.",
         "Rules": "The rule statements used to identify the web requests that you want to allow, block, or count. Each rule includes one top-level statement that AWS WAF uses to identify matching web requests, and parameters that govern how AWS WAF handles them.",
-        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, or an AWS App Runner service. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
+        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` .",
         "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS WAF APIs or command line interface. With AWS CloudFormation , you can only add tags to AWS WAF resources during resource creation.",
         "VisibilityConfig": "Defines and enables Amazon CloudWatch metrics and web request sample collection."
       }
@@ -65866,7 +65866,7 @@
         "LabelNamespace": "The label namespace prefix for this web ACL. All labels added by rules in this web ACL have this prefix.\n\nThe syntax for the label namespace prefix for a web ACL is the following: `awswaf:<account ID>:webacl:<web ACL name>:`\n\nWhen a rule with a label matches a web request, AWS WAF adds the fully qualified label to the request. A fully qualified label is made up of the label namespace from the rule group or web ACL where the rule is defined and the label from the rule, separated by a colon.",
         "Ref": "The `Ref` for the resource, containing the resource name, physical ID, and scope, formatted as follows: `name|id|scope` .\n\nFor example: `my-webacl-name|1234a1a-a1b1-12a1-abcd-a123b123456|REGIONAL` ."
       },
-      "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse an `WebACL` to define a collection of rules to use to inspect and control web requests. Each rule has an action defined (allow, block, or count) for requests that match the statement of the rule. In the web ACL, you specify a default action to take (allow, block) for any request that doesn't match any of the rules. The rules in a web ACL can contain rule statements that you define explicitly and rule statements that reference rule groups and managed rule groups. You can associate a web ACL with one or more AWS resources to protect. The resources can be an Amazon CloudFront distribution, an Amazon API Gateway REST API, an Application Load Balancer , an AWS AppSync GraphQL API , an Amazon Cognito user pool, or an AWS App Runner service.",
+      "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse an `WebACL` to define a collection of rules to use to inspect and control web requests. Each rule has an action defined (allow, block, or count) for requests that match the statement of the rule. In the web ACL, you specify a default action to take (allow, block) for any request that doesn't match any of the rules. The rules in a web ACL can contain rule statements that you define explicitly and rule statements that reference rule groups and managed rule groups. You can associate a web ACL with one or more AWS resources to protect. The resources can be an Amazon CloudFront distribution, an Amazon API Gateway REST API, an Application Load Balancer , an AWS AppSync GraphQL API , an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance.",
       "properties": {
         "CaptchaConfig": "Specifies how AWS WAF should handle `CAPTCHA` evaluations for rules that don't have their own `CaptchaConfig` settings. If you don't specify this, AWS WAF uses its default settings for `CaptchaConfig` .",
         "ChallengeConfig": "Specifies how AWS WAF should handle challenge evaluations for rules that don't have their own `ChallengeConfig` settings. If you don't specify this, AWS WAF uses its default settings for `ChallengeConfig` .",
@@ -65875,7 +65875,7 @@
         "Description": "A description of the web ACL that helps with identification.",
         "Name": "The name of the web ACL. You cannot change the name of a web ACL after you create it.",
         "Rules": "The rule statements used to identify the web requests that you want to allow, block, or count. Each rule includes one top-level statement that AWS WAF uses to identify matching web requests, and parameters that govern how AWS WAF handles them.",
-        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, or an AWS App Runner service. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` . \n\nFor information about how to define the association of the web ACL with your resource, see `WebACLAssociation` .",
+        "Scope": "Specifies whether this is for an Amazon CloudFront distribution or for a regional application. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance. Valid Values are `CLOUDFRONT` and `REGIONAL` .\n\n> For `CLOUDFRONT` , you must create your WAFv2 resources in the US East (N. Virginia) Region, `us-east-1` . \n\nFor information about how to define the association of the web ACL with your resource, see `WebACLAssociation` .",
         "Tags": "Key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.\n\n> To modify tags on existing resources, use the AWS WAF APIs or command line interface. With AWS CloudFormation , you can only add tags to AWS WAF resources during resource creation.",
         "TokenDomains": "Specifies the domains that AWS WAF should accept in a web request token. This enables the use of tokens across multiple protected websites. When AWS WAF provides a token, it uses the domain of the AWS resource that the web ACL is protecting. If you don't specify a list of token domains, AWS WAF accepts tokens only for the domain of the protected resource. With a token domain list, AWS WAF accepts the resource's host domain plus all domains in the token domain list, including their prefixed subdomains.",
         "VisibilityConfig": "Defines and enables Amazon CloudWatch metrics and web request sample collection."
@@ -66404,9 +66404,9 @@
       "attributes": {
         "Ref": "The `Ref` for the resource, containing the resource name, physical ID, and scope, formatted as follows: `name|id|scope` .\n\nFor example: `my-webacl-name|1234a1a-a1b1-12a1-abcd-a123b123456|REGIONAL` ."
       },
-      "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse a web ACL association to define an association between a web ACL and a regional application resource, to protect the resource. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, or an AWS App Runner service.\n\nFor Amazon CloudFront , don't use this resource. Instead, use your CloudFront distribution configuration. To associate a web ACL with a distribution, provide the Amazon Resource Name (ARN) of the `WebACL` to your CloudFront distribution configuration. To disassociate a web ACL, provide an empty ARN. For information, see [AWS::CloudFront::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html) .\n\nWhen you create a web ACL or make changes to a web ACL or web ACL components, like rules and rule groups, AWS WAF propagates the changes everywhere that the web ACL and its components are stored and used. Your changes are applied within seconds, but there might be a brief period of inconsistency when the changes have arrived in some places and not in others. So, for example, if you change a rule action setting, the action might be the old action in one area and the new action in another area. Or if you add an IP address to an IP set used in a blocking rule, the new address might briefly be blocked in one area while still allowed in another. This temporary inconsistency can occur when you first associate a web ACL with an AWS resource and when you change a web ACL that is already associated with a resource. Generally, any inconsistencies of this type last only a few seconds.",
+      "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse a web ACL association to define an association between a web ACL and a regional application resource, to protect the resource. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance.\n\nFor Amazon CloudFront , don't use this resource. Instead, use your CloudFront distribution configuration. To associate a web ACL with a distribution, provide the Amazon Resource Name (ARN) of the `WebACL` to your CloudFront distribution configuration. To disassociate a web ACL, provide an empty ARN. For information, see [AWS::CloudFront::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html) .\n\nWhen you create a web ACL or make changes to a web ACL or web ACL components, like rules and rule groups, AWS WAF propagates the changes everywhere that the web ACL and its components are stored and used. Your changes are applied within seconds, but there might be a brief period of inconsistency when the changes have arrived in some places and not in others. So, for example, if you change a rule action setting, the action might be the old action in one area and the new action in another area. Or if you add an IP address to an IP set used in a blocking rule, the new address might briefly be blocked in one area while still allowed in another. This temporary inconsistency can occur when you first associate a web ACL with an AWS resource and when you change a web ACL that is already associated with a resource. Generally, any inconsistencies of this type last only a few seconds.",
       "properties": {
-        "ResourceArn": "The Amazon Resource Name (ARN) of the resource to associate with the web ACL.\n\nThe ARN must be in one of the following formats:\n\n- For an Application Load Balancer: `arn:aws:elasticloadbalancing: *region* : *account-id* :loadbalancer/app/ *load-balancer-name* / *load-balancer-id*`\n- For an Amazon API Gateway REST API: `arn:aws:apigateway: *region* ::/restapis/ *api-id* /stages/ *stage-name*`\n- For an AWS AppSync GraphQL API: `arn:aws:appsync: *region* : *account-id* :apis/ *GraphQLApiId*`\n- For an Amazon Cognito user pool: `arn:aws:cognito-idp: *region* : *account-id* :userpool/ *user-pool-id*`\n- For an AWS App Runner service: `arn:aws:apprunner: *region* : *account-id* :service/ *apprunner-service-name* / *apprunner-service-id*`",
+        "ResourceArn": "The Amazon Resource Name (ARN) of the resource to associate with the web ACL.\n\nThe ARN must be in one of the following formats:\n\n- For an Application Load Balancer: `arn:aws:elasticloadbalancing: *region* : *account-id* :loadbalancer/app/ *load-balancer-name* / *load-balancer-id*`\n- For an Amazon API Gateway REST API: `arn:aws:apigateway: *region* ::/restapis/ *api-id* /stages/ *stage-name*`\n- For an AWS AppSync GraphQL API: `arn:aws:appsync: *region* : *account-id* :apis/ *GraphQLApiId*`\n- For an Amazon Cognito user pool: `arn:aws:cognito-idp: *region* : *account-id* :userpool/ *user-pool-id*`\n- For an AWS App Runner service: `arn:aws:apprunner: *region* : *account-id* :service/ *apprunner-service-name* / *apprunner-service-id*`\n- For an AWS Verified Access instance: `arn: *partition* :ec2: *region* : *account-id* :verified-access-instance/ *instance-id*`",
         "WebACLArn": "The Amazon Resource Name (ARN) of the web ACL that you want to associate with the resource."
       }
     },
