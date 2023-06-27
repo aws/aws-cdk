@@ -832,7 +832,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       If this flag is specified, Subnets of the EFS will be modifed correctly. 
       If it is not set, exiting EFSs won't be affected.`,
-    introducedIn: { v2: 'V2·NEXT' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: false,
   },
 
