@@ -470,6 +470,48 @@ describe('intrinsics constructors', () => {
       'Field.$': 'States.JsonToString($.Obj)',
     });
   });
+
+  test('correctly serialize a nested array', () => {
+    expect(
+      FieldUtils.renderObject({
+        nestedArray: [
+          [
+            [123, 123],
+            [456, 456],
+          ],
+        ],
+      }),
+    ).toStrictEqual({
+      nestedArray: [
+        [
+          [123, 123],
+          [456, 456],
+        ],
+      ],
+    });
+  });
+
+  test('deep replace correctly handles fields in nested arrays', () => {
+    expect(
+      FieldUtils.renderObject({
+        deep: [
+          [
+            {
+              deepField: JsonPath.numberAt('$.numField'),
+            },
+          ],
+        ],
+      }),
+    ).toStrictEqual({
+      deep: [
+        [
+          {
+            'deepField.$': '$.numField',
+          },
+        ],
+      ],
+    });
+  });
 });
 
 test('find task token even if nested in intrinsic functions', () => {
