@@ -828,7 +828,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
     type: FlagType.BugFix,
-    summary: 'Enable this feature flag to manage mount targets of the elastic file system more align with its subnet',
+    summary: 'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
     detailsMd: `
       If this flag is specified, Subnets of the EFS will be modifed correctly. 
       If it is not set, exiting EFSs won't be affected.`,
