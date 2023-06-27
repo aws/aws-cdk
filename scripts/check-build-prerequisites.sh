@@ -74,35 +74,6 @@ else
     wrong_version
 fi
 
-# Rustup
-app="rustup"
-app_min="1.25.2"
-check_which $app $app_min
-app_v=$(${app} --version 2>/dev/null | cut -d' ' -f2)
-echo -e "Checking rustup version... \c"
-major=$(echo ${app_v} | cut -d'.' -f1)
-minor=$(echo ${app_v} | cut -d'.' -f2)
-patch=$(echo ${app_v} | cut -d'.' -f3)
-if [ $major -eq 1 ]
-then
-    if [ $minor -eq 25 ]
-    then
-        if [ $patch -ge 2 ]
-        then
-            echo "Ok"
-        else
-            wrong_version
-        fi
-    elif [ $minor -gt 25 ]
-    then
-        echo "Ok"
-    else
-        wrong_version
-    fi
-else
-    wrong_version
-fi
-
 # Container Client
 container_client=${CDK_DOCKER:-docker}
 docker_min="19.03.0"
