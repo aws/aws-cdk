@@ -315,6 +315,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_3_37 = MariaDbEngineVersion.of('10.3.37', '10.3');
   /** Version "10.3.38". */
   public static readonly VER_10_3_38 = MariaDbEngineVersion.of('10.3.38', '10.3');
+  /** Version "10.3.39". */
+  public static readonly VER_10_3_39 = MariaDbEngineVersion.of('10.3.39', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
@@ -338,6 +340,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4')
   /** Version "10.4.28". */
   public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4')
+  /** Version "10.4.29". */
+  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4')
+  /** Version "10.4.30". */
+  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4')
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -359,6 +365,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_18 = MariaDbEngineVersion.of('10.5.18', '10.5');
   /** Version "10.5.19". */
   public static readonly VER_10_5_19 = MariaDbEngineVersion.of('10.5.19', '10.5');
+  /** Version "10.5.20". */
+  public static readonly VER_10_5_20 = MariaDbEngineVersion.of('10.5.20', '10.5');
+  /** Version "10.5.21". */
+  public static readonly VER_10_5_21 = MariaDbEngineVersion.of('10.5.21', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -374,6 +384,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_11 = MariaDbEngineVersion.of('10.6.11', '10.6');
   /** Version "10.6.12". */
   public static readonly VER_10_6_12 = MariaDbEngineVersion.of('10.6.12', '10.6');
+  /** Version "10.6.13". */
+  public static readonly VER_10_6_13 = MariaDbEngineVersion.of('10.6.13', '10.6');
+  /** Version "10.6.14". */
+  public static readonly VER_10_6_14 = MariaDbEngineVersion.of('10.6.14', '10.6');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -1435,6 +1449,8 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-10.rur-2022-10.r1', '19');
   /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r1". */
   public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r1', '19');
+  /** Version "19.0.0.0.ru-2023-04.rur-2023-04.r1". */
+  public static readonly VER_19_0_0_0_2023_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-04.rur-2023-04.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -1448,6 +1464,8 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-10.rur-2022-10.r1', '21');
   /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r1". */
   public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r1', '21');
+  /** Version "21.0.0.0.ru-2023-04.rur-2023-04.r1". */
+  public static readonly VER_21_0_0_0_2023_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-04.rur-2023-04.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -1697,6 +1715,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_12_00_6433_1_V1 = SqlServerEngineVersion.of('12.00.6433.1.v1', '12.00');
   /** Version "12.00.6439.10.v1". */
   public static readonly VER_12_00_6439_10_V1 = SqlServerEngineVersion.of('12.00.6439.10.v1', '12.00');
+  /** Version "12.00.6444.4.v1". */
+  public static readonly VER_12_00_6444_4_V1 = SqlServerEngineVersion.of('12.00.6444.4.v1', '12.00');
 
   /** Version "13.00" (only a major version, without a specific minor version). */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
@@ -1730,6 +1750,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of('13.00.6300.2.v1', '13.00');
   /** Version "13.00.6419.1.v1". */
   public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of('13.00.6419.1.v1', '13.00');
+  /** Version "13.00.6430.49.v1". */
+  public static readonly VER_13_00_6430_49_V1 = SqlServerEngineVersion.of('13.00.6430.49.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -1762,6 +1784,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3421_10_V1 = SqlServerEngineVersion.of('14.00.3421.10.v1', '14.00');
   /** Version "14.00.3451.2.v1". */
   public static readonly VER_14_00_3451_2_V1 = SqlServerEngineVersion.of('14.00.3451.2.v1', '14.00');
+  /** Version "14.00.3460.9.v1". */
+  public static readonly VER_14_00_3460_9_V1 = SqlServerEngineVersion.of('14.00.3460.9.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -1780,6 +1804,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4198_2_V1 = SqlServerEngineVersion.of('15.00.4198.2.v1', '15.00');
   /** Version "15.00.4236.7.v1". */
   public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
+  /** Version "15.00.4312.2.v1". */
+  public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.00.4312.2.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
