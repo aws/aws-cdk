@@ -830,8 +830,12 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
     detailsMd: `
-      If this flag is specified, Subnets of the EFS will be modifed correctly. 
-      If it is not set, exiting EFSs won't be affected.`,
+      When this feature flag is enabled, each mount target will have a stable
+      logicalId that is linked to the associated subnet. If the flag is set to
+      false then the logicalIds of the mount targets can change if the number of
+      subnets changes.
+
+      Set this flag to false for existing mount targets.
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
