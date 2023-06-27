@@ -1141,6 +1141,17 @@ export class Service extends cdk.Resource {
   }
 
   /**
+   * This method exposes the Instance Role after creating it if not set.
+   * @returns iam.IRole
+   */
+  public obtainInstanceRole(): iam.IRole {
+    if (!this.instanceRole) {
+      this.instanceRole = this.createInstanceRole();
+    }
+    return this.instanceRole;
+  }
+
+  /**
    * This method generates an Instance Role. Needed if using secrets and props.instanceRole is undefined
    * @returns iam.IRole
    */

@@ -1253,3 +1253,22 @@ testDeprecated('Using both environmentVariables and environment should throw an 
     });
   }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
 });
+
+test('Service exposes instanceRole via obtainInstanceRole()', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+    }),
+  });
+  // THEN
+  expect(stack.resolve(service.obtainInstanceRole().roleArn)).toEqual({
+    'Fn::GetAtt': ['InstanceRole3CCE2F1D', 'Arn'],
+  });
+});
