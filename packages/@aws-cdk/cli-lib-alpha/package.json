@@ -52,7 +52,7 @@
     "build+test+package": "yarn build+test && yarn package",
     "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
-    "gen": "../../../packages/aws-cdk/generate.sh",
+    "gen": "./generate.sh",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
