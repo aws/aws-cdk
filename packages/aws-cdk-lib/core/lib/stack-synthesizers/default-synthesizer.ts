@@ -344,6 +344,13 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     return this.qualifier;
   }
 
+  /**
+   * The role used to lookup for this stack
+   */
+  public get lookupRole(): string | undefined {
+    return this.lookupRoleArn;
+  }
+
   public bind(stack: Stack): void {
     super.bind(stack);
 
