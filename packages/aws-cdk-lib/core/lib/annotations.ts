@@ -25,6 +25,45 @@ export class Annotations {
   }
 
   /**
+   * Acknowledge a warning. When a warning is acknowledged for a scope
+   * all warnings that match the id will be ignored.
+   *
+   * The acknowledgement will apply to all child scopes
+   *
+   * @example
+   * declare const stack: Stack;
+   * Annotations.of(stack).acknowledgeWarning('SomeWarningId');
+   *
+   * @param id - the id of the warning message to acknowledge
+   */
+  public acknowledgeWarning(id: string, message?: string): void {
+    const scopes = this.scope.node.findAll().map(child => child.node.path);
+    this.addMessage(cxschema.ArtifactMetadataEntryType.ACKNOWLEDGE, {
+      id,
+      message,
+      scopes,
+    });
+  }
+
+  /**
+   * Adds a warning metadata entry to this construct.
+   *
+   * The CLI will display the warning when an app is synthesized, or fail if run
+   * in --strict mode.
+   *
+   * @param id the unique identifier for the warning. This can be used to acknowledge the warning
+   * @param message The warning message.
+   */
+  public addWarningV2(id: string, message: string) {
+    const warning = {
+      id: id,
+      scope: this.scope.node.path,
+      message,
+    };
+    this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, warning);
+  }
+
+  /**
    * Adds a warning metadata entry to this construct.
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
@@ -88,7 +127,10 @@ export class Annotations {
    * @param level The message level
    * @param message The message itself
    */
-  private addMessage(level: string, message: string) {
+  private addMessage(
+    level: string,
+    message: cxschema.LogMessageMetadataEntry | cxschema.LogMessageObjectMetadataEntry | cxschema.AcknowledgementMetadataEntry,
+  ) {
     const isNew = !this.scope.node.metadata.find((x) => x.data === message);
     if (isNew) {
       this.scope.node.addMetadata(level, message, { stackTrace: this.stackTraces });

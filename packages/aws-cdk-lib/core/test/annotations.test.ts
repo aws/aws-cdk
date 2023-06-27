@@ -93,4 +93,73 @@ describe('annotations', () => {
     }],
     );
   });
+
+  test('acknowledgeWarning removes warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addWarningV2('MESSAGE1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('MESSAGE2', 'You Should know this too!');
+    Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
+
+    // THEN
+    const assembly = app.synth();
+    let acknoledgement: any = {};
+    for (const s of Object.values(assembly.manifest.artifacts ?? {})) {
+      for (const [_path, md] of Object.entries(s.metadata ?? {})) {
+        for (const x of md) {
+          if (x.type === 'aws:cdk:acknowledge') {
+            acknoledgement.message = x.data as string;
+          }
+        }
+      }
+    }
+    expect(acknoledgement).toEqual({
+      message: {
+        id: 'MESSAGE2',
+        scopes: ['S1/C1'],
+        message: 'I Ack this',
+      },
+    });
+    expect(getWarnings(assembly)).toEqual([{
+      path: '/S1/C1',
+      message: 'MESSAGE1: You should know this!',
+    }]);
+  });
+
+  test('acknowledgeWarning removes warning on children', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    const c2 = new Construct(c1, 'C2');
+
+    // WHEN
+    Annotations.of(c2).addWarningV2('MESSAGE2', 'You Should know this too!');
+    Annotations.of(c1).acknowledgeWarning('MESSAGE2', 'I Ack this');
+
+    // THEN
+    const assembly = app.synth();
+    let acknoledgement: any = {};
+    for (const s of Object.values(assembly.manifest.artifacts ?? {})) {
+      for (const [_path, md] of Object.entries(s.metadata ?? {})) {
+        for (const x of md) {
+          if (x.type === 'aws:cdk:acknowledge') {
+            acknoledgement.message = x.data as string;
+          }
+        }
+      }
+    }
+    expect(acknoledgement).toEqual({
+      message: {
+        id: 'MESSAGE2',
+        scopes: ['S1/C1', 'S1/C1/C2'],
+        message: 'I Ack this',
+      },
+    });
+    expect(getWarnings(assembly)).toEqual([]);
+  });
 });

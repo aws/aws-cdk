@@ -5,7 +5,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { RemovalPolicy, Stack } from '../../core';
+import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
@@ -428,6 +428,89 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
+        `RDSNoFailoverServerlessReaders: Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
+        'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
+        'availability issues if a failover event occurs. It is recommended that at least one reader '+
+        'has `scaleWithWriter` set to true',
+      );
+    });
+
+    test('serverless reader in promotion tier 2 does not throws', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      CoreAnnotations.of(stack).acknowledgeWarning('RDSNoFailoverServerlessReaders');
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*',
+        `Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
+        'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
+        'availability issues if a failover event occurs. It is recommended that at least one reader '+
+        'has `scaleWithWriter` set to true',
+      );
+    });
+
+    test('serverless reader in promotion tier 2 does not throws with root context', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          ACKNOWLEDGEMENTS_CONTEXT_KEY: {
+            RDSNoFailoverServerlessReaders: ['Default/Database'],
+
+          },
+        },
+      });
+      const stack = testStack(app);
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 2);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        PromotionTier: 0,
+      });
+
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.serverless',
+        PromotionTier: 2,
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*',
         `Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
         'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
         'availability issues if a failover event occurs. It is recommended that at least one reader '+
@@ -591,7 +674,7 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'RDSProvisionedReadersDontMatchWriter: There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
         'Writer InstanceSize: m5.24xlarge\n'+
@@ -727,13 +810,13 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        'There are serverlessV2 readers in tier 2. Since there are no instances in a higher tier, '+
+        'RDSServerlessInHighestTier2-15: There are serverlessV2 readers in tier 2. Since there are no instances in a higher tier, '+
         'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
         'with the writer which could lead to availability issues during failover.',
       );
 
       Annotations.fromStack(stack).hasWarning('*',
-        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'RDSProvisionedReadersDontMatchWriter: There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
         'Writer InstanceSize: m5.24xlarge\n'+

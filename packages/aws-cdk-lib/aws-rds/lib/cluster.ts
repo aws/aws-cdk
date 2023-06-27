@@ -706,23 +706,27 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
       if (hasOnlyServerlessReaders) {
         if (noFailoverTierInstances) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            'RDSNoFailoverServerlessReaders',
             `Cluster ${this.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
             'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
             'availability issues if a failover event occurs. It is recommended that at least one reader '+
             'has `scaleWithWriter` set to true',
           );
+
         }
       } else {
         if (serverlessInHighestTier && highestTier > 1) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            'RDSServerlessInHighestTier2-15',
             `There are serverlessV2 readers in tier ${highestTier}. Since there are no instances in a higher tier, `+
             'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
             'with the writer which could lead to availability issues during failover.',
           );
         }
         if (someProvisionedReadersDontMatchWriter.length > 0 && writer.type === InstanceType.PROVISIONED) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            'RDSProvisionedReadersDontMatchWriter',
             `There are provisioned readers in the highest promotion tier ${highestTier} that do not have the same `+
             'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
             'of a failover.\n'+
