@@ -836,6 +836,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       subnets changes.
 
       Set this flag to false for existing mount targets.
+    `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
