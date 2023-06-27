@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
-    "integ.lambda-target": {
+    "integ-test/DefaultTest": {
       "stacks": [
         "TestStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
