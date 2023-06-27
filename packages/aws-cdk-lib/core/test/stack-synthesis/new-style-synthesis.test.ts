@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
@@ -15,6 +15,7 @@ const CFN_CONTEXT = {
 describe('new style synthesis', () => {
   let app: App;
   let stack: Stack;
+  let nestedStack: NestedStack;
 
   beforeEach(() => {
     app = new App({
@@ -184,6 +185,24 @@ describe('new style synthesis', () => {
     // THEN
     const assembly = app.synth();
     expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
+
+  });
+
+  test('nested Stack uses the lookup role ARN of the parent stack', () => {
+    // GIVEN
+    const myapp = new App();
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    nestedStack = new NestedStack(mystack, 'nestedStack');
+
+    // THEN
+    expect(nestedStack.synthesizer.lookupRole).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
   });
 
