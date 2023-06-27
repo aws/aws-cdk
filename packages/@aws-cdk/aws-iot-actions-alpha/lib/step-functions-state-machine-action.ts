@@ -8,14 +8,14 @@ import { ArnFormat, Stack } from 'aws-cdk-lib';
 /**
  * Configuration properties of an action for the Step Functions State Machine.
  */
-export interface StepFunctionsStartStateMachineActionProps extends CommonActionProps {
+export interface StepFunctionsStateMachineActionProps extends CommonActionProps {
   /**
    * Name of the state machine execution prefix.
    * The name given to the state machine execution consists of this prefix followed by a UUID. Step Functions creates a unique name for each state machine execution if one is not provided.
    *
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/stepfunctions-rule-action.html#stepfunctions-rule-action-parameters
    *
-   * @default: None
+   * @default: None - Step Functions creates a unique name for each state machine execution if one is not provided.
    */
   readonly executionNamePrefix?: string;
 }
@@ -23,7 +23,7 @@ export interface StepFunctionsStartStateMachineActionProps extends CommonActionP
 /**
  * The action to put the record from an MQTT message to the Step Functions State Machine.
  */
-export class StepFunctionsStartStateMachineAction implements iot.IAction {
+export class StepFunctionsStateMachineAction implements iot.IAction {
   private readonly executionNamePrefix?: string;
   private readonly role?: iam.IRole;
 
@@ -31,7 +31,7 @@ export class StepFunctionsStartStateMachineAction implements iot.IAction {
    * @param stateMachine The Step Functions Start Machine which shoud be executed.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stateMachine: stepfunctions.IStateMachine, props?: StepFunctionsStartStateMachineActionProps) {
+  constructor(private readonly stateMachine: stepfunctions.IStateMachine, props?: StepFunctionsStateMachineActionProps) {
     this.executionNamePrefix = props?.executionNamePrefix;
     this.role = props?.role;
   }

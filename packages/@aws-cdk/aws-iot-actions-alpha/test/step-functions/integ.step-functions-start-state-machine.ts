@@ -17,7 +17,7 @@ const stateMachine = new sfn.StateMachine(stack, 'SM', {
   definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
 });
 
-topicRule.addAction(new actions.StepFunctionsStartStateMachineAction(stateMachine));
+topicRule.addAction(new actions.StepFunctionsStateMachineAction(stateMachine));
 
 new integ.IntegTest(app, 'state-machine-integtest', {
   testCases: [stack],

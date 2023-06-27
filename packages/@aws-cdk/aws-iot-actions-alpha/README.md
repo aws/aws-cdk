@@ -176,7 +176,7 @@ const stateMachine = new stepfunctions.StateMachine(this, 'SM', {
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
   actions: [
-    new actions.StepFunctionsStartStateMachineAction(stateMachine),
+    new actions.StepFunctionsStateMachineAction(stateMachine),
   ],
 });
 ```

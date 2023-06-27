@@ -17,7 +17,7 @@ test('Default state machine action action', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.StepFunctionsStartStateMachineAction(stateMachine),
+    new actions.StepFunctionsStateMachineAction(stateMachine),
   );
 
   // THEN
@@ -89,7 +89,7 @@ test('can use imported state machine', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.StepFunctionsStartStateMachineAction(stateMachine),
+    new actions.StepFunctionsStateMachineAction(stateMachine),
   );
 
   // THEN
@@ -114,7 +114,7 @@ test('can set executionNamePrefix', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.StepFunctionsStartStateMachineAction(stateMachine, {
+    new actions.StepFunctionsStateMachineAction(stateMachine, {
       executionNamePrefix: 'my-prefix',
     }),
   );
@@ -142,7 +142,7 @@ test('can set role', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.StepFunctionsStartStateMachineAction(stateMachine, { role }),
+    new actions.StepFunctionsStateMachineAction(stateMachine, { role }),
   );
 
   // THEN
