@@ -1,4 +1,3 @@
-/// !cdk-integ *
 import { App, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
@@ -25,8 +24,7 @@ const app = new App();
 
 const codebuildamazonlinux25 = new AmazonLinuxImageTestStack(app, 'codebuild-project-amazonlinux-2-5');
 
-// THEN
 new IntegTest(app, 'amazon-linux-2-5-codebuild', {
   testCases: [codebuildamazonlinux25],
-  stackUpdateWorkflow: false,
+  stackUpdateWorkflow: true,
 });
