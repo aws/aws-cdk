@@ -9,8 +9,6 @@ jobs:
   handle-stale-discussions:
     name: Handle stale discussions
     runs-on: ubuntu-latest
-    permissions:
-      discussions: write
     steps:
       - name: Stale discussions action
         uses: aws-github-ops/handle-stale-discussions@v1
