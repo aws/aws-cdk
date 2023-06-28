@@ -565,7 +565,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   protected readonly tags: TagManager;
 
   /**
-   * Instance profile ARN generated when creating a launch template from an auto scaling group
+   * Instance profile ARN generated when creating a launch template from an auto scaling group.
    */
   private iamInstanceProfileArn?: string;
 
