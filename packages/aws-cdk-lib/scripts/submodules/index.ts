@@ -38,7 +38,16 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   const sourcePath = path.join(modulePath, 'lib');
   if (!fs.existsSync(path.join(sourcePath, 'index.ts'))) {
     const lines = submodule.scopes.map((s: string) => `// ${s} Cloudformation Resources`);
-    lines.push(...submodule.files.map((f) => `export * from './${path.relative(sourcePath, f).replace('.ts', '')}';`));
+    lines.push(...submodule.files
+      .map((f) => {
+        // New codegen uses absolute paths
+        if (path.isAbsolute(f)) {
+          return path.relative(sourcePath, f);
+        }
+        // Old codegen uses a filename that's already relative to sourcePath
+        return f;
+      })
+      .map((f) => `export * from './${f.replace('.ts', '')}';`));
     await fs.writeFile(path.join(sourcePath, 'index.ts'), lines.join('\n') + '\n');
   }
 

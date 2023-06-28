@@ -106,12 +106,9 @@ export interface HealthCheck {
 
   /**
    * The amount of time, in seconds, during which no response from a target means a failed health check.
+   * Must be 2 to 120 seconds.
    *
-   * For Application Load Balancers, the range is 2-60 seconds and the
-   * default is 5 seconds. For Network Load Balancers, this is 10 seconds for
-   * TCP and HTTPS health checks and 6 seconds for HTTP health checks.
-   *
-   * @default Duration.seconds(5) for ALBs, Duration.seconds(10) or Duration.seconds(6) for NLBs
+   * @default 6 seconds if the protocol is HTTP, 5 seconds if protocol is `GENEVE`, 30 seconds if target type is `lambda`, 10 seconds for TCP, TLS, or HTTPS
    */
   readonly timeout?: cdk.Duration;
 
@@ -189,13 +186,13 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   public abstract readonly firstLoadBalancerFullName: string;
 
   /**
-   * Health check for the members of this target group
-   */
-  /**
    * A token representing a list of ARNs of the load balancers that route traffic to this target group
    */
   public readonly loadBalancerArns: string;
 
+  /**
+   * Health check for the members of this target group
+   */
   public healthCheck: HealthCheck;
 
   /**
