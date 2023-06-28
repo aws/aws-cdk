@@ -18,6 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                   "aws:cdk:cloudformation:props": {
+                    "description": "api description",
                     "minimumCompressionSize": 1024,
                     "name": "my-api"
                   }
@@ -146,7 +147,7 @@
                         "cacheClusterEnabled": true,
                         "cacheClusterSize": "0.5",
                         "deploymentId": {
-                          "Ref": "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb"
+                          "Ref": "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6"
                         },
                         "description": "beta stage",
                         "methodSettings": [
@@ -1116,7 +1117,7 @@
                       "Ref": "myapi4C7BF186"
                     },
                     "deploymentId": {
-                      "Ref": "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1"
+                      "Ref": "TestDeploymentD77B56865531eba1e8fde4b8e6988d5af7b2efd6"
                     },
                     "stageName": "prod"
                   }
