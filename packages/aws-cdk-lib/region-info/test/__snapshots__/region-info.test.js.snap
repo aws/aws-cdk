@@ -87,7 +87,7 @@ exports[`built-in data is correct 1`] = `
     "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:23",
       "1.0.135.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:25",
-      "1.0.143.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:31",
+      "1.0.143.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:32",
       "1.0.178.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:50",
       "1.0.229.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:60",
       "1.0.54.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2",
