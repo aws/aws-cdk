@@ -567,7 +567,7 @@ describe('auto scaling group', () => {
 
   });
 
-  test('can configure replacing update', () => {
+  testDeprecated('can configure replacing update', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -596,7 +596,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can configure rolling update', () => {
+  testDeprecated('can configure rolling update', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -626,7 +626,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can configure resource signals', () => {
+  testDeprecated('can configure resource signals', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -913,7 +913,7 @@ describe('auto scaling group', () => {
     expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
   });
 
-  test('can set blockDeviceMappings', () => {
+  testDeprecated('can set blockDeviceMappings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1484,7 +1484,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('throw if notification and notificationsTopics are both configured', () => {
+  testDeprecated('throw if notification and notificationsTopics are both configured', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1538,7 +1538,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('setting notificationTopic configures all non test NotificationType', () => {
+  testDeprecated('setting notificationTopic configures all non test NotificationType', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
