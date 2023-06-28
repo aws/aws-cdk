@@ -25,6 +25,7 @@ RUN cargo install wasm-opt wasm-pack
 
 ARG NOCTILUCENT_GIT
 ARG NOCTILUCENT_COMMIT_ID
+ARG FEATURES=""
 
 # Check out noctilucent
 RUN git clone "${NOCTILUCENT_GIT}" "${TMPDIR}/noctilucent"                                          \
@@ -32,7 +33,7 @@ RUN git clone "${NOCTILUCENT_GIT}" "${TMPDIR}/noctilucent"                      
 
 # Build noctilucent to WASM
 RUN cd "${TMPDIR}/noctilucent" \
-  && wasm-pack build --target=nodejs --out-name=index --out-dir=/wasm-out                           \
+  && wasm-pack build --target=nodejs --out-name=index --out-dir=/wasm-out --features=${FEATURES}    \
   && rm --force /wasm-out/.gitignore /wasm-out/README.md /wasm-out/package.json                     \
   && echo "${NOCTILUCENT_GIT}:${NOCTILUCENT_COMMIT_ID}" > /wasm-out/.version
 
