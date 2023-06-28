@@ -27,7 +27,7 @@ else
   ${CDK_DOCKER:-docker} build --rm                                              \
     --build-arg NOCTILUCENT_GIT="${NOCTILUCENT_GIT}"                            \
     --build-arg NOCTILUCENT_COMMIT_ID="${NOCTILUCENT_COMMIT_ID}"                \
-    --build-arg FEATURES=golang                                                 \
+    --build-arg FEATURES=${NOCTILUCENT_FEATURES:-golang}                        \
     --file lib/vendor/noctilucent/Dockerfile                                    \
     --target wasm                                                               \
     --output type=local,dest=lib/vendor/noctilucent                             \
