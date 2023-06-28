@@ -327,7 +327,7 @@ describe('restapi', () => {
   test('uses correct description for Deployment from "deployOptions"', () => {
     // GIVEN
     const stack = new Stack();
-    const api = new apigw.RestApi(stack, 'restapi', {
+    new apigw.RestApi(stack, 'restapi', {
       description: 'Api description',
       deployOptions: { description: 'Deployment description' },
     });
