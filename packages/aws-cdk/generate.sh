@@ -15,30 +15,20 @@ cat > build-info.json <<HERE
 }
 HERE
 
-# Build noctilucent package
-(
-  # Check out the submodule if it's not there already
-  if [ ! -f "vendor/noctilucent/Cargo.toml" ]; then
-    git -C ./vendor clone https://github.com/iph/noctilucent.git
-  fi
-
-  # update the package to the pinned commit hash
-  git -C vendor/noctilucent reset --hard HEAD
-  git -C vendor/noctilucent fetch && git -C vendor/noctilucent checkout 6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1
-
-  # Install wasm-pack if it's not there already
-  if ! command -v wasm-pack >/dev/null 2>/dev/null; then
-    echo "installing wasm-pack, this may take a while..."
-    cargo install wasm-pack
-  fi
-
-  pkgroot=$(cd $(dirname -- "$0") && pwd)
-
-  cd vendor/noctilucent
-  wasm-pack build --target nodejs                                               \
-    --out-dir="${pkgroot}/lib/vendor/noctilucent"                               \
-    --out-name=index                                                            
-
-  cd ../../lib/vendor/noctilucent
-  rm package.json
-)
+# Build noctilucent package in a Docker/Finch VM
+NOCTILUCENT_GIT="https://github.com/iph/noctilucent.git"
+NOCTILUCENT_COMMIT_ID="6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1"
+if [ "$(cat lib/vendor/noctilucent/.version 2>/dev/null || echo '')" == "${NOCTILUCENT_GIT}:${NOCTILUCENT_COMMIT_ID}" ]
+then
+  echo "⏭️ Noctilucent WASM binary is up-to date, skipping build..."
+  echo "ℹ️ Delete lib/vendor/noctilucent/.version to force a rebuild."
+else
+  echo "⏳ Building Noctilucent WASM binary for embedding... This will take a while..."
+  ${CDK_DOCKER:-docker} build --rm                                              \
+    --build-arg NOCTILUCENT_GIT="${NOCTILUCENT_GIT}"                            \
+    --build-arg NOCTILUCENT_COMMIT_ID="${NOCTILUCENT_COMMIT_ID}"                \
+    --file lib/vendor/noctilucent/Dockerfile                                    \
+    --target wasm                                                               \
+    --output type=local,dest=lib/vendor/noctilucent                             \
+    lib/vendor/noctilucent
+fi
