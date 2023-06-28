@@ -324,6 +324,24 @@ describe('restapi', () => {
     })).toThrow(/Cannot set 'deployOptions' if 'deploy' is disabled/);
   });
 
+  test('uses correct description for Deployment from "deployOptions"', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'restapi', {
+      description: 'Api description',
+      deployOptions: { description: 'Deployment description' },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Deployment', {
+      Description: 'Deployment description',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Description: 'Api description',
+    });
+  });
+
   test('CloudWatch role is created for API Gateway', () => {
     // GIVEN
     const stack = new Stack();
