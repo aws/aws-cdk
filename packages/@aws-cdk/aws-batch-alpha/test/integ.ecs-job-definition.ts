@@ -8,7 +8,11 @@ import * as batch from '../lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import * as path from 'path';
 
-const app = new App();
+const app = new App({
+  context: {
+    '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId': false,
+  },
+});
 const stack = new Stack(app, 'stack');
 const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
