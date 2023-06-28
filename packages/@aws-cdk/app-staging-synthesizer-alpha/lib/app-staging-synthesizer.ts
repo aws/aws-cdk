@@ -171,13 +171,13 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   private constructor(private readonly props: AppStagingSynthesizerProps) {
     super();
 
-    const defaultIdentities = DeploymentIdentities.defaultBootstrapRoles();
-    const identities = props.deploymentIdentities ?? DeploymentIdentities.defaultBootstrapRoles();
-
     this.roles = {
-      deploymentRole: identities.deploymentRole ?? defaultIdentities.deploymentRole!,
-      cloudFormationExecutionRole: identities.cloudFormationExecutionRole ?? defaultIdentities.cloudFormationExecutionRole!,
-      lookupRole: identities.lookupRole ?? identities.lookupRole!,
+      deploymentRole: props.deploymentIdentities?.roles.deploymentRole ??
+        BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN),
+      cloudFormationExecutionRole: props.deploymentIdentities?.roles.cloudFormationExecutionRole ??
+        BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN),
+      lookupRole: this.props.deploymentIdentities?.roles.lookupRole ??
+        BootstrapRole.fromRoleArn(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN),
     };
   }
 
