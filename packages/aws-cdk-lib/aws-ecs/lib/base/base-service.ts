@@ -561,6 +561,8 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
+    this.node.addDependency(this.taskDefinition.taskRole);
+
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
