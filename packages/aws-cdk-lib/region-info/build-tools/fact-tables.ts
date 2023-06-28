@@ -269,7 +269,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
       // Middle East (Bahrain)
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension-Arm64:2',
-      // South America (São Paulo)
+      // South America (Sao Paulo)
       'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
     },
     x86_64: {
@@ -327,7 +327,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:28',
       // Middle East (UAE)
       'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:11',
-      // South America (São Paulo)
+      // South America (Sao Paulo)
       'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:37',
     },
   },
@@ -387,7 +387,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:25',
       // Middle East (UAE)
       'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:9',
-      // South America (São Paulo)
+      // South America (Sao Paulo)
       'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:32',
     },
   },
@@ -437,8 +437,8 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:20',
       // Middle East (Bahrain)
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:13',
-      // South America (São Paulo)
-      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:20'
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:20',
     },
   },
   '1.0.135.0': {
@@ -509,8 +509,8 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:18',
       // Middle East (Bahrain)
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:11',
-      // South America (São Paulo)
-      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:18'
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:18',
     },
   },
   '1.0.119.0': {
@@ -579,8 +579,8 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
       'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:16',
       // Middle East (Bahrain)
       'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:9',
-      // South America (São Paulo)
-      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16'
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16',
     },
   },
   '1.0.98.0': {
