@@ -131,6 +131,24 @@ export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
    * on this File System resource.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant read permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant read to
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read and write permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant read and write to
+   */
+  grantReadWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * As root user, grant read and write permissions for this file system to an IAM principal.
+   * @param grantee The principal to grant root access to
+   */
+  grantRootAccess(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
