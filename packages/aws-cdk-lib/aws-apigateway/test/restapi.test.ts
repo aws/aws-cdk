@@ -327,10 +327,11 @@ describe('restapi', () => {
   test('uses correct description for Deployment from "deployOptions"', () => {
     // GIVEN
     const stack = new Stack();
-    new apigw.RestApi(stack, 'restapi', {
+    const api = new apigw.RestApi(stack, 'restapi', {
       description: 'Api description',
       deployOptions: { description: 'Deployment description' },
     });
+    api.root.addMethod('GET');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Deployment', {
