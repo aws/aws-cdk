@@ -7,7 +7,6 @@ class AmazonLinuxImageTestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    /// !show
     new Project(this, 'MyProject', {
       buildSpec: BuildSpec.fromObject({
         version: '0.2',
@@ -16,7 +15,6 @@ class AmazonLinuxImageTestStack extends Stack {
         buildImage: LinuxBuildImage.AMAZON_LINUX_2_5,
       },
     });
-    /// !hide
   }
 }
 
