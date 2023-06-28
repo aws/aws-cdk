@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "Stack1.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47696196003068eea2528656bebb8f11e163f75e8635d774b801bbc06a0e57e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6ee7e4c51eb94469044985064f496eb40f95c0a00a878bd6d34cc51523a0604.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -129,6 +129,24 @@
             "data": "MyFunc586573B53"
           }
         ],
+        "/Stack1/MyFunc6/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc6ServiceRoleCDDBC2C6"
+          }
+        ],
+        "/Stack1/MyFunc6/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc6ServiceRoleDefaultPolicyC4D4BF55"
+          }
+        ],
+        "/Stack1/MyFunc6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc60D944984"
+          }
+        ],
         "/Stack1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -160,7 +178,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4926065bd63dad984b7b214cd689e14b56eeec5afba89f078cd5134f8304bd8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0b810723fa4d04ba470b2df1ac4b7c9343aebfbec64e0f6b032fea5f3a5bea7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -264,6 +282,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunc586573B53"
+          }
+        ],
+        "/Stack2/MyFunc6/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc6ServiceRoleCDDBC2C6"
+          }
+        ],
+        "/Stack2/MyFunc6/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc6ServiceRoleDefaultPolicyC4D4BF55"
+          }
+        ],
+        "/Stack2/MyFunc6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunc60D944984"
           }
         ],
         "/Stack2/BootstrapVersion": [
