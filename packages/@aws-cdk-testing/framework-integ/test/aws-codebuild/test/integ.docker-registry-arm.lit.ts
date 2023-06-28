@@ -35,7 +35,4 @@ const app = new cdk.App();
 
 const codebuildarmdockerasset = new TestStack(app, 'test-codebuild-arm-docker-registry');
 
-new IntegTest(app, 'codebuild-arm-docker-registry', {
-  testCases: [codebuildarmdockerasset],
-  stackUpdateWorkflow: false,
-});
+new IntegTest(app, 'codebuild-arm-docker-registry', { testCases: [codebuildarmdockerasset] });
