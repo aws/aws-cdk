@@ -29,9 +29,6 @@
         "lib/workers/extract/index.js"
       ],
       "externals": {
-        "optionalDependencies": [
-          "fsevents"
-        ],
         "dependencies": [
           "aws-cdk"
         ]
