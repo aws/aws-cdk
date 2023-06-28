@@ -219,12 +219,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
 };
 
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
-export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS:
-  Record<
-    string,
-    | Record<'x86_64', Record<string, string>>
-    | Record<'arm64', Record<string, string>>
-  > = {
+export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
   '1.0.229.0': {
     arm64: {
       // US East (N. Virginia)
