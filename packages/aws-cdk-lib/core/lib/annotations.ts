@@ -70,6 +70,7 @@ export class Annotations {
    * in --strict mode.
    *
    * @param message The warning message.
+   * @deprecated - use addWarningV2 instead
    */
   public addWarning(message: string) {
     this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, message);
