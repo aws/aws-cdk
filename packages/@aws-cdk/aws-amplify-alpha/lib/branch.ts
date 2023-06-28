@@ -11,7 +11,7 @@ import {
   Duration,
   NestedStack,
   Stack,
-} from 'aws-cdk-lib';
+} from 'aws-cdk-lib/core';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';

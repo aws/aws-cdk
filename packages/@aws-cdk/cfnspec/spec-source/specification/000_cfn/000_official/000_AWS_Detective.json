@@ -1,5 +1,5 @@
 {
-  "$version": "125.0.0",
+  "$version": "128.1.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::Detective::Graph": {

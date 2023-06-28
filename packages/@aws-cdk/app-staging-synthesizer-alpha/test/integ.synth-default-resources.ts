@@ -44,8 +44,13 @@ new lambda.Function(stack, 'lambda-ecr-2', {
   runtime: lambda.Runtime.FROM_IMAGE,
 });
 
+const defaultStagingStack = app.node.tryFindChild('StagingStack-default-resources-ACCOUNT-REGION') as Stack;
+if (!defaultStagingStack) {
+  throw new Error('Default Staging Stack not found');
+}
+
 new integ.IntegTest(app, 'integ-tests', {
-  testCases: [stack],
+  testCases: [stack, defaultStagingStack],
 });
 
 app.synth();

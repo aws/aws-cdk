@@ -81,7 +81,6 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await lambda_handler(event, standardContext);
 
-
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
       expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 0);
 
