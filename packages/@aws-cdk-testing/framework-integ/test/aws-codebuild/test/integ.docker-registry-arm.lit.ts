@@ -20,13 +20,11 @@ class TestStack extends cdk.Stack {
         },
       }),
       grantReportGroupPermissions: false,
-      /// !show
       environment: {
         buildImage: codebuild.LinuxArmBuildImage.fromDockerRegistry('my-registry/my-repo', {
           secretsManagerCredentials: secrets,
         }),
       },
-      /// !hide
     });
   }
 }
