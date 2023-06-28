@@ -275,10 +275,7 @@ export class Fn {
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
     }
-    if (conditions.length <= 10) {
-      return new FnAnd(...conditions);
-    }
-    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => Fn.conditionAnd(...group)));
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
 
   /**
