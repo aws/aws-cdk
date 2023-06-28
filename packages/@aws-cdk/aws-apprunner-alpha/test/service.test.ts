@@ -6,6 +6,7 @@ import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from 'aws-cdk-lib';
 import * as apprunner from '../lib';
@@ -1254,11 +1255,12 @@ testDeprecated('Using both environmentVariables and environment should throw an 
   }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
 });
 
-test('Service exposes instanceRole via obtainInstanceRole()', () => {
+test('Service is grantable', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
   const service = new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
@@ -1267,8 +1269,29 @@ test('Service exposes instanceRole via obtainInstanceRole()', () => {
       assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
     }),
   });
+
+  bucket.grantRead(service);
+
   // THEN
-  expect(stack.resolve(service.obtainInstanceRole().roleArn)).toEqual({
-    'Fn::GetAtt': ['InstanceRole3CCE2F1D', 'Arn'],
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+          ],
+          Resource: [
+            'arn:aws:s3:::my-bucket',
+            'arn:aws:s3:::my-bucket/*',
+          ],
+        },
+      ],
+    },
+    PolicyName: 'InstanceRoleDefaultPolicy1531605C',
+    Roles: [
+      { Ref: 'InstanceRole3CCE2F1D' },
+    ],
   });
 });

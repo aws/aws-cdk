@@ -959,7 +959,7 @@ export abstract class Secret {
 /**
  * The App Runner Service.
  */
-export class Service extends cdk.Resource {
+export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Import from service name.
    */
@@ -993,6 +993,7 @@ export class Service extends cdk.Resource {
 
     return new Import(scope, id);
   }
+  public readonly grantPrincipal: iam.IPrincipal;
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
   private instanceRole?: iam.IRole;
@@ -1052,6 +1053,7 @@ export class Service extends cdk.Resource {
     this.props = props;
 
     this.instanceRole = this.props.instanceRole;
+    this.grantPrincipal = this.instanceRole || new iam.UnknownPrincipal({ resource: this });
 
     const environmentVariables = this.getEnvironmentVariables();
     const environmentSecrets = this.getEnvironmentSecrets();
@@ -1138,17 +1140,6 @@ export class Service extends cdk.Resource {
     }
     secret.grantRead(this.instanceRole);
     this.secrets.push({ name: name, value: secret.arn });
-  }
-
-  /**
-   * This method exposes the Instance Role after creating it if not set.
-   * @returns iam.IRole
-   */
-  public obtainInstanceRole(): iam.IRole {
-    if (!this.instanceRole) {
-      this.instanceRole = this.createInstanceRole();
-    }
-    return this.instanceRole;
   }
 
   /**
