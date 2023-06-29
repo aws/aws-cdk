@@ -647,9 +647,9 @@ export interface EksVolumeOptions {
   readonly name: string;
 
   /**
-   * The path on the container where the container is mounted.
+   * The path on the container where the volume is mounted.
    *
-   * @default - the container is not mounted
+   * @default - the volume is not mounted
    */
   readonly mountPath?: string;
 
@@ -902,7 +902,7 @@ export class SecretPathVolume extends EksVolume {
   constructor(options: SecretPathVolumeOptions) {
     super(options);
     this.secretName = options.secretName;
-    this.optional = options.optional;
+    this.optional = options.optional ?? true;
   }
 }
 
