@@ -342,13 +342,14 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -458,13 +459,14 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -495,7 +497,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: secretsmanager.ISecret[];
+  public readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -553,12 +555,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
-      secrets: this.secrets?.map((secret) => {
+      secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
         return {
-          name: secret.secretName,
+          name,
           valueFrom: secret.secretArn,
         };
-      }),
+      }) : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
