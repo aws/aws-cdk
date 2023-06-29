@@ -103,7 +103,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true
   }
 }
 ```
@@ -161,8 +162,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
   }
 }
 ```
