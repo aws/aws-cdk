@@ -1344,18 +1344,18 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
+   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
+   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
    */
   readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
    *
-   * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "Managed".
+   * The `encryption` property must be either not specified or set to `KMS` or `DSSE`.
+   * An error will be emitted if `encryption` is set to `UNENCRYPTED` or `S3_MANAGED`.
    *
-   * @default - If encryption is set to "Kms" and this property is undefined,
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -2012,14 +2012,17 @@ export class Bucket extends BucketBase {
       encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
     }
 
-    // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if encryption key is set, encryption must be set to KMS or DSSE.
+    if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
+    if (
+      props.bucketKeyEnabled &&
+      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
+    ) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2067,6 +2070,37 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
+    if (encryptionType === BucketEncryption.DSSE) {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
+        description: `Created by ${this.node.path}`,
+      });
+
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms:dsse',
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
+      };
+      return { encryptionKey, bucketEncryption };
+    }
+
+    if (encryptionType === BucketEncryption.DSSE_MANAGED) {
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+          },
+        ],
+      };
+      return { bucketEncryption };
+    }
+
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
   }
 
@@ -2085,6 +2119,11 @@ export class Bucket extends BucketBase {
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
+      if ((rule.expiredObjectDeleteMarker)
+      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+        // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
+        throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+      }
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
@@ -2124,8 +2163,12 @@ export class Bucket extends BucketBase {
     }
 
     // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
-    if (!props.serverAccessLogsBucket && props.encryption === BucketEncryption.KMS_MANAGED) {
-      throw new Error('Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets');
+    if (
+      !props.serverAccessLogsBucket &&
+      props.encryption &&
+      [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
+    ) {
+      throw new Error('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets');
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
@@ -2384,7 +2427,8 @@ export class Bucket extends BucketBase {
 
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'lib', 'aws-s3', 'auto-delete-objects-handler'),
+      useCfnResponseWrapper: false,
       runtime: builtInCustomResourceProviderNodeRuntime(this),
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
@@ -2455,6 +2499,17 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Double server-side KMS encryption with a master key managed by KMS.
+   */
+  DSSE_MANAGED = 'DSSE_MANAGED',
+
+  /**
+   * Double server-side encryption with a KMS key managed by the user.
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  DSSE = 'DSSE',
 }
 
 /**

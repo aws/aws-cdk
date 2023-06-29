@@ -23,7 +23,7 @@ export interface KubectlProviderProps {
  */
 export interface KubectlProviderAttributes {
   /**
-   * The kubectl provider lambda arn
+   * The custom resource provider's service token.
    */
   readonly functionArn: string;
 

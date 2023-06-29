@@ -3,7 +3,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
@@ -685,6 +685,7 @@ export class Job extends JobBase {
         name: executable.type.name,
         scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
+        runtime: executable.runtime ? executable.runtime.name : undefined,
       },
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
