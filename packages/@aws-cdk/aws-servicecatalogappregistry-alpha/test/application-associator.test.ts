@@ -191,7 +191,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossAccountStack).hasWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
+    Annotations.fromStack(crossAccountStack).hasWarning('*', 'SCAppRegistry:AssociationSkipped: Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
   });
 
   test('ApplicationAssociator with cross account stacks inside cdkApp does not give warning if associateCrossAccountStacks is set to true', () => {
@@ -222,7 +222,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasWarning('*', 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
+    Annotations.fromStack(crossRegionStack).hasWarning('*', 'SCAppRegistry:CrossRegionAssociation: AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
         + ' Application region region2, stack region region');
   });
 
@@ -237,7 +237,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasWarning('*', 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
+    Annotations.fromStack(crossRegionStack).hasWarning('*', 'SCAppRegistry:EnvironmentAgnosticStack: Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
   });
 
   test('Cdk App Containing Pipeline with stage but stage not associated throws error', () => {
@@ -253,7 +253,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
     app.synth();
     Annotations.fromStack(pipelineStack).hasWarning('*',
-      'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage.');
+      'SCAppRegistry:StackNotAssociated: Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage.');
   });
 
   test('Cdk App Containing Pipeline with stage and stage associated successfully gets synthesized', () => {
