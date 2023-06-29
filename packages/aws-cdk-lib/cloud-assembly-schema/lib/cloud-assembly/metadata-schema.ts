@@ -228,21 +228,21 @@ export type LogMessageMetadataEntry = string;
  * @see ArtifactMetadataEntryType.WARN
  * @see ArtifactMetadataEntryType.ERROR
  */
-export type LogMessageObjectMetadataEntry = {
+export interface LogMessageObjectMetadataEntry {
   /**
    * The message id
    */
-  id: string;
+  readonly id: string;
 
   /**
    * The scope the message applies to
    */
-  scope: string;
+  readonly scope: string;
 
   /**
    * The log message
    */
-  message: string;
+  readonly message: string;
 };
 
 /**
@@ -258,33 +258,33 @@ export type StackTagsMetadataEntry = Tag[];
 /**
  * @see ArtifactMetadataEntryType.ACKNOWLEDGE
  */
-export type AcknowledgementMetadataEntry = {
+export interface AcknowledgementMetadataEntry {
   /**
    * The message id that is acknowledged
    */
-  id: string;
+  readonly id: string;
 
   /**
    * The list of scopes that this acknowledgement should apply to
    */
-  scopes: string[];
+  readonly scopes: string[];
 
   /**
    * The acknowledgement message
    */
-  message?: string;
+  readonly message?: string;
 };
 
 /**
  * Union type for all metadata entries that might exist in the manifest.
  */
 export type MetadataEntryData =
+  LogMessageObjectMetadataEntry |
+  AcknowledgementMetadataEntry |
   AssetMetadataEntry |
   LogMessageMetadataEntry |
   LogicalIdMetadataEntry |
-  StackTagsMetadataEntry |
-  LogMessageObjectMetadataEntry |
-  AcknowledgementMetadataEntry;
+  StackTagsMetadataEntry;
 
 /**
  * Type of artifact metadata entry.

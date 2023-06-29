@@ -53,7 +53,7 @@ export abstract class ConcreteWidget implements IWidget {
   protected y?: number;
 
   public readonly warnings: string[] | undefined = [];
-  public warningsV2: { [id: string]: string } | undefined = {};
+  public readonly warningsV2: { [id: string]: string } | undefined = {};
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -75,11 +75,10 @@ export abstract class ConcreteWidget implements IWidget {
    * Copy the warnings from the given metric
    */
   protected copyMetricWarnings(...ms: IMetric[]) {
-    this.warningsV2 = ms.reduce((prev, curr) => {
-      return {
-        ...prev,
-        ...curr.warningsV2,
-      };
-    }, this.warningsV2);
+    ms.forEach(m => {
+      for (const [id, message] of Object.entries(m.warningsV2 ?? {})) {
+        this.warningsV2![id] = message;
+      }
+    });
   }
 }
