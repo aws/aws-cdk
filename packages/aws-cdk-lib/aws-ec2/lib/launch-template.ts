@@ -411,6 +411,11 @@ export interface LaunchTemplateProps {
    * @default - Use subnet settings
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * @default
+   */
+  readonly instanceProfile?: iam.IInstanceProfile;
 }
 
 /**
@@ -564,11 +569,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   protected readonly tags: TagManager;
 
-  /**
-   * Instance profile ARN generated when creating a launch template from an auto scaling group.
-   */
-  private iamInstanceProfileArn?: string;
-
   // =============================================
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
@@ -590,22 +590,17 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.role = props.role;
     this._grantPrincipal = this.role;
 
-    const iamInstanceProfileToken = Lazy.any({
-      produce: () => {
-        if (this.iamInstanceProfileArn) {
-          return { arn: this.iamInstanceProfileArn };
-        }
+    let iamProfileArn: string | undefined = undefined;
+    if (FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+      if (props.instanceProfile) {
 
-        if (this.role) {
-          const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
-            roles: [this.role.roleName],
-          });
-          return { arn: iamProfile.getAtt('Arn').toString() };
-        }
-
-        return undefined;
-      },
-    });
+      }
+    } else if (this.role) {
+      const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
+        roles: [this.role.roleName],
+      });
+      iamProfileArn = iamProfile.attrArn;
+    }
 
     if (props.securityGroup) {
       this._connections = new Connections({ securityGroups: [props.securityGroup] });
@@ -730,7 +725,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         hibernationOptions: props?.hibernationConfigured !== undefined ? {
           configured: props.hibernationConfigured,
         } : undefined,
-        iamInstanceProfile: iamInstanceProfileToken,
+        iamInstanceProfile: iamProfile !== undefined ? {
+          arn: iamProfile.getAtt('Arn').toString(),
+        } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
@@ -815,13 +812,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     } else {
       return undefined;
     }
-  }
-
-  /**
-   * @internal
-   */
-  public _addIamInstanceProfileArn(iamInstanceProfileArn: string) {
-    this.iamInstanceProfileArn = iamInstanceProfileArn;
   }
 
   /**

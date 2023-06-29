@@ -72,7 +72,7 @@ export class InstanceProfile extends Resource implements IInstanceProfile {
    * @param id construct id
    * @param instanceProfileName the name of the existing InstanceProfile to import
    */
-  public static fromInstanceProfleName(scope: Construct, id: string, instanceProfileName: string): IInstanceProfile {
+  public static fromInstanceProfileName(scope: Construct, id: string, instanceProfileName: string): IInstanceProfile {
     const instanceProfileArn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',

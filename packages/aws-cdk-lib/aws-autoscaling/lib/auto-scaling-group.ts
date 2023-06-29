@@ -1311,14 +1311,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           instanceType: props.instanceType,
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
           securityGroup: this.securityGroup,
-          role: this._role,
           userData: props.userData,
           associatePublicIpAddress: props.associatePublicIpAddress,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
+          instanceProfile: iam.InstanceProfile.fromInstanceProfileArn(this, '', iamProfile.attrArn),
         });
 
-        launchTemplateFromConfig._addIamInstanceProfileArn(iamProfile.getAtt('Arn').toString());
         this.osType = launchTemplateFromConfig.osType!;
         this.launchTemplate = launchTemplateFromConfig;
       } else {
