@@ -1298,7 +1298,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      Annotations.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Annotations.of(this).addWarningV2('Core:Stack:DeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 

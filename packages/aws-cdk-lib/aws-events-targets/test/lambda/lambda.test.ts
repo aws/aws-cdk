@@ -320,13 +320,7 @@ test('must display a warning when using a Dead Letter Queue from another account
 
   Template.fromStack(stack1).resourceCountIs('AWS::SQS::QueuePolicy', 0);
 
-  Annotations.fromStack(stack1).hasWarning('/Stack1/Rule', Match.objectLike({
-    'Fn::Join': Match.arrayWith([
-      Match.arrayWith([
-        'Cannot add a resource policy to your dead letter queue associated with rule ',
-      ]),
-    ]),
-  }));
+  Annotations.fromStack(stack1).hasWarning('/Stack1/Rule', Match.stringLikeRegexp('EventsTargets:DLQ:ManuallyAddDLQResourcePolicy: .*'));
 });
 
 test('specifying retry policy', () => {

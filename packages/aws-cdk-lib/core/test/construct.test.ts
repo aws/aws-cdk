@@ -249,11 +249,11 @@ describe('construct', () => {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    Annotations.of(con).addWarning('This construct is deprecated, use the other one instead');
+    Annotations.of(con).addWarningV2('WARNING1', 'This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
 
     expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(con.node.metadata[0].data).toEqual('This construct is deprecated, use the other one instead');
+    expect(con.node.metadata[0].data.message).toEqual('This construct is deprecated, use the other one instead');
     expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
   });
 

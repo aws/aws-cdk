@@ -383,7 +383,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasWarning('*', 'ECR:Repository:NoResourceStatements: ECR resource policy does not allow resource statements.');
   });
 
   test('does not warn if repository policy does not have resources', () => {
@@ -399,7 +399,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('*', 'ECR resource policy does not allow resource statements.');
+    Annotations.fromStack(stack).hasNoWarning('*', 'ECR:Repository:NoResourceStatements: ECR resource policy does not allow resource statements.');
   });
 
   test('default encryption configuration', () => {

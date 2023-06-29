@@ -165,7 +165,7 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        cdk.Annotations.of(this.taskDefinition).addWarning('security groups are ignored when network mode is not awsvpc');
+        cdk.Annotations.of(this.taskDefinition).addWarningV2('EventsTargets:EcsTask:SecurityGroupIgnored', 'security groups are ignored when network mode is not awsvpc');
       }
       return;
     }

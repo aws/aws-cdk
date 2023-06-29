@@ -148,7 +148,7 @@ export class CfnResource extends CfnRefElement {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
             throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
           } else {
-            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+            Annotations.of(this).addWarningV2(`Core:CfnResource:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
         }
 

@@ -707,7 +707,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       if (hasOnlyServerlessReaders) {
         if (noFailoverTierInstances) {
           Annotations.of(this).addWarningV2(
-            'RDSNoFailoverServerlessReaders',
+            'RDS:Cluster:NoFailoverServerlessReaders',
             `Cluster ${this.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
             'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
             'availability issues if a failover event occurs. It is recommended that at least one reader '+
@@ -718,7 +718,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       } else {
         if (serverlessInHighestTier && highestTier > 1) {
           Annotations.of(this).addWarningV2(
-            'RDSServerlessInHighestTier2-15',
+            'RDS:Cluster:ServerlessInHighestTier2-15',
             `There are serverlessV2 readers in tier ${highestTier}. Since there are no instances in a higher tier, `+
             'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
             'with the writer which could lead to availability issues during failover.',
@@ -726,7 +726,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         }
         if (someProvisionedReadersDontMatchWriter.length > 0 && writer.type === InstanceType.PROVISIONED) {
           Annotations.of(this).addWarningV2(
-            'RDSProvisionedReadersDontMatchWriter',
+            'RDS:Cluster:ProvisionedReadersDontMatchWriter',
             `There are provisioned readers in the highest promotion tier ${highestTier} that do not have the same `+
             'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
             'of a failover.\n'+
@@ -745,7 +745,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (writer.type === InstanceType.PROVISIONED) {
       if (reader.type === InstanceType.SERVERLESS_V2) {
         if (!instanceSizeSupportedByServerlessV2(writer.instanceSize!, this.serverlessV2MaxCapacity)) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2('RDS:Cluster:ServerlessInstanceCantScaleWithWriter',
             'For high availability any serverless instances in promotion tiers 0-1 '+
             'should be able to scale to match the provisioned instance capacity.\n'+
             `Serverless instance ${reader.node.id} is in promotion tier ${reader.tier},\n`+
@@ -1131,10 +1131,10 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     super(scope, id, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
-      Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
+      Annotations.of(this).addWarningV2('RDS:Cluster:UseSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
     if (!props.credentials && !props.snapshotCredentials) {
-      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
+      Annotations.of(this).addWarningV2('RDS:Cluster:GeneratedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
     const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 

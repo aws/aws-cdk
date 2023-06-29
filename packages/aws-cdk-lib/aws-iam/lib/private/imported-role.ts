@@ -68,7 +68,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   }
 
   public addManagedPolicy(policy: IManagedPolicy): void {
-    Annotations.of(this).addWarning(`Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
+    Annotations.of(this).addWarningV2('IAM:ImportedRole:ManagedPolicyNotAdded', `Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
   }
 
   public grantPassRole(identity: IPrincipal): Grant {

@@ -578,7 +578,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+    Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "ECS:RepositoryImage:ECRImageRequiresPolicy: Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
   });
 
   test('correctly sets volumes', () => {

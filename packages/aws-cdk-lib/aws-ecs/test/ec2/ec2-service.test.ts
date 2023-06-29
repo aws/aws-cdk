@@ -1210,7 +1210,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'ECS:Service:ExternalDeploymentController: taskDefinition and launchType are blanked out when using external deployment controller.');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -1248,7 +1248,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[0].data.message).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
 
     });

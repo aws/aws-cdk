@@ -562,7 +562,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.of(this).addWarningV2('ECS:Service:ExternalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
     if (props.circuitBreaker

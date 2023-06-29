@@ -118,7 +118,7 @@ export class Annotations {
       throw new Error(`${this.scope.node.path}: ${text}`);
     }
 
-    this.addWarning(text);
+    this.addWarningV2(`Deprecated:${api}`, text);
   }
 
   /**
@@ -132,7 +132,20 @@ export class Annotations {
     level: string,
     message: cxschema.LogMessageMetadataEntry | cxschema.LogMessageObjectMetadataEntry | cxschema.AcknowledgementMetadataEntry,
   ) {
-    const isNew = !this.scope.node.metadata.find((x) => x.data === message);
+    let isNew = false;
+    switch (typeof message) {
+      case 'string':
+        isNew = !this.scope.node.metadata.find((x) => x.data === message);
+        break;
+      case 'object':
+        if ('scope' in message) {
+          isNew = !this.scope.node.metadata.find((x) => x.data.id === message.id && x.data.message === message.message);
+        } else if ('scopes' in message) {
+          isNew = !this.scope.node.metadata.find((x) =>
+            x.data.id === message.id && x.data.message === message.message && x.data.scopes === message.scopes,
+          );
+        }
+    }
     if (isNew) {
       this.scope.node.addMetadata(level, message, { stackTrace: this.stackTraces });
     }

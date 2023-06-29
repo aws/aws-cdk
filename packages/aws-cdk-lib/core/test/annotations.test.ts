@@ -24,7 +24,7 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
   });
@@ -51,15 +51,15 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack1/World',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
+        message: 'Deprecated:@aws-cdk/core.Construct.node: The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
   });
@@ -79,17 +79,17 @@ describe('annotations', () => {
     const app = new App();
     const stack = new Stack(app, 'S1');
     const c1 = new Construct(stack, 'C1');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this!');
-    Annotations.of(c1).addWarning('You should know this, too!');
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning1', 'You should know this!');
+    Annotations.of(c1).addWarningV2('warning2', 'You should know this, too!');
     expect(getWarnings(app.synth())).toEqual([{
       path: '/S1/C1',
-      message: 'You should know this!',
+      message: 'warning1: You should know this!',
     },
     {
       path: '/S1/C1',
-      message: 'You should know this, too!',
+      message: 'warning2: You should know this, too!',
     }],
     );
   });

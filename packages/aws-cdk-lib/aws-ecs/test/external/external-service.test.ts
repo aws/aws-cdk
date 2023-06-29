@@ -540,7 +540,7 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+    expect(service.node.metadata[0].data.message).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
     expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
 
   });
