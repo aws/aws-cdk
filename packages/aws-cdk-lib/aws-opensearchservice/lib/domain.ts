@@ -121,12 +121,20 @@ export interface EbsOptions {
 
   /**
    * The number of I/O operations per second (IOPS) that the volume
-   * supports. This property applies only to the Provisioned IOPS (SSD) EBS
+   * supports. This property applies only to the gp3 and Provisioned IOPS (SSD) EBS
    * volume type.
    *
    * @default - iops are not set.
    */
   readonly iops?: number;
+
+  /**
+   * The throughput (in MiB/s) of the EBS volumes attached to data nodes. 
+   * This property applies only to the gp3 volume type.
+   *
+   * @default - throughput is not set.
+   */
+  readonly throughput?: number;
 
   /**
    * The size (in GiB) of the EBS volume for each data node. The minimum and
@@ -1575,6 +1583,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         volumeSize: ebsEnabled ? volumeSize : undefined,
         volumeType: ebsEnabled ? volumeType : undefined,
         iops: ebsEnabled ? props.ebs?.iops : undefined,
+        throughput: ebsEnabled ? props.ebs?.throughput : undefined,
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
