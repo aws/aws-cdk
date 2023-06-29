@@ -1,9 +1,12 @@
-import { ICdk, CdkCliWrapper, CdkCliWrapperOptions, SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from '@aws-cdk/cdk-cli-wrapper';
+import { ChildProcess } from 'child_process';
+import { Readable, Writable } from 'stream';
+import { CdkCliWrapper, CdkCliWrapperOptions, DeployOptions, DestroyOptions, ICdk, ListOptions, SynthFastOptions, SynthOptions } from '@aws-cdk/cdk-cli-wrapper';
 import { IntegSnapshotRunner, IntegTest } from '../lib/runner';
 import { DestructiveChange, Diagnostic } from '../lib/workers';
 
 export interface MockCdkMocks {
   deploy?: jest.MockedFn<(options: DeployOptions) => void>;
+  watch?: jest.MockedFn<(options: DeployOptions) => ChildProcess>;
   synth?: jest.MockedFn<(options: SynthOptions) => void>;
   synthFast?: jest.MockedFn<(options: SynthFastOptions) => void>;
   destroy?: jest.MockedFn<(options: DestroyOptions) => void>;
@@ -21,6 +24,19 @@ export class MockCdkProvider {
   public mockDeploy(mock?: MockCdkMocks['deploy']) {
     this.mocks.deploy = mock ?? jest.fn().mockImplementation();
     this.cdk.deploy = this.mocks.deploy;
+  }
+  public mockWatch(mock?: MockCdkMocks['watch']) {
+    this.mocks.watch = mock ?? jest.fn().mockImplementation(jest.fn(() => {
+      return {
+        on: (_event: 'close', listener: (..._args: any[]) => void) => {
+          listener(0);
+        },
+        stdout: new Readable({ read: jest.fn(() => {}) }),
+        stderr: new Readable({ read: jest.fn(() => {}) }),
+        stdin: new Writable({ write: jest.fn(() => {}), final: jest.fn(() => {}) }),
+      } as unknown as ChildProcess;
+    }));
+    this.cdk.watch = this.mocks.watch;
   }
   public mockSynth(mock?: MockCdkMocks['synth']) {
     this.mocks.synth = mock ?? jest.fn().mockImplementation();
@@ -40,6 +56,7 @@ export class MockCdkProvider {
   }
   public mockAll(mocks: MockCdkMocks = {}): Required<MockCdkMocks> {
     this.mockDeploy(mocks.deploy);
+    this.mockWatch(mocks.watch);
     this.mockSynth(mocks.synth);
     this.mockSynthFast(mocks.synthFast);
     this.mockDestroy(mocks.destroy);

@@ -1213,7 +1213,9 @@
     "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0",
     "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5",
     "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D",
-    "myServiceLBPublicListenerC78AE8A0"
+    "myServiceLBPublicListenerC78AE8A0",
+    "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

@@ -1,4 +1,5 @@
 import { StringSpecializer, translateAssetTokenToCfnToken, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { AppStagingSynthesizer } from './app-staging-synthesizer';
 
 /**
  * Bootstrapped role specifier. These roles must exist already.
@@ -77,10 +78,62 @@ export class DeploymentIdentities {
     return new DeploymentIdentities(roles);
   }
 
+  /**
+   * Use the Roles that have been created by the default bootstrap stack
+   */
+  public static defaultBootstrapRoles(options: DefaultBootstrapRolesOptions = {}): DeploymentIdentities {
+    function replacePlaceholders(x: string) {
+      if (options.bootstrapRegion !== undefined) {
+        x = x.replace(/\$\{AWS::Region\}/g, options.bootstrapRegion);
+      }
+      return x;
+    }
+
+    return new DeploymentIdentities({
+      deploymentRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN)),
+      cloudFormationExecutionRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN)),
+      lookupRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN)),
+    });
+  }
+
+  /**
+   * CloudFormation Execution Role
+   */
+  public readonly cloudFormationExecutionRole?: BootstrapRole;
+
+  /**
+   * Deployment Action Role
+   */
+  public readonly deploymentRole?: BootstrapRole;
+
+  /**
+   * Lookup Role
+    @default - use bootstrapped role
+   */
+  public readonly lookupRole?: BootstrapRole;
+
   private constructor(
     /** roles that are bootstrapped to your account. */
-    public readonly roles: BootstrapRoles,
-  ) {}
+    roles: BootstrapRoles,
+  ) {
+    this.cloudFormationExecutionRole = roles.cloudFormationExecutionRole;
+    this.deploymentRole = roles.deploymentRole;
+    this.lookupRole = roles.lookupRole;
+  }
+}
+
+/**
+ * Options for `DeploymentIdentities.defaultBootstrappedRoles`
+ */
+export interface DefaultBootstrapRolesOptions {
+  /**
+   * The region where the default bootstrap roles have been created
+   *
+   * By default, the region in which the stack is deployed is used.
+   *
+   * @default - the stack's current region
+   */
+  readonly bootstrapRegion?: string;
 }
 
 /**

@@ -400,6 +400,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private readonly _cpu?: string;
 
+  private readonly _memory?: string;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -461,6 +463,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
+    this._memory = props.memoryMiB;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -736,9 +739,11 @@ export class TaskDefinition extends TaskDefinitionBase {
       // EC2 mode validations
 
       // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+      if (!this._memory) {
+        for (const container of this.containers) {
+          if (!container.memoryLimitSpecified) {
+            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          }
         }
       }
     }

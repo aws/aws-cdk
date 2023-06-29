@@ -738,7 +738,11 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRoleDefaultPolicyA592CB18",
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "FargateServiceSecurityGroup0A0E79CB": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -754,7 +758,11 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRoleDefaultPolicyA592CB18",
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {

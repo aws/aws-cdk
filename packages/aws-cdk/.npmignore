@@ -28,3 +28,6 @@ tsconfig.json
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+
+generate.sh
+lib/vendor/noctilucent/Dockerfile

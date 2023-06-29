@@ -128,6 +128,7 @@ export async function runIntegrationTestsInParallel(
       const testStart = Date.now();
       logger.highlight(`Running test ${test.fileName} in ${worker.profile ? worker.profile + '/' : ''}${worker.region}`);
       const response: IntegTestInfo[][] = await options.pool.exec('integTestWorker', [{
+        watch: options.watch,
         region: worker.region,
         profile: worker.profile,
         tests: [test],

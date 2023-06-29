@@ -22,6 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
+import { MIGRATE_SUPPORTED_LANGUAGES, cliMigrate } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -267,6 +268,12 @@ async function parseCommandLineArguments(args: string[]) {
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+    )
+    .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
+      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -649,6 +656,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         } else {
           return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
+      case 'migrate':
+        const migrateLanguage = configuration.settings.get(['language']);
+        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
       case 'version':
         return data(version.DISPLAY_VERSION);
 
@@ -656,7 +666,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         throw new Error('Unknown command: ' + command);
     }
   }
-
 }
 
 /**

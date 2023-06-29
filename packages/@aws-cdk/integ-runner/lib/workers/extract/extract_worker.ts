@@ -3,6 +3,7 @@ import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
 import { IntegTest, IntegTestInfo } from '../../runner/integration-tests';
 import { DiagnosticReason, IntegTestWorkerConfig, SnapshotVerificationOptions, Diagnostic, formatAssertionResults } from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
+import { IntegWatchOptions } from '../integ-watch-worker';
 
 /**
  * Runs a single integration test batch request.
@@ -17,7 +18,10 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
   const verbosity = request.verbosity ?? 0;
 
   for (const testInfo of request.tests) {
-    const test = new IntegTest(testInfo); // Hydrate from data
+    const test = new IntegTest({
+      ...testInfo,
+      watch: request.watch,
+    }); // Hydrate from data
     const start = Date.now();
 
     try {
@@ -83,6 +87,32 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
   }
 
   return failures;
+}
+
+export async function watchTestWorker(options: IntegWatchOptions) {
+  const verbosity = options.verbosity ?? 0;
+  const test = new IntegTest(options);
+  const runner = new IntegTestRunner({
+    test,
+    profile: options.profile,
+    env: {
+      AWS_REGION: options.region,
+      CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
+    },
+    showOutput: verbosity >= 2,
+  });
+  runner.createCdkContextJson();
+  const tests = runner.actualTests();
+
+  if (!tests || Object.keys(tests).length === 0) {
+    throw new Error(`No tests defined for ${runner.testName}`);
+  }
+  for (const testCaseName of Object.keys(tests)) {
+    await runner.watchIntegTest({
+      testCaseName,
+      verbosity,
+    });
+  }
 }
 
 /**
@@ -153,4 +183,5 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
 workerpool.worker({
   snapshotTestWorker,
   integTestWorker,
+  watchTestWorker,
 });

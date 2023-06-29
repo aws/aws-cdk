@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "TaskDefinitionWithoutContainerLevelMemory/DefaultTest": {
+      "stacks": [
+        "aws-ecs-task-definition-without-container-level-memory"
+      ],
+      "assertionStack": "TaskDefinitionWithoutContainerLevelMemory/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionWithoutContainerLevelMemoryDefaultTestDeployAssert5CA048EE"
+    }
+  }
+}

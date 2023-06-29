@@ -1068,15 +1068,17 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const stack = Stack.of(scope);
     const computeEnvironmentName = stack.splitArn(fargateComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+    class Import extends Resource implements IFargateComputeEnvironment {
       public readonly computeEnvironmentArn = fargateComputeEnvironmentArn;
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
+      public readonly maxvCpus = 1;
+      public readonly connections = { } as any;
+      public readonly securityGroups = [];
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
     }
 
-    return new Import(scope, id, {
-      vpc: undefined as any,
-    });
+    return new Import(scope, id);
   }
 
   public readonly computeEnvironmentName: string;

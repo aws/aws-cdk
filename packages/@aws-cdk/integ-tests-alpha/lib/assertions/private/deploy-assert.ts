@@ -1,9 +1,11 @@
-import { Stack } from 'aws-cdk-lib/core';
+import { Stack, Token } from 'aws-cdk-lib/core';
 import { Construct, IConstruct, Node } from 'constructs';
 import { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
 import { ActualResult, ExpectedResult } from '../common';
+import { HttpApiCall as HttpApiCall } from '../http-call';
 import { md5hash } from '../private/hash';
+import { FetchOptions } from '../providers';
 import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
 import { IDeployAssert } from '../types';
 
@@ -68,6 +70,26 @@ export class DeployAssert extends Construct implements IDeployAssert {
       service,
       parameters,
       outputPaths,
+    });
+  }
+
+  public httpApiCall(url: string, options?: FetchOptions): IApiCall {
+    let hash = '';
+    try {
+      hash = md5hash(this.scope.resolve({
+        url,
+        options,
+      }));
+    } catch {}
+
+    let append = '';
+    if (!Token.isUnresolved(url)) {
+      const parsedUrl = new URL(url);
+      append = `${parsedUrl.hostname}${parsedUrl.pathname}`;
+    }
+    return new HttpApiCall(this.scope, `HttpApiCall${append}${hash}`, {
+      url,
+      fetchOptions: options,
     });
   }
 

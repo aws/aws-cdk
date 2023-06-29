@@ -275,6 +275,46 @@ describe('task definition', () => {
         }],
       });
     });
+
+    test('You can omit container-level memory and memoryReservation parameters with EC2 compatibilities if task-level memory parameter is defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDef.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Memory: '512',
+      });
+
+    });
+
+    test('A task definition where task-level memory, container-level memory and memoryReservation are not defined throws an error', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDef.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
+    });
   });
 
   describe('When importing from an existing Task definition', () => {

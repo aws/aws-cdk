@@ -100,6 +100,7 @@ describe('bundling', () => {
       bundleDir: '/tmp/output',
       image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
+      network: 'host',
     };
     const helper = new AssetBundlingBindMount(options);
     helper.run();
@@ -107,6 +108,7 @@ describe('bundling', () => {
     // actual docker run with bind mount is called
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
+      '--network', 'host',
       '-v',
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);

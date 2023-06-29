@@ -71,6 +71,47 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
   });
 
+  test('can request other bootstrap region', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        deploymentIdentities: DeploymentIdentities.defaultBootstrapRoles({
+          bootstrapRegion: 'us-west-2',
+        }),
+      }),
+    });
+
+    // WHEN
+    const stackArtifact = synthStack(app);
+
+    // Bootstrapped roles are as advertised
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-exec-role-000000000000-us-west-2');
+    expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-lookup-role-000000000000-us-west-2' });
+    expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-deploy-role-000000000000-us-west-2');
+  });
+
+  test('can request other qualifier', () => {
+    // GIVEN
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        bootstrapQualifier: 'Q',
+        deploymentIdentities: DeploymentIdentities.defaultBootstrapRoles({
+          bootstrapRegion: 'us-west-2',
+        }),
+      }),
+    });
+
+    // WHEN
+    const stackArtifact = synthStack(app);
+
+    // Bootstrapped roles are as advertised
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-cfn-exec-role-000000000000-us-west-2');
+    expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-lookup-role-000000000000-us-west-2' });
+    expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-deploy-role-000000000000-us-west-2');
+  });
+
   test('can supply existing arn for bucket staging role', () => {
     // GIVEN
     const app = new App({
@@ -187,3 +228,21 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-abcdef-cfn-exec-role-000000000000-us-east-1');
   });
 });
+
+function synthStack(app: App) {
+  const stack = new Stack(app, 'Stack', {
+    env: {
+      account: '000000000000',
+      region: 'us-east-1',
+    },
+  });
+  new CfnResource(stack, 'Resource', {
+    type: 'Some::Resource',
+  });
+
+  // WHEN
+  const asm = app.synth();
+
+  // THEN
+  return asm.getStackArtifact('Stack');
+}
