@@ -35,6 +35,7 @@ Object.defineProperty(exports, 'aws_cassandra', { get: function () { return requ
 Object.defineProperty(exports, 'aws_ce', { get: function () { return require('./aws-ce'); } });
 Object.defineProperty(exports, 'aws_certificatemanager', { get: function () { return require('./aws-certificatemanager'); } });
 Object.defineProperty(exports, 'aws_chatbot', { get: function () { return require('./aws-chatbot'); } });
+Object.defineProperty(exports, 'aws_cleanrooms', { get: function () { return require('./aws-cleanrooms'); } });
 Object.defineProperty(exports, 'aws_cloud9', { get: function () { return require('./aws-cloud9'); } });
 Object.defineProperty(exports, 'aws_cloudformation', { get: function () { return require('./aws-cloudformation'); } });
 Object.defineProperty(exports, 'aws_cloudfront_origins', { get: function () { return require('./aws-cloudfront-origins'); } });
