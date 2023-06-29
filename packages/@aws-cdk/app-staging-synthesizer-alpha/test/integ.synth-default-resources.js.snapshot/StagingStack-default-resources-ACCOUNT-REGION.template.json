@@ -536,13 +536,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "defaultresourcesecrasset2FBE6B8A9",
+          "defaultresourcesecrasset15793EE93",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "defaultresourcesecrasset9191BD6E",
+          "defaultresourcesecrasset2FBE6B8A9",
           "Arn"
          ]
         }
@@ -564,13 +564,13 @@
     ]
    }
   },
-  "defaultresourcesecrasset9191BD6E": {
+  "defaultresourcesecrasset15793EE93": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
     "LifecyclePolicy": {
      "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
     },
-    "RepositoryName": "default-resources/ecr-asset",
+    "RepositoryName": "default-resources/ecr-asset/1",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-images",
@@ -581,7 +581,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "defaultresourcesecrassetAutoDeleteImagesCustomResource7AB58D8F": {
+  "defaultresourcesecrasset1AutoDeleteImagesCustomResource886FCF4C": {
    "Type": "Custom::ECRAutoDeleteImages",
    "Properties": {
     "ServiceToken": {
@@ -591,11 +591,11 @@
      ]
     },
     "RepositoryName": {
-     "Ref": "defaultresourcesecrasset9191BD6E"
+     "Ref": "defaultresourcesecrasset15793EE93"
     }
    },
    "DependsOn": [
-    "defaultresourcesecrasset9191BD6E"
+    "defaultresourcesecrasset15793EE93"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -637,7 +637,7 @@
          "Resource": [
           {
            "Fn::GetAtt": [
-            "defaultresourcesecrasset9191BD6E",
+            "defaultresourcesecrasset15793EE93",
             "Arn"
            ]
           },

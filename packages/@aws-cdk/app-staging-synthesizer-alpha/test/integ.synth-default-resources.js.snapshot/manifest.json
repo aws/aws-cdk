@@ -20,7 +20,7 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/dc7275f639c45accfa2abc4842978bcb3b0c5f0b83fcde22015e344b2e008f26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/8a7c67c9351a7622e67457ade8b2338e3fb0f2d5dc63e6c79920003fc3ed8075.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
@@ -41,18 +41,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdas342CE2BBD"
-          }
-        ],
-        "/synthesize-default-resources/lambda-ecr-1/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaecr1ServiceRoleA6BBC49F"
-          }
-        ],
-        "/synthesize-default-resources/lambda-ecr-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaecr1B33A3D15"
           }
         ],
         "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole/Resource": [
@@ -79,10 +67,19 @@
             "data": "lambdaecr2615DAF68"
           }
         ],
-        "UsingDefaultStagingStacksynthesizedefaultresources": [
+        "lambdaecr1ServiceRoleA6BBC49F": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UsingDefaultStagingStacksynthesizedefaultresources",
+            "data": "lambdaecr1ServiceRoleA6BBC49F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambdaecr1B33A3D15": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1B33A3D15",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -174,16 +171,16 @@
             "data": "CdkImageRoleDefaultPolicy4A1572DE"
           }
         ],
-        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset/Resource": [
+        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset--1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesecrasset9191BD6E"
+            "data": "defaultresourcesecrasset15793EE93"
           }
         ],
-        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset/AutoDeleteImagesCustomResource/Default": [
+        "/StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset--1/AutoDeleteImagesCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesecrassetAutoDeleteImagesCustomResource7AB58D8F"
+            "data": "defaultresourcesecrasset1AutoDeleteImagesCustomResource886FCF4C"
           }
         ],
         "/StagingStack-default-resources-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
@@ -208,6 +205,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultresourcesecrasset2AutoDeleteImagesCustomResource1272F059"
+          }
+        ],
+        "defaultresourcesecrasset9191BD6E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesecrasset9191BD6E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "defaultresourcesecrassetAutoDeleteImagesCustomResource7AB58D8F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesecrassetAutoDeleteImagesCustomResource7AB58D8F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
