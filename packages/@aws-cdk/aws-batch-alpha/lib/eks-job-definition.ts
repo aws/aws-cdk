@@ -192,14 +192,13 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                   };
                 }
                 if (SecretPathVolume.isSecretPathVolume(volume)) {
-                  /*return {
+                  return {
                     name: volume.name,
                     secret: {
                       optional: volume.optional,
                       secretName: volume.secretName,
                     },
                   };
-                  */
                 }
 
                 throw new Error('unknown volume type');
