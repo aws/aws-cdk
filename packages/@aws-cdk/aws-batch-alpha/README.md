@@ -502,9 +502,9 @@ The following example defines the `MY_SECRET_ENV_VAR` environment variable that 
 ARN of the Secret defined by `mySecret`:
 
 ```ts
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as cdk from 'aws-cdk-lib';
 
-declare const mySecret: efs.ISecret;
+declare const mySecret: secretsmanager.ISecret;
 
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
