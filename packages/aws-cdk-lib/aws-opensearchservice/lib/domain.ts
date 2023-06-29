@@ -129,7 +129,7 @@ export interface EbsOptions {
   readonly iops?: number;
 
   /**
-   * The throughput (in MiB/s) of the EBS volumes attached to data nodes. 
+   * The throughput (in MiB/s) of the EBS volumes attached to data nodes.
    * This property applies only to the gp3 volume type.
    *
    * @default - throughput is not set.
