@@ -522,7 +522,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'ap-northeast-2': '13.209.1.64',
   'ap-northeast-3': '13.208.177.192',
   'ap-south-1': '13.232.67.32',
-  'ap-south-2': '18.60.192.128/27',
+  'ap-south-2': '18.60.192.128',
   'ap-southeast-1': '13.228.64.192',
   'ap-southeast-2': '13.210.67.224',
   'ap-southeast-3': '108.136.221.64',
