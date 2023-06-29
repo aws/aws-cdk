@@ -12,7 +12,7 @@ class TestStack extends Stack {
     // required for gp3 volumes
     const domainProps: opensearch.DomainProps = {
       removalPolicy: RemovalPolicy.DESTROY,
-      version: opensearch.EngineVersion.openSearch('2.5'),
+      version: opensearch.EngineVersion.OPENSEARCH_2_5,
       ebs: {
         volumeSize: 30,
         volumeType: EbsDeviceVolumeType.GP3,
