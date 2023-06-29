@@ -673,7 +673,8 @@
    },
    "DependsOn": [
     "myServiceLBPublicListenerECSGroup17E9BBC1",
-    "myServiceLBPublicListenerC78AE8A0"
+    "myServiceLBPublicListenerC78AE8A0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   },
   "myServiceSecurityGroupC3B9D4E0": {
@@ -690,7 +691,8 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": ["myServiceTaskDefTaskRole1C1DE6CC"]
   },
   "myServiceSecurityGroupfromawsecsintegcircuitbreakernodcmyServiceLBSecurityGroupBDCB2AE380B499F76F": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -711,7 +713,8 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": ["myServiceTaskDefTaskRole1C1DE6CC"]
   }
  },
  "Outputs": {
