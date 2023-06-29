@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.86.0](https://github.com/aws/aws-cdk/compare/v2.85.0...v2.86.0) (2023-06-29)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v128.1.0 ([#26096](https://github.com/aws/aws-cdk/issues/26096)) ([d71c040](https://github.com/aws/aws-cdk/commit/d71c0407e7091a240dbecfdc910dc632ed1b7bff))
+
+
+### Bug Fixes
+
+* **cdk-lib:** Pass lookupRoleArn to NestedStackSynthesizer ([#26116](https://github.com/aws/aws-cdk/issues/26116)) ([3c29223](https://github.com/aws/aws-cdk/commit/3c29223b178840368088b56aba2db9d2365bceed))
+* **core:** network option is not being propagated to Docker ([#26014](https://github.com/aws/aws-cdk/issues/26014)) ([341de48](https://github.com/aws/aws-cdk/commit/341de48e3637953514a009715dfdeeb061aad929))
+* **core:** prevent the error when the condition is split into groups of 10 and 1 in `Fn.conditionAnd()` ([#25999](https://github.com/aws/aws-cdk/issues/25999)) ([ee3d41e](https://github.com/aws/aws-cdk/commit/ee3d41e674bc6b02cabd986de92075350017209b)), closes [/github.com/aws/aws-cdk/issues/25696#issuecomment-1561064092](https://github.com/aws//github.com/aws/aws-cdk/issues/25696/issues/issuecomment-1561064092)
+* **ecs:** potential race condition on TaskRole default policy update with CfnService ([#26070](https://github.com/aws/aws-cdk/issues/26070)) ([2d9078c](https://github.com/aws/aws-cdk/commit/2d9078c6afc77c0ef026d74168730bff2a167a60)), closes [#24880](https://github.com/aws/aws-cdk/issues/24880)
+* **ecs:** validation for task definition fails when task-level memory is defined but container-level memory and memoryReservation are not defined with EC2 compatibility ([#26027](https://github.com/aws/aws-cdk/issues/26027)) ([0e251e6](https://github.com/aws/aws-cdk/commit/0e251e68bad90b2dd7cb3ef48dfe025695e4ab64)), closes [#25275](https://github.com/aws/aws-cdk/issues/25275)
+* **elbv2:** correct wrong timeout validation ([#26031](https://github.com/aws/aws-cdk/issues/26031)) ([636841c](https://github.com/aws/aws-cdk/commit/636841c380ccc3a6da372117cf0317f351a75cff)), closes [#26023](https://github.com/aws/aws-cdk/issues/26023)
+* **stepfunctions:** nested arrays are not serialized correctly ([#26055](https://github.com/aws/aws-cdk/issues/26055)) ([f9d4573](https://github.com/aws/aws-cdk/commit/f9d45738d7b1ad0c9ad9877fe961fe063f544224)), closes [#26045](https://github.com/aws/aws-cdk/issues/26045)
+
 ## [2.85.0](https://github.com/aws/aws-cdk/compare/v2.84.0...v2.85.0) (2023-06-21)
 
 
