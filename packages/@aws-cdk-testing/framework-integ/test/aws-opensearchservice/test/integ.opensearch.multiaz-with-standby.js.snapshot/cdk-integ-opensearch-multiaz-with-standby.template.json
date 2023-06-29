@@ -4,15 +4,16 @@
    "Type": "AWS::OpenSearchService::Domain",
    "Properties": {
     "ClusterConfig": {
-     "DedicatedMasterCount": 2,
+     "DedicatedMasterCount": 3,
      "DedicatedMasterEnabled": true,
      "DedicatedMasterType": "r5.large.search",
-     "InstanceCount": 1,
+     "InstanceCount": 3,
      "InstanceType": "r5.large.search",
-     "WarmCount": 2,
-     "WarmEnabled": true,
-     "WarmType": "ultrawarm1.medium.search",
-     "ZoneAwarenessEnabled": false
+     "MultiAZWithStandbyEnabled": true,
+     "ZoneAwarenessConfig": {
+      "AvailabilityZoneCount": 3
+     },
+     "ZoneAwarenessEnabled": true
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
@@ -21,12 +22,12 @@
     "EBSOptions": {
      "EBSEnabled": true,
      "VolumeSize": 10,
-     "VolumeType": "gp2"
+     "VolumeType": "gp3"
     },
     "EncryptionAtRestOptions": {
      "Enabled": false
     },
-    "EngineVersion": "Elasticsearch_7.1",
+    "EngineVersion": "OpenSearch_1.3",
     "LogPublishingOptions": {},
     "NodeToNodeEncryptionOptions": {
      "Enabled": false

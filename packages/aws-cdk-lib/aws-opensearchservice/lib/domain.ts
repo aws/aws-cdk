@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -78,7 +79,7 @@ export interface CapacityConfig {
    * For more information, see [Multi-AZ with Standby]
    * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
    *
-   * @default - false
+   * @default - no multi-az with standby
    */
   readonly multiAzWithStandbyEnabled?: boolean;
 }
@@ -1223,8 +1224,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
-    const multiAzWithStandbyEnabled = props.capacity?.multiAzWithStandbyEnabled ?? false;
-
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
 
@@ -1549,6 +1548,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           domainName: props.customEndpoint.domainName,
           validation: props.customEndpoint.hostedZone ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone) : undefined,
         });
+      }
+    }
+
+    let multiAzWithStandbyEnabled = props.capacity?.multiAzWithStandbyEnabled;
+    if (multiAzWithStandbyEnabled === undefined) {
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY)) {
+        multiAzWithStandbyEnabled = true;
       }
     }
 

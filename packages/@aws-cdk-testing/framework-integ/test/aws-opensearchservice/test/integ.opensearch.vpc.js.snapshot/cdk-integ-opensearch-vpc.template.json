@@ -424,7 +424,6 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 2,
      "InstanceType": "r5.large.search",
-     "MultiAZWithStandbyEnabled": false,
      "ZoneAwarenessConfig": {
       "AvailabilityZoneCount": 2
      },
