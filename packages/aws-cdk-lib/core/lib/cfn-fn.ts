@@ -450,8 +450,19 @@ export class Fn {
     return Token.asNumber(new FnLength(array));
   }
 
+  /**
+   * Test whether the given object extends FnBase class.
+   *
+   * @internal
+   */
+  public static _isFnBase(x: any): x is FnBase {
+    return x !== null && typeof(x) === 'object' && FN_BASE_SYMBOL in x;
+  }
+
   private constructor() { }
 }
+
+const FN_BASE_SYMBOL = Symbol.for('@aws-cdk/core.CfnFnBase');
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
@@ -459,6 +470,8 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+
+    Object.defineProperty(this, FN_BASE_SYMBOL, { value: true });
   }
 }
 
