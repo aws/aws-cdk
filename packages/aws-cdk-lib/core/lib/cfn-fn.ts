@@ -275,7 +275,10 @@ export class Fn {
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
     }
-    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
+    if (conditions.length <= 10) {
+      return new FnAnd(...conditions);
+    }
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => Fn.conditionAnd(...group)));
   }
 
   /**
@@ -447,8 +450,19 @@ export class Fn {
     return Token.asNumber(new FnLength(array));
   }
 
+  /**
+   * Test whether the given object extends FnBase class.
+   *
+   * @internal
+   */
+  public static _isFnBase(x: any): x is FnBase {
+    return x !== null && typeof(x) === 'object' && FN_BASE_SYMBOL in x;
+  }
+
   private constructor() { }
 }
+
+const FN_BASE_SYMBOL = Symbol.for('@aws-cdk/core.CfnFnBase');
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
@@ -456,6 +470,8 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+
+    Object.defineProperty(this, FN_BASE_SYMBOL, { value: true });
   }
 }
 
