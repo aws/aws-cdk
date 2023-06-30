@@ -465,6 +465,14 @@
     }
    }
   },
+  "mySecretE4D0A59C": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "myContainerExecutionRoleEBACF86C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -525,6 +533,14 @@
        "Value": "12"
       }
      ],
+     "Secrets": [
+      {
+       "Name": "MY_SECRET_ENV_VAR",
+       "ValueFrom": {
+        "Ref": "mySecretE4D0A59C"
+       }
+      }
+     ],
      "Ulimits": [
       {
        "HardLimit": 50,
@@ -579,6 +595,9 @@
     "Type": "container",
     "ContainerProperties": {
      "Environment": [],
+     "EphemeralStorage": {
+      "SizeInGiB": 100
+     },
      "ExecutionRoleArn": {
       "Fn::GetAtt": [
        "myFargateContainerExecutionRoleB9EB79EA",
