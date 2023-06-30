@@ -49,6 +49,14 @@
           "ReadOnly": true
          },
          {
+          "MountPath": "/secret/path",
+          "Name": "secretVolumeName"
+         },
+         {
+          "MountPath": "/secret/path2",
+          "Name": "defaultOptionalSettingSecretVolume"
+         },
+         {
           "MountPath": "/fooasdfadfs",
           "Name": "hostPath"
          }
@@ -62,6 +70,20 @@
          "SizeLimit": "2048Mi"
         },
         "Name": "woah"
+       },
+       {
+        "Name": "secretVolumeName",
+        "Secret": {
+         "Optional": false,
+         "SecretName": "secretName"
+        }
+       },
+       {
+        "Name": "defaultOptionalSettingSecretVolume",
+        "Secret": {
+         "Optional": true,
+         "SecretName": "NewSecretName"
+        }
        },
        {
         "HostPath": {

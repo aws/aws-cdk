@@ -1527,7 +1527,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with enabled monitoring', () => {
+  test('cluster with enabled monitoring (legacy)', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1543,6 +1543,58 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      monitoringInterval: cdk.Duration.minutes(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'monitoring.rds.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('cluster with enabled monitoring should create default role with new api', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      vpc,
+      writer: ClusterInstance.serverlessV2('writer'),
+      iamAuthentication: true,
       monitoringInterval: cdk.Duration.minutes(1),
     });
 
