@@ -41,4 +41,4 @@ Path patterns can use the following variables:
 
 You can use the `cfn2ts` binary as a drop-in replacement for the existing `@aws-cdk/cfn2ts` command.
 
-At a code level, import `@aws-cdk/spec2cdk/cfn2ts` for a drop-in replacement.
+At a code level, import `@aws-cdk/spec2cdk/lib/cfn2ts` for a drop-in replacement.

@@ -12,17 +12,8 @@
     "cfn2ts": "bin/cfn2ts",
     "spec2cdk": "bin/spec2cdk"
   },
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js"
-    },
-    "cfn2ts": {
-      "types": "./lib/cfn2ts/index.d.ts",
-      "require": "./lib/cfn2ts/index.js"
-    },
-    "package.json": "./package.json"
-  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
