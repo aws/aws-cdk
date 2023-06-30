@@ -708,6 +708,142 @@ describe('repository', () => {
       });
     });
 
+    test('grant push', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      repo.grantPush(new iam.AnyPrincipal());
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Principal': { 'AWS': '*' },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      });
+    });
+
+    test('grant pull for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPull(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant push for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPush(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('grant pullpush for role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      repo.grantPullPush(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+                'ecr:CompleteLayerUpload',
+                'ecr:UploadLayerPart',
+                'ecr:InitiateLayerUpload',
+                'ecr:PutImage',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': ['TestHarnessRepoAA7E9724', 'Arn'],
+              },
+            }, {
+              'Action': 'ecr:GetAuthorizationToken',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
     test('grant read adds appropriate permissions', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -838,6 +974,66 @@ describe('repository', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryPolicyText: JSON.parse(policyText2),
       });
+    });
+  });
+
+  describe('when auto delete images is set to true', () => {
+    test('permissions are correctly for multiple ecr repos', () => {
+      const stack = new cdk.Stack();
+      new ecr.Repository(stack, 'Repo1', {
+        autoDeleteImages: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      new ecr.Repository(stack, 'Repo2', {
+        autoDeleteImages: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        Policies: [
+          {
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'ecr:BatchDeleteImage',
+                    'ecr:DescribeRepositories',
+                    'ecr:ListImages',
+                    'ecr:ListTagsForResource',
+                  ],
+                  Resource: [
+                    {
+                      'Fn::GetAtt': [
+                        'Repo1DBD717D9',
+                        'Arn',
+                      ],
+                    },
+                    {
+                      'Fn::GetAtt': [
+                        'Repo2730A8200',
+                        'Arn',
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    test('synth fails when removal policy is not DESTROY', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecr.Repository(stack, 'Repo', {
+          autoDeleteImages: true,
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
+        });
+      }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
     });
   });
 });

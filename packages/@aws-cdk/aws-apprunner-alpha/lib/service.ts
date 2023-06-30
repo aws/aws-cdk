@@ -3,8 +3,8 @@ import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as cdk from 'aws-cdk-lib';
-import { Lazy } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
+import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
@@ -1041,7 +1041,6 @@ export class Service extends cdk.Resource {
 
   /**
    * The name of the service.
-   * @attribute
    */
   readonly serviceName: string;
 
@@ -1106,7 +1105,15 @@ export class Service extends cdk.Resource {
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
     this.serviceStatus = resource.attrStatus;
-    this.serviceName = resource.ref;
+    /**
+     * Cloudformaton does not return the serviceName attribute so we extract it from the serviceArn.
+     * The ARN comes with this format:
+     * arn:aws:apprunner:us-east-1:123456789012:service/SERVICE_NAME/SERVICE_ID
+     */
+    // First, get the last element by splitting with ':'
+    const resourceFullName = cdk.Fn.select(5, cdk.Fn.split(':', this.serviceArn));
+    // Now, split the resourceFullName with '/' to get the serviceName
+    this.serviceName = cdk.Fn.select(1, cdk.Fn.split('/', resourceFullName));
   }
 
   /**

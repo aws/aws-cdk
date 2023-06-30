@@ -1,4 +1,4 @@
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from 'aws-cdk-lib/aws-batch';
 

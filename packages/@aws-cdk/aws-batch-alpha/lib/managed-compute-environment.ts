@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
@@ -1068,15 +1068,17 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const stack = Stack.of(scope);
     const computeEnvironmentName = stack.splitArn(fargateComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+    class Import extends Resource implements IFargateComputeEnvironment {
       public readonly computeEnvironmentArn = fargateComputeEnvironmentArn;
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
+      public readonly maxvCpus = 1;
+      public readonly connections = { } as any;
+      public readonly securityGroups = [];
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
     }
 
-    return new Import(scope, id, {
-      vpc: undefined as any,
-    });
+    return new Import(scope, id);
   }
 
   public readonly computeEnvironmentName: string;
@@ -1088,6 +1090,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
+      computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
