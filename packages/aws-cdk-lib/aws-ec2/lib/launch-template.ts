@@ -587,20 +587,30 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
     }
 
-    this.role = props.role;
-    this._grantPrincipal = this.role;
+    if (props.instanceProfile && props.role) {
+      throw new Error('You cannot provide both an instanceProfile and a role');
+    }
 
     let iamProfileArn: string | undefined = undefined;
-    if (FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
-      if (props.instanceProfile) {
-
+    if (props.instanceProfile) {
+      this.role = props.instanceProfile.role;
+      iamProfileArn = props.instanceProfile.instanceProfileArn;
+    } else if (props.role) {
+      this.role = props.role;
+      if (FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+        const iamProfile = new iam.InstanceProfile(this, 'Profile', {
+          role: this.role,
+        });
+        iamProfileArn = iamProfile.instanceProfileArn;
+      } else {
+        const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
+          roles: [this.role.roleName],
+        });
+        iamProfileArn = iamProfile.attrArn;
       }
-    } else if (this.role) {
-      const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
-        roles: [this.role.roleName],
-      });
-      iamProfileArn = iamProfile.attrArn;
     }
+
+    this._grantPrincipal = this.role;
 
     if (props.securityGroup) {
       this._connections = new Connections({ securityGroups: [props.securityGroup] });
@@ -725,9 +735,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         hibernationOptions: props?.hibernationConfigured !== undefined ? {
           configured: props.hibernationConfigured,
         } : undefined,
-        iamInstanceProfile: iamProfile !== undefined ? {
-          arn: iamProfile.getAtt('Arn').toString(),
-        } : undefined,
+        iamInstanceProfile: iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,

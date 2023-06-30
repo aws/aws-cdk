@@ -75,7 +75,7 @@ abstract class InstanceProfileBase extends Resource implements IInstanceProfile 
   public abstract readonly instanceProfileArn: string;
 
   /**
-   * The role defined as part of the InstanceProfile
+   * The role defined as part of the InstanceProfile.
    * @internal
    */
   protected _role?: IRole;

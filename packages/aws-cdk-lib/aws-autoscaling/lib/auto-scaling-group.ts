@@ -1305,7 +1305,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
       // generate launch template from launch config props when feature flag is set
       if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
-        const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, id, {
+        const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
           instanceProfileArn: iamProfile.attrArn,
           role: this.role,
         });

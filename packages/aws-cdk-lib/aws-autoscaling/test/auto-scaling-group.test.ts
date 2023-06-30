@@ -141,27 +141,6 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('instanceProfile L2 testing', () => {
-    /* eslint-disable no-console */
-    console.log('instanceProfile L2 testing');
-
-    // GIVEN
-    const stack = getTestStack();
-    stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
-    const vpc = mockVpc(stack);
-
-    // WHEN
-    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      machineImage: new ec2.AmazonLinuxImage(),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      instanceMonitoring: autoscaling.Monitoring.DETAILED,
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure'),
-      role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
-      vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    });
-  });
-
   test('can create launch template from launch config props when @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation is set', () => {
     // GIVEN
     const stack = getTestStack();
