@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "IntegTestDSSEBucket/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-bucket-encryption"
+      ],
+      "assertionStack": "IntegTestDSSEBucket/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F"
+    }
+  }
+}

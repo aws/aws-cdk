@@ -134,3 +134,17 @@ new cloud9.Ec2Environment(this, 'C9Env', {
   owner: cloud9.Owner.user(user)
 })
 ```
+
+## Auto-Hibernation
+
+A Cloud9 environemnt can automatically start and stop the associated EC2 instance to reduce costs.
+
+Use `automaticStop` to specify the number of minutes until the running instance is shut down after the environment was last used.
+
+```ts
+const defaultVpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+new cloud9.Ec2Environment(this, 'Cloud9Env2', {
+  vpc: defaultVpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+  automaticStop: Duration.minutes(30),
+});

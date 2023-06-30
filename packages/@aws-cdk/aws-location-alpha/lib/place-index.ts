@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 
