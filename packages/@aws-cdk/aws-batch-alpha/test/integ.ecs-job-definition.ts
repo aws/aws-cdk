@@ -7,6 +7,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import * as path from 'path';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
@@ -40,6 +41,9 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
       name: batch.UlimitName.CORE,
       softLimit: 10,
     }],
+    secrets: {
+      MY_SECRET_ENV_VAR: new Secret(stack, 'mySecret'),
+    },
   }),
 });
 
