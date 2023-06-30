@@ -364,6 +364,7 @@
     "@aws-cdk/aws-systemsmanagersap": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
+    "@aws-cdk/aws-verifiedpermissions": "0.0.0",
     "@aws-cdk/aws-voiceid": "0.0.0",
     "@aws-cdk/aws-vpclattice": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
