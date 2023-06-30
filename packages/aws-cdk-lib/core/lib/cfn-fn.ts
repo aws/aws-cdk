@@ -445,7 +445,7 @@ export class Fn {
   }
 
   /**
-   * Test whether the given construct extends FnBase class.
+   * Test whether the given object extends FnBase class.
    *
    * @internal
    */
