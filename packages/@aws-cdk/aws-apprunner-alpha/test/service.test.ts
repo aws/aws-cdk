@@ -1295,3 +1295,38 @@ test('Service is grantable', () => {
     ],
   });
 });
+
+test('addToRolePolicy', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  service.addToRolePolicy(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3:GetObject'],
+    resources: [bucket.bucketArn],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:GetObject',
+          Resource: 'arn:aws:s3:::my-bucket',
+        },
+      ],
+    },
+    PolicyName: 'DemoServiceInstanceRoleDefaultPolicy9600BEA1',
+    Roles: [
+      { Ref: 'DemoServiceInstanceRoleFCED1725' },
+    ],
+  });
+});
