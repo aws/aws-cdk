@@ -1,7 +1,15 @@
 import { App } from 'aws-cdk-lib';
 import { DefaultStagingStack } from '../lib';
+import { testWithXRepos } from './util';
 
 describe('default staging stack', () => {
+  test('can have at least 21 ECR Repositories', () => {
+    // Decreasing this number is a breaking change! We have committed
+    // to supporting 21 ECR repositories in the template. We can only
+    // increase this commitment, not decrease it.
+    expect(testWithXRepos(21)).toBeTruthy();
+  });
+
   describe('appId fails', () => {
     test('when appId > 20 characters', () => {
       const app = new App();

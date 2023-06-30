@@ -34,7 +34,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-default-resources-file-role-",
+       "cdk-default-resourcesmax-file-role-",
        {
         "Ref": "AWS::Region"
        }
@@ -188,7 +188,7 @@
   "BucketKeyAlias69A0886F": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/cdk-default-resources-staging",
+    "AliasName": "alias/cdk-default-resourcesmax-staging",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "BucketKey7092080A",
@@ -219,7 +219,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-default-resources-staging-",
+       "cdk-default-resourcesmax-staging-",
        {
         "Ref": "AWS::AccountId"
        },
@@ -506,7 +506,7 @@
      "Fn::Join": [
       "",
       [
-       "cdk-default-resources-image-role-",
+       "cdk-default-resourcesmax-image-role-",
        {
         "Ref": "AWS::Region"
        }
@@ -536,13 +536,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "defaultresourcesecrasset15793EE93",
+          "defaultresourcesmaxecrasset13112F7F9",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "defaultresourcesecrasset2FBE6B8A9",
+          "defaultresourcesmaxecrasset2904B88A7",
           "Arn"
          ]
         }
@@ -564,13 +564,13 @@
     ]
    }
   },
-  "defaultresourcesecrasset15793EE93": {
+  "defaultresourcesmaxecrasset13112F7F9": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
     "LifecyclePolicy": {
-     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
     },
-    "RepositoryName": "default-resources/ecr-asset/1",
+    "RepositoryName": "default-resourcesmax/ecr-asset/1",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-images",
@@ -581,7 +581,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "defaultresourcesecrasset1AutoDeleteImagesCustomResource886FCF4C": {
+  "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5": {
    "Type": "Custom::ECRAutoDeleteImages",
    "Properties": {
     "ServiceToken": {
@@ -591,11 +591,11 @@
      ]
     },
     "RepositoryName": {
-     "Ref": "defaultresourcesecrasset15793EE93"
+     "Ref": "defaultresourcesmaxecrasset13112F7F9"
     }
    },
    "DependsOn": [
-    "defaultresourcesecrasset15793EE93"
+    "defaultresourcesmaxecrasset13112F7F9"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -637,13 +637,13 @@
          "Resource": [
           {
            "Fn::GetAtt": [
-            "defaultresourcesecrasset15793EE93",
+            "defaultresourcesmaxecrasset13112F7F9",
             "Arn"
            ]
           },
           {
            "Fn::GetAtt": [
-            "defaultresourcesecrasset2FBE6B8A9",
+            "defaultresourcesmaxecrasset2904B88A7",
             "Arn"
            ]
           }
@@ -677,13 +677,13 @@
     "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
    ]
   },
-  "defaultresourcesecrasset2FBE6B8A9": {
+  "defaultresourcesmaxecrasset2904B88A7": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
     "LifecyclePolicy": {
-     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
     },
-    "RepositoryName": "default-resources/ecr-asset-2",
+    "RepositoryName": "default-resourcesmax/ecr-asset-2",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-images",
@@ -694,7 +694,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "defaultresourcesecrasset2AutoDeleteImagesCustomResource1272F059": {
+  "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1": {
    "Type": "Custom::ECRAutoDeleteImages",
    "Properties": {
     "ServiceToken": {
@@ -704,11 +704,11 @@
      ]
     },
     "RepositoryName": {
-     "Ref": "defaultresourcesecrasset2FBE6B8A9"
+     "Ref": "defaultresourcesmaxecrasset2904B88A7"
     }
    },
    "DependsOn": [
-    "defaultresourcesecrasset2FBE6B8A9"
+    "defaultresourcesmaxecrasset2904B88A7"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

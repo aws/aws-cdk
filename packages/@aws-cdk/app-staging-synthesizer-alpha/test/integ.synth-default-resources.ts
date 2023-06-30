@@ -3,14 +3,20 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AppStagingSynthesizer } from '../lib';
+import { APP_ID_MAX } from './util';
 
 // IMAGE_COPIES env variable is used to test maximum number of ECR repositories allowed.
 const IMAGE_COPIES = Number(process.env.IMAGE_COPIES) ?? 1;
-const app = new App();
+
+const app = new App({
+  context: {
+    '@aws-cdk/aws-iam:minimizePolicies': true,
+  },
+});
 
 const stack = new Stack(app, 'synthesize-default-resources', {
   synthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'default-resources',
+    appId: APP_ID_MAX, // this has implications on the overall template size
   }),
 });
 
@@ -48,7 +54,7 @@ new lambda.Function(stack, 'lambda-ecr-two', {
   runtime: lambda.Runtime.FROM_IMAGE,
 });
 
-const defaultStagingStack = app.node.tryFindChild('StagingStack-default-resources-ACCOUNT-REGION') as Stack;
+const defaultStagingStack = app.node.tryFindChild(`StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`) as Stack;
 if (!defaultStagingStack) {
   throw new Error('Default Staging Stack not found');
 }
