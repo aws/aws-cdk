@@ -1,6 +1,6 @@
 import * as path from 'node:path';
-import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
+import { generateAll, ModuleMap } from './codegen';
 import submodulesGen from './submodules';
 
 const awsCdkLibDir = path.join(__dirname, '..');

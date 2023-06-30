@@ -18,6 +18,7 @@
     "tools/@aws-cdk/pkglint",
     "tools/@aws-cdk/pkgtools",
     "tools/@aws-cdk/prlint",
+    "tools/@aws-cdk/spec2cdk",
     "tools/@aws-cdk/yarn-cling",
     "scripts/@aws-cdk/script-tests"
   ],
