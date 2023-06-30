@@ -50,9 +50,17 @@
               "version": "0.0.0"
             }
           },
-          "ImportedWithToken": {
-            "id": "ImportedWithToken",
-            "path": "Import-SSM-Parameter/ImportedWithToken",
+          "ImportedWithIntrinsic": {
+            "id": "ImportedWithIntrinsic",
+            "path": "Import-SSM-Parameter/ImportedWithIntrinsic",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedWithForceFlag": {
+            "id": "ImportedWithForceFlag",
+            "path": "Import-SSM-Parameter/ImportedWithForceFlag",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -66,9 +74,17 @@
               "version": "0.0.0"
             }
           },
-          "ImportedWithTokenOutput": {
-            "id": "ImportedWithTokenOutput",
-            "path": "Import-SSM-Parameter/ImportedWithTokenOutput",
+          "ImportedWithIntrinsicOutput": {
+            "id": "ImportedWithIntrinsicOutput",
+            "path": "Import-SSM-Parameter/ImportedWithIntrinsicOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedWithForceFlagOutput": {
+            "id": "ImportedWithForceFlagOutput",
+            "path": "Import-SSM-Parameter/ImportedWithForceFlagOutput",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"

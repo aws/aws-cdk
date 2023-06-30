@@ -26,7 +26,21 @@
     "Ref": "ImportedWithNameParameter"
    }
   },
-  "ImportedWithTokenOutput": {
+  "ImportedWithIntrinsicOutput": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "{{resolve:ssm:",
+      {
+       "Ref": "StringParameter472EED0E"
+      },
+      "}}"
+     ]
+    ]
+   }
+  },
+  "ImportedWithForceFlagOutput": {
    "Value": {
     "Fn::Join": [
      "",

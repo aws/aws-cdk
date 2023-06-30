@@ -964,7 +964,40 @@ test('fails if parameterName is undefined and simpleName is "false"', () => {
   expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(/If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
 });
 
-test('When a parameter name contains tokens, use dynamic reference instead', () => {
+test('When a parameter name contains a CFn intrinsic, use dynamic reference instead', () => {
+  // GIVEN
+  const app = new cdk.App();
+
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'import-string-param1', {
+    simpleName: true,
+    parameterName: cdk.Fn.importValue('some-exported-value'),
+  });
+  new cdk.CfnOutput(stack, 'OutputParamValue', {
+    value: param.stringValue,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasOutput('OutputParamValue', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:ssm:',
+          {
+            'Fn::ImportValue': 'some-exported-value',
+          },
+          '}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('When a parameter representation overridden, use dynamic reference', () => {
   // GIVEN
   const app = new cdk.App();
 
@@ -977,6 +1010,7 @@ test('When a parameter name contains tokens, use dynamic reference instead', () 
   const paramB = ssm.StringParameter.fromStringParameterAttributes(stack, 'import-string-param', {
     simpleName: true,
     parameterName: paramA.parameterName,
+    forceDynamicReference: true,
   });
   new cdk.CfnOutput(stack, 'OutputParamValue', {
     value: paramB.stringValue,
@@ -997,75 +1031,5 @@ test('When a parameter name contains tokens, use dynamic reference instead', () 
         ],
       ],
     },
-  });
-});
-
-test('When a parameter name contains tokens, use dynamic reference instead (cross-stack)', () => {
-  // GIVEN
-  const app = new cdk.App();
-
-  const stackA = new cdk.Stack(app, 'StackA');
-  const paramA = new ssm.StringParameter(stackA, 'StringParameter', {
-    stringValue: 'Initial parameter value',
-  });
-  const stackB = new cdk.Stack(app, 'StackB');
-
-  // WHEN
-  const paramB = ssm.StringParameter.fromStringParameterAttributes(stackB, 'import-string-param', {
-    simpleName: true,
-    parameterName: paramA.parameterName,
-  });
-  new cdk.CfnOutput(stackB, 'OutputParamValue', {
-    value: paramB.stringValue,
-  });
-
-  // THEN
-  const template = Template.fromStack(stackB);
-  template.hasOutput('OutputParamValue', {
-    Value: {
-      'Fn::Join': [
-        '',
-        [
-          '{{resolve:ssm:',
-          {
-            'Fn::ImportValue': 'StackA:ExportsOutputRefStringParameter472EED0ECEFE290A',
-          },
-          '}}',
-        ],
-      ],
-    },
-  });
-});
-
-test('When a parameter name contains tokens that can be resolved to string, use parameter', () => {
-  // GIVEN
-  const app = new cdk.App();
-
-  const stackA = new cdk.Stack(app, 'StackA', { env: { region: 'us-east-1', account: '123456789012' } });
-  const role = new iam.Role(stackA, 'Role', {
-    roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-    assumedBy: new iam.AccountRootPrincipal(),
-  });
-  const stackB = new cdk.Stack(app, 'StackB', { env: { region: 'us-east-2', account: '123456789012' } });
-
-  // WHEN
-  const paramB = ssm.StringParameter.fromStringParameterAttributes(stackB, 'import-string-param', {
-    simpleName: true,
-    parameterName: role.roleName,
-  });
-  new cdk.CfnOutput(stackB, 'OutputParamValue', {
-    value: paramB.stringValue,
-  });
-
-  // THEN
-  const template = Template.fromStack(stackB);
-  template.hasOutput('OutputParamValue', {
-    Value: {
-      Ref: 'importstringparamParameter',
-    },
-  });
-  template.hasParameter('importstringparamParameter', {
-    Type: 'AWS::SSM::Parameter::Value<String>',
-    Default: 'stackastackarole438bb295b7bd8838d703',
   });
 });
