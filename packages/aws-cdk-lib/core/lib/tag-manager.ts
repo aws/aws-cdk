@@ -3,7 +3,7 @@ import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
 import { IResolvable } from './resolvable';
 
-export const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
+const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 
 interface Tag {
   key: string;
