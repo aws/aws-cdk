@@ -632,14 +632,25 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    *
    * @internal
    */
-  protected _createInstances(props: DatabaseClusterProps): InstanceConfig {
+  protected _createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterProps): InstanceConfig {
     const instanceEndpoints: Endpoint[] = [];
     const instanceIdentifiers: string[] = [];
     const readers: IAuroraClusterInstance[] = [];
+
+    let monitoringRole = props.monitoringRole;
+    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = new Role(cluster, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+    }
+
     // need to create the writer first since writer is determined by what instance is first
     const writer = props.writer!.bind(this, this, {
       monitoringInterval: props.monitoringInterval,
-      monitoringRole: props.monitoringRole,
+      monitoringRole: monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
       subnetGroup: this.subnetGroup,
       promotionTier: 0, // override the promotion tier so that writers are always 0
@@ -647,7 +658,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
         monitoringInterval: props.monitoringInterval,
-        monitoringRole: props.monitoringRole,
+        monitoringRole: monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
         subnetGroup: this.subnetGroup,
       });
@@ -988,7 +999,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('writer must be provided');
     }
 
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1185,7 +1196,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
