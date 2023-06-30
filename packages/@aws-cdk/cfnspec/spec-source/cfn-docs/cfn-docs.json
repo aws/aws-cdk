@@ -678,8 +678,7 @@
     },
     "AWS::AmplifyUIBuilder::Component": {
       "attributes": {
-        "Id": "The unique ID of the component.",
-        "Ref": ""
+        "Id": "The unique ID of the component."
       },
       "description": "The AWS::AmplifyUIBuilder::Component resource specifies a component within an Amplify app. A component is a user interface (UI) element that you can customize. Use `ComponentChild` to configure an instance of a `Component` . A `ComponentChild` instance inherits the configuration of the main `Component` .",
       "properties": {
@@ -853,8 +852,7 @@
     },
     "AWS::AmplifyUIBuilder::Form": {
       "attributes": {
-        "Id": "The ID for the form.",
-        "Ref": ""
+        "Id": "The ID for the form."
       },
       "description": "The AWS::AmplifyUIBuilder::Form resource specifies all of the information that is required to create a form.",
       "properties": {
@@ -1016,8 +1014,7 @@
     },
     "AWS::AmplifyUIBuilder::Theme": {
       "attributes": {
-        "Id": "The ID for the theme.",
-        "Ref": ""
+        "Id": "The ID for the theme."
       },
       "description": "The AWS::AmplifyUIBuilder::Theme resource specifies a theme within an Amplify app. A theme is a collection of style settings that apply globally to the components associated with the app.",
       "properties": {
@@ -4308,8 +4305,7 @@
         "AutoScalingConfigurationArn": "The Amazon Resource Name (ARN) of this auto scaling configuration.",
         "AutoScalingConfigurationRevision": "The revision of this auto scaling configuration. It's unique among all the active configurations that share the same `AutoScalingConfigurationName` .",
         "Latest": "It's set to true for the configuration with the highest `Revision` among all configurations that share the same `AutoScalingConfigurationName` . It's set to false otherwise. App Runner temporarily doubles the number of provisioned instances during deployments, to maintain the same capacity for both old and new code.",
-        "Ref": "",
-        "Status": "The current state of the auto scaling configuration. If the status of the configuration revision is `ACTIVE` , your auto scaling configuration exists. If the status of a configuration revision is `INACTIVE` , your auto scaling configuration was deleted and can't be used. Inactive configuration revisions are permanently removed some time after they are deleted."
+        "Ref": ""
       },
       "description": "Specify an AWS App Runner Automatic Scaling configuration by using the `AWS::AppRunner::AutoScalingConfiguration` resource in an AWS CloudFormation template. \n\nThe `AWS::AppRunner::AutoScalingConfiguration` resource is an AWS App Runner resource type that specifies an App Runner automatic scaling configuration.\n\nApp Runner requires this resource to set non-default auto scaling settings for instances used to process the web requests. You can share an auto scaling configuration across multiple services.\n\nCreate multiple revisions of a configuration by calling this action multiple times using the same `AutoScalingConfigurationName` . The call returns incremental `AutoScalingConfigurationRevision` values. When you create a service and configure an auto scaling configuration resource, the service uses the latest active revision of the auto scaling configuration by default. You can optionally configure the service to use a specific revision.\n\nConfigure a higher `MinSize` to increase the spread of your App Runner service over more Availability Zones in the AWS Region . The tradeoff is a higher minimal cost.\n\nConfigure a lower `MaxSize` to control your cost. The tradeoff is lower responsiveness during peak demand.",
       "properties": {
@@ -4551,6 +4547,8 @@
         "Description": "The description of the app block.",
         "DisplayName": "The display name of the app block.",
         "Name": "The name of the app block.\n\n*Pattern* : `^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$`",
+        "PackagingType": "The packaging type of the app block.",
+        "PostSetupScriptDetails": "The post setup script details of the app block.",
         "SetupScriptDetails": "The setup script details of the app block.",
         "SourceS3Location": "The source S3 location of the app block.",
         "Tags": "The tags of the app block."
@@ -4561,7 +4559,7 @@
       "description": "The S3 location of the app block.",
       "properties": {
         "S3Bucket": "The S3 bucket of the app block.",
-        "S3Key": "The S3 key of the S3 object of the virtual hard disk."
+        "S3Key": "The S3 key of the S3 object of the virtual hard disk.\n\nThis is required when it's used by `SetupScriptDetails` and `PostSetupScriptDetails` ."
       }
     },
     "AWS::AppStream::AppBlock.ScriptDetails": {
@@ -4572,6 +4570,43 @@
         "ExecutablePath": "The run path for the script.",
         "ScriptS3Location": "The S3 object location of the script.",
         "TimeoutInSeconds": "The run timeout, in seconds, for the script."
+      }
+    },
+    "AWS::AppStream::AppBlockBuilder": {
+      "attributes": {
+        "Arn": "The ARN of the app block builder.",
+        "CreatedTime": "The time when the app block builder was created.",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` of the app block builder, such as `abcdefAppBlockBuilder` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates an app block builder.",
+      "properties": {
+        "AccessEndpoints": "The access endpoints of the app block builder.",
+        "AppBlockArns": "The ARN of the app block.\n\n*Maximum* : `1`",
+        "Description": "The description of the app block builder.",
+        "DisplayName": "The display name of the app block builder.",
+        "EnableDefaultInternetAccess": "Indicates whether default internet access is enabled for the app block builder.",
+        "IamRoleArn": "The ARN of the IAM role that is applied to the app block builder.",
+        "InstanceType": "The instance type of the app block builder.",
+        "Name": "The name of the app block builder.",
+        "Platform": "The platform of the app block builder.\n\n*Allowed values* : `WINDOWS_SERVER_2019`",
+        "Tags": "The tags of the app block builder.",
+        "VpcConfig": "The VPC configuration for the app block builder."
+      }
+    },
+    "AWS::AppStream::AppBlockBuilder.AccessEndpoint": {
+      "attributes": {},
+      "description": "Describes an interface VPC endpoint (interface endpoint) that lets you create a private connection between the virtual private cloud (VPC) that you specify and AppStream 2.0. When you specify an interface endpoint for a stack, users of the stack can connect to AppStream 2.0 only through that endpoint. When you specify an interface endpoint for an image builder, administrators can connect to the image builder only through that endpoint.",
+      "properties": {
+        "EndpointType": "The type of interface endpoint.",
+        "VpceId": "The identifier (ID) of the VPC in which the interface endpoint is used."
+      }
+    },
+    "AWS::AppStream::AppBlockBuilder.VpcConfig": {
+      "attributes": {},
+      "description": "Describes VPC configuration information for fleets and image builders.",
+      "properties": {
+        "SecurityGroupIds": "The identifiers of the security groups for the fleet or image builder.",
+        "SubnetIds": "The identifiers of the subnets to which a network interface is attached from the fleet instance or image builder instance. Fleet instances use one or more subnets. Image builder instances use one subnet."
       }
     },
     "AWS::AppStream::Application": {
@@ -10826,6 +10861,83 @@
         "Username": "The username for the user."
       }
     },
+    "AWS::Comprehend::DocumentClassifier": {
+      "attributes": {
+        "Arn": "",
+        "Ref": ""
+      },
+      "description": "",
+      "properties": {
+        "DataAccessRoleArn": "",
+        "DocumentClassifierName": "",
+        "InputDataConfig": "",
+        "LanguageCode": "",
+        "Mode": "",
+        "ModelKmsKeyId": "",
+        "ModelPolicy": "",
+        "OutputDataConfig": "",
+        "Tags": "",
+        "VersionName": "",
+        "VolumeKmsKeyId": "",
+        "VpcConfig": ""
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.AugmentedManifestsListItem": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AttributeNames": "",
+        "S3Uri": "",
+        "Split": ""
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.DocumentClassifierDocuments": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "S3Uri": "",
+        "TestS3Uri": ""
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.DocumentClassifierInputDataConfig": {
+      "attributes": {},
+      "description": "The input properties for training a document classifier.\n\nFor more information on how the input file is formatted, see [Preparing training data](https://docs.aws.amazon.com/comprehend/latest/dg/prep-classifier-data.html) in the Comprehend Developer Guide.",
+      "properties": {
+        "AugmentedManifests": "A list of augmented manifest files that provide training data for your custom model. An augmented manifest file is a labeled dataset that is produced by Amazon SageMaker Ground Truth.\n\nThis parameter is required if you set `DataFormat` to `AUGMENTED_MANIFEST` .",
+        "DataFormat": "The format of your training data:\n\n- `COMPREHEND_CSV` : A two-column CSV file, where labels are provided in the first column, and documents are provided in the second. If you use this value, you must provide the `S3Uri` parameter in your request.\n- `AUGMENTED_MANIFEST` : A labeled dataset that is produced by Amazon SageMaker Ground Truth. This file is in JSON lines format. Each line is a complete JSON object that contains a training document and its associated labels.\n\nIf you use this value, you must provide the `AugmentedManifests` parameter in your request.\n\nIf you don't specify a value, Amazon Comprehend uses `COMPREHEND_CSV` as the default.",
+        "DocumentReaderConfig": "",
+        "DocumentType": "",
+        "Documents": "",
+        "LabelDelimiter": "Indicates the delimiter used to separate each label for training a multi-label classifier. The default delimiter between labels is a pipe (|). You can use a different character as a delimiter (if it's an allowed character) by specifying it under Delimiter for labels. If the training documents use a delimiter other than the default or the delimiter you specify, the labels on that line will be combined to make a single unique label, such as LABELLABELLABEL.",
+        "S3Uri": "The Amazon S3 URI for the input data. The S3 bucket must be in the same Region as the API endpoint that you are calling. The URI can point to a single input file or it can provide the prefix for a collection of input files.\n\nFor example, if you use the URI `S3://bucketName/prefix` , if the prefix is a single file, Amazon Comprehend uses that file as input. If more than one file begins with the prefix, Amazon Comprehend uses all of them as input.\n\nThis parameter is required if you set `DataFormat` to `COMPREHEND_CSV` .",
+        "TestS3Uri": "This specifies the Amazon S3 location where the test annotations for an entity recognizer are located. The URI must be in the same AWS Region as the API endpoint that you are calling."
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.DocumentClassifierOutputDataConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "KmsKeyId": "",
+        "S3Uri": ""
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.DocumentReaderConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "DocumentReadAction": "",
+        "DocumentReadMode": "",
+        "FeatureTypes": ""
+      }
+    },
+    "AWS::Comprehend::DocumentClassifier.VpcConfig": {
+      "attributes": {},
+      "description": "Configuration parameters for an optional private Virtual Private Cloud (VPC) containing the resources you are using for the job. For more information, see [Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) .",
+      "properties": {
+        "SecurityGroupIds": "The ID number for a security group on an instance of your private VPC. Security groups on your VPC function serve as a virtual firewall to control inbound and outbound traffic and provides security for the resources that you\u2019ll be accessing on the VPC. This ID number is preceded by \"sg-\", for instance: \"sg-03b388029b0a285ea\". For more information, see [Security Groups for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) .",
+        "Subnets": "The ID for each subnet being used in your private VPC. This subnet is a subset of the a range of IPv4 addresses used by the VPC and is specific to a given availability zone in the VPC\u2019s Region. This ID number is preceded by \"subnet-\", for instance: \"subnet-04ccf456919e69055\". For more information, see [VPCs and Subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) ."
+      }
+    },
     "AWS::Comprehend::Flywheel": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the flywheel.",
@@ -15618,6 +15730,7 @@
       },
       "description": "Specifies a key pair for use with an Amazon Elastic Compute Cloud instance as follows:\n\n- To import an existing key pair, include the `PublicKeyMaterial` property.\n- To create a new key pair, omit the `PublicKeyMaterial` property.\n\nWhen you import an existing key pair, you specify the public key material for the key. We assume that you have the private key material for the key. AWS CloudFormation does not create or return the private key material when you import a key pair.\n\nWhen you create a new key pair, the private key is saved to AWS Systems Manager Parameter Store, using a parameter with the following name: `/ec2/keypair/{key_pair_id}` . For more information about retrieving private key, and the required permissions, see [Create a key pair using AWS CloudFormation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html#create-key-pair-cloudformation) in the *Amazon EC2 User Guide* .\n\nWhen AWS CloudFormation deletes a key pair that was created or imported by a stack, it also deletes the parameter that was used to store the private key material in Parameter Store.",
       "properties": {
+        "KeyFormat": "The format of the key pair.\n\nDefault: `pem`",
         "KeyName": "A unique name for the key pair.\n\nConstraints: Up to 255 ASCII characters",
         "KeyType": "The type of key pair. Note that ED25519 keys are not supported for Windows instances.\n\nIf the `PublicKeyMaterial` property is specified, the `KeyType` property is ignored, and the key type is inferred from the `PublicKeyMaterial` value.\n\nDefault: `rsa`",
         "PublicKeyMaterial": "The public key material. The `PublicKeyMaterial` property is used to import a key pair. If this property is not specified, then a new key pair will be created.",
@@ -15628,6 +15741,7 @@
       "attributes": {
         "DefaultVersionNumber": "The default version of the launch template, such as 2.\n\nThe default version of a launch template cannot be specified in AWS CloudFormation . The default version can be set in the Amazon EC2 console or by using the `modify-launch-template` AWS CLI command.",
         "LatestVersionNumber": "The latest version of the launch template, such as `5` .",
+        "LaunchTemplateId": "",
         "Ref": "`Ref` returns the ID of the launch template, for example, `lt-01238c059e3466abc` ."
       },
       "description": "Specifies the properties for creating a launch template.\n\nThe minimum required properties for specifying a launch template are as follows:\n\n- You must specify at least one property for the launch template data.\n- You do not need to specify a name for the launch template. If you do not specify a name, AWS CloudFormation creates the name for you.\n\nA launch template can contain some or all of the configuration information to launch an instance. When you launch an instance using a launch template, instance properties that are not specified in the launch template use default values, except the `ImageId` property, which has no default value. If you do not specify an AMI ID for the launch template `ImageId` property, you must specify an AMI ID for the instance `ImageId` property.\n\nFor more information, see [Launch an instance from a launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) in the *Amazon EC2 User Guide* .",
@@ -17037,6 +17151,8 @@
     "AWS::EC2::Subnet": {
       "attributes": {
         "AvailabilityZone": "The Availability Zone of this subnet. For example:\n\n`{ \"Fn::GetAtt\" : [ \"mySubnet\", \"AvailabilityZone\" ] }`",
+        "AvailabilityZoneId": "",
+        "CidrBlock": "",
         "Ipv6CidrBlocks": "The IPv6 CIDR blocks that are associated with the subnet, such as `[ 2001:db8:1234:1a00::/64 ]` .",
         "NetworkAclAssociationId": "The ID of the network ACL that is associated with the subnet's VPC, such as `acl-5fb85d36` .",
         "OutpostArn": "The Amazon Resource Name (ARN) of the Outpost.",
@@ -17702,7 +17818,9 @@
       "description": "Describes the options for Verified Access logs.",
       "properties": {
         "CloudWatchLogs": "CloudWatch Logs logging destination.",
+        "IncludeTrustContext": "Include trust data sent by trust providers into the logs.",
         "KinesisDataFirehose": "Kinesis logging destination.",
+        "LogVersion": "The logging version to use.\n\nValid values: `ocsf-0.1` | `ocsf-1.0.0-rc.2`",
         "S3": "Amazon S3 logging options."
       }
     },
@@ -17803,11 +17921,11 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "AboutText": "",
-        "Architectures": "",
-        "OperatingSystems": "",
-        "RepositoryDescription": "",
-        "UsageText": ""
+        "AboutText": "The longform description of the contents of the repository. This text appears in the repository details on the Amazon ECR Public Gallery.",
+        "Architectures": "The architecture tags that are associated with the repository.",
+        "OperatingSystems": "The operating system tags that are associated with the repository.",
+        "RepositoryDescription": "The short description of the repository.",
+        "UsageText": "The longform usage details of the contents of the repository. The usage text provides context for users of the repository."
       }
     },
     "AWS::ECR::PullThroughCacheRule": {
@@ -22431,7 +22549,7 @@
       "description": "The `AWS::GameLift::Build` resource creates a game server build that is installed and run on instances in an Amazon GameLift fleet. This resource points to an Amazon S3 location that contains a zip file with all of the components of the game server build.",
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
-        "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> If you have active fleets using the Windows Server 2012 operating system, you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support. All others must use Windows Server 2016 when creating new Windows-based builds.",
+        "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> The Amazon Linux 2023 OS is not available in the China Regions. > Support is ending in 2023 for the Windows Server 2012 and Amazon Linux (AL1) operating systems. If you have active fleets using these operating systems, you can continue to create new builds using these until their end of support. All other users must use Windows Server 2016, Amazon Linux 2, or Amazon Linux 2023. For more information, including specific end-of-support dates, see the Amazon GameLift FAQs for [Windows Server](https://docs.aws.amazon.com/gamelift/faq/win2012/) and [Linux Server](https://docs.aws.amazon.com/gamelift/faq/al1/) .",
         "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
@@ -25273,7 +25391,8 @@
     },
     "AWS::IAM::ServiceLinkedRole": {
       "attributes": {
-        "Ref": "`Ref` returns the `RoleName` created for the service-linked role appended with an underscore followed by the `CustomSuffix` . For example: `AWSServiceRoleForAutoScaling_TestSuffix` ."
+        "Ref": "`Ref` returns the `RoleName` created for the service-linked role appended with an underscore followed by the `CustomSuffix` . For example: `AWSServiceRoleForAutoScaling_TestSuffix` .",
+        "RoleName": ""
       },
       "description": "Creates an IAM role that is linked to a specific AWS service. The service controls the attached policies and when the role can be deleted. This helps ensure that the service is not broken by an unexpectedly changed or deleted role, which could put your AWS resources into an unknown state. Allowing the service to control the role helps improve service stability and proper cleanup when a service and its role are no longer needed. For more information, see [Using service-linked roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html) in the *IAM User Guide* .\n\nTo attach a policy to this service-linked role, you must make the request using the AWS service that depends on this role.",
       "properties": {
@@ -31740,11 +31859,6 @@
     "AWS::LakeFormation::DataLakeSettings.ExternalDataFilteringAllowList": {
       "attributes": {},
       "description": "A list of the account IDs of AWS accounts with Amazon EMR clusters that are allowed to perform data filtering.",
-      "properties": {}
-    },
-    "AWS::LakeFormation::DataLakeSettings.Permissions": {
-      "attributes": {},
-      "description": "Permissions granted to a principal.",
       "properties": {}
     },
     "AWS::LakeFormation::DataLakeSettings.PrincipalPermissions": {
@@ -38561,12 +38675,14 @@
     },
     "AWS::NetworkManager::Device": {
       "attributes": {
+        "CreatedAt": "",
         "DeviceArn": "The ARN of the device. For example, `arn:aws:networkmanager::123456789012:device/global-network-01231231231231231/device-07f6fd08867abc123` .",
         "DeviceId": "The ID of the device. For example, `device-07f6fd08867abc123` .",
         "Ref": "`Ref` returns the IDs of the global network and device. For example: `global-network-01231231231231231|device-07f6fd08867abc123` ."
       },
       "description": "Specifies a device.",
       "properties": {
+        "AWSLocation": "",
         "Description": "A description of the device.\n\nConstraints: Maximum length of 256 characters.",
         "GlobalNetworkId": "The ID of the global network.",
         "Location": "The site location.",
@@ -38576,6 +38692,14 @@
         "Tags": "The tags for the device.",
         "Type": "The device type.",
         "Vendor": "The vendor of the device.\n\nConstraints: Maximum length of 128 characters."
+      }
+    },
+    "AWS::NetworkManager::Device.AWSLocation": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "SubnetArn": "",
+        "Zone": ""
       }
     },
     "AWS::NetworkManager::Device.Location": {
@@ -40009,12 +40133,10 @@
         "ApplicationInstanceIdToReplace": "The ID of an application instance to replace with the new instance.",
         "DefaultRuntimeContextDevice": "The device's ID.",
         "Description": "A description for the application instance.",
-        "DeviceId": "A device's ID.",
         "ManifestOverridesPayload": "Setting overrides for the application manifest.",
         "ManifestPayload": "The application's manifest document.",
         "Name": "A name for the application instance.",
         "RuntimeRoleArn": "The ARN of a runtime role for the application instance.",
-        "StatusFilter": "Only include instances with a specific status.",
         "Tags": "Tags for the application instance."
       }
     },
@@ -42210,18 +42332,10 @@
         "NullValueColor": "Determines the color that is applied to null values."
       }
     },
-    "AWS::QuickSight::Analysis.ColorsConfiguration": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "CustomColors": ""
-      }
-    },
     "AWS::QuickSight::Analysis.ColumnConfiguration": {
       "attributes": {},
       "description": "The general configuration of a column.",
       "properties": {
-        "ColorsConfiguration": "",
         "Column": "The column.",
         "FormatConfiguration": "The format configuration of a column.",
         "Role": "The role of the column."
@@ -42473,15 +42587,6 @@
         "URLTemplate": "THe URL link of the `CustomActionURLOperation` ."
       }
     },
-    "AWS::QuickSight::Analysis.CustomColor": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Color": "",
-        "FieldValue": "",
-        "SpecialValue": ""
-      }
-    },
     "AWS::QuickSight::Analysis.CustomContentConfiguration": {
       "attributes": {},
       "description": "The configuration of a `CustomContentVisual` .",
@@ -42588,6 +42693,7 @@
         "MeasureLabelVisibility": "Determines the visibility of the measure field labels.",
         "Overlap": "Determines whether overlap is enabled or disabled for the data labels.",
         "Position": "Determines the position of the data labels.",
+        "TotalsVisibility": "Determines the visibility of the total.",
         "Visibility": "Determines the visibility of the data labels."
       }
     },
@@ -42834,6 +42940,7 @@
       "properties": {
         "CustomValuesConfiguration": "The configuration of custom values for destination parameter in `DestinationParameterValueConfiguration` .",
         "SelectAllValueOptions": "The configuration that selects all options.",
+        "SourceColumn": "",
         "SourceField": "The source field ID of the destination parameter.",
         "SourceParameterName": "The source parameter name of the destination parameter."
       }
@@ -43129,6 +43236,7 @@
       "attributes": {},
       "description": "The configuration of selected fields in the `CustomActionFilterOperation` .\n\nThis is a union type structure. For this structure to be valid, only one of the attributes can be defined.",
       "properties": {
+        "SelectedColumns": "The selected columns of a dataset.",
         "SelectedFieldOptions": "A structure that contains the options that choose which fields are filtered in the `CustomActionFilterOperation` .\n\nValid values are defined as follows:\n\n- `ALL_FIELDS` : Applies the filter operation to all fields.",
         "SelectedFields": "Chooses the fields that are filtered in `CustomActionFilterOperation` ."
       }
@@ -43472,6 +43580,27 @@
         "West": "The longitude of the west bound of the geospatial coordinate bounds."
       }
     },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapColorScale": {
+      "attributes": {},
+      "description": "The color scale specification for the heatmap point style.",
+      "properties": {
+        "Colors": "The list of colors to be used in heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapConfiguration": {
+      "attributes": {},
+      "description": "The heatmap configuration of the geospatial point style.",
+      "properties": {
+        "HeatmapColor": "The color scale specification for the heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Analysis.GeospatialHeatmapDataColor": {
+      "attributes": {},
+      "description": "The color to be used in the heatmap point style.",
+      "properties": {
+        "Color": "The hex color to be used in the heatmap point style."
+      }
+    },
     "AWS::QuickSight::Analysis.GeospatialMapAggregatedFieldWells": {
       "attributes": {},
       "description": "The aggregated field wells for a geospatial map.",
@@ -43525,6 +43654,7 @@
       "description": "The point style of the geospatial map.",
       "properties": {
         "ClusterMarkerConfiguration": "The cluster marker configuration of the geospatial point style.",
+        "HeatmapConfiguration": "The heatmap configuration of the geospatial point style.",
         "SelectedPointStyle": "The selected point styles (point, cluster) of the geospatial map."
       }
     },
@@ -44512,6 +44642,7 @@
       "properties": {
         "FieldId": "The field ID of the cell for conditional formatting.",
         "Scope": "The scope of the cell for conditional formatting.",
+        "Scopes": "A list of cell scopes for conditional formatting.",
         "TextFormat": "The text format of the cell for conditional formatting."
       }
     },
@@ -44556,6 +44687,22 @@
         "Width": "The width of the data path option."
       }
     },
+    "AWS::QuickSight::Analysis.PivotTableFieldCollapseStateOption": {
+      "attributes": {},
+      "description": "The collapse state options for the pivot table field options.",
+      "properties": {
+        "State": "The state of the field target of a pivot table. Choose one of the following options:\n\n- `COLLAPSED`\n- `EXPANDED`",
+        "Target": "A tagged-union object that sets the collapse state."
+      }
+    },
+    "AWS::QuickSight::Analysis.PivotTableFieldCollapseStateTarget": {
+      "attributes": {},
+      "description": "The target of a pivot table field collapse state.",
+      "properties": {
+        "FieldDataPathValues": "The data path of the pivot table's header. Used to set the collapse state.",
+        "FieldId": "The field ID of the pivot table that the collapse state needs to be set to."
+      }
+    },
     "AWS::QuickSight::Analysis.PivotTableFieldOption": {
       "attributes": {},
       "description": "The selected field options for the pivot table field options.",
@@ -44569,6 +44716,7 @@
       "attributes": {},
       "description": "The field options for a pivot table visual.",
       "properties": {
+        "CollapseStateOptions": "The collapse state options for the pivot table field options.",
         "DataPathOptions": "The data path options for the pivot table field options.",
         "SelectedFieldOptions": "The selected field options for the pivot table field options."
       }
@@ -44592,6 +44740,7 @@
       "description": "The table options for a pivot table visual.",
       "properties": {
         "CellStyle": "The table cell style of cells.",
+        "CollapsedRowDimensionsVisibility": "The visibility setting of a pivot table's collapsed row dimension fields. If the value of this structure is `HIDDEN` , all collapsed columns in a pivot table are automatically hidden. The default value is `VISIBLE` .",
         "ColumnHeaderStyle": "The table cell style of the column header.",
         "ColumnNamesVisibility": "The visibility of the column names.",
         "MetricPlacement": "The metric placement (row, column) options.",
@@ -44700,6 +44849,7 @@
         "AlternateBandColorsVisibility": "Determines the visibility of the colors of alternatign bands in a radar chart.",
         "AlternateBandEvenColor": "The color of the even-numbered alternate bands of a radar chart.",
         "AlternateBandOddColor": "The color of the odd-numbered alternate bands of a radar chart.",
+        "AxesRangeScale": "The axis behavior options of a radar chart.",
         "BaseSeriesSettings": "The base sreies settings of a radar chart.",
         "CategoryAxis": "The category axis of a radar chart.",
         "CategoryLabelOptions": "The category label options of a radar chart.",
@@ -44933,6 +45083,7 @@
       "description": "The aggregated field well of a scatter plot.",
       "properties": {
         "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is aggregated by category.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is aggregated by category."
@@ -44965,6 +45116,8 @@
       "attributes": {},
       "description": "The unaggregated field wells of a scatter plot.",
       "properties": {
+        "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is a dimension field and cannot be aggregated.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is a dimension field and cannot be aggregated."
@@ -46392,18 +46545,10 @@
         "NullValueColor": "Determines the color that is applied to null values."
       }
     },
-    "AWS::QuickSight::Dashboard.ColorsConfiguration": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "CustomColors": ""
-      }
-    },
     "AWS::QuickSight::Dashboard.ColumnConfiguration": {
       "attributes": {},
       "description": "The general configuration of a column.",
       "properties": {
-        "ColorsConfiguration": "",
         "Column": "The column.",
         "FormatConfiguration": "The format configuration of a column.",
         "Role": "The role of the column."
@@ -46655,15 +46800,6 @@
         "URLTemplate": "THe URL link of the `CustomActionURLOperation` ."
       }
     },
-    "AWS::QuickSight::Dashboard.CustomColor": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Color": "",
-        "FieldValue": "",
-        "SpecialValue": ""
-      }
-    },
     "AWS::QuickSight::Dashboard.CustomContentConfiguration": {
       "attributes": {},
       "description": "The configuration of a `CustomContentVisual` .",
@@ -46847,6 +46983,7 @@
         "MeasureLabelVisibility": "Determines the visibility of the measure field labels.",
         "Overlap": "Determines whether overlap is enabled or disabled for the data labels.",
         "Position": "Determines the position of the data labels.",
+        "TotalsVisibility": "Determines the visibility of the total.",
         "Visibility": "Determines the visibility of the data labels."
       }
     },
@@ -47114,6 +47251,7 @@
       "properties": {
         "CustomValuesConfiguration": "The configuration of custom values for destination parameter in `DestinationParameterValueConfiguration` .",
         "SelectAllValueOptions": "The configuration that selects all options.",
+        "SourceColumn": "",
         "SourceField": "The source field ID of the destination parameter.",
         "SourceParameterName": "The source parameter name of the destination parameter."
       }
@@ -47430,6 +47568,7 @@
       "attributes": {},
       "description": "The configuration of selected fields in the `CustomActionFilterOperation` .\n\nThis is a union type structure. For this structure to be valid, only one of the attributes can be defined.",
       "properties": {
+        "SelectedColumns": "The selected columns of a dataset.",
         "SelectedFieldOptions": "A structure that contains the options that choose which fields are filtered in the `CustomActionFilterOperation` .\n\nValid values are defined as follows:\n\n- `ALL_FIELDS` : Applies the filter operation to all fields.",
         "SelectedFields": "Chooses the fields that are filtered in `CustomActionFilterOperation` ."
       }
@@ -47773,6 +47912,27 @@
         "West": "The longitude of the west bound of the geospatial coordinate bounds."
       }
     },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapColorScale": {
+      "attributes": {},
+      "description": "The color scale specification for the heatmap point style.",
+      "properties": {
+        "Colors": "The list of colors to be used in heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapConfiguration": {
+      "attributes": {},
+      "description": "The heatmap configuration of the geospatial point style.",
+      "properties": {
+        "HeatmapColor": "The color scale specification for the heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Dashboard.GeospatialHeatmapDataColor": {
+      "attributes": {},
+      "description": "The color to be used in the heatmap point style.",
+      "properties": {
+        "Color": "The hex color to be used in the heatmap point style."
+      }
+    },
     "AWS::QuickSight::Dashboard.GeospatialMapAggregatedFieldWells": {
       "attributes": {},
       "description": "The aggregated field wells for a geospatial map.",
@@ -47826,6 +47986,7 @@
       "description": "The point style of the geospatial map.",
       "properties": {
         "ClusterMarkerConfiguration": "The cluster marker configuration of the geospatial point style.",
+        "HeatmapConfiguration": "The heatmap configuration of the geospatial point style.",
         "SelectedPointStyle": "The selected point styles (point, cluster) of the geospatial map."
       }
     },
@@ -48813,6 +48974,7 @@
       "properties": {
         "FieldId": "The field ID of the cell for conditional formatting.",
         "Scope": "The scope of the cell for conditional formatting.",
+        "Scopes": "A list of cell scopes for conditional formatting.",
         "TextFormat": "The text format of the cell for conditional formatting."
       }
     },
@@ -48857,6 +49019,22 @@
         "Width": "The width of the data path option."
       }
     },
+    "AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateOption": {
+      "attributes": {},
+      "description": "The collapse state options for the pivot table field options.",
+      "properties": {
+        "State": "The state of the field target of a pivot table. Choose one of the following options:\n\n- `COLLAPSED`\n- `EXPANDED`",
+        "Target": "A tagged-union object that sets the collapse state."
+      }
+    },
+    "AWS::QuickSight::Dashboard.PivotTableFieldCollapseStateTarget": {
+      "attributes": {},
+      "description": "The target of a pivot table field collapse state.",
+      "properties": {
+        "FieldDataPathValues": "The data path of the pivot table's header. Used to set the collapse state.",
+        "FieldId": "The field ID of the pivot table that the collapse state needs to be set to."
+      }
+    },
     "AWS::QuickSight::Dashboard.PivotTableFieldOption": {
       "attributes": {},
       "description": "The selected field options for the pivot table field options.",
@@ -48870,6 +49048,7 @@
       "attributes": {},
       "description": "The field options for a pivot table visual.",
       "properties": {
+        "CollapseStateOptions": "The collapse state options for the pivot table field options.",
         "DataPathOptions": "The data path options for the pivot table field options.",
         "SelectedFieldOptions": "The selected field options for the pivot table field options."
       }
@@ -48893,6 +49072,7 @@
       "description": "The table options for a pivot table visual.",
       "properties": {
         "CellStyle": "The table cell style of cells.",
+        "CollapsedRowDimensionsVisibility": "The visibility setting of a pivot table's collapsed row dimension fields. If the value of this structure is `HIDDEN` , all collapsed columns in a pivot table are automatically hidden. The default value is `VISIBLE` .",
         "ColumnHeaderStyle": "The table cell style of the column header.",
         "ColumnNamesVisibility": "The visibility of the column names.",
         "MetricPlacement": "The metric placement (row, column) options.",
@@ -49001,6 +49181,7 @@
         "AlternateBandColorsVisibility": "Determines the visibility of the colors of alternatign bands in a radar chart.",
         "AlternateBandEvenColor": "The color of the even-numbered alternate bands of a radar chart.",
         "AlternateBandOddColor": "The color of the odd-numbered alternate bands of a radar chart.",
+        "AxesRangeScale": "The axis behavior options of a radar chart.",
         "BaseSeriesSettings": "The base sreies settings of a radar chart.",
         "CategoryAxis": "The category axis of a radar chart.",
         "CategoryLabelOptions": "The category label options of a radar chart.",
@@ -49234,6 +49415,7 @@
       "description": "The aggregated field well of a scatter plot.",
       "properties": {
         "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is aggregated by category.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is aggregated by category."
@@ -49266,6 +49448,8 @@
       "attributes": {},
       "description": "The unaggregated field wells of a scatter plot.",
       "properties": {
+        "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is a dimension field and cannot be aggregated.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is a dimension field and cannot be aggregated."
@@ -51437,18 +51621,10 @@
         "NullValueColor": "Determines the color that is applied to null values."
       }
     },
-    "AWS::QuickSight::Template.ColorsConfiguration": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "CustomColors": ""
-      }
-    },
     "AWS::QuickSight::Template.ColumnConfiguration": {
       "attributes": {},
       "description": "The general configuration of a column.",
       "properties": {
-        "ColorsConfiguration": "",
         "Column": "The column.",
         "FormatConfiguration": "The format configuration of a column.",
         "Role": "The role of the column."
@@ -51724,15 +51900,6 @@
         "URLTemplate": "THe URL link of the `CustomActionURLOperation` ."
       }
     },
-    "AWS::QuickSight::Template.CustomColor": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "Color": "",
-        "FieldValue": "",
-        "SpecialValue": ""
-      }
-    },
     "AWS::QuickSight::Template.CustomContentConfiguration": {
       "attributes": {},
       "description": "The configuration of a `CustomContentVisual` .",
@@ -51839,6 +52006,7 @@
         "MeasureLabelVisibility": "Determines the visibility of the measure field labels.",
         "Overlap": "Determines whether overlap is enabled or disabled for the data labels.",
         "Position": "Determines the position of the data labels.",
+        "TotalsVisibility": "Determines the visibility of the total.",
         "Visibility": "Determines the visibility of the data labels."
       }
     },
@@ -52077,6 +52245,7 @@
       "properties": {
         "CustomValuesConfiguration": "The configuration of custom values for destination parameter in `DestinationParameterValueConfiguration` .",
         "SelectAllValueOptions": "The configuration that selects all options.",
+        "SourceColumn": "",
         "SourceField": "The source field ID of the destination parameter.",
         "SourceParameterName": "The source parameter name of the destination parameter."
       }
@@ -52372,6 +52541,7 @@
       "attributes": {},
       "description": "The configuration of selected fields in the `CustomActionFilterOperation` .\n\nThis is a union type structure. For this structure to be valid, only one of the attributes can be defined.",
       "properties": {
+        "SelectedColumns": "The selected columns of a dataset.",
         "SelectedFieldOptions": "A structure that contains the options that choose which fields are filtered in the `CustomActionFilterOperation` .\n\nValid values are defined as follows:\n\n- `ALL_FIELDS` : Applies the filter operation to all fields.",
         "SelectedFields": "Chooses the fields that are filtered in `CustomActionFilterOperation` ."
       }
@@ -52715,6 +52885,27 @@
         "West": "The longitude of the west bound of the geospatial coordinate bounds."
       }
     },
+    "AWS::QuickSight::Template.GeospatialHeatmapColorScale": {
+      "attributes": {},
+      "description": "The color scale specification for the heatmap point style.",
+      "properties": {
+        "Colors": "The list of colors to be used in heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Template.GeospatialHeatmapConfiguration": {
+      "attributes": {},
+      "description": "The heatmap configuration of the geospatial point style.",
+      "properties": {
+        "HeatmapColor": "The color scale specification for the heatmap point style."
+      }
+    },
+    "AWS::QuickSight::Template.GeospatialHeatmapDataColor": {
+      "attributes": {},
+      "description": "The color to be used in the heatmap point style.",
+      "properties": {
+        "Color": "The hex color to be used in the heatmap point style."
+      }
+    },
     "AWS::QuickSight::Template.GeospatialMapAggregatedFieldWells": {
       "attributes": {},
       "description": "The aggregated field wells for a geospatial map.",
@@ -52768,6 +52959,7 @@
       "description": "The point style of the geospatial map.",
       "properties": {
         "ClusterMarkerConfiguration": "The cluster marker configuration of the geospatial point style.",
+        "HeatmapConfiguration": "The heatmap configuration of the geospatial point style.",
         "SelectedPointStyle": "The selected point styles (point, cluster) of the geospatial map."
       }
     },
@@ -53737,6 +53929,7 @@
       "properties": {
         "FieldId": "The field ID of the cell for conditional formatting.",
         "Scope": "The scope of the cell for conditional formatting.",
+        "Scopes": "A list of cell scopes for conditional formatting.",
         "TextFormat": "The text format of the cell for conditional formatting."
       }
     },
@@ -53781,6 +53974,22 @@
         "Width": "The width of the data path option."
       }
     },
+    "AWS::QuickSight::Template.PivotTableFieldCollapseStateOption": {
+      "attributes": {},
+      "description": "The collapse state options for the pivot table field options.",
+      "properties": {
+        "State": "The state of the field target of a pivot table. Choose one of the following options:\n\n- `COLLAPSED`\n- `EXPANDED`",
+        "Target": "A tagged-union object that sets the collapse state."
+      }
+    },
+    "AWS::QuickSight::Template.PivotTableFieldCollapseStateTarget": {
+      "attributes": {},
+      "description": "The target of a pivot table field collapse state.",
+      "properties": {
+        "FieldDataPathValues": "The data path of the pivot table's header. Used to set the collapse state.",
+        "FieldId": "The field ID of the pivot table that the collapse state needs to be set to."
+      }
+    },
     "AWS::QuickSight::Template.PivotTableFieldOption": {
       "attributes": {},
       "description": "The selected field options for the pivot table field options.",
@@ -53794,6 +54003,7 @@
       "attributes": {},
       "description": "The field options for a pivot table visual.",
       "properties": {
+        "CollapseStateOptions": "The collapse state options for the pivot table field options.",
         "DataPathOptions": "The data path options for the pivot table field options.",
         "SelectedFieldOptions": "The selected field options for the pivot table field options."
       }
@@ -53817,6 +54027,7 @@
       "description": "The table options for a pivot table visual.",
       "properties": {
         "CellStyle": "The table cell style of cells.",
+        "CollapsedRowDimensionsVisibility": "The visibility setting of a pivot table's collapsed row dimension fields. If the value of this structure is `HIDDEN` , all collapsed columns in a pivot table are automatically hidden. The default value is `VISIBLE` .",
         "ColumnHeaderStyle": "The table cell style of the column header.",
         "ColumnNamesVisibility": "The visibility of the column names.",
         "MetricPlacement": "The metric placement (row, column) options.",
@@ -53925,6 +54136,7 @@
         "AlternateBandColorsVisibility": "Determines the visibility of the colors of alternatign bands in a radar chart.",
         "AlternateBandEvenColor": "The color of the even-numbered alternate bands of a radar chart.",
         "AlternateBandOddColor": "The color of the odd-numbered alternate bands of a radar chart.",
+        "AxesRangeScale": "The axis behavior options of a radar chart.",
         "BaseSeriesSettings": "The base sreies settings of a radar chart.",
         "CategoryAxis": "The category axis of a radar chart.",
         "CategoryLabelOptions": "The category label options of a radar chart.",
@@ -54158,6 +54370,7 @@
       "description": "The aggregated field well of a scatter plot.",
       "properties": {
         "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is aggregated by category.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is aggregated by category."
@@ -54190,6 +54403,8 @@
       "attributes": {},
       "description": "The unaggregated field wells of a scatter plot.",
       "properties": {
+        "Category": "The category field well of a scatter plot.",
+        "Label": "The label field well of a scatter plot.",
         "Size": "The size field well of a scatter plot.",
         "XAxis": "The x-axis field well of a scatter plot.\n\nThe x-axis is a dimension field and cannot be aggregated.",
         "YAxis": "The y-axis field well of a scatter plot.\n\nThe y-axis is a dimension field and cannot be aggregated."
@@ -55282,7 +55497,8 @@
       "description": "Permission for the resource.",
       "properties": {
         "Actions": "The IAM action to grant or revoke permissions on.",
-        "Principal": "The Amazon Resource Name (ARN) of the principal. This can be one of the following:\n\n- The ARN of an Amazon QuickSight user or group associated with a data source or dataset. (This is common.)\n- The ARN of an Amazon QuickSight user, group, or namespace associated with an analysis, dashboard, template, or theme. (This is common.)\n- The ARN of an AWS account root: This is an IAM ARN rather than a Amazon QuickSight ARN. Use this option only to share resources (templates) across AWS accounts . (This is less common.)"
+        "Principal": "The Amazon Resource Name (ARN) of the principal. This can be one of the following:\n\n- The ARN of an Amazon QuickSight user or group associated with a data source or dataset. (This is common.)\n- The ARN of an Amazon QuickSight user, group, or namespace associated with an analysis, dashboard, template, or theme. (This is common.)\n- The ARN of an AWS account root: This is an IAM ARN rather than a Amazon QuickSight ARN. Use this option only to share resources (templates) across AWS accounts . (This is less common.)",
+        "Resource": ""
       }
     },
     "AWS::QuickSight::Theme.SheetStyle": {
@@ -57199,14 +57415,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57214,18 +57430,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57234,7 +57450,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57244,15 +57460,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -61653,19 +61869,15 @@
       },
       "description": "A versioned model that can be deployed for SageMaker inference.",
       "properties": {
-        "AdditionalInferenceSpecificationDefinition": "A structure of additional Inference Specification. Additional Inference Specification specifies details about inference jobs that can be run with models based on this model package",
         "AdditionalInferenceSpecifications": "An array of additional Inference Specification objects.",
         "AdditionalInferenceSpecificationsToAdd": "An array of additional Inference Specification objects to be added to the existing array. The total number of additional Inference Specification objects cannot exceed 15. Each additional Inference Specification object specifies artifacts based on this model package that can be used on inference endpoints. Generally used with SageMaker Neo to store the compiled artifacts.",
         "ApprovalDescription": "A description provided when the model approval is set.",
         "CertifyForMarketplace": "Whether the model package is to be certified to be listed on AWS Marketplace. For information about listing model packages on AWS Marketplace, see [List Your Algorithm or Model Package on AWS Marketplace](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-mkt-list.html) .",
         "ClientToken": "A unique token that guarantees that the call to this API is idempotent.",
-        "CreatedBy": "Information about the user who created or modified an experiment, trial, trial component, lineage group, or project.",
         "CustomerMetadataProperties": "The metadata properties for the model package.",
         "Domain": "The machine learning domain of your model package and its components. Common machine learning domains include computer vision and natural language processing.",
         "DriftCheckBaselines": "Represents the drift check baselines that can be used when the model monitor is set using the model package.",
-        "Environment": "The environment variables to set in the Docker container. Each key and value in the `Environment` string to string map can have length of up to 1024. We support up to 16 entries in the map.",
         "InferenceSpecification": "Defines how to perform inference generation after a training job is run.",
-        "LastModifiedBy": "Information about the user who created or modified an experiment, trial, trial component, lineage group, or project.",
         "LastModifiedTime": "The last time the model package was modified.",
         "MetadataProperties": "Metadata properties of the tracking entity, trial, or trial component.",
         "ModelApprovalStatus": "The approval status of the model. This can be one of the following values.\n\n- `APPROVED` - The model is approved\n- `REJECTED` - The model is rejected.\n- `PENDING_MANUAL_APPROVAL` - The model is waiting for manual approval.",
@@ -61674,7 +61886,6 @@
         "ModelPackageGroupName": "The model group to which the model belongs.",
         "ModelPackageName": "The name of the model.",
         "ModelPackageStatusDetails": "Specifies the validation and image scan statuses of the model package.",
-        "ModelPackageStatusItem": "Represents the overall status of a model package.",
         "ModelPackageVersion": "The version number of a versioned model.",
         "SamplePayloadUrl": "The Amazon Simple Storage Service path where the sample payload are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).",
         "SourceAlgorithmSpecification": "A list of algorithms that were used to create a model package.",
@@ -61838,15 +62049,13 @@
         "ImageDigest": "An MD5 hash of the training algorithm that identifies the Docker image used for training.",
         "ModelDataUrl": "The Amazon S3 path where the model artifacts, which result from model training, are stored. This path must point to a single `gzip` compressed tar archive ( `.tar.gz` suffix).\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model package.",
         "ModelInput": "A structure with Model Input details.",
-        "NearestModelName": "The name of a pre-trained machine learning benchmarked by Amazon SageMaker Inference Recommender model that matches your model. You can find a list of benchmarked models by calling `ListModelMetadata` .",
-        "ProductId": "The AWS Marketplace product ID of the model package."
+        "NearestModelName": "The name of a pre-trained machine learning benchmarked by Amazon SageMaker Inference Recommender model that matches your model. You can find a list of benchmarked models by calling `ListModelMetadata` ."
       }
     },
     "AWS::SageMaker::ModelPackage.ModelPackageStatusDetails": {
       "attributes": {},
       "description": "Specifies the validation and image scan statuses of the model package.",
       "properties": {
-        "ImageScanStatuses": "The status of the scan of the Docker image container for the model package.",
         "ValidationStatuses": "The validation status of the model package."
       }
     },
@@ -61930,15 +62139,6 @@
         "InstanceCount": "The number of ML compute instances to use in the transform job. The default value is `1` , and the maximum is `100` . For distributed transform jobs, specify a value greater than `1` .",
         "InstanceType": "The ML compute instance type for the transform job. If you are using built-in algorithms to transform moderately sized datasets, we recommend using ml.m4.xlarge or `ml.m5.large` instance types.",
         "VolumeKmsKeyId": "The AWS Key Management Service ( AWS KMS) key that Amazon SageMaker uses to encrypt model data on the storage volume attached to the ML compute instance(s) that run the batch transform job.\n\n> Certain Nitro-based instances include local storage, dependent on the instance type. Local storage volumes are encrypted using a hardware module on the instance. You can't request a `VolumeKmsKeyId` when using an instance type with local storage.\n> \n> For a list of instance types that support local instance storage, see [Instance Store Volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html#instance-store-volumes) .\n> \n> For more information about local instance storage encryption, see [SSD Instance Store Volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ssd-instance-store.html) . \n\nThe `VolumeKmsKeyId` can be any of the following formats:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n- Alias name: `alias/ExampleAlias`\n- Alias name ARN: `arn:aws:kms:us-west-2:111122223333:alias/ExampleAlias`"
-      }
-    },
-    "AWS::SageMaker::ModelPackage.UserContext": {
-      "attributes": {},
-      "description": "Information about the user who created or modified an experiment, trial, trial component, lineage group, project, or model card.",
-      "properties": {
-        "DomainId": "The domain associated with the user.",
-        "UserProfileArn": "The Amazon Resource Name (ARN) of the user's profile.",
-        "UserProfileName": "The name of the user's profile."
       }
     },
     "AWS::SageMaker::ModelPackage.ValidationProfile": {
@@ -62907,7 +63107,7 @@
         "Id": "The ARN of the secret.",
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::Secret` resource to the intrinsic `Ref` function, the function returns the ARN of the secret configured such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nIf you know the ARN of a secret, you can reference a secret you created in one part of the stack template from within the definition of another resource in the same template. You typically use the `Ref` function with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type to get references to both the secret and its associated database.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secret information that you store in an encrypted form in Secrets Manager.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. Follow these steps, as shown in the examples below:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a username and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
+      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secret information that you store in an encrypted form in Secrets Manager.\n\nFor Amazon RDS master user credentials, see [AWS::RDS::DBCluster MasterUserSecret](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-masterusersecret.html) .\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. See the example *Creating a Redshift cluster and a secret for the admin credentials* .\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .",
       "properties": {
         "Description": "The description of the secret.",
         "GenerateSecretString": "A structure that specifies how to generate a password to encrypt and store in the secret. To include a specific string in the secret, use `SecretString` instead. If you omit both `GenerateSecretString` and `SecretString` , you create an empty secret. When you make a change to this property, a new secret version is created.\n\nWe recommend that you specify the maximum length and include every character type that the system you are generating a password for can support.",
@@ -64345,8 +64545,8 @@
         "LoggingRole": "The Amazon Resource Name (ARN) of the AWS Identity and Access Management (IAM) role that allows a server to turn on Amazon CloudWatch logging for Amazon S3 or Amazon EFSevents. When set, you can view user activity in your CloudWatch logs.",
         "PostAuthenticationLoginBanner": "Specifies a string to display when users connect to a server. This string is displayed after the user authenticates.\n\n> The SFTP protocol does not support post-authentication display banners.",
         "PreAuthenticationLoginBanner": "Specifies a string to display when users connect to a server. This string is displayed before the user authenticates. For example, the following banner displays details about using the system:\n\n`This system is for the use of authorized users only. Individuals using this computer system without authority, or in excess of their authority, are subject to having all of their activities on this system monitored and recorded by system personnel.`",
-        "ProtocolDetails": "The protocol settings that are configured for your server.\n\n- To indicate passive mode (for FTP and FTPS protocols), use the `PassiveIp` parameter. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n- To ignore the error that is generated when the client attempts to use the `SETSTAT` command on a file that you are uploading to an Amazon S3 bucket, use the `SetStatOption` parameter. To have the AWS Transfer Family server ignore the `SETSTAT` command and upload files without needing to make any changes to your SFTP client, set the value to `ENABLE_NO_OP` . If you set the `SetStatOption` parameter to `ENABLE_NO_OP` , Transfer Family generates a log entry to Amazon CloudWatch Logs, so that you can determine when the client is making a `SETSTAT` call.\n- To determine whether your AWS Transfer Family server resumes recent, negotiated sessions through a unique session ID, use the `TlsSessionResumptionMode` parameter.\n- `As2Transports` indicates the transport method for the AS2 messages. Currently, only HTTP is supported.",
-        "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n- `AS2` (Applicability Statement 2): used for transporting structured business-to-business data\n\n> - If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> - If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be either `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> - If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set any of the supported identity types: `SERVICE_MANAGED` , `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `AS2` , then the `EndpointType` must be `VPC` , and domain must be Amazon S3.",
+        "ProtocolDetails": "The protocol settings that are configured for your server.\n\n- To indicate passive mode (for FTP and FTPS protocols), use the `PassiveIp` parameter. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n- To ignore the error that is generated when the client attempts to use the `SETSTAT` command on a file that you are uploading to an Amazon S3 bucket, use the `SetStatOption` parameter. To have the AWS Transfer Family server ignore the `SETSTAT` command and upload files without needing to make any changes to your SFTP client, set the value to `ENABLE_NO_OP` . If you set the `SetStatOption` parameter to `ENABLE_NO_OP` , Transfer Family generates a log entry to Amazon CloudWatch Logs, so that you can determine when the client is making a `SETSTAT` call.\n- To determine whether your AWS Transfer Family server resumes recent, negotiated sessions through a unique session ID, use the `TlsSessionResumptionMode` parameter.\n- `As2Transports` indicates the transport method for the AS2 messages. Currently, only HTTP is supported.\n\nThe `Protocols` parameter is an array of strings.\n\n*Allowed values* : One or more of `SFTP` , `FTPS` , `FTP` , `AS2`",
+        "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n- `AS2` (Applicability Statement 2): used for transporting structured business-to-business data\n\n> - If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> - If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be either `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> - If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set any of the supported identity types: `SERVICE_MANAGED` , `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `AS2` , then the `EndpointType` must be `VPC` , and domain must be Amazon S3. \n\nThe `Protocols` parameter is an array of strings.\n\n*Allowed values* : One or more of `SFTP` , `FTPS` , `FTP` , `AS2`",
         "SecurityPolicyName": "Specifies the name of the security policy that is attached to the server.",
         "StructuredLogDestinations": "Specifies the log groups to which your server logs are sent.\n\nTo specify a log group, you must provide the ARN for an existing log group. In this case, the format of the log group is as follows:\n\n`arn:aws:logs:region-name:amazon-account-id:log-group:log-group-name:*`\n\nFor example, `arn:aws:logs:us-east-1:111122223333:log-group:mytestgroup:*`\n\nIf you have previously specified a log group for a server, you can clear it, and in effect turn off structured logging, by providing an empty value for this parameter in an `update-server` call. For example:\n\n`update-server --server-id s-1234567890abcdef0 --structured-log-destinations`",
         "Tags": "Key-value pairs that can be used to group and search for servers.",
@@ -64355,7 +64555,7 @@
     },
     "AWS::Transfer::Server.As2Transport": {
       "attributes": {},
-      "description": "Indicates the transport method for the AS2 messages. Currently, only HTTP is supported.",
+      "description": "Indicates the transport method for the AS2 messages. Currently, only HTTP is supported.\n\nThe `As2Transports` parameter is an array of `As2Transport` strings.\n\n*Required* : No\n\n*Type* : String\n\n*Allowed values* : `HTTP`\n\nUpdate requires: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)",
       "properties": {}
     },
     "AWS::Transfer::Server.EndpointDetails": {
@@ -64382,7 +64582,7 @@
     },
     "AWS::Transfer::Server.Protocol": {
       "attributes": {},
-      "description": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n- `AS2` (Applicability Statement 2): used for transporting structured business-to-business data\n\n> - If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> - If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be either `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> - If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set any of the supported identity types: `SERVICE_MANAGED` , `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `AS2` , then the `EndpointType` must be `VPC` , and domain must be Amazon S3.",
+      "description": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n- `AS2` (Applicability Statement 2): used for transporting structured business-to-business data\n\n> - If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> - If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be either `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> - If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set any of the supported identity types: `SERVICE_MANAGED` , `AWS_DIRECTORY_SERVICE` , `AWS_LAMBDA` , or `API_GATEWAY` .\n> - If `Protocol` includes `AS2` , then the `EndpointType` must be `VPC` , and domain must be Amazon S3. \n\nThe `Protocols` parameter is an array of `Protocol` strings.\n\n*Required* : No\n\n*Type* : String\n\n*Allowed values* : One or more of `SFTP` , `FTPS` , `FTP` , `AS2`\n\nUpdate requires: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)",
       "properties": {}
     },
     "AWS::Transfer::Server.ProtocolDetails": {
@@ -64397,7 +64597,7 @@
     },
     "AWS::Transfer::Server.StructuredLogDestination": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies a log group to which your server logs are sent.",
       "properties": {}
     },
     "AWS::Transfer::Server.WorkflowDetail": {
@@ -64569,6 +64769,131 @@
         "DeleteStepDetails": "Details for a step that deletes the file.",
         "TagStepDetails": "Details for a step that creates one or more tags.\n\nYou specify one or more tags. Each tag contains a key-value pair.",
         "Type": "Currently, the following step types are supported.\n\n- *`COPY`* - Copy the file to another location.\n- *`CUSTOM`* - Perform a custom step with an AWS Lambda function target.\n- *`DECRYPT`* - Decrypt a file that was encrypted before it was uploaded.\n- *`DELETE`* - Delete the file.\n- *`TAG`* - Add a tag to the file."
+      }
+    },
+    "AWS::VerifiedPermissions::IdentitySource": {
+      "attributes": {
+        "Details": "A structure that contains information about the configuration of the identity source.",
+        "Details.ClientIds": "The application client IDs associated with the specified Amazon Cognito user pool that are enabled for this identity source.",
+        "Details.DiscoveryUrl": "The well-known URL that points to this user pool's OIDC discovery endpoint. This is a URL string in the following format. This URL replaces the placeholders for both the AWS Region and the user pool identifier with those appropriate for this user pool.\n\n`https://cognito-idp.<region>.amazonaws.com/<user-pool-id>/.well-known/openid-configuration`",
+        "Details.OpenIdIssuer": "A string that identifies the type of OIDC service represented by this identity source. At this time, the only valid value is `cognito` .",
+        "Details.UserPoolArn": "The [Amazon Resource Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of the Amazon Cognito user pool whose identities are accessible to this Verified Permissions policy store.",
+        "IdentitySourceId": "The unique ID of the new or updated identity store.",
+        "Ref": "`Ref` returns the unique id of the new identity source. For example:\n\n`{ \"Ref\": \"ISEXAMPLEabcdefg111111\" }`"
+      },
+      "description": "Creates or updates a reference to Amazon Cognito as an external identity provider.\n\nIf you are creating a new identity source, then you must specify a `Configuration` . If you are updating an existing identity source, then you must specify an `UpdateConfiguration` .\n\nAfter you create an identity source, you can use the identities provided by the IdP as proxies for the principal in authorization queries that use the [IsAuthorizedWithToken](https://docs.aws.amazon.com/verifiedpermissions/latest/apireference/API_IsAuthorizedWithToken.html) operation. These identities take the form of tokens that contain claims about the user, such as IDs, attributes and group memberships. Amazon Cognito provides both identity tokens and access tokens, and Verified Permissions can use either or both. Any combination of identity and access tokens results in the same Cedar principal. Verified Permissions automatically translates the information about the identities into the standard Cedar attributes that can be evaluated by your policies. Because the Amazon Cognito identity and access tokens can contain different information, the tokens you choose to use determine the attributes that are available to access in the Cedar principal from your policies.\n\nAmazon Cognito Identity is not available in all of the same AWS Regions as Amazon Verified Permissions . Because of this, the `AWS::VerifiedPermissions::IdentitySource` type is not available to create from AWS CloudFormation in Regions where Amazon Cognito Identity is not currently available. Users can still create `AWS::VerifiedPermissions::IdentitySource` in those Regions, but only from the AWS CLI , Amazon Verified Permissions SDK, or from the AWS console.\n\n> To reference a user from this identity source in your Cedar policies, use the following syntax.\n> \n> *IdentityType::\"<CognitoUserPoolIdentifier>|<CognitoClientId>*\n> \n> Where `IdentityType` is the string that you provide to the `PrincipalEntityType` parameter for this operation. The `CognitoUserPoolId` and `CognitoClientId` are defined by the Amazon Cognito user pool.",
+      "properties": {
+        "Configuration": "Contains configuration information used when creating or updating an identity source.\n\n> At this time, the only valid member of this structure is a Amazon Cognito user pool configuration.\n> \n> You must specify a `userPoolArn` , and optionally, a `ClientId` .",
+        "PolicyStoreId": "Specifies the ID of the policy store in which you want to store this identity source. Only policies and requests made using this policy store can reference identities from the identity provider configured in the new identity source.",
+        "PrincipalEntityType": "Specifies the namespace and data type of the principals generated for identities authenticated by the new identity source."
+      }
+    },
+    "AWS::VerifiedPermissions::IdentitySource.CognitoUserPoolConfiguration": {
+      "attributes": {},
+      "description": "A structure that contains configuration information used when creating or updating an identity source that represents a connection to an Amazon Cognito user pool used as an identity provider for Verified Permissions .",
+      "properties": {
+        "ClientIds": "The unique application client IDs that are associated with the specified Amazon Cognito user pool.\n\nExample: `\"ClientIds\": [\"&ExampleCogClientId;\"]`",
+        "UserPoolArn": "The [Amazon Resource Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of the Amazon Cognito user pool that contains the identities to be authorized."
+      }
+    },
+    "AWS::VerifiedPermissions::IdentitySource.IdentitySourceConfiguration": {
+      "attributes": {},
+      "description": "A structure that contains configuration information used when creating or updating a new identity source.\n\n> At this time, the only valid member of this structure is a Amazon Cognito user pool configuration.\n> \n> You must specify a `userPoolArn` , and optionally, a `ClientId` .",
+      "properties": {
+        "CognitoUserPoolConfiguration": "A structure that contains configuration information used when creating or updating an identity source that represents a connection to an Amazon Cognito user pool used as an identity provider for Verified Permissions ."
+      }
+    },
+    "AWS::VerifiedPermissions::IdentitySource.IdentitySourceDetails": {
+      "attributes": {},
+      "description": "A structure that contains configuration of the identity source.",
+      "properties": {
+        "ClientIds": "The application client IDs associated with the specified Amazon Cognito user pool that are enabled for this identity source.",
+        "DiscoveryUrl": "The well-known URL that points to this user pool's OIDC discovery endpoint. This is a URL string in the following format. This URL replaces the placeholders for both the AWS Region and the user pool identifier with those appropriate for this user pool.\n\n`https://cognito-idp. *<region>* .amazonaws.com/ *<user-pool-id>* /.well-known/openid-configuration`",
+        "OpenIdIssuer": "A string that identifies the type of OIDC service represented by this identity source.\n\nAt this time, the only valid value is `cognito` .",
+        "UserPoolArn": "The [Amazon Resource Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of the Amazon Cognito user pool whose identities are accessible to this Verified Permissions policy store."
+      }
+    },
+    "AWS::VerifiedPermissions::Policy": {
+      "attributes": {
+        "PolicyId": "The unique ID of the new or updated policy.",
+        "PolicyType": "The type of the policy. This is one of the following values:\n\n- Static\n- TemplateLinked",
+        "Ref": "`Ref` returns the unique id of the new or updated policy. For example:\n\n`{ \"Ref\": \"SPEXAMPLEabcdefg111111\" }`"
+      },
+      "description": "Creates or updates a Cedar policy and saves it in the specified policy store. You can create either a static policy or a policy linked to a policy template.\n\nYou can directly update only static policies. To update a template-linked policy, you must update it's linked policy template instead.\n\n- To create a static policy, in the `Definition` include a `Static` element that includes the Cedar policy text in the `Statement` element.\n- To create a policy that is dynamically linked to a policy template, in the `Definition` include a `Templatelinked` element that specifies the policy template ID and the principal and resource to associate with this policy. If the policy template is ever updated, any policies linked to the policy template automatically use the updated template.\n\n> If the policy store has validation enabled, then creating a policy causes it to be validated against the schema in the policy store. If the policy doesn't pass validation, the operation fails and the policy isn't stored.",
+      "properties": {
+        "Definition": "Specifies the policy type and content to use for the new or updated policy. The definition structure must include either a `Static` or a `TemplateLinked` element.",
+        "PolicyStoreId": "Specifies the `PolicyStoreId` of the policy store you want to store the policy in."
+      }
+    },
+    "AWS::VerifiedPermissions::Policy.EntityIdentifier": {
+      "attributes": {},
+      "description": "Contains the identifier of an entity in a policy, including its ID and type.",
+      "properties": {
+        "EntityId": "The identifier of an entity.\n\n`\"entityId\":\" *identifier* \"`",
+        "EntityType": "The type of an entity.\n\nExample: `\"entityType\":\" *typeName* \"`"
+      }
+    },
+    "AWS::VerifiedPermissions::Policy.PolicyDefinition": {
+      "attributes": {},
+      "description": "A structure that defines a Cedar policy. It includes the policy type, a description, and a policy body. This is a top level data type used to create a policy.\n\nThis data type is used as a request parameter for the [CreatePolicy](https://docs.aws.amazon.com/verifiedpermissions/latest/apireference/API_CreatePolicy.html) operation. This structure must always have either an `Static` or a `TemplateLinked` element.",
+      "properties": {
+        "Static": "A structure that describes a static policy. An static policy doesn't use a template or allow placeholders for entities.",
+        "TemplateLinked": "A structure that describes a policy that was instantiated from a template. The template can specify placeholders for `principal` and `resource` . When you use [CreatePolicy](https://docs.aws.amazon.com/verifiedpermissions/latest/apireference/API_CreatePolicy.html) to create a policy from a template, you specify the exact principal and resource to use for the instantiated policy."
+      }
+    },
+    "AWS::VerifiedPermissions::Policy.StaticPolicyDefinition": {
+      "attributes": {},
+      "description": "A structure that defines a static policy.",
+      "properties": {
+        "Description": "The description of the static policy.",
+        "Statement": "The policy content of the static policy, written in the Cedar policy language."
+      }
+    },
+    "AWS::VerifiedPermissions::Policy.TemplateLinkedPolicyDefinition": {
+      "attributes": {},
+      "description": "A structure that describes a policy created by instantiating a policy template.\n\n> You can't directly update a template-linked policy. You must update the associated policy template instead.",
+      "properties": {
+        "PolicyTemplateId": "The unique identifier of the policy template used to create this policy.",
+        "Principal": "The principal associated with this template-linked policy. Verified Permissions substitutes this principal for the `?principal` placeholder in the policy template when it evaluates an authorization request.",
+        "Resource": "The resource associated with this template-linked policy. Verified Permissions substitutes this resource for the `?resource` placeholder in the policy template when it evaluates an authorization request."
+      }
+    },
+    "AWS::VerifiedPermissions::PolicyStore": {
+      "attributes": {
+        "Arn": "The [Amazon Resource Name (ARN)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) of the new or updated policy store.",
+        "PolicyStoreId": "The unique ID of the new or updated policy store.",
+        "Ref": "`Ref` returns the unique id of the new or updated policy store. For example:\n\n`{ \"Ref\": \"PSEXAMPLEabcdefg111111\" }`"
+      },
+      "description": "Creates a policy store. A policy store is a container for policy resources. You can create a separate policy store for each of your applications.",
+      "properties": {
+        "Schema": "Creates or updates the policy schema in a policy store. Cedar can use the schema to validate any Cedar policies and policy templates submitted to the policy store. Any changes to the schema validate only policies and templates submitted after the schema change. Existing policies and templates are not re-evaluated against the changed schema. If you later update a policy, then it is evaluated against the new schema at that time.",
+        "ValidationSettings": "Specifies the validation setting for this policy store.\n\nCurrently, the only valid and required value is `Mode` .\n\n> We recommend that you turn on `STRICT` mode only after you define a schema. If a schema doesn't exist, then `STRICT` mode causes any policy to fail validation, and Verified Permissions rejects the policy. You can turn off validation by using the [UpdatePolicyStore](https://docs.aws.amazon.com/verifiedpermissions/latest/apireference/API_UpdatePolicyStore) . Then, when you have a schema defined, use [UpdatePolicyStore](https://docs.aws.amazon.com/verifiedpermissions/latest/apireference/API_UpdatePolicyStore) again to turn validation back on."
+      }
+    },
+    "AWS::VerifiedPermissions::PolicyStore.SchemaDefinition": {
+      "attributes": {},
+      "description": "Contains a list of principal types, resource types, and actions that can be specified in policies stored in the same policy store. If the validation mode for the policy store is set to `STRICT` , then policies that can't be validated by this schema are rejected by Verified Permissions and can't be stored in the policy store.",
+      "properties": {
+        "CedarJson": "A JSON string representation of the schema supported by applications that use this policy store. For more information, see [Policy store schema](https://docs.aws.amazon.com/verifiedpermissions/latest/userguide/schema.html) in the *Amazon Verified Permissions User Guide* ."
+      }
+    },
+    "AWS::VerifiedPermissions::PolicyStore.ValidationSettings": {
+      "attributes": {},
+      "description": "A structure that contains Cedar policy validation settings for the policy store. The validation mode determines which validation failures that Cedar considers serious enough to block acceptance of a new or edited static policy or policy template.",
+      "properties": {
+        "Mode": "The validation mode currently configured for this policy store. The valid values are:\n\n- *OFF* \u2013 Neither Verified Permissions nor Cedar perform any validation on policies. No validation errors are reported by either service.\n- *STRICT* \u2013 Requires a schema to be present in the policy store. Cedar performs validation on all submitted new or updated static policies and policy templates. Any that fail validation are rejected and Cedar doesn't store them in the policy store.\n\n> If `Mode=STRICT` and the policy store doesn't contain a schema, Verified Permissions rejects all static policies and policy templates because there is no schema to validate against.\n> \n> To submit a static policy or policy template without a schema, you must turn off validation."
+      }
+    },
+    "AWS::VerifiedPermissions::PolicyTemplate": {
+      "attributes": {
+        "PolicyTemplateId": "The unique identifier of the new or modified policy template.",
+        "Ref": "`Ref` returns the unique id of the new or updated policy template. For example:\n\n`{ \"Ref\": \"PTEXAMPLEabcdefg111111\" }`"
+      },
+      "description": "Creates a policy template. A template can use placeholders for the principal and resource. A template must be instantiated into a policy by associating it with specific principals and resources to use for the placeholders. That instantiated policy can then be considered in authorization decisions. The instantiated policy works identically to any other policy, except that it is dynamically linked to the template. If the template changes, then any policies that are linked to that template are immediately updated as well.",
+      "properties": {
+        "Description": "The description to attach to the new or updated policy template.",
+        "PolicyStoreId": "The unique identifier of the policy store that contains the template.",
+        "Statement": "Specifies the content that you want to use for the new policy template, written in the Cedar policy language."
       }
     },
     "AWS::VoiceID::Domain": {
@@ -65868,6 +66193,7 @@
       },
       "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse an `WebACL` to define a collection of rules to use to inspect and control web requests. Each rule has an action defined (allow, block, or count) for requests that match the statement of the rule. In the web ACL, you specify a default action to take (allow, block) for any request that doesn't match any of the rules. The rules in a web ACL can contain rule statements that you define explicitly and rule statements that reference rule groups and managed rule groups. You can associate a web ACL with one or more AWS resources to protect. The resources can be an Amazon CloudFront distribution, an Amazon API Gateway REST API, an Application Load Balancer , an AWS AppSync GraphQL API , an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance.",
       "properties": {
+        "AssociationConfig": "Specifies custom configurations for the associations between the web ACL and protected resources.\n\nUse this to customize the maximum size of the request body that your protected CloudFront distributions forward to AWS WAF for inspection. The default is 16 KB (16,384 kilobytes).\n\n> You are charged additional fees when your protected resources forward body sizes that are larger than the default. For more information, see [AWS WAF Pricing](https://docs.aws.amazon.com/waf/pricing/) .",
         "CaptchaConfig": "Specifies how AWS WAF should handle `CAPTCHA` evaluations for rules that don't have their own `CaptchaConfig` settings. If you don't specify this, AWS WAF uses its default settings for `CaptchaConfig` .",
         "ChallengeConfig": "Specifies how AWS WAF should handle challenge evaluations for rules that don't have their own `ChallengeConfig` settings. If you don't specify this, AWS WAF uses its default settings for `ChallengeConfig` .",
         "CustomResponseBodies": "A map of custom response keys and content bodies. When you create a rule with a block action, you can send a custom response to the web request. You define these for the web ACL, and then use them in the rules and default actions that you define in the web ACL.\n\nFor information about customizing web requests and responses, see [Customizing web requests and responses in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-custom-request-response.html) in the *AWS WAF Developer Guide* .\n\nFor information about the limits on count and size for custom request and response settings, see [AWS WAF quotas](https://docs.aws.amazon.com/waf/latest/developerguide/limits.html) in the *AWS WAF Developer Guide* .",
@@ -65909,6 +66235,13 @@
       "description": "A logical rule statement used to combine other rule statements with AND logic. You provide more than one `Statement` within the `AndStatement` .",
       "properties": {
         "Statements": "The statements to combine with AND logic. You can use any statements that can be nested."
+      }
+    },
+    "AWS::WAFv2::WebACL.AssociationConfig": {
+      "attributes": {},
+      "description": "Specifies custom configurations for the associations between the web ACL and protected resources.\n\nUse this to customize the maximum size of the request body that your protected CloudFront distributions forward to AWS WAF for inspection. The default is 16 KB (16,384 kilobytes).\n\n> You are charged additional fees when your protected resources forward body sizes that are larger than the default. For more information, see [AWS WAF Pricing](https://docs.aws.amazon.com/waf/pricing/) .",
+      "properties": {
+        "RequestBody": "Customizes the maximum size of the request body that your protected CloudFront distributions forward to AWS WAF for inspection. The default size is 16 KB (16,384 kilobytes).\n\n> You are charged additional fees when your protected resources forward body sizes that are larger than the default. For more information, see [AWS WAF Pricing](https://docs.aws.amazon.com/waf/pricing/) ."
       }
     },
     "AWS::WAFv2::WebACL.BlockAction": {
@@ -66225,6 +66558,13 @@
         "TextTransformations": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass detection. If you specify one or more transformations in a rule statement, AWS WAF performs all transformations on the content of the request component identified by `FieldToMatch` , starting from the lowest priority setting, before inspecting the content for a match."
       }
     },
+    "AWS::WAFv2::WebACL.RequestBodyAssociatedResourceTypeConfig": {
+      "attributes": {},
+      "description": "Customizes the maximum size of the request body that your protected CloudFront distributions forward to AWS WAF for inspection. The default size is 16 KB (16,384 kilobytes).\n\n> You are charged additional fees when your protected resources forward body sizes that are larger than the default. For more information, see [AWS WAF Pricing](https://docs.aws.amazon.com/waf/pricing/) . \n\nThis is used in the `AssociationConfig` of the web ACL.",
+      "properties": {
+        "DefaultSizeInspectionLimit": "Specifies the maximum size of the web request body component that an associated CloudFront distribution should send to AWS WAF for inspection. This applies to statements in the web ACL that inspect the body or JSON body.\n\nDefault: `16 KB (16,384 kilobytes)`"
+      }
+    },
     "AWS::WAFv2::WebACL.RequestInspection": {
       "attributes": {},
       "description": "The criteria for inspecting login requests, used by the ATP rule group to validate credentials usage.\n\nThis is part of the `AWSManagedRulesATPRuleSet` configuration in `ManagedRuleGroupConfig` .\n\nIn these settings, you specify how your application accepts login attempts by providing the request payload type and the names of the fields within the request body where the username and password are provided.",
@@ -66406,7 +66746,7 @@
       },
       "description": "> This is the latest version of *AWS WAF* , named AWS WAF V2, released in November, 2019. For information, including how to migrate your AWS WAF resources from the prior release, see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . \n\nUse a web ACL association to define an association between a web ACL and a regional application resource, to protect the resource. A regional application can be an Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, an Amazon Cognito user pool, an AWS App Runner service, or an AWS Verified Access instance.\n\nFor Amazon CloudFront , don't use this resource. Instead, use your CloudFront distribution configuration. To associate a web ACL with a distribution, provide the Amazon Resource Name (ARN) of the `WebACL` to your CloudFront distribution configuration. To disassociate a web ACL, provide an empty ARN. For information, see [AWS::CloudFront::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html) .\n\nWhen you create a web ACL or make changes to a web ACL or web ACL components, like rules and rule groups, AWS WAF propagates the changes everywhere that the web ACL and its components are stored and used. Your changes are applied within seconds, but there might be a brief period of inconsistency when the changes have arrived in some places and not in others. So, for example, if you change a rule action setting, the action might be the old action in one area and the new action in another area. Or if you add an IP address to an IP set used in a blocking rule, the new address might briefly be blocked in one area while still allowed in another. This temporary inconsistency can occur when you first associate a web ACL with an AWS resource and when you change a web ACL that is already associated with a resource. Generally, any inconsistencies of this type last only a few seconds.",
       "properties": {
-        "ResourceArn": "The Amazon Resource Name (ARN) of the resource to associate with the web ACL.\n\nThe ARN must be in one of the following formats:\n\n- For an Application Load Balancer: `arn:aws:elasticloadbalancing: *region* : *account-id* :loadbalancer/app/ *load-balancer-name* / *load-balancer-id*`\n- For an Amazon API Gateway REST API: `arn:aws:apigateway: *region* ::/restapis/ *api-id* /stages/ *stage-name*`\n- For an AWS AppSync GraphQL API: `arn:aws:appsync: *region* : *account-id* :apis/ *GraphQLApiId*`\n- For an Amazon Cognito user pool: `arn:aws:cognito-idp: *region* : *account-id* :userpool/ *user-pool-id*`\n- For an AWS App Runner service: `arn:aws:apprunner: *region* : *account-id* :service/ *apprunner-service-name* / *apprunner-service-id*`\n- For an AWS Verified Access instance: `arn: *partition* :ec2: *region* : *account-id* :verified-access-instance/ *instance-id*`",
+        "ResourceArn": "The Amazon Resource Name (ARN) of the resource to associate with the web ACL.\n\nThe ARN must be in one of the following formats:\n\n- For an Application Load Balancer: `arn: *partition* :elasticloadbalancing: *region* : *account-id* :loadbalancer/app/ *load-balancer-name* / *load-balancer-id*`\n- For an Amazon API Gateway REST API: `arn: *partition* :apigateway: *region* ::/restapis/ *api-id* /stages/ *stage-name*`\n- For an AWS AppSync GraphQL API: `arn: *partition* :appsync: *region* : *account-id* :apis/ *GraphQLApiId*`\n- For an Amazon Cognito user pool: `arn: *partition* :cognito-idp: *region* : *account-id* :userpool/ *user-pool-id*`\n- For an AWS App Runner service: `arn: *partition* :apprunner: *region* : *account-id* :service/ *apprunner-service-name* / *apprunner-service-id*`\n- For an AWS Verified Access instance: `arn: *partition* :ec2: *region* : *account-id* :verified-access-instance/ *instance-id*`",
         "WebACLArn": "The Amazon Resource Name (ARN) of the web ACL that you want to associate with the resource."
       }
     },
