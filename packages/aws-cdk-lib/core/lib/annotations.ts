@@ -32,9 +32,10 @@ export class Annotations {
    *
    * @example
    * declare const stack: Stack;
-   * Annotations.of(stack).acknowledgeWarning('SomeWarningId');
+   * Annotations.of(stack).acknowledgeWarning('SomeWarningId', 'This warning can be ignored because...');
    *
    * @param id - the id of the warning message to acknowledge
+   * @param message optional message to explain the reason for acknowledgement
    */
   public acknowledgeWarning(id: string, message?: string): void {
     const scopes = this.scope.node.findAll().map(child => child.node.path);
@@ -50,6 +51,10 @@ export class Annotations {
    *
    * The CLI will display the warning when an app is synthesized, or fail if run
    * in --strict mode.
+   *
+   * @example
+   * declare const construct: Construct;
+   * Annotations.of(construct).addWarningV2('Library:Construct:ThisIsAWarning', 'Some message explaining the warning');
    *
    * @param id the unique identifier for the warning. This can be used to acknowledge the warning
    * @param message The warning message.
