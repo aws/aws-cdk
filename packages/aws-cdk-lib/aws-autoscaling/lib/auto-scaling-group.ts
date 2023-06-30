@@ -1295,16 +1295,21 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
       this.grantPrincipal = this._role;
 
-      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-        roles: [this.role.roleName],
-      });
-
       if (props.ssmSessionPermissions) {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
       }
 
+      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+        roles: [this.role.roleName],
+      });
+
       // generate launch template from launch config props when feature flag is set
       if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+        const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, id, {
+          instanceProfileArn: iamProfile.attrArn,
+          role: this.role,
+        });
+
         launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
           keyName: props.keyName,
@@ -1315,7 +1320,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           associatePublicIpAddress: props.associatePublicIpAddress,
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
-          instanceProfile: iam.InstanceProfile.fromInstanceProfileArn(this, '', iamProfile.attrArn),
+          instanceProfile,
         });
 
         this.osType = launchTemplateFromConfig.osType!;

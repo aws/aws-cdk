@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnInstanceProfile } from './iam.generated';
 import { IRole } from './role';
-import { Resource, Lazy, Arn, Stack } from '../../core';
+import { Resource, Arn, Stack, IResource } from '../../core';
 
 /**
  * Represents an IAM Instance Profile
  */
-export interface IInstanceProfile {
+export interface IInstanceProfile extends IResource {
   /**
    * The InstanceProfile's name.
    * @attribute
@@ -20,9 +20,9 @@ export interface IInstanceProfile {
   readonly instanceProfileArn: string;
 
   /**
-   * Adds a role to this InstanceProfile.
+   * The InstanceProfile's role.
    */
-  addRole(role: IRole): void;
+  readonly role?: IRole;
 }
 
 /**
@@ -34,7 +34,7 @@ export interface InstanceProfileProps {
    * be assigned to an EC2 instance at a time, and all applications on the instance
    * share the same role and permissions.
    */
-  readonly roles: IRole[];
+  readonly role: IRole;
 
   /**
    * The name of the InstanceProfile to create.
@@ -44,14 +44,16 @@ export interface InstanceProfileProps {
   readonly instanceProfileName?: string;
 
   /**
-   * The path to the InstanceProfile. Minimum path length is 1 character and maximum
-   * is 512 characters.
+   * The path to the InstanceProfile.
    *
-   * @default - '/'
+   * @default /
    */
   readonly path?: string;
 }
 
+/**
+ * Attributes of an Instance Profile
+ */
 export interface InstanceProfileAttributes {
   /**
    * The ARN of the InstanceProfile.
@@ -59,12 +61,37 @@ export interface InstanceProfileAttributes {
    * Format: arn:<partition>:iam::<account-id>:instance-profile/<instance-profile-name-with-path>
    */
   readonly instanceProfileArn: string;
+
+  /**
+   * The role associated with the InstanceProfile.
+   *
+   * @default - no role
+   */
+  readonly role?: IRole;
+}
+
+abstract class InstanceProfileBase extends Resource implements IInstanceProfile {
+  public abstract readonly instanceProfileName: string;
+  public abstract readonly instanceProfileArn: string;
+
+  /**
+   * The role defined as part of the InstanceProfile
+   * @internal
+   */
+  protected _role?: IRole;
+
+  /**
+   * Returns the role of this InstanceProfile.
+   */
+  public get role(): IRole | undefined {
+    return this._role;
+  }
 }
 
 /**
  * IAM Instance Profile
  */
-export class InstanceProfile extends Resource implements IInstanceProfile {
+export class InstanceProfile extends InstanceProfileBase {
   /**
    * Import an existing InstanceProfile from an InstanceProfile name.
    *
@@ -107,15 +134,15 @@ export class InstanceProfile extends Resource implements IInstanceProfile {
    * @param attrs the attributes of the InstanceProfile to import
    */
   public static fromInstanceProfileAttributes(scope: Construct, id: string, attrs: InstanceProfileAttributes): IInstanceProfile {
-    class Import extends Resource implements IInstanceProfile {
+    class Import extends InstanceProfileBase {
       public readonly instanceProfileName: string = Arn.extractResourceName(attrs.instanceProfileArn, 'instance-profile').split('/').pop()!;
       public readonly instanceProfileArn: string = attrs.instanceProfileArn;
 
-      public addRole(_role: IRole) {
-        throw new Error('Cannot add role to imported Instance Profile');
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        this._role = attrs.role;
       }
     }
-
     return new Import(scope, id);
   }
 
@@ -129,16 +156,14 @@ export class InstanceProfile extends Resource implements IInstanceProfile {
    */
   public readonly instanceProfileArn: string;
 
-  private readonly roles: IRole[];
-
   constructor(scope: Construct, id: string, props: InstanceProfileProps) {
     super(scope, id, { physicalName: props.instanceProfileName });
 
-    this.roles = [...props.roles];
+    this._role = props.role;
 
     const instanceProfile = new CfnInstanceProfile(this, 'Resource', {
-      roles: Lazy.list({ produce: () => this.roles.map(role => role.roleName) }),
-      instanceProfileName: props.instanceProfileName,
+      roles: [props.role.roleName],
+      instanceProfileName: this.physicalName,
       path: props.path,
     });
 
@@ -149,9 +174,5 @@ export class InstanceProfile extends Resource implements IInstanceProfile {
       resource: 'instance-profile',
       resourceName: `${props.path ? props.path.substring(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
-  }
-
-  public addRole(role: IRole) {
-    this.roles.push(role);
   }
 }
