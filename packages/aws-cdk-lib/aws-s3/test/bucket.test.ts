@@ -64,6 +64,17 @@ describe('bucket', () => {
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'AES256',
+                  },
+                },
+              ],
+            },
+          },
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
