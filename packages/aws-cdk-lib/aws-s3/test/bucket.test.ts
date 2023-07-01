@@ -351,6 +351,34 @@ describe('bucket', () => {
     });
   });
 
+  test('KMS key is generated if encryptionType is KMS and no encryptionKey is specified', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      'Description': 'Created by Default/MyBucket',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
+  });
+
   test('enforceSsl can be enabled', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', { enforceSSL: true });
@@ -2662,10 +2690,27 @@ describe('bucket', () => {
   test('if a kms key is specified, it implies bucket is encrypted with kms (dah)', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'k');
-
+    const key = new kms.Key(stack, 'MyKey');
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey: key });
     // THEN
-    new s3.Bucket(stack, 'b', { encryptionKey: key });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('Bucket with Server Access Logs', () => {
