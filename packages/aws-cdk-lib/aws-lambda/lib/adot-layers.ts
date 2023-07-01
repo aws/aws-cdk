@@ -248,7 +248,7 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.13.0');
+  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.18.0');
 
   /**
    * Version 1.13.0
