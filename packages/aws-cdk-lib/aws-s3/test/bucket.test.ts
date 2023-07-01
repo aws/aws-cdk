@@ -351,7 +351,7 @@ describe('bucket', () => {
     });
   });
 
-  test('KMS key is generated if encryptionType is KMS and no encryptionKey is specified', () => {
+  test('KMS key is generated if encryption is KMS and no encryptionKey is specified', () => {
     const stack = new cdk.Stack();
 
     new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
