@@ -1242,3 +1242,21 @@ test('should validate maxHealthyPercent', () => {
     maxHealthyPercent: 0.5,
   })).toThrow(/Must be a non-negative integer/);
 });
+
+test('minHealthyPercent must be less than maxHealthyPercent', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+    },
+    minHealthyPercent: 100,
+    maxHealthyPercent: 70,
+  })).toThrow(/must be less than/);
+});

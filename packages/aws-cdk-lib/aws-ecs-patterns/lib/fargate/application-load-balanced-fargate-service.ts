@@ -99,6 +99,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     this.validateHealthyPercentage('minHealthyPercent', props.minHealthyPercent);
     this.validateHealthyPercentage('maxHealthyPercent', props.maxHealthyPercent);
 
+    if (props.minHealthyPercent && props.maxHealthyPercent && props.minHealthyPercent >= props.maxHealthyPercent) {
+      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
+    }
+
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
 
     this.service = new FargateService(this, 'Service', {
