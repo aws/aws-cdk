@@ -44,6 +44,7 @@ TODO: Schedule is not yet fully implemented. See section in [L2 Event Bridge Sch
 Only an L2 class is created that wraps the L1 class and handles the following properties:
 
 - schedule
+- schedule group
 - target (only LambdaInvoke is supported for now)
 - flexibleTimeWindow will be set to `{ mode: 'OFF' }`
 
@@ -97,7 +98,44 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
 
 ### Grouping Schedules
 
-TODO: Group is not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+Your AWS account comes with a default scheduler group, which you can access in CDK with:
+
+ ```text
+ const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+ ```
+
+ When creating a new schedule, you can also add the schedule to a custom scheduling group managed by you:
+
+ ```text
+ const group = new Group(this, "Group", {
+     groupName: "MyGroup",
+ });
+
+ const target = new targets.LambdaInvoke(props.func, {
+     input: ScheduleTargetInput.fromObject({
+         "payload": "useful",
+     }),
+ });
+
+ const schedule1 = new Schedule(this, 'Schedule1', {
+     scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+     target,
+ });
+
+ const schedule2 = new Schedule(this, 'Schedule2', {
+     scheduleExpression: ScheduleExpression.rate(Duration.minutes(5)),
+     target,
+ });
+
+ group.addSchedules(schedule1, schedule2);
+ 
+ // You can also assign groups in a schedule constructor:
+ const schedule3 = new Schedule(this, 'Schedule2', {
+     scheduleExpression: ScheduleExpression.rate(Duration.minutes(5)),
+     group,
+     target,
+ });
+ ```
 
 ## Scheduler Targets
 
