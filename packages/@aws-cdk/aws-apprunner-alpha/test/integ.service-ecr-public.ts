@@ -16,3 +16,7 @@ const service1 = new Service(stack, 'Service1', {
   autoDeploymentsEnabled: false,
 });
 new cdk.CfnOutput(stack, 'URL1', { value: `https://${service1.serviceUrl}` });
+new cdk.CfnOutput(stack, 'ServiceName', { value: service1.serviceName });
+new cdk.CfnOutput(stack, 'ServiceId', { value: service1.serviceId });
+new cdk.CfnOutput(stack, 'ServiceStatus', { value: service1.serviceStatus });
+new cdk.CfnOutput(stack, 'ServiceArn', { value: service1.serviceArn });
