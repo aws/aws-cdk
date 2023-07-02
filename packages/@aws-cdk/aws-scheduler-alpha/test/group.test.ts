@@ -2,15 +2,22 @@ import { Duration, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
-import { Schedule } from '../lib';
+import { ScheduleExpression, ScheduleTargetInput } from '../lib';
 import { Group, GroupProps } from '../lib/group';
+import { Schedule, targets } from '../lib/private';
 
 describe('Schedule Group', () => {
   let stack: Stack;
+  let func: lambda.IFunction;
+  let role: iam.IRole;
+  const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
     stack = new Stack();
+    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/johndoe');
+    func = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
   });
 
   test('creates a group with default properties', () => {
@@ -80,13 +87,31 @@ describe('Schedule Group', () => {
     };
     const group = new Group(stack, 'TestGroup', props);
 
-    const schedule1 = new Schedule(stack, 'Schedule1');
-    const schedule2 = new Schedule(stack, 'Schedule2');
+    const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: new targets.LambdaInvoke({
+        role,
+        input: ScheduleTargetInput.fromText('test'),
+      }, func),
+    });
+    const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: new targets.LambdaInvoke({
+        role,
+        input: ScheduleTargetInput.fromText('test'),
+      }, func),
+    });
 
     group.addSchedules(schedule1, schedule2);
 
     expect(schedule1.group).toEqual(group);
     expect(schedule2.group).toEqual(group);
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        GroupName: `${props.groupName}`,
+      },
+    });
   });
 
   test('grantReadSchedules', () => {

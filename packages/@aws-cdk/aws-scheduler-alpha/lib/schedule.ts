@@ -1,13 +1,6 @@
-import { IResource, Resource } from 'aws-cdk-lib';
-import { IGroup } from './group';
+import { IResource } from 'aws-cdk-lib';
 
 /**
  * Interface representing a created or an imported `Schedule`.
  */
-export interface ISchedule extends IResource {
-  group?: IGroup;
-}
-
-export class Schedule extends Resource implements ISchedule {
-  group?: IGroup;
-}
+export interface ISchedule extends IResource {}

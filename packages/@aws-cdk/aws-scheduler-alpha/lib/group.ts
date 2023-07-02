@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { Arn, ArnFormat, Aws, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { Schedule } from './schedule';
+import { Schedule } from './private';
 
 export interface GroupProps {
   /**
