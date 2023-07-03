@@ -96,7 +96,7 @@ cli.synth({
 });
 ```
 
-### synth
+### bootstrap
 
 ```ts
 // await this asynchronous method call using a language feature
