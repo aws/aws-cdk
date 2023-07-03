@@ -591,6 +591,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       throw new Error('You cannot provide both an instanceProfile and a role');
     }
 
+    // use provided instance profile or create one if a role was provided
     let iamProfileArn: string | undefined = undefined;
     if (props.instanceProfile) {
       this.role = props.instanceProfile.role;

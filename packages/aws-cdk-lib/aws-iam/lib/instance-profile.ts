@@ -20,7 +20,7 @@ export interface IInstanceProfile extends IResource {
   readonly instanceProfileArn: string;
 
   /**
-   * The InstanceProfile's role.
+   * The role associated with the InstanceProfile.
    */
   readonly role?: IRole;
 }
@@ -70,18 +70,21 @@ export interface InstanceProfileAttributes {
   readonly role?: IRole;
 }
 
+/**
+ * Base class for an Instance Profile
+ */
 abstract class InstanceProfileBase extends Resource implements IInstanceProfile {
   public abstract readonly instanceProfileName: string;
   public abstract readonly instanceProfileArn: string;
 
   /**
-   * The role defined as part of the InstanceProfile.
+   * The role associated with the InstanceProfile.
    * @internal
    */
   protected _role?: IRole;
 
   /**
-   * Returns the role of this InstanceProfile.
+   * Returns the role associated with this InstanceProfile.
    */
   public get role(): IRole | undefined {
     return this._role;
