@@ -2346,10 +2346,10 @@ describe('ec2 service', () => {
         });
         const vpc = new ec2.Vpc(govCloudStack, 'MyVpc', {});
         const gcCluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
-        addDefaultCapacityProvider(cluster, govCloudStack, vpc);
+        addDefaultCapacityProvider(gcCluster, govCloudStack, vpc);
         const gcTaskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
 
-        taskDefinition.addContainer('web', {
+        gcTaskDefinition.addContainer('web', {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
           memoryLimitMiB: 512,
         });
