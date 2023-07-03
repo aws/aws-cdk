@@ -306,6 +306,158 @@ describe('Job', () => {
       });
     });
 
+    describe('enabling execution class', () => {
+      describe('enabling execution class with FLEX', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+          });
+        });
+      });
+
+      describe('enabling execution class with FLEX and WorkerType G_1X', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            workerType: glue.WorkerType.G_1X,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+            WorkerType: 'G.1X',
+          });
+        });
+      });
+
+      describe('enabling execution class with FLEX and WorkerType G_2X', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            workerType: glue.WorkerType.G_2X,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+            WorkerType: 'G.2X',
+          });
+        });
+      });
+
+      describe('enabling execution class with STANDARD', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.STANDARD,
+          });
+        });
+
+        test('should set STANDARD', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'STANDARD',
+          });
+        });
+      });
+
+      describe('errors for execution class with FLEX', () => {
+        test('job type except JobType.ETL should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonShell({
+              glueVersion: glue.GlueVersion.V2_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for JobType.ETL jobs');
+        });
+
+        test('with glue version 0.9 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V0_9,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with glue version 1.0 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V1_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with glue version 2.0 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V2_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with G_025X as worker type that is neither G_1X nor G_2X should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            workerType: glue.WorkerType.G_025X,
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+        });
+
+        test('with G_4X as worker type that is neither G_1X nor G_2X should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            workerType: glue.WorkerType.G_4X,
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+        });
+      });
+    });
+
     describe('enabling spark ui', () => {
       describe('with no bucket or path provided', () => {
         beforeEach(() => {
