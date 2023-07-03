@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Metric, Statistic } from '../../aws-cloudwatch';
@@ -8,7 +9,6 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
-import each from 'jest-each';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -36,6 +36,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_1_2,
   EngineVersion.OPENSEARCH_1_3,
   EngineVersion.OPENSEARCH_2_3,
+  EngineVersion.OPENSEARCH_2_5,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -196,6 +197,7 @@ each([
   [EngineVersion.OPENSEARCH_1_2, 'OpenSearch_1.2'],
   [EngineVersion.OPENSEARCH_1_3, 'OpenSearch_1.3'],
   [EngineVersion.OPENSEARCH_2_3, 'OpenSearch_2.3'],
+  [EngineVersion.OPENSEARCH_2_5, 'OpenSearch_2.5'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 

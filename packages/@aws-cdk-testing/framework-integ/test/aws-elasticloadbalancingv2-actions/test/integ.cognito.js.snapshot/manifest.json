@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-cognito.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93a95925d84976f569101a57c8168f573c9082576c798f93def25e662e00852d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +171,12 @@
             "data": "StackVPCGWFFCB6290"
           }
         ],
+        "/integ-cognito/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
+          }
+        ],
         "/integ-cognito/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -193,6 +193,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LBListener49E825B4"
+          }
+        ],
+        "/integ-cognito/LB/Listener/Action2Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBListenerAction2RuleDEE172B4"
           }
         ],
         "/integ-cognito/UserPool/Resource": [
@@ -213,10 +219,76 @@
             "data": "Domain66AC69E0"
           }
         ],
+        "/integ-cognito/ARecord/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordE7B57761"
+          }
+        ],
         "/integ-cognito/DNS": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DNS"
+          }
+        ],
+        "/integ-cognito/User/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserFDDCDD17"
+          }
+        ],
+        "/integ-cognito/User/Resource/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserCustomResourcePolicyC2EB5139"
+          }
+        ],
+        "/integ-cognito/User/SetUserPassword/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSetUserPasswordAD2F2A64"
+          }
+        ],
+        "/integ-cognito/User/SetUserPassword/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSetUserPasswordCustomResourcePolicy7B250C76"
+          }
+        ],
+        "/integ-cognito/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
+        "/integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/integ-cognito/Signin/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SigninServiceRole24B8BB32"
+          }
+        ],
+        "/integ-cognito/Signin/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Signin352C80E6"
+          }
+        ],
+        "/integ-cognito/Exports/Output{\"Ref\":\"Signin352C80E6\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSignin352C80E64BA58F71"
           }
         ],
         "/integ-cognito/BootstrapVersion": [
@@ -250,7 +322,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75262cd26d1fd97ddeebfb8c87fca618b3702c38903dcb56c597df6865739b49.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -263,9 +335,40 @@
         }
       },
       "dependencies": [
+        "integ-cognito",
         "integtestcognitoDefaultTestDeployAssert6F2623C9.assets"
       ],
       "metadata": {
+        "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bdInvoke5A72F915"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/integ-test-cognito/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -280,6 +383,12 @@
         ]
       },
       "displayName": "integ-test-cognito/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { CfnTrail } from './cloudtrail.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -6,8 +8,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack } from '../../core';
-import { Construct } from 'constructs';
-import { CfnTrail } from './cloudtrail.generated';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -190,10 +190,6 @@ export class InsightType {
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
- * NOTE the above example creates an UNENCRYPTED bucket by default,
- * If you are required to use an Encrypted bucket you can supply a preconfigured bucket
- * via TrailProps
- *
  */
 export class Trail extends Resource {
 
@@ -247,7 +243,7 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED, enforceSSL: true });
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { enforceSSL: true });
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.bucketArn],

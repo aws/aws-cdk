@@ -147,7 +147,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
-This option also enables you to 
+This option also enables you to
 multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
@@ -157,14 +157,19 @@ declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'BucketDeployment', {
   sources: [s3deploy.Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket,
-  cacheControl: [s3deploy.CacheControl.fromString('max-age=31536000,public,immutable')],
+  cacheControl: [
+    s3deploy.CacheControl.maxAge(Duration.days(365)),
+    s3deploy.CacheControl.immutable(),
+  ],
   prune: false,
 });
 
 new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
   sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
   destinationBucket,
-  cacheControl: [s3deploy.CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
+  cacheControl: [
+    s3deploy.CacheControl.maxAge(Duration.seconds(0)),
+  ],
   prune: false,
 });
 ```
@@ -268,6 +273,23 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
+## Signed Content Payloads
+
+By default, deployment uses streaming uploads which set the `x-amz-content-sha256`
+request header to `UNSIGNED-PAYLOAD` (matching default behavior of the AWS CLI tool).
+In cases where bucket policy restrictions require signed content payloads, you can enable
+generation of a signed `x-amz-content-sha256` request header with `signContent: true`.
+
+```ts
+declare const bucket: s3.IBucket;
+
+new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: bucket,
+  signContent: true,
+});
+```
+
 ## Size Limits
 
 The default memory limit for the deployment resource is 128MiB. If you need to
@@ -275,7 +297,7 @@ copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
 The default ephemeral storage size for the deployment resource is 512MiB. If you
-need to upload larger files, you may hit this limit. You can use the 
+need to upload larger files, you may hit this limit. You can use the
 `ephemeralStorageSize` configuration to increase the storage size of the AWS Lambda
 resource handler.
 
@@ -332,6 +354,36 @@ new s3deploy.BucketDeployment(this, 'BucketDeployment', {
 The value in `topic.topicArn` is a deploy-time value. It only gets resolved
 during deployment by placing a marker in the generated source file and
 substituting it when its deployed to the destination with the actual value.
+
+### Substitutions from Templated Files
+
+The `DeployTimeSubstitutedFile` construct allows you to specify substitutions
+to make from placeholders in a local file which will be resolved during deployment. This
+is especially useful in situations like creating an API from a spec file, where users might
+want to reference other CDK resources they have created.
+
+The syntax for template variables is `{{ variable-name }}` in your local file. Then, you would 
+specify the substitutions in CDK like this:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const myLambdaFunction: lambda.Function;
+
+new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
+  source: 'my-file.yaml',
+  destinationBucket: destinationBucket,
+  substitutions: {
+    variable-name: myLambdaFunction.functionName,
+  },
+});
+```
+
+Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
+In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
+in the file.
 
 ## Keep Files Zipped
 

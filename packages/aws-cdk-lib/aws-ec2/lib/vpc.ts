@@ -1,9 +1,4 @@
-import * as cxschema from '../../cloud-assembly-schema';
-import {
-  Arn, Annotations, ContextProvider,
-  IResource, Lazy, Resource, Stack, Token, Tags, Names,
-} from '../../core';
-import * as cxapi from '../../cx-api';
+import * as path from 'path';
 import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
@@ -19,6 +14,13 @@ import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOpt
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
+import * as cxschema from '../../cloud-assembly-schema';
+import {
+  Arn, Annotations, ContextProvider,
+  IResource, Lazy, Resource, Stack, Token, Tags, Names, CustomResourceProvider, CustomResourceProviderRuntime, CustomResource, FeatureFlags,
+} from '../../core';
+import * as cxapi from '../../cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 const FAKE_AZ_NAME = 'fake-az';
@@ -1078,6 +1080,14 @@ export interface VpcProps {
    * @default this.node.path
    */
   readonly vpcName?: string;
+
+  /**
+   * If set to true then the default inbound & outbound rules will be removed
+   * from the default security group
+   *
+   * @default true if '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup' is enabled, false otherwise
+   */
+  readonly restrictDefaultSecurityGroup?: boolean;
 }
 
 /**
@@ -1157,7 +1167,7 @@ export interface SubnetConfiguration {
  *
  * ```ts
  * const vpc = new ec2.Vpc(this, 'TheVPC', {
- *   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+ *   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
  * })
  *
  * // Iterate the private subnets
@@ -1441,13 +1451,11 @@ export class Vpc extends VpcBase {
 
     if (props.availabilityZones) {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
-      const resolvedStackAzs = stack.availabilityZones.filter(az => !Token.isUnresolved(az));
-      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 // stack AZs are tokenized, so we cannot validate it
-        || props.availabilityZones.every(
-          az => Token.isUnresolved(az) // given AZ is tokenized, such as in integ tests, so we cannot validate it
-            || resolvedStackAzs.includes(az));
+      const resolvedStackAzs = this.resolveStackAvailabilityZones(stack.availabilityZones);
+      const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
+        props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
-        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${stack.availabilityZones}`);
+        throw new Error(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`);
       }
       this.availabilityZones = props.availabilityZones;
     } else {
@@ -1457,7 +1465,6 @@ export class Vpc extends VpcBase {
     for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
       this.availabilityZones.push(FAKE_AZ_NAME);
     }
-
 
     this.vpcId = this.resource.ref;
     this.vpcArn = Arn.format({
@@ -1539,6 +1546,11 @@ export class Vpc extends VpcBase {
       for (const [flowLogId, flowLog] of Object.entries(flowLogs)) {
         this.addFlowLog(flowLogId, flowLog);
       }
+    }
+
+    const restrictFlag = FeatureFlags.of(this).isEnabled(EC2_RESTRICT_DEFAULT_SECURITY_GROUP);
+    if ((restrictFlag && props.restrictDefaultSecurityGroup !== false) || props.restrictDefaultSecurityGroup) {
+      this.restrictDefaultSecurityGroup();
     }
   }
 
@@ -1674,6 +1686,52 @@ export class Vpc extends VpcBase {
       Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
       Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes });
     });
+  }
+
+  private restrictDefaultSecurityGroup(): void {
+    const id = 'Custom::VpcRestrictDefaultSG';
+    const provider = CustomResourceProvider.getOrCreateProvider(this, id, {
+      codeDirectory: path.join(__dirname, 'restrict-default-security-group-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      description: 'Lambda function for removing all inbound/outbound rules from the VPC default security group',
+    });
+    provider.addToRolePolicy({
+      Effect: 'Allow',
+      Action: [
+        'ec2:AuthorizeSecurityGroupIngress',
+        'ec2:AuthorizeSecurityGroupEgress',
+        'ec2:RevokeSecurityGroupIngress',
+        'ec2:RevokeSecurityGroupEgress',
+      ],
+      Resource: [
+        Stack.of(this).formatArn({
+          resource: 'security-group',
+          service: 'ec2',
+          resourceName: this.vpcDefaultSecurityGroup,
+        }),
+      ],
+    });
+    new CustomResource(this, 'RestrictDefaultSecurityGroupCustomResource', {
+      resourceType: id,
+      serviceToken: provider.serviceToken,
+      properties: {
+        DefaultSecurityGroupId: this.vpcDefaultSecurityGroup,
+        Account: Stack.of(this).account,
+      },
+    });
+  }
+
+  /**
+   * Returns the list of resolved availability zones found in the provided stack availability
+   * zones.
+   *
+   * Note: A resolved availability zone refers to an availability zone that is not a token
+   * and is also not a dummy value.
+   */
+  private resolveStackAvailabilityZones(stackAvailabilityZones: string[]): string[] {
+    const dummyValues = ['dummy1a', 'dummy1b', 'dummy1c'];
+    // if an az is resolved and it is not a 'dummy' value, then add it to array as a resolved az
+    return stackAvailabilityZones.filter(az => !Token.isUnresolved(az) && !dummyValues.includes(az));
   }
 }
 

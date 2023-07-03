@@ -54,7 +54,6 @@ export class PermissionsBoundary {
    * @param name the name of the permissions boundary policy
    *
    * @example
-   * declare const app: App;
    * new Stage(app, 'ProdStage', {
    *   permissionsBoundary: PermissionsBoundary.fromName('my-custom-permissions-boundary'),
    * });
@@ -80,7 +79,6 @@ export class PermissionsBoundary {
    * @param arn the ARN of the permissions boundary policy
    *
    * @example
-   * declare const app: App;
    * new Stage(app, 'ProdStage', {
    *   permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::${AWS::AccountId}:policy/my-custom-permissions-boundary'),
    * });

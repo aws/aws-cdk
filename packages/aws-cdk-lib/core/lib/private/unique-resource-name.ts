@@ -76,10 +76,7 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
 
   // Calculate the hash from the full path, included unresolved tokens so the hash value is always unique
   const hash = pathHash(components);
-  if (prefix) {
-    components.unshift(prefix);
-  }
-  const human = removeDupes(components)
+  const human = prefix + removeDupes(components)
     .filter(pathElement => pathElement !== HIDDEN_FROM_HUMAN_ID)
     .map(pathElement => removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters))
     .filter(pathElement => pathElement)

@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { ScalableTaskCount } from './scalable-task-count';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -18,8 +20,6 @@ import {
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
-import { Construct } from 'constructs';
-import { ScalableTaskCount } from './scalable-task-count';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
@@ -560,6 +560,8 @@ export abstract class BaseService extends Resource
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       ...additionalProps,
     });
+
+    this.node.addDependency(this.taskDefinition.taskRole);
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');

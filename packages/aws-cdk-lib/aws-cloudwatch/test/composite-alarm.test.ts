@@ -106,7 +106,6 @@ describe('CompositeAlarm', () => {
       },
     });
 
-
   });
 
   test('test action suppressor translates to a correct CFN properties', () => {
@@ -122,7 +121,6 @@ describe('CompositeAlarm', () => {
       threshold: 100,
       evaluationPeriods: 3,
     });
-
 
     const alarmRule = AlarmRule.fromBoolean(true);
 
@@ -174,7 +172,6 @@ describe('CompositeAlarm', () => {
       evaluationPeriods: 3,
     });
 
-
     const alarmRule = AlarmRule.fromBoolean(true);
 
     new CompositeAlarm(stack, 'CompositeAlarm', {
@@ -193,6 +190,20 @@ describe('CompositeAlarm', () => {
       ActionsSuppressorExtensionPeriod: 60,
       ActionsSuppressorWaitPeriod: 60,
     });
+  });
+
+  test('imported alarm arn and name generated correctly', () => {
+    const stack = new Stack();
+
+    const alarmFromArn = CompositeAlarm.fromCompositeAlarmArn(stack, 'AlarmFromArn', 'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName');
+
+    expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
+
+    const alarmFromName = CompositeAlarm.fromCompositeAlarmName(stack, 'AlarmFromName', 'TestAlarmName');
+
+    expect(alarmFromName.alarmName).toEqual('TestAlarmName');
+    expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
 
 });

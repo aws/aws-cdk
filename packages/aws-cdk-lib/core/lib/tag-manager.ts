@@ -239,6 +239,23 @@ export interface ITaggable {
 }
 
 /**
+ * Modernized version of ITaggable
+ *
+ * `ITaggable` has a problem: for a number of L1 resources, we failed to generate
+ * `tags: TagManager`, and generated `tags: CfnSomeResource.TagProperty[]` instead.
+ *
+ * To mark these resources as taggable, we need to put the `TagManager` in a new property
+ * whose name is unlikely to conflict with any existing properties. Hence, a new interface
+ * for that purpose. All future resources will implement `ITaggableV2`.
+ */
+export interface ITaggableV2 {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly cdkTagManager: TagManager;
+}
+
+/**
  * Options to configure TagManager behavior
  */
 export interface TagManagerOptions {
@@ -261,15 +278,13 @@ export interface TagManagerOptions {
  * value that will resolve to the tags at synthesis time.
  *
  * @example
- * import * as cdk from '@aws-cdk/core';
+ * class MyConstruct extends Resource implements ITaggable {
+ *   public readonly tags = new TagManager(TagType.KEY_VALUE, 'Whatever::The::Type');
  *
- * class MyConstruct extends cdk.Resource implements cdk.ITaggable {
- *   public readonly tags = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Whatever::The::Type');
- *
- *   constructor(scope: cdk.Construct, id: string) {
+ *   constructor(scope: Construct, id: string) {
  *     super(scope, id);
  *
- *     new cdk.CfnResource(this, 'Resource', {
+ *     new CfnResource(this, 'Resource', {
  *       type: 'Whatever::The::Type',
  *       properties: {
  *         // ...
@@ -285,7 +300,22 @@ export class TagManager {
    * Check whether the given construct is Taggable
    */
   public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
+    const tags = (construct as any).tags;
+    return tags && typeof tags === 'object' && tags.constructor.name === 'TagManager';
+  }
+
+  /**
+   * Check whether the given construct is ITaggableV2
+   */
+  public static isTaggableV2(construct: any): construct is ITaggableV2 {
+    return (construct as any).cdkTagManager !== undefined;
+  }
+
+  /**
+   * Return the TagManager associated with the given construct, if any
+   */
+  public static of(construct: any): TagManager | undefined {
+    return TagManager.isTaggableV2(construct) ? construct.cdkTagManager : TagManager.isTaggable(construct) ? construct.tags : undefined;
   }
 
   /**
@@ -305,21 +335,19 @@ export class TagManager {
   public readonly renderedTags: IResolvable;
 
   private readonly tags = new Map<string, Tag>();
-  private readonly dynamicTags: any;
+  private dynamicTags?: any;
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
   private readonly resourceTypeName: string;
-  private readonly initialTagPriority = 50;
+  private readonly externalTagPriority = 50;
+  private readonly didHaveInitialTags: boolean;
 
-  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
+  constructor(tagType: TagType, resourceTypeName: string, initialTags?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS()[tagType];
-    if (tagStructure !== undefined) {
-      const parseTagsResult = this.tagFormatter.parseTags(tagStructure, this.initialTagPriority);
-      this.dynamicTags = parseTagsResult.dynamicTags;
-      this._setTag(...parseTagsResult.tags);
-    }
     this.tagPropertyName = options.tagPropertyName || 'tags';
+    this.parseExternalTags(initialTags);
+    this.didHaveInitialTags = initialTags !== undefined;
 
     this.renderedTags = Lazy.any({ produce: () => this.renderTags() });
   }
@@ -355,8 +383,13 @@ export class TagManager {
    * which will return a `Lazy` value that will resolve to the correct
    * tags at synthesis time.
    */
-  public renderTags(): any {
+  public renderTags(combineWithTags?: any): any {
+    if (combineWithTags !== undefined && this.didHaveInitialTags) {
+      throw new Error('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
+    }
+    this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
       const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
       return ret.length > 0 ? ret : undefined;
@@ -413,5 +446,18 @@ export class TagManager {
   private get sortedTags(): Tag[] {
     return Array.from(this.tags.values())
       .sort((a, b) => a.key.localeCompare(b.key));
+  }
+
+  /**
+   * Parse external tags.
+   *
+   * Set the parseable ones into this tag manager. Save the rest (tokens, lazies) in `this.dynamicTags`.
+   */
+  private parseExternalTags(initialTags: any) {
+    if (initialTags !== undefined) {
+      const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
+      this.dynamicTags = parseTagsResult.dynamicTags;
+      this._setTag(...parseTagsResult.tags);
+    }
   }
 }

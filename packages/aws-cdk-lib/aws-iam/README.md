@@ -143,7 +143,7 @@ CDK will not create any IAM roles or policies with the `stack` scope. `cdk synth
 it will generate a policy report to the cloud assembly (i.e. cdk.out). The `iam-policy-report.txt`
 report will contain a list of IAM roles and associated permissions that would have been created.
 This report can be used to create the roles with the appropriate permissions outside of
-the CDK application. 
+the CDK application.
 
 Once the missing roles have been created, their names can be added to the `usePrecreatedRoles`
 property, like shown below:
@@ -151,13 +151,13 @@ property, like shown below:
 ```ts
 declare const app: App;
 const stack = new Stack(app, 'MyStack');
-iam.Role.customizeRoles(stack, {
+iam.Role.customizeRoles(this, {
   usePrecreatedRoles: {
     'MyStack/MyRole': 'my-precreated-role-name',
   },
 });
 
-new iam.Role(stack, 'MyRole', {
+new iam.Role(this, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
 });
 ```
@@ -171,13 +171,13 @@ declare const app: App;
 const stack = new Stack(app, 'MyStack');
 iam.Role.customizeRoles(stack);
 
-const fn = new lambda.Function(stack, 'MyLambda', {
+const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_14_X,
 });
 
-const bucket = new s3.Bucket(stack, 'Bucket');
+const bucket = new s3.Bucket(this, 'Bucket');
 bucket.grantRead(fn);
 ```
 
@@ -228,7 +228,7 @@ come back and update the `customizeRoles` with the role name.
 ```ts
 declare const app: App;
 const stack = new Stack(app, 'MyStack');
-iam.Role.customizeRoles(stack, {
+iam.Role.customizeRoles(this, {
   usePrecreatedRoles: {
     'MyStack/MyLambda/ServiceRole': 'my-role-name',
   }
@@ -244,7 +244,7 @@ It is also possible to generate the report _without_ preventing the role/policy 
 
 ```ts
 declare const stack: Stack;
-iam.Role.customizeRoles(stack, {
+iam.Role.customizeRoles(this, {
   preventSynthesis: false,
 });
 ```
@@ -256,6 +256,13 @@ to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create
 an `ExternalId` works like this:
 
 [supplying an external ID](test/example.external-id.lit.ts)
+
+## SourceArn and SourceAccount
+
+If you need to create resource policies using `aws:SourceArn` and `aws:SourceAccount` for cross-service resource access,
+use `addSourceArnCondition` and `addSourceAccountCondition` to create the conditions.
+
+See [Cross-service confused deputy prevention for more details](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html#cross-service-confused-deputy-prevention).
 
 ## Principals vs Identities
 
@@ -508,7 +515,7 @@ const prodStage = new Stage(app, 'ProdStage', {
 new Stack(prodStage, 'ProdStack', {
   synthesizer: new DefaultStackSynthesizer({
     qualifier: 'custom',
-  });
+  }),
 });
 ```
 
@@ -690,7 +697,7 @@ const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user });
 ```
 
 You can force CloudFormation to rotate the access key by providing a monotonically increasing `serial`
-property. Simply provide a higher serial value than any number used previously: 
+property. Simply provide a higher serial value than any number used previously:
 
 ```ts
 const user = new iam.User(this, 'MyUser');
@@ -723,8 +730,8 @@ const group = iam.Group.fromGroupName(this, 'MyImportedGroupByName', 'group-name
 To add a user to a group (both for a new and imported user/group):
 
 ```ts
-const user = new iam.User(this, 'MyUser'); // or User.fromUserName(stack, 'User', 'johnsmith');
-const group = new iam.Group(this, 'MyGroup'); // or Group.fromGroupArn(stack, 'Group', 'arn:aws:iam::account-id:group/group-name');
+const user = new iam.User(this, 'MyUser'); // or User.fromUserName(this, 'User', 'johnsmith');
+const group = new iam.Group(this, 'MyGroup'); // or Group.fromGroupArn(this, 'Group', 'arn:aws:iam::account-id:group/group-name');
 
 user.addToGroup(group);
 // or

@@ -12,14 +12,12 @@ To have SecretsManager generate a new secret value automatically,
 follow this example:
 
 ```ts
-declare const vpc: ec2.Vpc;
+declare const vpc: ec2.IVpc;
 
-// Simple secret
-const secret = new secretsmanager.Secret(this, 'Secret');
-// Using the secret
 const instance1 = new rds.DatabaseInstance(this, "PostgresInstance1", {
   engine: rds.DatabaseInstanceEngine.POSTGRES,
-  credentials: rds.Credentials.fromSecret(secret),
+  // Generate the secret with admin username `postgres` and random password
+  credentials: rds.Credentials.fromGeneratedSecret('postgres'),
   vpc
 });
 // Templated secret with username and password fields
@@ -27,6 +25,7 @@ const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   generateSecretString: {
     secretStringTemplate: JSON.stringify({ username: 'postgres' }),
     generateStringKey: 'password',
+    excludeCharacters: '/@"',
   },
 });
 // Using the templated secret as credentials
@@ -125,6 +124,7 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
 });
 ```
 
@@ -134,7 +134,7 @@ MariaDB, SQLServer, Redshift and MongoDB (both for the single and multi user sch
 When deployed in a VPC, the hosted rotation implements `ec2.IConnectable`:
 
 ```ts
-declare const myVpc: ec2.Vpc;
+declare const myVpc: ec2.IVpc;
 declare const dbConnections: ec2.Connections;
 declare const secret: secretsmanager.Secret;
 
@@ -267,11 +267,11 @@ For example:
 In order to create this type of secret, use the `secretObjectValue` input prop.
 
 ```ts
-const user = new iam.User(stack, 'User');
-const accessKey = new iam.AccessKey(stack, 'AccessKey', { user });
+const user = new iam.User(this, 'User');
+const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
 declare const stack: Stack;
 
-new secretsmanager.Secret(stack, 'Secret', {
+new secretsmanager.Secret(this, 'Secret', {
   secretObjectValue: {
     username: SecretValue.unsafePlainText(user.userName),
     database: SecretValue.unsafePlainText('foo'),

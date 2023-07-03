@@ -974,7 +974,8 @@
     "name": "SagemakerEdge"
   },
   "amp": {
-    "name": "Amp"
+    "name": "Amp",
+    "cors": true
   },
   "greengrassv2": {
     "name": "GreengrassV2"
@@ -1284,5 +1285,34 @@
   },
   "internetmonitor": {
     "name": "InternetMonitor"
+  },
+  "ivsrealtime": {
+    "prefix": "ivs-realtime",
+    "name": "IVSRealTime"
+  },
+  "vpclattice": {
+    "prefix": "vpc-lattice",
+    "name": "VPCLattice"
+  },
+  "osis": {
+    "name": "OSIS"
+  },
+  "mediapackagev2": {
+    "name": "MediaPackageV2"
+  },
+  "paymentcryptography": {
+    "prefix": "payment-cryptography",
+    "name": "PaymentCryptography"
+  },
+  "paymentcryptographydata": {
+    "prefix": "payment-cryptography-data",
+    "name": "PaymentCryptographyData"
+  },
+  "codegurusecurity": {
+    "prefix": "codeguru-security",
+    "name": "CodeGuruSecurity"
+  },
+  "verifiedpermissions": {
+    "name": "VerifiedPermissions"
   }
 }

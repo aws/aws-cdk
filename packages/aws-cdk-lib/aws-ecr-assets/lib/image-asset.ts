@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Construct } from 'constructs';
 
 /**
  * networking mode on build time supported by docker
@@ -165,7 +165,13 @@ export interface DockerCacheOption {
    * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
    * @default {} No options provided
    *
-   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   * @example
+   * declare const branch: string;
+   *
+   * const params = {
+   *   ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,
+   *   mode: "max",
+   * };
    */
   readonly params?: { [key: string]: string };
 }
@@ -209,10 +215,11 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build secrets
    *
    * @example
+   * import { DockerBuildSecret } from 'aws-cdk-lib';
    *
-   * {
+   * const buildSecrets = {
    *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
-   * }
+   * };
    */
   readonly buildSecrets?: { [key: string]: string }
 
@@ -258,6 +265,14 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly outputs?: string[];
+
+  /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using AppScopedStagingSynthesizer.
+   *
+   * @default - no asset name
+   */
+  readonly assetName?: string;
 
   /**
    * Cache from options to pass to the `docker build` command.
@@ -355,6 +370,14 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerOutputs?: string[];
 
   /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using AppScopedStagingSynthesizer.
+   *
+   * @default - no asset name
+   */
+  private readonly assetName?: string;
+
+  /**
    * Cache from options to pass to the `docker build` command.
    */
   private readonly dockerCacheFrom?: DockerCacheOption[];
@@ -446,11 +469,12 @@ export class DockerImageAsset extends Construct implements IAsset {
         : JSON.stringify(extraHash),
     });
 
-    this.sourceHash = staging.assetHash;
     this.assetHash = staging.assetHash;
+    this.sourceHash = this.assetHash;
 
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
+    this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildSecrets = props.buildSecrets;
     this.dockerBuildTarget = props.target;
@@ -460,6 +484,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
+      assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
       dockerBuildSecrets: this.dockerBuildSecrets,
       dockerBuildTarget: this.dockerBuildTarget,

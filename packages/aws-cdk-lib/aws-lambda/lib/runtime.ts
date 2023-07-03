@@ -87,7 +87,7 @@ export class Runtime {
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * The NodeJS 18.x runtime (nodejs18.x) supported in all commercial regions except me-central-1, eu-central-2 and eu-south-2.
+   * The NodeJS 18.x runtime (nodejs18.x)
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -134,6 +134,14 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.10 runtime (python3.10)
+   */
+  public static readonly PYTHON_3_10 = new Runtime('python3.10', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    */
   public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA, {
@@ -151,6 +159,13 @@ export class Runtime {
    * The Java 11 runtime (java11)
    */
   public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Java 17 runtime (java17)
+   */
+  public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
   });
 
@@ -198,6 +213,11 @@ export class Runtime {
    * The Ruby 2.7 runtime (ruby2.7)
    */
   public static readonly RUBY_2_7 = new Runtime('ruby2.7', RuntimeFamily.RUBY);
+
+  /**
+   * The Ruby 3.2 runtime (ruby3.2)
+   */
+  public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

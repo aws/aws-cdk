@@ -60,6 +60,14 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
+To give an IAM User or Role permission to invoke a method, use `grantExecute`:
+
+```ts
+declare user: iam.User;
+const books = api.root.addResource('books');
+books.grantExecute(user);
+```
+
 ## AWS Lambda-backed APIs
 
 A very common practice is to use Amazon API Gateway with AWS Lambda as the
@@ -608,6 +616,41 @@ resource.addMethod('GET', integration, {
 Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
 However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
 
+If you want to use `requestValidatorOptions` in multiple `addMethod()` calls
+then you need to set the `@aws-cdk/aws-apigateway:requestValidatorUniqueId`
+feature flag. When this feature flag is set, each `RequestValidator` will have a unique generated id.
+
+> **Note** if you enable this feature flag when you have already used
+> `addMethod()` with `requestValidatorOptions` the Logical Id of the resource
+> will change causing the resource to be replaced.
+
+```ts
+declare const integration: apigateway.LambdaIntegration;
+declare const resource: apigateway.Resource;
+declare const responseModel: apigateway.Model;
+declare const errorResponseModel: apigateway.Model;
+
+resource.node.setContext('@aws-cdk/aws-apigateway:requestValidatorUniqueId', true);
+
+resource.addMethod('GET', integration, {
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  },
+});
+
+resource.addMethod('POST', integration, {
+  // we can set request validator options like below
+  requestValidatorOptions: {
+    requestValidatorName: 'test-validator2',
+    validateRequestBody: true,
+    validateRequestParameters: false
+  },
+});
+```
+
 ## Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to
@@ -730,50 +773,54 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 
 A full working example is shown below.
 
-```ts
+```ts nofixture
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import { App, Stack } from 'aws-cdk-lib';
-import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from '../../lib';
+import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from 'aws-cdk-lib/aws-apigateway';
 
 /// !show
-const app = new App();
-const stack = new Stack(app, 'TokenAuthorizerInteg');
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
-const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
-  handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
-});
+    const authorizerFn = new lambda.Function(this, 'MyAuthorizerFunction', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
+    });
 
-const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
-  handler: authorizerFn,
-});
+    const authorizer = new TokenAuthorizer(this, 'MyAuthorizer', {
+      handler: authorizerFn,
+    });
 
-const restapi = new RestApi(stack, 'MyRestApi', {
-  cloudWatchRole: true,
-  defaultMethodOptions: {
-    authorizer,
-  },
-  defaultCorsPreflightOptions: {
-    allowOrigins: Cors.ALL_ORIGINS,
-  },
-});
+    const restapi = new RestApi(this, 'MyRestApi', {
+      cloudWatchRole: true,
+      defaultMethodOptions: {
+        authorizer,
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+      },
+    });
 
 
-restapi.root.addMethod('ANY', new MockIntegration({
-  integrationResponses: [
-    { statusCode: '200' },
-  ],
-  passthroughBehavior: PassthroughBehavior.NEVER,
-  requestTemplates: {
-    'application/json': '{ "statusCode": 200 }',
-  },
-}), {
-  methodResponses: [
-    { statusCode: '200' },
-  ],
-});
+    restapi.root.addMethod('ANY', new MockIntegration({
+      integrationResponses: [
+        { statusCode: '200' },
+      ],
+      passthroughBehavior: PassthroughBehavior.NEVER,
+      requestTemplates: {
+        'application/json': '{ "statusCode": 200 }',
+      },
+    }), {
+      methodResponses: [
+        { statusCode: '200' },
+      ],
+    });
+  }
+}
 ```
 
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,

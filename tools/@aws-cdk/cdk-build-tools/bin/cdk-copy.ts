@@ -67,27 +67,31 @@ interface DuplicateConfig {
 async function duplicateModule(config: DuplicateConfig) {
   const sourceModuleDirectory = path.resolve(config.sourcePackageDir, config.moduleName);
   const targetModuleDirectory = path.resolve(config.outDir);
-  const filesPattern = path.join(sourceModuleDirectory, '**', '*');
-  const files = await glob(filesPattern, {
+
+  await copyAndRewrite(sourceModuleDirectory, targetModuleDirectory, config.ignore);
+
+  const sourceRosettaDirectory = path.resolve(config.sourcePackageDir, 'rosetta', config.moduleName.replace(/-/g, '_'));
+  const targetRosettaDirectory = path.resolve(config.outDir, 'rosetta');
+
+  await copyAndRewrite(sourceRosettaDirectory, targetRosettaDirectory, config.ignore);
+}
+
+async function copyAndRewrite(sourceDirectory: string, targetDirectory: string, ignore: string[]) {
+  const files = await glob(path.join(sourceDirectory, '**', '*'), {
     ignore: [
-      ...autoIgnore(sourceModuleDirectory),
-      ...config.ignore,
+      ...autoIgnore(sourceDirectory),
+      ...ignore,
     ],
   });
-
 
   // Copy all files to new destination and rewrite imports if needed
   await Promise.all(
     files.map(async (filePath: string) => {
       const stat = await fs.stat(filePath);
-      const relativePath = filePath.replace(sourceModuleDirectory, '');
-      const newPath = path.join(targetModuleDirectory, relativePath);
-      // Create missing directories if needed
-      if (stat.isDirectory()) {
-        if (!fs.existsSync(newPath)) {
-          await fs.mkdir(newPath, { recursive: true });
-        }
-      } else {
+      const relativePath = filePath.replace(sourceDirectory, '');
+      const newPath = path.join(targetDirectory, relativePath);
+      if (stat.isFile()) {
+        await fs.mkdir(path.dirname(newPath), { recursive: true });
         if (fs.existsSync(newPath)) {
           await fs.remove(newPath);
         }
@@ -181,7 +185,6 @@ function autoIgnore(source: string): string[] {
   return [
     // package.json `main` is lib/index.js so no need for top level index.ts
     ...['.ts', '.js', '.d.ts'].map((ext: string) => path.join(source, `index${ext}`)),
-    '**/__snapshots__/**',
     'node_modules/**',
   ];
 }

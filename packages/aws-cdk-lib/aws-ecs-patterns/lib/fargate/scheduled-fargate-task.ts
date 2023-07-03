@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
-import { Construct } from 'constructs';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
@@ -96,6 +96,8 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       subnetSelection: this.subnetSelection,
       platformVersion: props.platformVersion,
       securityGroups: props.securityGroups,
+      propagateTags: props.propagateTags,
+      tags: props.tags,
     });
 
     this.addTaskAsTarget(this.task);

@@ -7,6 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
 });
 
@@ -26,6 +27,7 @@ const group = listener.addTargets('Target', {
 
 group.configureHealthCheck({
   interval: cdk.Duration.seconds(250),
+  timeout: cdk.Duration.seconds(100),
   protocol: elbv2.Protocol.TCP,
 });
 

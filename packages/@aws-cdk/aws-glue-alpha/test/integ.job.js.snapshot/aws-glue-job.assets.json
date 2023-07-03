@@ -1,0 +1,32 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
+      "source": {
+        "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "e99fb38377ba41ea9e74da162cf01b6821baa17e8e3d003c711b03d822356b89": {
+      "source": {
+        "path": "aws-glue-job.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e99fb38377ba41ea9e74da162cf01b6821baa17e8e3d003c711b03d822356b89.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

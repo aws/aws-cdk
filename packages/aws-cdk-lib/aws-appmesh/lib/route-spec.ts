@@ -1,4 +1,3 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
@@ -8,6 +7,7 @@ import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatch
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
+import * as cdk from '../../core';
 
 /**
  * Properties for the Weighted Targets in the route
@@ -66,6 +66,13 @@ export interface HttpRouteMatch {
    * @default - do not match on query parameters
    */
   readonly queryParameters?: QueryParameterMatch[];
+
+  /**
+   * The port to match from the request.
+   *
+   * @default - do not match on port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -110,6 +117,13 @@ export interface GrpcRouteMatch {
    * @default - do not match on method name
    */
   readonly methodName?: string;
+
+  /**
+   * The port to match from the request.
+   *
+   * @default - do not match on port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -459,6 +473,7 @@ class HttpRouteSpec extends RouteSpec {
         method: this.match?.method,
         scheme: this.match?.protocol,
         queryParameters: queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
+        port: this.match?.port,
       },
       timeout: renderTimeout(this.timeout),
       retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
@@ -551,6 +566,7 @@ class GrpcRouteSpec extends RouteSpec {
     const serviceName = this.match.serviceName;
     const methodName = this.match.methodName;
     const metadata = this.match.metadata;
+    const port = this.match.port;
 
     validateGrpcRouteMatch(this.match);
     validateGrpcMatchArrayLength(metadata);
@@ -569,6 +585,7 @@ class GrpcRouteSpec extends RouteSpec {
           serviceName: serviceName,
           methodName: methodName,
           metadata: metadata?.map(singleMetadata => singleMetadata.bind(scope).headerMatch),
+          port: port,
         },
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,

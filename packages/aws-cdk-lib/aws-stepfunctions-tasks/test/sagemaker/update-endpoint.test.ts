@@ -70,7 +70,6 @@ test('pass parameters to update endpoint', () => {
   });
 });
 
-
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new tasks.SageMakerUpdateEndpoint(stack, 'UpdateSagemaker', {

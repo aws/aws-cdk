@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "798d29f00c3d8f856bf85b7138c6e647084b39d095a48e9fe00157a314591215": {
+      "source": {
+        "path": "integ-apprunner-ecr-public.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "798d29f00c3d8f856bf85b7138c6e647084b39d095a48e9fe00157a314591215.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

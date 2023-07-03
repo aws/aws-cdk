@@ -1,7 +1,7 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
 
@@ -18,10 +18,10 @@ beforeEach(() => {
 
 describeDeprecated('InvokeFunction', () => {
   test('Invoke lambda with function ARN', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeFunction(fn) });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -38,13 +38,13 @@ describeDeprecated('InvokeFunction', () => {
 
   test('Lambda function payload ends up in Parameters', () => {
     new sfn.StateMachine(stack, 'SM', {
-      definition: new sfn.Task(stack, 'Task', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Task(stack, 'Task', {
         task: new tasks.InvokeFunction(fn, {
           payload: {
             foo: sfn.JsonPath.stringAt('$.bar'),
           },
         }),
-      }),
+      })),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {

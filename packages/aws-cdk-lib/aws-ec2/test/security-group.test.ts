@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
 
@@ -100,7 +100,6 @@ describe('security group', () => {
       ],
     });
 
-
   });
 
   test('security group disallow outbound traffic by default', () => {
@@ -123,7 +122,6 @@ describe('security group', () => {
         },
       ],
     });
-
 
   });
 
@@ -267,7 +265,6 @@ describe('security group', () => {
 
     // THEN -- no crash
 
-
   });
 
   test('can add multiple rules using tokens on same security group', () => {
@@ -321,7 +318,6 @@ describe('security group', () => {
       expect(range.canInlineRule).toEqual(false);
     }
 
-
   });
 
   describe('Peer IP CIDR validation', () => {
@@ -334,7 +330,6 @@ describe('security group', () => {
         expect(Peer.ipv4(cidrIp).uniqueId).toEqual(cidrIp);
       }
 
-
     });
 
     test('passes with unresolved IP CIDR token', () => {
@@ -342,7 +337,6 @@ describe('security group', () => {
       Token.asString(new Intrinsic('ip'));
 
       // THEN: don't throw
-
 
     });
 
@@ -352,14 +346,12 @@ describe('security group', () => {
         Peer.ipv4('invalid');
       }).toThrow(/Invalid IPv4 CIDR/);
 
-
     });
 
     test('throws if missing mask in IPv4 CIDR block', () => {
       expect(() => {
         Peer.ipv4('0.0.0.0');
       }).toThrow(/CIDR mask is missing in IPv4/);
-
 
     });
 
@@ -377,7 +369,6 @@ describe('security group', () => {
         expect(Peer.ipv6(cidrIp).uniqueId).toEqual(cidrIp);
       }
 
-
     });
 
     test('throws if invalid IPv6 CIDR block', () => {
@@ -386,14 +377,12 @@ describe('security group', () => {
         Peer.ipv6('invalid');
       }).toThrow(/Invalid IPv6 CIDR/);
 
-
     });
 
     test('throws if missing mask in IPv6 CIDR block', () => {
       expect(() => {
         Peer.ipv6('::');
       }).toThrow(/IDR mask is missing in IPv6/);
-
 
     });
   });
@@ -439,7 +428,6 @@ describe('security group', () => {
       expect(() => {
         Peer.securityGroupId('invalid');
       }).toThrow(/Invalid security group ID/);
-
 
     });
 
@@ -803,7 +791,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
 
-
     });
     test('addEgressRule rule will add a new inline egress rule and remove the denyAllTraffic rule', () => {
       // GIVEN
@@ -876,7 +863,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
   });
 
 };
-
 
 function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {
 

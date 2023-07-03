@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -5,7 +6,6 @@ import * as lambda from '../../aws-lambda';
 import { LogGroup, RetentionDays } from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../core';
 import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
 
@@ -137,7 +137,6 @@ describe('cloudtrail', () => {
       const stack = getTestStack();
       const topic = new sns.Topic(stack, 'Topic');
 
-
       new Trail(stack, 'Trail', { snsTopic: topic });
 
       Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
@@ -258,8 +257,8 @@ describe('cloudtrail', () => {
         trailName: 'KmsKeyTrail',
         encryptionKey: key,
       });
-      new Trail(stack, 'UnencryptedTrail', {
-        trailName: 'UnencryptedTrail',
+      new Trail(stack, 'DefaultTrail', {
+        trailName: 'DefaultTrail',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
@@ -275,7 +274,7 @@ describe('cloudtrail', () => {
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-        TrailName: 'UnencryptedTrail',
+        TrailName: 'DefaultTrail',
         KMSKeyId: Match.absent(),
       });
     });

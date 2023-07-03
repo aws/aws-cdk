@@ -1,9 +1,9 @@
-import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
+import * as iam from '../../aws-iam';
+import * as sns from '../../aws-sns';
+import { Aws, IResource, Resource } from '../../core';
 
 /**
  * A configuration set event destination
@@ -267,7 +267,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         conditions: {
           StringEquals: {
             'AWS:SourceAccount': this.env.account,
-            'AWS:SourceArn': `arn:aws:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetName}`,
+            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetName}`,
           },
         },
       }));

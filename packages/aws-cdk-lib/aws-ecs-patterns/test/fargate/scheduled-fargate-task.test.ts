@@ -472,3 +472,79 @@ test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
   // THEN
   Annotations.fromStack(stack).hasNoWarning('/Default', Match.anyValue());
 });
+
+test('Scheduled Fargate Task - with tag propagation', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [
+      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
+    ],
+  });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+    },
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          PropagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+        }),
+      }),
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with list of tags', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [
+      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
+    ],
+  });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+    },
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    tags: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          TagList: [
+            {
+              Key: 'my-tag',
+              Value: 'my-tag-value',
+            },
+          ],
+        }),
+      }),
+    ],
+  });
+});

@@ -1,6 +1,7 @@
-import { Annotations, Match, Template } from '../../assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import {
   AclCidr,
   AclTraffic,
@@ -193,7 +194,6 @@ describe('vpc', () => {
 
     describe('dns getters correspond to CFN properties', () => {
 
-
       const inputs = [
         { dnsSupport: false, dnsHostnames: false },
         // {dnsSupport: false, dnsHostnames: true} - this configuration is illegal so its not part of the permutations.
@@ -223,10 +223,8 @@ describe('vpc', () => {
           expect(input.dnsSupport).toEqual(vpc.dnsSupportEnabled);
           expect(input.dnsHostnames).toEqual(vpc.dnsHostnamesEnabled);
 
-
         });
       }
-
 
     });
 
@@ -721,11 +719,36 @@ describe('vpc', () => {
 
     test('with availabilityZones set to zones different from stack', () => {
       const stack = getTestStack();
+      // we need to create a context with availability zones, otherwise we're checking against dummy values
+      stack.node.setContext(
+        `availability-zones:account=${stack.account}:region=${stack.region}`,
+        ['us-east-1a', 'us-east1b', 'us-east-1c'],
+      );
       expect(() => {
         new Vpc(stack, 'VPC', {
           availabilityZones: [stack.availabilityZones[0] + 'invalid'],
         });
       }).toThrow(/must be a subset of the stack/);
+    });
+
+    test('does not throw with availability zones set without context in non-agnostic stack', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          availabilityZones: ['us-east-1a'],
+        });
+      }).not.toThrow();
+    });
+
+    test('agnostic stack without context with defined vpc AZs', () => {
+      const stack = new Stack(undefined, 'TestStack');
+      new Vpc(stack, 'VPC', {
+        availabilityZones: ['us-east-1a'],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 2);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZone: 'us-east-1a',
+      });
     });
 
     test('with natGateway set to 1', () => {
@@ -796,7 +819,6 @@ describe('vpc', () => {
           ],
         });
       }).toThrow(/make sure you don't configure any PRIVATE/);
-
 
     });
 
@@ -952,7 +974,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('with a vpn gateway and route propagation on isolated subnets', () => {
       const stack = getTestStack();
@@ -985,7 +1006,6 @@ describe('vpc', () => {
           Ref: 'VPCVpnGatewayB5ABAE68',
         },
       });
-
 
     });
     test('with a vpn gateway and route propagation on private and isolated subnets', () => {
@@ -1033,7 +1053,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to isolated subnets when there are no private subnets', () => {
       const stack = getTestStack();
@@ -1062,7 +1081,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('route propagation defaults to public subnets when there are no private/isolated subnets', () => {
       const stack = getTestStack();
@@ -1090,7 +1108,6 @@ describe('vpc', () => {
         },
       });
 
-
     });
     test('fails when specifying vpnConnections with vpnGateway set to false', () => {
       // GIVEN
@@ -1106,7 +1123,6 @@ describe('vpc', () => {
         },
       })).toThrow(/`vpnConnections`.+`vpnGateway`.+false/);
 
-
     });
     test('fails when specifying vpnGatewayAsn with vpnGateway set to false', () => {
       // GIVEN
@@ -1116,7 +1132,6 @@ describe('vpc', () => {
         vpnGateway: false,
         vpnGatewayAsn: 65000,
       })).toThrow(/`vpnGatewayAsn`.+`vpnGateway`.+false/);
-
 
     });
 
@@ -1201,7 +1216,6 @@ describe('vpc', () => {
         NetworkInterfaceId: 'router-1',
       });
 
-
     });
     test('Can add an IPv4 route', () => {
       // GIVEN
@@ -1222,6 +1236,77 @@ describe('vpc', () => {
         NetworkInterfaceId: 'router-1',
       });
 
+    });
+    test('can restrict access to the default security group', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, true);
+      new Vpc(stack, 'Vpc');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::VpcRestrictDefaultSG', {
+        DefaultSecurityGroupId: {
+          'Fn::GetAtt': ['Vpc8378EB38', 'DefaultSecurityGroup'],
+        },
+        ServiceToken: {
+          'Fn::GetAtt': ['CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E', 'Arn'],
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        Policies: [
+          {
+            PolicyDocument: {
+              Statement: [{
+                Effect: 'Allow',
+                Action: [
+                  'ec2:AuthorizeSecurityGroupIngress',
+                  'ec2:AuthorizeSecurityGroupEgress',
+                  'ec2:RevokeSecurityGroupIngress',
+                  'ec2:RevokeSecurityGroupEgress',
+                ],
+                Resource: [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':ec2:us-east-1:123456789012:security-group/',
+                      {
+                        'Fn::GetAtt': [
+                          'Vpc8378EB38',
+                          'DefaultSecurityGroup',
+                        ],
+                      },
+                    ],
+                  ],
+                }],
+              }],
+            },
+          },
+        ],
+      });
+    });
+
+    test('will not restrict access to the default security group when feature flag is false', () => {
+      // GIVEN
+      const stack = getTestStack();
+      stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
+      new Vpc(stack, 'Vpc');
+
+      Template.fromStack(stack).resourceCountIs('Custom::VpcRestrictDefaultSG', 0);
+    });
+
+    test('can disable restrict access to the default security group when feature flag is true', () => {
+      // GIVEN
+      const stack = getTestStack();
+      stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, true);
+      new Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
+
+      Template.fromStack(stack).resourceCountIs('Custom::VpcRestrictDefaultSG', 0);
     });
   });
 
@@ -1364,7 +1449,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('natGateways controls amount of NAT instances', () => {
@@ -1423,7 +1507,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll INBOUND_AND_OUTBOUND', () => {
@@ -1460,7 +1543,6 @@ describe('vpc', () => {
         ],
       });
 
-
     });
 
     test('can configure Security Groups of NAT instances with defaultAllowAll OUTBOUND_ONLY', () => {
@@ -1489,7 +1571,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1521,7 +1602,6 @@ describe('vpc', () => {
           },
         ],
       });
-
 
     });
 
@@ -1658,7 +1738,6 @@ describe('vpc', () => {
       // THEN
       expect(subnetIds).toEqual(vpc.publicSubnets.map(s => s.subnetId));
 
-
     });
 
     test('can select isolated subnets', () => {
@@ -1676,7 +1755,6 @@ describe('vpc', () => {
 
       // THEN
       expect(subnetIds).toEqual(vpc.isolatedSubnets.map(s => s.subnetId));
-
 
     });
 
@@ -1763,7 +1841,6 @@ describe('vpc', () => {
         vpc.selectSubnets({ subnetGroupName: 'Toot' });
       }).toThrow(/There are no subnet groups with name 'Toot' in this VPC. Available names: Public,Private/);
 
-
     });
 
     test('select subnets with az restriction', () => {
@@ -1848,7 +1925,6 @@ describe('vpc', () => {
           { 'Fn::Select': [1, publicSubnetList] },
         ],
       });
-
 
     });
 

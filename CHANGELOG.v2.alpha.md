@@ -2,6 +2,90 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.86.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.85.0-alpha.0...v2.86.0-alpha.0) (2023-06-29)
+
+
+### Features
+
+* **app-staging-synthesizer:** select different bootstrap region ([#26129](https://github.com/aws/aws-cdk/issues/26129)) ([2fec6a4](https://github.com/aws/aws-cdk/commit/2fec6a4cd09bd08b7183f1e67d5d7eb487e4ac29))
+* **integ-runner:** integ-runner --watch ([#26087](https://github.com/aws/aws-cdk/issues/26087)) ([1fe2f09](https://github.com/aws/aws-cdk/commit/1fe2f095a0bc0aafb6b2dbd0cdaae79cc2e59ddd))
+* **integ-tests:** new HttpApiCall method to easily make http calls ([#26102](https://github.com/aws/aws-cdk/issues/26102)) ([00b9c84](https://github.com/aws/aws-cdk/commit/00b9c84ecf17c05a4c794ba7b5bdc9d83b2fba16))
+
+
+### Bug Fixes
+
+* **batch-alpha:** cannot import FargateComputeEnvironment with fromFargateComputeEnvironmentArn ([#25985](https://github.com/aws/aws-cdk/issues/25985)) ([05810f4](https://github.com/aws/aws-cdk/commit/05810f44f3fa008c07c6fe39bacd2a00c52b32a0)), closes [40aws-cdk/aws-batch-alpha/lib/managed-compute-environment.ts#L1071](https://github.com/40aws-cdk/aws-batch-alpha/lib/managed-compute-environment.ts/issues/L1071) [40aws-cdk/aws-batch-alpha/lib/managed-compute-environment.ts#L1077-L1079](https://github.com/40aws-cdk/aws-batch-alpha/lib/managed-compute-environment.ts/issues/L1077-L1079) [#25979](https://github.com/aws/aws-cdk/issues/25979)
+
+## [2.85.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.84.0-alpha.0...v2.85.0-alpha.0) (2023-06-21)
+
+
+### Features
+
+* **app-staging-synthesizer:** clean up staging resources on deletion ([#25906](https://github.com/aws/aws-cdk/issues/25906)) ([3b14213](https://github.com/aws/aws-cdk/commit/3b142136524db7c1e9bff1a082b87219ea9ee1ff)), closes [#25722](https://github.com/aws/aws-cdk/issues/25722)
+* **batch:** `ephemeralStorage` property on job definitions ([#25399](https://github.com/aws/aws-cdk/issues/25399)) ([a8768f4](https://github.com/aws/aws-cdk/commit/a8768f4da1bebbc4fd45b40e92ed82e868bb2a1b)), closes [#25393](https://github.com/aws/aws-cdk/issues/25393)
+
+
+### Bug Fixes
+
+* **apprunner:** incorrect serviceName  ([#26015](https://github.com/aws/aws-cdk/issues/26015)) ([ad89f01](https://github.com/aws/aws-cdk/commit/ad89f0182e218eee01b0aef84b055a96556dda59)), closes [#26002](https://github.com/aws/aws-cdk/issues/26002)
+
+## [2.84.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.83.1-alpha.0...v2.84.0-alpha.0) (2023-06-13)
+
+
+### Bug Fixes
+
+* **batch:** computeEnvironmentName is not set in FargateComputeEnvironment ([#25944](https://github.com/aws/aws-cdk/issues/25944)) ([fb9f559](https://github.com/aws/aws-cdk/commit/fb9f559ba0c40f5df5dc6d2a856d88826913eed4))
+
+## [2.83.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.83.0-alpha.0...v2.83.1-alpha.0) (2023-06-09)
+
+## [2.83.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.82.0-alpha.0...v2.83.0-alpha.0) (2023-06-07)
+
+
+### Features
+
+* **cloud9:** support setting automaticStopTimeMinutes ([#25593](https://github.com/aws/aws-cdk/issues/25593)) ([437345e](https://github.com/aws/aws-cdk/commit/437345e2ca72e67714334f4b9cb7da8f23c4a970)), closes [#25592](https://github.com/aws/aws-cdk/issues/25592)
+
+## [2.82.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.81.0-alpha.0...v2.82.0-alpha.0) (2023-06-01)
+
+
+### Features
+
+* **synthetics:** support runtime nodejs puppeteer 4.0 ([#25553](https://github.com/aws/aws-cdk/issues/25553)) ([1d7a9a8](https://github.com/aws/aws-cdk/commit/1d7a9a80b08d41ce8759bed9286adaa8259c2bc8)), closes [#25493](https://github.com/aws/aws-cdk/issues/25493)
+* **app-staging-synthesizer:** new synthesizer separates assets out per CDK application  ([#24430](https://github.com/aws/aws-cdk/issues/24430)) ([ae21ecc](https://github.com/aws/aws-cdk/commit/ae21ecc2a72be14ececdf0c5b8649e49dc456b0c))
+
+## [2.81.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.80.0-alpha.0...v2.81.0-alpha.0) (2023-05-25)
+
+
+### Features
+
+* **batch-alpha:** tag instances launched from your managed CEs ([#25643](https://github.com/aws/aws-cdk/issues/25643)) ([8498740](https://github.com/aws/aws-cdk/commit/849874045cd1e877619c3b636e6f16a58c85b4a1))
+
+## [2.80.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.79.1-alpha.0...v2.80.0-alpha.0) (2023-05-19)
+
+## [2.79.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.79.0-alpha.0...v2.79.1-alpha.0) (2023-05-11)
+
+## [2.79.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.78.0-alpha.0...v2.79.0-alpha.0) (2023-05-10)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** Revert deprecated method to keep deprecated method in alpha version ([b20b123](https://github.com/aws/aws-cdk/commit/b20b1f231e12007e7d064cdc4f0c9dc7354827a3))
+* **batch:** JobDefinition's ContainerDefinition's Image is synthesized with `[Object object]` ([#25250](https://github.com/aws/aws-cdk/issues/25250)) ([b3d0d57](https://github.com/aws/aws-cdk/commit/b3d0d570fe02e124f4497e35eb87c96c0eb8a1d5))
+
+## [2.78.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.77.0-alpha.0...v2.78.0-alpha.0) (2023-05-03)
+
+## [2.77.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.76.0-alpha.0...v2.77.0-alpha.0) (2023-04-26)
+
+## [2.76.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.76.0-alpha.0...v2.76.1-alpha.0) (2023-04-21)
+
+## [2.76.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.75.1-alpha.0...v2.76.0-alpha.0) (2023-04-19)
+
+## [2.75.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.75.0-alpha.0...v2.75.1-alpha.0) (2023-04-18)
+
+## [2.75.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.74.0-alpha.0...v2.75.0-alpha.0) (2023-04-17)
+
+## [2.74.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.73.0-alpha.0...v2.74.0-alpha.0) (2023-04-13)
+
 ## [2.73.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.72.1-alpha.0...v2.73.0-alpha.0) (2023-04-05)
 
 ## [2.72.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.72.0-alpha.0...v2.72.1-alpha.0) (2023-03-30)

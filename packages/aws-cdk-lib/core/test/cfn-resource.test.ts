@@ -1,7 +1,7 @@
-import * as cxschema from '../../cloud-assembly-schema';
-import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
 import { Construct } from 'constructs';
 import { getWarnings } from './util';
+import * as cxschema from '../../cloud-assembly-schema';
+import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
 import * as core from '../lib';
 import { Names } from '../lib';
 

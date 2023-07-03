@@ -58,7 +58,7 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
-  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy
+  maxEventAge: Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
@@ -95,9 +95,9 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput({
-    timestamp: events.EventField.from('$.time'),
-    message: events.EventField.from('$.detail-type'),
+  logEvent: targets.LogGroupTargetInput.fromObject({
+    timestamp: events.EventField.fromPath('$.time'),
+    message: events.EventField.fromPath('$.detail-type'),
   }),
 }));
 ```
@@ -111,10 +111,10 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput({
+  logEvent: targets.LogGroupTargetInput.fromObject({
     message: JSON.stringify({
-	  CustomField: 'CustomValue',
-	}),
+      CustomField: 'CustomValue',
+    }),
   }),
 }));
 ```
@@ -183,7 +183,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
 });
 
 const dlq = new sqs.Queue(this, 'DeadLetterQueue');
@@ -192,7 +192,7 @@ const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
 });
 const stateMachine = new sfn.StateMachine(this, 'SM', {
-  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(Duration.seconds(10)) })
 });
 
 rule.addTarget(new targets.SfnStateMachine(stateMachine, {
@@ -213,41 +213,51 @@ You can optionally attach a
 to the target.
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as batch from '@aws-cdk/aws-batch-alpha';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
-const jobQueue = new batch.JobQueue(this, 'MyQueue', {
+declare const vpc: ec2.Vpc;
+
+const computeEnvironment = new batch.FargateComputeEnvironment(this, 'ComputeEnv', {
+  vpc,
+});
+
+const jobQueue = new batch.JobQueue(this, 'JobQueue', {
+  priority: 1,
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnvironment', {
-        managed: false,
-      }),
+      computeEnvironment,
       order: 1,
     },
   ],
 });
 
-const jobDefinition = new batch.JobDefinition(this, 'MyJob', {
-  container: {
-    image: ContainerImage.fromRegistry('test-repo'),
-  },
+const jobDefinition = new batch.EcsJobDefinition(this, 'MyJob', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
+    image: ecs.ContainerImage.fromRegistry('test-repo'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
 });
 
 const queue = new sqs.Queue(this, 'Queue');
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  schedule: events.Schedule.rate(Duration.hours(1)),
 });
 
 rule.addTarget(new targets.BatchJob(
   jobQueue.jobQueueArn,
   jobQueue,
   jobDefinition.jobDefinitionArn,
-  jobDefinition, {
+  jobDefinition,
+  {
     deadLetterQueue: queue,
     event: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     retryAttempts: 2,
-    maxEventAge: cdk.Duration.hours(2),
+    maxEventAge: Duration.hours(2),
   },
 ));
 ```
@@ -263,7 +273,7 @@ import * as api from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
 });
 
 const fn = new lambda.Function( this, 'MyFunc', {
@@ -313,7 +323,7 @@ const destination = new events.ApiDestination(this, 'Destination', {
 });
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```
@@ -336,4 +346,95 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Run an ECS Task
+
+Use the `EcsTask` target to run an ECS Task.
+
+The code snippet below creates a scheduled event rule that will run the task described in `taskDefinition` every hour.
+
+### Tagging Tasks
+
+By default, ECS tasks run from EventBridge targets will not have tags applied to
+them. You can set the `propagateTags` field to propagate the tags set on the task
+definition to the task initialized by the event trigger.
+
+If you want to set tags independent of those applied to the TaskDefinition, you
+can use the `tags` array. Both of these fields can be used together or separately
+to set tags on the triggered task.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask( {
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+      tags: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
+    })
+);
+```
+
+### Assign public IP addresses to tasks
+
+You can set the `assignPublicIp` flag to assign public IP addresses to tasks.
+If you want to detach the public IP address from the task, you have to set the flag `false`.
+You can specify the flag `true` only when the launch type is set to FARGATE.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    assignPublicIp: true,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  }),
+);
+declare const rule: events.Rule
+```
+
+### enable Amazon ECS Exec for ECS Task
+
+If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    command: ['echo', events.EventField.fromPath('$.detail.event')],
+  }],
+  enableExecuteCommand: true,
+}));
 ```

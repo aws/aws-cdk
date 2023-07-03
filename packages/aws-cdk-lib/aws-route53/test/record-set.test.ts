@@ -1,6 +1,6 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
 
