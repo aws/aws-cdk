@@ -438,6 +438,7 @@
     "./aws-systemsmanagersap": "./aws-systemsmanagersap/index.js",
     "./aws-timestream": "./aws-timestream/index.js",
     "./aws-transfer": "./aws-transfer/index.js",
+    "./aws-verifiedpermissions": "./aws-verifiedpermissions/index.js",
     "./aws-voiceid": "./aws-voiceid/index.js",
     "./aws-vpclattice": "./aws-vpclattice/index.js",
     "./aws-waf": "./aws-waf/index.js",
