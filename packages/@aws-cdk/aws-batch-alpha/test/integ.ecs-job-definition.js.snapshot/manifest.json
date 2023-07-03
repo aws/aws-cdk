@@ -195,6 +195,12 @@
             "data": "myFileSystemEfsMountTarget2E187D733"
           }
         ],
+        "/stack/mySecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mySecretE4D0A59C"
+          }
+        ],
         "/stack/myContainer/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

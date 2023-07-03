@@ -795,6 +795,30 @@
               "version": "0.0.0"
             }
           },
+          "mySecret": {
+            "id": "mySecret",
+            "path": "stack/mySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/mySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
           "myContainer": {
             "id": "myContainer",
             "path": "stack/myContainer",
@@ -844,8 +868,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSJobDefn": {
@@ -886,6 +910,14 @@
                         {
                           "type": "GPU",
                           "value": "12"
+                        }
+                      ],
+                      "secrets": [
+                        {
+                          "name": "MY_SECRET_ENV_VAR",
+                          "valueFrom": {
+                            "Ref": "mySecretE4D0A59C"
+                          }
                         }
                       ],
                       "mountPoints": [
@@ -936,7 +968,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -989,8 +1021,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsFargateContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSFargateJobDefn": {
@@ -1074,7 +1106,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1223,8 +1255,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.52"
             }
           },
           "ECSDockerJobDefn": {
@@ -1275,7 +1307,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

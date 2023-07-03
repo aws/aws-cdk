@@ -39,6 +39,3 @@ test/integ/cli/*.d.ts
 .DS_Store
 
 junit.xml
-
-# Exclude the noctilucent WASM package
-lib/vendor/noctilucent/
