@@ -1505,7 +1505,9 @@
     "myServicelb2listener2ECSTargetGroupweb443Group8FAB1268",
     "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2ECSTargetGroupweb80Rule2490715C",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

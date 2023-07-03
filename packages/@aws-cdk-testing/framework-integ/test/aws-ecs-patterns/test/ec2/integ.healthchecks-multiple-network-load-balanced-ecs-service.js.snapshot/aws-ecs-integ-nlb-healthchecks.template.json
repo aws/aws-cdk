@@ -1125,7 +1125,8 @@
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
     "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

@@ -1029,7 +1029,8 @@
    },
    "DependsOn": [
     "myServiceLBPublicListenerECSGroup17E9BBC1",
-    "myServiceLBPublicListenerC78AE8A0"
+    "myServiceLBPublicListenerC78AE8A0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

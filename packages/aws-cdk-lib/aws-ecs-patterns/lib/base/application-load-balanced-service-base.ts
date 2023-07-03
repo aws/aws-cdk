@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { Certificate, CertificateValidation, ICertificate } from '../../../aws-certificatemanager';
 import { IVpc } from '../../../aws-ec2';
 import {
@@ -13,7 +14,6 @@ import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-ro
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
 import { Duration } from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * Describes the type of DNS record the service should create

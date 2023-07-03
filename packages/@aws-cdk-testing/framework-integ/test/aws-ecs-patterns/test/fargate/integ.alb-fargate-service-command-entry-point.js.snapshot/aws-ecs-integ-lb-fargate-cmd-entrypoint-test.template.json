@@ -682,7 +682,8 @@
    },
    "DependsOn": [
     "ALBFargateServiceWithCommandAndEntryPointLBPublicListenerECSGroupBAD40305",
-    "ALBFargateServiceWithCommandAndEntryPointLBPublicListener6589DC80"
+    "ALBFargateServiceWithCommandAndEntryPointLBPublicListener6589DC80",
+    "ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"
    ]
   },
   "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880": {
@@ -699,7 +700,8 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": ["ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"]
   },
   "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupfromawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointLBSecurityGroup886E70918046DDBFE6": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -720,7 +722,8 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": ["ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"]
   }
  },
  "Outputs": {

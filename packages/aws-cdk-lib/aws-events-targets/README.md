@@ -213,24 +213,33 @@ You can optionally attach a
 to the target.
 
 ```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as batch from '@aws-cdk/aws-batch-alpha';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
-const jobQueue = new batch.JobQueue(this, 'MyQueue', {
+declare const vpc: ec2.Vpc;
+
+const computeEnvironment = new batch.FargateComputeEnvironment(this, 'ComputeEnv', {
+  vpc,
+});
+
+const jobQueue = new batch.JobQueue(this, 'JobQueue', {
+  priority: 1,
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnvironment', {
-        managed: false,
-      }),
+      computeEnvironment,
       order: 1,
     },
   ],
 });
 
-const jobDefinition = new batch.JobDefinition(this, 'MyJob', {
-  container: {
-    image: ContainerImage.fromRegistry('test-repo'),
-  },
+const jobDefinition = new batch.EcsJobDefinition(this, 'MyJob', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
+    image: ecs.ContainerImage.fromRegistry('test-repo'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
 });
 
 const queue = new sqs.Queue(this, 'Queue');
@@ -243,7 +252,8 @@ rule.addTarget(new targets.BatchJob(
   jobQueue.jobQueueArn,
   jobQueue,
   jobDefinition.jobDefinitionArn,
-  jobDefinition, {
+  jobDefinition,
+  {
     deadLetterQueue: queue,
     event: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     retryAttempts: 2,
@@ -346,16 +356,16 @@ The code snippet below creates a scheduled event rule that will run the task des
 
 ### Tagging Tasks
 
-By default, ECS tasks run from EventBridge targets will not have tags applied to 
-them. You can set the `propagateTags` field to propagate the tags set on the task 
-definition to the task initialized by the event trigger. 
+By default, ECS tasks run from EventBridge targets will not have tags applied to
+them. You can set the `propagateTags` field to propagate the tags set on the task
+definition to the task initialized by the event trigger.
 
-If you want to set tags independent of those applied to the TaskDefinition, you 
-can use the `tags` array. Both of these fields can be used together or separately 
+If you want to set tags independent of those applied to the TaskDefinition, you
+can use the `tags` array. Both of these fields can be used together or separately
 to set tags on the triggered task.
 
 ```ts
-import * as ecs from "@aws-cdk/aws-ecs"
+import * as ecs from "aws-cdk-lib/aws-ecs"
 declare const cluster: ecs.ICluster
 declare const taskDefinition: ecs.TaskDefinition
 
@@ -376,4 +386,55 @@ rule.addTarget(
       ],
     })
 );
+```
+
+### Assign public IP addresses to tasks
+
+You can set the `assignPublicIp` flag to assign public IP addresses to tasks.
+If you want to detach the public IP address from the task, you have to set the flag `false`.
+You can specify the flag `true` only when the launch type is set to FARGATE.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    assignPublicIp: true,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  }),
+);
+declare const rule: events.Rule
+```
+
+### enable Amazon ECS Exec for ECS Task
+
+If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
+
+```ts
+import * as ecs from "aws-cdk-lib/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    command: ['echo', events.EventField.fromPath('$.detail.event')],
+  }],
+  enableExecuteCommand: true,
+}));
 ```

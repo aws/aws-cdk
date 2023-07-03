@@ -6,7 +6,7 @@ import { NetworkMultipleTargetGroupsFargateService } from 'aws-cdk-lib/aws-ecs-p
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-multi-nlb-healthchecks');
-const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 // Two load balancers with two listeners and two target groups.
@@ -49,7 +49,6 @@ const networkMultipleTargetGroupsFargateService = new NetworkMultipleTargetGroup
 networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({});
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
-
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
 

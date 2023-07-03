@@ -1,9 +1,9 @@
+import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { TestFunction } from './test-function';
 import * as sources from '../lib';
 
 describe('KafkaEventSource', () => {
@@ -58,7 +58,6 @@ describe('KafkaEventSource', () => {
           kafkaTopic,
         ],
       });
-
 
     });
     test('with secret', () => {
@@ -132,7 +131,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
   });
 
@@ -203,7 +201,6 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-
     });
     test('without vpc, secret must be set', () => {
       const stack = new cdk.Stack();
@@ -219,7 +216,6 @@ describe('KafkaEventSource', () => {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           }));
       }).toThrow(/secret must be set/);
-
 
     });
 
@@ -279,7 +275,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
 
       });
       test('with secret', () => {
@@ -369,7 +364,6 @@ describe('KafkaEventSource', () => {
           ],
         });
 
-
       });
       test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
@@ -392,7 +386,6 @@ describe('KafkaEventSource', () => {
             }));
         }).toThrow(/vpcSubnets must be set/);
 
-
       });
 
       test('setting vpc requires securityGroup to be set', () => {
@@ -414,7 +407,6 @@ describe('KafkaEventSource', () => {
               vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
-
 
       });
     });
@@ -670,7 +662,6 @@ describe('KafkaEventSource', () => {
       const kafkaTopic = 'some-topic';
       const consumerGroupId = 'my-consumer-group-id';
 
-
       const mskEventMapping = new sources.ManagedKafkaEventSource(
         {
           clusterArn,
@@ -682,6 +673,7 @@ describe('KafkaEventSource', () => {
       // WHEN
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
 
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -707,6 +699,7 @@ describe('KafkaEventSource', () => {
       // WHEN
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
     });
   });
 });

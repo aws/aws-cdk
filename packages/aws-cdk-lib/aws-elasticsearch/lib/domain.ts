@@ -1,5 +1,10 @@
 import { URL } from 'url';
 
+import { Construct } from 'constructs';
+import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
+import { CfnDomain } from './elasticsearch.generated';
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import * as perms from './perms';
 import * as acm from '../../aws-certificatemanager';
 import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -9,12 +14,6 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { Construct } from 'constructs';
-
-import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
-import { CfnDomain } from './elasticsearch.generated';
-import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import * as perms from './perms';
 
 /**
  * Elasticsearch version
@@ -943,7 +942,6 @@ export interface IDomain extends cdk.IResource {
   metricIndexingLatency(props?: MetricOptions): Metric;
 }
 
-
 /**
  * A new or imported domain.
  */
@@ -1327,7 +1325,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
 }
 
-
 /**
  * Reference to an Elasticsearch domain.
  *
@@ -1348,7 +1345,6 @@ export interface DomainAttributes {
    */
   readonly domainEndpoint: string;
 }
-
 
 /**
  * Provides an Elasticsearch domain.
@@ -1459,7 +1455,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public readonly masterUserPassword?: cdk.SecretValue;
 
-
   private readonly domain: CfnDomain;
 
   private accessPolicy?: ElasticsearchAccessPolicy
@@ -1496,7 +1491,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const zoneAwarenessEnabled =
       props.zoneAwareness?.enabled ??
       props.zoneAwareness?.availabilityZoneCount != null;
-
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;

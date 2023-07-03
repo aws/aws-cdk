@@ -1,3 +1,8 @@
+import { Construct, IConstruct } from 'constructs';
+import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { ECSMetrics } from './ecs-canned-metrics.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -7,11 +12,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
-import { Construct, IConstruct } from 'constructs';
-import { BottleRocketImage, EcsOptimizedAmi } from './amis';
-import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
-import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -376,7 +376,7 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
-        namespace: options.name,
+        namespace: sdNamespace.namespaceArn,
       };
     }
 
@@ -765,8 +765,10 @@ export interface ClusterAttributes {
 
   /**
    * The security groups associated with the container instances registered to the cluster.
+   *
+   * @default - no security groups
    */
-  readonly securityGroups: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Specifies whether the cluster has EC2 instance capacity.
@@ -1108,7 +1110,7 @@ export interface ExecuteCommandLogConfiguration {
   readonly s3Bucket?: s3.IBucket,
 
   /**
-   * Whether or not to enable encryption on the CloudWatch logs.
+   * Whether or not to enable encryption on the S3 bucket.
    *
    * @default - encryption will be disabled.
    */

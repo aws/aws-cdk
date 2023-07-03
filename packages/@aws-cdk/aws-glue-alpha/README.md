@@ -27,6 +27,8 @@ The `glue.JobExecutable` allows you to specify the type of job, the language to 
 
 `glue.Code` allows you to refer to the different code assets required by the job, either from an existing S3 location or from a local file path.
 
+`glue.ExecutionClass` allows you to specify `FLEX` or `STANDARD`. `FLEX` is appropriate for non-urgent jobs such as pre-production jobs, testing, and one-time data loads.
+
 ### Spark Jobs
 
 These jobs run in an Apache Spark environment managed by AWS Glue.
@@ -44,6 +46,7 @@ new glue.Job(this, 'ScalaSparkEtlJob', {
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
   }),
+  workerType: glue.WorkerType.G_8X,
   description: 'an example Scala ETL job',
 });
 ```
@@ -93,6 +96,7 @@ new glue.Job(this, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
+    runtime: glue.Runtime.RAY_TWO_FOUR,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
   }),
   workerType: glue.WorkerType.Z_2X,

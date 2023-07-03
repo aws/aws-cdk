@@ -12,7 +12,7 @@ class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
     const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
 
     // Create the scheduled task
@@ -26,6 +26,13 @@ class EventStack extends cdk.Stack {
       },
       desiredTaskCount: 2,
       schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+      tags: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
     });
   }
 }

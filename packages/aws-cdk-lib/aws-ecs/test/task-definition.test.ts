@@ -275,6 +275,46 @@ describe('task definition', () => {
         }],
       });
     });
+
+    test('You can omit container-level memory and memoryReservation parameters with EC2 compatibilities if task-level memory parameter is defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDef.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Memory: '512',
+      });
+
+    });
+
+    test('A task definition where task-level memory, container-level memory and memoryReservation are not defined throws an error', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDef = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDef.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
+    });
   });
 
   describe('When importing from an existing Task definition', () => {
@@ -290,7 +330,6 @@ describe('task definition', () => {
       expect(taskDefinition.taskDefinitionArn).toEqual(taskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
       expect(taskDefinition.executionRole).toEqual(undefined);
-
 
     });
 
@@ -323,7 +362,6 @@ describe('task definition', () => {
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
 
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
@@ -348,7 +386,6 @@ describe('task definition', () => {
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -370,7 +407,6 @@ describe('task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
 
     });
   });

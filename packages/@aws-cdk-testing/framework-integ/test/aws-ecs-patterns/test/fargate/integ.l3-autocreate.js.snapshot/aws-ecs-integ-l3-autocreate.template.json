@@ -280,7 +280,8 @@
    },
    "DependsOn": [
     "ALBFargateServiceLBPublicListenerECSGroup6871FB8C",
-    "ALBFargateServiceLBPublicListener3489002A"
+    "ALBFargateServiceLBPublicListener3489002A",
+    "ALBFargateServiceTaskDefTaskRole11408723"
    ]
   },
   "ALBFargateServiceSecurityGroup82F7A67E": {
@@ -297,7 +298,8 @@
     "VpcId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
-   }
+   },
+   "DependsOn": ["ALBFargateServiceTaskDefTaskRole11408723"]
   },
   "ALBFargateServiceSecurityGroupfromawsecsintegl3autocreateALBFargateServiceLBSecurityGroupD565E0BF802E7B8344": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -318,7 +320,8 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": ["ALBFargateServiceTaskDefTaskRole11408723"]
   },
   "EcsDefaultClusterMnL3mNNYN926A5246": {
    "Type": "AWS::ECS::Cluster"
@@ -941,7 +944,8 @@
    },
    "DependsOn": [
     "NLBFargateServiceLBPublicListenerECSGroupC469CAA2",
-    "NLBFargateServiceLBPublicListenerB0DCA73C"
+    "NLBFargateServiceLBPublicListenerB0DCA73C",
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
    ]
   },
   "NLBFargateServiceSecurityGroup9D81388B": {
@@ -958,7 +962,8 @@
     "VpcId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
-   }
+   },
+   "DependsOn": ["NLBFargateServiceTaskDefTaskRole6C88F40B"]
   }
  },
  "Outputs": {

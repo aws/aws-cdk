@@ -68,6 +68,9 @@
   "aws-backup": [
     "AWS::Backup"
   ],
+  "aws-backupgateway": [
+    "AWS::BackupGateway"
+  ],
   "aws-batch": [
     "AWS::Batch"
   ],
@@ -88,6 +91,9 @@
   ],
   "aws-chatbot": [
     "AWS::Chatbot"
+  ],
+  "aws-cleanrooms": [
+    "AWS::CleanRooms"
   ],
   "aws-cloud9": [
     "AWS::Cloud9"
@@ -474,6 +480,9 @@
   "aws-organizations": [
     "AWS::Organizations"
   ],
+  "aws-osis": [
+    "AWS::OSIS"
+  ],
   "aws-panorama": [
     "AWS::Panorama"
   ],
@@ -488,6 +497,9 @@
   ],
   "aws-pipes": [
     "AWS::Pipes"
+  ],
+  "aws-proton": [
+    "AWS::Proton"
   ],
   "aws-qldb": [
     "AWS::QLDB"
@@ -582,6 +594,9 @@
   "aws-ses": [
     "AWS::SES"
   ],
+  "aws-shield": [
+    "AWS::Shield"
+  ],
   "aws-signer": [
     "AWS::Signer"
   ],
@@ -623,6 +638,9 @@
   ],
   "aws-transfer": [
     "AWS::Transfer"
+  ],
+  "aws-verifiedpermissions": [
+    "AWS::VerifiedPermissions"
   ],
   "aws-voiceid": [
     "AWS::VoiceID"

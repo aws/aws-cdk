@@ -657,7 +657,11 @@
     "TaskDefinition": {
      "Ref": "PublicQueueServiceQueueProcessingTaskDef858327F6"
     }
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceSecurityGroupFC07A65A": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -673,7 +677,11 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
@@ -716,7 +724,11 @@
     },
     "ScalableDimension": "ecs:service:DesiredCount",
     "ServiceNamespace": "ecs"
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling559C41BF": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
@@ -732,7 +744,11 @@
      },
      "TargetValue": 50
     }
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicyB2B27FF9": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
@@ -752,7 +768,11 @@
       }
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm5782C233": {
    "Type": "AWS::CloudWatch::Alarm",
@@ -781,7 +801,11 @@
     "Period": 300,
     "Statistic": "Maximum",
     "Threshold": 0
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyDCB40C8A": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
@@ -806,7 +830,11 @@
       }
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm5D67333D": {
    "Type": "AWS::CloudWatch::Alarm",
@@ -835,7 +863,11 @@
     "Period": 300,
     "Statistic": "Maximum",
     "Threshold": 100
-   }
+   },
+   "DependsOn": [
+    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
    "Type": "AWS::ECS::Cluster"

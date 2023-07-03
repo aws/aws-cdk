@@ -1,13 +1,17 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ContainerImage, FargatePlatformVersion } from 'aws-cdk-lib/aws-ecs';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { App, Duration, Size, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import * as path from 'path';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 const app = new App();
 const stack = new Stack(app, 'stack');
-const vpc = new Vpc(stack, 'vpc');
+const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
 new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
   container: new batch.EcsEc2ContainerDefinition(stack, 'myContainer', {
@@ -37,6 +41,9 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
       name: batch.UlimitName.CORE,
       softLimit: 10,
     }],
+    secrets: {
+      MY_SECRET_ENV_VAR: new Secret(stack, 'mySecret'),
+    },
   }),
 });
 
@@ -45,6 +52,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 16,
     memory: Size.mebibytes(32768),
+    ephemeralStorageSize: Size.gibibytes(100),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
   }),
   jobDefinitionName: 'foofoo',
@@ -64,6 +72,16 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
   ],
   schedulingPriority: 10,
   timeout: Duration.minutes(10),
+});
+
+new batch.EcsJobDefinition(stack, 'ECSDockerJobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(stack, 'EcsDockerContainer', {
+    cpu: 16,
+    memory: Size.mebibytes(32768),
+    image: ecs.ContainerImage.fromDockerImageAsset(new DockerImageAsset(stack, 'dockerImageAsset', {
+      directory: path.join(__dirname, 'batchjob-image'),
+    })),
+  }),
 });
 
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {

@@ -873,7 +873,8 @@
    },
    "DependsOn": [
     "ALBECSServiceWithCommandEntryPointLBPublicListenerECSGroup7271102D",
-    "ALBECSServiceWithCommandEntryPointLBPublicListener1DCF0F84"
+    "ALBECSServiceWithCommandEntryPointLBPublicListener1DCF0F84",
+    "ALBECSServiceWithCommandEntryPointTaskDefTaskRoleD0EE621C"
    ]
   }
  },

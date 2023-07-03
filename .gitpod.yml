@@ -3,10 +3,17 @@ github:
     pullRequestsFromForks: true
     addComment: true
 
-image: jsii/superchain:1-buster-slim
+image: public.ecr.aws/jsii/superchain:1-buster-slim-node18
 
 tasks:
-  - init: yarn install && ./scripts/foreach.sh yarn build
+  - init: |
+        (
+          set -e
+          yarn install
+          export NODE_OPTIONS=--max-old-space-size=8192
+          # pre-build packages
+          npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ --skip-nx-cache
+        )
 
 vscode:
   extensions:

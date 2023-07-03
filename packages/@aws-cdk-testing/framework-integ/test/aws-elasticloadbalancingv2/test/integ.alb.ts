@@ -7,6 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
 });
 
@@ -34,7 +35,6 @@ const group2 = listener.addTargets('ConditionalTarget', {
   stickinessCookieName: 'MyDeliciousCookie',
   slowStart: cdk.Duration.minutes(1),
 });
-
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
   threshold: 5,

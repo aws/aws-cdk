@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Construct, IConstruct } from 'constructs';
+import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { Duration, Stack, NestedStack, Names } from '../../core';
+import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 import { KubectlLayer } from '../../lambda-layer-kubectl';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster, Cluster } from './cluster';
 
 /**
  * Properties for a KubectlProvider
@@ -23,7 +23,7 @@ export interface KubectlProviderProps {
  */
 export interface KubectlProviderAttributes {
   /**
-   * The kubectl provider lambda arn
+   * The custom resource provider's service token.
    */
   readonly functionArn: string;
 
@@ -160,15 +160,32 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    // taken from the lambda default role logic.
+    // makes it easier for roles to be passed in.
+    if (handler.isBoundToVpc) {
+      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
     );
 
-    // For OCI helm chart public ECR authorization.
-    this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly'),
+    /**
+     * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
+     * we conditionally attach this policy when the AWS partition is `aws`.
+     */
+    const hasEcrPublicCondition = new CfnCondition(this.handlerRole.node.scope!, 'HasEcrPublic', {
+      expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
+    });
+
+    const conditionalPolicy = iam.ManagedPolicy.fromManagedPolicyArn(this, 'ConditionalPolicyArn',
+      Fn.conditionIf(hasEcrPublicCondition.logicalId,
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly').managedPolicyArn,
+        Aws.NO_VALUE).toString(),
     );
+
+    this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
 
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');

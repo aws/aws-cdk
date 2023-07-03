@@ -14,6 +14,10 @@ describe('WorkerType', () => {
 
   test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
 
+  test('.G_4X should set the name correctly', () => expect(glue.WorkerType.G_4X.name).toEqual('G.4X'));
+
+  test('.G_8X should set the name correctly', () => expect(glue.WorkerType.G_8X.name).toEqual('G.8X'));
+
   test('.G_025X should set the name correctly', () => expect(glue.WorkerType.G_025X.name).toEqual('G.025X'));
 
   test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X.name).toEqual('Z.2X'));
@@ -55,7 +59,6 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
   });
-
 
   describe('new', () => {
     const className = 'com.amazon.test.ClassName';
@@ -299,6 +302,162 @@ describe('Job', () => {
               Ref: 'JobServiceRole4F432993',
             },
           ],
+        });
+      });
+    });
+
+    describe('enabling execution class', () => {
+      describe('enabling execution class with FLEX', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+          });
+        });
+      });
+
+      describe('enabling execution class with FLEX and WorkerType G_1X', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            workerType: glue.WorkerType.G_1X,
+            workerCount: 10,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+            WorkerType: 'G.1X',
+          });
+        });
+      });
+
+      describe('enabling execution class with FLEX and WorkerType G_2X', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            workerType: glue.WorkerType.G_2X,
+            workerCount: 10,
+          });
+        });
+
+        test('should set FLEX', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'FLEX',
+            WorkerType: 'G.2X',
+          });
+        });
+      });
+
+      describe('enabling execution class with STANDARD', () => {
+        beforeEach(() => {
+          job = new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.STANDARD,
+          });
+        });
+
+        test('should set STANDARD', () => {
+          Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+            ExecutionClass: 'STANDARD',
+          });
+        });
+      });
+
+      describe('errors for execution class with FLEX', () => {
+        test('job type except JobType.ETL should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonShell({
+              glueVersion: glue.GlueVersion.V2_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for JobType.ETL jobs');
+        });
+
+        test('with glue version 0.9 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V0_9,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with glue version 1.0 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V1_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with glue version 2.0 should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V2_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+        });
+
+        test('with G_025X as worker type that is neither G_1X nor G_2X should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            workerType: glue.WorkerType.G_025X,
+            workerCount: 2,
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+        });
+
+        test('with G_4X as worker type that is neither G_1X nor G_2X should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V3_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            workerType: glue.WorkerType.G_4X,
+            workerCount: 10,
+            executionClass: glue.ExecutionClass.FLEX,
+          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
       });
     });
@@ -614,6 +773,7 @@ describe('Job', () => {
           executable: glue.JobExecutable.pythonRay({
             glueVersion: glue.GlueVersion.V3_0,
             pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
             script,
           }),
           workerType: glue.WorkerType.Z_2X,
@@ -626,6 +786,7 @@ describe('Job', () => {
           executable: glue.JobExecutable.pythonRay({
             glueVersion: glue.GlueVersion.V4_0,
             pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
             script,
           }),
           workerType: glue.WorkerType.Z_2X,
@@ -633,8 +794,19 @@ describe('Job', () => {
           sparkUI: { enabled: true },
         })).toThrow('Spark UI is not available for JobType.RAY');
       });
-    });
 
+      test('without runtime should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+        })).toThrow('Runtime is required for Ray jobs.');
+      });
+    });
 
     test('etl job with all props should synthesize correctly', () => {
       new glue.Job(stack, 'Job', {

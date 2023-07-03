@@ -61,7 +61,6 @@ describe('ec2 service', () => {
 
       expect(service.node.defaultChild).toBeDefined();
 
-
     });
 
     test('allows setting enable execute command', () => {
@@ -139,7 +138,6 @@ describe('ec2 service', () => {
         ],
       });
 
-
     });
 
     test('no logging enabled when logging field is set to NONE', () => {
@@ -198,7 +196,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -323,7 +320,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -495,7 +491,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
 
     });
 
@@ -743,7 +738,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('with custom cloudmap namespace', () => {
@@ -810,7 +804,6 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
 
     });
 
@@ -929,7 +922,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
 
     });
 
@@ -1096,7 +1088,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
@@ -1177,7 +1168,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
 
-
     });
 
     test('throws when task definition is not EC2 compatible', () => {
@@ -1201,7 +1191,6 @@ describe('ec2 service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with EC2/);
-
 
     });
 
@@ -1239,7 +1228,6 @@ describe('ec2 service', () => {
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       });
-
 
     });
 
@@ -1294,7 +1282,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Don't supply desiredCount/);
 
-
     });
 
     test('errors if daemon and maximumPercent not 100', () => {
@@ -1318,7 +1305,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 300,
         });
       }).toThrow(/Maximum percent must be 100 for daemon mode./);
-
 
     });
 
@@ -1345,7 +1331,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Minimum healthy percent must be less than maximum healthy percent./);
 
-
     });
 
     test('errors if no container definitions', () => {
@@ -1365,7 +1350,6 @@ describe('ec2 service', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow(/one essential container/);
-
 
     });
 
@@ -1425,7 +1409,6 @@ describe('ec2 service', () => {
           MinimumHealthyPercent: 0,
         },
       });
-
 
     });
 
@@ -1628,7 +1611,6 @@ describe('ec2 service', () => {
           },
         });
 
-
       });
 
       test('it allows vpcSubnets', () => {
@@ -1685,7 +1667,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with memberOf placement constraints', () => {
@@ -1715,7 +1696,6 @@ describe('ec2 service', () => {
           Type: 'memberOf',
         }],
       });
-
 
     });
 
@@ -1748,7 +1728,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with spreadAcross placement strategy', () => {
@@ -1779,7 +1758,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('can turn PlacementStrategy into json format', () => {
@@ -1789,7 +1767,6 @@ describe('ec2 service', () => {
         field: 'attribute:ecs.availability-zone',
       }]);
 
-
     });
 
     test('can turn PlacementConstraints into json format', () => {
@@ -1797,7 +1774,6 @@ describe('ec2 service', () => {
       expect(PlacementConstraint.distinctInstances().toJson()).toEqual([{
         type: 'distinctInstance',
       }]);
-
 
     });
 
@@ -1824,7 +1800,6 @@ describe('ec2 service', () => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross());
       }).toThrow('spreadAcross: give at least one field to spread by');
 
-
     });
 
     test('errors with spreadAcross placement strategy if daemon specified', () => {
@@ -1850,7 +1825,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
-
 
     });
 
@@ -1954,7 +1928,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('errors with random placement strategy if daemon specified', () => {
@@ -1980,7 +1953,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
       }).toThrow();
-
 
     });
 
@@ -2012,7 +1984,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('with packedbyMemory placement strategy', () => {
@@ -2042,7 +2013,6 @@ describe('ec2 service', () => {
           Type: 'binpack',
         }],
       });
-
 
     });
 
@@ -2074,7 +2044,6 @@ describe('ec2 service', () => {
         }],
       });
 
-
     });
 
     test('errors with packedBy placement strategy if daemon specified', () => {
@@ -2100,8 +2069,51 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
       }).toThrow();
+    });
 
+    test('throws an exception if non-DAEMON service is added but no EC2 capacity is associated with the cluster', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Cluster for this service needs Ec2 capacity/);
+    });
+
+    test('does not throw an exception if DAEMON service is added but no EC2 capacity is associated with the cluster', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+      });
+
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
     });
 
     describe('with deployment alarms' , () => {
@@ -2535,7 +2547,6 @@ describe('ec2 service', () => {
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
 
-
     });
 
     test('allows network mode of task definition to be bridge', () => {
@@ -2558,7 +2569,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
 
     });
 
@@ -2585,7 +2595,6 @@ describe('ec2 service', () => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2610,7 +2619,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
-
 
     });
   });
@@ -2641,7 +2649,6 @@ describe('ec2 service', () => {
       // THEN
       service.attachToApplicationTargetGroup(targetGroup);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2670,7 +2677,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToApplicationTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
 
     });
 
@@ -2721,7 +2727,6 @@ describe('ec2 service', () => {
           });
         });
 
-
       });
 
       test('with bridge/NAT network mode and host port other than 0', () => {
@@ -2769,7 +2774,6 @@ describe('ec2 service', () => {
           });
         });
 
-
       });
 
       test('with host network mode', () => {
@@ -2814,7 +2818,6 @@ describe('ec2 service', () => {
           FromPort: 8001,
           ToPort: 8001,
         });
-
 
       });
 
@@ -2861,7 +2864,6 @@ describe('ec2 service', () => {
           ToPort: 8001,
         });
 
-
       });
     });
   });
@@ -2892,7 +2894,6 @@ describe('ec2 service', () => {
       // THEN
       service.attachToNetworkTargetGroup(targetGroup);
 
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2921,7 +2922,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
 
     });
   });
@@ -2965,7 +2965,6 @@ describe('ec2 service', () => {
         HealthCheckGracePeriodSeconds: 60,
       });
 
-
     });
 
     test('can attach any container and port as a target', () => {
@@ -3004,7 +3003,6 @@ describe('ec2 service', () => {
         ],
       });
 
-
     });
   });
 
@@ -3034,7 +3032,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
-
 
     });
 
@@ -3066,7 +3063,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/Cannot enable DNS service discovery for HTTP Cloudmap Namespace./);
 
-
     });
 
     test('throws if network mode is none', () => {
@@ -3096,7 +3092,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
 
     });
 
@@ -3172,7 +3167,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -3250,7 +3244,6 @@ describe('ec2 service', () => {
         },
       });
 
-
     });
 
     test('throws if wrong DNS record type specified with bridge network mode', () => {
@@ -3283,7 +3276,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
-
 
     });
 
@@ -3358,7 +3350,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -3436,7 +3427,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
 
     });
 
@@ -3656,7 +3646,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/another task definition/i);
 
-
     });
 
     test('throws if SRV and the container port is not mapped', () => {
@@ -3690,7 +3679,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/container port.*not.*mapped/i);
-
 
     });
   });
@@ -3734,7 +3722,6 @@ describe('ec2 service', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
 
   });
 
@@ -4053,7 +4040,6 @@ describe('ec2 service', () => {
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
 
-
     });
 
     test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -4066,7 +4052,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
 
     });
   });

@@ -483,6 +483,21 @@ fn.addFunctionUrl({
 });
 ```
 
+### Invoke Mode for Function URLs
+
+Invoke mode determines how AWS Lambda invokes your function. You can configure the invoke mode when creating a Function URL using the invokeMode property
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+  invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
+});
+```
+
+If the invokeMode property is not specified, the default BUFFERED mode will be used.
+
 ## Layers
 
 The `lambda.LayerVersion` class can be used to define Lambda layers and manage
@@ -566,6 +581,66 @@ new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
 });
+```
+
+### Parameters and Secrets Extension
+
+Lambda functions can be configured to use the Parameters and Secrets Extension. The Parameters and Secrets Extension can be used to retrieve and cache [secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html) from Secrets Manager or [parameters](https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html) from Parameter Store in Lambda functions without using an SDK.
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(stack, 'Secret');
+const parameter = new ssm.StringParameter(stack, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103, {
+  cacheSize: 500,
+  logLevel: lamabda.ParamsAndSecretsLogLevel.DEBUG,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets,
+});
+
+secret.grantRead(lambdaFunction);
+parameter.grantRead(lambdaFunction);
+```
+
+If the version of Parameters and Secrets Extension is not yet available in the CDK, you can also provide the ARN directly as so:
+
+```ts
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+
+const secret = new sm.Secret(stack, 'Secret');
+const parameter = new ssm.StringParameter(stack, 'Parameter', {
+  parameterName: 'mySsmParameterName',
+  stringValue: 'mySsmParameterValue',
+});
+
+const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
+const paramsAndSecrets = lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn, {
+  cacheSize: 500,
+});
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  paramsAndSecrets,
+});
+
+secret.grantRead(lambdaFunction);
+parameters.grantRead(lambdaFunction);
 ```
 
 ## Event Rule Target

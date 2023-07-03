@@ -3,9 +3,9 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
-import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
+import { Code, GlueVersion, JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ISecurityConfiguration } from './security-configuration';
@@ -31,6 +31,16 @@ export class WorkerType {
    * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
    */
   public static readonly G_2X = new WorkerType('G.2X');
+
+  /**
+   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_4X = new WorkerType('G.4X');
+
+  /**
+   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_8X = new WorkerType('G.8X');
 
   /**
    * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
@@ -117,6 +127,26 @@ export enum MetricType {
    * An aggregate number.
    */
   COUNT = 'count',
+}
+
+/**
+ * The ExecutionClass whether the job is run with a standard or flexible execution class.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html#aws-glue-api-jobs-job-Job
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html
+ */
+export enum ExecutionClass {
+  /**
+   * The flexible execution class is appropriate for time-insensitive jobs whose start
+   * and completion times may vary.
+   */
+  FLEX = 'FLEX',
+
+  /**
+   * The standard execution class is ideal for time-sensitive workloads that require fast job
+   * startup and dedicated resources.
+   */
+  STANDARD = 'STANDARD',
 }
 
 /**
@@ -590,6 +620,16 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly continuousLogging?: ContinuousLoggingProps,
+
+  /**
+   * The ExecutionClass whether the job is run with a standard or flexible execution class.
+   *
+   * @default - STANDARD
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html#aws-glue-api-jobs-job-Job
+   * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html
+   */
+  readonly executionClass?: ExecutionClass,
 }
 
 /**
@@ -667,6 +707,18 @@ export class Job extends JobBase {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
+    if (props.executionClass === ExecutionClass.FLEX) {
+      if (executable.type !== JobType.ETL) {
+        throw new Error('FLEX ExecutionClass is only available for JobType.ETL jobs');
+      }
+      if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0].includes(executable.glueVersion)) {
+        throw new Error('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+      }
+      if (props.workerType && (props.workerType !== WorkerType.G_1X && props.workerType !== WorkerType.G_2X)) {
+        throw new Error('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+      }
+    }
+
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -675,12 +727,14 @@ export class Job extends JobBase {
         name: executable.type.name,
         scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
+        runtime: executable.runtime ? executable.runtime.name : undefined,
       },
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
       numberOfWorkers: props.workerCount,
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
+      executionClass: props.executionClass,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       timeout: props.timeout?.toMinutes(),
@@ -799,7 +853,6 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
     ...props,
   }).attachTo(rule);
 }
-
 
 /**
  * Returns the job arn

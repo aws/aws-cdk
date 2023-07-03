@@ -496,7 +496,8 @@
    },
    "DependsOn": [
     "LBPublicListenerFargateGroup5EE2FBAF",
-    "LBPublicListener6E1F3D94"
+    "LBPublicListener6E1F3D94",
+    "TaskDefTaskRole1EDB4A67"
    ]
   },
   "ServiceSecurityGroupC96ED6A7": {
@@ -513,7 +514,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "ServiceSecurityGroupfromawsecsintegLBSecurityGroupC30F5EB480CD1B9463": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -534,7 +538,10 @@
      ]
     },
     "ToPort": 80
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "ServiceTaskCountTarget23E25614": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
@@ -577,7 +584,10 @@
     },
     "ScalableDimension": "ecs:service:DesiredCount",
     "ServiceNamespace": "ecs"
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "ServiceTaskCountTargetReasonableCpu4174EFCE": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
@@ -593,7 +603,10 @@
      },
      "TargetValue": 10
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "LB8A12904C": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",

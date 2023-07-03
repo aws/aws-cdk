@@ -1,5 +1,5 @@
-import { IResource, Resource } from '../../core';
 import { IAlarmAction } from './alarm-action';
+import { IResource, Resource } from '../../core';
 
 /**
  * Interface for Alarm Rule.
@@ -57,7 +57,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   /**
    * Trigger this action if the alarm fires
    *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   * Typically SnsAcion or AutoScalingAction.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
@@ -70,7 +70,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   /**
    * Trigger this action if there is insufficient data to evaluate the alarm
    *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   * Typically SnsAcion or AutoScalingAction.
    */
   public addInsufficientDataAction(...actions: IAlarmAction[]) {
     if (this.insufficientDataActionArns === undefined) {
@@ -83,7 +83,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   /**
    * Trigger this action if the alarm returns from breaching state into ok state
    *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   * Typically SnsAcion or AutoScalingAction.
    */
   public addOkAction(...actions: IAlarmAction[]) {
     if (this.okActionArns === undefined) {

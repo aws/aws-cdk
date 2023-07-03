@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
@@ -5,7 +6,6 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
@@ -378,7 +378,6 @@ describe('cluster', () => {
         },
       });
 
-
     });
 
     testDeprecated('multiple clusters with default capacity', () => {
@@ -393,7 +392,6 @@ describe('cluster', () => {
           instanceType: new ec2.InstanceType('m3.medium'),
         });
       }
-
 
     });
 
@@ -533,7 +531,6 @@ describe('cluster', () => {
         ],
       });
 
-
     });
 
     testDeprecated('lifecycle hook with encrypted SNS is added correctly', () => {
@@ -560,7 +557,6 @@ describe('cluster', () => {
           ],
         },
       });
-
 
     });
 
@@ -742,7 +738,6 @@ describe('cluster', () => {
         },
       });
 
-
     });
   });
 
@@ -761,7 +756,6 @@ describe('cluster', () => {
       InstanceType: 'm3.large',
     });
 
-
   });
 
   testDeprecated('allows specifying cluster size', () => {
@@ -779,7 +773,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '3',
     });
-
 
   });
 
@@ -833,7 +826,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   /*
@@ -869,7 +861,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('errors if amazon linux given with special HW type', () => {
@@ -889,7 +880,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Amazon Linux does not support special hardware type/);
-
 
   });
 
@@ -917,7 +907,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('errors if windows given with special HW type', () => {
@@ -937,7 +926,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Windows Server does not support special hardware type/);
-
 
   });
 
@@ -959,7 +947,6 @@ describe('cluster', () => {
       });
     }).toThrow(/"windowsVersion" and Linux image "generation" cannot be both set/);
 
-
   });
 
   testDeprecated('allows returning the correct image for windows for EcsOptimizedAmi', () => {
@@ -970,7 +957,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.WINDOWS);
-
 
   });
 
@@ -983,7 +969,6 @@ describe('cluster', () => {
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
 
-
   });
 
   testDeprecated('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
@@ -995,7 +980,6 @@ describe('cluster', () => {
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
 
-
   });
 
   test('allows returning the correct image for linux for EcsOptimizedImage', () => {
@@ -1004,7 +988,6 @@ describe('cluster', () => {
 
     expect(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
-
 
   });
 
@@ -1015,7 +998,6 @@ describe('cluster', () => {
     expect(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
-
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware', () => {
@@ -1025,9 +1007,7 @@ describe('cluster', () => {
     expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
-
   });
-
 
   test('allows returning the correct image for windows for EcsOptimizedImage', () => {
     // GIVEN
@@ -1035,7 +1015,6 @@ describe('cluster', () => {
 
     expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
-
 
   });
 
@@ -1053,7 +1032,13 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ServiceConnectDefaults: {
+        Namespace: {
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Arn'],
+        },
+      },
+    });
   });
 
   test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
@@ -1062,12 +1047,12 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    cluster.addDefaultCloudMapNamespace({
       name: 'foo',
       type: cloudmap.NamespaceType.HTTP,
     });
-    // THEN
-    expect(namespace.namespaceName).toBe('foo');
+    expect(cluster.defaultCloudMapNamespace).not.toBe(undefined);
+    expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
   });
 
   /*
@@ -1102,7 +1087,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
@@ -1133,7 +1117,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('allows specifying windows image v2', () => {
@@ -1158,7 +1141,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('allows specifying spot fleet', () => {
@@ -1177,7 +1159,6 @@ describe('cluster', () => {
       SpotPrice: '0.31',
     });
 
-
   });
 
   testDeprecated('allows specifying drain time', () => {
@@ -1195,7 +1176,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       HeartbeatTimeout: 60,
     });
-
 
   });
 
@@ -1229,7 +1209,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('allows containers access to instance metadata service', () => {
@@ -1261,7 +1240,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   testDeprecated('allows adding default service discovery namespace', () => {
@@ -1286,7 +1264,6 @@ describe('cluster', () => {
         Ref: 'MyVpcF9F0CA6F',
       },
     });
-
 
   });
 
@@ -1313,7 +1290,6 @@ describe('cluster', () => {
 
     expect(cluster.defaultCloudMapNamespace!.type).toEqual(cloudmap.NamespaceType.DNS_PUBLIC);
 
-
   });
 
   testDeprecated('throws if default service discovery namespace added more than once', () => {
@@ -1338,9 +1314,7 @@ describe('cluster', () => {
       });
     }).toThrow(/Can only add default namespace once./);
 
-
   });
-
 
   test('export/import of a cluster with a namespace', () => {
     // GIVEN
@@ -1372,7 +1346,6 @@ describe('cluster', () => {
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();
 
-
   });
 
   test('imported cluster with imported security groups honors allowAllOutbound', () => {
@@ -1399,7 +1372,20 @@ describe('cluster', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 1);
 
+  });
 
+  test('Security groups are optonal for imported clusters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+    });
+
+    // THEN
+    expect(cluster.connections.securityGroups).toEqual([]);
   });
 
   test('Metric', () => {
@@ -1439,7 +1425,6 @@ describe('cluster', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
 
   });
 
@@ -1578,7 +1563,6 @@ describe('cluster', () => {
       ],
     });
 
-
   });
 
   test('disable container insights', () => {
@@ -1598,7 +1582,6 @@ describe('cluster', () => {
       ],
     });
 
-
   });
 
   test('default container insights is undefined', () => {
@@ -1617,7 +1600,6 @@ describe('cluster', () => {
       template.Resources.EcsCluster97242B84.Properties === undefined ||
       template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
     ).toEqual(true);
-
 
   });
 
@@ -1954,7 +1936,6 @@ describe('cluster', () => {
       CapacityProviders: ['FARGATE_SPOT'],
     });
 
-
   });
 
   test('allows specifying Fargate capacityProviders', () => {
@@ -1976,7 +1957,6 @@ describe('cluster', () => {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
 
-
   });
 
   test('allows specifying capacityProviders (alternate method)', () => {
@@ -1996,7 +1976,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
-
 
   });
 
@@ -2019,7 +1998,6 @@ describe('cluster', () => {
       CapacityProviders: ['FARGATE'],
     });
 
-
   });
 
   testDeprecated('allows adding capacityProviders post-construction', () => {
@@ -2041,7 +2019,6 @@ describe('cluster', () => {
       CapacityProviders: ['FARGATE'],
     });
 
-
   });
 
   testDeprecated('throws for unsupported capacity providers', () => {
@@ -2054,7 +2031,6 @@ describe('cluster', () => {
     expect(() => {
       cluster.addCapacityProvider('HONK');
     }).toThrow(/CapacityProvider not supported/);
-
 
   });
 
@@ -2522,7 +2498,6 @@ describe('cluster', () => {
       },
     });
 
-
   });
 
   test('throws when no log configuration is provided when logging is set to OVERRIDE', () => {
@@ -2538,7 +2513,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
-
 
   });
 
@@ -2561,7 +2535,6 @@ describe('cluster', () => {
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
 
-
   });
 
   test('throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name', () => {
@@ -2581,7 +2554,6 @@ describe('cluster', () => {
       });
     }).toThrow(/You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
 
-
   });
 
   test('throws when S3EncryptionEnabled without providing S3 Bucket name', () => {
@@ -2600,7 +2572,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
-
 
   });
 
@@ -2668,7 +2639,6 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
   // Add Bottlerocket ASG Capacity Provider
   cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
-
 
   // THEN Bottlerocket LaunchConfiguration
   Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
