@@ -339,5 +339,5 @@ Since this module is experimental, there are some known limitations:
   bootstrap stack, the staging resources in them will just go unused. You can customize the
   template to remove them if desired.
 - Due to limitations on the CloudFormation template size, CDK Applications can have
-  at most 21 independent ECR images. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26119)
+  at most 20 independent ECR images. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26119)
   if you need more than this.
