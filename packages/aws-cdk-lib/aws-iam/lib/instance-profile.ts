@@ -21,6 +21,8 @@ export interface IInstanceProfile extends IResource {
 
   /**
    * The role associated with the InstanceProfile.
+   *
+   * @default - no role
    */
   readonly role?: IRole;
 }
