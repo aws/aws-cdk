@@ -709,7 +709,7 @@ describe('reboot for Parameter Changes', () => {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Handler: 'index.handler',
-            Runtime: 'nodejs16.x',
+            Runtime: 'nodejs18.x',
             Timeout: 900,
           },
         },
