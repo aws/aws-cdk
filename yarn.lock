@@ -5219,10 +5219,10 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.1.269:
-  version "0.1.275"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.275.tgz#22c3c5c1f7c8508f8f2094f951e569571be3bec6"
-  integrity sha512-xLmvaLyDjmwy7wV2g3sgzC8Rl5Kcgw1uq9Fhtg67Vl+L3hXtlwG/YYdeEV0vlfFCwHwnw+ww4kSus1KU1yTW2Q==
+cdk-generate-synthetic-examples@^0.1.287:
+  version "0.1.287"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.287.tgz#6ea883857e3afe6164c1a45c9a95dad554447aa0"
+  integrity sha512-fUfqPzq4bMhPhzG6LZhTIGvjUIg7AB6MPuIo334Pr0tILahWS1LrF/pXmmKN4leysu7vgGGxJrXOfIKTWMB6iQ==
   dependencies:
     "@jsii/spec" "^1.84.0"
     fs-extra "^10.1.0"
