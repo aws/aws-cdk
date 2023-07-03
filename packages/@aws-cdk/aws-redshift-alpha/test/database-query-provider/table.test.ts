@@ -1,11 +1,14 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
 
-const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
-jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
-  describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
-});
+const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+jest.mock('@aws-sdk/client-redshift-data', () => ({
+  RedshiftData: class {
+    executeStatement = mockExecuteStatement;
+    describeStatement = jest.fn(async () => ({ Status: 'FINISHED' }));
+  },
+}));
+
 import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
