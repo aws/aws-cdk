@@ -1,5 +1,5 @@
-import * as cxapi from 'aws-cdk-lib/cx-api';
 import { execSync } from 'child_process';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 
 export const CFN_CONTEXT = {
   'AWS::Region': 'the_region',

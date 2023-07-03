@@ -1,6 +1,6 @@
 import { App } from 'aws-cdk-lib';
-import { DefaultStagingStack } from '../lib';
 import { testWithXRepos } from './util';
+import { DefaultStagingStack } from '../lib';
 
 describe('default staging stack', () => {
   test('can have at least 21 ECR Repositories', () => {

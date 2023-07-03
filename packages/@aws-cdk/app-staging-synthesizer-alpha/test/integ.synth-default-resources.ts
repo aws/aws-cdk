@@ -2,8 +2,8 @@ import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AppStagingSynthesizer } from '../lib';
 import { APP_ID_MAX } from './util';
+import { AppStagingSynthesizer } from '../lib';
 
 // IMAGE_COPIES env variable is used to test maximum number of ECR repositories allowed.
 const IMAGE_COPIES = Number(process.env.IMAGE_COPIES) ?? 1;
