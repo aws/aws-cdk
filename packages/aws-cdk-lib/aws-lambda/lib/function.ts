@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { AdotInstrumentationConfig, AdotLambdaExecWrapper, AdotLambdaLayerPythonSdkVersion } from './adot-layers';
+import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
