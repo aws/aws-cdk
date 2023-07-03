@@ -3106,6 +3106,20 @@ describe('function', () => {
     });
   });
 
+  test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new lambda.Function(stack, 'Fn1', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_10,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_13_0),
+        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+      },
+    })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
+  });
+
   test('adds ADOT instrumentation to a container image Lambda function', () => {
     // GIVEN
     const app = new cdk.App();

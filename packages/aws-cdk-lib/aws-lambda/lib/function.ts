@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { AdotInstrumentationConfig } from './adot-layers';
+import { AdotInstrumentationConfig, AdotLambdaExecWrapper, AdotLambdaLayerPythonSdkVersion } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -1155,6 +1155,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // checking for common mistakes on a best-effort basis.
     if (this.runtime === Runtime.GO_1_X) {
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
+    }
+
+    if (props.adotInstrumentation.layerVersion instanceof AdotLambdaLayerPythonSdkVersion
+      && props.adotInstrumentation.execWrapper != AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+      throw new Error('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER');
     }
 
     this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
