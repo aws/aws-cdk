@@ -27,11 +27,16 @@ const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceType: '',
 };
 
-const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
-jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
-  describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
+const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+jest.mock('@aws-sdk/client-redshift-data', () => {
+  return {
+    RedshiftData: class {
+      executeStatement = mockExecuteStatement;
+      describeStatement = jest.fn(async () => ({ Status: 'FINISHED' }));
+    },
+  };
 });
+
 import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
 
 beforeEach(() => {
