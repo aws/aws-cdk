@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { DynamoDB } from '@aws-sdk/client-dynamodb'; // eslint-disable-line import/no-extraneous-dependencies
 import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '../../../custom-resources/lib/provider-framework/types';
 
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', { ...event, ResponseURL: '...' });
 
-  const dynamodb = new DynamoDB();
+  const dynamodb = new DynamoDB({});
 
   const tableName = event.ResourceProperties.TableName;
   const region = event.ResourceProperties.Region;
@@ -22,7 +22,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
     // To differentiate the two cases, we make an API call to DynamoDB to check whether a replica already exists.
     const describeTableResult = await dynamodb.describeTable({
       TableName: tableName,
-    }).promise();
+    });
     console.log('Describe table: %j', describeTableResult);
     const replicaExists = describeTableResult.Table?.Replicas?.some(replica => replica.RegionName === region);
     updateTableAction = replicaExists ? undefined : 'Create';
@@ -38,7 +38,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
           },
         },
       ],
-    }).promise();
+    });
     console.log('Update table: %j', data);
   } else {
     console.log("Skipping updating Table, as a replica in '%s' already exists", region);
@@ -52,11 +52,11 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', { ...event, ResponseURL: '...' });
 
-  const dynamodb = new DynamoDB();
+  const dynamodb = new DynamoDB({});
 
   const data = await dynamodb.describeTable({
     TableName: event.ResourceProperties.TableName,
-  }).promise();
+  });
   console.log('Describe table: %j', data);
 
   const tableActive = data.Table?.TableStatus === 'ACTIVE';

@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as AWS from 'aws-sdk';
+import { CodePipeline } from '@aws-sdk/client-codepipeline';
 
-const client = new AWS.CodePipeline({ apiVersion: '2015-07-09' });
+const client = new CodePipeline({ apiVersion: '2015-07-09' });
 const TIMEOUT_IN_MINUTES = 5;
 
 const sleep = (seconds: number) => {
@@ -28,7 +28,7 @@ export async function handler(event: any, _context: any) {
 
   const deadline = Date.now() + TIMEOUT_IN_MINUTES * 60000;
   while (Date.now() < deadline) {
-    const response = await client.getPipelineState({ name: pipelineName }).promise();
+    const response = await client.getPipelineState({ name: pipelineName });
     const token = parseState(response);
     if (token) {
       await client.putApprovalResult({
@@ -40,7 +40,7 @@ export async function handler(event: any, _context: any) {
           status: 'Approved',
         },
         token,
-      }).promise();
+      });
       return;
     }
     await sleep(5);

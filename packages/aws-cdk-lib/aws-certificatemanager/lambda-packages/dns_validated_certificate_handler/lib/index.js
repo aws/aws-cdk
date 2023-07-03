@@ -1,6 +1,7 @@
 'use strict';
 
-const aws = require('aws-sdk');
+import { ACM, waitUntilCertificateValidated } from '@aws-sdk/client-acm';
+import { Route53 } from '@aws-sdk/client-route-53';
 
 const defaultSleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -74,12 +75,12 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  */
 const addTags = async function(certificateArn, region, tags) {
   const result = Array.from(Object.entries(tags)).map(([Key, Value]) => ({ Key, Value }))
-  const acm = new aws.ACM({ region });
+  const acm = new ACM({ region });
 
   await acm.addTagsToCertificate({
     CertificateArn: certificateArn,
     Tags: result,
-  }).promise();
+  });
 }
 
 /**
@@ -96,12 +97,8 @@ const addTags = async function(certificateArn, region, tags) {
  */
 const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint) {
   const crypto = require('crypto');
-  const acm = new aws.ACM({ region });
-  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
-  if (waiter) {
-    // Used by the test suite, since waiters aren't mockable yet
-    route53.waitFor = acm.waitFor = waiter;
-  }
+  const acm = new ACM({ region });
+  const route53 = route53Endpoint ? new Route53({ endpoint: route53Endpoint }) : new Route53();
 
   console.log(`Requesting certificate for ${domainName}`);
 
@@ -113,7 +110,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
     },
     IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').slice(0, 32),
     ValidationMethod: 'DNS'
-  }).promise();
+  });
 
   console.log(`Certificate ARN: ${reqCertResponse.CertificateArn}`);
 
@@ -123,7 +120,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   for (let attempt = 0; attempt < maxAttempts && !records.length; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
-    }).promise();
+    });
 
     records = getDomainValidationRecords(Certificate);
     if (!records.length) {
@@ -143,14 +140,13 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   await commitRoute53Records(route53, records, hostedZoneId);
 
   console.log('Waiting for validation...');
-  await acm.waitFor('certificateValidated', {
-    // Wait up to 9 minutes and 30 seconds
-    $waiter: {
-      delay: 30,
-      maxAttempts: 19
-    },
+  await waitUntilCertificateValidated({
+    client: acm,
+    maxAttempts: 19,
+    delay: 30,
+  }, {
     CertificateArn: reqCertResponse.CertificateArn
-  }).promise();
+  })
 
   return reqCertResponse.CertificateArn;
 };
@@ -164,10 +160,6 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 const deleteCertificate = async function (arn, region, hostedZoneId, route53Endpoint, cleanupRecords) {
   const acm = new aws.ACM({ region });
   const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
-  if (waiter) {
-    // Used by the test suite, since waiters aren't mockable yet
-    route53.waitFor = acm.waitFor = waiter;
-  }
 
   try {
     console.log(`Waiting for certificate ${arn} to become unused`);
@@ -177,7 +169,7 @@ const deleteCertificate = async function (arn, region, hostedZoneId, route53Endp
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const { Certificate } = await acm.describeCertificate({
         CertificateArn: arn
-      }).promise();
+      });
 
       if (cleanupRecords) {
         records = getDomainValidationRecords(Certificate);
@@ -206,7 +198,7 @@ const deleteCertificate = async function (arn, region, hostedZoneId, route53Endp
 
     await acm.deleteCertificate({
       CertificateArn: arn
-    }).promise();
+    });
 
     if (cleanupRecords) {
       console.log(`Deleting ${records.length} DNS records from zone ${hostedZoneId}:`);
@@ -268,17 +260,16 @@ async function commitRoute53Records(route53, records, hostedZoneId, action = 'UP
       }),
     },
     HostedZoneId: hostedZoneId
-  }).promise();
+  });
 
   console.log('Waiting for DNS records to commit...');
-  await route53.waitFor('resourceRecordSetsChanged', {
-    // Wait up to 5 minutes
-    $waiter: {
-      delay: 30,
-      maxAttempts: 10
-    },
-    Id: changeBatch.ChangeInfo.Id
-  }).promise();
+  await waitUntilResourceRecordSetsChanged({
+    client: route53,
+    delay: 30,
+    maxAttempts: 10,
+  }, {
+    Id: changeBatch.ChangeInfo.Id,
+  });
 }
 
 /**
