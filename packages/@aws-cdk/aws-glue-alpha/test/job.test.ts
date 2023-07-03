@@ -336,6 +336,7 @@ describe('Job', () => {
             }),
             executionClass: glue.ExecutionClass.FLEX,
             workerType: glue.WorkerType.G_1X,
+            workerCount: 10,
           });
         });
 
@@ -357,6 +358,7 @@ describe('Job', () => {
             }),
             executionClass: glue.ExecutionClass.FLEX,
             workerType: glue.WorkerType.G_2X,
+            workerCount: 10,
           });
         });
 
@@ -440,6 +442,7 @@ describe('Job', () => {
               script,
             }),
             workerType: glue.WorkerType.G_025X,
+            workerCount: 2,
             executionClass: glue.ExecutionClass.FLEX,
           })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
@@ -452,6 +455,7 @@ describe('Job', () => {
               script,
             }),
             workerType: glue.WorkerType.G_4X,
+            workerCount: 10,
             executionClass: glue.ExecutionClass.FLEX,
           })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
