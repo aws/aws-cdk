@@ -171,30 +171,30 @@ export class AwsCdkCli implements IAwsCdkCli {
   /**
    * cdk bootstrap
    */
-    public async bootstrap(options: BootstrapOptions = {}) {
-      const bootstrapCommandArgs: string[] = [
-        ...renderBooleanArg('force', options.force),
-        ...renderBooleanArg('show-template', options.showTemplate),
-        ...renderBooleanArg('terminationProtection', options.terminationProtection),
-        ...renderBooleanArg('example-permissions-boundary', options.examplePermissionsBoundary),
-        ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
-        ...renderBooleanArg('execute', options.execute),
-        ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-        ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
-        ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
-        ...options.template ? ['--template', options.template] : [],
-        ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
-        ...options.qualifier ? ['--qualifier', options.qualifier] : [],
-        ...options.trust ? ['--qualifier', options.trust] : [],
-        ...options.trustForLookup ? ['--qualifier', options.trustForLookup] : [],
-        ...options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : [],
-        ...options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : [],
-        ...options.publicAccessBlockConfiguration ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration] : [],
-        ...this.createDefaultArguments(options),
-      ];
-  
-      await this.exec(['bootstrap', ...bootstrapCommandArgs]);
-    }
+  public async bootstrap(options: BootstrapOptions = {}) {
+    const bootstrapCommandArgs: string[] = [
+      ...renderBooleanArg('force', options.force),
+      ...renderBooleanArg('show-template', options.showTemplate),
+      ...renderBooleanArg('terminationProtection', options.terminationProtection),
+      ...renderBooleanArg('example-permissions-boundary', options.examplePermissionsBoundary),
+      ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
+      ...renderBooleanArg('execute', options.execute),
+      ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
+      ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
+      ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
+      ...options.template ? ['--template', options.template] : [],
+      ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
+      ...options.qualifier ? ['--qualifier', options.qualifier] : [],
+      ...options.trust ? ['--qualifier', options.trust] : [],
+      ...options.trustForLookup ? ['--qualifier', options.trustForLookup] : [],
+      ...options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : [],
+      ...options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : [],
+      ...options.publicAccessBlockConfiguration ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration] : [],
+      ...this.createDefaultArguments(options),
+    ];
+
+    await this.exec(['bootstrap', ...bootstrapCommandArgs]);
+  }
 
   /**
    * cdk deploy
