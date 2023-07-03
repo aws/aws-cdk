@@ -6752,7 +6752,7 @@
       "properties": {
         "Command": "The command that's passed to the container. This parameter maps to `Cmd` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `COMMAND` parameter to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . For more information, see [https://docs.docker.com/engine/reference/builder/#cmd](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/builder/#cmd) .",
         "Environment": "The environment variables to pass to a container. This parameter maps to `Env` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `--env` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) .\n\n> We don't recommend using plaintext environment variables for sensitive information, such as credential data. > Environment variables cannot start with \" `AWS_BATCH` \". This naming convention is reserved for variables that AWS Batch sets.",
-        "EphemeralStorage": "",
+        "EphemeralStorage": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate .",
         "ExecutionRoleArn": "The Amazon Resource Name (ARN) of the execution role that AWS Batch can assume. For jobs that run on Fargate resources, you must provide an execution role. For more information, see [AWS Batch execution IAM role](https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html) in the *AWS Batch User Guide* .",
         "FargatePlatformConfiguration": "The platform configuration for jobs that are running on Fargate resources. Jobs that are running on EC2 resources must not specify this parameter.",
         "Image": "The image used to start a container. This string is passed directly to the Docker daemon. Images in the Docker Hub registry are available by default. Other repositories are specified with `*repository-url* / *image* : *tag*` . It can be 255 characters long. It can contain uppercase and lowercase letters, numbers, hyphens (-), underscores (_), colons (:), periods (.), forward slashes (/), and number signs (#). This parameter maps to `Image` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `IMAGE` parameter of [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) .\n\n> Docker image architecture must match the processor architecture of the compute resources that they're scheduled on. For example, ARM-based Docker images can only run on ARM-based compute resources. \n\n- Images in Amazon ECR Public repositories use the full `registry/repository[:tag]` or `registry/repository[@digest]` naming conventions. For example, `public.ecr.aws/ *registry_alias* / *my-web-app* : *latest*` .\n- Images in Amazon ECR repositories use the full registry and repository URI (for example, `123456789012.dkr.ecr.<region-name>.amazonaws.com/<repository-name>` ).\n- Images in official repositories on Docker Hub use a single name (for example, `ubuntu` or `mongo` ).\n- Images in other repositories on Docker Hub are qualified with an organization name (for example, `amazon/amazon-ecs-agent` ).\n- Images in other online repositories are qualified further by a domain name (for example, `quay.io/assemblyline/ubuntu` ).",
@@ -6804,7 +6804,7 @@
         "ImagePullPolicy": "The image pull policy for the container. Supported values are `Always` , `IfNotPresent` , and `Never` . This parameter defaults to `IfNotPresent` . However, if the `:latest` tag is specified, it defaults to `Always` . For more information, see [Updating images](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/containers/images/#updating-images) in the *Kubernetes documentation* .",
         "Name": "The name of the container. If the name isn't specified, the default name \" `Default` \" is used. Each container in a pod must have a unique name.",
         "Resources": "The type and amount of resources to assign to a container. The supported resources include `memory` , `cpu` , and `nvidia.com/gpu` . For more information, see [Resource management for pods and containers](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the *Kubernetes documentation* .",
-        "SecurityContext": "The security context for a job. For more information, see [Configure a security context for a pod or container](https://docs.aws.amazon.com/https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) in the *Kubernetes documentation* .",
+        "SecurityContext": "",
         "VolumeMounts": "The volume mounts for the container. AWS Batch supports `emptyDir` , `hostPath` , and `secret` volume types. For more information about volumes and volume mounts in Kubernetes, see [Volumes](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/) in the *Kubernetes documentation* ."
       }
     },
@@ -6818,21 +6818,21 @@
     },
     "AWS::Batch::JobDefinition.EksContainerResourceRequirements": {
       "attributes": {},
-      "description": "",
+      "description": "The type and amount of resources to assign to a container. The supported resources include `memory` , `cpu` , and `nvidia.com/gpu` . For more information, see [Resource management for pods and containers](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the *Kubernetes documentation* .",
       "properties": {
-        "Limits": "",
-        "Requests": ""
+        "Limits": "The type and quantity of the resources to reserve for the container. The values vary based on the `name` that's specified. Resources can be requested using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> To maximize your resource utilization, provide your jobs with as much memory as possible for the specific instance type that you are using. To learn how, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that's reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both places, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that's reserved for the container. Values must be a whole integer. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .",
+        "Requests": "The type and quantity of the resources to request for the container. The values vary based on the `name` that's specified. Resources can be requested by using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> If you're trying to maximize your resource utilization by providing your jobs as much memory as possible for a particular instance type, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that are reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that are reserved for the container. Values must be a whole integer. `nvidia.com/gpu` can be specified in `limits` , `requests` , or both. If `nvidia.com/gpu` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` ."
       }
     },
     "AWS::Batch::JobDefinition.EksContainerSecurityContext": {
       "attributes": {},
-      "description": "",
+      "description": "The security context for a job. For more information, see [Configure a security context for a pod or container](https://docs.aws.amazon.com/https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) in the *Kubernetes documentation* .",
       "properties": {
-        "Privileged": "",
-        "ReadOnlyRootFilesystem": "",
-        "RunAsGroup": "",
-        "RunAsNonRoot": "",
-        "RunAsUser": ""
+        "Privileged": "When this parameter is `true` , the container is given elevated permissions on the host container instance. The level of permissions are similar to the `root` user permissions. The default value is `false` . This parameter maps to `privileged` policy in the [Privileged pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#privileged) in the *Kubernetes documentation* .",
+        "ReadOnlyRootFilesystem": "When this parameter is `true` , the container is given read-only access to its root file system. The default value is `false` . This parameter maps to `ReadOnlyRootFilesystem` policy in the [Volumes and file systems pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems) in the *Kubernetes documentation* .",
+        "RunAsGroup": "When this parameter is specified, the container is run as the specified group ID ( `gid` ). If this parameter isn't specified, the default is the group that's specified in the image metadata. This parameter maps to `RunAsGroup` and `MustRunAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
+        "RunAsNonRoot": "When this parameter is specified, the container is run as a user with a `uid` other than 0. If this parameter isn't specified, so such rule is enforced. This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
+        "RunAsUser": "When this parameter is specified, the container is run as the specified user ID ( `uid` ). If this parameter isn't specified, the default is the user that's specified in the image metadata. This parameter maps to `RunAsUser` and `MustRanAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* ."
       }
     },
     "AWS::Batch::JobDefinition.EksContainerVolumeMount": {
@@ -6846,17 +6846,17 @@
     },
     "AWS::Batch::JobDefinition.EksEmptyDir": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration of a Kubernetes `emptyDir` volume. An `emptyDir` volume is first created when a pod is assigned to a node. It exists as long as that pod is running on that node. The `emptyDir` volume is initially empty. All containers in the pod can read and write the files in the `emptyDir` volume. However, the `emptyDir` volume can be mounted at the same or different paths in each container. When a pod is removed from a node for any reason, the data in the `emptyDir` is deleted permanently. For more information, see [emptyDir](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) in the *Kubernetes documentation* .",
       "properties": {
-        "Medium": "",
-        "SizeLimit": ""
+        "Medium": "The medium to store the volume. The default value is an empty string, which uses the storage of the node.\n\n- **\"\"** - *(Default)* Use the disk storage of the node.\n- **\"Memory\"** - Use the `tmpfs` volume that's backed by the RAM of the node. Contents of the volume are lost when the node reboots, and any storage on the volume counts against the container's memory limit.",
+        "SizeLimit": "The maximum size of the volume. By default, there's no maximum size defined."
       }
     },
     "AWS::Batch::JobDefinition.EksHostPath": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration of a Kubernetes `hostPath` volume. A `hostPath` volume mounts an existing file or directory from the host node's filesystem into your pod. For more information, see [hostPath](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) in the *Kubernetes documentation* .",
       "properties": {
-        "Path": ""
+        "Path": "The path of the file or directory on the host to mount into containers on the pod."
       }
     },
     "AWS::Batch::JobDefinition.EksProperties": {
@@ -6868,10 +6868,10 @@
     },
     "AWS::Batch::JobDefinition.EksSecret": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration of a Kubernetes `secret` volume. For more information, see [secret](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#secret) in the *Kubernetes documentation* .",
       "properties": {
-        "Optional": "",
-        "SecretName": ""
+        "Optional": "Specifies whether the secret or the secret's keys must be defined.",
+        "SecretName": "The name of the secret. The name must be allowed as a DNS subdomain name. For more information, see [DNS subdomain names](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names) in the *Kubernetes documentation* ."
       }
     },
     "AWS::Batch::JobDefinition.EksVolume": {
@@ -6894,9 +6894,9 @@
     },
     "AWS::Batch::JobDefinition.EphemeralStorage": {
       "attributes": {},
-      "description": "",
+      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate .",
       "properties": {
-        "SizeInGiB": ""
+        "SizeInGiB": "The total amount, in GiB, of ephemeral storage to set for the task. The minimum supported value is `21` GiB and the maximum supported value is `200` GiB."
       }
     },
     "AWS::Batch::JobDefinition.EvaluateOnExit": {
@@ -15741,7 +15741,7 @@
       "attributes": {
         "DefaultVersionNumber": "The default version of the launch template, such as 2.\n\nThe default version of a launch template cannot be specified in AWS CloudFormation . The default version can be set in the Amazon EC2 console or by using the `modify-launch-template` AWS CLI command.",
         "LatestVersionNumber": "The latest version of the launch template, such as `5` .",
-        "LaunchTemplateId": "",
+        "LaunchTemplateId": "The ID of the launch template.",
         "Ref": "`Ref` returns the ID of the launch template, for example, `lt-01238c059e3466abc` ."
       },
       "description": "Specifies the properties for creating a launch template.\n\nThe minimum required properties for specifying a launch template are as follows:\n\n- You must specify at least one property for the launch template data.\n- You do not need to specify a name for the launch template. If you do not specify a name, AWS CloudFormation creates the name for you.\n\nA launch template can contain some or all of the configuration information to launch an instance. When you launch an instance using a launch template, instance properties that are not specified in the launch template use default values, except the `ImageId` property, which has no default value. If you do not specify an AMI ID for the launch template `ImageId` property, you must specify an AMI ID for the instance `ImageId` property.\n\nFor more information, see [Launch an instance from a launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) in the *Amazon EC2 User Guide* .",
@@ -17150,10 +17150,10 @@
     },
     "AWS::EC2::Subnet": {
       "attributes": {
-        "AvailabilityZone": "The Availability Zone of this subnet. For example:\n\n`{ \"Fn::GetAtt\" : [ \"mySubnet\", \"AvailabilityZone\" ] }`",
-        "AvailabilityZoneId": "",
-        "CidrBlock": "",
-        "Ipv6CidrBlocks": "The IPv6 CIDR blocks that are associated with the subnet, such as `[ 2001:db8:1234:1a00::/64 ]` .",
+        "AvailabilityZone": "The Availability Zone of this subnet. For example, `us-east-1a` .",
+        "AvailabilityZoneId": "The Availability Zone ID of this subnet. For example, `use1-az1` .",
+        "CidrBlock": "The IPv4 CIDR blocks that are associated with the subnet.",
+        "Ipv6CidrBlocks": "The IPv6 CIDR blocks that are associated with the subnet.",
         "NetworkAclAssociationId": "The ID of the network ACL that is associated with the subnet's VPC, such as `acl-5fb85d36` .",
         "OutpostArn": "The Amazon Resource Name (ARN) of the Outpost.",
         "Ref": "`Ref` returns the ID of the subnet.",
@@ -17911,7 +17911,7 @@
       },
       "description": "The `AWS::ECR::PublicRepository` resource specifies an Amazon Elastic Container Registry Public (Amazon ECR Public) repository, where users can push and pull Docker images, Open Container Initiative (OCI) images, and OCI compatible artifacts. For more information, see [Amazon ECR public repositories](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repositories.html) in the *Amazon ECR Public User Guide* .",
       "properties": {
-        "RepositoryCatalogData": "The details about the repository that are publicly visible in the Amazon ECR Public Gallery. For more information, see [Amazon ECR Public repository catalog data](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-catalog-data.html) in the *Amazon ECR Public User Guide* .",
+        "RepositoryCatalogData": "",
         "RepositoryName": "The name to use for the public repository. The repository name may be specified on its own (such as `nginx-web-app` ) or it can be prepended with a namespace to group the repository into a category (such as `project-a/nginx-web-app` ). If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the repository name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "RepositoryPolicyText": "The JSON repository policy text to apply to the public repository. For more information, see [Amazon ECR Public repository policies](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policies.html) in the *Amazon ECR Public User Guide* .",
         "Tags": "An array of key-value pairs to apply to this resource."
@@ -17919,7 +17919,7 @@
     },
     "AWS::ECR::PublicRepository.RepositoryCatalogData": {
       "attributes": {},
-      "description": "",
+      "description": "The details about the repository that are publicly visible in the Amazon ECR Public Gallery. For more information, see [Amazon ECR Public repository catalog data](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-catalog-data.html) in the *Amazon ECR Public User Guide* .",
       "properties": {
         "AboutText": "The longform description of the contents of the repository. This text appears in the repository details on the Amazon ECR Public Gallery.",
         "Architectures": "The architecture tags that are associated with the repository.",
@@ -22550,19 +22550,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> The Amazon Linux 2023 OS is not available in the China Regions. > Support is ending in 2023 for the Windows Server 2012 and Amazon Linux (AL1) operating systems. If you have active fleets using these operating systems, you can continue to create new builds using these until their end of support. All other users must use Windows Server 2016, Amazon Linux 2, or Amazon Linux 2023. For more information, including specific end-of-support dates, see the Amazon GameLift FAQs for [Windows Server](https://docs.aws.amazon.com/gamelift/faq/win2012/) and [Linux Server](https://docs.aws.amazon.com/gamelift/faq/al1/) .",
-        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
+        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "",
+      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "",
-        "Key": "",
-        "ObjectVersion": "",
-        "RoleArn": ""
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Key": "The name of the zip file that contains the build files or script files.",
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
@@ -25391,8 +25391,8 @@
     },
     "AWS::IAM::ServiceLinkedRole": {
       "attributes": {
-        "Ref": "`Ref` returns the `RoleName` created for the service-linked role appended with an underscore followed by the `CustomSuffix` . For example: `AWSServiceRoleForAutoScaling_TestSuffix` .",
-        "RoleName": ""
+        "Ref": "`Ref` returns the `RoleName` created for the service-linked role. The `CustomSuffix` is appended to the service-provided prefix with an underscore followed by the `CustomSuffix` to form the complete role name. For example, `AWSServiceRoleForAutoScaling` or `AWSServiceRoleForAutoScaling_TestSuffix` if a `CustomSuffix` is specified.",
+        "RoleName": "Returns the friendly name that identifies the role. For example, `AWSServiceRoleForAutoScaling` or `AWSServiceRoleForAutoScaling_TestSuffix` if a `CustomSuffix` is specified."
       },
       "description": "Creates an IAM role that is linked to a specific AWS service. The service controls the attached policies and when the role can be deleted. This helps ensure that the service is not broken by an unexpectedly changed or deleted role, which could put your AWS resources into an unknown state. Allowing the service to control the role helps improve service stability and proper cleanup when a service and its role are no longer needed. For more information, see [Using service-linked roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html) in the *IAM User Guide* .\n\nTo attach a policy to this service-linked role, you must make the request using the AWS service that depends on this role.",
       "properties": {
@@ -40273,7 +40273,7 @@
         "Name": "The name of the solution.",
         "PerformAutoML": "> We don't recommend enabling automated machine learning. Instead, match your use case to the available Amazon Personalize recipes. For more information, see [Determining your use case.](https://docs.aws.amazon.com/personalize/latest/dg/determining-use-case.html) \n\nWhen true, Amazon Personalize performs a search for the best USER_PERSONALIZATION recipe from the list specified in the solution configuration ( `recipeArn` must not be specified). When false (the default), Amazon Personalize uses `recipeArn` for training.",
         "PerformHPO": "Whether to perform hyperparameter optimization (HPO) on the chosen recipe. The default is `false` .",
-        "RecipeArn": "The ARN of the recipe used to create the solution.",
+        "RecipeArn": "The ARN of the recipe used to create the solution. This is required when `performAutoML` is false.",
         "SolutionConfig": "Describes the configuration properties for the solution."
       }
     },
@@ -50540,9 +50540,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "The refresh properties of a dataset.",
+      "description": "",
       "properties": {
-        "RefreshConfiguration": "The refresh configuration for a dataset."
+        "RefreshConfiguration": ""
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -50578,7 +50578,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
+        "StaticValues": ""
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50624,9 +50624,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "The incremental refresh configuration for a dataset.",
+      "description": "",
       "properties": {
-        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
+        "LookbackWindow": ""
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50701,18 +50701,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "The lookback window setup of an incremental refresh configuration.",
+      "description": "",
       "properties": {
-        "ColumnName": "The name of the lookback window column.",
-        "Size": "The lookback window column size.",
-        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
+        "ColumnName": "",
+        "Size": "",
+        "SizeUnit": ""
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
+        "DateTimeStaticValues": "",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50729,10 +50729,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
+      "description": "",
       "properties": {
-        "NewDefaultValues": "The new default values for the parameter.",
-        "NewParameterName": "The new name for the parameter.",
+        "NewDefaultValues": "",
+        "NewParameterName": "",
         "ParameterName": ""
       }
     },
@@ -50754,9 +50754,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "The refresh configuration of a dataset.",
+      "description": "",
       "properties": {
-        "IncrementalRefresh": "The incremental refresh for the dataset."
+        "IncrementalRefresh": ""
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -57415,14 +57415,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57430,18 +57430,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57450,7 +57450,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57460,15 +57460,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -64454,7 +64454,7 @@
       },
       "description": "Creates an agreement. An agreement is a bilateral trading partner agreement, or partnership, between an AWS Transfer Family server and an AS2 process. The agreement defines the file and message transfer relationship between the server and the AS2 process. To define an agreement, Transfer Family combines a server, local profile, partner profile, certificate, and other attributes.\n\nThe partner is identified with the `PartnerProfileId` , and the AS2 process is identified with the `LocalProfileId` .",
       "properties": {
-        "AccessRole": "With AS2, you can send files by calling `StartFileTransfer` and specifying the file paths in the request parameter, `SendFilePaths` . We use the file\u2019s parent directory (for example, for `--send-file-paths /bucket/dir/file.txt` , parent directory is `/bucket/dir/` ) to temporarily store a processed AS2 message file, store the MDN when we receive them from the partner, and write a final JSON file containing relevant metadata of the transmission. So, the `AccessRole` needs to provide read and write access to the parent directory of the file location used in the `StartFileTransfer` request. Additionally, you need to provide read and write access to the parent directory of the files that you intend to send with `StartFileTransfer` .",
+        "AccessRole": "With AS2, you can send files by calling `StartFileTransfer` and specifying the file paths in the request parameter, `SendFilePaths` . We use the file\u2019s parent directory (for example, for `--send-file-paths /bucket/dir/file.txt` , parent directory is `/bucket/dir/` ) to temporarily store a processed AS2 message file, store the MDN when we receive them from the partner, and write a final JSON file containing relevant metadata of the transmission. So, the `AccessRole` needs to provide read and write access to the parent directory of the file location used in the `StartFileTransfer` request. Additionally, you need to provide read and write access to the parent directory of the files that you intend to send with `StartFileTransfer` .\n\nIf you are using Basic authentication for your AS2 connector, the access role requires the `secretsmanager:GetSecretValue` permission for the secret. If the secret is encrypted using a customer-managed key instead of the AWS managed key in Secrets Manager, then the role also needs the `kms:Decrypt` permission for that key.",
         "BaseDirectory": "The landing directory (folder) for files that are transferred by using the AS2 protocol.",
         "Description": "The name or short description that's used to identify the agreement.",
         "LocalProfileId": "A unique identifier for the AS2 local profile.",
@@ -64493,7 +64493,7 @@
       },
       "description": "Creates the connector, which captures the parameters for an outbound connection for the AS2 protocol. The connector is required for sending files to an externally hosted AS2 server. For more details about connectors, see [Create AS2 connectors](https://docs.aws.amazon.com/transfer/latest/userguide/create-b2b-server.html#configure-as2-connector) .",
       "properties": {
-        "AccessRole": "With AS2, you can send files by calling `StartFileTransfer` and specifying the file paths in the request parameter, `SendFilePaths` . We use the file\u2019s parent directory (for example, for `--send-file-paths /bucket/dir/file.txt` , parent directory is `/bucket/dir/` ) to temporarily store a processed AS2 message file, store the MDN when we receive them from the partner, and write a final JSON file containing relevant metadata of the transmission. So, the `AccessRole` needs to provide read and write access to the parent directory of the file location used in the `StartFileTransfer` request. Additionally, you need to provide read and write access to the parent directory of the files that you intend to send with `StartFileTransfer` .",
+        "AccessRole": "With AS2, you can send files by calling `StartFileTransfer` and specifying the file paths in the request parameter, `SendFilePaths` . We use the file\u2019s parent directory (for example, for `--send-file-paths /bucket/dir/file.txt` , parent directory is `/bucket/dir/` ) to temporarily store a processed AS2 message file, store the MDN when we receive them from the partner, and write a final JSON file containing relevant metadata of the transmission. So, the `AccessRole` needs to provide read and write access to the parent directory of the file location used in the `StartFileTransfer` request. Additionally, you need to provide read and write access to the parent directory of the files that you intend to send with `StartFileTransfer` .\n\nIf you are using Basic authentication for your AS2 connector, the access role requires the `secretsmanager:GetSecretValue` permission for the secret. If the secret is encrypted using a customer-managed key instead of the AWS managed key in Secrets Manager, then the role also needs the `kms:Decrypt` permission for that key.",
         "As2Config": "A structure that contains the parameters for a connector object.",
         "LoggingRole": "The Amazon Resource Name (ARN) of the AWS Identity and Access Management (IAM) role that allows a connector to turn on CloudWatch logging for Amazon S3 events. When set, you can view connector activity in your CloudWatch logs.",
         "Tags": "Key-value pairs that can be used to group and search for connectors.",
