@@ -16,7 +16,7 @@ import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
-import { Runtime } from './runtime';
+import { Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -1157,8 +1157,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
     }
 
-    if (props.adotInstrumentation.layerVersion instanceof AdotLambdaLayerPythonSdkVersion
-      && props.adotInstrumentation.execWrapper !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+    // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
+    if (this.runtime.family === RuntimeFamily.PYTHON &&
+      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
       throw new Error('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER');
     }
 
