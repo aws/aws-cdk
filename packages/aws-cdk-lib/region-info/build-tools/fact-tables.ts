@@ -29,8 +29,8 @@ export const AWS_CDK_METADATA = new Set([
   'me-south-1',
   // 'me-central-1',
   'sa-east-1',
-  // 'ap-south-2',
   // 'eu-central-2',
+  // 'ap-south-2',
 ]);
 
 /**
@@ -220,18 +220,170 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
 
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
 export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
+  '1.0.229.0': {
+    arm64: {
+      // US East (N. Virginia)
+      'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // US East (Ohio)
+      'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:7',
+      // US West (N. California)
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // US West (Oregon)
+      'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Africa (Cape Town)
+      'af-south-1': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension-Arm64:2',
+      // Asia Pacific (Hong Kong)
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension-Arm64:2',
+      // Asia Pacific (Jakarta)
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension-Arm64:2',
+      // Asia Pacific (Mumbai)
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:7',
+      // Asia Pacific (Osaka)
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension-Arm64:2',
+      // Asia Pacific (Seoul)
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:4',
+      // Asia Pacific (Singapore)
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Asia Pacific (Sydney)
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Asia Pacific (Tokyo)
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:11',
+      // Canada (Central)
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
+      // Europe (Frankfurt)
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Europe (Ireland)
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Europe (London)
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:5',
+      // Europe (Spain)
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension-Arm64:2',
+      // Europe (Paris)
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension-Arm64:3',
+      // Europe (Stockholm)
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
+      // Middle East (Bahrain)
+      'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension-Arm64:2',
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:3',
+    },
+    x86_64: {
+      // US East (N. Virginia)
+      'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:38',
+      // US East (Ohio)
+      'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:38',
+      // US West (N. California)
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:38',
+      // US West (Oregon)
+      'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:38',
+      // Africa (Cape Town)
+      'af-south-1': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:28',
+      // Asia Pacific (Hong Kong)
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:28',
+      // Asia Pacific (Hyderabad)
+      'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:10',
+      // Asia Pacific (Jakarta)
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:14',
+      // Asia Pacific (Mumbai)
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:36',
+      // Asia Pacific (Osaka)
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:19',
+      // Asia Pacific (Seoul)
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:37',
+      // Asia Pacific (Singapore)
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:38',
+      // Asia Pacific (Sydney)
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:38',
+      // Asia Pacific (Tokyo)
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:60',
+      // Canada (Central)
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:37',
+      // China (Beijing)
+      'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:29',
+      // China (Ningxia)
+      'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:29',
+      // Europe (Frankfurt)
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:38',
+      // Europe (Ireland)
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:38',
+      // Europe (London)
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:38',
+      // Europe (Milan)
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:28',
+      // Europe (Paris)
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:37',
+      // Europe (Spain)
+      'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:12',
+      // Europe (Stockholm)
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:35',
+      // Europe (Zurich)
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:11',
+      // Middle East (Bahrain)
+      'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:28',
+      // Middle East (UAE)
+      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:11',
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:37',
+    },
+  },
   '1.0.178.0': {
     x86_64: {
+      // US East (N. Virginia)
+      'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:35',
+      // US East (Ohio)
+      'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:33',
+      // US West (N. California)
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:33',
+      // US West (Oregon)
+      'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:33',
+      // Africa (Cape Town)
+      'af-south-1': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:25',
+      // Asia Pacific (Hong Kong)
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:25',
       // Asia Pacific (Hyderabad)
       'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:8',
       // Asia Pacific (Jakarta)
-      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:8',
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:11',
+      // Asia Pacific (Mumbai)
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:31',
+      // Asia Pacific (Osaka)
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:2',
+      // Asia Pacific (Seoul)
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:32',
+      // Asia Pacific (Singapore)
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:33',
+      // Asia Pacific (Sydney)
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:33',
+      // Asia Pacific (Tokyo)
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:50',
+      // Canada (Central)
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:32',
+      // China (Beijing)
+      'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:26',
+      // China (Ningxia)
+      'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:26',
+      // Europe (Frankfurt)
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:35',
+      // Europe (Ireland)
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:33',
+      // Europe (London)
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:33',
+      // Europe (Milan)
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:25',
+      // Europe (Paris)
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:32',
       // Europe (Spain)
       'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:10',
+      // Europe (Stockholm)
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:30',
       // Europe (Zurich)
       'eu-central-2': 'arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:7',
+      // Middle East (Bahrain)
+      'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:25',
       // Middle East (UAE)
       'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:9',
+      // South America (Sao Paulo)
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:32',
     },
   },
   '1.0.143.0': {
@@ -259,7 +411,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
       // Asia Pacific (Sydney)
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:21',
       // Asia Pacific (Tokyo)
-      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:31',
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:32',
       // Canada (Central)
       'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:20',
       // China (Beijing)
@@ -522,7 +674,7 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'ap-northeast-2': '13.209.1.64',
   'ap-northeast-3': '13.208.177.192',
   'ap-south-1': '13.232.67.32',
-  'ap-south-2': '18.60.192.128/27',
+  'ap-south-2': '18.60.192.128',
   'ap-southeast-1': '13.228.64.192',
   'ap-southeast-2': '13.210.67.224',
   'ap-southeast-3': '108.136.221.64',
@@ -533,12 +685,12 @@ export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'eu-central-2': '16.62.183.32',
   'eu-north-1': '13.53.63.224',
   'eu-south-1': '15.161.135.128',
-  'eu-south-2': '18.100.194.0/26',
+  'eu-south-2': '18.100.71.96',
   'eu-west-1': '52.19.239.192',
   'eu-west-2': '18.130.1.96',
   'eu-west-3': '35.180.1.96',
   'me-south-1': '15.185.91.0',
-  'me-central-1': '3.28.159.64/26',
+  'me-central-1': '3.28.159.32',
   'sa-east-1': '18.228.1.128',
   'us-east-1': '52.70.63.192',
   'us-east-2': '13.58.135.96',
@@ -662,6 +814,7 @@ const ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS: { [version: string]: { [arch: string]: { 
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-24-0:1',
@@ -683,6 +836,7 @@ const ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS: { [version: string]: { [arch: string]: { 
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-24-0:1',
@@ -905,6 +1059,7 @@ const ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS: {
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-24-0:1',
@@ -926,6 +1081,7 @@ const ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS: {
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-agent-arm64-ver-1-24-0:1',
@@ -1146,6 +1302,7 @@ const ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS: { [version: string]: { [arch: strin
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-12-0:1',
@@ -1167,6 +1324,7 @@ const ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS: { [version: string]: { [arch: strin
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1',
@@ -1349,6 +1507,7 @@ const ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS: { [version: string]: { [arch: string]: 
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-python-amd64-ver-1-17-0:1',
@@ -1370,6 +1529,7 @@ const ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS: { [version: string]: { [arch: string]: 
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-python-arm64-ver-1-17-0:1',
@@ -1552,6 +1712,7 @@ const ADOT_LAMBDA_LAYER_GENERIC_ARNS: { [version: string]: { [arch: string]: { [
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-74-0:1',
@@ -1573,6 +1734,7 @@ const ADOT_LAMBDA_LAYER_GENERIC_ARNS: { [version: string]: { [arch: string]: { [
       'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
       'ca-central-1': 'arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
       'eu-central-1': 'arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
       'eu-north-1': 'arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
       'eu-south-2': 'arn:aws:lambda:eu-south-2:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
       'eu-west-1': 'arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-arm64-ver-0-74-0:1',
