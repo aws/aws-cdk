@@ -598,17 +598,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       iamProfileArn = props.instanceProfile.instanceProfileArn;
     } else if (props.role) {
       this.role = props.role;
-      if (FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
-        const iamProfile = new iam.InstanceProfile(this, 'Profile', {
-          role: this.role,
-        });
-        iamProfileArn = iamProfile.instanceProfileArn;
-      } else {
-        const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
-          roles: [this.role.roleName],
-        });
-        iamProfileArn = iamProfile.attrArn;
-      }
+      const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
+        roles: [this.role.roleName],
+      });
+      iamProfileArn = iamProfile.attrArn;
     }
 
     this._grantPrincipal = this.role;

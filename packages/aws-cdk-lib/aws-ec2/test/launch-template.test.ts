@@ -484,41 +484,6 @@ describe('LaunchTemplate', () => {
       expect(template.osType).toBe(OperatingSystemType.WINDOWS);
       expect(template.userData).toBeDefined();
     });
-
-    test('Given role', () => {
-      // WHEN
-      stack.node.setContext(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
-      const role = new Role(stack, 'TestRole', {
-        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
-      });
-      const template = new LaunchTemplate(stack, 'Template', {
-        role,
-      });
-
-      // THEN
-      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
-        Roles: [
-          {
-            Ref: 'TestRole6C9272DF',
-          },
-        ],
-      });
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
-        LaunchTemplateData: {
-          IamInstanceProfile: {
-            Arn: {
-              'Fn::GetAtt': [
-                'TemplateProfileC249557A',
-                'Arn',
-              ],
-            },
-          },
-        },
-      });
-      expect(template.role).toBeDefined();
-      expect(template.grantPrincipal).toBeDefined();
-    });
   });
 
   test.each([
