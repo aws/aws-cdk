@@ -43,7 +43,7 @@ class StackUnderTest extends Stack {
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.LATEST),
-        execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
+        execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
@@ -53,7 +53,7 @@ class StackUnderTest extends Stack {
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.LATEST),
-        execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
+        execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
@@ -63,7 +63,7 @@ class StackUnderTest extends Stack {
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromJavaAutoInstrumentationLayerVersion(AdotLambdaLayerJavaAutoInstrumentationVersion.LATEST),
-        execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
+        execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
@@ -73,16 +73,6 @@ class StackUnderTest extends Stack {
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromGenericLayerVersion(AdotLambdaLayerGenericVersion.LATEST),
-        execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
-      },
-    });
-
-    new Function(this, 'MyFunc6', {
-      runtime: Runtime.PYTHON_3_9,
-      handler: 'index.handler',
-      code: Code.fromInline('def handler(event, context): pass'),
-      adotInstrumentation: {
-        layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });

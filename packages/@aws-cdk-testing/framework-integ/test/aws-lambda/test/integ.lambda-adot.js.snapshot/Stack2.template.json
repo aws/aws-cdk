@@ -169,7 +169,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -266,7 +266,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -363,7 +363,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -460,7 +460,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -486,103 +486,6 @@
    "DependsOn": [
     "MyFunc5ServiceRoleDefaultPolicy96ABEA66",
     "MyFunc5ServiceRoleFE4CE92B"
-   ]
-  },
-  "MyFunc6ServiceRoleCDDBC2C6": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "MyFunc6ServiceRoleDefaultPolicyC4D4BF55": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "xray:PutTelemetryRecords",
-        "xray:PutTraceSegments"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MyFunc6ServiceRoleDefaultPolicyC4D4BF55",
-    "Roles": [
-     {
-      "Ref": "MyFunc6ServiceRoleCDDBC2C6"
-     }
-    ]
-   }
-  },
-  "MyFunc60D944984": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "def handler(event, context): pass"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyFunc6ServiceRoleCDDBC2C6",
-      "Arn"
-     ]
-    },
-    "Environment": {
-     "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
-     }
-    },
-    "Handler": "index.handler",
-    "Layers": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:aws:lambda:",
-        {
-         "Ref": "AWS::Region"
-        },
-        ":901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1"
-       ]
-      ]
-     }
-    ],
-    "Runtime": "python3.9",
-    "TracingConfig": {
-     "Mode": "Active"
-    }
-   },
-   "DependsOn": [
-    "MyFunc6ServiceRoleDefaultPolicyC4D4BF55",
-    "MyFunc6ServiceRoleCDDBC2C6"
    ]
   }
  },
