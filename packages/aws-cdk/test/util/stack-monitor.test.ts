@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { MockSdk } from './mock-sdk';
 import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { sleep } from '../util';
@@ -144,7 +145,6 @@ async function testMonitorWithEventCalls(
   await waitForCondition(() => finished);
   await monitor.stop();
 }
-
 
 class FakePrinter implements IActivityPrinter {
   public updateSleep: number = 0;

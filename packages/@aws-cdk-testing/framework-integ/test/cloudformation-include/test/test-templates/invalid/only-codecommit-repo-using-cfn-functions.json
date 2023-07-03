@@ -1,0 +1,13 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "my-repository",
+        "RepositoryDescription": {
+          "Fn::Select": [0, { "Fn::ValueOfAll": ["AWS::EC2::Subnet::Id", "VpcId"]}]
+        }
+      }
+    }
+  }
+}

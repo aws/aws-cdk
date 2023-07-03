@@ -143,6 +143,10 @@ function getCdkRootDir(filename: string): string | undefined {
 }
 
 function isAlphaPackage(packageDir: string): boolean {
+  if (packageDir.endsWith('aws-cdk-lib/core')) {
+    return false; // special case for core because it does not have a package.json  
+  }
+
   const pkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), { encoding: 'utf-8' }));
 
   const separateModule = pkg['separate-module'];
@@ -155,7 +159,7 @@ function isAlphaPackage(packageDir: string): boolean {
     return false;
   }
   // we're only interested in '@aws-cdk/' packages,
-  // and those that are JSII-enabled (so no @aws-cdk/assert)
+  // and those that are JSII-enabled
   return pkg.name.startsWith('@aws-cdk/') && !!pkg['jsii'];
 }
 

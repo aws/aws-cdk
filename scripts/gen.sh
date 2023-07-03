@@ -1,8 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8196 ${NODE_OPTIONS:-}"
 
 echo "============================================================================================="
 echo "installing..."
@@ -15,8 +14,8 @@ fail() {
 
 echo "============================================================================================="
 echo "building required build tools..."
-time lerna run --stream build --scope @aws-cdk/cfn2ts --scope @aws-cdk/ubergen --include-dependencies || fail
+time npx lerna run --stream build --scope @aws-cdk/cfn2ts --scope @aws-cdk/spec2cdk --include-dependencies || fail
 
 echo "============================================================================================="
 echo "executing gen..."
-time lerna run --stream gen || fail
+time npx lerna run --stream gen || fail

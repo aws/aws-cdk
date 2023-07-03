@@ -3,6 +3,8 @@
   "testCases": {
     "xxxxx.test-with-snapshot": {
       "stacks": ["test-stack"],
+      "assertionStack": "Bundling/DefaultTest/DeployAssert",
+      "assertionStackName": "BundlingDefaultTestDeployAssertAACA0CAF",
       "diffAssets": true,
       "allowDestroy": [
         "AWS::IAM::Role"

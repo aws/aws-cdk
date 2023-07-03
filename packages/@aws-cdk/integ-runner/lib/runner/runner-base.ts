@@ -1,7 +1,8 @@
+/* eslint-disable @aws-cdk/no-literal-partition */
 import * as path from 'path';
+import { CdkCliWrapper, ICdk } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
-import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
@@ -33,7 +34,7 @@ export interface IntegRunnerOptions {
    *
    * @default - no additional environment variables
    */
-  readonly env?: { [name: string]: string | undefined },
+  readonly env?: { [name: string]: string },
 
   /**
    * tmp cdk.out directory
@@ -216,7 +217,7 @@ export abstract class IntegRunner {
     try {
       const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
       return testSuite;
-    } catch (e) {
+    } catch {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.test.normalizedTestName,
@@ -382,7 +383,6 @@ export abstract class IntegRunner {
     };
   }
 }
-
 
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.

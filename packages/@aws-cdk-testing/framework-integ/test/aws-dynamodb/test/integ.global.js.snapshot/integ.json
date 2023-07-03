@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "cdk-dynamodb-global-20191121-test/DefaultTest": {
+      "stacks": [
+        "cdk-dynamodb-global-20191121"
+      ],
+      "assertionStack": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611"
+    }
+  }
+}

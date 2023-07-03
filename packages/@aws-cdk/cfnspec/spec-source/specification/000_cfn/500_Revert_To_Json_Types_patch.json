@@ -390,22 +390,6 @@
         ]
       }
     },
-    "AWS::Redshift::EndpointAccess": {
-      "patch": {
-        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
-        "operations": [
-          {
-            "op": "remove",
-            "path": "/Properties/VpcEndpoint/Type"
-          },
-          {
-            "op": "add",
-            "path": "/Properties/VpcEndpoint/PrimitiveType",
-            "value": "Json"
-          }
-        ]
-      }
-    },
     "AWS::Route53::HealthCheck": {
       "patch": {
         "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
@@ -417,22 +401,6 @@
           {
             "op": "add",
             "path": "/Properties/HealthCheckConfig/PrimitiveType",
-            "value": "Json"
-          }
-        ]
-      }
-    },
-    "AWS::S3::AccessPoint": {
-      "patch": {
-        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
-        "operations": [
-          {
-            "op": "remove",
-            "path": "/Properties/PolicyStatus/Type"
-          },
-          {
-            "op": "add",
-            "path": "/Properties/PolicyStatus/PrimitiveType",
             "value": "Json"
           }
         ]
@@ -918,6 +886,15 @@
           {
             "op": "add",
             "path": "/Properties/Captcha/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Challenge/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Challenge/PrimitiveType",
             "value": "Json"
           },
           {

@@ -1,0 +1,17 @@
+// Fixture with packages imported, but nothing else
+import { Duration, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as certificatemanager from 'aws-cdk-lib/aws-certificatemanager';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as path from 'path';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

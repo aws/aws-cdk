@@ -112,7 +112,7 @@ export class TestRepository {
 
       // eslint-disable-next-line no-console
       console.log('Deleted', this.repositoryName);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') { throw e; }
       // Okay
     }
@@ -199,7 +199,7 @@ export class TestRepository {
     try {
       await this.codeArtifact.describeDomain({ domain: this.domain }).promise();
       return true;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') { throw e; }
       return false;
     }
@@ -209,7 +209,7 @@ export class TestRepository {
     try {
       await this.codeArtifact.describeRepository({ domain: this.domain, repository: name }).promise();
       return true;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') { throw e; }
       return false;
     }
@@ -246,7 +246,7 @@ async function retry<A>(block: () => Promise<A>) {
   while (true) {
     try {
       return await block();
-    } catch (e) {
+    } catch (e: any) {
       if (attempts-- === 0) { throw e; }
       // eslint-disable-next-line no-console
       console.debug(e.message);
@@ -261,7 +261,7 @@ async function retryThrottled<A>(block: () => Promise<A>) {
   while (true) {
     try {
       return await block();
-    } catch (e) {
+    } catch (e: any) {
       // eslint-disable-next-line no-console
       console.debug(e.message);
       if (e.code !== 'ThrottlingException') { throw e; }

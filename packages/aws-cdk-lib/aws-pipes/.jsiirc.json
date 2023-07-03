@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Pipes"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.pipes"
+    },
+    "python": {
+      "module": "aws_cdk.aws_pipes"
+    }
+  }
+}

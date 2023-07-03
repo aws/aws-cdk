@@ -131,6 +131,14 @@ $ # Synthesize cloud assembly for StackName, but don't cloudFormation template o
 $ cdk synth MyStackName --quiet
 ```
 
+The `quiet` option can be set in the `cdk.json` file.
+
+```json
+{
+  "quiet": true
+}
+```
+
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
 See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
 
@@ -138,8 +146,8 @@ See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest
 ### `cdk diff`
 
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
-deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
-found.
+deployed application (or a user-specified CloudFormation template). If you need the command to return a non-zero if any differences are
+found you need to use the `--fail` command line option.
 
 ```console
 $ # Diff against the currently deployed stack
@@ -601,6 +609,26 @@ as, most likely, a permissions boundary is maintained and has dedicated conventi
 For more information on configuring permissions, including using permissions
 boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
+Once a bootstrap template has been deployed with a set of parameters, you must
+use the `--no-previous-parameters` CLI flag to change any of these parameters on
+future deployments. 
+
+> **Note** Please note that when you use this flag, you must resupply
+>*all* previously supplied parameters.
+
+For example if you bootstrap with a custom permissions boundary
+
+```console
+cdk bootstrap --custom-permissions-boundary my-permissions-boundary
+```
+
+In order to remove that permissions boundary you have to specify the
+`--no-previous-parameters` option.
+
+```console
+cdk bootstrap --no-previous-parameters
+```
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for
@@ -757,8 +785,11 @@ Some of the interesting keys that can be used in the JSON configuration files:
         "key": "value"
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
-    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
+    "toolkitBucket": {
+        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+    },
+    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 
@@ -780,3 +811,25 @@ The following environment variables affect aws-cdk:
 The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
 environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
 sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
+
+### Changing the default TypeScript transpiler
+
+The ts-node package used to synthesize and deploy CDK apps supports an alternate transpiler that might improve transpile times. The SWC transpiler is written in Rust and has no type checking. The SWC transpiler should be enabled by experienced TypeScript developers.
+
+To enable the SWC transpiler, install the package in the CDK app.
+
+```sh
+npm i -D @swc/core @swc/helpers regenerator-runtime
+```
+
+And, update the `tsconfig.json` file to add the `ts-node` property.
+
+```json
+{
+  "ts-node": {
+    "swc": true
+  }
+}
+```
+
+The documentation may be found at <https://typestrong.org/ts-node/docs/swc/>

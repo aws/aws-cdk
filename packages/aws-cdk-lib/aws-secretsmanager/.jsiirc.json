@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SecretsManager"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.secretsmanager"
+    },
+    "python": {
+      "module": "aws_cdk.aws_secretsmanager"
+    }
+  }
+}

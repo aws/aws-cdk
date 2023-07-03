@@ -1,0 +1,14 @@
+Conditions:
+  AlwaysTrueCond:
+    !And
+      - !Not [ !Equals [ !Ref "AWS::Region", completely-made-up-region ] ]
+      - !Or [ !Equals [ !Ref "AWS::Region", completely-made-up-region ], !Equals [ !Ref "AWS::Region", completely-made-up-region] ]
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        !If
+        - AlwaysTrueCond
+        - MyBucketName
+        - !Ref AWS::NoValue

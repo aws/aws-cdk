@@ -1,26 +1,9 @@
-lib/**/*.js
-test/**/*.js
-scripts/*.js
-.warnings.jsii.js
-*.js.map
-*.d.ts
-node_modules
-dist
-tsconfig.json
-.jsii
-
-.LAST_BUILD
-.LAST_PACKAGE
-*.snk
-.nyc_output
-coverage
-nyc.config.js
-!.eslintrc.js
+# This package is copied from aws-cdk-lib/cloud-assembly-schema, ignore everything
+# except package.json
+*
+!package.json
+!.npmignore
 !jest.config.js
-
-junit.xml
-
-!**/*.snapshot/**/asset.*/*.js
-!**/*.snapshot/**/asset.*/*.d.ts
-
-!**/*.snapshot/**/asset.*/**
+!LICENSE
+!NOTICE
+!CONTRIBUTING.md

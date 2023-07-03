@@ -70,7 +70,6 @@ env:
           [
             {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"enableGlobalAffixes":false},
             {"area":"@aws-cdk/alexa-ask","keywords":["alexa-ask","alexa"],"labels":["@aws-cdk/alexa-ask"]},
-            {"area":"@aws-cdk/assert","keywords":["assert"],"labels":["@aws-cdk/assert"]},
             {"area":"@aws-cdk/assertions","keywords":["assertions"],"labels":["@aws-cdk/assertions"]},
             {"area":"@aws-cdk/assets","keywords":["assets","staging"],"labels":["@aws-cdk/assets"]},
             {"area":"@aws-cdk/aws-accessanalyzer","keywords":["aws-accessanalyzer","accessanalyzer"],"labels":["@aws-cdk/aws-accessanalyzer"]},
@@ -282,5 +281,6 @@ env:
             {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"]},
             {"area":"@aws-cdk/triggers","keywords":["trigger","triggers"],"labels":["@aws-cdk/triggers"]},
             {"area":"@aws-cdk/integ-tests","keywords":["integ-tests", "integ"],"labels":["@aws-cdk/integ-tests"]},
-            {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"]}
+            {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"]},
+            {"area":"@aws-cdk/app-staging-synthesizer-alpha", "keywords":["app-staging-synthesizer", "app-staging-synthesizer-alpha"],"labels":["@aws-cdk/app-staging-synthesizer-alpha"]}
           ]

@@ -9,6 +9,9 @@ import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
+import { withTimeout } from './with-timeout';
+
+export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
 
 /**
  * Higher order function to execute a block with a CDK app fixture
@@ -135,7 +138,7 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  * test declaration but centralizing it is going to make it convenient to modify in the future.
  */
 export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
-  return withAws(withCdkApp(block));
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
 }
 
 export interface DisableBootstrapContext {
@@ -239,6 +242,11 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly customPermissionsBoundary?: string;
+
+  /**
+   * @default undefined
+   */
+  readonly usePreviousParameters?: boolean;
 }
 
 export class TestFixture extends ShellHelper {
@@ -355,6 +363,9 @@ export class TestFixture extends ShellHelper {
       args.push('--custom-permissions-boundary', options.customPermissionsBoundary);
     } else if (options.examplePermissionsBoundary !== undefined) {
       args.push('--example-permissions-boundary');
+    }
+    if (options.usePreviousParameters === false) {
+      args.push('--no-previous-parameters');
     }
 
     return this.cdk(args, {

@@ -1,6 +1,0 @@
-*.snk
-.LAST_BUILD
-junit.xml
-*.js
-*.d.ts
-!.eslintrc.js

@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "SwapParametersTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "SwapParametersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SwapParametersTestDefaultTestDeployAssert4CDF4940"
+    }
+  }
+}

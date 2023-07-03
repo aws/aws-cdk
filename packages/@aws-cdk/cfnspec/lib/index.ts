@@ -29,7 +29,6 @@ export function docs(): schema.CloudFormationDocsFile {
   return require('../spec/cfn-docs.json');
 }
 
-
 /**
  * Return the resource specification for the given typename
  *
@@ -67,7 +66,7 @@ export function resourceAugmentation(typeName: string): schema.ResourceAugmentat
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`./augmentations/${fileName}.json`);
-  } catch (e) {
+  } catch {
     return {};
   }
 }

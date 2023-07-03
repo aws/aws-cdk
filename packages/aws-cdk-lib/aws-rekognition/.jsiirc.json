@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Rekognition"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.rekognition"
+    },
+    "python": {
+      "module": "aws_cdk.aws_rekognition"
+    }
+  }
+}

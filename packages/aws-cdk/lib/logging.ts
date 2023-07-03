@@ -7,7 +7,35 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: any[]) => {
+export async function withCorkedLogging<A>(block: () => Promise<A>): Promise<A> {
+  corkLogging();
+  try {
+    return await block();
+  } finally {
+    uncorkLogging();
+  }
+}
+
+let CORK_COUNTER = 0;
+const logBuffer: [Writable, string][] = [];
+
+function corked() {
+  return CORK_COUNTER !== 0;
+}
+
+function corkLogging() {
+  CORK_COUNTER += 1;
+}
+
+function uncorkLogging() {
+  CORK_COUNTER -= 1;
+  if (!corked()) {
+    logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
+    logBuffer.splice(0);
+  }
+}
+
+const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: unknown[]) => {
   const ts = timestamp ? `[${formatTime(new Date())}] ` : '';
 
   let str = ts + util.format(fmt, ...args);
@@ -15,8 +43,15 @@ const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestam
     str = styles.reduce((a, style) => style(a), str);
   }
 
-
   const realStream = typeof stream === 'function' ? stream() : stream;
+
+  // Logger is currently corked, so we store the message to be printed
+  // later when we are uncorked.
+  if (corked()) {
+    logBuffer.push([realStream, str]);
+    return;
+  }
+
   realStream.write(str + '\n');
 };
 
@@ -38,7 +73,6 @@ export enum LogLevel {
   TRACE = 2
 }
 
-
 export let logLevel = LogLevel.DEFAULT;
 export let CI = false;
 
@@ -57,8 +91,8 @@ export function increaseVerbosity() {
 const stream = () => CI ? stdout : stderr;
 const _debug = logger(stream, [chalk.gray], true);
 
-export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
-export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
+export const trace = (fmt: string, ...args: unknown[]) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
+export const debug = (fmt: string, ...args: unknown[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [chalk.red]);
 export const warning = logger(stream, [chalk.yellow]);
 export const success = logger(stream, [chalk.green]);
@@ -66,7 +100,7 @@ export const highlight = logger(stream, [chalk.bold]);
 export const print = logger(stream);
 export const data = logger(stdout);
 
-export type LoggerFunction = (fmt: string, ...args: any[]) => void;
+export type LoggerFunction = (fmt: string, ...args: unknown[]) => void;
 
 /**
  * Create a logger output that features a constant prefix string.

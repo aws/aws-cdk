@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.MemoryDB"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.memorydb"
+    },
+    "python": {
+      "module": "aws_cdk.aws_memorydb"
+    }
+  }
+}

@@ -1,5 +1,5 @@
+/* eslint-disable import/order */
 import { isVersionBetween } from '../lib/platform-warnings';
-
 
 test.each([
   ['2.1', false],

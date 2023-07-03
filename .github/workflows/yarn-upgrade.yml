@@ -21,6 +21,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
       - name: Locate Yarn cache
         id: yarn-cache
@@ -39,7 +41,9 @@ jobs:
         run: |-
           npm -g install lerna npm-check-updates
       - name: Build Integ Runner
-        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+          npx lerna run build --scope @aws-cdk/integ-runner
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
@@ -63,7 +67,7 @@ jobs:
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
           done
           # Upgrade dependencies at an aws-eks integ test docker image
-          cd packages/@aws-cdk/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
+          cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn upgrade" to run)
       - name: Run "yarn install"
@@ -111,7 +115,7 @@ jobs:
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           # Git commit details
           branch: automation/yarn-upgrade

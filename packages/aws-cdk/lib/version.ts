@@ -56,7 +56,7 @@ export class VersionCheckTTL {
         return true;
       }
       return false;
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 'ENOENT') {
         return true;
       } else {
@@ -117,7 +117,7 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
       const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
       bannerMsg.forEach((e) => print(e));
     }
-  } catch (err) {
+  } catch (err: any) {
     debug(`Could not run version check - ${err.message}`);
   }
 }
