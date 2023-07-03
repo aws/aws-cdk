@@ -21,12 +21,12 @@ import {
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
+import { RegionInfo } from '../../../region-info';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
-import { RegionInfo } from '../../../region-info';
 
 /**
  * The interface for a service.
@@ -676,7 +676,7 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new Error(`at least one alarm name is required when specifying deploymentAlarms, received empty array`);
+        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
@@ -704,21 +704,21 @@ export abstract class BaseService extends Resource
    * The same Alarm Behavior must be used on all deployment alarms. If you specify different AlarmBehavior values in
    * multiple calls to this function, or the Alarm Behavior used here doesn't match the one used in the service
    * constructor, an error will be thrown.
-   * 
+   *
    * If the alarm's metric references the service, you cannot pass `Alarm.alarmName` here. That will cause a circular
    * dependency between the service and its deployment alarm. See this package's README for options to alarm on service
    * metrics, and avoid this circular dependency.
-   * 
+   *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {    
-      throw new Error(`at least one alarm name is required when calling enableDeploymentAlarms(), received empty array`);
+    if (alarmNames.length === 0 ) {
+      throw new Error('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
     }
 
     alarmNames.forEach(alarmName => {
       if (Token.isUnresolved(alarmName)) {
         Annotations.of(this).addInfo(
-          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`
+          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`,
         );
       }
     });
@@ -726,7 +726,7 @@ export abstract class BaseService extends Resource
     if (this.deploymentAlarms?.enable && options?.behavior) {
       if (
         (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
-        (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)  
+        (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
       ) {
         throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
       }
@@ -1366,7 +1366,7 @@ export abstract class BaseService extends Resource
   }
 
   private deploymentAlarmsAvailableInRegion(): boolean {
-    const unsupportedPartitions = ['aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
+    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-us-iso', 'aws-us-iso-b'];
     const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
     if (currentRegion.partition) {
       return !unsupportedPartitions.includes(currentRegion.partition);
