@@ -623,6 +623,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },

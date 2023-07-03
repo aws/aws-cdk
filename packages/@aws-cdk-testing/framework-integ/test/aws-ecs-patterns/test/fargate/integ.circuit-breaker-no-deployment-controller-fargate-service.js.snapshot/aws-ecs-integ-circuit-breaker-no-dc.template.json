@@ -627,6 +627,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "DeploymentCircuitBreaker": {
       "Enable": true,
       "Rollback": true

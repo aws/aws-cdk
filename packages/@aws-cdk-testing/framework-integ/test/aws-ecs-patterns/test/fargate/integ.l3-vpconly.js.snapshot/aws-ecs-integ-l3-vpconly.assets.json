@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "files": {
-    "dac414ae494ecb929014edf8af8f06f7f3fbaced676efdaedebfa8dc7c781ae3": {
+    "d845e450e45a49b916e77011e84302a7cefbadb67c339ea83aaf973b9064a476": {
       "source": {
         "path": "aws-ecs-integ-l3-vpconly.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dac414ae494ecb929014edf8af8f06f7f3fbaced676efdaedebfa8dc7c781ae3.json",
+          "objectKey": "d845e450e45a49b916e77011e84302a7cefbadb67c339ea83aaf973b9064a476.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

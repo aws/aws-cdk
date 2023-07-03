@@ -624,6 +624,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -889,6 +894,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
