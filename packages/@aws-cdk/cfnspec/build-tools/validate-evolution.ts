@@ -65,16 +65,52 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
     return;
   }
 
+  const operations: any[] = [];
+
+  for (const key of disappearedKeys) {
+    const [cfnResource, typeName] = key.split('.');
+    const usages = findTypeUsages(oldSpec, cfnResource, typeName);
+    if (usages.length === 0) {
+      // Might have disappeared, but no one should have been using this
+      continue;
+    }
+    if (newSpec.DeletedPropertyTypes?.[key]) {
+      // Marked as deleted on purpose
+      continue;
+    }
+
+    operations.push({
+      $comment: `If ${cfnResource}.${typeName} was renamed, use this and the 'replace's below. Remove this comment.`,
+      op: 'move',
+      from: `/PropertyTypes/${cfnResource}.<NEW_TYPE_NAME_HERE>`,
+      path: `/PropertyTypes/${cfnResource}.${typeName}`,
+    });
+
+    operations.push(...usages.map((path) => ({
+      op: 'replace',
+      path,
+      value: typeName,
+    })));
+
+    operations.push({
+      $comment: `If ${cfnResource}.${typeName} was deleted on purpose, use this. Remove this comment.`,
+      op: 'add',
+      path: `/DeletedPropertyTypes/${cfnResource}.${typeName}`,
+      value: true,
+    });
+  }
+
   const exampleJsonPatch = {
     patch: {
       description: 'Undoing upstream property type renames of <SERVICE> because <REASON>',
-      operations: disappearedKeys.map((key) => ({
-        op: 'move',
-        from: `/PropertyTypes/${key.split('.')[0]}.<NEW_TYPE_NAME_HERE>`,
-        path: `/PropertyTypes/${key}`,
-      })),
+      operations,
     },
   };
+
+  const now = new Date();
+  const YYYY = `${now.getFullYear()}`;
+  const MM = `0${now.getMonth() + 1}`.slice(-2);
+  const DD = `0${now.getDate()}`.slice(-2);
 
   process.stderr.write([
     '┌───────────────────────────────────────────────────────────────────────────────────────┐',
@@ -91,10 +127,38 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
     '',
     'See what the renames were, check out this PR locally and add a JSON patch file for these types:',
     '',
-    '(Example)',
+    `(Example 600_Renames_${YYYY}${MM}${DD}_patch.json)`,
     '',
     JSON.stringify(exampleJsonPatch, undefined, 2),
     '\n',
   ].join('\n'));
   process.exitCode = 1;
+}
+
+function findTypeUsages(spec: any, cfnResource: string, typeName: string): string[] {
+  const ret = new Array<string>();
+
+  const typesToInspect: Array<readonly [string, string]> = [
+    ...Object.keys(spec.PropertyTypes ?? {})
+      .filter((propTypeName) => propTypeName.startsWith(`${cfnResource}.`))
+      .map((propTypeName) => ['PropertyTypes', propTypeName] as const),
+    ...spec.ResourceTypes?.[cfnResource] ? [['ResourceTypes', cfnResource] as const] : [],
+  ];
+
+  for (const [topKey, typeKey] of typesToInspect) {
+    const propType = spec[topKey][typeKey];
+
+    for (const innerKey of ['Properties', 'Attributes']) {
+
+      for (const [propName, propDef] of Object.entries(propType?.[innerKey] ?? {})) {
+        for (const [fieldName, fieldType] of Object.entries(propDef as any)) {
+          if (fieldType === typeName) {
+            ret.push(`/${topKey}/${typeKey}/${innerKey}/${propName}/${fieldName}`);
+          }
+        }
+      }
+    }
+  }
+
+  return ret;
 }
