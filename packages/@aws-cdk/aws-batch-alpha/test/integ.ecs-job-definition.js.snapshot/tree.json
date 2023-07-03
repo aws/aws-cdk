@@ -868,8 +868,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSJobDefn": {
@@ -968,7 +968,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1021,8 +1021,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsFargateContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSFargateJobDefn": {
@@ -1106,7 +1106,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1255,8 +1255,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSDockerJobDefn": {
@@ -1307,7 +1307,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
