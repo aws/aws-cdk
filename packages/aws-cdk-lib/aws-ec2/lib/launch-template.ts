@@ -1,4 +1,3 @@
-
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
