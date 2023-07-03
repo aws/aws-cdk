@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f26622ca3477134f226bcbfd161988e8b7bfd0eb4a33cac70da555408ccfbdb7.zip"
+     "S3Key": "2575608c9455922c199396dd056f7479bb172f5c6068cd093f6d061160f48cee.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -827,7 +827,7 @@
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
    "ap-south-2": {
-    "FirehoseCidrBlock": "18.60.192.128/27/27"
+    "FirehoseCidrBlock": "18.60.192.128/27"
    },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
@@ -860,7 +860,7 @@
     "FirehoseCidrBlock": "15.161.135.128/27"
    },
    "eu-south-2": {
-    "FirehoseCidrBlock": "18.100.194.0/26/27"
+    "FirehoseCidrBlock": "18.100.71.96/27"
    },
    "eu-west-1": {
     "FirehoseCidrBlock": "52.19.239.192/27"
@@ -872,7 +872,7 @@
     "FirehoseCidrBlock": "35.180.1.96/27"
    },
    "me-central-1": {
-    "FirehoseCidrBlock": "3.28.159.64/26/27"
+    "FirehoseCidrBlock": "3.28.159.32/27"
    },
    "me-south-1": {
     "FirehoseCidrBlock": "15.185.91.0/27"
