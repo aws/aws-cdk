@@ -2,7 +2,7 @@
 import { exec as runCli } from 'aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
-import { SharedOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions, StackActivityProgress } from './commands';
+import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress } from './commands';
 
 /**
  * AWS CDK CLI operations
@@ -17,6 +17,11 @@ export interface IAwsCdkCli {
    * cdk synth
    */
   synth(options?: SynthOptions): Promise<void>;
+
+  /**
+   * cdk bootstrap
+   */
+  bootstrap(options?: BootstrapOptions): Promise<void>;
 
   /**
    * cdk deploy
@@ -162,6 +167,34 @@ export class AwsCdkCli implements IAwsCdkCli {
 
     await this.exec(['synth', ...synthCommandArgs]);
   }
+
+  /**
+   * cdk bootstrap
+   */
+    public async bootstrap(options: BootstrapOptions = {}) {
+      const bootstrapCommandArgs: string[] = [
+        ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
+        ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
+        ...renderBooleanArg('force', options.force),
+        ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
+        ...renderBooleanArg('show-template', options.showTemplate),
+        ...options.template ? ['--template', options.template] : [],
+        ...renderBooleanArg('terminationProtection', options.terminationProtection),
+        ...renderBooleanArg('example-permissions-boundary', options.examplePermissionsBoundary),
+        ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
+        ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
+        ...renderBooleanArg('execute', options.execute),
+        ...options.qualifier ? ['--qualifier', options.qualifier] : [],
+        ...options.trust ? ['--qualifier', options.trust] : [],
+        ...options.trustForLookup ? ['--qualifier', options.trustForLookup] : [],
+        ...options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : [],
+        ...options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : [],
+        ...options.publicAccessBlockConfiguration ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration] : [],
+        ...this.createDefaultArguments(options),
+      ];
+  
+      await this.exec(['bootstrap', ...bootstrapCommandArgs]);
+    }
 
   /**
    * cdk deploy
