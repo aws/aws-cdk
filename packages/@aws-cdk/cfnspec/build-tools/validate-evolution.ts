@@ -74,8 +74,13 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
       // Might have disappeared, but no one should have been using this
       continue;
     }
+    if (newSpec.DeletedPropertyTypes?.[key]) {
+      // Marked as deleted on purpose
+      continue;
+    }
 
     operations.push({
+      $comment: `If ${cfnResource}.${typeName} was renamed, use this and the 'replace's below. Remove this comment.`,
       op: 'move',
       from: `/PropertyTypes/${cfnResource}.<NEW_TYPE_NAME_HERE>`,
       path: `/PropertyTypes/${cfnResource}.${typeName}`,
@@ -86,6 +91,13 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
       path,
       value: typeName,
     })));
+
+    operations.push({
+      $comment: `If ${cfnResource}.${typeName} was deleted on purpose, use this. Remove this comment.`,
+      op: 'add',
+      path: `/DeletedPropertyTypes/${cfnResource}.${typeName}`,
+      value: true,
+    });
   }
 
   const exampleJsonPatch = {
