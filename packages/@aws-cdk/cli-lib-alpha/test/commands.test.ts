@@ -325,7 +325,7 @@ describe('list', () => {
 
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['bootstrap'],
+      ['bootstrap', '--all'],
       expect.anything(),
     );
   });
