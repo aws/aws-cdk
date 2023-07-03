@@ -1158,7 +1158,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (props.adotInstrumentation.layerVersion instanceof AdotLambdaLayerPythonSdkVersion
-      && props.adotInstrumentation.execWrapper != AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+      && props.adotInstrumentation.execWrapper !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
       throw new Error('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER');
     }
 
