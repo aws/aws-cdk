@@ -640,7 +640,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["FargateNlbServiceTaskDefTaskRoleD95D755C"]
+   "DependsOn": [
+    "FargateNlbServiceTaskDefTaskRoleD95D755C"
+   ]
   },
   "FargateAlbServiceLBA7128551": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -941,7 +943,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["FargateAlbServiceTaskDefTaskRoleC9259C01"]
+   "DependsOn": [
+    "FargateAlbServiceTaskDefTaskRoleC9259C01"
+   ]
   },
   "FargateAlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateAlbServiceLBSecurityGroup0327D42E20157F514694": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -963,7 +967,9 @@
     },
     "ToPort": 2015
    },
-   "DependsOn": ["FargateAlbServiceTaskDefTaskRoleC9259C01"]
+   "DependsOn": [
+    "FargateAlbServiceTaskDefTaskRoleC9259C01"
+   ]
   }
  },
  "Outputs": {

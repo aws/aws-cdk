@@ -223,9 +223,9 @@ describe('external service', () => {
       taskDefinition,
       deploymentAlarms: {
         alarmNames: [myAlarm.alarmName],
-      }
+      },
     });
-    
+
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         Alarms: {

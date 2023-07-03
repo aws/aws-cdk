@@ -709,7 +709,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["myServiceTaskDefTaskRole1C1DE6CC"]
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   }
  },
  "Outputs": {

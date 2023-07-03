@@ -704,6 +704,8 @@
       ]
      ]
     },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs",
     "RoleARN": {
      "Fn::Join": [
       "",
@@ -719,9 +721,7 @@
        ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ]
      ]
-    },
-    "ScalableDimension": "ecs:service:DesiredCount",
-    "ServiceNamespace": "ecs"
+    }
    },
    "DependsOn": [
     "QueueProcessingServiceQueueProcessingTaskDefTaskRoleDefaultPolicyAE808B19",

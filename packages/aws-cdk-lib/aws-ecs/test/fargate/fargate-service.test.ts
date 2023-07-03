@@ -962,22 +962,22 @@ describe('fargate service', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-  
+
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
-  
+
       const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
-  
+
       new ecs.FargateService(stack, 'ExternalService', {
         cluster,
         taskDefinition,
         deploymentAlarms: {
           alarmNames: [myAlarm.alarmName],
-        }
+        },
       });
-      
+
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         DeploymentConfiguration: {
           Alarms: {

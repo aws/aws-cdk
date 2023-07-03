@@ -1258,8 +1258,6 @@ describe('ec2 service', () => {
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
     });
 
-
-
     test('errors if daemon and desiredCount both specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2116,7 +2114,7 @@ describe('ec2 service', () => {
       }).not.toThrow();
     });
 
-    describe('with deployment alarms' , () => {
+    describe('with deployment alarms', () => {
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
       let taskDefinition: ecs.TaskDefinition;
@@ -2287,7 +2285,7 @@ describe('ec2 service', () => {
           taskDefinition,
           deploymentAlarms: {
             alarmNames: [myAlarm.alarmName],
-            behavior: AlarmBehavior.ROLLBACK_ON_ALARM
+            behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
           },
         });
         expect(() => {
@@ -2298,7 +2296,7 @@ describe('ec2 service', () => {
           taskDefinition,
           deploymentAlarms: {
             alarmNames: [myAlarm.alarmName],
-            behavior: AlarmBehavior.FAIL_ON_ALARM
+            behavior: AlarmBehavior.FAIL_ON_ALARM,
           },
         });
         expect(() => {
@@ -2309,11 +2307,12 @@ describe('ec2 service', () => {
       test('empty array of alarm names is not allowed', () => {
         expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
-          cluster,
-          taskDefinition,
-          deploymentAlarms: {
-            alarmNames: [],
-          }});
+            cluster,
+            taskDefinition,
+            deploymentAlarms: {
+              alarmNames: [],
+            },
+          });
         }).toThrow('at least one alarm name is required when specifying deploymentAlarms, received empty array');
 
         const service = new ecs.Ec2Service(stack, 'AnotherEc2Service', {
@@ -2343,20 +2342,20 @@ describe('ec2 service', () => {
       test('no deployment alarms configured in gov cloud', () => {
         const app = new cdk.App();
         const govCloudStack = new cdk.Stack(app, 'GovStack', {
-          env: { region: 'us-gov-east-1'},
+          env: { region: 'us-gov-east-1' },
         });
         const vpc = new ec2.Vpc(govCloudStack, 'MyVpc', {});
-        const cluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
+        const gcCluster = new ecs.Cluster(govCloudStack, 'EcsCluster', { vpc });
         addDefaultCapacityProvider(cluster, govCloudStack, vpc);
-        const taskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
+        const gcTaskDefinition = new ecs.Ec2TaskDefinition(govCloudStack, 'Ec2TaskDef');
 
         taskDefinition.addContainer('web', {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
           memoryLimitMiB: 512,
         });
         new ecs.Ec2Service(govCloudStack, 'Ec2Service', {
-          cluster,
-          taskDefinition,
+          cluster: gcCluster,
+          taskDefinition: gcTaskDefinition,
         });
 
         Template.fromStack(govCloudStack).hasResourceProperties('AWS::ECS::Service', {
@@ -2370,8 +2369,8 @@ describe('ec2 service', () => {
        * This section of tests test all combinations of the following possible
        * alarm names and metrics. Most combinations work just fine, some
        * combinations could cause a circular dependency and will have an info
-       * annotation for the user. 
-       * NAME: 
+       * annotation for the user.
+       * NAME:
        *   - name is undefined, so it is a token referencing its own logical id
        *   - contains a token referencing the service
        *   - contains a token referencing another resource
@@ -2421,7 +2420,7 @@ describe('ec2 service', () => {
         });
         test ('alarm name is undefined and alarm metric is hardcoded', () => {
           // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
-          const metric = new cloudwatch.Metric({namespace: 'AWS/ECS', metricName: 'CustomMetric'});
+          const metric = new cloudwatch.Metric({ namespace: 'AWS/ECS', metricName: 'CustomMetric' });
           const alarm = new cloudwatch.Alarm(stack, 'MyAlarm', {
             metric,
             evaluationPeriods: 5,
@@ -2433,7 +2432,7 @@ describe('ec2 service', () => {
         test ('alarm name references the service', () => {
           // This configuration will fail deployment
           const alarmName = `${service.serviceName}Alarm`;
-          const metric = new cloudwatch.Metric({namespace: 'CustomNamespace', metricName: 'CustomMetric'});
+          const metric = new cloudwatch.Metric({ namespace: 'CustomNamespace', metricName: 'CustomMetric' });
           new cloudwatch.Alarm(stack, 'MyAlarm', {
             alarmName,
             metric,
@@ -2472,7 +2471,7 @@ describe('ec2 service', () => {
         test ('alarm name references other resource and alarm metric is hardcoded', () => {
           // This will succeed deployment, but we still have an info message because we can't tell it apart from scenarios that will fail deployment
           const alarmName = `${cluster.clusterName}Alarm`;
-          const metric = new cloudwatch.Metric({namespace: 'CustomNamespace', metricName: 'CustomMetric'});
+          const metric = new cloudwatch.Metric({ namespace: 'CustomNamespace', metricName: 'CustomMetric' });
           new cloudwatch.Alarm(stack, 'MyAlarm', {
             alarmName,
             metric,
@@ -2511,7 +2510,7 @@ describe('ec2 service', () => {
         test ('alarm name and metric are hardcoded', () => {
           // This will succeed deployment, and we know this during synthesis, so there is no info Annotation about circular dependency errors
           const alarmName = 'MyAlarm';
-          const metric = new cloudwatch.Metric({namespace: 'CustomNamespace', metricName: 'CustomMetric'});
+          const metric = new cloudwatch.Metric( { namespace: 'CustomNamespace', metricName: 'CustomMetric' } );
           new cloudwatch.Alarm(stack, 'MyAlarm', {
             alarmName,
             metric,

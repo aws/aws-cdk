@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "integ-deployment-alarms.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17f0ccf38a53361f8e468a95b481665e108b96a74a065707d886fa41295e326e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/358dc87882ec27928f43d7c24603937d46e4ad79dfe2c2a8369c7e110a2e030a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,6 +171,24 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/integ-deployment-alarms/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/integ-deployment-alarms/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/integ-deployment-alarms/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
         "/integ-deployment-alarms/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -306,10 +324,7 @@
         "/integ-deployment-alarms/MyMetricAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyMetricAlarmF8571CCA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyMetricAlarmF8571CCA"
           }
         ],
         "/integ-deployment-alarms/BootstrapVersion": [
@@ -322,15 +337,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "EC2ServiceManagedAlarm14D6F0E17": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EC2ServiceManagedAlarm14D6F0E17",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
