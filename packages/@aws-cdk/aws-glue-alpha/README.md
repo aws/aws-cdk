@@ -27,6 +27,8 @@ The `glue.JobExecutable` allows you to specify the type of job, the language to 
 
 `glue.Code` allows you to refer to the different code assets required by the job, either from an existing S3 location or from a local file path.
 
+`glue.ExecutionClass` allows you to specify `FLEX` or `STANDARD`. `FLEX` is appropriate for non-urgent jobs such as pre-production jobs, testing, and one-time data loads.
+
 ### Spark Jobs
 
 These jobs run in an Apache Spark environment managed by AWS Glue.

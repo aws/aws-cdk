@@ -50,6 +50,7 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       quiet: true,
       logStreamPrefix: 'EtlJob',
     },
+    executionClass: glue.ExecutionClass.STANDARD,
     tags: {
       key: 'value',
     },
@@ -123,6 +124,18 @@ new glue.Job(stack, 'RayJob', {
   tags: {
     key: 'value',
   },
+});
+
+new glue.Job(stack, 'EtlJobWithFLEX', {
+  jobName: 'EtlJobWithFLEX',
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V3_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script,
+  }),
+  workerType: glue.WorkerType.G_1X,
+  workerCount: 10,
+  executionClass: glue.ExecutionClass.FLEX,
 });
 
 app.synth();
