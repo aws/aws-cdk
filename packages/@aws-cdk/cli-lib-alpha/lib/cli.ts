@@ -173,17 +173,17 @@ export class AwsCdkCli implements IAwsCdkCli {
    */
     public async bootstrap(options: BootstrapOptions = {}) {
       const bootstrapCommandArgs: string[] = [
-        ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-        ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
         ...renderBooleanArg('force', options.force),
-        ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
         ...renderBooleanArg('show-template', options.showTemplate),
-        ...options.template ? ['--template', options.template] : [],
         ...renderBooleanArg('terminationProtection', options.terminationProtection),
         ...renderBooleanArg('example-permissions-boundary', options.examplePermissionsBoundary),
-        ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
         ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
         ...renderBooleanArg('execute', options.execute),
+        ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
+        ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
+        ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
+        ...options.template ? ['--template', options.template] : [],
+        ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
         ...options.qualifier ? ['--qualifier', options.qualifier] : [],
         ...options.trust ? ['--qualifier', options.trust] : [],
         ...options.trustForLookup ? ['--qualifier', options.trustForLookup] : [],
