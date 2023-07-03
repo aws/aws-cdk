@@ -737,6 +737,9 @@
    "ap-southeast-3": {
     "value": "nodejs16.x"
    },
+   "ap-southeast-4": {
+    "value": "nodejs16.x"
+   },
    "ca-central-1": {
     "value": "nodejs16.x"
    },
@@ -837,6 +840,9 @@
    },
    "ap-southeast-3": {
     "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
