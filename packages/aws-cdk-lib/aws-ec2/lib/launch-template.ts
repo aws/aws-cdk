@@ -412,7 +412,9 @@ export interface LaunchTemplateProps {
   readonly associatePublicIpAddress?: boolean;
 
   /**
-   * @default
+   * The instance profile used to pass role information to EC2 instances.
+   *
+   * @default - No instance profile
    */
   readonly instanceProfile?: iam.IInstanceProfile;
 }
@@ -779,6 +781,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
     if (this.role) {
       resource.node.addDependency(this.role);
+    } else if (props.instanceProfile?.role) {
+      resource.node.addDependency(props.instanceProfile.role);
     }
 
     Tags.of(this).add(NAME_TAG, this.node.path);
