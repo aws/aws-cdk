@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from '../../cx-api';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
@@ -141,10 +141,10 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can create launch template from launch config props when @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation is set', () => {
+  test('can create launch template from launch config props when @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig is set', () => {
     // GIVEN
     const stack = getTestStack();
-    stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
     const vpc = mockVpc(stack);
     const userData = ec2.UserData.forLinux();
     userData.addCommands('it me!');
@@ -322,10 +322,10 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can add security group to a launch template when @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation is set', () => {
+  test('can add security group to a launch template when @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig is set', () => {
     // GIVEN
     const stack = getTestStack();
-    stack.node.setContext(AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
     const vpc = mockVpc(stack);
 
     // WHEN

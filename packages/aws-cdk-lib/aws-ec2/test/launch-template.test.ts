@@ -446,10 +446,10 @@ describe('LaunchTemplate', () => {
     });
   });
 
-  describe('feature flag @aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation', () => {
+  describe('feature flag @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig', () => {
     test('Given machineImage (Linux)', () => {
       // WHEN
-      stack.node.setContext(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+      stack.node.setContext(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
       const template = new LaunchTemplate(stack, 'Template', {
         machineImage: new AmazonLinuxImage(),
       });
@@ -468,7 +468,7 @@ describe('LaunchTemplate', () => {
 
     test('Given machineImage (Windows)', () => {
       // WHEN
-      stack.node.setContext(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG, true);
+      stack.node.setContext(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
       const template = new LaunchTemplate(stack, 'Template', {
         machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
       });

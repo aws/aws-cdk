@@ -2,7 +2,6 @@ import { Template } from '../../assertions';
 import { Stack, Token, App, CfnResource } from '../../core';
 import { InstanceProfile, Role, ServicePrincipal } from '../lib';
 
-/* eslint-disable no-console */
 describe('IAM instance profiles', () => {
   test('default instance profile', () => {
     // GIVEN
