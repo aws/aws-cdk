@@ -1957,14 +1957,14 @@ describe('EBS Options Configurations', () => {
         volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
       },
     };
-    new Domain(stack, `Domain`, domainProps);
+    new Domain(stack, 'Domain', domainProps);
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       EBSOptions: {
         VolumeSize: 30,
         Iops: 500,
         VolumeType: 'io1',
-      }
+      },
     });
   });
 
@@ -1977,14 +1977,14 @@ describe('EBS Options Configurations', () => {
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
       },
     };
-    new Domain(stack, `Domain`, domainProps);
+    new Domain(stack, 'Domain', domainProps);
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       EBSOptions: {
         VolumeSize: 30,
         Throughput: 125,
         VolumeType: 'gp3',
-      }
+      },
     });
   });
 
@@ -1998,7 +1998,7 @@ describe('EBS Options Configurations', () => {
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
       },
     };
-    new Domain(stack, `Domain`, domainProps);
+    new Domain(stack, 'Domain', domainProps);
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       EBSOptions: {
@@ -2006,7 +2006,7 @@ describe('EBS Options Configurations', () => {
         iops: 3000,
         Throughput: 125,
         VolumeType: 'gp3',
-      }
+      },
     });
   });
 
@@ -2034,9 +2034,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      'General Purpose EBS volumes can not be used with Iops or Throughput configuration'
-    );
+    }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2046,9 +2044,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      'General Purpose EBS volumes can not be used with Iops or Throughput configuration'
-    );
+    }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2060,9 +2056,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`.'
-    );
+    }).toThrow('`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2074,9 +2068,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      '`io1` volumes iops must be between 100 and 64000.'
-    );
+    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2088,9 +2080,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      '`io1` volumes iops must be between 100 and 64000.'
-    );
+    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2116,9 +2106,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      '`gp3` volumes iops must be between 3000 and 16000.'
-    );
+    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2144,9 +2132,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      'throughput property takes a minimum of 125 and a maximum of 1000.'
-    );
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
   });
 });
 

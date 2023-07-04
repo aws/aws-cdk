@@ -1429,7 +1429,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       if (
         volumeType &&
         [
-          ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD
+          ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
         ].includes(volumeType) &&
         !props.ebs?.iops
       ) {
@@ -1459,7 +1459,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         if (props.ebs?.iops < Min || props.ebs?.iops > Max) {
           throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
         }
-  
+
         // Enforce maximum ratio of IOPS/GiB:
         // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
         const maximumRatios: { [key: string]: number } = {};
@@ -1470,7 +1470,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         if (props.ebs?.volumeSize && (props.ebs?.iops > maximumRatio * props.ebs?.volumeSize)) {
           throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
         }
-  
+
         const maximumThroughputRatios: { [key: string]: number } = {};
         maximumThroughputRatios[ec2.EbsDeviceVolumeType.GP3] = 0.25;
         const maximumThroughputRatio = maximumThroughputRatios[volumeType];
