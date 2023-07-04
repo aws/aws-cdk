@@ -26537,7 +26537,7 @@
         "AbortConfig": "The criteria that determine when and how a job abort takes place.",
         "Description": "A description of the job template.",
         "Document": "The job document.\n\nRequired if you don't specify a value for `documentSource` .",
-        "DocumentSource": "An S3 link to the job document to use in the template. Required if you don't specify a value for `document` .\n\n> If the job document resides in an S3 bucket, you must use a placeholder link when specifying the document.\n> \n> The placeholder link is of the following form:\n> \n> `${aws:iot:s3-presigned-url:https://s3.amazonaws.com/ *bucket* / *key* }`\n> \n> where *bucket* is your bucket name and *key* is the object in the bucket to which you are linking.",
+        "DocumentSource": "An S3 link, or S3 object URL, to the job document. The link is an Amazon S3 object URL and is required if you don't specify a value for `document` .\n\nFor example, `--document-source https://s3. *region-code* .amazonaws.com/example-firmware/device-firmware.1.0`\n\nFor more information, see [Methods for accessing a bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html) .",
         "JobArn": "The ARN of the job to use as the basis for the job template.",
         "JobExecutionsRetryConfig": "Allows you to create the criteria to retry a job.",
         "JobExecutionsRolloutConfig": "Allows you to create a staged rollout of a job.",
@@ -50540,9 +50540,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh properties of a dataset.",
       "properties": {
-        "RefreshConfiguration": ""
+        "RefreshConfiguration": "The refresh configuration for a dataset."
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -50578,7 +50578,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": ""
+        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50624,9 +50624,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "",
+      "description": "The incremental refresh configuration for a dataset.",
       "properties": {
-        "LookbackWindow": ""
+        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50701,18 +50701,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "",
+      "description": "The lookback window setup of an incremental refresh configuration.",
       "properties": {
-        "ColumnName": "",
-        "Size": "",
-        "SizeUnit": ""
+        "ColumnName": "The name of the lookback window column.",
+        "Size": "The lookback window column size.",
+        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "",
+        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50729,10 +50729,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "",
+      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
       "properties": {
-        "NewDefaultValues": "",
-        "NewParameterName": "",
+        "NewDefaultValues": "The new default values for the parameter.",
+        "NewParameterName": "The new name for the parameter.",
         "ParameterName": ""
       }
     },
@@ -50754,9 +50754,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh configuration of a dataset.",
       "properties": {
-        "IncrementalRefresh": ""
+        "IncrementalRefresh": "The incremental refresh for the dataset."
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -57415,14 +57415,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57430,18 +57430,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57450,7 +57450,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57460,15 +57460,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -60788,7 +60788,7 @@
     },
     "AWS::SageMaker::Endpoint.CapacitySize": {
       "attributes": {},
-      "description": "Specifies the endpoint capacity to activate for production.",
+      "description": "Specifies the type and size of the endpoint capacity to activate for a blue/green deployment, a rolling deployment, or a rollback strategy. You can specify your batches as either instance count or the overall percentage or your fleet.\n\nFor a rollback strategy, if you don't specify the fields in this object, or if you set the `Value` to 100%, then SageMaker uses a blue/green rollback strategy and rolls all traffic back to the blue fleet.",
       "properties": {
         "Type": "Specifies the endpoint capacity type.\n\n- `INSTANCE_COUNT` : The endpoint activates based on the number of instances.\n- `CAPACITY_PERCENT` : The endpoint activates based on the specified percentage of capacity.",
         "Value": "Defines the capacity size, either as a number of instances or a capacity percentage."
@@ -63169,7 +63169,7 @@
         "IsTerminal": "Specifies whether a rule is the last to be applied with respect to a finding that matches the rule criteria. This is useful when a finding matches the criteria for multiple rules, and each rule has different actions. If the value of this field is set to `true` for a rule, Security Hub applies the rule action to a finding that matches the rule criteria and doesn't evaluate other rules for the finding. The default value of this field is `false` .",
         "RuleName": "The name of the rule.",
         "RuleOrder": "An integer ranging from 1 to 1000 that represents the order in which the rule action is applied to findings. Security Hub applies rules with lower values for this parameter first.",
-        "RuleStatus": "Whether the rule is active after it is created. If this parameter is equal to `ENABLED` , Security Hub will apply the rule to findings and finding updates after the rule is created.",
+        "RuleStatus": "Whether the rule is active after it is created. If this parameter is equal to `ENABLED` , Security Hub applies the rule to findings and finding updates after the rule is created.",
         "Tags": "User-defined tags that help you label the purpose of a rule."
       }
     },
@@ -63331,7 +63331,7 @@
       },
       "description": "The `AWS::SecurityHub::Standard` resource specifies the enablement of a security standard. The standard is identified by the `StandardsArn` property. To view a list of Security Hub standards and their Amazon Resource Names (ARNs), use the [`DescribeStandards`](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_DescribeStandards.html) API operation.\n\nYou must create a separate `AWS::SecurityHub::Standard` resource for each standard that you want to enable.\n\nFor more information about Security Hub standards, see [Security Hub standards reference](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference.html) in the *AWS Security Hub User Guide* .",
       "properties": {
-        "DisabledStandardsControls": "Specifies whether a control is enabled or disabled in a specified standard.",
+        "DisabledStandardsControls": "Specifies which controls are to be disabled in a standard.",
         "StandardsArn": "The ARN of the standard that you want to enable. To view a list of available Security Hub standards and their ARNs, use the [`DescribeStandards`](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_DescribeStandards.html) API operation."
       }
     },
@@ -63339,7 +63339,7 @@
       "attributes": {},
       "description": "Provides details about an individual security control. For a list of Security Hub controls, see [Security Hub controls reference](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-controls-reference.html) in the *AWS Security Hub User Guide* .",
       "properties": {
-        "Reason": "A user-defined reason for changing a control's enablement status in a specified standard.",
+        "Reason": "A user-defined reason for changing a control's enablement status in a specified standard. If you are disabling a control, then this property is required.",
         "StandardsControlArn": "The Amazon Resource Name (ARN) of the control."
       }
     },
