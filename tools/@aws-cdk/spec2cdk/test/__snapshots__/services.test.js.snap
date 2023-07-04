@@ -14313,6 +14313,11 @@ export class CfnKeyPair extends cdk.CfnResource implements cdk.IInspectable, cdk
   public readonly attrKeyPairId: string;
 
   /**
+   * The format of the key pair.
+   */
+  public keyFormat?: string;
+
+  /**
    * A unique name for the key pair.
    */
   public keyName: string;
@@ -14352,6 +14357,7 @@ export class CfnKeyPair extends cdk.CfnResource implements cdk.IInspectable, cdk
 
     this.attrKeyFingerprint = cdk.Token.asString(this.getAtt("KeyFingerprint", cdk.ResolutionTypeHint.STRING));
     this.attrKeyPairId = cdk.Token.asString(this.getAtt("KeyPairId", cdk.ResolutionTypeHint.STRING));
+    this.keyFormat = props.keyFormat;
     this.keyName = props.keyName;
     this.keyType = props.keyType;
     this.publicKeyMaterial = props.publicKeyMaterial;
@@ -14363,6 +14369,7 @@ export class CfnKeyPair extends cdk.CfnResource implements cdk.IInspectable, cdk
 
   protected get cfnProperties(): Record<string, any> {
     return {
+      "keyFormat": this.keyFormat,
       "keyName": this.keyName,
       "keyType": this.keyType,
       "publicKeyMaterial": this.publicKeyMaterial,
@@ -14393,6 +14400,16 @@ export class CfnKeyPair extends cdk.CfnResource implements cdk.IInspectable, cdk
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-keypair.html
  */
 export interface CfnKeyPairProps {
+  /**
+   * The format of the key pair.
+   *
+   * Default: \`pem\`
+   *
+   * @default - "pem"
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-keypair.html#cfn-ec2-keypair-keyformat
+   */
+  readonly keyFormat?: string;
+
   /**
    * A unique name for the key pair.
    *
@@ -14445,6 +14462,7 @@ function CfnKeyPairPropsValidator(properties: any): cdk.ValidationResult {
   if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
     errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
   }
+  errors.collect(cdk.propertyValidator("keyFormat", cdk.validateString)(properties.keyFormat));
   errors.collect(cdk.propertyValidator("keyName", cdk.requiredValidator)(properties.keyName));
   errors.collect(cdk.propertyValidator("keyName", cdk.validateString)(properties.keyName));
   errors.collect(cdk.propertyValidator("keyType", cdk.validateString)(properties.keyType));
@@ -14458,6 +14476,7 @@ function convertCfnKeyPairPropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnKeyPairPropsValidator(properties).assertSuccess();
   return {
+    "KeyFormat": cdk.stringToCloudFormation(properties.keyFormat),
     "KeyName": cdk.stringToCloudFormation(properties.keyName),
     "KeyType": cdk.stringToCloudFormation(properties.keyType),
     "PublicKeyMaterial": cdk.stringToCloudFormation(properties.publicKeyMaterial),
@@ -14475,6 +14494,7 @@ function CfnKeyPairPropsFromCloudFormation(properties: any): cfn_parse.FromCloud
     return new cfn_parse.FromCloudFormationResult(properties);
   }
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnKeyPairProps>();
+  ret.addPropertyResult("keyFormat", "KeyFormat", (properties.KeyFormat != null ? cfn_parse.FromCloudFormation.getString(properties.KeyFormat) : undefined));
   ret.addPropertyResult("keyName", "KeyName", (properties.KeyName != null ? cfn_parse.FromCloudFormation.getString(properties.KeyName) : undefined));
   ret.addPropertyResult("keyType", "KeyType", (properties.KeyType != null ? cfn_parse.FromCloudFormation.getString(properties.KeyType) : undefined));
   ret.addPropertyResult("publicKeyMaterial", "PublicKeyMaterial", (properties.PublicKeyMaterial != null ? cfn_parse.FromCloudFormation.getString(properties.PublicKeyMaterial) : undefined));
@@ -14538,16 +14558,18 @@ export class CfnLaunchTemplate extends cdk.CfnResource implements cdk.IInspectab
   public readonly attrDefaultVersionNumber: string;
 
   /**
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
    * The latest version of the launch template, such as \`5\` .
    *
    * @cloudformationAttribute LatestVersionNumber
    */
   public readonly attrLatestVersionNumber: string;
+
+  /**
+   * The ID of the launch template.
+   *
+   * @cloudformationAttribute LaunchTemplateId
+   */
+  public readonly attrLaunchTemplateId: string;
 
   /**
    * The information for the launch template.
@@ -14583,8 +14605,8 @@ export class CfnLaunchTemplate extends cdk.CfnResource implements cdk.IInspectab
     cdk.requireProperty(props, "launchTemplateData", this);
 
     this.attrDefaultVersionNumber = cdk.Token.asString(this.getAtt("DefaultVersionNumber", cdk.ResolutionTypeHint.STRING));
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
     this.attrLatestVersionNumber = cdk.Token.asString(this.getAtt("LatestVersionNumber", cdk.ResolutionTypeHint.STRING));
+    this.attrLaunchTemplateId = cdk.Token.asString(this.getAtt("LaunchTemplateId", cdk.ResolutionTypeHint.STRING));
     this.launchTemplateData = props.launchTemplateData;
     this.launchTemplateName = props.launchTemplateName;
     this.tagSpecifications = props.tagSpecifications;
@@ -30601,16 +30623,28 @@ export class CfnSubnet extends cdk.CfnResource implements cdk.IInspectable, cdk.
   }
 
   /**
-   * The Availability Zone of this subnet. For example:
-   *
-   * \`{ "Fn::GetAtt" : [ "mySubnet", "AvailabilityZone" ] }\`
+   * The Availability Zone of this subnet. For example, \`us-east-1a\` .
    *
    * @cloudformationAttribute AvailabilityZone
    */
   public readonly attrAvailabilityZone: string;
 
   /**
-   * The IPv6 CIDR blocks that are associated with the subnet, such as \`[ 2001:db8:1234:1a00::/64 ]\` .
+   * The Availability Zone ID of this subnet. For example, \`use1-az1\` .
+   *
+   * @cloudformationAttribute AvailabilityZoneId
+   */
+  public readonly attrAvailabilityZoneId: string;
+
+  /**
+   * The IPv4 CIDR blocks that are associated with the subnet.
+   *
+   * @cloudformationAttribute CidrBlock
+   */
+  public readonly attrCidrBlock: string;
+
+  /**
+   * The IPv6 CIDR blocks that are associated with the subnet.
    *
    * @cloudformationAttribute Ipv6CidrBlocks
    */
@@ -30723,6 +30757,8 @@ export class CfnSubnet extends cdk.CfnResource implements cdk.IInspectable, cdk.
     cdk.requireProperty(props, "vpcId", this);
 
     this.attrAvailabilityZone = cdk.Token.asString(this.getAtt("AvailabilityZone", cdk.ResolutionTypeHint.STRING));
+    this.attrAvailabilityZoneId = cdk.Token.asString(this.getAtt("AvailabilityZoneId", cdk.ResolutionTypeHint.STRING));
+    this.attrCidrBlock = cdk.Token.asString(this.getAtt("CidrBlock", cdk.ResolutionTypeHint.STRING));
     this.attrIpv6CidrBlocks = cdk.Token.asList(this.getAtt("Ipv6CidrBlocks", cdk.ResolutionTypeHint.STRING_LIST));
     this.attrNetworkAclAssociationId = cdk.Token.asString(this.getAtt("NetworkAclAssociationId", cdk.ResolutionTypeHint.STRING));
     this.attrOutpostArn = cdk.Token.asString(this.getAtt("OutpostArn", cdk.ResolutionTypeHint.STRING));
@@ -36983,7 +37019,7 @@ export namespace CfnVerifiedAccessInstance {
     readonly cloudWatchLogs?: CfnVerifiedAccessInstance.CloudWatchLogsProperty | cdk.IResolvable;
 
     /**
-     * Include claims from trust providers in Verified Access logs.
+     * Include trust data sent by trust providers into the logs.
      *
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-verifiedaccessinstance-verifiedaccesslogs.html#cfn-ec2-verifiedaccessinstance-verifiedaccesslogs-includetrustcontext
      */
@@ -36997,7 +37033,9 @@ export namespace CfnVerifiedAccessInstance {
     readonly kinesisDataFirehose?: cdk.IResolvable | CfnVerifiedAccessInstance.KinesisDataFirehoseProperty;
 
     /**
-     * Select log version for Verified Access logs.
+     * The logging version to use.
+     *
+     * Valid values: \`ocsf-0.1\` | \`ocsf-1.0.0-rc.2\`
      *
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-verifiedaccessinstance-verifiedaccesslogs.html#cfn-ec2-verifiedaccessinstance-verifiedaccesslogs-logversion
      */
