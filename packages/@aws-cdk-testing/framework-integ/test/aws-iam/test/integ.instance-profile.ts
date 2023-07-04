@@ -28,7 +28,7 @@ const instanceProfileImportedByArnWithPath = InstanceProfile.fromInstanceProfile
 );
 const instanceProfileImportedByArnPathMultiple = InstanceProfile.fromInstanceProfileArn(
   stack,
-  'ImportedProfileByArnWithPath',
+  'ImportedProfileByArnWithPathMultiple',
   'arn:aws:iam::123456789012:instance-profile/p/a/t/h/MyInstanceProfile',
 );
 const instanceProfileImportedByAttributesWithRole = InstanceProfile.fromInstanceProfileAttributes(stack, 'AttributesWithRole', {
