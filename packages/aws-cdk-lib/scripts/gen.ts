@@ -22,6 +22,7 @@ async function main() {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
     scopeMapPath,
+    cdkResourceSchemaPath: path.resolve(__dirname, '..', '..', '..', 'dist', 'cdk-resources.json.gz'),
   }));
 
   await updateExportsAndEntryPoints(generated);

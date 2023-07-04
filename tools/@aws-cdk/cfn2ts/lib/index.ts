@@ -1,4 +1,7 @@
 import * as path from 'path';
+import { promisify } from 'util';
+import { gzip, constants as zlib } from 'zlib';
+
 import * as cfnSpec from '@aws-cdk/cfnspec';
 import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
@@ -6,10 +9,13 @@ import { AugmentationGenerator, AugmentationsGeneratorOptions } from './augmenta
 import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
+import type { Schema, TypeName } from './schema';
+import { upcaseFirst } from './util';
 
 interface GenerateOutput {
   outputFiles: string[];
-  resources: Record<string, string>;
+  resources: Schema['resources'];
+  types: Schema['types'];
 }
 
 export default async function generate(
@@ -19,7 +25,8 @@ export default async function generate(
 ): Promise<GenerateOutput> {
   const result: GenerateOutput = {
     outputFiles: [],
-    resources: {},
+    resources: new Map(),
+    types: new Map(),
   };
 
   if (outPath !== '.') { await fs.mkdirp(outPath); }
@@ -42,10 +49,38 @@ export default async function generate(
     generator.emitCode();
     await generator.save(outPath);
     result.outputFiles.push(generator.outputFile);
-    result.resources = {
-      ...result.resources,
-      ...generator.resources,
-    };
+
+    for (const [cfn, resource] of generator.resources) {
+      result.resources.set(cfn, {
+        ...resource,
+        construct: {
+          ts: {
+            ...resource.construct.ts,
+            module: name,
+          },
+          dotnet: {
+            ...resource.construct.dotnet,
+            ns: upcaseFirst(name),
+          },
+          go: {
+            ...resource.construct.go,
+            module: name,
+            package: name,
+          },
+          java: {
+            ...resource.construct.java,
+            package: name,
+          },
+          python: {
+            ...resource.construct.python,
+            module: name,
+          },
+        },
+      });
+    }
+    for (const [fqn, type] of generator.types) {
+      result.types.set(fqn, type);
+    }
 
     const augs = new AugmentationGenerator(name, spec, affix, options);
     if (augs.emitCode()) {
@@ -70,7 +105,13 @@ export interface GenerateAllOptions extends CodeGeneratorOptions, AugmentationsG
   /**
     * Path of the file containing the map of module names to their CFN Scopes
     */
-  scopeMapPath: string;
+  readonly scopeMapPath: string;
+
+  /**
+   * Path of the file where a CFN resource schema should be written to. If
+   * `undefined`, no schema file will be generated.
+   */
+  readonly cdkResourceSchemaPath?: string;
 }
 
 /**
@@ -80,7 +121,8 @@ export interface ModuleMapEntry {
   name: string;
   definition?: pkglint.ModuleDefinition;
   scopes: string[];
-  resources: Record<string, string>;
+  resources: Schema['resources'];
+  types: Schema['types'];
   files: string[];
 }
 
@@ -102,7 +144,7 @@ export interface ModuleMap {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, ...options }: GenerateAllOptions,
+  { scopeMapPath, cdkResourceSchemaPath, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const cfnScopes = cfnSpec.namespaces();
   const moduleMap = await readScopeMap(scopeMapPath);
@@ -120,7 +162,8 @@ export async function generateAll(
       name: moduleDefinition.moduleName,
       definition: moduleDefinition,
       scopes: newScopes,
-      resources: {},
+      resources: new Map(),
+      types: new Map(),
       files: [],
     };
   }
@@ -131,17 +174,106 @@ export async function generateAll(
       const sourcePath = path.join(packagePath, 'lib');
 
       const isCore = name === 'core';
-      const { outputFiles, resources } = await generate(scopes, sourcePath, {
+      const { outputFiles, resources, types } = await generate(scopes, sourcePath, {
         ...options,
         coreImport: isCore ? '.' : options.coreImport,
       });
 
       // Add generated resources and files to module in map
       moduleMap[name].resources = resources;
+      moduleMap[name].types = types;
       moduleMap[name].files = outputFiles;
     }));
 
+  if (cdkResourceSchemaPath) {
+    const schema: Schema = {
+      resources: new Map(),
+      types: new Map(),
+      version: JSON.parse(await fs.readFile(path.resolve(__dirname, '..', 'package.json'), 'utf-8')).version,
+    };
+
+    for (let [name, { definition, resources, types }] of Object.entries(moduleMap)) {
+      if (definition === undefined) {
+        if (name !== 'core') {
+          throw new Error(`Missing module definition for ${name}!`);
+        }
+        definition = {
+          namespace: 'core',
+          moduleName: 'core',
+          submoduleName: '',
+          moduleFamily: '',
+          moduleBaseName: 'core',
+          packageName: 'aws-cdk-lib',
+          dotnetPackage: 'Amazon.CDK',
+          javaGroupId: 'software.amazon.awscdk',
+          javaArtifactId: 'aws-cdk-lib',
+          javaPackage: 'software.amazon.awscdk',
+          goModuleName: 'github.com/aws/aws-cdk-go/awscdk/v2/',
+          goPackageName: 'awscdk',
+          pythonDistName: 'aws-cdk',
+          pythonModuleName: 'aws_cdk',
+        };
+      }
+      for (const [cfn, resource] of resources) {
+        schema.resources.set(cfn, { ...resource, construct: rehomeTypeName(resource.construct, definition) });
+      }
+      for (const [fqn, type] of types) {
+        schema.types.set(fqn, { ...type, name: rehomeTypeName(type.name, definition) });
+      }
+    }
+
+    // Serialize the document to JSON.
+    const document = JSON.stringify(
+      schema,
+      (_key, value) => {
+        if (value instanceof Map) {
+          return Object.fromEntries(value);
+        } else if (value === false) {
+          return undefined;
+        } else {
+          return value;
+        }
+      },
+      2,
+    );
+
+    // Compress if the filename ends with `.gz`.
+    const data = cdkResourceSchemaPath.endsWith('.gz')
+      ? await promisify(gzip)(document, { level: zlib.Z_BEST_COMPRESSION })
+      : document;
+
+    // Write the file out.
+    await fs.mkdir(path.dirname(cdkResourceSchemaPath), { recursive: true });
+    await fs.writeFile(cdkResourceSchemaPath, data);
+  }
+
   return moduleMap;
+}
+
+function rehomeTypeName(name: TypeName, definition: pkglint.ModuleDefinition): TypeName {
+  return {
+    ts: {
+      ...name.ts,
+      module: `aws-cdk-lib/${definition.moduleName}`,
+    },
+    dotnet: {
+      ...name.dotnet,
+      ns: definition.dotnetPackage,
+    },
+    go: {
+      ...name.go,
+      module: definition.goModuleName,
+      package: definition.goPackageName,
+    },
+    java: {
+      ...name.java,
+      package: definition.javaPackage,
+    },
+    python: {
+      ...name.python,
+      module: definition.pythonModuleName,
+    },
+  };
 }
 
 /**

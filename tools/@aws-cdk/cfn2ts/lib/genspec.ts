@@ -4,6 +4,7 @@
 
 import { schema } from '@aws-cdk/cfnspec';
 import * as codemaker from 'codemaker';
+import { TypeReference } from './schema';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import * as util from './util';
 
@@ -100,7 +101,9 @@ export class Attribute {
   constructor(
     readonly propertyName: string,
     readonly attributeType: string,
-    readonly constructorArguments: string) {
+    readonly constructorArguments: string,
+    readonly valueType: TypeReference,
+  ) {
   }
 }
 
@@ -200,16 +203,33 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
   const propertyName = `attr${suffixName}`; // "attrArn"
 
   let attrType: string;
-  if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
-    attrType = 'string';
-  } else if ('PrimitiveType' in spec && spec.PrimitiveType === 'Integer') {
-    attrType = 'number';
+  let valueType: TypeReference;
+  if ('PrimitiveType' in spec) {
+    switch (spec.PrimitiveType) {
+      case 'Double':
+      case 'Integer':
+      case 'Long':
+        attrType = 'number';
+        valueType = { primitive: 'number' };
+        break;
+      case 'String':
+        attrType = 'string';
+        valueType = { primitive: 'string' };
+        break;
+      default:
+        // eslint-disable-next-line no-console
+        console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a Token-able type`);
+        attrType = TOKEN_NAME.fqn;
+        valueType = { primitive: 'unknown' };
+    }
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
+    valueType = { listOf: { primitive: 'string' } };
   } else {
     // eslint-disable-next-line no-console
-    console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
+    console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a Token-able type`);
     attrType = TOKEN_NAME.fqn;
+    valueType = { primitive: 'unknown' };
   }
 
   let typeHint = 'STRING';
@@ -219,7 +239,7 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
     typeHint = 'STRING_LIST';
   }
   const constructorArguments = `this.getAtt('${attributeName}', cdk.ResolutionTypeHint.${typeHint})`;
-  return new Attribute(propertyName, attrType, constructorArguments);
+  return new Attribute(propertyName, attrType, constructorArguments, valueType);
 }
 
 /**

@@ -39,7 +39,7 @@ export interface AugmentationsGeneratorOptions {
   *
   * @default '@aws-cdk/aws-cloudwatch'
   */
-  cloudwatchImport?: string;
+  readonly cloudwatchImport?: string;
 }
 
 export class AugmentationGenerator {
