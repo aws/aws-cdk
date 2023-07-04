@@ -1,9 +1,6 @@
 name: Yarn Upgrade v1-main
 
 on:
-  schedule:
-    # Every wednesday at 13:37 UTC
-    - cron: 37 13 * * 3
   workflow_dispatch: {}
 
 jobs:
