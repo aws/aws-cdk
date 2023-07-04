@@ -150,7 +150,18 @@
                     "name": "MyShare",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
-                      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
+                          ]
+                        ]
+                      }
                     ],
                     "principals": [
                       {

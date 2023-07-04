@@ -34,6 +34,14 @@ class MyError extends Error {
   }
 }
 
+beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+
 describe('log retention provider', () => {
   afterEach(() => {
     AWS.restore();
@@ -86,7 +94,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('update event with new log retention', async () => {
@@ -133,7 +140,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('update event with log retention undefined', async () => {
@@ -177,7 +183,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('delete event', async () => {
@@ -210,7 +215,6 @@ describe('log retention provider', () => {
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
     expect(request.isDone()).toEqual(true);
-
 
   });
 
@@ -252,7 +256,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('responds with FAILED on error', async () => {
@@ -275,7 +278,6 @@ describe('log retention provider', () => {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
     expect(request.isDone()).toEqual(true);
-
 
   });
 
@@ -318,7 +320,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('succeeds when createLogGroup for CDK lambda log group returns OperationAbortedException twice', async () => {
@@ -360,7 +361,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('fails when createLogGroup for CDK lambda log group fails with OperationAbortedException indefinitely', async () => {
@@ -395,7 +395,6 @@ describe('log retention provider', () => {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
     expect(request.isDone()).toEqual(true);
-
 
   });
 
@@ -438,7 +437,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('succeeds when putRetentionPolicy for CDK lambda log group returns OperationAbortedException twice', async () => {
@@ -480,7 +478,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('fails when putRetentionPolicy for CDK lambda log group fails with OperationAbortedException indefinitely', async () => {
@@ -515,7 +512,6 @@ describe('log retention provider', () => {
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
     expect(request.isDone()).toEqual(true);
-
 
   });
 
@@ -558,7 +554,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('fails when deleteRetentionPolicy for provider log group fails with OperationAbortedException indefinitely', async () => {
@@ -594,7 +589,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('response data contains the log group name', async () => {
@@ -625,7 +619,6 @@ describe('log retention provider', () => {
     await withOperation('Create');
     await withOperation('Update');
     await withOperation('Delete');
-
 
   });
 
@@ -663,7 +656,6 @@ describe('log retention provider', () => {
 
     expect(request.isDone()).toEqual(true);
 
-
   });
 
   test('custom log retention region', async () => {
@@ -692,7 +684,6 @@ describe('log retention provider', () => {
     });
 
     expect(request.isDone()).toEqual(true);
-
 
   });
 

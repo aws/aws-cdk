@@ -8,6 +8,7 @@ import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-queue-isolated');
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
   subnetConfiguration: [
     {
@@ -22,7 +23,6 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
     },
   ],
 });
-
 
 vpc.addS3Endpoint('S3Endpoint', [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }]);
 

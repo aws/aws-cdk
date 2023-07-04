@@ -1,13 +1,13 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
-import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,
@@ -24,7 +24,15 @@ import {
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
-jest.mock('../../custom-resources');
+jest.mock('../../custom-resources', () => {
+  const autoMock = jest.createMockFromModule('../../custom-resources');
+  const { builtInCustomResourceNodeRuntime } = jest.requireActual('../../custom-resources');
+  return {
+    // @ts-ignore
+    ...autoMock,
+    builtInCustomResourceNodeRuntime,
+  };
+});
 
 /* eslint-disable quote-props */
 
@@ -616,10 +624,36 @@ test('replica-handler permission check', () => {
           'Effect': 'Allow',
           'Resource': [
             {
-              'Fn::Join': ['', ['arn:aws:dynamodb:eu-central-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-central-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
             },
             {
-              'Fn::Join': ['', ['arn:aws:dynamodb:eu-west-1:', { Ref: 'AWS::AccountId' }, ':table/test']],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-west-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
             },
           ],
         },

@@ -172,6 +172,11 @@ export class FactName {
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
 
   /**
+   * The default NodeJS version used for custom resource function runtimes
+   */
+  public static readonly DEFAULT_CR_NODE_VERSION = 'defaultCrNodeVersion';
+
+  /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
   public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
@@ -202,5 +207,16 @@ export class FactName {
   public static adotLambdaLayer(type: string, version: string, architecture: string): string {
     const suffix = type + '_' + version.split('.').join('_') + '_' + architecture;
     return `adot-lambda-layer:${suffix}`;
+  }
+
+  /**
+   * The ARN of Parameters and Secrets Lambda layer for a given lambda architecture.
+   *
+   * @param version the layer version
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public static paramsAndSecretsLambdaLayer(version: string, architecture: string): string {
+    const suffix = version.split('.').join('_') + `_${architecture}`;
+    return `params-and-secrets-layer:${suffix}`;
   }
 }

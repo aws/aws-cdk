@@ -3,15 +3,17 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Size, Stack } from 'aws-cdk-lib';
-import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
+import * as cdk from 'aws-cdk-lib';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
-
+import { capitalizePropertyNames } from './utils';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {
@@ -253,9 +255,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
-        secrets: [
-          new Secret(stack, 'testSecret'),
-        ],
+        secrets: {
+          envName: new Secret(stack, 'testSecret'),
+        },
       }),
     });
 
@@ -266,59 +268,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
         ...pascalCaseExpectedProps.ContainerProperties,
         Secrets: [
           {
-            Name: {
-              'Fn::Join': [
-                '-',
-                [
-                  {
-                    'Fn::Select': [
-                      0,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    'Fn::Select': [
-                      1,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              ],
-            },
+            Name: 'envName',
             ValueFrom: { Ref: 'testSecretB96AD12C' },
           },
         ],
@@ -529,6 +479,85 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       },
     });
   });
+
+  test('correctly renders docker images', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromDockerImageAsset(new DockerImageAsset(stack, 'dockerImageAsset', {
+          directory: path.join(__dirname, 'batchjob-image'),
+        })),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
+        },
+      },
+    });
+  });
+
+  test('correctly renders images from repositories', () => {
+    // GIVEN
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromEcrRepository(repo, 'my-tag'),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::Select': [
+                  4,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.dkr.ecr.',
+              {
+                'Fn::Select': [
+                  3,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
+                    ],
+                  },
+                ],
+              },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { Ref: 'Repo02AC86CF' },
+              ':my-tag',
+            ],
+          ],
+        },
+      },
+    });
+  });
 });
 
 describe('EC2 containers', () => {
@@ -711,5 +740,75 @@ describe('Fargate containers', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('can set ephemeralStorageSize', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(100),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(100).toGibibytes(),
+        },
+      },
+    });
+  });
+
+  test('can set ephemeralStorageSize as token', () => {
+    const ephemeralStorageValue: number = cdk.Token.asNumber(150);
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(ephemeralStorageValue),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+        EphemeralStorage: {
+          SizeInGiB: Size.gibibytes(150).toGibibytes(),
+        },
+      },
+    });
+  });
+
+  test('ephemeralStorageSize throws error when out of range', () => {
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(19),
+      }),
+    })).toThrow("ECS Fargate container 'EcsFargateContainer' specifies 'ephemeralStorageSize' at 19 < 21 GB");
+
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
+        ...defaultContainerProps,
+        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+        ephemeralStorageSize: Size.gibibytes(201),
+      }),
+    })).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
   });
 });

@@ -10,11 +10,14 @@ class KinesisEventSourceTest extends cdk.Stack {
 
     const fn = new TestFunction(this, 'F');
     const stream = new kinesis.Stream(this, 'Q');
-
-    fn.addEventSource(new KinesisEventSource(stream, {
+    const eventSource = new KinesisEventSource(stream, {
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       tumblingWindow: cdk.Duration.seconds(60),
-    }));
+    });
+
+    fn.addEventSource(eventSource);
+
+    new cdk.CfnOutput(this, 'OutputEventSourceMappingArn', { value: eventSource.eventSourceMappingArn });
   }
 }
 

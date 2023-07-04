@@ -49,13 +49,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kms.Key",
+              "fqn": "aws-cdk-lib.aws_kms.Key",
               "version": "0.0.0"
             }
           },
@@ -82,7 +82,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -126,7 +126,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -134,7 +134,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -156,7 +156,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -175,7 +175,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -195,7 +195,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -215,7 +215,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -243,13 +243,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -293,7 +293,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -301,7 +301,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -323,7 +323,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -342,7 +342,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -362,7 +362,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -382,7 +382,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -410,13 +410,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -460,7 +460,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -468,7 +468,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -490,7 +490,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -509,7 +509,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -529,13 +529,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -579,7 +579,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -587,7 +587,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -609,7 +609,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -628,7 +628,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -648,13 +648,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -673,7 +673,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -692,13 +692,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -728,13 +728,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-redshift.CfnClusterSubnetGroup",
+                      "fqn": "aws-cdk-lib.aws_redshift.CfnClusterSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift.ClusterSubnetGroup",
+                  "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -762,13 +762,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -791,7 +791,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -815,19 +815,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift.DatabaseSecret",
+                  "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -889,7 +889,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift.CfnCluster",
+                  "fqn": "aws-cdk-lib.aws_redshift.CfnCluster",
                   "version": "0.0.0"
                 }
               },
@@ -914,19 +914,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-redshift.CfnClusterParameterGroup",
+                      "fqn": "aws-cdk-lib.aws_redshift.CfnClusterParameterGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift.ClusterParameterGroup",
+                  "fqn": "@aws-cdk/aws-redshift-alpha.ClusterParameterGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift.Cluster",
+              "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
               "version": "0.0.0"
             }
           },
@@ -953,7 +953,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -977,19 +977,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift.DatabaseSecret",
+                  "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -1001,7 +1001,7 @@
                     "id": "Handler",
                     "path": "aws-cdk-redshift-cluster-database/User/Resource/Handler",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -1021,7 +1021,7 @@
                                 "id": "ImportServiceRole",
                                 "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/core.Resource",
+                                  "fqn": "aws-cdk-lib.Resource",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1060,7 +1060,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1114,19 +1114,19 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Policy",
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Role",
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0"
                             }
                           },
@@ -1138,7 +1138,7 @@
                                 "id": "Stage",
                                 "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/Code/Stage",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/core.AssetStaging",
+                                  "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1146,13 +1146,13 @@
                                 "id": "AssetBucket",
                                 "path": "aws-cdk-redshift-cluster-database/User/Resource/Provider/framework-onEvent/Code/AssetBucket",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                               "version": "0.0.0"
                             }
                           },
@@ -1166,7 +1166,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                                  "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1186,24 +1186,32 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": "nodejs14.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "DefaultCrNodeVersionMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.Function",
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/custom-resources.Provider",
+                      "fqn": "aws-cdk-lib.custom_resources.Provider",
                       "version": "0.0.0"
                     }
                   },
@@ -1215,20 +1223,20 @@
                         "id": "Default",
                         "path": "aws-cdk-redshift-cluster-database/User/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
+                      "fqn": "aws-cdk-lib.CustomResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.2.52"
                 }
               },
               "TablePrivileges": {
@@ -1243,7 +1251,7 @@
                         "id": "Handler",
                         "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                          "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                           "version": "0.0.0"
                         }
                       },
@@ -1263,7 +1271,7 @@
                                     "id": "ImportServiceRole",
                                     "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/core.Resource",
+                                      "fqn": "aws-cdk-lib.Resource",
                                       "version": "0.0.0"
                                     }
                                   },
@@ -1302,7 +1310,7 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                       "version": "0.0.0"
                                     }
                                   },
@@ -1356,19 +1364,19 @@
                                           }
                                         },
                                         "constructInfo": {
-                                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                           "version": "0.0.0"
                                         }
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.Policy",
+                                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Role",
+                                  "fqn": "aws-cdk-lib.aws_iam.Role",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1380,7 +1388,7 @@
                                     "id": "Stage",
                                     "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/Code/Stage",
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/core.AssetStaging",
+                                      "fqn": "aws-cdk-lib.AssetStaging",
                                       "version": "0.0.0"
                                     }
                                   },
@@ -1388,13 +1396,13 @@
                                     "id": "AssetBucket",
                                     "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider/framework-onEvent/Code/AssetBucket",
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1408,7 +1416,7 @@
                                       "s3Bucket": {
                                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
-                                      "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                                      "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                                     },
                                     "role": {
                                       "Fn::GetAtt": [
@@ -1428,24 +1436,32 @@
                                       }
                                     },
                                     "handler": "framework.onEvent",
-                                    "runtime": "nodejs14.x",
+                                    "runtime": {
+                                      "Fn::FindInMap": [
+                                        "DefaultCrNodeVersionMap",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        "value"
+                                      ]
+                                    },
                                     "timeout": 900
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.Function",
+                              "fqn": "aws-cdk-lib.aws_lambda.Function",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/custom-resources.Provider",
+                          "fqn": "aws-cdk-lib.custom_resources.Provider",
                           "version": "0.0.0"
                         }
                       },
@@ -1457,31 +1473,39 @@
                             "id": "Default",
                             "path": "aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Resource/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.264"
+                      "version": "10.2.52"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.2.52"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift.User",
+              "fqn": "@aws-cdk/aws-redshift-alpha.User",
+              "version": "0.0.0"
+            }
+          },
+          "DefaultCrNodeVersionMap": {
+            "id": "DefaultCrNodeVersionMap",
+            "path": "aws-cdk-redshift-cluster-database/DefaultCrNodeVersionMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1497,7 +1521,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -1536,7 +1560,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1587,19 +1611,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1611,7 +1635,7 @@
                     "id": "Stage",
                     "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -1619,13 +1643,13 @@
                     "id": "AssetBucket",
                     "path": "aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -1639,7 +1663,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1a159599b617b432864ddf9e4e9ec70b884de7656daa51073d4149a3080c5f79.zip"
+                      "s3Key": "1c86c854dd7bf4e9476b013497c1b08c57bf296dbc4200f2a251f79ad102d15e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1648,18 +1672,26 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "DefaultCrNodeVersionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 60
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -1675,7 +1707,7 @@
                     "id": "Handler",
                     "path": "aws-cdk-redshift-cluster-database/Table/Resource/Handler",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -1695,7 +1727,7 @@
                                 "id": "ImportServiceRole",
                                 "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/core.Resource",
+                                  "fqn": "aws-cdk-lib.Resource",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1734,7 +1766,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1788,19 +1820,19 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Policy",
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Role",
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0"
                             }
                           },
@@ -1812,7 +1844,7 @@
                                 "id": "Stage",
                                 "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/Code/Stage",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/core.AssetStaging",
+                                  "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1820,13 +1852,13 @@
                                 "id": "AssetBucket",
                                 "path": "aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/Code/AssetBucket",
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                               "version": "0.0.0"
                             }
                           },
@@ -1840,7 +1872,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+                                  "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1860,24 +1892,32 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": "nodejs14.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "DefaultCrNodeVersionMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.Function",
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/custom-resources.Provider",
+                      "fqn": "aws-cdk-lib.custom_resources.Provider",
                       "version": "0.0.0"
                     }
                   },
@@ -1889,25 +1929,25 @@
                         "id": "Default",
                         "path": "aws-cdk-redshift-cluster-database/Table/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CustomResource",
+                      "fqn": "aws-cdk-lib.CustomResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.2.52"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift.Table",
+              "fqn": "@aws-cdk/aws-redshift-alpha.Table",
               "version": "0.0.0"
             }
           },
@@ -1915,7 +1955,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-redshift-cluster-database/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -1923,13 +1963,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-redshift-cluster-database/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -1946,7 +1986,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.264"
+                  "version": "10.2.52"
                 }
               },
               "DeployAssert": {
@@ -1957,7 +1997,7 @@
                     "id": "BootstrapVersion",
                     "path": "redshift-cluster-database-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -1965,25 +2005,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "redshift-cluster-database-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -1992,12 +2032,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.264"
+          "version": "10.2.52"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

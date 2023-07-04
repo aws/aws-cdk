@@ -910,6 +910,7 @@ function cdkModuleName(name: string) {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
+    dotnetPackageId: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
@@ -925,10 +926,6 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
-
-    // skip the legacy @aws-cdk/cdk because we actually did not rename
-    // the .NET module, so we are not publishing the deprecated one
-    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
@@ -949,7 +946,34 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
- * JSII .NET namespace is required and must look sane
+ * JSII .NET packageId is required and must look sane
+ */
+export class JSIIDotNetPackageIdIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+    const moduleName = cdkModuleName(pkg.json.name);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.packageId', moduleName.dotnetPackageId, /\./g, /*case insensitive*/ true);
+
+    if (dotnet) {
+      const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
+      const expectedPrefix = moduleName.dotnetPackageId.split('.').slice(0, 2).join('.');
+      if (actualPrefix !== expectedPrefix) {
+        pkg.report({
+          ruleName: this.name,
+          message: `.NET packageId must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
+          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'packageId'], moduleName.dotnetPackageId),
+        });
+      }
+    }
+  }
+}
+
+/**
+ * JSII .NET icon url is required and must look sane
  */
 export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
   public readonly name = 'jsii/dotnet/icon-url';
@@ -1061,6 +1085,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/asset-kubectl-v20',
       '@aws-cdk/asset-node-proxy-agent-v5',
       '@aws-cdk/asset-awscli-v1',
+      '@aws-cdk/cdk-cli-wrapper',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1612,7 +1637,6 @@ export class JestSetup extends ValidationRule {
         message: 'There must be a devDependency on \'@types/jest\' if you use jest testing',
       });
     }
-
 
   }
 }

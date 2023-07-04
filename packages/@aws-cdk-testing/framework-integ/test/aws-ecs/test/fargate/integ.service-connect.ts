@@ -1,12 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
+import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class ServiceConnect extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const cluster = new ecs.Cluster(this, 'EcsCluster', {
       defaultCloudMapNamespace: {
         name: 'scorekeep.com',
@@ -36,7 +38,7 @@ class ServiceConnect extends cdk.Stack {
 
     new ecs.FargateService(this, 'svc', {
       taskDefinition: td,
-      cluster: cluster,
+      cluster,
       serviceConnectConfiguration: {
         services: [
           {
@@ -50,14 +52,58 @@ class ServiceConnect extends cdk.Stack {
         }),
       },
     });
+
+    const ns = new cloudmap.HttpNamespace(this, 'ns', {
+      name: 'whistler.com',
+    });
+
+    const svc2 = new ecs.FargateService(this, 'svc-two', {
+      taskDefinition: td,
+      cluster,
+    });
+
+    svc2.node.addDependency(ns);
+
+    svc2.enableServiceConnect({
+      services: [
+        {
+          portMappingName: 'api',
+          dnsName: 'api',
+          port: 80,
+        },
+      ],
+      namespace: ns.namespaceArn,
+    });
   }
 }
 
 const app = new cdk.App();
 const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
 
-new integ.IntegTest(app, 'ServiceConnect', {
+const test = new integ.IntegTest(app, 'ServiceConnect', {
   testCases: [stack],
 });
+const listNamespaceCall = test.assertions.awsApiCall('ServiceDiscovery', 'listNamespaces');
+listNamespaceCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['servicediscovery:ListNamespaces'],
+  Resource: ['*'],
+});
+listNamespaceCall.expect(integ.ExpectedResult.objectLike({
+  Namespaces: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Name: 'scorekeep.com',
+      Type: 'DNS_PRIVATE',
+    }),
+  ]),
+}));
+listNamespaceCall.expect(integ.ExpectedResult.objectLike({
+  Namespaces: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Name: 'whistler.com',
+      Type: 'HTTP',
+    }),
+  ]),
+}));
 
 app.synth();

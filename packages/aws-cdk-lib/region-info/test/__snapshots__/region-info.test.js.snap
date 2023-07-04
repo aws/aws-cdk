@@ -1,19 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`built-in data is correct 1`] = `
-Object {
-  "af-south-1": Object {
+{
+  "af-south-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:13",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:25",
+      "1.0.229.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:28",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -21,7 +23,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.af-south-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.af-south-1.amazonaws.com",
@@ -37,18 +39,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-east-1": Object {
+  "ap-east-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:13",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:25",
+      "1.0.229.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:28",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -56,7 +60,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-east-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-east-1.amazonaws.com",
@@ -72,18 +76,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-northeast-1": Object {
+  "ap-northeast-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:11",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:23",
       "1.0.135.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:25",
-      "1.0.143.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:31",
-      "1.0.178.0": undefined,
+      "1.0.143.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:32",
+      "1.0.178.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:50",
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:60",
       "1.0.54.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -91,7 +97,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-ap-northeast-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-1.amazonaws.com",
@@ -107,18 +113,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-northeast-2": Object {
+  "ap-northeast-2": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:4",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:32",
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:37",
       "1.0.54.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -126,7 +134,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-2.amazonaws.com",
@@ -142,18 +150,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-northeast-3": Object {
+  "ap-northeast-3": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": "arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:1",
       "1.0.143.0": "arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:2",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:2",
+      "1.0.229.0": "arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:19",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -161,7 +171,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-3.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-3.amazonaws.com",
@@ -177,18 +187,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-south-1": Object {
+  "ap-south-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:7",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:31",
+      "1.0.229.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:36",
       "1.0.54.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -196,7 +208,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-south-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-south-1.amazonaws.com",
@@ -212,18 +224,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-south-2": Object {
+  "ap-south-2": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
-      "1.0.178.0": "arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:6",
+      "1.0.178.0": "arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:8",
+      "1.0.229.0": "arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:10",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -231,7 +245,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-south-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-south-2.amazonaws.com",
@@ -247,18 +261,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-southeast-1": Object {
+  "ap-southeast-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -266,7 +282,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-southeast-1.amazonaws.com",
@@ -282,18 +298,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-southeast-2": Object {
+  "ap-southeast-2": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -301,7 +319,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-southeast-2.amazonaws.com",
@@ -317,18 +335,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ap-southeast-3": Object {
+  "ap-southeast-3": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
-      "1.0.178.0": "arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:8",
+      "1.0.178.0": "arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:11",
+      "1.0.229.0": "arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:14",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -336,7 +356,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ap-southeast-3.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-southeast-3.amazonaws.com",
@@ -352,18 +372,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "ca-central-1": Object {
+  "ca-central-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:3",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:32",
+      "1.0.229.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:37",
       "1.0.54.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -371,7 +393,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.ca-central-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ca-central-1.amazonaws.com",
@@ -387,18 +409,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "cn-north-1": Object {
+  "cn-north-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com.cn",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:14",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:26",
+      "1.0.229.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:29",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -406,7 +430,7 @@ Object {
     },
     "partition": "aws-cn",
     "s3StaticWebsiteEndpoint": "s3-website.cn-north-1.amazonaws.com.cn",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.cn-north-1.amazonaws.com.cn",
@@ -422,18 +446,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "cn.com.amazonaws.vpce",
   },
-  "cn-northwest-1": Object {
+  "cn-northwest-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com.cn",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:14",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:26",
+      "1.0.229.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:29",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -441,7 +467,7 @@ Object {
     },
     "partition": "aws-cn",
     "s3StaticWebsiteEndpoint": "s3-website.cn-northwest-1.amazonaws.com.cn",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.cn-northwest-1.amazonaws.com.cn",
@@ -457,18 +483,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "cn.com.amazonaws.vpce",
   },
-  "eu-central-1": Object {
+  "eu-central-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:35",
+      "1.0.229.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -476,7 +504,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-central-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-central-1.amazonaws.com",
@@ -492,18 +520,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-central-2": Object {
+  "eu-central-2": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": "arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:7",
+      "1.0.229.0": "arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:11",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -511,7 +541,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-central-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-central-2.amazonaws.com",
@@ -527,18 +557,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-north-1": Object {
+  "eu-north-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension-Arm64:3",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:30",
+      "1.0.229.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:35",
       "1.0.54.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -546,7 +578,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-north-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-north-1.amazonaws.com",
@@ -562,18 +594,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-south-1": Object {
+  "eu-south-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:13",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:25",
+      "1.0.229.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:28",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -581,7 +615,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-south-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-south-1.amazonaws.com",
@@ -597,18 +631,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-south-2": Object {
+  "eu-south-2": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
-      "1.0.178.0": "arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:2",
+      "1.0.178.0": "arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:10",
+      "1.0.229.0": "arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:12",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -616,7 +652,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-south-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-south-2.amazonaws.com",
@@ -632,18 +668,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-west-1": Object {
+  "eu-west-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -651,7 +689,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-eu-west-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-1.amazonaws.com",
@@ -667,18 +705,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-west-2": Object {
+  "eu-west-2": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -686,7 +726,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-2.amazonaws.com",
@@ -702,18 +742,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "eu-west-3": Object {
+  "eu-west-3": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension-Arm64:3",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:32",
+      "1.0.229.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:37",
       "1.0.54.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:12",
@@ -721,7 +763,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-west-3.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-3.amazonaws.com",
@@ -737,18 +779,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "me-central-1": Object {
+  "me-central-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
-      "1.0.178.0": "arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:6",
+      "1.0.178.0": "arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:9",
+      "1.0.229.0": "arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:11",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -756,7 +800,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.me-central-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.me-central-1.amazonaws.com",
@@ -772,18 +816,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "me-south-1": Object {
+  "me-south-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension-Arm64:2",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:9",
       "1.0.135.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:11",
       "1.0.143.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:13",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:25",
+      "1.0.229.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:28",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -791,7 +837,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.me-south-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.me-south-1.amazonaws.com",
@@ -807,18 +853,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "sa-east-1": Object {
+  "sa-east-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:3",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:32",
+      "1.0.229.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:37",
       "1.0.54.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -826,7 +874,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-sa-east-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.sa-east-1.amazonaws.com",
@@ -842,18 +890,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-east-1": Object {
+  "us-east-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:35",
+      "1.0.229.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -861,7 +911,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-us-east-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-east-1.amazonaws.com",
@@ -877,18 +927,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-east-2": Object {
+  "us-east-2": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:7",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -896,7 +948,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.us-east-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-east-2.amazonaws.com",
@@ -912,18 +964,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-gov-east-1": Object {
+  "us-gov-east-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": undefined,
+      "1.0.229.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -931,7 +985,7 @@ Object {
     },
     "partition": "aws-us-gov",
     "s3StaticWebsiteEndpoint": "s3-website.us-gov-east-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-gov-east-1.amazonaws.com",
@@ -947,18 +1001,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-gov-west-1": Object {
+  "us-gov-west-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": undefined,
+      "1.0.229.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -966,7 +1022,7 @@ Object {
     },
     "partition": "aws-us-gov",
     "s3StaticWebsiteEndpoint": "s3-website-us-gov-west-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-gov-west-1.amazonaws.com",
@@ -982,18 +1038,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-iso-east-1": Object {
+  "us-iso-east-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": undefined,
+      "1.0.229.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -1001,7 +1059,7 @@ Object {
     },
     "partition": "aws-iso",
     "s3StaticWebsiteEndpoint": "s3-website.us-iso-east-1.c2s.ic.gov",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.amazonaws.com",
@@ -1017,18 +1075,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "gov.ic.c2s.vpce",
   },
-  "us-iso-west-1": Object {
+  "us-iso-west-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": undefined,
+      "1.0.229.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -1036,7 +1096,7 @@ Object {
     },
     "partition": "aws-iso",
     "s3StaticWebsiteEndpoint": "s3-website.us-iso-west-1.c2s.ic.gov",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.amazonaws.com",
@@ -1052,18 +1112,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "gov.ic.c2s.vpce",
   },
-  "us-isob-east-1": Object {
+  "us-isob-east-1": {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "sc2s.sgov.gov",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": undefined,
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
       "1.0.143.0": undefined,
       "1.0.178.0": undefined,
+      "1.0.229.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -1071,7 +1133,7 @@ Object {
     },
     "partition": "aws-iso-b",
     "s3StaticWebsiteEndpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.amazonaws.com",
@@ -1087,18 +1149,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "gov.sgov.sc2s.vpce",
   },
-  "us-west-1": Object {
+  "us-west-1": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
+      "1.0.229.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:20",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -1106,7 +1170,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-us-west-1.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-west-1.amazonaws.com",
@@ -1122,18 +1186,20 @@ Object {
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
-  "us-west-2": Object {
+  "us-west-2": {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
-    "lambdaInsightsArmVersions": Object {
+    "lambdaInsightsArmVersions": {
       "1.0.119.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
       "1.0.135.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:2",
+      "1.0.229.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:5",
     },
-    "lambdaInsightsVersions": Object {
+    "lambdaInsightsVersions": {
       "1.0.119.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.135.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:18",
       "1.0.143.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:21",
-      "1.0.178.0": undefined,
+      "1.0.178.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:33",
+      "1.0.229.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:38",
       "1.0.54.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -1141,7 +1207,7 @@ Object {
     },
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website-us-west-2.amazonaws.com",
-    "servicePrincipals": Object {
+    "servicePrincipals": {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-west-2.amazonaws.com",

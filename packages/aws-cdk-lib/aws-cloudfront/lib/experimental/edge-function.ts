@@ -1,16 +1,21 @@
 import * as path from 'path';
+import { Construct, Node } from 'constructs';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
 import {
+  builtInCustomResourceProviderNodeRuntime,
   CfnResource,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
-  Lazy, Resource, Stack, Stage, Token,
+  CustomResource,
+  CustomResourceProvider,
+  Lazy,
+  Resource,
+  Stack,
+  Stage,
+  Token,
 } from '../../../core';
-
-import { Construct, Node } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -193,7 +198,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

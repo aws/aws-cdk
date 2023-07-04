@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { InstanceClass, InstanceSize, InstanceType } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { /*Aws,*/ Duration, Size, Stack } from 'aws-cdk-lib';
-import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
+import { capitalizePropertyNames } from './utils';
 import * as batch from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
@@ -223,16 +223,4 @@ describe.each([batch.EcsJobDefinition, batch.EksJobDefinition, batch.MultiNodeJo
       },
     });
   });
-
-  /*
-  test('can be imported from name', () => {
-    // WHEN
-    const importedJob = JobDefinition.fromJobDefinitionName(stack, 'job-def-clone', 'job-def-name');
-
-    // THEN
-    expect(importedJob.jobDefinitionName).toEqual('job-def-name');
-    expect(importedJob.jobDefinitionArn)
-      .toEqual(`arn:${Aws.PARTITION}:batch:${Aws.REGION}:${Aws.ACCOUNT_ID}:job-definition/job-def-name`);
-  });
-  */
 });

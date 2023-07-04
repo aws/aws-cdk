@@ -6,7 +6,6 @@ import { table } from 'table';
 import * as core from '../../lib';
 import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
-
 let consoleErrorMock: jest.SpyInstance;
 let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
@@ -16,8 +15,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  consoleErrorMock.mockRestore();
-  consoleLogMock.mockRestore();
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.resetAllMocks();
 });
 
 describe('validations', () => {
@@ -62,11 +64,11 @@ describe('validations', () => {
       severity: 'medium',
       creationStack: [
         expect.stringMatching(/Default \(Default\)/),
-        expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+        expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
         expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
         expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-        expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+        expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
         expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
       ],
@@ -167,7 +169,7 @@ Policy Validation Report Summary
             resourceLogicalId: 'DefaultResource',
             templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
           }],
-        }], '1.2.3'),
+        }]),
       ],
     });
     const stage1 = new core.Stage(app, 'Stage1', {
@@ -180,7 +182,7 @@ Policy Validation Report Summary
             resourceLogicalId: 'DefaultResource',
             templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
           }],
-        }]),
+        }], '1.2.3'),
       ],
     });
     const stage2 = new core.Stage(app, 'Stage2', {
@@ -246,20 +248,21 @@ Policy Validation Report Summary
           title: 'test-rule2',
           creationStack: [
             expect.stringMatching(/Stage1 \(Stage1\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stage/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
           resourceLogicalId: 'DefaultResource',
           description: 'do something',
+          version: '1.2.3',
         },
         {
           pluginName: 'test-plugin4',
@@ -477,11 +480,11 @@ Policy Validation Report Summary
           title: 'rule-1',
           creationStack: [
             expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
@@ -544,11 +547,11 @@ Policy Validation Report Summary
           title: 'rule-2',
           creationStack: [
             expect.stringMatching(/Default \(Default\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
-            expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),
+            expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
             expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
           ],
@@ -665,13 +668,13 @@ Policy Validation Report Summary
                 {
                   constructStack: {
                     'id': 'Default',
-                    'construct': 'aws-cdk-lib.Stack',
+                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
                     'location': "Run with '--debug' to include location info",
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
-                      'construct': 'aws-cdk-lib.CfnResource',
+                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
                       'location': "Run with '--debug' to include location info",
                       'path': 'Default/Fake',
@@ -692,20 +695,18 @@ Policy Validation Report Summary
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
-  private _version?: string;
-
   constructor(
     public readonly name: string,
     private readonly violations: PolicyViolationBeta1[],
-    readonly version?: string) {
-    this._version = version;
+    public readonly version?: string,
+    public readonly ruleIds?: string []) {
   }
 
   validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
-      pluginVersion: this._version,
+      pluginVersion: this.version,
     };
   }
 }
@@ -741,6 +742,7 @@ interface ValidationReportData {
   description?: string;
   resourceLogicalId: string;
   severity?: string;
+  version?: string;
   ruleMetadata?: { [key: string]: string };
 }
 
@@ -767,6 +769,7 @@ const validationReport = (data: ValidationReportData[]) => {
         expect.stringMatching(new RegExp('Validation Report')),
         expect.stringMatching(new RegExp('-----------------')),
         expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
+        expect.stringMatching(new RegExp(`Version: ${d.version ?? 'N/A'}`)),
         expect.stringMatching(new RegExp(`Status: ${d.status}`)),
         expect.stringMatching(new RegExp('\(Violations\)')),
         title,

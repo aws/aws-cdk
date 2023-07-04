@@ -95,6 +95,18 @@ existing one as well.
 Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
 history when CloudFormation deletes your state machine.
 
+Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
+
+```ts
+new sfn.StateMachine(stack, 'StateMachineFromString', {
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+});
+
+new sfn.StateMachine(stack, 'StateMachineFromFile', {
+  definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
+});
+```
+
 ## State Machine Data
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine
@@ -179,6 +191,17 @@ The following methods are available:
 | `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
 | `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
 | `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+| `JsonPath.executionId` | reference the Execution Id field of the context object. |
+| `JsonPath.executionInput` | reference the Execution Input object of the context object. |
+| `JsonPath.executionName` | reference the Execution Name field of the context object. |
+| `JsonPath.executionRoleArn` | reference the Execution RoleArn field of the context object. |
+| `JsonPath.executionStartTime` | reference the Execution StartTime field of the context object. |
+| `JsonPath.stateEnteredTime` | reference the State EnteredTime field of the context object. |
+| `JsonPath.stateName` | reference the State Name field of the context object. |
+| `JsonPath.stateRetryCount` | reference the State RetryCount field of the context object. |
+| `JsonPath.stateMachineId` | reference the StateMachine Id field of the context object. |
+| `JsonPath.stateMachineName` | reference the StateMachine Name field of the context object. |
+
 
 You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
 
@@ -576,7 +599,6 @@ Tasks are executed using the State Machine's execution role. In some cases, e.g.
 This can be achieved by providing the optional `credentials` property which allows using a fixed role or a json expression to resolve the role at runtime from the task's inputs.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const submitLambda: lambda.Function;
@@ -916,13 +938,13 @@ In addition, the StateMachine can be imported via the `StateMachine.fromStateMac
 const app = new App();
 const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
-  stack,
+  this,
   "ViaArnImportedStateMachine",
   "arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ"
 );
 
 sfn.StateMachine.fromStateMachineName(
-  stack,
+  this,
   "ViaResourceNameImportedStateMachine",
   "StateMachine2E01A3A5-N5TJppzoevKQ"
 );

@@ -19,7 +19,6 @@ describe('fargate task definition', () => {
         Memory: '512',
       });
 
-
     });
 
     test('support lazy cpu and memory values', () => {
@@ -36,7 +35,6 @@ describe('fargate task definition', () => {
         Cpu: '128',
         Memory: '1024',
       });
-
 
     });
 
@@ -109,7 +107,6 @@ describe('fargate task definition', () => {
         ],
       });
 
-
     });
 
     test('throws when adding placement constraint', () => {
@@ -121,7 +118,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
-
 
     });
 
@@ -139,7 +135,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
-
 
     });
 
@@ -190,12 +185,16 @@ describe('fargate task definition', () => {
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
+      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
       // WHEN
       const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
+        executionRole: expectExecutionRole,
       });
 
       // THEN
@@ -205,7 +204,7 @@ describe('fargate task definition', () => {
       expect(taskDefinition.isEc2Compatible).toEqual(false);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
-
+      expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
 
     });
 
@@ -228,7 +227,6 @@ describe('fargate task definition', () => {
         taskDefinition.networkMode;
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
 
     });
 

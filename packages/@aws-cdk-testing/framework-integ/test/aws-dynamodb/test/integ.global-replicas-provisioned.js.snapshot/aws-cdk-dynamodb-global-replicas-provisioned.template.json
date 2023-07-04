@@ -231,6 +231,8 @@
       ]
      ]
     },
+    "ScalableDimension": "dynamodb:table:WriteCapacityUnits",
+    "ServiceNamespace": "dynamodb",
     "RoleARN": {
      "Fn::Join": [
       "",
@@ -246,9 +248,7 @@
        ":role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
       ]
      ]
-    },
-    "ScalableDimension": "dynamodb:table:WriteCapacityUnits",
-    "ServiceNamespace": "dynamodb"
+    }
    }
   },
   "TableWriteScalingTargetTrackingD78DCCD8": {
@@ -286,7 +286,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cf4730b0be0dfb553e6b9c37bedbba20746a488e34196097845d91bacf8c5782.json"
+       "/1dd0aee46fc850c1abb8d80aab782ecbae6adbb354577e6d1203ae969ed36f82.json"
       ]
      ]
     },

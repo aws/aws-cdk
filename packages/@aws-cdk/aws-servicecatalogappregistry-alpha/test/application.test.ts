@@ -286,7 +286,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -301,7 +307,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -318,7 +330,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -335,7 +353,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -351,7 +375,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly',
+          ]],
+        }],
       });
     });
 
@@ -367,7 +397,13 @@ describe('Application', () => {
         Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
-        PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
+        PermissionArns: [{
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation',
+          ]],
+        }],
       });
     });
   });
@@ -398,7 +434,6 @@ describe('Scope based Associations with Application within Same Account', () => 
       Resource: { Ref: 'AWS::StackId' },
     });
   });
-
 
   test('Associate Stack in same account will associate allStacks Inside it', () => {
     const application = new appreg.Application(stack, 'MyApplication', {
@@ -511,7 +546,6 @@ describe('Conditional nested stack Associations with Application within Same Acc
   });
 
 });
-
 
 class AppRegistrySampleStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {

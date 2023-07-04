@@ -1,8 +1,8 @@
-import * as cdk from '../../core';
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import * as cdk from '../../core';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -235,7 +235,6 @@ export interface EventSourceMappingOptions {
    */
   readonly kafkaConsumerGroupId?: string
 
-
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
@@ -273,6 +272,11 @@ export interface IEventSourceMapping extends cdk.IResource {
    * @attribute
    */
   readonly eventSourceMappingId: string;
+
+  /**
+   * The ARN of the event source mapping (i.e. arn:aws:lambda:region:account-id:event-source-mapping/event-source-mapping-id)
+   */
+  readonly eventSourceMappingArn: string;
 }
 
 /**
@@ -293,13 +297,27 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
    * Import an event source into this stack from its event source id.
    */
   public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+    const eventSourceMappingArn = EventSourceMapping.formatArn(scope,
+      eventSourceMappingId,
+    );
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
+      public readonly eventSourceMappingArn = eventSourceMappingArn;
     }
     return new Import(scope, id);
   }
 
+  private static formatArn(scope: Construct, eventSourceMappingId: string): string {
+    return cdk.Stack.of(scope).formatArn({
+      service: 'lambda',
+      resource: 'event-source-mapping',
+      resourceName: eventSourceMappingId,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
   public readonly eventSourceMappingId: string;
+  public readonly eventSourceMappingArn: string;
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
@@ -395,6 +413,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
+    this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);
   }
 
   private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {
@@ -402,7 +421,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       return;
     }
 
-    if (kafkaConsumerGroupId.length > 200 ||kafkaConsumerGroupId.length < 1) {
+    if (kafkaConsumerGroupId.length > 200 || kafkaConsumerGroupId.length < 1) {
       throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
     }
 

@@ -1,5 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { Construct } from 'constructs';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
@@ -13,6 +11,10 @@ import { IResource } from './resource';
 import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { IStage } from './stage';
 import { validateHttpMethod } from './util';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
+import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 
 export interface MethodOptions {
   /**
@@ -211,7 +213,7 @@ export class Method extends Resource {
       restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
-      apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
+      apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
@@ -360,7 +362,11 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
+      const useUniqueId = FeatureFlags.of(this).isEnabled(APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID);
+      const id = useUniqueId
+        ? `${Names.uniqueResourceName(new Construct(this, 'Validator'), {})}`
+        : 'validator';
+      const validator = (this.api as RestApi).addRequestValidator(id, options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
@@ -448,6 +454,19 @@ export class Method extends Resource {
    */
   public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
+  }
+
+  /**
+   * Grants an IAM principal permission to invoke this method.
+   *
+   * @param grantee the principal
+   */
+  public grantExecute(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['execute-api:Invoke'],
+      resourceArns: [this.methodArn],
+    });
   }
 
   private cannedMetric(fn: (dims: {

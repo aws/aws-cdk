@@ -6,7 +6,7 @@
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "update-metrics": "/bin/bash build-tools/update-metrics.sh",
     "rejected": "node build-tools/report-issues.js spec-source/specification/000_cfn/000_official/ rejected",
-    "build": "cdk-build && node build-tools/build",
+    "build": "cdk-build && ts-node --preferTsExts build-tools/build.ts",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
@@ -33,12 +33,14 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.1",
     "@types/md5": "^2.3.2",
     "fast-json-patch": "^3.1.1",
-    "jest": "^27.5.1",
+    "jest": "^29.5.0",
     "json-diff": "^0.10.0",
-    "sort-json": "^2.0.1"
+    "sort-json": "^2.0.1",
+    "ts-node": "^10.9.1"
+
   },
   "dependencies": {
     "fs-extra": "^9.1.0",

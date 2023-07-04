@@ -16,7 +16,6 @@ import * as redshift from '../lib';
 
 const app = new cdk.App();
 
-
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string },
 }
@@ -34,6 +33,7 @@ class RedshiftRebootStack extends cdk.Stack {
     props = { ...props, ...requiredStackName };
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc', {
+      restrictDefaultSecurityGroup: false,
       subnetConfiguration: [{
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         name: 'foobar',
@@ -79,23 +79,47 @@ stacks.forEach(s => {
 const test = new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
   stackUpdateWorkflow: false,
-  // diffAssets: true,
+  diffAssets: true,
 });
 
 const describeClusters = test.assertions.awsApiCall('Redshift', 'describeClusters', { ClusterIdentifier: updateStack.cluster.clusterName });
 describeClusters.assertAtPath('Clusters.0.ClusterParameterGroups.0.ParameterGroupName', integ.ExpectedResult.stringLikeRegexp(updateStack.parameterGroup.clusterParameterGroupName));
 describeClusters.assertAtPath('Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus', integ.ExpectedResult.stringLikeRegexp('in-sync'));
 
-const describeParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters',
+const describeUserParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters',
   {
     ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
     Source: 'user',
   },
 );
-describeParams.expect(integ.ExpectedResult.objectLike({
+describeUserParams.expect(integ.ExpectedResult.objectLike({
   Parameters: Match.arrayWith([
     Match.objectLike({ ParameterName: 'enable_user_activity_logging', ParameterValue: 'false' }),
     Match.objectLike({ ParameterName: 'use_fips_ssl', ParameterValue: 'true' }),
   ]),
 }));
+
+const describeEngineDefaultParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters',
+  {
+    ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
+    Source: 'engine-default',
+  },
+);
+describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
+  Parameters: Match.arrayWith([
+    Match.objectLike({ ParameterName: 'auto_analyze', ParameterValue: 'true' }),
+    Match.objectLike({ ParameterName: 'auto_mv', ParameterValue: 'true' }),
+    Match.objectLike({ ParameterName: 'datestyle', ParameterValue: 'ISO, MDY' }),
+    Match.objectLike({ ParameterName: 'enable_case_sensitive_identifier', ParameterValue: 'false' }),
+    Match.objectLike({ ParameterName: 'extra_float_digits', ParameterValue: '0' }),
+    Match.objectLike({ ParameterName: 'max_concurrency_scaling_clusters', ParameterValue: '1' }),
+    Match.objectLike({ ParameterName: 'max_cursor_result_set_size', ParameterValue: 'default' }),
+    Match.objectLike({ ParameterName: 'query_group', ParameterValue: 'default' }),
+    Match.objectLike({ ParameterName: 'require_ssl', ParameterValue: 'false' }),
+    Match.objectLike({ ParameterName: 'search_path', ParameterValue: '$user, public' }),
+    Match.objectLike({ ParameterName: 'statement_timeout', ParameterValue: '0' }),
+    Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
+  ]),
+}));
+
 app.synth();

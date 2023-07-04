@@ -1,8 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
-import { Stack } from 'aws-cdk-lib';
+import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
-
 
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
@@ -87,6 +86,55 @@ test('JobQueue respects name', () => {
   });
 });
 
+test('JobQueue name is parsed from arn', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  const queue = new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+    jobQueueName: 'JoBBQ',
+  });
+
+  // THEN
+  expect(Tokenization.resolve(queue.jobQueueName, {
+    scope: stack,
+    resolver: new DefaultTokenResolver(new StringConcat()),
+  })).toEqual({
+    'Fn::Select': [
+      1,
+      {
+        'Fn::Split': [
+          '/',
+          {
+            'Fn::Select': [
+              5,
+              {
+                'Fn::Split': [
+                  ':',
+                  {
+                    'Fn::GetAtt': [
+                      'joBBQ9FD52DAF',
+                      'JobQueueArn',
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+});
+
 test('JobQueue respects schedulingPolicy', () => {
   // GIVEN
   const stack = new Stack();
@@ -112,7 +160,7 @@ test('JobQueue respects schedulingPolicy', () => {
     }],
     Priority: 10,
     SchedulingPolicyArn: {
-      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+      'Fn::GetAtt': ['FairsharePolicyA0C549BE', 'Arn'],
     },
   });
 });
@@ -155,7 +203,7 @@ test('JobQueue respects addComputeEnvironment', () => {
     ],
     Priority: 10,
     SchedulingPolicyArn: {
-      'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
+      'Fn::GetAtt': ['FairsharePolicyA0C549BE', 'Arn'],
     },
   });
 });
@@ -198,4 +246,16 @@ test('JobQueue throws when the same order is assigned to multiple ComputeEnviron
   expect(() => {
     Template.fromStack(stack);
   }).toThrow(/assigns the same order to different ComputeEnvironments/);
+});
+
+test('JobQueue throws when there are no linked ComputeEnvironments', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ');
+
+  expect(() => {
+    Template.fromStack(stack);
+  }).toThrow(/This JobQueue does not link any ComputeEnvironments/);
 });

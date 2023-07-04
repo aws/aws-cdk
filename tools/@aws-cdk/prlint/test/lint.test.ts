@@ -1,19 +1,42 @@
 import * as linter from '../lint';
 import * as path from 'path';
 
+let mockRemoveLabel = jest.fn();
+let mockAddLabel = jest.fn();
+
+let mockListReviews = jest.fn().mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number }) => {
+  return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
+});
 beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation();
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
 });
 
+afterEach(() => { 
+  jest.clearAllMocks();
+})
+
 afterAll(() => {
   process.env.REPO_ROOT = undefined;
+  jest.resetAllMocks();
 });
 
 let mockCreateReview: (errorMessage: string) => Promise<any>;
+const SHA = 'ABC';
+
+type Subset<K> = {
+    [attr in keyof K]?: K[attr] extends object
+        ? Subset<K[attr]>
+        : K[attr] extends object | null
+        ? Subset<K[attr]> | null
+        : K[attr] extends object | null | undefined
+        ? Subset<K[attr]> | null | undefined
+        : K[attr];
+};
 
 describe('breaking changes format', () => {
   test('disallow variations to "BREAKING CHANGE:"', async () => {
-    const issue = {
+    const issue: Subset<linter.GitHubPr> = {
       number: 1,
       title: 'chore: some title',
       body: 'BREAKING CHANGES:',
@@ -23,7 +46,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
   });
 
   test('the first breaking change should immediately follow "BREAKING CHANGE:"', async () => {
@@ -38,7 +61,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow(/description of the first breaking change should immediately follow/);
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/description of the first breaking change should immediately follow/);
   });
 
   test('invalid title', async () => {
@@ -52,7 +75,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
   });
 
   test('valid title', async () => {
@@ -66,7 +89,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves; // not throw
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
   });
 });
 
@@ -82,7 +105,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   test('invalid scope with aws- prefix', async () => {
@@ -96,7 +119,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
   });
 
   test('valid scope with aws- in summary and body', async () => {
@@ -110,7 +133,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   test('valid with missing scope', async () => {
@@ -124,7 +147,21 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+  });
+
+  test('valid with aws-cdk-lib as a scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(aws-cdk-lib): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   test.each(['core', 'prlint', 'awslint'])('valid scope for packages that dont use aws- prefix', async (scope) => {
@@ -138,12 +175,12 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   })
 });
 
-describe.only('ban breaking changes in stable modules', () => {
-  test.only('breaking change in stable module', async () => {
+describe('ban breaking changes in stable modules', () => {
+  test('breaking change in stable module', async () => {
     const issue = {
       number: 1,
       title: 'chore(s3): some title',
@@ -154,7 +191,7 @@ describe.only('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 
   test('breaking changes multiple in stable modules', async () => {
@@ -172,7 +209,7 @@ describe.only('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
   });
 
   test('unless exempt-breaking-change label added', async () => {
@@ -189,7 +226,7 @@ describe.only('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validate()).resolves; // not throw
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
   });
 
   test('with additional "closes" footer', async () => {
@@ -209,7 +246,7 @@ describe.only('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validate()).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 });
 
@@ -240,7 +277,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   test('integ files not changed in feat', async () => {
@@ -269,7 +306,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow(
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
@@ -304,7 +341,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow(
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
@@ -339,7 +376,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow(
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
@@ -374,7 +411,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validate()).rejects.toThrow(
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
       '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
@@ -406,7 +443,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prLinter = configureMock(issue, files);
-    expect(await prLinter.validate()).resolves;
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   test('integ files not changed, not a feature', async () => {
@@ -432,7 +469,7 @@ describe('integration tests required on features', () => {
       }
     ];
     const prlinter = configureMock(issue, files);
-    expect(await prlinter.validate()).resolves;
+    expect(await prlinter.validatePullRequestTarget(SHA)).resolves;
   });
 
   describe('CLI file changed', () => {
@@ -453,13 +490,13 @@ describe('integration tests required on features', () => {
 
     test('no label throws error', async () => {
       const prLinter = configureMock(issue, files);
-      await expect(prLinter.validate()).rejects.toThrow(/CLI code has changed. A maintainer must/);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/CLI code has changed. A maintainer must/);
     });
 
     test('with label no error', async () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
-      await prLinter.validate();
+      await prLinter.validatePullRequestTarget(SHA);
       // THEN: no exception
     });
 
@@ -472,14 +509,214 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(issue, files);
-      await prLinter.validate();
+      await prLinter.validatePullRequestTarget(SHA);
       // THEN: no exception
     })
   });
+
+  describe('assess needs review from status event', () => { 
+    const pr = {
+      draft: false,
+      mergeable_state: 'behind',
+      number: 1234,
+      labels: [],
+    };
+    beforeEach(() => { 
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'DISMISSED' }]
+        }
+      });
+    })
+
+    test('needs a review', async () => {
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "labels": ["pr/needs-review"],
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+    });
+
+    test('does not need a review because of request changes', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('needs a review because of exemption request', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr-linter/exemption-requested',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "labels": ["pr/needs-review"],
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+    });
+
+    test('does not need a review if member has requested changes', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
+          ]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr-linter/exemption-requested',
+        },
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('does not need a review if member has approved', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'APPROVED' },
+          ]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('review happens even if linter fails', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
+          ]
+        }
+      });
+      (pr as any).title = 'blah';
+      (pr as any).labels = [
+        {
+          name: 'pr-linter/exemption-requested',
+        },
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+  });
 });
 
-
-function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
+function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
       return { data: pr };
@@ -495,9 +732,7 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
       }
     },
 
-    listReviews(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
-    },
+    listReviews: mockListReviews,
 
     dismissReview() {},
   };
@@ -509,7 +744,25 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
 
     listComments() {
       return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }] }
-    }
+    },
+
+    removeLabel: mockRemoveLabel,
+    addLabels: mockAddLabel,
+  };
+
+  const reposClient = {
+    listCommitStatusesForRef() {
+      return {
+        data: [{
+          context: linter.CODE_BUILD_CONTEXT,
+          state: 'success',
+        }],
+      }
+    },
+  };
+
+  const searchClient = {
+    issuesAndPullRequests() {},
   };
   return new linter.PullRequestLinter({
     owner: 'aws',
@@ -520,6 +773,8 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
     client: {
       pulls: pullsClient as any,
       issues: issuesClient as any,
+      search: searchClient as any,
+      repos: reposClient as any,
       paginate: (method: any, args: any) => { return method(args).data },
     } as any,
   })

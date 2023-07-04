@@ -2,12 +2,11 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack, Duration } from 'aws-cdk-lib';
-import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
+import { Stack, Duration, Tags } from 'aws-cdk-lib';
+import { capitalizePropertyNames } from './utils';
 import * as batch from '../lib';
-import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
+import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment } from '../lib';
 import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
-
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
@@ -199,7 +198,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       vpc,
       images: [
         {
-          image: ec2.MachineImage.latestAmazonLinux(),
+          image: ec2.MachineImage.latestAmazonLinux2(),
         },
       ],
     });
@@ -211,7 +210,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ...defaultComputeResources,
         Ec2Configuration: [
           {
-            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
+            ImageIdOverride: { Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
             ImageType: expectedImageType,
           },
         ],
@@ -565,12 +564,60 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('respects tags', () => {
+    // WHEN
+    const ce = new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+    });
+
+    Tags.of(ce).add('superfood', 'acai');
+    Tags.of(ce).add('super', 'salamander');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Tags: {
+          superfood: 'acai',
+          super: 'salamander',
+        },
+      },
+    });
+  });
+
   test('can be imported from arn', () => {
     // WHEN
     const ce = ManagedEc2EcsComputeEnvironment.fromManagedEc2EcsComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
 
     // THEN
     expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+  });
+
+  test('attach necessary managed policy to instance role', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role',
+            ],
+          ],
+        },
+      ],
+    });
   });
 
   test('throws when no instance types are provided', () => {
@@ -861,5 +908,39 @@ describe('ManagedEc2EksComputeEnvironment', () => {
         ],
       },
     });
+  });
+});
+
+describe('FargateComputeEnvironment', () => {
+  beforeEach(() => {
+    stack = new Stack();
+    vpc = new ec2.Vpc(stack, 'vpc');
+  });
+
+  test('respects name', () => {
+    // WHEN
+    new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
+      vpc,
+      maxvCpus: 512,
+      computeEnvironmentName: 'maxPropsFargateCE',
+      replaceComputeEnvironment: true,
+      spot: true,
+      terminateOnUpdate: true,
+      updateTimeout: Duration.minutes(30),
+      updateToLatestImageVersion: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeEnvironmentName: 'maxPropsFargateCE',
+    });
+  });
+
+  test('can be imported from arn', () => {
+    // WHEN
+    const ce = FargateComputeEnvironment.fromFargateComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+
+    // THEN
+    expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
   });
 });

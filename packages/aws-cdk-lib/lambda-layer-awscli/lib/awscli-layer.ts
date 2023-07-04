@@ -1,7 +1,7 @@
 import { ASSET_FILE, LAYER_SOURCE_DIR } from '@aws-cdk/asset-awscli-v1';
+import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import { FileSystem } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * An AWS Lambda layer that includes the AWS CLI.

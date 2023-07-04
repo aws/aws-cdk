@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib';
+import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
@@ -64,6 +64,18 @@ export class EngineVersion {
    * Neptune engine version 1.2.0.0
    */
   public static readonly V1_2_0_0 = new EngineVersion('1.2.0.0');
+  /**
+   * Neptune engine version 1.2.0.1
+   */
+  public static readonly V1_2_0_1 = new EngineVersion('1.2.0.1');
+  /**
+   * Neptune engine version 1.2.0.2
+   */
+  public static readonly V1_2_0_2 = new EngineVersion('1.2.0.2');
+  /**
+   * Neptune engine version 1.2.1.0
+   */
+  public static readonly V1_2_1_0 = new EngineVersion('1.2.1.0');
 
   /**
    * Constructor for specifying a custom engine version

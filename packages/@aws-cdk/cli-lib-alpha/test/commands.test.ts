@@ -1,4 +1,4 @@
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 import { RequireApproval, StackActivityProgress } from '../lib/commands';
@@ -31,7 +31,6 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
-
 
   test('deploy with all arguments', async () => {
     // WHEN
@@ -70,6 +69,9 @@ describe('deploy', () => {
       versionReporting: true,
       usePreviousParameters: true,
       progress: StackActivityProgress.BAR,
+      concurrency: 5,
+      assetParallelism: true,
+      assetPrebuild: true,
     });
 
     // THEN
@@ -83,6 +85,9 @@ describe('deploy', () => {
         '--previous-parameters',
         '--no-rollback',
         '--no-staging',
+        '--asset-parallelism',
+        '--asset-prebuild',
+        '--concurrency', '5',
         '--reuse-assets', 'asset1234',
         '--reuse-assets', 'asset5678',
         '--outputs-file', 'outputs.json',
@@ -112,7 +117,6 @@ describe('deploy', () => {
       expect.anything(),
     );
   });
-
 
   test('can parse boolean arguments', async () => {
     // WHEN
@@ -158,7 +162,6 @@ describe('deploy', () => {
     );
   });
 
-
   test('can parse context', async () => {
     // WHEN
     await cdk.deploy({
@@ -198,6 +201,25 @@ describe('deploy', () => {
         'deploy',
         '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
         '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
+        '--progress', 'events',
+        'Stack1',
+      ],
+      expect.anything(),
+    );
+  });
+
+  test('can parse number arguments', async () => {
+    // WHEN
+    await cdk.deploy({
+      stacks: ['Stack1'],
+      concurrency: 5,
+    });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      [
+        'deploy',
+        '--concurrency', '5',
         '--progress', 'events',
         'Stack1',
       ],
@@ -259,7 +281,6 @@ describe('destroy', () => {
     );
   });
 });
-
 
 describe('list', () => {
   test('default list', async () => {

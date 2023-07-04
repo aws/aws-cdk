@@ -3,7 +3,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
@@ -31,6 +31,16 @@ export class WorkerType {
    * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
    */
   public static readonly G_2X = new WorkerType('G.2X');
+
+  /**
+   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_4X = new WorkerType('G.4X');
+
+  /**
+   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  public static readonly G_8X = new WorkerType('G.8X');
 
   /**
    * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
@@ -675,6 +685,7 @@ export class Job extends JobBase {
         name: executable.type.name,
         scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
+        runtime: executable.runtime ? executable.runtime.name : undefined,
       },
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
@@ -799,7 +810,6 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
     ...props,
   }).attachTo(rule);
 }
-
 
 /**
  * Returns the job arn

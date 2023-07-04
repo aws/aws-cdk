@@ -1,14 +1,3 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as notifications from '../../aws-codestarnotifications';
-import * as ec2 from '../../aws-ec2';
-import * as ecr from '../../aws-ecr';
-import { DockerImageAsset, DockerImageAssetProps } from '../../aws-ecr-assets';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 import { Construct, IConstruct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -24,6 +13,17 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as notifications from '../../aws-codestarnotifications';
+import * as ec2 from '../../aws-ec2';
+import * as ecr from '../../aws-ecr';
+import { DockerImageAsset, DockerImageAssetProps } from '../../aws-ecr-assets';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
+import * as secretsmanager from '../../aws-secretsmanager';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -1733,6 +1733,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
   /** The `aws/codebuild/standard:6.0` build image. */
   public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:6.0');
+  /** The `aws/codebuild/standard:7.0` build image. */
+  public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:7.0');
 
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
@@ -1748,6 +1750,8 @@ export class LinuxBuildImage implements IBuildImage {
    * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0 instead.
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
+  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use `STANDARD_2_0` and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1887,7 +1891,7 @@ export class LinuxBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  public validate(_: BuildEnvironment): string[] {
+  public validate(_env: BuildEnvironment): string[] {
     return [];
   }
 

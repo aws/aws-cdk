@@ -11,7 +11,6 @@ describe('Batch job event target', () => {
   let jobQueue: batch.IJobQueue;
   let jobDefinition: batch.IJobDefinition;
 
-
   beforeEach(() => {
     stack = new Stack();
     jobQueue = new batch.JobQueue(stack, 'MyQueue', {
@@ -48,7 +47,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -79,7 +78,7 @@ describe('Batch job event target', () => {
               { Ref: 'MyJob8719E923' },
               {
                 'Fn::GetAtt': [
-                  'MyQueue4F9177CF',
+                  'MyQueueE6CA6235',
                   'JobQueueArn',
                 ],
               },
@@ -123,7 +122,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -221,7 +220,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },
@@ -285,7 +284,7 @@ describe('Batch job event target', () => {
         {
           Arn: {
             'Fn::GetAtt': [
-              'MyQueue4F9177CF',
+              'MyQueueE6CA6235',
               'JobQueueArn',
             ],
           },

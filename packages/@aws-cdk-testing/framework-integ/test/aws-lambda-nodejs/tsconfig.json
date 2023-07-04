@@ -4,12 +4,12 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "alwaysStrict": true,
-    "charset": "utf8",
     "declaration": true,
     "experimentalDecorators": true,
     "incremental": true,
     "lib": [
-      "es2020"
+      "es2020",
+      "dom"
     ],
     "module": "CommonJS",
     "newLine": "lf",

@@ -3,8 +3,8 @@ import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as cdk from 'aws-cdk-lib';
-import { Lazy } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
+import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
@@ -30,6 +30,16 @@ export enum ImageRepositoryType {
  */
 export class Cpu {
   /**
+   * 0.25 vCPU
+   */
+  public static readonly QUARTER_VCPU = Cpu.of('0.25 vCPU');
+
+  /**
+   * 0.5 vCPU
+   */
+  public static readonly HALF_VCPU = Cpu.of('0.5 vCPU');
+
+  /**
    * 1 vCPU
    */
   public static readonly ONE_VCPU = Cpu.of('1 vCPU')
@@ -40,13 +50,30 @@ export class Cpu {
   public static readonly TWO_VCPU = Cpu.of('2 vCPU')
 
   /**
+   * 4 vCPU
+   */
+  public static readonly FOUR_VCPU = Cpu.of('4 vCPU')
+
+  /**
    * Custom CPU unit
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-cpu
    *
    * @param unit custom CPU unit
    */
-  public static of(unit: string) { return new Cpu(unit); }
+  public static of(unit: string): Cpu {
+    const numericPatterns = ['256', '512', '1024', '2048', '4096'];
+    const unitPatterns = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('CPU value is invalid');
+    };
+
+    return new Cpu(unit);
+  }
 
   /**
    *
@@ -55,11 +82,20 @@ export class Cpu {
   private constructor(public readonly unit: string) {}
 }
 
-
 /**
  * The amount of memory reserved for each instance of your App Runner service.
  */
 export class Memory {
+  /**
+   * 0.5 GB(for 0.25 vCPU)
+   */
+  public static readonly HALF_GB = Memory.of('0.5 GB')
+
+  /**
+   * 1 GB(for 0.25 or 0.5 vCPU)
+   */
+  public static readonly ONE_GB = Memory.of('1 GB')
+
   /**
    * 2 GB(for 1 vCPU)
    */
@@ -76,13 +112,45 @@ export class Memory {
   public static readonly FOUR_GB = Memory.of('4 GB')
 
   /**
+   * 6 GB(for 2 vCPU)
+   */
+  public static readonly SIX_GB = Memory.of('6 GB')
+
+  /**
+   * 8 GB(for 4 vCPU)
+   */
+  public static readonly EIGHT_GB = Memory.of('8 GB')
+
+  /**
+   * 10 GB(for 4 vCPU)
+   */
+  public static readonly TEN_GB = Memory.of('10 GB')
+
+  /**
+   * 12 GB(for 4 vCPU)
+   */
+  public static readonly TWELVE_GB = Memory.of('12 GB')
+
+  /**
    * Custom Memory unit
    *
    * @param unit custom Memory unit
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
-  public static of(unit: string) { return new Memory(unit); }
+  public static of(unit: string): Memory {
+    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
+    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const allowedPatterns = numericPatterns.concat(unitPatterns);
+    const isValidValue = allowedPatterns.some(
+      (pattern) => pattern === unit,
+    );
+    if (!isValidValue) {
+      throw new Error('Memory value is invalid');
+    };
+
+    return new Memory(unit);
+  }
 
   /**
    *
@@ -973,7 +1041,6 @@ export class Service extends cdk.Resource {
 
   /**
    * The name of the service.
-   * @attribute
    */
   readonly serviceName: string;
 
@@ -1038,7 +1105,15 @@ export class Service extends cdk.Resource {
     this.serviceId = resource.attrServiceId;
     this.serviceUrl = resource.attrServiceUrl;
     this.serviceStatus = resource.attrStatus;
-    this.serviceName = resource.ref;
+    /**
+     * Cloudformaton does not return the serviceName attribute so we extract it from the serviceArn.
+     * The ARN comes with this format:
+     * arn:aws:apprunner:us-east-1:123456789012:service/SERVICE_NAME/SERVICE_ID
+     */
+    // First, get the last element by splitting with ':'
+    const resourceFullName = cdk.Fn.select(5, cdk.Fn.split(':', this.serviceArn));
+    // Now, split the resourceFullName with '/' to get the serviceName
+    this.serviceName = cdk.Fn.select(1, cdk.Fn.split('/', resourceFullName));
   }
 
   /**

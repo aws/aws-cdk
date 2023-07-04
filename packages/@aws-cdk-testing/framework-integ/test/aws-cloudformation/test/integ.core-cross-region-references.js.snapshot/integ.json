@@ -1,9 +1,10 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "testCases": {
     "cross-region-references/DefaultTest": {
       "stacks": [
-        "cross-region-consumer"
+        "cross-region-consumer",
+        "cross-region-consumer2"
       ],
       "stackUpdateWorkflow": false,
       "assertionStack": "cross-region-references/DefaultTest/DeployAssert",

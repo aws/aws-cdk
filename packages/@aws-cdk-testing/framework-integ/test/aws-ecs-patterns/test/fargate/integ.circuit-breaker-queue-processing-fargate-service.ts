@@ -9,6 +9,7 @@ import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 const app = new App({ postCliContext: { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: false } });
 const stack = new Stack(app, 'aws-ecs-patterns-queue');
 const vpc = new ec2.Vpc(stack, 'VPC', {
+  restrictDefaultSecurityGroup: false,
   maxAzs: 2,
 });
 

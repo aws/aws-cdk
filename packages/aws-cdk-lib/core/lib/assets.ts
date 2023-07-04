@@ -112,7 +112,7 @@ export interface FileAssetSource {
    *
    * The command should produce the location of a ZIP file on `stdout`.
    *
-   * @default - Exactly one of `directory` and `executable` is required
+   * @default - Exactly one of `fileName` and `executable` is required
    */
   readonly executable?: string[];
 
@@ -121,7 +121,7 @@ export interface FileAssetSource {
    * source resides. This can be a path to a file or a directory, depending on the
    * packaging type.
    *
-   * @default - Exactly one of `directory` and `executable` is required
+   * @default - Exactly one of `fileName` and `executable` is required
    */
   readonly fileName?: string;
 
@@ -131,6 +131,21 @@ export interface FileAssetSource {
    * @default - Required if `fileName` is specified.
    */
   readonly packaging?: FileAssetPackaging;
+
+  /**
+   * Whether or not the asset needs to exist beyond deployment time; i.e.
+   * are copied over to a different location and not needed afterwards.
+   * Setting this property to true has an impact on the lifecycle of the asset,
+   * because we will assume that it is safe to delete after the CloudFormation
+   * deployment succeeds.
+   *
+   * For example, Lambda Function assets are copied over to Lambda during
+   * deployment. Therefore, it is not necessary to store the asset in S3, so
+   * we consider those deployTime assets.
+   *
+   * @default false
+   */
+  readonly deployTime?: boolean;
 }
 
 export interface DockerImageAssetSource {
@@ -243,17 +258,26 @@ export interface DockerImageAssetSource {
   readonly dockerOutputs?: string[];
 
   /**
+   * Unique identifier of the docker image asset and its potential revisions.
+   * Required if using AppScopedStagingSynthesizer.
+   *
+   * @default - no asset name
+   */
+  readonly assetName?: string;
+
+  /**
    * Cache from options to pass to the `docker build` command.
+   *
    * @default - no cache from args are passed
    */
   readonly dockerCacheFrom?: DockerCacheOption[];
 
   /**
    * Cache to options to pass to the `docker build` command.
+   *
    * @default - no cache to args are passed
    */
   readonly dockerCacheTo?: DockerCacheOption;
-
 }
 
 /**
@@ -377,7 +401,13 @@ export interface DockerCacheOption {
    * Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.
    * @default {} No options provided
    *
-   * @example { ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`, mode: "max" }
+   * @example
+   * declare const branch: string;
+   *
+   * const params = {
+   *   ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,
+   *   mode: "max",
+   * };
    */
   readonly params?: { [key: string]: string };
 }

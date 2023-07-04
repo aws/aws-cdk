@@ -222,7 +222,6 @@ test('Incorrect go version', () => {
   expect(tryBundle).toBe(false);
 });
 
-
 test('Custom bundling docker image', () => {
   Bundling.bundle({
     entry,
@@ -304,7 +303,6 @@ test('AssetHashType can be specified', () => {
     }),
   });
 });
-
 
 test('with command hooks', () => {
   Bundling.bundle({

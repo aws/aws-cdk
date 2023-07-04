@@ -70,6 +70,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
         },
         ...(this.options.volumes ?? []),
       ],
+      network: this.options.network,
     });
   }
 }
@@ -128,7 +129,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
       `${this.inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
       '-v',
       `${this.outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
-      'alpine',
+      'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
       `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,

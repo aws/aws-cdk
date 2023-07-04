@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.129"
-        }
-      },
       "test-kinesis-stream-action-stack": {
         "id": "test-kinesis-stream-action-stack",
         "path": "test-kinesis-stream-action-stack",
@@ -49,7 +41,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "fqn": "aws-cdk-lib.aws_iot.CfnTopicRule",
                   "version": "0.0.0"
                 }
               },
@@ -57,6 +49,14 @@
                 "id": "TopicRuleActionRole",
                 "path": "test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole",
                 "children": {
+                  "ImportTopicRuleActionRole": {
+                    "id": "ImportTopicRuleActionRole",
+                    "path": "test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "test-kinesis-stream-action-stack/TopicRule/TopicRuleActionRole/Resource",
@@ -78,7 +78,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -116,25 +116,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "fqn": "@aws-cdk/aws-iot-alpha.TopicRule",
               "version": "0.0.0"
             }
           },
@@ -161,20 +161,17 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    },
-                    "streamModeDetails": {
-                      "streamMode": "PROVISIONED"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
               "version": "0.0.0"
             }
           },
@@ -182,19 +179,43 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "test-kinesis-stream-action-stack/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnCondition",
+              "fqn": "aws-cdk-lib.CfnCondition",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "test-kinesis-stream-action-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "test-kinesis-stream-action-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

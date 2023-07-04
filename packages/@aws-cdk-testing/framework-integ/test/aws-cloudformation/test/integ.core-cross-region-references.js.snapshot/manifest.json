@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "cross-region-producer.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/70e0b1af0ea278adf024d80a32c2797554d527123f1dc1eb9f2a894a6d46bc7a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f93ad4a2004b446276ef3fac1ada613b58a45257e6bfd66f18ab8119232f6131.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -75,6 +75,12 @@
             "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
           }
         ],
+        "/cross-region-producer/ExportsWriteruswest209BD44F0/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsWriteruswest209BD44F0A7CF058B"
+          }
+        ],
         "/cross-region-producer/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -106,7 +112,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/33212ba7662e584fce97d4b64b2b7d157f5f1bac2b2ffe4e25e18545b514ec8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/040feadb656c8ee041eefecb29ba4dce4c7624b4251262b31de71eb50f7b03d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -198,6 +204,114 @@
       },
       "displayName": "cross-region-consumer"
     },
+    "cross-region-consumer2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cross-region-consumer2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cross-region-consumer2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "cross-region-consumer2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/53c15caedb9b417bc96d7984a83b406becc29ab06fca463bc0beceecbcf6d0a5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cross-region-consumer2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cross-region-producer",
+        "cross-region-consumer2.assets"
+      ],
+      "metadata": {
+        "/cross-region-consumer2/IntegNested/IntegNestedParameter0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedParameter04B9B8A01"
+          }
+        ],
+        "/cross-region-consumer2/IntegNested/IntegNestedParameter1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedParameter1DE6274D4"
+          }
+        ],
+        "/cross-region-consumer2/IntegNested/reference-to-crossregionconsumer2ExportsReader29C6F905--cdk--exports--cross-region-consumer2--crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+          }
+        ],
+        "/cross-region-consumer2/IntegNested/reference-to-crossregionconsumer2ExportsReader29C6F905--cdk--exports--cross-region-consumer2--crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetocrossregionconsumer2ExportsReader29C6F905cdkexportscrossregionconsumer2crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+          }
+        ],
+        "/cross-region-consumer2/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+          }
+        ],
+        "/cross-region-consumer2/IntegParameter0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegParameter02A1817A4"
+          }
+        ],
+        "/cross-region-consumer2/IntegParameter1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegParameter1EDBEF1C6"
+          }
+        ],
+        "/cross-region-consumer2/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/cross-region-consumer2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cross-region-consumer2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cross-region-consumer2"
+    },
     "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -214,7 +328,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e62b4ad819f8f21c0c8707091f053b8b322398afc1a04fd089b1be1436fb011a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abfdad43ef2795ab9e253a1b3cb3bfd72c1d00fa011b42ce99ffdff17b83c947.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

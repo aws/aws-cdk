@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
@@ -15,6 +15,7 @@ const CFN_CONTEXT = {
 describe('new style synthesis', () => {
   let app: App;
   let stack: Stack;
+  let nestedStack: NestedStack;
 
   beforeEach(() => {
     app = new App({
@@ -60,7 +61,6 @@ describe('new style synthesis', () => {
       },
     });
 
-
   });
 
   test('version check is added to both template and manifest artifact', () => {
@@ -103,7 +103,6 @@ describe('new style synthesis', () => {
     const template = app.synth().getStackByName('Stack2').template;
     expect(template?.Rules?.CheckBootstrapVersion).toEqual(undefined);
 
-
   });
 
   test('customize version parameter', () => {
@@ -134,7 +133,6 @@ describe('new style synthesis', () => {
   test('contains asset but not requiring a specific version parameter', () => {
     // GIVEN
     class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
-
 
       /**
        * Synthesize the associated bootstrap stack to the session.
@@ -188,6 +186,23 @@ describe('new style synthesis', () => {
     const assembly = app.synth();
     expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
+  });
+
+  test('nested Stack uses the lookup role ARN of the parent stack', () => {
+    // GIVEN
+    const myapp = new App();
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    nestedStack = new NestedStack(mystack, 'nestedStack');
+
+    // THEN
+    expect(nestedStack.synthesizer.lookupRole).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
 
   });
 
@@ -206,7 +221,6 @@ describe('new style synthesis', () => {
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
 
-
   });
 
   test('add docker image asset', () => {
@@ -219,7 +233,6 @@ describe('new style synthesis', () => {
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.repositoryName)).toEqual('cdk-hnb659fds-container-assets-the_account-the_region');
     expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
-
 
   });
 
@@ -282,7 +295,6 @@ describe('new style synthesis', () => {
       }
     }
 
-
   });
 
   test('customize publishing resources', () => {
@@ -331,7 +343,6 @@ describe('new style synthesis', () => {
       assumeRoleExternalId: 'image-external-id',
     });
 
-
   });
 
   test('customize deploy role externalId', () => {
@@ -350,7 +361,6 @@ describe('new style synthesis', () => {
 
     const stackArtifact = asm.getStackByName(mystack.stackName);
     expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
-
 
   });
 
@@ -394,7 +404,6 @@ describe('new style synthesis', () => {
     const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://file-asset-bucket/000000000000/${templateHash}`);
-
 
   });
 

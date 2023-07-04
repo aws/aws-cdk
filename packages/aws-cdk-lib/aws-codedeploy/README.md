@@ -141,8 +141,6 @@ With Application Load Balancer or Network Load Balancer,
 you provide a Target Group as the load balancer:
 
 ```ts
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const alb: elbv2.ApplicationLoadBalancer;
 const listener = alb.addListener('Listener', { port: 80 });
 const targetGroup = listener.addTargets('Fleet', { port: 80 });
@@ -325,8 +323,8 @@ letting you specify precisely how fast a new function version is deployed.
 
 ```ts
 const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
 });
@@ -344,8 +342,8 @@ You can specify a custom name for your deployment config, but if you do you will
 
 ```ts
 const config = new codedeploy.LambdaDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
   deploymentConfigName: 'MyDeploymentConfig',
@@ -416,7 +414,7 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
@@ -456,43 +454,48 @@ and green target groups.
 ```ts
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const listener: elbv2.IApplicationListener;
+
 // Alarm on the number of unhealthy ECS tasks in each target group
-const blueUnhealthyHosts = new cloudwatch.Alarm(stack, 'BlueUnhealthyHosts', {
-  alarmName: stack.stackName + '-Unhealthy-Hosts-Blue',
+const blueUnhealthyHosts = new cloudwatch.Alarm(this, 'BlueUnhealthyHosts', {
+  alarmName: Stack.of(this).stackName + '-Unhealthy-Hosts-Blue',
   metric: blueTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });
 
-const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
-  alarmName: stack.stackName + '-Unhealthy-Hosts-Green',
+const greenUnhealthyHosts = new cloudwatch.Alarm(this, 'GreenUnhealthyHosts', {
+  alarmName: Stack.of(this).stackName + '-Unhealthy-Hosts-Green',
   metric: greenTargetGroup.metricUnhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });
 
 // Alarm on the number of HTTP 5xx responses returned by each target group
-const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
-  alarmName: stack.stackName + '-Http-5xx-Blue',
+const blueApiFailure = new cloudwatch.Alarm(this, 'Blue5xx', {
+  alarmName: Stack.of(this).stackName + '-Http-5xx-Blue',
   metric: blueTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
-    { period: cdk.Duration.minutes(1) },
+    { period: Duration.minutes(1) },
   ),
   threshold: 1,
   evaluationPeriods: 1,
 });
 
-const greenApiFailure = new cloudwatch.Alarm(stack, 'Green5xx', {
-  alarmName: stack.stackName + '-Http-5xx-Green',
+const greenApiFailure = new cloudwatch.Alarm(this, 'Green5xx', {
+  alarmName: Stack.of(this).stackName + '-Http-5xx-Green',
   metric: greenTargetGroup.metricHttpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
-    { period: cdk.Duration.minutes(1) },
+    { period: Duration.minutes(1) },
   ),
   threshold: 1,
   evaluationPeriods: 1,
 });
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   // CodeDeploy will monitor these alarms during a deployment and automatically roll back
   alarms: [blueUnhealthyHosts, greenUnhealthyHosts, blueApiFailure, greenApiFailure],
   autoRollback: {
@@ -526,7 +529,7 @@ declare const greenTargetGroup: elbv2.ITargetGroup;
 declare const listener: elbv2.IApplicationListener;
 declare const testListener: elbv2.IApplicationListener;
 
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
@@ -558,7 +561,13 @@ If the ContinueDeployment API is not called within the approval wait time period
 deployment and can automatically roll back the deployment.
 
 ```ts
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const testListener: elbv2.IApplicationListener;
+
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   autoRollback: {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
@@ -583,7 +592,18 @@ is complete in order to let the deployment "bake" a while. During this bake time
 CloudWatch alarms specified for the deployment group and will automatically roll back if those alarms go into a failed state.
 
 ```ts
-new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+import { aws_cloudwatch as cloudwatch } from 'aws-cdk-lib';
+
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const blueUnhealthyHosts: cloudwatch.Alarm;
+declare const greenUnhealthyHosts: cloudwatch.Alarm;
+declare const blueApiFailure: cloudwatch.Alarm;
+declare const greenApiFailure: cloudwatch.Alarm;
+
+new codedeploy.EcsDeploymentGroup(this, 'BlueGreenDG', {
   service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
@@ -626,8 +646,8 @@ letting you specify precisely how fast an ECS service is deployed.
 
 ```ts
 new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
 });
@@ -637,8 +657,8 @@ You can specify a custom name for your deployment config, but if you do you will
 
 ```ts
 const config = new codedeploy.EcsDeploymentConfig(this, 'CustomConfig', {
-  trafficRoutingConfig: new codedeploy.TimeBasedCanaryTrafficRoutingConfig({
-    interval: cdk.Duration.minutes(15),
+  trafficRouting: new codedeploy.TimeBasedCanaryTrafficRouting({
+    interval: Duration.minutes(15),
     percentage: 5,
   }),
   deploymentConfigName: 'MyDeploymentConfig',
@@ -661,8 +681,8 @@ const deploymentConfig = codedeploy.EcsDeploymentConfig.fromEcsDeploymentConfigN
 
 An experimental construct is available on the Construct Hub called [@cdklabs/cdk-ecs-codedeploy](https://constructs.dev/packages/@cdklabs/cdk-ecs-codedeploy) that manages ECS CodeDeploy deployments.
 
-```ts
-declare const deploymentGroup: codeDeploy.IEcsDeploymentGroup;
+```ts fixture=constructhub
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
 declare const taskDefinition: ecs.ITaskDefinition;
 
 new EcsDeployment({
@@ -677,7 +697,10 @@ new EcsDeployment({
 
 The deployment will use the AutoRollbackConfig for the EcsDeploymentGroup unless it is overridden in the deployment:
 
-```ts
+```ts fixture=constructhub
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
 new EcsDeployment({
   deploymentGroup,
   targetService: {
@@ -695,7 +718,10 @@ new EcsDeployment({
 
 By default, the CodeDeploy Deployment will timeout after 30 minutes. The timeout value can be overridden:
 
-```ts
+```ts fixture=constructhub
+declare const deploymentGroup: codedeploy.IEcsDeploymentGroup;
+declare const taskDefinition: ecs.ITaskDefinition;
+
 new EcsDeployment({
   deploymentGroup,
   targetService: {

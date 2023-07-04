@@ -9,7 +9,8 @@ import { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
-import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
+import { Token } from '../../token';
+import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
 
 /**
  * Properties for an ExportReader
@@ -21,6 +22,43 @@ export interface ExportWriterProps {
    * @default - the stack region
    */
   readonly region?: string;
+}
+
+/**
+ * Create our own CustomResourceProvider so that we can add a single policy
+ * with a list of ARNs instead of having to create a separate policy statement per ARN.
+ */
+class CRProvider extends CustomResourceProvider {
+  public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps): CRProvider {
+    const id = `${uniqueid}CustomResourceProvider`;
+    const stack = Stack.of(scope);
+    const provider = stack.node.tryFindChild(id) as CRProvider
+      ?? new CRProvider(stack, id, props);
+
+    return provider;
+  }
+
+  private readonly resourceArns = new Set<string>();
+  constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
+    super(scope, id, props);
+    this.addToRolePolicy({
+      Effect: 'Allow',
+      Resource: Lazy.list({ produce: () => Array.from(this.resourceArns) }),
+      Action: [
+        'ssm:DeleteParameters',
+        'ssm:ListTagsForResource',
+        'ssm:GetParameters',
+        'ssm:PutParameter',
+      ],
+    });
+  }
+
+  /**
+   * Add a resource ARN to the existing policy statement
+   */
+  public addResourceArn(arn: string): void {
+    this.resourceArns.add(arn);
+  }
 }
 
 /**
@@ -54,31 +92,19 @@ export class ExportWriter extends Construct {
       });
   }
   private readonly _references: CrossRegionExports = {};
+  private readonly provider: CRProvider;
   constructor(scope: Construct, id: string, props: ExportWriterProps) {
     super(scope, id);
     const stack = Stack.of(this);
     const region = props.region ?? stack.region;
 
     const resourceType = 'Custom::CrossRegionExportWriter';
-    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
+    this.provider = CRProvider.getOrCreateProvider(this, resourceType, {
       codeDirectory: path.join(__dirname, 'cross-region-ssm-writer-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
-      policyStatements: [{
-        Effect: 'Allow',
-        Resource: stack.formatArn({
-          service: 'ssm',
-          resource: 'parameter',
-          region,
-          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
-        }),
-        Action: [
-          'ssm:DeleteParameters',
-          'ssm:ListTagsForResource',
-          'ssm:GetParameters',
-          'ssm:PutParameter',
-        ],
-      }],
+      runtime: builtInCustomResourceProviderNodeRuntime(this),
     });
+
+    this.addRegionToPolicy(region);
 
     const properties: ExportWriterCRProps = {
       region: region,
@@ -86,7 +112,7 @@ export class ExportWriter extends Construct {
     };
     new CustomResource(this, 'Resource', {
       resourceType: resourceType,
-      serviceToken,
+      serviceToken: this.provider.serviceToken,
       properties: {
         WriterProps: properties,
       },
@@ -115,11 +141,30 @@ export class ExportWriter extends Construct {
   }
 
   /**
+   * Add a resource arn for the consuming stack region
+   * Each writer could be writing to multiple regions and needs
+   * permissions to each region.
+   *
+   * If the region is not resolved then do not add anything.
+   */
+  private addRegionToPolicy(region: string): void {
+    if (!Token.isUnresolved(region)) {
+      this.provider.addResourceArn(Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        region,
+        resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
+      }));
+    }
+  }
+
+  /**
    * Add the export to the export reader which is created in the importing stack
    */
   private addToExportReader(exportName: string, exportValueRef: Intrinsic, importStack: Stack): Intrinsic {
     const readerConstructName = makeUniqueId(['ExportsReader']);
     const exportReader = ExportReader.getOrCreate(importStack.nestedStackParent ?? importStack, readerConstructName);
+    this.addRegionToPolicy(importStack.region);
 
     return exportReader.importValue(exportName, exportValueRef);
   }

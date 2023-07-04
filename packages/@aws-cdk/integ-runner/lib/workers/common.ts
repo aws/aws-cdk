@@ -57,7 +57,6 @@ export interface DestructiveChange {
   readonly impact: ResourceImpact;
 }
 
-
 /**
  * Represents integration tests metrics for a given worker
  */
@@ -162,6 +161,13 @@ export interface IntegTestOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * true if running in watch mode
+   *
+   * @default false
+   */
+  readonly watch?: boolean;
 }
 
 /**
