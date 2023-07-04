@@ -221,24 +221,6 @@ new glue.Table(this, 'MyTable', {
 });
 ```
 
-However, if your data will not reside in a S3 bucket, you can use the `externalDataLocation` property to point to the data location:
-
-```ts
-declare const myDatabase: glue.Database;
-new glue.Table(this, 'MyTable', {
-  externalDataLocation: 'default_db_public_example', // A table in Redshift
-  // ...
-  database: myDatabase,
-  columns: [{
-    name: 'col1',
-    type: glue.Schema.STRING,
-  }],
-  dataFormat: glue.DataFormat.JSON,
-});
-```
-
-Using `externalDataLocation` will override the `bucket` and `s3Prefix` properties.
-
 ### Partition Keys
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
@@ -431,13 +413,14 @@ new glue.Table(this, 'MyTable', {
 
 ### Glue Connections
 
-Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog. The `connection` property of the `Table` class allows you to specify a Glue Connection to be associated with the table.
+Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog. The `connection` property of the `Table` class allows you to specify a Glue Connection to be associated with the table. Use this in combination with the `externalDataLocation` property to specify an internal destination that the connection will point to:
 
 ```ts
 declare const myConnection: glue.Connection;
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   connection: myConnection,
+  externalDataLocation: 'default_db_public_example', // A table in Redshift
   // ...
   database: myDatabase,
   columns: [{
