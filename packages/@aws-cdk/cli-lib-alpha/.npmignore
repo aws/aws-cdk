@@ -25,6 +25,7 @@ tsconfig.json
 !lib/main.js
 !lib/bridge.js
 !lib/setup-sandbox.js
+!lib/api/bootstrap/bootstrap-template.yaml
 !*.d.ts
 !*.lit.ts
 !rosetta/
