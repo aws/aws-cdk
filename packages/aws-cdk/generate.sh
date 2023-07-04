@@ -29,6 +29,7 @@ else
     --build-arg NOCTILUCENT_COMMIT_ID="${NOCTILUCENT_COMMIT_ID}"                \
     --file lib/vendor/noctilucent/Dockerfile                                    \
     --target wasm                                                               \
-    --output type=local,dest=lib/vendor/noctilucent                             \
+    --output type=tar,dest=lib/vendor/noctilucent/noctilucent.tar               \
     lib/vendor/noctilucent
+  tar -C lib/vendor/noctilucent -xvf lib/vendor/noctilucent/noctilucent.tar
 fi
