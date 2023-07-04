@@ -2092,9 +2092,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      '`gp3` volumes iops must be between 3000 and 16000.'
-    );
+    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2118,9 +2116,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow(
-      'throughput property takes a minimum of 125 and a maximum of 1000.'
-    );
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
 
     expect(() => {
       const domainProps: DomainProps = {
