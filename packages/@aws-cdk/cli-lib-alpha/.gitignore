@@ -25,3 +25,4 @@ npm-shrinkwrap.json
 junit.xml
 
 lib/*.wasm
+lib/*.yaml
