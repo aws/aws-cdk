@@ -60,7 +60,11 @@ export async function validateSpecificationEvolution(specProducer: () => Promise
  */
 function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
   const newPropsTypes = newSpec.PropertyTypes ?? {};
-  const disappearedKeys = Object.keys(oldSpec.PropertyTypes ?? {}).filter(k => !(k in newPropsTypes));
+  const disappearedKeys = Object.keys(oldSpec.PropertyTypes ?? {})
+    .filter(k => !(k in newPropsTypes))
+    // Marked as deleted on purpose
+    .filter(k => !(newSpec.DeletedPropertyTypes?.[k]));
+
   if (disappearedKeys.length === 0) {
     return;
   }
@@ -70,12 +74,9 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
   for (const key of disappearedKeys) {
     const [cfnResource, typeName] = key.split('.');
     const usages = findTypeUsages(oldSpec, cfnResource, typeName);
-    if (usages.length === 0) {
-      // Might have disappeared, but no one should have been using this
-      continue;
-    }
 
     operations.push({
+      $comment: `If ${cfnResource}.${typeName} was renamed, use this and the 'replace's below. Remove this comment.`,
       op: 'move',
       from: `/PropertyTypes/${cfnResource}.<NEW_TYPE_NAME_HERE>`,
       path: `/PropertyTypes/${cfnResource}.${typeName}`,
@@ -86,6 +87,13 @@ function validatePropertyTypeNameConsistency(oldSpec: any, newSpec: any) {
       path,
       value: typeName,
     })));
+
+    operations.push({
+      $comment: `If ${cfnResource}.${typeName} was deleted on purpose, use this. Remove this comment.`,
+      op: 'add',
+      path: `/DeletedPropertyTypes/${cfnResource}.${typeName}`,
+      value: true,
+    });
   }
 
   const exampleJsonPatch = {

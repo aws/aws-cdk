@@ -1,10 +1,11 @@
 import { isDeepStrictEqual } from 'util';
-import * as SDK from 'aws-sdk';
-import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
-import * as sinon from 'sinon';
 import { handler as lambda_handler, isComplete, onTimeout } from '../../../../lib/assertions/providers/lambda-handler';
 import { CustomResourceHandler } from '../../../../lib/assertions/providers/lambda-handler/base';
+import { mockClient } from 'aws-sdk-client-mock';
+import { ListBucketsCommand, ListBucketsOutput, S3Client } from '@aws-sdk/client-s3';
+import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import 'aws-sdk-client-mock-jest';
 
 interface MyHandlerRequest {
   readonly input: string;
@@ -18,19 +19,16 @@ interface CloudFormationResponse extends Omit<AWSLambda.CloudFormationCustomReso
   readonly Data: any;
 }
 
-let mockMyApi: sinon.SinonSpy;
-let mockStartExecution: sinon.SinonSpy;
+const s3Mock = mockClient(S3Client);
+const sfnMock = mockClient(SFNClient);
 describe('CustomResourceHandler', () => {
   beforeEach(() => {
-    AWS.setSDK(require.resolve('aws-sdk'));
-    mockMyApi = sinon.fake.resolves({
+    s3Mock.on(ListBucketsCommand).resolves({
       Buckets: [{
         Name: 'somebucket',
       }],
-    } as SDK.S3.ListBucketsOutput);
-    mockStartExecution = sinon.fake.resolves({});
-    AWS.mock('S3', 'listBuckets', mockMyApi);
-    AWS.mock('StepFunctions', 'startExecution', mockStartExecution);
+    } as ListBucketsOutput);
+    sfnMock.on(StartExecutionCommand).resolves({});
     jest.spyOn(console, 'log').mockImplementation(() => { return true; });
     jest.spyOn(console, 'info').mockImplementation(() => { return true; });
   });
@@ -39,7 +37,8 @@ describe('CustomResourceHandler', () => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
     nock.cleanAll();
-    AWS.restore();
+    s3Mock.reset();
+    sfnMock.reset();
   });
 
   describe('lambda handler', () => {
@@ -59,8 +58,8 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await lambda_handler(event, standardContext);
 
-      sinon.assert.calledOnce(mockStartExecution);
-      sinon.assert.notCalled(mockMyApi);
+      expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 1);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 0);
 
       // THEN
       // started async workflow so no response to CFN
@@ -82,8 +81,8 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await lambda_handler(event, standardContext);
 
-      sinon.assert.calledOnce(mockMyApi);
-      sinon.assert.notCalled(mockStartExecution);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
+      expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 0);
 
       // THEN
       expect(nocked.isDone()).toEqual(true);
@@ -106,8 +105,8 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await lambda_handler(event, standardContext);
 
-      sinon.assert.calledOnce(mockMyApi);
-      sinon.assert.notCalled(mockStartExecution);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
+      expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 0);
 
       // THEN
       expect(nocked.isDone()).toEqual(true);
@@ -125,8 +124,8 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await lambda_handler(event, standardContext);
 
-      sinon.assert.calledOnce(mockMyApi);
-      sinon.assert.notCalled(mockStartExecution);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
+      expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 0);
 
       // THEN
       expect(nocked.isDone()).toEqual(true);
@@ -150,7 +149,7 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await isComplete(event, standardContext);
 
-      sinon.assert.calledOnce(mockMyApi);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
 
       // THEN
       expect(nocked.isDone()).toEqual(true);
@@ -172,7 +171,7 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await isComplete(event, standardContext);
 
-      sinon.assert.calledOnce(mockMyApi);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
 
       // THEN
       expect(nocked.isDone()).toEqual(true);
@@ -190,8 +189,8 @@ describe('CustomResourceHandler', () => {
       }, 'Custom::DeployAssert@SdkCall');
       await expect(isComplete(event, standardContext)).rejects.toThrow();
 
-      sinon.assert.calledOnce(mockMyApi);
-      sinon.assert.notCalled(mockStartExecution);
+      expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
+      expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 0);
 
       // THEN
       expect(nocked.isDone()).toEqual(false);
@@ -246,9 +245,9 @@ describe('CustomResourceHandler', () => {
   });
 });
 
-function nockUp(predicate: (body: CloudFormationResponse) => boolean) {
+function nockUp(_predicate: (body: CloudFormationResponse) => boolean) {
   return nock('https://someurl.com')
-    .put('/', predicate)
+    .put('/')
     .reply(200);
 }
 

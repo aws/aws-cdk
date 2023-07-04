@@ -12,6 +12,7 @@ import {
   Code,
   ParamsAndSecretsLayerVersion,
   ParamsAndSecretsVersions,
+  ParamsAndSecretsLogLevel,
 } from 'aws-cdk-lib/aws-lambda';
 
 const app = new cdk.App();
@@ -32,6 +33,10 @@ class StackUnderTest extends Stack {
 
     const paramsAndSecrets = ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V1_0_103, {
       cacheSize: 100,
+      cacheEnabled: true,
+      httpPort: 8080,
+      logLevel: ParamsAndSecretsLogLevel.DEBUG,
+      maxConnections: 5,
       secretsManagerTtl: cdk.Duration.seconds(100),
       parameterStoreTtl: cdk.Duration.seconds(100),
     });
