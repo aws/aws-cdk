@@ -88,7 +88,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
-export const AUTOSCALING_DISABLE_LAUNCH_CONFIG = '@aws-cdk/aws-autoscaling:disableDefaultLaunchConfigCreation';
+export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -808,11 +808,11 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [AUTOSCALING_DISABLE_LAUNCH_CONFIG]: {
+  [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: {
     type: FlagType.BugFix,
-    summary: 'Do not create a launch configuration when creating an AutoScalingGroup',
+    summary: 'Generate a launch template when creating an AutoScalingGroup',
     detailsMd: `
-      Enable this flag to disallow creating a launch configuration when creating an AutoScalingGroup.
+      Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
       Launch configurations have been deprecated and cannot be created in AWS Accounts created after
       December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
       will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
