@@ -103,12 +103,10 @@ describe('IAM instance profiles', () => {
     });
 
     // WHEN
-    const instanceProfile = new InstanceProfile(stack, 'InstanceProfile', {
+    new InstanceProfile(stack, 'InstanceProfile', {
       role,
       path: '/sample/path/',
     });
-
-    console.log(stack.resolve(instanceProfile.instanceProfileArn));
 
     // THEN
     Template.fromStack(stack).templateMatches({

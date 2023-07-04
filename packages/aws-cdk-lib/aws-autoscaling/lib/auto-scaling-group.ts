@@ -24,7 +24,7 @@ import {
   Token,
   Tokenization, withResolved,
 } from '../../core';
-import { AUTOSCALING_DISABLE_LAUNCH_CONFIG } from '../../cx-api';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
  * Name tag constant
@@ -1304,7 +1304,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
 
       // generate launch template from launch config props when feature flag is set
-      if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+      if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
         const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
           instanceProfileArn: iamProfile.attrArn,
           role: this.role,
@@ -1464,7 +1464,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    if (FeatureFlags.of(this).isEnabled(AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+    if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
       this.launchTemplate?.addSecurityGroup(securityGroup);
     } else {
       if (!this.securityGroups) {

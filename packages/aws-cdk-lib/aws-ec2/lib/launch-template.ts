@@ -624,7 +624,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
-      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_DISABLE_LAUNCH_CONFIG)) {
+      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
       // priority: prop.userData -> userData from machineImage -> undefined
       this.userData = props.userData ?? imageConfig?.userData;
     } else {
