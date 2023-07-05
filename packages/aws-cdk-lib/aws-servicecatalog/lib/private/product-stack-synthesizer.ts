@@ -52,9 +52,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       this.bucketDeployment.addSource(Source.asset(assetPath));
     }
 
-    const physicalName = this.physicalNameOfBucket(this.assetBucket);
-
-    const bucketName = physicalName;
+    const bucketName = this.physicalNameOfBucket(this.assetBucket);;
     if (!asset.fileName) {
       throw new Error('Asset file name is undefined');
     }

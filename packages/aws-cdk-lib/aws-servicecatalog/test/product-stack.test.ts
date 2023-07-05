@@ -22,7 +22,7 @@ describe('ProductStack', () => {
 
     // THEN
     expect(productStack._getAssetBucket()).toBeUndefined();
-  }),
+  });
 
   test('Used defined Asset bucket in product stack with assets', () => {
     // GIVEN
@@ -181,7 +181,7 @@ describe('ProductStack', () => {
     expect(() => {
       new servicecatalog.ProductStack(group, 'ProductStack');
     }).toThrow(/must be defined within scope of another non-product stack/);
-  }),
+  });
 
   test('can be defined as a direct child or an indirect child of a Stack', () => {
     // GIVEN
