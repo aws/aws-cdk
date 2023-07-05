@@ -8,7 +8,10 @@ let db: SpecDatabase;
 
 beforeAll(async () => {
   db = await loadAwsServiceSpec();
+  void db;
 });
+void renderer;
+void AstBuilder;
 
 // Snapshot tests will fail every time the docs get updated
 // eslint-disable-next-line jest/no-commented-out-tests

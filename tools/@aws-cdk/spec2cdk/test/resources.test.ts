@@ -8,6 +8,7 @@ let db: SpecDatabase;
 
 beforeAll(async () => {
   db = await loadAwsServiceSpec();
+  void db;
 });
 void renderer;
 void AstBuilder;
