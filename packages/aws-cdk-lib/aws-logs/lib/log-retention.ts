@@ -221,9 +221,9 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public grantPropagateTagsToLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
-        'logs:ListTagsLogGroup',
-        'logs:TagLogGroup',
-        'logs:UntagLogGroup',
+        'logs:ListTagsForResource',
+        'logs:TagResource',
+        'logs:UntagResource',
       ],
       // only propagate tags to the specific log group
       resources: [cdk.Stack.of(this).formatArn({
