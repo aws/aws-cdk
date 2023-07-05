@@ -9,7 +9,6 @@ import * as pipelines from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
