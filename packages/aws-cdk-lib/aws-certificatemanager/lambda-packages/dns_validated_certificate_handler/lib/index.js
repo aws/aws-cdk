@@ -1,7 +1,7 @@
 'use strict';
 
-import { ACM, waitUntilCertificateValidated } from '@aws-sdk/client-acm';
-import { Route53 } from '@aws-sdk/client-route-53';
+const { ACM, waitUntilCertificateValidated } = require('@aws-sdk/client-acm');
+const { Route53, waitUntilResourceRecordSetsChanged } = require('@aws-sdk/client-route-53');
 
 const defaultSleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -158,8 +158,8 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  * @param {string} arn The certificate ARN
  */
 const deleteCertificate = async function (arn, region, hostedZoneId, route53Endpoint, cleanupRecords) {
-  const acm = new aws.ACM({ region });
-  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
+  const acm = new ACM({ region });
+  const route53 = route53Endpoint ? new Route53({ endpoint: route53Endpoint }) : new Route53();
 
   try {
     console.log(`Waiting for certificate ${arn} to become unused`);
