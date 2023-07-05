@@ -295,8 +295,8 @@ export interface ContainerDefinitionOptions {
 
   /**
    * The user to use inside the container. This parameter maps to User in the Create a container section of the Docker Remote API and the --user option to docker run.
-   * 
-   * @see {@link https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user|ContainerDefinition User}
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user
    * @default root
    */
   readonly user?: string;
