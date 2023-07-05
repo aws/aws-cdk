@@ -97,23 +97,28 @@ export class LogRetention extends Construct implements cdk.ITaggable {
     // Custom resource provider
     const provider = this.ensureSingletonLogRetentionFunction(props);
 
-    // if removalPolicy is DESTROY, add action for DeleteLogGroup
-    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
-      provider.grantDeleteLogGroup(props.logGroupName);
-    }
-
-    // if propagateTags is true, add ListTagGroup, TagLogGroup, and UntagLogGroup actions
-    if (props.propagateTags) {
-      provider.grantPropagateTagsToLogGroup(props.logGroupName);
-    }
-
-    const logGroupArn = cdk.Stack.of(this).formatArn({
+    // format: arn:aws:logs:<region>:<account-id>:log-group:<log-group-name>
+    const logGroupBaseArn = cdk.Stack.of(this).formatArn({
       region: props.logGroupRegion,
       service: 'logs',
       resource: 'log-group',
       resourceName: `${props.logGroupName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
+    this.logGroupArn = logGroupBaseArn + ':*';
+
+    // if removalPolicy is DESTROY, add action for DeleteLogGroup
+    if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
+      provider.grantDeleteLogGroup(this.logGroupArn);
+    }
+
+    // if propagateTags is true, add ListResource, TagResource, and UntagResource actions
+    // cloudwatchlogs tagging resource api calls use base arn format and so granting must use the same base arn
+    if (props.propagateTags) {
+      provider.grantPropagateTagsToLogGroup(logGroupBaseArn);
+    }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
@@ -123,7 +128,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        LogGroupArn: logGroupArn,
+        LogGroupArn: logGroupBaseArn,
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
@@ -135,10 +140,6 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         Tags: this.tags.renderedTags,
       },
     });
-
-    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
-    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
-    this.logGroupArn = logGroupArn + ':*';
   }
 
   /**
@@ -218,7 +219,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   /**
    * @internal
    */
-  public grantPropagateTagsToLogGroup(logGroupName: string) {
+  public grantPropagateTagsToLogGroup(logGroupArn: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'logs:ListTagsForResource',
@@ -226,28 +227,18 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
         'logs:UntagResource',
       ],
       // only propagate tags to the specific log group
-      resources: [cdk.Stack.of(this).formatArn({
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: `${logGroupName}:*`,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })],
+      resources: [logGroupArn],
     }));
   }
 
   /**
    * @internal
    */
-  public grantDeleteLogGroup(logGroupName: string) {
+  public grantDeleteLogGroup(logGroupArn: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
       //Only allow deleting the specific log group.
-      resources: [cdk.Stack.of(this).formatArn({
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: `${logGroupName}:*`,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })],
+      resources: [logGroupArn],
     }));
   }
 }
