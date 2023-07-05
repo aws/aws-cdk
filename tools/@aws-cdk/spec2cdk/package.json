@@ -2,7 +2,7 @@
   "name": "@aws-cdk/spec2cdk",
   "private": true,
   "version": "0.0.0",
-  "description": "Generates L1 resource from @aws-cdk/aws-service-specs",
+  "description": "Generate L1 resources from @aws-cdk/aws-service-specs",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
