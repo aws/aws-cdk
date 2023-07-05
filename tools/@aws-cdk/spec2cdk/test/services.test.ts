@@ -8,30 +8,7 @@ let db: SpecDatabase;
 
 beforeAll(async () => {
   db = await loadAwsServiceSpec();
-  void db;
 });
-void renderer;
-void AstBuilder;
-
-// Snapshot tests will fail every time the docs get updated
-// eslint-disable-next-line jest/no-commented-out-tests
-/*
-const SNAPSHOT_SERVICES = ['alexa-ask', 'aws-chatbot', 'aws-scheduler', 'aws-sqs', 'aws-sam', 'aws-ec2', 'aws-omics'];
-
-test.each(SNAPSHOT_SERVICES)('%s', (serviceName) => {
-  const service = db.lookup('service', 'name', 'equals', serviceName).only();
-
-  const ast = AstBuilder.forService(service, { db });
-
-  const rendered = {
-    module: renderer.render(ast.module),
-    augmentations: ast.augmentations?.hasAugmentations ? renderer.render(ast.augmentations) : undefined,
-    metrics: ast.cannedMetrics?.hasCannedMetrics ? renderer.render(ast.cannedMetrics) : undefined,
-  };
-
-  // expect(rendered).toMatchSnapshot();
-});
-*/
 
 test('can codegen service with arbitrary suffix', () => {
   const service = db.lookup('service', 'name', 'equals', 'aws-kinesisanalyticsv2').only();
