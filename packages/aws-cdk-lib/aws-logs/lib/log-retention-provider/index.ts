@@ -138,6 +138,7 @@ async function setLogGroupTags(logGroupArn: string, tags: AWS.CloudWatchLogs.Tag
   const delay = options?.retryOptions?.base === undefined ? 10 : options.retryOptions.base;
   do {
     try {
+      console.log('logGroupArn = ', logGroupArn);
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       const tagsOnLogGroup = (await cloudwatchlogs.listTagsForResource({ resourceArn: logGroupArn }).promise()).tags ?? {};
 

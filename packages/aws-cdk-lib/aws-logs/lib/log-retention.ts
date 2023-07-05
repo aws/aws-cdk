@@ -107,13 +107,11 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       provider.grantPropagateTagsToLogGroup(props.logGroupName);
     }
 
-    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
-    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
-    this.logGroupArn = cdk.Stack.of(this).formatArn({
+    const logGroupArn = cdk.Stack.of(this).formatArn({
       region: props.logGroupRegion,
       service: 'logs',
       resource: 'log-group',
-      resourceName: `${props.logGroupName}:*`,
+      resourceName: `${props.logGroupName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
@@ -125,7 +123,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        LogGroupArn: this.logGroupArn,
+        LogGroupArn: logGroupArn,
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
@@ -137,6 +135,10 @@ export class LogRetention extends Construct implements cdk.ITaggable {
         Tags: this.tags.renderedTags,
       },
     });
+
+    // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
+    this.logGroupArn = logGroupArn + ':*';
   }
 
   /**
