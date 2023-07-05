@@ -1,7 +1,7 @@
 import { debug } from './_env';
 import { Mode } from './credentials';
 import { CredentialProviderSource, PluginHost } from '../plugin';
-import { warn } from 'console';
+import { warning } from '../../logging';
 
 /**
  * Cache for credential providers.
@@ -39,7 +39,7 @@ export class CredentialPlugins {
         available = await source.isAvailable();
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warn(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
         available = false;
       }
 
@@ -53,7 +53,7 @@ export class CredentialPlugins {
         canProvide = await source.canProvideCredentials(awsAccountId);
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warn(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
         canProvide = false;
       }
       if (!canProvide) { continue; }
