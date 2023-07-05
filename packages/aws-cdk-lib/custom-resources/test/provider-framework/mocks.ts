@@ -86,7 +86,10 @@ export async function invokeFunctionMock(req: InvokeCommandInput): Promise<Invoc
     }
 
     return {
-      Payload: new TextEncoder().encode(JSON.stringify(ret)),
+      Payload: ret
+        ? new TextEncoder().encode(typeof ret !== 'string' ? JSON.stringify(ret) : ret)
+        // handle undefined explicitly for mocks so we don't encode it
+        : undefined,
     };
   } catch (e: any) {
     return {
