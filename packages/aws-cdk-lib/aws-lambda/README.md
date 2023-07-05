@@ -1001,6 +1001,25 @@ const lambdaFunction = new lambda.Function(this, 'MyFunction', {
 cdk.Tags.of(lambdaFunction).remove('env');
 ```
 
+To prevent a specific `Tag` from propagating to the `logGroup` for a `Function`, you can use the `excludeResourceTypes` prop in the props available as part of adding a `Tag`. As an example, consider the following `Function`:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+  logRetention: logs.RetentionDays.ONE_MONTH,
+  functionName: 'MyFunction',
+  propagateTagsToLogGroup: true,
+});
+cdk.Tags.of(lambdaFunction).add('env', 'beta');
+cdk.Tags.of(lambdaFunction).add('dept', 'sales', { excludeResourceTypes: ['AWS::Logs::LogGroup'] });
+```
+
+In the above example, the `Tag` with key 'dept' and value 'sales' would be added to the `Function`, but would not be propagated to the `logGroup` for the `Function`.
+
 In the above example, all `Tags` would be removed from the `logGroup` associated with the `Function` including the `Tag` with the key 'env' and the value 'beta'.
 
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
