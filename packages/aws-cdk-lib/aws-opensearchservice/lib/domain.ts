@@ -1477,7 +1477,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         if (props.ebs?.throughput && props.ebs?.iops) {
           const iopsRatio = (props.ebs?.throughput / props.ebs?.iops);
           if (iopsRatio > maximumThroughputRatio) {
-            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`);
           }
         }
       }
@@ -1492,7 +1492,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         if (props.ebs?.throughput < Min || props.ebs?.throughput > Max) {
           throw new Error(
-            `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
+            `throughput property takes a minimum of ${Min} and a maximum of ${Max}.`,
           );
         }
       }
