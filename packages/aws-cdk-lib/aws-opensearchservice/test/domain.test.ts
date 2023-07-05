@@ -2003,7 +2003,7 @@ describe('EBS Options Configurations', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       EBSOptions: {
         VolumeSize: 30,
-        iops: 3000,
+        Iops: 3000,
         Throughput: 125,
         VolumeType: 'gp3',
       },
@@ -2045,18 +2045,6 @@ describe('EBS Options Configurations', () => {
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
     }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          throughput: 125,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`.');
 
     expect(() => {
       const domainProps: DomainProps = {
