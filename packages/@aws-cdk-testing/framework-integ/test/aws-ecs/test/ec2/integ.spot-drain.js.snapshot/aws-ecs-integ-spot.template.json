@@ -1360,6 +1360,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1369,7 +1374,10 @@
     "TaskDefinition": {
      "Ref": "Task79114B6B"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskTaskRoleE98524A1"
+   ]
   }
  },
  "Parameters": {

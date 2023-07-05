@@ -122,11 +122,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2575608c9455922c199396dd056f7479bb172f5c6068cd093f6d061160f48cee.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
@@ -1128,7 +1128,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1324,6 +1324,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1354,7 +1359,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefinitionB36D86D9"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   },
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1370,7 +1378,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   }
  },
  "Mappings": {

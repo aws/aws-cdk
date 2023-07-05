@@ -150,6 +150,7 @@ describe('JobExecutable', () => {
         glueVersion: glue.GlueVersion.V4_0,
         language: glue.JobLanguage.PYTHON,
         pythonVersion: glue.PythonVersion.THREE_NINE,
+        runtime: glue.Runtime.RAY_TWO_FOUR,
         script,
       })).toBeDefined();
     });

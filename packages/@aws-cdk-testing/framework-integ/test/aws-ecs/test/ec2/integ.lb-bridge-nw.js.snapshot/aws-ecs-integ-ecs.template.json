@@ -924,6 +924,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -946,7 +951,8 @@
    },
    "DependsOn": [
     "LBPublicListenerECSGroupD6A32205",
-    "LBPublicListener6E1F3D94"
+    "LBPublicListener6E1F3D94",
+    "TaskDefTaskRole1EDB4A67"
    ]
   },
   "LB8A12904C": {

@@ -934,6 +934,11 @@
      "Ref": "EC2CPClusterD5F0FD32"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -943,7 +948,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {
