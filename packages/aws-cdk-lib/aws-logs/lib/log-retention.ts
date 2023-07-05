@@ -128,6 +128,7 @@ export class LogRetention extends Construct implements cdk.ITaggable {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
+        // cloudwatchlogs tagging api expects resourceArn to be in base arn format
         LogGroupArn: logGroupBaseArn,
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
