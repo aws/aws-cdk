@@ -617,15 +617,14 @@ const service = new ecs.FargateService(this, 'Service', {
 Amazon ECS [deployment alarms]
 (https://aws.amazon.com/blogs/containers/automate-rollbacks-for-amazon-ecs-rolling-deployments-with-cloudwatch-alarms/)
 allow monitoring and automatically reacting to changes during a rolling update
-by using Amazon CloudWatch metric alarms. ECS will conduct the deployment as
-normal.
+by using Amazon CloudWatch metric alarms.
 
 Amazon ECS starts monitoring the configured deployment alarms as soon as one or
 more tasks of the updated service are in a running state. The deployment process
 continues until the primary deployment is healthy and has reached the desired
 count and the active deployment has been scaled down to 0. Then, the deployment
 remains in the IN_PROGRESS state for an additional "bake time." The length the
-bake time is calculated based on the evaluation periods and period of the alarm.
+bake time is calculated based on the evaluation periods and period of the alarms.
 After the bake time, if none of the alarms have been activated, then Amazon ECS
 considers this to be a successful update and deletes the active deployment and
 changes the status of the primary deployment to COMPLETED.

@@ -318,9 +318,6 @@ export interface BaseServiceOptions {
    * The alarm(s) to monitor during deployment, and behavior to apply if at least one enters a state of alarm
    * during the deployment or bake time.
    *
-   * If this property is defined, deployment alarms will be implicitly enabled. If alarms are enabled, you must
-   * specify at least one alarm to monitor via the service constructor or subsequent calls to
-   * enableDeploymentAlarms() or createAlarm().
    *
    * @default - No alarms will be monitored during deployment.
    */
