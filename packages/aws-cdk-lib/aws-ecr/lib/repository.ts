@@ -738,7 +738,7 @@ export class Repository extends RepositoryBase {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.resources.length) {
-      Annotations.of(this).addWarningV2('ECR:Repository:NoResourceStatements', 'ECR resource policy does not allow resource statements.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();

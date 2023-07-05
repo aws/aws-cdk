@@ -74,7 +74,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param message The error message.
    */
   private warning(id: string, node: IConstruct, message: string): void {
-    Annotations.of(node).addWarningV2(`SCAppRegistry:${id}`, message);
+    Annotations.of(node).addWarningV2(`@aws-cdk/servicecatalogappregistry:${id}`, message);
   }
 
   /**

@@ -428,10 +428,10 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        `RDS:Cluster:NoFailoverServerlessReaders: Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
+        `Cluster ${cluster.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
         'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
         'availability issues if a failover event occurs. It is recommended that at least one reader '+
-        'has `scaleWithWriter` set to true',
+        'has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]',
       );
     });
 
@@ -592,11 +592,10 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        'RDS:Cluster:ServerlessInstanceCantScaleWithWriter: '+
         'For high availability any serverless instances in promotion tiers 0-1 '+
         'should be able to scale to match the provisioned instance capacity.\n'+
         'Serverless instance reader is in promotion tier 1,\n'+
-        `But can not scale to match the provisioned writer instance (${instanceType.toString()})`,
+        `But can not scale to match the provisioned writer instance (${instanceType.toString()}) [ack: @aws-cdk/aws-rds:serverlessInstanceCantScaleWithWriter]`,
       );
     });
   });
@@ -675,11 +674,11 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        'RDS:Cluster:ProvisionedReadersDontMatchWriter: There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
         'Writer InstanceSize: m5.24xlarge\n'+
-        'Reader InstanceSizes: t3.medium, m5.xlarge',
+        'Reader InstanceSizes: t3.medium, m5.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
       );
     });
 
@@ -811,17 +810,17 @@ describe('cluster new api', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('*',
-        'RDS:Cluster:ServerlessInHighestTier2-15: There are serverlessV2 readers in tier 2. Since there are no instances in a higher tier, '+
+        'There are serverlessV2 readers in tier 2. Since there are no instances in a higher tier, '+
         'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
-        'with the writer which could lead to availability issues during failover.',
+        'with the writer which could lead to availability issues during failover. [ack: @aws-cdk/aws-rds:serverlessInHighestTier2-15]',
       );
 
       Annotations.fromStack(stack).hasWarning('*',
-        'RDS:Cluster:ProvisionedReadersDontMatchWriter: There are provisioned readers in the highest promotion tier 2 that do not have the same '+
+        'There are provisioned readers in the highest promotion tier 2 that do not have the same '+
         'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
         'of a failover.\n'+
         'Writer InstanceSize: m5.24xlarge\n'+
-        'Reader InstanceSizes: m5.xlarge',
+        'Reader InstanceSizes: m5.xlarge [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]',
       );
     });
   });

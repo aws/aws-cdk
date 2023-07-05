@@ -27,7 +27,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     if (!this.bucketDeployment) {
       const parentStack = (this.boundStack as ProductStack)._getParentStack();
       if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
-        cdk.Annotations.of(parentStack).addWarningV2('ServiceCatalog:Assets:ManuallyAddBucketPermissions', '[WARNING] Bucket Policy Permissions cannot be added to' +
+        cdk.Annotations.of(parentStack).addWarningV2('@aws-cdk/aws-servicecatalog:assetsManuallyAddBucketPermissions', '[WARNING] Bucket Policy Permissions cannot be added to' +
           ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
       this.bucketDeployment = new BucketDeployment(parentStack, 'AssetsBucketDeployment', {

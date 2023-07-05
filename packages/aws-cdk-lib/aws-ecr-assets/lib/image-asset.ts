@@ -438,7 +438,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     exclude.push(cdkout);
 
     if (props.repositoryName) {
-      Annotations.of(this).addWarningV2('ECRAssets:ImageAsset:RepositoryNameDeprecated', 'DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr-assets:repositoryNameDeprecated', 'DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash

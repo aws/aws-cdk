@@ -641,7 +641,7 @@ abstract class VpcBase extends Resource implements IVpc {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       } else {
-        Annotations.of(this).addWarningV2('EC2:Vpc:SubnetNameDeprecated', 'Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:subnetNameDeprecated', 'Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
       placement = { ...placement, subnetGroupName: placement.subnetName };
     }
@@ -2184,7 +2184,7 @@ class ImportedVpc extends VpcBase {
     // None of the values may be unresolved list tokens
     for (const k of Object.keys(props) as Array<keyof VpcAttributes>) {
       if (Array.isArray(props[k]) && Token.isUnresolved(props[k])) {
-        Annotations.of(this).addWarningV2(`EC2:Vpc:VpcAttributeIsListToken${k}`, `fromVpcAttributes: '${k}' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.`);
+        Annotations.of(this).addWarningV2(`@aws-cdk/aws-ec2:vpcAttributeIsListToken${k}`, `fromVpcAttributes: '${k}' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.`);
       }
     }
 
@@ -2345,7 +2345,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
-      Annotations.of(this).addWarningV2('EC2:Vpc:NoSubnetRouteTableId', `No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:noSubnetRouteTableId', `No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this._ipv4CidrBlock = attrs.ipv4CidrBlock;

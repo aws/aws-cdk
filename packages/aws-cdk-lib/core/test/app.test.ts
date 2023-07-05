@@ -78,8 +78,8 @@ describe('app', () => {
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
       '/stack1/s1c2':
         [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-          { type: 'aws:cdk:warning', data: { id: 'warning1', message: 'warning1', scope: 'stack1/s1c2' } },
-          { type: 'aws:cdk:warning', data: { id: 'warning2', message: 'warning2', scope: 'stack1/s1c2' } }],
+          { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
+          { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' }],
     });
 
     const stack2 = response.stacks[1];

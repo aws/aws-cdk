@@ -1025,7 +1025,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'AutoScaling:Group:IopsIgnored: iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1 [ack: @aws-cdk/aws-autoscaling:iopsIgnored]');
   });
 
   test('warning if iops and volumeType !== IO1', () => {
@@ -1049,7 +1049,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'AutoScaling:Group:IopsIgnored: iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1 [ack: @aws-cdk/aws-autoscaling:iopsIgnored]');
   });
 
   test('step scaling on metric', () => {
