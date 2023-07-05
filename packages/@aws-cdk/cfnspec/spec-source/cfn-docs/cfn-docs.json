@@ -4548,7 +4548,7 @@
         "DisplayName": "The display name of the app block.",
         "Name": "The name of the app block.\n\n*Pattern* : `^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$`",
         "PackagingType": "The packaging type of the app block.",
-        "PostSetupScriptDetails": "The post setup script details of the app block.",
+        "PostSetupScriptDetails": "The post setup script details of the app block.\n\nThis only applies to app blocks with PackagingType `APPSTREAM2` .",
         "SetupScriptDetails": "The setup script details of the app block.",
         "SourceS3Location": "The source S3 location of the app block.",
         "Tags": "The tags of the app block."
@@ -4574,22 +4574,22 @@
     },
     "AWS::AppStream::AppBlockBuilder": {
       "attributes": {
-        "Arn": "The ARN of the app block builder.",
-        "CreatedTime": "The time when the app block builder was created.",
-        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` of the app block builder, such as `abcdefAppBlockBuilder` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+        "Arn": "",
+        "CreatedTime": "",
+        "Ref": ""
       },
       "description": "Creates an app block builder.",
       "properties": {
-        "AccessEndpoints": "The access endpoints of the app block builder.",
-        "AppBlockArns": "The ARN of the app block.\n\n*Maximum* : `1`",
+        "AccessEndpoints": "",
+        "AppBlockArns": "",
         "Description": "The description of the app block builder.",
         "DisplayName": "The display name of the app block builder.",
         "EnableDefaultInternetAccess": "Indicates whether default internet access is enabled for the app block builder.",
         "IamRoleArn": "The ARN of the IAM role that is applied to the app block builder.",
         "InstanceType": "The instance type of the app block builder.",
         "Name": "The name of the app block builder.",
-        "Platform": "The platform of the app block builder.\n\n*Allowed values* : `WINDOWS_SERVER_2019`",
-        "Tags": "The tags of the app block builder.",
+        "Platform": "The platform of the app block builder.\n\n`WINDOWS_SERVER_2019` is the only valid value.",
+        "Tags": "",
         "VpcConfig": "The VPC configuration for the app block builder."
       }
     },
@@ -50540,9 +50540,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "The refresh properties of a dataset.",
+      "description": "",
       "properties": {
-        "RefreshConfiguration": "The refresh configuration for a dataset."
+        "RefreshConfiguration": ""
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -50578,7 +50578,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
+        "StaticValues": ""
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50624,9 +50624,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "The incremental refresh configuration for a dataset.",
+      "description": "",
       "properties": {
-        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
+        "LookbackWindow": ""
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50701,18 +50701,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "The lookback window setup of an incremental refresh configuration.",
+      "description": "",
       "properties": {
-        "ColumnName": "The name of the lookback window column.",
-        "Size": "The lookback window column size.",
-        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
+        "ColumnName": "",
+        "Size": "",
+        "SizeUnit": ""
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
+        "DateTimeStaticValues": "",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50729,10 +50729,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
+      "description": "",
       "properties": {
-        "NewDefaultValues": "The new default values for the parameter.",
-        "NewParameterName": "The new name for the parameter.",
+        "NewDefaultValues": "",
+        "NewParameterName": "",
         "ParameterName": ""
       }
     },
@@ -50754,9 +50754,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "The refresh configuration of a dataset.",
+      "description": "",
       "properties": {
-        "IncrementalRefresh": "The incremental refresh for the dataset."
+        "IncrementalRefresh": ""
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
