@@ -7,7 +7,6 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
-
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -55,7 +54,6 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-
 
 const pipeStack = new PipelineStack(
   app,
