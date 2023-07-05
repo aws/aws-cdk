@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "Integ/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-fargate-multi-alb-health"
       ],
-      "assertionStack": "Integ/DefaultTest/DeployAssert"
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
   }
 }
