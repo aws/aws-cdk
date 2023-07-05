@@ -6,6 +6,7 @@ import { WaiterStateMachine } from './waiter-state-machine';
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration } from '../../../core';
@@ -119,6 +120,13 @@ export interface ProviderProps {
    * @default -  CloudFormation default name from unique physical ID
    */
   readonly providerFunctionName?: string;
+
+  /**
+   * AWS KMS key used to encrypt provider lambda's environment variables.
+   *
+   * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
+   */
+  readonly providerFunctionEnvEncryption?: kms.IKey;
 }
 
 /**
@@ -150,6 +158,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly role?: iam.IRole;
+  private readonly providerFunctionEnvEncryption?: kms.IKey;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -168,6 +177,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.securityGroups = props.securityGroups;
 
     this.role = props.role;
+    this.providerFunctionEnvEncryption = props.providerFunctionEnvEncryption;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
@@ -217,6 +227,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       securityGroups: this.securityGroups,
       role: this.role,
       functionName: name,
+      environmentEncryption: this.providerFunctionEnvEncryption,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
