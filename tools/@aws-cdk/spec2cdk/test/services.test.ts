@@ -10,22 +10,6 @@ beforeAll(async () => {
   db = await loadAwsServiceSpec();
 });
 
-const SNAPSHOT_SERVICES = ['alexa-ask', 'aws-chatbot', 'aws-scheduler', 'aws-sqs', 'aws-sam', 'aws-ec2', 'aws-omics'];
-
-test.each(SNAPSHOT_SERVICES)('%s', (serviceName) => {
-  const service = db.lookup('service', 'name', 'equals', serviceName).only();
-
-  const ast = AstBuilder.forService(service, { db });
-
-  const rendered = {
-    module: renderer.render(ast.module),
-    augmentations: ast.augmentations?.hasAugmentations ? renderer.render(ast.augmentations) : undefined,
-    metrics: ast.cannedMetrics?.hasCannedMetrics ? renderer.render(ast.cannedMetrics) : undefined,
-  };
-
-  expect(rendered).toMatchSnapshot();
-});
-
 test('can codegen service with arbitrary suffix', () => {
   const service = db.lookup('service', 'name', 'equals', 'aws-kinesisanalyticsv2').only();
 
@@ -33,7 +17,8 @@ test('can codegen service with arbitrary suffix', () => {
 
   const rendered = renderer.render(ast.module);
 
-  expect(rendered).toMatchSnapshot();
+  // Snapshot tests will fail every time the docs get updated
+  // expect(rendered).toMatchSnapshot();
   expect(rendered).toContain('class CfnApplicationV2');
   expect(rendered).toContain('namespace CfnApplicationV2');
   expect(rendered).toContain('interface CfnApplicationV2Props');
