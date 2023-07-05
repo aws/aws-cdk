@@ -118,7 +118,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
-        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
         PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
@@ -152,11 +152,11 @@ describe('log retention provider', () => {
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
     sinon.assert.calledWith(listTagsForResourceFake, {
-      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
     });
 
     sinon.assert.calledWith(tagResourceFake, {
-      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
       tags: { dept: 'eng', env: 'beta' },
     });
 
@@ -190,7 +190,7 @@ describe('log retention provider', () => {
         ServiceToken: 'token',
         RetentionInDays: '365',
         LogGroupName: 'group',
-        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
         PropagateTags: 'true',
         Tags: [
           { Key: 'dept', Value: 'eng' },
@@ -200,7 +200,7 @@ describe('log retention provider', () => {
       OldResourceProperties: {
         ServiceToken: 'token',
         LogGroupName: 'group',
-        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+        LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
         RetentionInDays: '30',
       },
     };
@@ -221,16 +221,16 @@ describe('log retention provider', () => {
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
     sinon.assert.calledWith(listTagsForResourceFake, {
-      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
     });
 
     sinon.assert.calledWith(tagResourceFake, {
-      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
       tags: { env: 'prod' },
     });
 
     sinon.assert.calledWith(untagResourceFake, {
-      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group:*',
+      resourceArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/group',
       tagKeys: ['key'],
     });
 

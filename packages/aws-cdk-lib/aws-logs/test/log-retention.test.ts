@@ -231,9 +231,9 @@ describe('log retention', () => {
           },
           {
             Action: [
-              'logs:ListTagsLogGroup',
-              'logs:TagLogGroup',
-              'logs:UntagLogGroup',
+              'logs:ListTagsForResource',
+              'logs:TagResource',
+              'logs:UntagResource',
             ],
             Effect: 'Allow',
             Resource: {
@@ -252,7 +252,7 @@ describe('log retention', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':log-group:group:*',
+                  ':log-group:group',
                 ],
               ],
             },
@@ -342,9 +342,9 @@ describe('log retention', () => {
           },
           {
             Action: [
-              'logs:ListTagsLogGroup',
-              'logs:TagLogGroup',
-              'logs:UntagLogGroup',
+              'logs:ListTagsForResource',
+              'logs:TagResource',
+              'logs:UntagResource',
             ],
             Effect: 'Allow',
             Resource: {
@@ -363,16 +363,16 @@ describe('log retention', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':log-group:first-group:*',
+                  ':log-group:first-group',
                 ],
               ],
             },
           },
           {
             Action: [
-              'logs:ListTagsLogGroup',
-              'logs:TagLogGroup',
-              'logs:UntagLogGroup',
+              'logs:ListTagsForResource',
+              'logs:TagResource',
+              'logs:UntagResource',
             ],
             Effect: 'Allow',
             Resource: {
@@ -391,7 +391,7 @@ describe('log retention', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':log-group:second-group:*',
+                  ':log-group:second-group',
                 ],
               ],
             },
@@ -463,9 +463,9 @@ describe('log retention', () => {
           },
           {
             Action: [
-              'logs:ListTagsLogGroup',
-              'logs:TagLogGroup',
-              'logs:UntagLogGroup',
+              'logs:ListTagsForResource',
+              'logs:TagResource',
+              'logs:UntagResource',
             ],
             Effect: 'Allow',
             Resource: {
@@ -484,7 +484,7 @@ describe('log retention', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':log-group:second-group:*',
+                  ':log-group:second-group',
                 ],
               ],
             },
