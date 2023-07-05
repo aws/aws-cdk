@@ -33,7 +33,7 @@ describe('eks container', () => {
 
   test('eks container defaults', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
@@ -47,7 +47,7 @@ describe('eks container', () => {
 
   test('respects args', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         args: ['arg1', 'arg2'],
@@ -71,7 +71,7 @@ describe('eks container', () => {
 
   test('respects command', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         command: ['echo', 'bar'],
@@ -95,7 +95,7 @@ describe('eks container', () => {
 
   test('respects cpuLimit', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuLimit: 256,
@@ -123,7 +123,7 @@ describe('eks container', () => {
 
   test('respects cpuReservation', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuReservation: 256,
@@ -151,7 +151,7 @@ describe('eks container', () => {
 
   test('respects memoryLimitMiB', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         memoryLimit: Size.mebibytes(2048),
@@ -179,7 +179,7 @@ describe('eks container', () => {
 
   test('respects memoryReservation', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         memoryReservation: Size.mebibytes(2048),
@@ -207,7 +207,7 @@ describe('eks container', () => {
 
   test('respects gpuLimit', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         gpuLimit: 20,
@@ -235,7 +235,7 @@ describe('eks container', () => {
 
   test('respects gpuReservation', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         gpuReservation: 20,
@@ -263,7 +263,7 @@ describe('eks container', () => {
 
   test('respects resource requests and limits', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuLimit: 256,
@@ -303,7 +303,7 @@ describe('eks container', () => {
 
   test('respects env', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         env: {
@@ -339,7 +339,7 @@ describe('eks container', () => {
 
   test('respects imagePullPolicy', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         imagePullPolicy: ImagePullPolicy.NEVER,
@@ -363,7 +363,7 @@ describe('eks container', () => {
 
   test('respects name', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         name: 'myContainerName',
@@ -387,7 +387,7 @@ describe('eks container', () => {
 
   test('respects privileged', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
@@ -413,7 +413,7 @@ describe('eks container', () => {
 
   test('respects readonlyFileSystem', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         readonlyRootFilesystem: true,
@@ -439,7 +439,7 @@ describe('eks container', () => {
 
   test('respects runAsGroup', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsGroup: 1,
@@ -465,7 +465,7 @@ describe('eks container', () => {
 
   test('respects runAsRoot', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefEksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsRoot: true,
@@ -491,7 +491,7 @@ describe('eks container', () => {
 
   test('respects runAsUser', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsUser: 90,
@@ -517,7 +517,7 @@ describe('eks container', () => {
 
   test('respects emptyDir volumes', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [
@@ -560,7 +560,7 @@ describe('eks container', () => {
 
   test('respects hostPath volumes', () => {
     // WHEN
-    new EksJobDefinition(stack, 'ECSJobDefn', {
+    new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [EksVolume.hostPath({
@@ -597,9 +597,48 @@ describe('eks container', () => {
     });
   });
 
+  test('respects secret volumes, and ensures optional defaults to true', () => {
+    // WHEN
+    new EksJobDefinition(stack, 'EksJobDefn', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        volumes: [EksVolume.secret({
+          name: 'secretVolumeName',
+          secretName: 'myKubeSecret',
+          mountPath: '/mount/path',
+          readonly: true,
+        })],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      EksProperties: {
+        PodProperties: {
+          ...pascalCaseExpectedProps.EksProperties.PodProperties,
+          Containers: [{
+            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+            VolumeMounts: [{
+              MountPath: '/mount/path',
+              ReadOnly: true,
+            }],
+          }],
+          Volumes: [{
+            Name: 'secretVolumeName',
+            Secret: {
+              SecretName: 'myKubeSecret',
+              Optional: true,
+            },
+          }],
+        },
+      },
+    });
+  });
+
   test('respects addVolume() with emptyDir volume', () => {
     // GIVEN
-    const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
+    const jobDefn = new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
@@ -642,7 +681,7 @@ describe('eks container', () => {
 
   test('respects addVolume() with hostPath volume', () => {
     // GIVEN
-    const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
+    const jobDefn = new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
@@ -674,6 +713,49 @@ describe('eks container', () => {
             Name: 'hostPathName',
             HostPath: {
               Path: 'hostPathPath',
+            },
+          }],
+        },
+      },
+    });
+  });
+
+  test('respects addVolume() with secret volume (optional: false)', () => {
+    // GIVEN
+    const jobDefn = new EksJobDefinition(stack, 'EKSJobDefn', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    jobDefn.container.addVolume(EksVolume.secret({
+      name: 'secretVolumeName',
+      secretName: 'secretName',
+      optional: false,
+      mountPath: '/mount/path',
+      readonly: true,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      EksProperties: {
+        PodProperties: {
+          ...pascalCaseExpectedProps.EksProperties.PodProperties,
+          Containers: [{
+            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+            VolumeMounts: [{
+              MountPath: '/mount/path',
+              Name: 'secretVolumeName',
+              ReadOnly: true,
+            }],
+          }],
+          Volumes: [{
+            Name: 'secretVolumeName',
+            Secret: {
+              SecretName: 'secretName',
+              Optional: false,
             },
           }],
         },
