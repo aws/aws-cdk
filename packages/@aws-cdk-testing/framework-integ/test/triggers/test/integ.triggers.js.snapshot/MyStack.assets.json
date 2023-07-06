@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "files": {
     "e6b302aaee9bb5261338cf6b21e540e805eeaf2c18eb3246f7556104f361f68d": {
       "source": {
@@ -27,7 +27,7 @@
         }
       }
     },
-    "e91c1cca866fd61b7711092caf0931c69f960d7a7fcddf0a968ceb17ac53855c": {
+    "cf7bdd7888a2a9fb35b9a7519386fb474fb100da95a2fa9c740485ff5a39284b": {
       "source": {
         "path": "MyStack.template.json",
         "packaging": "file"
@@ -35,7 +35,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e91c1cca866fd61b7711092caf0931c69f960d7a7fcddf0a968ceb17ac53855c.json",
+          "objectKey": "cf7bdd7888a2a9fb35b9a7519386fb474fb100da95a2fa9c740485ff5a39284b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

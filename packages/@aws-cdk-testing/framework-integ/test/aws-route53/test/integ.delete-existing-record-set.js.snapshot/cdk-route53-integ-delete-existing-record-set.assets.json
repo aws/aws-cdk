@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "files": {
     "93d4963306216a9c4bf68e6d8b69958040b1812029cb78b74b9a2189b274e66a": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "2f99586d47a43e5b24958666f08a41946ec248a30ce289e6a6b3811b95bd2129": {
+    "b389330550d72c120717777e970c160701a5003a341679030575bf505c49555a": {
       "source": {
         "path": "cdk-route53-integ-delete-existing-record-set.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2f99586d47a43e5b24958666f08a41946ec248a30ce289e6a6b3811b95bd2129.json",
+          "objectKey": "b389330550d72c120717777e970c160701a5003a341679030575bf505c49555a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

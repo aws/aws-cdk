@@ -111,7 +111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "23d29b729b3751f91b095338f026c42c76c18bfc53c9a2e0d26df46b864f3bbc.zip"
+     "S3Key": "5009f77d2e9161f4799d4facb1cb8859134a40234014484b4911e924c169c9cb.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -347,6 +347,9 @@
     "value": "nodejs16.x"
    },
    "ap-southeast-3": {
+    "value": "nodejs16.x"
+   },
+   "ap-southeast-4": {
     "value": "nodejs16.x"
    },
    "ca-central-1": {
