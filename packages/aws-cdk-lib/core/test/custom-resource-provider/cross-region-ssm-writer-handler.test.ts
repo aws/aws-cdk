@@ -1,28 +1,16 @@
 import { handler } from '../../lib/custom-resource-provider/cross-region-export-providers/cross-region-ssm-writer-handler';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/cross-region-export-providers/types';
 
-let mockPutParameter: jest.Mock ;
-let mocklistTagsForResource: jest.Mock;
-let mockDeleteParameters: jest.Mock;
-jest.mock('aws-sdk', () => {
+let mockPutParameter: jest.Mock = jest.fn() ;
+let mocklistTagsForResource: jest.Mock = jest.fn();
+let mockDeleteParameters: jest.Mock = jest.fn();
+jest.mock('@aws-sdk/client-ssm', () => {
   return {
     SSM: jest.fn(() => {
       return {
-        putParameter: jest.fn((params) => {
-          return {
-            promise: () => mockPutParameter(params),
-          };
-        }),
-        listTagsForResource: jest.fn((params) => {
-          return {
-            promise: () => mocklistTagsForResource(params),
-          };
-        }),
-        deleteParameters: jest.fn((params) => {
-          return {
-            promise: () => mockDeleteParameters(params),
-          };
-        }),
+        putParameter: mockPutParameter,
+        listTagsForResource: mocklistTagsForResource,
+        deleteParameters: mockDeleteParameters,
       };
     }),
   };
@@ -30,11 +18,9 @@ jest.mock('aws-sdk', () => {
 beforeEach(() => {
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
-  mockPutParameter = jest.fn();
-  mockDeleteParameters = jest.fn().mockImplementation(() => {
+  mockDeleteParameters.mockImplementation(() => {
     return {};
   });
-  mocklistTagsForResource = jest.fn();
   mocklistTagsForResource.mockImplementation(() => {
     return {};
   });

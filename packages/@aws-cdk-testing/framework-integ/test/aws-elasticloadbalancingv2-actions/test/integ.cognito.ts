@@ -189,6 +189,7 @@ const testCase = new CognitoStack(app, 'integ-cognito', {
 });
 const test = new integ.IntegTest(app, 'integ-test-cognito', {
   testCases: [testCase],
+  diffAssets: true,
 });
 const testUser = new CognitoUser(testCase, 'User', {
   userPool: testCase.userPool,
