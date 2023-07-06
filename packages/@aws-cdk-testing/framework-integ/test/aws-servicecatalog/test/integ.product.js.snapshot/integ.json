@@ -6,6 +6,7 @@
       "stacks": [
         "integ-servicecatalog-product"
       ],
+      "diffAssets": true,
       "assertionStack": "integ-product/DefaultTest/DeployAssert",
       "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
     }

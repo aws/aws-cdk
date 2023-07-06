@@ -343,6 +343,7 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
   testCases: [stack],
+  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {
