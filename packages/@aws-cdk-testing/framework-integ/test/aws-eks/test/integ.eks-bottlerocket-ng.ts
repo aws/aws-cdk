@@ -45,5 +45,6 @@ const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-bottlerocket-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-bottlerocket-ng', {
   testCases: [stack],
+  diffAssets: true,
 });
 app.synth();

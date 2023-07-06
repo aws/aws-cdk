@@ -264,14 +264,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-route53-cross-account-integ/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::CrossAccountZoneDelegationCustomResourceProvider": {
             "id": "Custom::CrossAccountZoneDelegationCustomResourceProvider",
             "path": "aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider",
@@ -462,7 +454,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },
