@@ -29,3 +29,7 @@ export interface IHandlerHost {
 
   emitMessage(type: EventType, m: string): void;
 }
+
+export interface IHandlerOptions {
+  readonly quiet?: boolean;
+}
