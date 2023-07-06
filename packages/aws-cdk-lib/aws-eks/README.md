@@ -213,7 +213,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
 });
 
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_26,
+  version: eks.KubernetesVersion.V1_27,
   defaultCapacity: 0,
 });
 
