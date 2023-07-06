@@ -13,7 +13,7 @@ describe('IAM instance profiles', () => {
     // THEN
     Template.fromStack(stack).templateMatches({
       Resources: {
-        Role1ABCC5F0: {
+        InstanceProfileInstanceRole3FE337A6: {
           Type: 'AWS::IAM::Role',
           Properties: {
             AssumeRolePolicyDocument: {
@@ -35,7 +35,7 @@ describe('IAM instance profiles', () => {
           Properties: {
             Roles: [
               {
-                Ref: 'Role1ABCC5F0',
+                Ref: 'InstanceProfileInstanceRole3FE337A6',
               },
             ],
           },
@@ -91,20 +91,16 @@ describe('IAM instance profiles', () => {
   test('given instance profile name', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new Role(stack, 'Role', {
-      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
-    });
 
     // WHEN
     new InstanceProfile(stack, 'InstanceProfile', {
-      role,
       instanceProfileName: 'MyInstanceProfile',
     });
 
     // THEN
     Template.fromStack(stack).templateMatches({
       Resources: {
-        Role1ABCC5F0: {
+        InstanceProfileInstanceRole3FE337A6: {
           Type: 'AWS::IAM::Role',
           Properties: {
             AssumeRolePolicyDocument: {
@@ -126,7 +122,7 @@ describe('IAM instance profiles', () => {
           Properties: {
             Roles: [
               {
-                Ref: 'Role1ABCC5F0',
+                Ref: 'InstanceProfileInstanceRole3FE337A6',
               },
             ],
             InstanceProfileName: 'MyInstanceProfile',
@@ -139,20 +135,16 @@ describe('IAM instance profiles', () => {
   test('given instance profile path', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new Role(stack, 'Role', {
-      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
-    });
 
     // WHEN
     new InstanceProfile(stack, 'InstanceProfile', {
-      role,
       path: '/sample/path/',
     });
 
     // THEN
     Template.fromStack(stack).templateMatches({
       Resources: {
-        Role1ABCC5F0: {
+        InstanceProfileInstanceRole3FE337A6: {
           Type: 'AWS::IAM::Role',
           Properties: {
             AssumeRolePolicyDocument: {
@@ -174,7 +166,7 @@ describe('IAM instance profiles', () => {
           Properties: {
             Roles: [
               {
-                Ref: 'Role1ABCC5F0',
+                Ref: 'InstanceProfileInstanceRole3FE337A6',
               },
             ],
             Path: '/sample/path/',
