@@ -46,6 +46,6 @@ const integTest = new IntegTest(app, 'aws-cdk-integ-lambda-log-retention', {
   testCases: [new TestStack(app, 'aws-cdk-lambda-log-retention')],
 });
 
-integTest.assertions.awsApiCall('cloudwatch-logs', 'listTagsForResource', {
+integTest.assertions.awsApiCall('CloudWatchLogs', 'listTagsForResource', {
   resourceArn: 'arn:aws:logs:us-east-1:586193817576:log-group:/aws/lambda/OneWeek',
 });
