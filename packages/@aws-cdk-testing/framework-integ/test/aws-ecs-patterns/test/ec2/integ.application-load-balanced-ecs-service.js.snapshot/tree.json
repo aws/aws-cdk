@@ -698,37 +698,22 @@
               "version": "0.0.0"
             }
           },
-          "FirstAutoScalingGroup": {
-            "id": "FirstAutoScalingGroup",
-            "path": "aws-ecs-integ-alb/FirstAutoScalingGroup",
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-ecs-integ-alb/SecurityGroup",
             "children": {
-              "InstanceSecurityGroup": {
-                "id": "InstanceSecurityGroup",
-                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-ecs-integ-alb/FirstAutoScalingGroup"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-alb/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-ecs-integ-alb/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
                       }
                     },
                     "constructInfo": {
@@ -741,7 +726,17 @@
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "FirstAutoScalingGroup": {
+            "id": "FirstAutoScalingGroup",
+            "path": "aws-ecs-integ-alb/FirstAutoScalingGroup",
+            "children": {
               "InstanceRole": {
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole",
@@ -885,40 +880,91 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "FirstAutoScalingGroupInstanceProfileA7AB0D44"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "userData": {
-                      "Fn::Base64": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "#!/bin/bash\necho ECS_CLUSTER=",
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "FirstAutoScalingGroupInstanceProfileA7AB0D44",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
                             {
-                              "Ref": "ClusterEB0386A7"
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
                             },
-                            " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                          ]
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "#!/bin/bash\necho ECS_CLUSTER=",
+                                  {
+                                    "Ref": "ClusterEB0386A7"
+                                  },
+                                  " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -935,8 +981,16 @@
                   "aws:cdk:cloudformation:props": {
                     "maxSize": "1",
                     "minSize": "1",
-                    "launchConfigurationName": {
-                      "Ref": "FirstAutoScalingGroupLaunchConfig324EED6C"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "FirstAutoScalingGroupLaunchTemplate8C808BC8"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "FirstAutoScalingGroupLaunchTemplate8C808BC8",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "newInstancesProtectedFromScaleIn": true,
                     "tags": [
@@ -1204,40 +1258,91 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t3.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "SecondAutoScalingGroupInstanceProfileF37FF7A1"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "userData": {
-                      "Fn::Base64": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "#!/bin/bash\necho ECS_CLUSTER=",
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "SecondAutoScalingGroupInstanceProfileF37FF7A1",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t3.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
                             {
-                              "Ref": "ClusterEB0386A7"
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
                             },
-                            " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                          ]
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "#!/bin/bash\necho ECS_CLUSTER=",
+                                  {
+                                    "Ref": "ClusterEB0386A7"
+                                  },
+                                  " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1254,8 +1359,16 @@
                   "aws:cdk:cloudformation:props": {
                     "maxSize": "1",
                     "minSize": "1",
-                    "launchConfigurationName": {
-                      "Ref": "SecondAutoScalingGroupLaunchConfigB54F15EA"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "SecondAutoScalingGroupLaunchTemplateD3548173"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "SecondAutoScalingGroupLaunchTemplateD3548173",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "newInstancesProtectedFromScaleIn": true,
                     "tags": [
@@ -1345,6 +1458,12 @@
                           {
                             "Fn::GetAtt": [
                               "myServiceLBSecurityGroupFE0ED608",
+                              "GroupId"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "SecurityGroupDD263621",
                               "GroupId"
                             ]
                           }
