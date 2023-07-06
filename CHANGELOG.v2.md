@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.87.0](https://github.com/aws/aws-cdk/compare/v2.86.0...v2.87.0) (2023-07-06)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v129.0.0 ([#26179](https://github.com/aws/aws-cdk/issues/26179)) ([fa3caf3](https://github.com/aws/aws-cdk/commit/fa3caf33360e81d54897edbf3acf5495f488189b))
+* **codebuild:** Support for CodeBuild Image `aws/codebuild/amazonlinux2-x86_64-standard:5.0` ([#26058](https://github.com/aws/aws-cdk/issues/26058)) ([bc029fe](https://github.com/aws/aws-cdk/commit/bc029fe5ac69a8b7fd2dfdbcd8834e9a2cf8e000))
+* **ecs:** enable alarm-based rollbacks ([#25840](https://github.com/aws/aws-cdk/issues/25840)) ([1a44f69](https://github.com/aws/aws-cdk/commit/1a44f691bba459259417677dde5db248ee5e4584)), closes [#25346](https://github.com/aws/aws-cdk/issues/25346)
+* update alpha modules to sdk v3 ([#25895](https://github.com/aws/aws-cdk/issues/25895)) ([0a4140e](https://github.com/aws/aws-cdk/commit/0a4140ee5e709b04bf6c2b67de449eb29ceb01ef))
+
+
+### Bug Fixes
+
+* all aws-cdk-lib custom resources now use Node18 ([#26212](https://github.com/aws/aws-cdk/issues/26212)) ([399b6bb](https://github.com/aws/aws-cdk/commit/399b6bbdbfbf6440145e6d78e18898aae6261702))
+* **aws-cdk-lib:** specifying EC2 private IP with associate public IP enabled generates invalid CFn ([#26208](https://github.com/aws/aws-cdk/issues/26208)) ([1520d77](https://github.com/aws/aws-cdk/commit/1520d7759ad28e5295f21cd1df115c639bb5ef1c)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/cfn-ec2) [#26187](https://github.com/aws/aws-cdk/issues/26187)
+* **core:** tags disappear if CDK app is bundled+minified ([#26181](https://github.com/aws/aws-cdk/issues/26181)) ([1f81718](https://github.com/aws/aws-cdk/commit/1f8171882ae9c7a75e19f247bfa70c122999d726)), closes [#26169](https://github.com/aws/aws-cdk/issues/26169)
+* **rds:** monitoring role is not created by default when using readers and writers ([#26006](https://github.com/aws/aws-cdk/issues/26006)) ([9065b25](https://github.com/aws/aws-cdk/commit/9065b25a6a3812cf186aaddcbc5466d422a40424)), closes [/github.com/aws/aws-cdk/blob/4c9016a264c2fec9c0e0e3fae1d7c4216c964b31/packages/aws-cdk-lib/aws-rds/lib/cluster.ts#L635](https://github.com/aws//github.com/aws/aws-cdk/blob/4c9016a264c2fec9c0e0e3fae1d7c4216c964b31/packages/aws-cdk-lib/aws-rds/lib/cluster.ts/issues/L635) [/github.com/aws/aws-cdk/blob/4c9016a264c2fec9c0e0e3fae1d7c4216c964b31/packages/aws-cdk-lib/aws-rds/lib/cluster.ts#L1228](https://github.com/aws//github.com/aws/aws-cdk/blob/4c9016a264c2fec9c0e0e3fae1d7c4216c964b31/packages/aws-cdk-lib/aws-rds/lib/cluster.ts/issues/L1228) [#25941](https://github.com/aws/aws-cdk/issues/25941)
+* **sns-subscriptions:** cannot add Lambda Subscription when using a Lambda Construct from a different Construct Library ([#26206](https://github.com/aws/aws-cdk/issues/26206)) ([06b33d5](https://github.com/aws/aws-cdk/commit/06b33d54c348d78df886c040e702287658573089)), closes [#24788](https://github.com/aws/aws-cdk/issues/24788)
+* **ssm:** cannot import a ssm parameter with a name containing unresolved token ([#25749](https://github.com/aws/aws-cdk/issues/25749)) ([1f1b642](https://github.com/aws/aws-cdk/commit/1f1b6426f00031dc0f67b9690d33f718f394733c)), closes [#17094](https://github.com/aws/aws-cdk/issues/17094)
+
 ## [2.86.0](https://github.com/aws/aws-cdk/compare/v2.85.0...v2.86.0) (2023-06-29)
 
 
