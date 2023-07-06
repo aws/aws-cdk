@@ -449,6 +449,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1091,15 +1096,6 @@
     }
    }
   },
-  "BlueGreenDGApplication3649479D": {
-   "Type": "AWS::CodeDeploy::Application",
-   "Properties": {
-    "ComputePlatform": "ECS"
-   },
-   "DependsOn": [
-    "CanaryConfig039778DD"
-   ]
-  },
   "BlueGreenDGServiceRole33E3BCAC": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1129,6 +1125,15 @@
       ]
      }
     ]
+   },
+   "DependsOn": [
+    "CanaryConfig039778DD"
+   ]
+  },
+  "BlueGreenDGApplication3649479D": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "ECS"
    },
    "DependsOn": [
     "CanaryConfig039778DD"

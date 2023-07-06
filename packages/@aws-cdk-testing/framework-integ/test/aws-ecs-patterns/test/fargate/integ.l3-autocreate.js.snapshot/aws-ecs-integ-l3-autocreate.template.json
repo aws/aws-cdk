@@ -233,6 +233,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -294,7 +299,9 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
    },
-   "DependsOn": ["ALBFargateServiceTaskDefTaskRole11408723"]
+   "DependsOn": [
+    "ALBFargateServiceTaskDefTaskRole11408723"
+   ]
   },
   "ALBFargateServiceSecurityGroupfromawsecsintegl3autocreateALBFargateServiceLBSecurityGroupD565E0BF802E7B8344": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -316,7 +323,9 @@
     },
     "ToPort": 80
    },
-   "DependsOn": ["ALBFargateServiceTaskDefTaskRole11408723"]
+   "DependsOn": [
+    "ALBFargateServiceTaskDefTaskRole11408723"
+   ]
   },
   "EcsDefaultClusterMnL3mNNYN926A5246": {
    "Type": "AWS::ECS::Cluster"
@@ -892,6 +901,11 @@
      "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -953,7 +967,9 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
    },
-   "DependsOn": ["NLBFargateServiceTaskDefTaskRole6C88F40B"]
+   "DependsOn": [
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
+   ]
   }
  },
  "Outputs": {

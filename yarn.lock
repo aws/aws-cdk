@@ -50,12 +50,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.165.tgz#c169599d83beceea7e638082ef9833997f04c85d"
   integrity sha512-bsyLQD/vqXQcc9RDmlM1XqiFNO/yewgVFXmkMcQkndJbmE/jgYkzewwYGrBlfL725hGLQipXq19+jwWwdsXQqg==
 
-"@aws-cdk/aws-service-spec@^0.0.0":
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.0.tgz#30e96d039a00e55f777408d72f688e6d10ea6310"
-  integrity sha512-DFb77tb9oxBO2W3IIOXzsCuyAT7+XqVxRYgyDzYNTXOj23EfXC4GUrP2ppqcBdxIDWS+aXB9O52MdQBZYpvTKw==
+"@aws-cdk/aws-service-spec@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.1.tgz#97ae97815bd504a23d497f18203c45f1416d7871"
+  integrity sha512-WdVtyTEjgJCRgvbd0oOu9YawNKe8MppKQWh1WFawjErwa1LtSRdT6yjQSu+IU0c4KpXgTE9gSz6cBK6nlU8LSQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.0"
+    "@aws-cdk/service-spec-types" "^0.0.1"
     "@cdklabs/tskb" "^0.0.0"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.195":
@@ -63,10 +63,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.229.tgz#fc766bcf0899e24ba9af5b8757264479e3f1c662"
   integrity sha512-ATloS7yCcJHxMaOwItTndudTzmtbfYYyw9seaIeTvAHLeRcwIdpT0fDJKGzNVq+Aqn3nu0RjJI3kOpmJ7/sM7A==
 
-"@aws-cdk/service-spec-types@^0.0.0":
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.0.tgz#fb69d6e4cb62c5b86cfcb83b0ee48d58a4c6653b"
-  integrity sha512-qolX8aB6f8LuuyZWrMDAwelULA2x2tcjin3bYv7EP5C+pbVVOH6AVbFMhAqisvuN7hYZoy6y52f+ExvUObaIPQ==
+"@aws-cdk/service-spec-types@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.1.tgz#adf5b3b987bac7ebbfa1c58176b4d98a35192ffd"
+  integrity sha512-WpYRdOSLT+dGDbzbZQKcdqnIm5JA9HIvLdxOvz9hIySYTTSXLPzMBRHmmZ2XUpwxxp9YVVJZcIHuK7q9rKivSw==
   dependencies:
     "@cdklabs/tskb" "^0.0.0"
 
@@ -1829,10 +1829,15 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.0.tgz#2d7e1ae75ab1d65e1cdb3f586819c606128e0d56"
   integrity sha512-smJy/KlMifb6WzCDU2ONlkSmr2fzp+rvlE8AHAAUQH2uBO5odHUKGzNEnpnlynPfodt6/pvXQv6ly0OtzuFanQ==
 
-"@cdklabs/typewriter@^0.0.0":
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.0.tgz#c837c050670eda054e2e4749ad3de3b58ca063fa"
-  integrity sha512-EOP8HhScycmN1zaZszprpRzMCzwxnFmpr4ygr1IkoldXYgr8KSBg9SaFLfcjD2vH3gPJtFqv8xeXlF5VKvN4mA==
+"@cdklabs/tskb@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.1.tgz#dc2732703d8ef080369db5e7ad150223f60cc519"
+  integrity sha512-UWJLIaMsu2a9cE40Gtopz2i7afkx6oEjWVT/rBLWlCT4QYvUEq1+Uqw1fBK4Q96fgPCwJNU7zeWlSz0PcjFx7A==
+
+"@cdklabs/typewriter@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.1.tgz#35ac7ce4483c8f0d2711b8a9c79a17781b21f19a"
+  integrity sha512-Hl9BmIwwVMRYUAFyfiie4IXJQ8h0qXVzL76bjcph6uH6suyjB2QvaF01Lw29zEEA0X4ncwsexN7++kabCWR6/A==
 
 "@colors/colors@1.5.0":
   version "1.5.0"

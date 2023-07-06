@@ -1,4 +1,3 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
