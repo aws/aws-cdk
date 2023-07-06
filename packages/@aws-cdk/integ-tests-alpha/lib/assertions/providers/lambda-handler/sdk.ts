@@ -52,18 +52,18 @@ function getServicePackage(service: string): V3SdkPkg {
   }
 }
 
-function getServiceClient(sdkCall: V3SdkPkg): any {
+function getServiceClient(sdkPkg: V3SdkPkg): any {
   try {
-    const ServiceClient = findV3ClientConstructor(sdkCall.pkg);
+    const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
     return new ServiceClient({});
   } catch (e) {
-    throw Error(`No client constructor found within package: ${sdkCall.packageName}`);
+    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
   }
 }
 
-function getSdkCommand(sdkCall: V3SdkPkg, api: string): any {
+function getSdkCommand(sdkPkg: V3SdkPkg, api: string): any {
   const commandName = api.endsWith('Command') ? api : `${api}Command`;
-  const command = Object.entries(sdkCall.pkg).find(
+  const command = Object.entries(sdkPkg.pkg).find(
     ([name]) => name.toLowerCase() === commandName.toLowerCase(),
   )?.[1] as { new (input: any): any };
 
@@ -85,7 +85,6 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
         decode(request.parameters)) ?? {},
       ),
     );
-    // const response = await client[request.api](request.parameters && decode(request.parameters));
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.ResponseMetadata;
