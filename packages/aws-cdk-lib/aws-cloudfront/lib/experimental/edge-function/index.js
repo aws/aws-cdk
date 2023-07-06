@@ -1,4 +1,4 @@
-var AWS = require('aws-sdk');
+const { SSM } = require('@aws-sdk/client-ssm');
 
 exports.handler = async function (event) {
   const props = event.ResourceProperties;
@@ -6,8 +6,8 @@ exports.handler = async function (event) {
   console.info(`Reading function ARN from SSM parameter ${props.ParameterName} in region ${props.Region}`);
 
   if (event.RequestType === 'Create' || event.RequestType === 'Update') {
-    const ssm = new AWS.SSM({ region: props.Region });
-    const ssmParameter = await ssm.getParameter({ Name: props.ParameterName }).promise();
+    const ssm = new SSM({ region: props.Region });
+    const ssmParameter = await ssm.getParameter({ Name: props.ParameterName });
     console.info('Response: %j', ssmParameter);
     const functionArn = ssmParameter.Parameter.Value;
     return {
