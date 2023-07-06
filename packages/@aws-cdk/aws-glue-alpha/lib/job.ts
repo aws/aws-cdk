@@ -719,7 +719,7 @@ export class Job extends JobBase {
       }
     }
 
-    if (props.maxCapacity !== undefined && (props.workerType || props.workerCount !== undefined)) {
+    if (props.maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
       throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
     }
     if (props.maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
