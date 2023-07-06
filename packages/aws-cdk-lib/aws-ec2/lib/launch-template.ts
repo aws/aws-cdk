@@ -252,6 +252,8 @@ export interface LaunchTemplateProps {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
+   * Note: You can provide an instanceProfile or a role, but not both.
+   *
    * @default - No new role is created.
    */
   readonly role?: iam.IRole;
@@ -413,6 +415,8 @@ export interface LaunchTemplateProps {
 
   /**
    * The instance profile used to pass role information to EC2 instances.
+   *
+   * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @default - No instance profile
    */

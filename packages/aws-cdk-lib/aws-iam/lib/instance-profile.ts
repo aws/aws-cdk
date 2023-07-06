@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnInstanceProfile } from './iam.generated';
-import { IRole, Role } from './role';
 import { ServicePrincipal } from './principals';
+import { IRole, Role } from './role';
 import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
 
 /**
