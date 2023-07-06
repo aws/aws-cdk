@@ -274,13 +274,6 @@ The most important properties to set while creating an Alarms are:
 
 To create a cross-account alarm, make sure you have enabled [cross-account functionality](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html) in CloudWatch. Then, set the `account` property in the `Metric` object either manually or via the `metric.attachTo()` method.
 
-Please note that it is **not possible** to:
-
-- Create a cross-Account alarm that as `evaluationPeriods > 1`. The reason is that the only
-  way to pass an AccountID is to use the [`Metrics` field of the Alarm resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metrics). If we use the `Metrics` field, the CloudWatch event that is
-  used to evaluate the Alarm doesn't have a `SampleCount` field anymore ("[When CloudWatch evaluates alarms, periods are aggregated into single data points](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create-alarm-on-metric-math-expression.html)"). The result is that the Alarm cannot evaluate more than 1 period.
-- Create a cross-Region alarm ([source](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html)).
-
 ### Alarm Actions
 
 To add actions to an alarm, use the integration classes from the

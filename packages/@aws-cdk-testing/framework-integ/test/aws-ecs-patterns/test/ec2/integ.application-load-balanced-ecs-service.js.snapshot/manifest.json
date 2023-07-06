@@ -183,10 +183,10 @@
             "data": "Cluster3DA9CCBA"
           }
         ],
-        "/aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ-alb/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceSecurityGroupD970428E"
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-ecs-integ-alb/FirstAutoScalingGroup/InstanceRole/Resource": [
@@ -207,10 +207,10 @@
             "data": "FirstAutoScalingGroupInstanceProfileA7AB0D44"
           }
         ],
-        "/aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupLaunchConfig324EED6C"
+            "data": "FirstAutoScalingGroupLaunchTemplate8C808BC8"
           }
         ],
         "/aws-ecs-integ-alb/FirstAutoScalingGroup/ASG": [
@@ -231,12 +231,6 @@
             "data": "FirstCapacityProvierD92F5AC4"
           }
         ],
-        "/aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceSecurityGroup4660265D"
-          }
-        ],
         "/aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -255,10 +249,10 @@
             "data": "SecondAutoScalingGroupInstanceProfileF37FF7A1"
           }
         ],
-        "/aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupLaunchConfigB54F15EA"
+            "data": "SecondAutoScalingGroupLaunchTemplateD3548173"
           }
         ],
         "/aws-ecs-integ-alb/SecondAutoScalingGroup/ASG": [
@@ -355,6 +349,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FirstAutoScalingGroupInstanceSecurityGroupD970428E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FirstAutoScalingGroupLaunchConfig324EED6C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstAutoScalingGroupLaunchConfig324EED6C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SecondAutoScalingGroupInstanceSecurityGroup4660265D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SecondAutoScalingGroupLaunchConfigB54F15EA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondAutoScalingGroupLaunchConfigB54F15EA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

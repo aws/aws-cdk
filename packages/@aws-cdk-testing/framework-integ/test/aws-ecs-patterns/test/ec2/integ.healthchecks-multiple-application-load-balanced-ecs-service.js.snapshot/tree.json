@@ -763,6 +763,9 @@
                           "version": "0.0.0"
                         }
                       }
+                    ],
+                    "cluster": {
+                      "Ref": "ClusterEB0386A7"
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
@@ -911,73 +914,57 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
-                  },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-multiple-alb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchConfig",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                      "aws:cdk:cloudformation:props": {
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "t2.micro",
-                        "iamInstanceProfile": {
-                          "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-                        },
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
-                                {
-                                  "Ref": "ClusterEB0386A7"
-                                },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                              ]
-                            ]
-                          }
-                        }
-                      }
-                    },
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MyAutoScalingGroup": {
+            "id": "MyAutoScalingGroup",
+            "path": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup",
+            "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                       "version": "0.0.0"
                     }
                   },
-                  "ASG": {
-                    "id": "ASG",
-                    "path": "aws-ecs-integ-multiple-alb-healthchecks/Cluster/DefaultAutoScalingGroup/ASG",
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup/InstanceRole/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
-                        "maxSize": "1",
-                        "minSize": "1",
-                        "launchConfigurationName": {
-                          "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ-multiple-alb-healthchecks/Cluster/DefaultAutoScalingGroup",
-                            "propagateAtLaunch": true
-                          }
-                        ],
-                        "vpcZoneIdentifier": [
-                          {
-                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                          },
-                          {
-                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                            "value": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup"
                           }
                         ]
                       }
@@ -987,9 +974,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "DrainECSHook": {
-                    "id": "DrainECSHook",
-                    "path": "aws-ecs-integ-multiple-alb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook",
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ-multiple-alb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy",
                     "children": {
                       "Function": {
                         "id": "Function",
@@ -1251,7 +1238,8 @@
                                   "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                                   "version": "0.0.0"
                                 }
-                              }
+                              ],
+                              "Version": "2012-10-17"
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_sns.Subscription",
@@ -1380,7 +1368,7 @@
                                   "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
-                              }
+                              ]
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
@@ -1482,6 +1470,12 @@
                               "myServicelb1SecurityGroup342C51EA",
                               "GroupId"
                             ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "MyAutoScalingGroupSGEBE6954A",
+                              "GroupId"
+                            ]
                           }
                         ],
                         "subnets": [
@@ -1511,6 +1505,15 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
                             "groupDescription": "Automatically created Security Group for ELB awsecsintegmultiplealbhealthchecksmyServicelb1519E3BB7",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "255.255.255.255/32",
+                                "description": "Disallow all traffic",
+                                "ipProtocol": "icmp",
+                                "fromPort": 252,
+                                "toPort": 86
+                              }
+                            ],
                             "securityGroupIngress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -1689,6 +1692,12 @@
                               "myServicelb2SecurityGroupEB00B5B9",
                               "GroupId"
                             ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "MyAutoScalingGroupSGEBE6954A",
+                              "GroupId"
+                            ]
                           }
                         ],
                         "subnets": [
@@ -1718,6 +1727,15 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
                             "groupDescription": "Automatically created Security Group for ELB awsecsintegmultiplealbhealthchecksmyServicelb2A292D354",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "255.255.255.255/32",
+                                "description": "Disallow all traffic",
+                                "ipProtocol": "icmp",
+                                "fromPort": 252,
+                                "toPort": 86
+                              }
+                            ],
                             "securityGroupIngress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -1786,7 +1804,7 @@
                               {
                                 "type": "forward",
                                 "targetGroupArn": {
-                                  "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+                                  "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
                                 }
                               }
                             ],
@@ -1802,13 +1820,13 @@
                           "version": "0.0.0"
                         }
                       },
-                      "ECSTargetGroupweb90Group": {
-                        "id": "ECSTargetGroupweb90Group",
-                        "path": "aws-ecs-integ-multiple-alb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group",
+                      "ECSTargetGroupweb80Group": {
+                        "id": "ECSTargetGroupweb80Group",
+                        "path": "aws-ecs-integ-multiple-alb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ-multiple-alb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource",
+                            "path": "aws-ecs-integ-multiple-alb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
@@ -1935,11 +1953,6 @@
                             "portMappings": [
                               {
                                 "containerPort": 80,
-                                "hostPort": 0,
-                                "protocol": "tcp"
-                              },
-                              {
-                                "containerPort": 90,
                                 "hostPort": 0,
                                 "protocol": "tcp"
                               }
@@ -2145,10 +2158,10 @@
                           },
                           {
                             "targetGroupArn": {
-                              "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+                              "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
                             },
                             "containerName": "web",
-                            "containerPort": 90
+                            "containerPort": 80
                           }
                         ],
                         "schedulingStrategy": "REPLICA",

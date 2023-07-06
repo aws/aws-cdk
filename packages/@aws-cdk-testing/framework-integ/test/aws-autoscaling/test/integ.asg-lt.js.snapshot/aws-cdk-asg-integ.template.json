@@ -719,39 +719,80 @@
     ]
    }
   },
-  "AsgWithGp3BlockdeviceLaunchConfig24411F5E": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "AsgWithGp3BlockdeviceLaunchTemplateDFFAAF81": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t3.micro",
-    "BlockDeviceMappings": [
-     {
-      "DeviceName": "ebs",
-      "Ebs": {
-       "DeleteOnTermination": true,
-       "Encrypted": true,
-       "Throughput": 125,
-       "VolumeSize": 15,
-       "VolumeType": "gp3"
+    "LaunchTemplateData": {
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/sda1",
+       "Ebs": {
+        "DeleteOnTermination": true,
+        "Encrypted": true,
+        "Throughput": 125,
+        "VolumeSize": 15,
+        "VolumeType": "gp3"
+       }
       }
+     ],
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AsgWithGp3BlockdeviceInstanceProfile2FC414A5",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
      }
-    ],
-    "IamInstanceProfile": {
-     "Ref": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
     },
-    "SecurityGroups": [
+    "TagSpecifications": [
      {
-      "Fn::GetAtt": [
-       "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206",
-       "GroupId"
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate"
+       }
       ]
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
+    ]
    },
    "DependsOn": [
     "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
@@ -763,8 +804,16 @@
     "MaxSize": "10",
     "MinSize": "0",
     "DesiredCapacity": "5",
-    "LaunchConfigurationName": {
-     "Ref": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "AsgWithGp3BlockdeviceLaunchTemplateDFFAAF81"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "AsgWithGp3BlockdeviceLaunchTemplateDFFAAF81",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
