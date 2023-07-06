@@ -735,7 +735,7 @@ export class RestApi extends RestApiBase {
   /**
    * Import an existing RestApi.
    */
-  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
+  public static fromRestApiId(scope: Construct, id: string, restApiId: string): RestApiBase {
     class Import extends RestApiBase {
       public readonly restApiId = restApiId;
 
@@ -754,7 +754,7 @@ export class RestApi extends RestApiBase {
   /**
    * Import an existing RestApi that can be configured with additional Methods and Resources.
    */
-  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
+  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): RestApiBase {
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
       public readonly restApiName = attrs.restApiName ?? id;

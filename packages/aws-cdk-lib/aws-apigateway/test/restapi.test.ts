@@ -944,6 +944,7 @@ describe('Import', () => {
     // THEN
     expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
     expect(imported.restApiName).toEqual('imported-api');
+    expect(apigw.RestApiBase._isRestApiBase(imported)).toBeTruthy();
   });
 
   test('fromRestApiAttributes()', () => {
@@ -968,6 +969,7 @@ describe('Import', () => {
       ResourceId: stack.resolve(resource.resourceId),
     });
     expect(imported.restApiName).toEqual('imported-api');
+    expect(apigw.RestApiBase._isRestApiBase(imported)).toBeTruthy();
   });
 
   test('fromRestApiAttributes() with restApiName', () => {
