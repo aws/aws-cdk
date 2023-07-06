@@ -167,7 +167,7 @@ export class InstanceProfile extends InstanceProfileBase {
    */
   public readonly instanceProfileArn: string;
 
-  constructor(scope: Construct, id: string, props: InstanceProfileProps) {
+  constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
 
     this._role = props.role || new Role(this, 'InstanceRole', {

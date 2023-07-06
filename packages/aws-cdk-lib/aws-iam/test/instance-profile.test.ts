@@ -6,6 +6,47 @@ describe('IAM instance profiles', () => {
   test('default instance profile', () => {
     // GIVEN
     const stack = new Stack();
+
+    // WHEN
+    new InstanceProfile(stack, 'InstanceProfile');
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        Role1ABCC5F0: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    Service: 'ec2.amazonaws.com',
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+        InstanceProfile9F2F41CB: {
+          Type: 'AWS::IAM::InstanceProfile',
+          Properties: {
+            Roles: [
+              {
+                Ref: 'Role1ABCC5F0',
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('given role', () => {
+    // GIVEN
+    const stack = new Stack();
     const role = new Role(stack, 'Role', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
     });
