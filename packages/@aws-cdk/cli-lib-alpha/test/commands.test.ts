@@ -318,4 +318,16 @@ describe('list', () => {
       expect.anything(),
     );
   });
+
+  test('bootstrap without options', async () => {
+    // WHEN
+    await cdk.bootstrap();
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      ['bootstrap', '--all'],
+      expect.anything(),
+    );
+  });
+
 });

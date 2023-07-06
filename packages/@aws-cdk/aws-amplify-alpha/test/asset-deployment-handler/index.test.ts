@@ -1,36 +1,30 @@
-const getSignedUrlResponse = jest.fn();
-const mockS3 = {
-  getSignedUrl: getSignedUrlResponse,
-};
-const listJobsResponse = jest.fn();
-const listJobsRequest = jest.fn().mockImplementation(() => {
-  return {
-    promise: listJobsResponse,
-  };
-});
-const startDeploymentResponse = jest.fn();
-const startDeploymentRequest = jest.fn().mockImplementation(() => {
-  return {
-    promise: startDeploymentResponse,
-  };
-});
-const getJobResponse = jest.fn();
-const getJobRequest = jest.fn().mockImplementation(() => {
-  return {
-    promise: getJobResponse,
-  };
-});
+const mockGetSignedUrlResponse = jest.fn();
+const listJobsRequest = jest.fn();
+const startDeploymentRequest = jest.fn();
+const getJobRequest = jest.fn();
 const mockAmplify = {
   listJobs: listJobsRequest,
   startDeployment: startDeploymentRequest,
   getJob: getJobRequest,
 };
+const mockS3 = {};
 
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-s3', () => {
   return {
+    GetObjectCommand: jest.fn((input) => input),
     S3: jest.fn(() => mockS3),
+  };
+});
+
+jest.mock('@aws-sdk/client-amplify', () => {
+  return {
     Amplify: jest.fn(() => mockAmplify),
-    config: { logger: '' },
+  };
+});
+
+jest.mock('@aws-sdk/s3-request-presigner', () => {
+  return {
+    getSignedUrl: mockGetSignedUrlResponse,
   };
 });
 
@@ -58,15 +52,15 @@ describe('handler', () => {
 
   it('onEvent CREATE success', async () => {
     // GIVEN
-    listJobsResponse.mockImplementation(() => {
+    listJobsRequest.mockImplementation(() => {
       return {
         jobSummaries: [],
       };
     });
-    getSignedUrlResponse.mockImplementation(() => {
+    mockGetSignedUrlResponse.mockImplementation(() => {
       return 'signedUrlValue';
     });
-    startDeploymentResponse.mockImplementation(() => {
+    startDeploymentRequest.mockImplementation(() => {
       return {
         jobSummary: { jobId: 'jobIdValue' },
       };
@@ -90,7 +84,6 @@ describe('handler', () => {
       LogicalResourceId: 'logicalResourceIdValue',
     });
 
-    // THEN
     expect(response).toEqual({
       AmplifyJobId: 'jobIdValue',
     });
@@ -100,8 +93,8 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsResponse).toBeCalled();
-    expect(getSignedUrlResponse).toHaveBeenCalledWith('getObject', {
+    expect(listJobsRequest).toBeCalled();
+    expect(mockGetSignedUrlResponse).toHaveBeenCalledWith(mockS3, {
       Bucket: 's3BucketNameValue',
       Key: 's3ObjectKeyValue',
     });
@@ -110,12 +103,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       sourceUrl: 'signedUrlValue',
     });
-    expect(startDeploymentResponse).toBeCalled();
+    expect(startDeploymentRequest).toBeCalled();
   });
 
   it('onEvent CREATE pending job', async () => {
     // GIVEN
-    listJobsResponse.mockImplementation(() => {
+    listJobsRequest.mockImplementation(() => {
       return {
         jobSummaries: [{ status: 'PENDING' }],
       };
@@ -144,15 +137,15 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsResponse).toBeCalled();
-    expect(getSignedUrlResponse).not.toHaveBeenCalled();
+    expect(listJobsRequest).toBeCalled();
+    expect(mockGetSignedUrlResponse).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
-    expect(startDeploymentResponse).not.toHaveBeenCalled();
+    expect(startDeploymentRequest).not.toHaveBeenCalled();
   });
 
   it('isComplete CREATE success', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'SUCCEED' } },
       };
@@ -191,12 +184,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete CREATE pending', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'PENDING' } },
       };
@@ -231,12 +224,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete CREATE failed', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'FAILED' } },
       };
@@ -266,12 +259,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete CREATE cancelled', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'CANCELLED' } },
       };
@@ -302,12 +295,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete CREATE no JobId', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'PENDING' } },
       };
@@ -333,20 +326,20 @@ describe('handler', () => {
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
-    expect(getJobResponse).not.toHaveBeenCalled();
+    expect(getJobRequest).not.toHaveBeenCalled();
   });
 
   it('onEvent UPDATE success', async () => {
     // GIVEN
-    listJobsResponse.mockImplementation(() => {
+    listJobsRequest.mockImplementation(() => {
       return {
         jobSummaries: [],
       };
     });
-    getSignedUrlResponse.mockImplementation(() => {
+    mockGetSignedUrlResponse.mockImplementation(() => {
       return 'signedUrlValue';
     });
-    startDeploymentResponse.mockImplementation(() => {
+    startDeploymentRequest.mockImplementation(() => {
       return {
         jobSummary: { jobId: 'jobIdValue' },
       };
@@ -382,8 +375,8 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsResponse).toBeCalled();
-    expect(getSignedUrlResponse).toHaveBeenCalledWith('getObject', {
+    expect(listJobsRequest).toBeCalled();
+    expect(mockGetSignedUrlResponse).toHaveBeenCalledWith(mockS3, {
       Bucket: 's3BucketNameValue',
       Key: 's3ObjectKeyValue',
     });
@@ -392,12 +385,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       sourceUrl: 'signedUrlValue',
     });
-    expect(startDeploymentResponse).toBeCalled();
+    expect(startDeploymentRequest).toBeCalled();
   });
 
   it('onEvent UPDATE pending job', async () => {
     // GIVEN
-    listJobsResponse.mockImplementation(() => {
+    listJobsRequest.mockImplementation(() => {
       return {
         jobSummaries: [{ status: 'PENDING' }],
       };
@@ -429,15 +422,15 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsResponse).toBeCalled();
-    expect(getSignedUrlResponse).not.toHaveBeenCalled();
+    expect(listJobsRequest).toBeCalled();
+    expect(mockGetSignedUrlResponse).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
-    expect(startDeploymentResponse).not.toHaveBeenCalled();
+    expect(startDeploymentRequest).not.toHaveBeenCalled();
   });
 
   it('isComplete UPDATE success', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'SUCCEED' } },
       };
@@ -478,12 +471,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete UPDATE pending', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'PENDING' } },
       };
@@ -520,12 +513,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete UPDATE failed', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'FAILED' } },
       };
@@ -557,12 +550,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete UPDATE cancelled', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'CANCELLED' } },
       };
@@ -595,12 +588,12 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobResponse).toBeCalled();
+    expect(getJobRequest).toBeCalled();
   });
 
   it('isComplete UPDATE no JobId', async () => {
     // GIVEN
-    getJobResponse.mockImplementation(() => {
+    getJobRequest.mockImplementation(() => {
       return {
         job: { summary: { status: 'PENDING' } },
       };
@@ -628,14 +621,14 @@ describe('handler', () => {
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
-    expect(getJobResponse).not.toHaveBeenCalled();
+    expect(getJobRequest).not.toHaveBeenCalled();
   });
 
   it('onEvent DELETE success', async () => {
     // GIVEN
 
     // WHEN
-    await expect(() => onEvent({
+    expect(() => onEvent({
       ServiceToken: 'serviceTokenValue',
       RequestType: 'Delete',
       ResourceType: 'Custom::AmplifyAssetDeployment',
@@ -707,7 +700,7 @@ describe('handler', () => {
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
-    expect(getJobResponse).not.toHaveBeenCalled();
+    expect(getJobRequest).not.toHaveBeenCalled();
   });
 
   it('isComplete unsupported resource type', async () => {
@@ -735,6 +728,6 @@ describe('handler', () => {
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
-    expect(getJobResponse).not.toHaveBeenCalled();
+    expect(getJobRequest).not.toHaveBeenCalled();
   });
 });

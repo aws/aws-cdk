@@ -50,6 +50,7 @@ const stack = new TestStack(app, 'integ-provider-framework');
 
 new integ.IntegTest(app, 'IntegProviderFrameworkTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

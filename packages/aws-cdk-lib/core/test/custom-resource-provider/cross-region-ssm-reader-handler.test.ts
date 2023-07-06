@@ -5,29 +5,17 @@ let mockDeleteParameters: jest.Mock ;
 let mockAddTagsToResource: jest.Mock;
 let mockGetParametersByPath: jest.Mock;
 let mockRemoveTagsFromResource: jest.Mock;
-jest.mock('aws-sdk', () => {
+
+jest.mock('@aws-sdk/client-ssm', () => {
   return {
-    SSM: jest.fn(() => {
-      return {
-        addTagsToResource: jest.fn((params) => {
-          return {
-            promise: () => mockAddTagsToResource(params),
-          };
-        }),
-        removeTagsFromResource: jest.fn((params) => {
-          return {
-            promise: () => mockRemoveTagsFromResource(params),
-          };
-        }),
-        getParametersByPath: jest.fn((params) => {
-          return {
-            promise: () => mockGetParametersByPath(params),
-          };
-        }),
-      };
-    }),
+    SSM: jest.fn().mockImplementation(() => ({
+      addTagsToResource: mockAddTagsToResource,
+      removeTagsFromResource: mockRemoveTagsFromResource,
+      getParametersByPath: mockGetParametersByPath,
+    })),
   };
 });
+
 beforeEach(() => {
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});

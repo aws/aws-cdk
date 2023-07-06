@@ -169,6 +169,7 @@ const testCase = new AlbOidcStack(app, 'IntegAlbOidc', {
 });
 const test = new integ.IntegTest(app, 'IntegTestAlbOidc', {
   testCases: [testCase],
+  diffAssets: true,
 });
 const testUser = new CognitoUser(testCase, 'User', {
   userPool: testCase.userPool,

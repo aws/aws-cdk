@@ -19,7 +19,7 @@
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "cdk-generate-synthetic-examples": "^0.1.269",
+    "cdk-generate-synthetic-examples": "^0.1.287",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
@@ -85,6 +85,7 @@
       "tools/@aws-cdk/pkglint",
       "tools/@aws-cdk/pkgtools",
       "tools/@aws-cdk/prlint",
+      "tools/@aws-cdk/spec2cdk",
       "tools/@aws-cdk/yarn-cling",
       "scripts/@aws-cdk/script-tests"
     ],

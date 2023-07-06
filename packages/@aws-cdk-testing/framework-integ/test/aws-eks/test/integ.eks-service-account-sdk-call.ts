@@ -77,6 +77,7 @@ new CfnOutput(stack, 'PingerResponse', {
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

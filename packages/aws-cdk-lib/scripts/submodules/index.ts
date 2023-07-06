@@ -1,9 +1,9 @@
 import * as path from 'node:path';
-import { ModuleMap, ModuleMapEntry } from '@aws-cdk/cfn2ts';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import awsEventsTargets from './aws-events-targets';
 import cloudformationInclude from './cloudformation-include';
+import { ModuleMap, ModuleMapEntry } from '../codegen';
 
 export default async function submodulesGen(modules: ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {

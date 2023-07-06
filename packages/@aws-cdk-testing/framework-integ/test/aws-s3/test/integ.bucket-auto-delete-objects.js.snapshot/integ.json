@@ -5,6 +5,7 @@
       "stacks": [
         "cdk-s3-bucket-auto-delete-objects"
       ],
+      "diffAssets": true,
       "assertionStack": "cdk-integ-s3-bucket-auto-delete-objects/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegs3bucketautodeleteobjectsDefaultTestDeployAssert7EEB3F44"
     }

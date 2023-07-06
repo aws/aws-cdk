@@ -42,6 +42,7 @@ const cjsEntryTestCase = new JavaScriptCommonJsStack(app, 'cdk-integ-lambda-node
 
 const integ = new IntegTest(app, 'LambdaModules', {
   testCases: [mtsEntryTestCase, ctsEntryTestCase, cjsEntryTestCase],
+  diffAssets: true,
 });
 
 for (const testCase of [mtsEntryTestCase, ctsEntryTestCase, cjsEntryTestCase]) {

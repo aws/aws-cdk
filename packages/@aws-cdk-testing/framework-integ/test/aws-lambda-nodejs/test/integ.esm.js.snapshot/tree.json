@@ -8,14 +8,6 @@
         "id": "cdk-integ-lambda-nodejs-esm",
         "path": "cdk-integ-lambda-nodejs-esm",
         "children": {
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-integ-lambda-nodejs-esm/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "esm": {
             "id": "esm",
             "path": "cdk-integ-lambda-nodejs-esm/esm",
@@ -127,15 +119,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -176,7 +160,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

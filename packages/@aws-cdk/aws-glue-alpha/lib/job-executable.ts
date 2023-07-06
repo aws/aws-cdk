@@ -88,6 +88,34 @@ export enum PythonVersion {
 }
 
 /**
+ * AWS Glue runtime determines the runtime engine of the job.
+ *
+ */
+export class Runtime {
+  /**
+   * Runtime for a Glue for Ray 2.4.
+   */
+  public static readonly RAY_TWO_FOUR = new Runtime('Ray2.4');
+
+  /**
+   * Custom runtime
+   * @param runtime custom runtime
+   */
+  public static of(runtime: string): Runtime {
+    return new Runtime(runtime);
+  }
+
+  /**
+   * The name of this Runtime.
+   */
+  public readonly name: string;
+
+  private constructor(name: string) {
+    this.name = name;
+  }
+}
+
+/**
  * The job type.
  *
  * If you need to use a JobType that doesn't exist as a static member, you
@@ -150,6 +178,12 @@ interface PythonExecutableProps {
 }
 
 interface SharedJobExecutableProps {
+  /**
+   * Runtime. It is required for Ray jobs.
+   *
+   */
+  readonly runtime?: Runtime;
+
   /**
    * Glue version.
    *
@@ -347,6 +381,9 @@ export class JobExecutable {
     if (config.pythonVersion === PythonVersion.THREE && config.type === JobType.RAY) {
       throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
+    if (config.runtime === undefined && config.type === JobType.RAY) {
+      throw new Error('Runtime is required for Ray jobs.');
+    }
     this.config = config;
   }
 
@@ -387,6 +424,13 @@ export interface JobExecutableConfig {
    * @default - no python version specified
    */
   readonly pythonVersion?: PythonVersion;
+
+  /**
+   * The Runtime to use.
+   *
+   * @default - no runtime specified
+   */
+  readonly runtime?: Runtime;
 
   /**
    * The script that is executed by a job.

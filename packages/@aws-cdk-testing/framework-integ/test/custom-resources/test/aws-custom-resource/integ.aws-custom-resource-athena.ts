@@ -136,6 +136,7 @@ notebook.node.addDependency(workgroup);
 
 new IntegTest(app, 'CustomResourceAthena', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

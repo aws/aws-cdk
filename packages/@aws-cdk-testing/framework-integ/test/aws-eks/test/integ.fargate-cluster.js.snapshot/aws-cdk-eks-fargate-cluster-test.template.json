@@ -1027,7 +1027,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/08dd55307ff6e514b31c82e31cf28bf8da5e049b517bb228ff8ac5ea52dcb43a.json"
+       "/8d5a5339b9ee2f8b65ed9e94f87049422b0dfdcd8743db37b19b2652e2907542.json"
       ]
      ]
     }
@@ -1054,7 +1054,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/06a0af2c284673113e592dcdc29dc948dd46842dbea1ef5a2da77bc27a8ac739.json"
+       "/60ff99772bb1d9ce0d83d241e6f03526d9d824e31c779fc48cfc6462a8a0e8f6.json"
       ]
      ]
     },

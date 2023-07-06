@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "networkMultipleTargetGroupsFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-fargate-multi-nlb-health"
       ],
-      "assertionStack": "networkMultipleTargetGroupsFargateServiceTest/DefaultTest/DeployAssert"
+      "assertionStack": "networkMultipleTargetGroupsFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkMultipleTargetGroupsFargateServiceTestDefaultTestDeployAssertC9049A80"
     }
   }
 }

@@ -18,6 +18,7 @@ import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * A branch
@@ -248,6 +249,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             ],
           }),
         ],
+        runtime: Runtime.NODEJS_18_X,
       },
     );
 
@@ -266,6 +268,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             actions: ['amplify:GetJob*'],
           }),
         ],
+        runtime: Runtime.NODEJS_18_X,
       },
     );
 

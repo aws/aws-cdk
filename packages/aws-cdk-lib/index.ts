@@ -236,6 +236,7 @@ export * as aws_synthetics from './aws-synthetics';
 export * as aws_systemsmanagersap from './aws-systemsmanagersap';
 export * as aws_timestream from './aws-timestream';
 export * as aws_transfer from './aws-transfer';
+export * as aws_verifiedpermissions from './aws-verifiedpermissions';
 export * as aws_voiceid from './aws-voiceid';
 export * as aws_vpclattice from './aws-vpclattice';
 export * as aws_waf from './aws-waf';

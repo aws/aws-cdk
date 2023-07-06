@@ -255,9 +255,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
-        secrets: [
-          new Secret(stack, 'testSecret'),
-        ],
+        secrets: {
+          envName: new Secret(stack, 'testSecret'),
+        },
       }),
     });
 
@@ -268,59 +268,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
         ...pascalCaseExpectedProps.ContainerProperties,
         Secrets: [
           {
-            Name: {
-              'Fn::Join': [
-                '-',
-                [
-                  {
-                    'Fn::Select': [
-                      0,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    'Fn::Select': [
-                      1,
-                      {
-                        'Fn::Split': [
-                          '-',
-                          {
-                            'Fn::Select': [
-                              6,
-                              {
-                                'Fn::Split': [
-                                  ':',
-                                  {
-                                    Ref: 'testSecretB96AD12C',
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              ],
-            },
+            Name: 'envName',
             ValueFrom: { Ref: 'testSecretB96AD12C' },
           },
         ],

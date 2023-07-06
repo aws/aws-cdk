@@ -1166,7 +1166,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                                  "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1186,15 +1186,7 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": {
-                                  "Fn::FindInMap": [
-                                    "DefaultCrNodeVersionMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "value"
-                                  ]
-                                },
+                                "runtime": "nodejs18.x",
                                 "timeout": 900
                               }
                             },
@@ -1236,7 +1228,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "TablePrivileges": {
@@ -1416,7 +1408,7 @@
                                       "s3Bucket": {
                                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
-                                      "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                                      "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                                     },
                                     "role": {
                                       "Fn::GetAtt": [
@@ -1436,15 +1428,7 @@
                                       }
                                     },
                                     "handler": "framework.onEvent",
-                                    "runtime": {
-                                      "Fn::FindInMap": [
-                                        "DefaultCrNodeVersionMap",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        "value"
-                                      ]
-                                    },
+                                    "runtime": "nodejs18.x",
                                     "timeout": 900
                                   }
                                 },
@@ -1486,13 +1470,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1663,7 +1647,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1c86c854dd7bf4e9476b013497c1b08c57bf296dbc4200f2a251f79ad102d15e.zip"
+                      "s3Key": "135d36da5a9e712a2792be4734f4cf4b34b551d49646eef9dec0c185fc869c12.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1872,7 +1856,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                                  "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1892,15 +1876,7 @@
                                   }
                                 },
                                 "handler": "framework.onEvent",
-                                "runtime": {
-                                  "Fn::FindInMap": [
-                                    "DefaultCrNodeVersionMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "value"
-                                  ]
-                                },
+                                "runtime": "nodejs18.x",
                                 "timeout": 900
                               }
                             },
@@ -1942,7 +1918,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1986,7 +1962,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -2032,7 +2008,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },

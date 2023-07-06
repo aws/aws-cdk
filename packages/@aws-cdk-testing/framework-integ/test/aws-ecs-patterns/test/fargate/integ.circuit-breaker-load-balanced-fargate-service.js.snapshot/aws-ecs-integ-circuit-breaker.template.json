@@ -627,6 +627,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "DeploymentCircuitBreaker": {
       "Enable": true,
       "Rollback": true
@@ -695,7 +700,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["myServiceTaskDefTaskRole1C1DE6CC"]
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   },
   "myServiceSecurityGroupfromawsecsintegcircuitbreakermyServiceLBSecurityGroupB690840480BBFF8B33": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -717,7 +724,9 @@
     },
     "ToPort": 80
    },
-   "DependsOn": ["myServiceTaskDefTaskRole1C1DE6CC"]
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
   }
  },
  "Outputs": {

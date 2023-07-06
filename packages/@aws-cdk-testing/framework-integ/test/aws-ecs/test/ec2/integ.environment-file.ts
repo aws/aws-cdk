@@ -71,6 +71,9 @@ new ecs.Ec2Service(stack, 'Service', {
   taskDefinition,
 });
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  diffAssets: true,
+});
 
 app.synth();

@@ -412,7 +412,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
         lifecycleRules: [{
-          description: 'Garbage collect old image versions and keep the specified number of latest versions',
+          description: 'Garbage collect old image versions',
           maxImageCount: this.props.imageAssetVersionCount ?? 3,
         }],
         ...(this.autoDeleteStagingAssets ? {

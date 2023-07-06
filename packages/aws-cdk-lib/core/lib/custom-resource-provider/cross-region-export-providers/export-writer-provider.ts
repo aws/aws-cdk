@@ -10,7 +10,7 @@ import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
 import { Token } from '../../token';
-import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
+import { CustomResourceProviderRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
 
 /**
  * Properties for an ExportReader
@@ -101,7 +101,7 @@ export class ExportWriter extends Construct {
     const resourceType = 'Custom::CrossRegionExportWriter';
     this.provider = CRProvider.getOrCreateProvider(this, resourceType, {
       codeDirectory: path.join(__dirname, 'cross-region-ssm-writer-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
     });
 
     this.addRegionToPolicy(region);

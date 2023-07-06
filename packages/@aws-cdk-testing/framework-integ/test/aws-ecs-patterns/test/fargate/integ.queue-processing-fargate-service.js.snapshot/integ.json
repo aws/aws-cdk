@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "queueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-ecs-patterns-queue"
       ],
-      "assertionStack": "queueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+      "assertionStack": "queueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6"
     }
   }
 }

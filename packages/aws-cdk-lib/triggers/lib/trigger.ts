@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { Construct, IConstruct, Node } from 'constructs';
 import * as lambda from '../../aws-lambda';
-import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration } from '../../core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration } from '../../core';
 
 /**
  * Interface for triggers.
@@ -116,7 +116,7 @@ export class Trigger extends Construct implements ITrigger {
 
     const handlerArn = this.determineHandlerArn(props);
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       codeDirectory: join(__dirname, 'lambda'),
     });
 

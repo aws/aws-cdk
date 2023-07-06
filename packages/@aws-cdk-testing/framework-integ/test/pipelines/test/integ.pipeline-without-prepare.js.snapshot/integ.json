@@ -5,6 +5,7 @@
       "stacks": [
         "PreparelessPipelineStack"
       ],
+      "diffAssets": true,
       "assertionStack": "PreparelessPipelineTest/DefaultTest/DeployAssert",
       "assertionStackName": "PreparelessPipelineTestDefaultTestDeployAssert7B7DD2C6"
     }

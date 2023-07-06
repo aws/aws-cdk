@@ -34,6 +34,7 @@ Currently the package includes implementations for:
 
 - `cdk deploy`
 - `cdk synth`
+- `cdk bootstrap`
 - `cdk destroy`
 - `cdk list`
 
@@ -93,6 +94,13 @@ cli.list();
 cli.synth({
   stacks: ['MyTestStack'],
 });
+```
+
+### bootstrap
+
+```ts
+// await this asynchronous method call using a language feature
+cli.bootstrap();
 ```
 
 ### deploy

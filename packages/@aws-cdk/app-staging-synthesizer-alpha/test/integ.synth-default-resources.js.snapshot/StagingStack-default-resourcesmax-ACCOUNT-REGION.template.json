@@ -1,0 +1,717 @@
+{
+ "Resources": {
+  "CdkFileRoleE26CEABA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Fn::Join": [
+      "",
+      [
+       "cdk-default-resourcesmax-file-role-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "CdkFileRoleDefaultPolicy621C7E5B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "BucketKey7092080A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CdkFileRoleDefaultPolicy621C7E5B",
+    "Roles": [
+     {
+      "Ref": "CdkFileRoleE26CEABA"
+     }
+    ]
+   }
+  },
+  "BucketKey7092080A": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CancelKeyDeletion",
+        "kms:Create*",
+        "kms:Delete*",
+        "kms:Describe*",
+        "kms:Disable*",
+        "kms:Enable*",
+        "kms:Get*",
+        "kms:List*",
+        "kms:Put*",
+        "kms:Revoke*",
+        "kms:ScheduleKeyDeletion",
+        "kms:TagResource",
+        "kms:UntagResource",
+        "kms:Update*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "BucketKeyAlias69A0886F": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/cdk-default-resourcesmax-staging",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "BucketKey7092080A",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "CdkStagingBucket1636058C": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "BucketKey7092080A",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cdk-default-resourcesmax-staging-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 365
+       },
+       "Status": "Enabled"
+      },
+      {
+       "ExpirationInDays": 30,
+       "Prefix": "deploy-time/",
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CdkStagingBucketPolicy42BD1F92": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "CdkStagingBucket1636058C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/cdk-hnb659fds-deploy-role-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-",
+           {
+            "Ref": "AWS::Region"
+           }
+          ]
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CdkStagingBucketAutoDeleteObjectsCustomResource800E998D": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "CdkStagingBucket1636058C"
+    }
+   },
+   "DependsOn": [
+    "CdkStagingBucketPolicy42BD1F92"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\"use strict\";var C=Object.create;var c=Object.defineProperty;var f=Object.getOwnPropertyDescriptor;var w=Object.getOwnPropertyNames;var A=Object.getPrototypeOf,P=Object.prototype.hasOwnProperty;var L=(t,e)=>{for(var s in e)c(t,s,{get:e[s],enumerable:!0})},d=(t,e,s,r)=>{if(e&&typeof e==\"object\"||typeof e==\"function\")for(let o of w(e))!P.call(t,o)&&o!==s&&c(t,o,{get:()=>e[o],enumerable:!(r=f(e,o))||r.enumerable});return t};var l=(t,e,s)=>(s=t!=null?C(A(t)):{},d(e||!t||!t.__esModule?c(s,\"default\",{value:t,enumerable:!0}):s,t)),k=t=>d(c({},\"__esModule\",{value:!0}),t);var _={};L(_,{autoDeleteHandler:()=>g,handler:()=>O});module.exports=k(_);var h=require(\"@aws-sdk/client-s3\");var m=l(require(\"https\")),R=l(require(\"url\")),a={sendHttpRequest:T,log:B,includeStackTraces:!0,userHandlerIndex:\"./index\"},p=\"AWSCDK::CustomResourceProviderFramework::CREATE_FAILED\",D=\"AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID\";function y(t){return async(e,s)=>{let r={...e,ResponseURL:\"...\"};if(a.log(JSON.stringify(r,void 0,2)),e.RequestType===\"Delete\"&&e.PhysicalResourceId===p){a.log(\"ignoring DELETE event caused by a failed CREATE event\"),await i(\"SUCCESS\",e);return}try{let o=await t(r,s),n=b(e,o);await i(\"SUCCESS\",n)}catch(o){let n={...e,Reason:a.includeStackTraces?o.stack:o.message};n.PhysicalResourceId||(e.RequestType===\"Create\"?(a.log(\"CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored\"),n.PhysicalResourceId=p):a.log(`ERROR: Malformed event. \"PhysicalResourceId\" is required: ${JSON.stringify(e)}`)),await i(\"FAILED\",n)}}}function b(t,e={}){let s=e.PhysicalResourceId??t.PhysicalResourceId??t.RequestId;if(t.RequestType===\"Delete\"&&s!==t.PhysicalResourceId)throw new Error(`DELETE: cannot change the physical resource ID from \"${t.PhysicalResourceId}\" to \"${e.PhysicalResourceId}\" during deletion`);return{...t,...e,PhysicalResourceId:s}}async function i(t,e){let s={Status:t,Reason:e.Reason??t,StackId:e.StackId,RequestId:e.RequestId,PhysicalResourceId:e.PhysicalResourceId||D,LogicalResourceId:e.LogicalResourceId,NoEcho:e.NoEcho,Data:e.Data};a.log(\"submit response to cloudformation\",s);let r=JSON.stringify(s),o=R.parse(e.ResponseURL),n={hostname:o.hostname,path:o.path,method:\"PUT\",headers:{\"content-type\":\"\",\"content-length\":Buffer.byteLength(r,\"utf8\")}};await x({attempts:5,sleep:1e3},a.sendHttpRequest)(n,r)}async function T(t,e){return new Promise((s,r)=>{try{let o=m.request(t,n=>s());o.on(\"error\",r),o.write(e),o.end()}catch(o){r(o)}})}function B(t,...e){console.log(t,...e)}function x(t,e){return async(...s)=>{let r=t.attempts,o=t.sleep;for(;;)try{return await e(...s)}catch(n){if(r--<=0)throw n;await H(Math.floor(Math.random()*o)),o*=2}}}async function H(t){return new Promise(e=>setTimeout(e,t))}var E=\"aws-cdk:auto-delete-objects\",u=new h.S3({}),O=y(g);async function g(t){switch(t.RequestType){case\"Create\":return;case\"Update\":return F(t);case\"Delete\":return S(t.ResourceProperties?.BucketName)}}async function F(t){let e=t,s=e.OldResourceProperties?.BucketName,r=e.ResourceProperties?.BucketName;if(r!=null&&s!=null&&r!==s)return S(s)}async function I(t){let e=await u.listObjectVersions({Bucket:t}),s=[...e.Versions??[],...e.DeleteMarkers??[]];if(s.length===0)return;let r=s.map(o=>({Key:o.Key,VersionId:o.VersionId}));await u.deleteObjects({Bucket:t,Delete:{Objects:r}}),e?.IsTruncated&&await I(t)}async function S(t){if(!t)throw new Error(\"No BucketName was provided.\");if(!await N(t)){process.stdout.write(`Bucket does not have '${E}' tag, skipping cleaning.\n`);return}try{await I(t)}catch(e){if(e.code!==\"NoSuchBucket\")throw e}}async function N(t){return(await u.getBucketTagging({Bucket:t})).TagSet?.some(s=>s.Key===E&&s.Value===\"true\")}0&&(module.exports={autoDeleteHandler,handler});\n"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "CdkStagingBucket1636058C"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "CdkImageRoleF1394AC3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Fn::Join": [
+      "",
+      [
+       "cdk-default-resourcesmax-image-role-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "CdkImageRoleDefaultPolicy4A1572DE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "defaultresourcesmaxecrasset13112F7F9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "defaultresourcesmaxecrasset2904B88A7",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CdkImageRoleDefaultPolicy4A1572DE",
+    "Roles": [
+     {
+      "Ref": "CdkImageRoleF1394AC3"
+     }
+    ]
+   }
+  },
+  "defaultresourcesmaxecrasset13112F7F9": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "default-resourcesmax/ecr-asset/1",
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-images",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5": {
+   "Type": "Custom::ECRAutoDeleteImages",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+      "Arn"
+     ]
+    },
+    "RepositoryName": {
+     "Ref": "defaultresourcesmaxecrasset13112F7F9"
+    }
+   },
+   "DependsOn": [
+    "defaultresourcesmaxecrasset13112F7F9"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ecr:BatchDeleteImage",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:ListTagsForResource"
+         ],
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "defaultresourcesmaxecrasset13112F7F9",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "defaultresourcesmaxecrasset2904B88A7",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\"use strict\";var C=Object.create;var c=Object.defineProperty;var S=Object.getOwnPropertyDescriptor;var w=Object.getOwnPropertyNames;var A=Object.getPrototypeOf,P=Object.prototype.hasOwnProperty;var L=(e,t)=>{for(var o in t)c(e,o,{get:t[o],enumerable:!0})},d=(e,t,o,s)=>{if(t&&typeof t==\"object\"||typeof t==\"function\")for(let r of w(t))!P.call(e,r)&&r!==o&&c(e,r,{get:()=>t[r],enumerable:!(s=S(t,r))||s.enumerable});return e};var p=(e,t,o)=>(o=e!=null?C(A(e)):{},d(t||!e||!e.__esModule?c(o,\"default\",{value:e,enumerable:!0}):o,e)),D=e=>d(c({},\"__esModule\",{value:!0}),e);var W={};L(W,{autoDeleteHandler:()=>I,handler:()=>k});module.exports=D(W);var h=require(\"@aws-sdk/client-ecr\");var m=p(require(\"https\")),R=p(require(\"url\")),n={sendHttpRequest:x,log:N,includeStackTraces:!0,userHandlerIndex:\"./index\"},l=\"AWSCDK::CustomResourceProviderFramework::CREATE_FAILED\",b=\"AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID\";function y(e){return async(t,o)=>{let s={...t,ResponseURL:\"...\"};if(n.log(JSON.stringify(s,void 0,2)),t.RequestType===\"Delete\"&&t.PhysicalResourceId===l){n.log(\"ignoring DELETE event caused by a failed CREATE event\"),await u(\"SUCCESS\",t);return}try{let r=await e(s,o),a=T(t,r);await u(\"SUCCESS\",a)}catch(r){let a={...t,Reason:n.includeStackTraces?r.stack:r.message};a.PhysicalResourceId||(t.RequestType===\"Create\"?(n.log(\"CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored\"),a.PhysicalResourceId=l):n.log(`ERROR: Malformed event. \"PhysicalResourceId\" is required: ${JSON.stringify(t)}`)),await u(\"FAILED\",a)}}}function T(e,t={}){let o=t.PhysicalResourceId??e.PhysicalResourceId??e.RequestId;if(e.RequestType===\"Delete\"&&o!==e.PhysicalResourceId)throw new Error(`DELETE: cannot change the physical resource ID from \"${e.PhysicalResourceId}\" to \"${t.PhysicalResourceId}\" during deletion`);return{...e,...t,PhysicalResourceId:o}}async function u(e,t){let o={Status:e,Reason:t.Reason??e,StackId:t.StackId,RequestId:t.RequestId,PhysicalResourceId:t.PhysicalResourceId||b,LogicalResourceId:t.LogicalResourceId,NoEcho:t.NoEcho,Data:t.Data};n.log(\"submit response to cloudformation\",o);let s=JSON.stringify(o),r=R.parse(t.ResponseURL),a={hostname:r.hostname,path:r.path,method:\"PUT\",headers:{\"content-type\":\"\",\"content-length\":Buffer.byteLength(s,\"utf8\")}};await H({attempts:5,sleep:1e3},n.sendHttpRequest)(a,s)}async function x(e,t){return new Promise((o,s)=>{try{let r=m.request(e,a=>o());r.on(\"error\",s),r.write(t),r.end()}catch(r){s(r)}})}function N(e,...t){console.log(e,...t)}function H(e,t){return async(...o)=>{let s=e.attempts,r=e.sleep;for(;;)try{return await t(...o)}catch(a){if(s--<=0)throw a;await F(Math.floor(Math.random()*r)),r*=2}}}async function F(e){return new Promise(t=>setTimeout(t,e))}var g=\"aws-cdk:auto-delete-images\",i=new h.ECR({}),k=y(I);async function I(e){switch(e.RequestType){case\"Create\":break;case\"Update\":return _(e);case\"Delete\":return f(e.ResourceProperties?.RepositoryName)}}async function _(e){let t=e,o=t.OldResourceProperties?.RepositoryName,s=t.ResourceProperties?.RepositoryName;if(s&&o&&s!==o)return f(o)}async function E(e){let t=await i.listImages(e),o=[],s=[];(t.imageIds??[]).forEach(a=>{\"imageTag\"in a?s.push(a):o.push(a)});let r=t.nextToken??null;o.length===0&&s.length===0||(s.length!==0&&await i.batchDeleteImage({repositoryName:e.repositoryName,imageIds:s}),o.length!==0&&await i.batchDeleteImage({repositoryName:e.repositoryName,imageIds:o}),r&&await E({...e,nextToken:r}))}async function f(e){if(!e)throw new Error(\"No RepositoryName was provided.\");let o=(await i.describeRepositories({repositoryNames:[e]})).repositories?.find(s=>s.repositoryName===e);if(!await q(o?.repositoryArn)){process.stdout.write(`Repository does not have '${g}' tag, skipping cleaning.\n`);return}try{await E({repositoryName:e})}catch(s){if(s.name!==\"RepositoryNotFoundException\")throw s}}async function q(e){return(await i.listTagsForResource({resourceArn:e})).tags?.some(o=>o.Key===g&&o.Value===\"true\")}0&&(module.exports={autoDeleteHandler,handler});\n"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": "Lambda function for auto-deleting images in undefined repository."
+   },
+   "DependsOn": [
+    "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+   ]
+  },
+  "defaultresourcesmaxecrasset2904B88A7": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "default-resourcesmax/ecr-asset-2",
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-images",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1": {
+   "Type": "Custom::ECRAutoDeleteImages",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+      "Arn"
+     ]
+    },
+    "RepositoryName": {
+     "Ref": "defaultresourcesmaxecrasset2904B88A7"
+    }
+   },
+   "DependsOn": [
+    "defaultresourcesmaxecrasset2904B88A7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ }
+}
