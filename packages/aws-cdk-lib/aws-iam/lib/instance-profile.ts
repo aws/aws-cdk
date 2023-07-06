@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnInstanceProfile } from './iam.generated';
-import { IRole } from './role';
-import { Resource, Arn, Stack, IResource } from '../../core';
+import { IRole, Role } from './role';
+import { ServicePrincipal } from './principals';
+import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
 
 /**
  * Represents an IAM Instance Profile
@@ -21,8 +22,6 @@ export interface IInstanceProfile extends IResource {
 
   /**
    * The role associated with the InstanceProfile.
-   *
-   * @default - no role
    */
   readonly role?: IRole;
 }
@@ -32,11 +31,18 @@ export interface IInstanceProfile extends IResource {
  */
 export interface InstanceProfileProps {
   /**
-   * The name of the role to associate with the InstanceProfile. Only one role can
-   * be assigned to an EC2 instance at a time, and all applications on the instance
-   * share the same role and permissions.
+   * An IAM role to associate with the instance profile that is used by EC2 instances.
+   *
+   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * @example
+   * const role = new iam.Role(this, 'MyRole', {
+   *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   * });
+   *
+   * @default - a role will be automatically created, it can be accessed via the `role` property
    */
-  readonly role: IRole;
+  readonly role?: IRole;
 
   /**
    * The name of the InstanceProfile to create.
@@ -164,10 +170,13 @@ export class InstanceProfile extends InstanceProfileBase {
   constructor(scope: Construct, id: string, props: InstanceProfileProps) {
     super(scope, id, { physicalName: props.instanceProfileName });
 
-    this._role = props.role;
+    this._role = props.role || new Role(this, 'InstanceRole', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
 
     const instanceProfile = new CfnInstanceProfile(this, 'Resource', {
-      roles: [props.role.roleName],
+      roles: [this._role.roleName],
       instanceProfileName: this.physicalName,
       path: props.path,
     });
