@@ -1,0 +1,219 @@
+{
+ "Resources": {
+  "MyLambdaServiceRole4539ECB6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:TagResource",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+    "Roles": [
+     {
+      "Ref": "MyLambdaServiceRole4539ECB6"
+     }
+    ]
+   }
+  },
+  "MyLambdaCCE802FB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    const { LambdaClient, TagResourceCommand } = require('@aws-sdk/client-lambda');\n\n    const client = new LambdaClient();\n\n    let arn = process.env.FUNC_ARN;\n\n    exports.handler = async (event, context) => {\n        const value = btoa(JSON.stringify(event, null, 2));\n        const input = {\n            Resource: arn,\n            Tags: {\n                \"OutputValue\": value,\n            },\n        };\n        const command = new TagResourceCommand(input);\n        const response = await client.send(command);\n    };"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "MyLambdaServiceRole4539ECB6",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "FUNC_ARN": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":lambda:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":function:MyTestFunc"
+        ]
+       ]
+      }
+     }
+    },
+    "FunctionName": "MyTestFunc",
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+    "MyLambdaServiceRole4539ECB6"
+   ]
+  },
+  "MyRoleF48FFE04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRoleDefaultPolicyA36BE1DD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyLambdaCCE802FB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyLambdaCCE802FB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRoleDefaultPolicyA36BE1DD",
+    "Roles": [
+     {
+      "Ref": "MyRoleF48FFE04"
+     }
+    ]
+   }
+  },
+  "Schedule83A77FD1": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "at(2023-07-06T17:54:31)",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "MyLambdaCCE802FB",
+       "Arn"
+      ]
+     },
+     "Input": "\"test\"",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "MyRoleF48FFE04",
+       "Arn"
+      ]
+     }
+    },
+    "ScheduleExpressionTimezone": "Etc/UTC"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
