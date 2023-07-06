@@ -1,5 +1,7 @@
 import * as https from 'https';
 import { parse as urlparse } from 'url';
+import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
+import { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
 import * as consts from '../../lib/provider-framework/runtime/consts';
 
 export const MOCK_REQUEST = {
@@ -16,7 +18,7 @@ export const MOCK_SFN_ARN = 'arn:of:state:machine';
 export let stringifyPayload = true;
 export let onEventImplMock: AWSCDKAsyncCustomResource.OnEventHandler | undefined;
 export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler | undefined;
-export let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
+export let startStateMachineInput: StartExecutionCommandInput | undefined;
 export let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
 
 export function setup() {
@@ -54,7 +56,7 @@ export async function httpRequestMock(options: https.RequestOptions, body: strin
   expect(cfnResponse.Status === 'FAILED' || cfnResponse.Status === 'SUCCESS').toBeTruthy();
 }
 
-export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Promise<AWS.Lambda.InvocationResponse> {
+export async function invokeFunctionMock(req: InvokeCommandInput): Promise<InvocationResponse> {
   if (!req.Payload || typeof (req.Payload) !== 'string') {
     throw new Error(`invalid payload of type ${typeof (req.Payload)}}`);
   }
@@ -84,12 +86,15 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
     }
 
     return {
-      Payload: stringifyPayload ? JSON.stringify(ret) : ret,
+      Payload: ret
+        ? new TextEncoder().encode(typeof ret !== 'string' ? JSON.stringify(ret) : ret)
+        // handle undefined explicitly for mocks so we don't encode it
+        : undefined,
     };
   } catch (e: any) {
     return {
       FunctionError: 'Unhandled',
-      Payload: JSON.stringify({
+      Payload: new TextEncoder().encode(JSON.stringify({
         errorType: e.name,
         errorMessage: e.message,
         trace: [
@@ -105,7 +110,7 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
           '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:685:12)',
           '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)',
         ],
-      }),
+      })),
     };
   }
 }
@@ -126,7 +131,7 @@ export function prepareForExecution() {
   }
 }
 
-export async function startExecutionMock(req: AWS.StepFunctions.StartExecutionInput) {
+export async function startExecutionMock(req: StartExecutionInput) {
   startStateMachineInput = req;
   expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);
   return {

@@ -32,7 +32,8 @@
     "esbuild": "^0.17.19"
   },
   "dependencies": {
-    "aws-sdk": "^2.1379.0"
+    "@aws-sdk/client-ecr": "^3.357.0",
+    "@aws-sdk/client-s3": "^3.357.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

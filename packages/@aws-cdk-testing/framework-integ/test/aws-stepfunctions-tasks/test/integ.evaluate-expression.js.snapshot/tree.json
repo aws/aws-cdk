@@ -26,14 +26,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-sfn-evaluate-expression-integ/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Eval41256dc5445742738ed917bc818694e5": {
             "id": "Eval41256dc5445742738ed917bc818694e5",
             "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5",
@@ -140,15 +132,7 @@
                       ]
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -690,7 +674,7 @@
                 "path": "EvaluateExpressionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -736,7 +720,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

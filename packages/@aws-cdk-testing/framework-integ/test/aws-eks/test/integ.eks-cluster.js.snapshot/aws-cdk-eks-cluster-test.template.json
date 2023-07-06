@@ -3530,7 +3530,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/8816ae99181649599b5bab24457bff7e2e2cf99a02980a17d6b8ed5bfe3e3f59.json"
+       "/519b305117fceb7428dc60a80bdc7576be24b151717d52fb5ccc11ac4e7b5a14.json"
       ]
      ]
     }
@@ -3553,7 +3553,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/cf702fea70b45c69677406608c24d07b14fc02f59c09b723f7b87c7c3a86362a.json"
+       "/feacbec28ce9fa1fccc5253cd8a584b17729ec106ff7f862e7cde90fe7e73104.json"
       ]
      ]
     },
@@ -3751,7 +3751,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

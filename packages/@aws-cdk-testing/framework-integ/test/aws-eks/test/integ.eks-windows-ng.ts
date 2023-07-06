@@ -54,5 +54,6 @@ const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-windows-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {
   testCases: [stack],
+  diffAssets: true,
 });
 app.synth();

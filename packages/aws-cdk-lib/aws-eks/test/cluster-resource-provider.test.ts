@@ -56,7 +56,7 @@ describe('cluster resource provider', () => {
       await handler.onEvent();
 
       // THEN
-      expect(mocks.actualRequest.createClusterRequest?.name.length).toEqual(100);
+      expect(mocks.actualRequest.createClusterRequest?.name?.length).toEqual(100);
       expect(mocks.actualRequest.createClusterRequest?.name).toEqual('hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
     });
 

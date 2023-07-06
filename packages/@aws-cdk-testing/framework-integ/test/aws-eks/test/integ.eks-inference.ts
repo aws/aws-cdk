@@ -32,6 +32,7 @@ const app = new App();
 const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence', {
   testCases: [stack],
+  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {

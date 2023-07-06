@@ -23,6 +23,7 @@ const app = new App();
 const stack = new EksAllHandlersInVpcStack(app, 'aws-cdk-eks-handlers-in-vpc-test');
 new integ.IntegTest(app, 'aws-cdk-eks-handlers-in-vpc', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

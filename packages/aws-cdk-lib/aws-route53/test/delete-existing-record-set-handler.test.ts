@@ -1,25 +1,20 @@
+import { handler } from '../lib/delete-existing-record-set-handler';
+
 const mockListResourceRecordSetsResponse = jest.fn();
 const mockChangeResourceRecordSetsResponse = jest.fn();
+const mockWaitUntilResourceRecordSetsChanged = jest.fn().mockResolvedValue({});
 
 const mockRoute53 = {
-  listResourceRecordSets: jest.fn().mockReturnValue({
-    promise: mockListResourceRecordSetsResponse,
-  }),
-  changeResourceRecordSets: jest.fn().mockReturnValue({
-    promise: mockChangeResourceRecordSetsResponse,
-  }),
-  waitFor: jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue({}),
-  }),
+  listResourceRecordSets: mockListResourceRecordSetsResponse,
+  changeResourceRecordSets: mockChangeResourceRecordSetsResponse,
 };
 
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-route-53', () => {
   return {
-    Route53: jest.fn(() => mockRoute53),
+    Route53: jest.fn().mockImplementation(() => mockRoute53),
+    waitUntilResourceRecordSetsChanged: (...args: any[]) => mockWaitUntilResourceRecordSetsChanged(...args),
   };
 });
-
-import { handler } from '../lib/delete-existing-record-set-handler';
 
 const event: AWSLambda.CloudFormationCustomResourceEvent & { PhysicalResourceId?: string } = {
   RequestType: 'Create',
@@ -87,7 +82,8 @@ test('create request with existing record', async () => {
     },
   });
 
-  expect(mockRoute53.waitFor).toHaveBeenCalledWith('resourceRecordSetsChanged', {
+  expect(mockWaitUntilResourceRecordSetsChanged).toHaveBeenCalledTimes(1);
+  expect(mockWaitUntilResourceRecordSetsChanged.mock.calls[0][1]).toEqual({
     Id: 'change-id',
   });
 });

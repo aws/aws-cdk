@@ -5,6 +5,7 @@
       "stacks": [
         "test-bucket-deployment-signobject"
       ],
+      "diffAssets": true,
       "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF"
     }

@@ -27,7 +27,7 @@ import {
   Token,
   Tokenization,
   Annotations,
-  builtInCustomResourceProviderNodeRuntime,
+  CustomResourceProviderRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import * as cxapi from '../../cx-api';
@@ -2429,7 +2429,7 @@ export class Bucket extends BucketBase {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'lib', 'aws-s3', 'auto-delete-objects-handler'),
       useCfnResponseWrapper: false,
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

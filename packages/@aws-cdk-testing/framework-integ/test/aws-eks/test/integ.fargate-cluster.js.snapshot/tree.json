@@ -62,7 +62,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.223"
+              "version": "2.0.229"
             }
           },
           "FargateCluster": {
@@ -1184,7 +1184,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1428,14 +1428,6 @@
                   "version": "0.0.0"
                 }
               },
-              "DefaultCrNodeVersionMap": {
-                "id": "DefaultCrNodeVersionMap",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/DefaultCrNodeVersionMap",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "OnEventHandler": {
                 "id": "OnEventHandler",
                 "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
@@ -1533,7 +1525,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
+                          "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1553,15 +1545,7 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": {
-                          "Fn::FindInMap": [
-                            "DefaultCrNodeVersionMap",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            "value"
-                          ]
-                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1673,7 +1657,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "baa290a08acb84544e3ce6cc3bd88d6689f5494eef7df73b7957fe9c4ef93e17.zip"
+                          "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1693,15 +1677,7 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": {
-                          "Fn::FindInMap": [
-                            "DefaultCrNodeVersionMap",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            "value"
-                          ]
-                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1904,7 +1880,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -1933,15 +1909,7 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": {
-                              "Fn::FindInMap": [
-                                "DefaultCrNodeVersionMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "value"
-                              ]
-                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2133,7 +2101,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2159,15 +2127,7 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": {
-                              "Fn::FindInMap": [
-                                "DefaultCrNodeVersionMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "value"
-                              ]
-                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2359,7 +2319,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2385,15 +2345,7 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": {
-                              "Fn::FindInMap": [
-                                "DefaultCrNodeVersionMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "value"
-                              ]
-                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2546,7 +2498,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.52"
+                      "version": "10.2.55"
                     }
                   }
                 },
@@ -2611,7 +2563,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/08dd55307ff6e514b31c82e31cf28bf8da5e049b517bb228ff8ac5ea52dcb43a.json"
+                          "/8d5a5339b9ee2f8b65ed9e94f87049422b0dfdcd8743db37b19b2652e2907542.json"
                         ]
                       ]
                     }
@@ -2625,7 +2577,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "version": "10.2.55"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2758,7 +2710,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "cff916937906abb9c99e0ecbb4accbc091c734ce975c7ff64b3f4bfae4372b9c.zip"
+                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2963,7 +2915,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
                             "role": {
                               "Fn::GetAtt": [
@@ -2983,15 +2935,7 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": {
-                              "Fn::FindInMap": [
-                                "DefaultCrNodeVersionMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "value"
-                              ]
-                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
@@ -3024,14 +2968,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.custom_resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "DefaultCrNodeVersionMap": {
-                "id": "DefaultCrNodeVersionMap",
-                "path": "aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/DefaultCrNodeVersionMap",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -3115,7 +3051,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/06a0af2c284673113e592dcdc29dc948dd46842dbea1ef5a2da77bc27a8ac739.json"
+                          "/60ff99772bb1d9ce0d83d241e6f03526d9d824e31c779fc48cfc6462a8a0e8f6.json"
                         ]
                       ]
                     },
@@ -3152,7 +3088,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
@@ -3190,7 +3126,7 @@
                 "path": "aws-cdk-eks-fargate-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -3236,7 +3172,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },

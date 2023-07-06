@@ -6,10 +6,10 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
 import {
-  builtInCustomResourceProviderNodeRuntime,
   CfnResource,
   CustomResource,
   CustomResourceProvider,
+  CustomResourceProviderRuntime,
   Lazy,
   Resource,
   Stack,
@@ -198,7 +198,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

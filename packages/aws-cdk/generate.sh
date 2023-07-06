@@ -15,20 +15,13 @@ cat > build-info.json <<HERE
 }
 HERE
 
-# Build noctilucent package in a Docker/Finch VM
-NOCTILUCENT_GIT="https://github.com/iph/noctilucent.git"
-NOCTILUCENT_COMMIT_ID="6da7c9fade55f8443bba7b8fdfcd4ebfe5208fb1"
-if [ "$(cat lib/vendor/noctilucent/.version 2>/dev/null || echo '')" == "${NOCTILUCENT_GIT}:${NOCTILUCENT_COMMIT_ID}" ]
-then
-  echo "⏭️ Noctilucent WASM binary is up-to date, skipping build..."
-  echo "ℹ️ Delete lib/vendor/noctilucent/.version to force a rebuild."
-else
-  echo "⏳ Building Noctilucent WASM binary for embedding... This will take a while..."
-  ${CDK_DOCKER:-docker} build --rm                                              \
-    --build-arg NOCTILUCENT_GIT="${NOCTILUCENT_GIT}"                            \
-    --build-arg NOCTILUCENT_COMMIT_ID="${NOCTILUCENT_COMMIT_ID}"                \
-    --file lib/vendor/noctilucent/Dockerfile                                    \
-    --target wasm                                                               \
-    --output type=local,dest=lib/vendor/noctilucent                             \
-    lib/vendor/noctilucent
-fi
+# Download noctilucent wasm-pack build
+NOCTILUCENT_VERSION=0.1.2
+PACK_URL=https://github.com/iph/noctilucent/releases/download/v${NOCTILUCENT_VERSION}/wasm-pack.zip
+outdir=lib/vendor/noctilucent
+
+mkdir -p $outdir
+(cd $outdir && curl -sSfLo wasm-pack.zip "$PACK_URL" && unzip -o wasm-pack.zip)
+
+# Don't need these files
+rm $outdir/{.gitignore,README.md,package.json,wasm-pack.zip}

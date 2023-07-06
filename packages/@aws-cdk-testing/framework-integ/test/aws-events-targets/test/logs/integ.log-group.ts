@@ -55,6 +55,7 @@ timer3.addTarget(new targets.CloudWatchLogGroup(importedLogGroup, {
 
 const integ = new IntegTest(app, 'LogGroup', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 const putEventsDate = Date.now().toString();

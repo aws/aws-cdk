@@ -33,6 +33,7 @@ const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-deployed-
 
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
+  diffAssets: true,
 });
 
 app.synth();

@@ -106,6 +106,7 @@ new integ.IntegTest(app, 'AwsCustomResourceTest', {
       runtime: lambda.Runtime.NODEJS_18_X,
     }),
   ],
+  diffAssets: true,
 });
 
 app.synth();

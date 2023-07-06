@@ -1,4 +1,0 @@
-# Ignore all files in this directory except the Dockerfile
-/*
-!/.gitignore
-!/Dockerfile

@@ -70,6 +70,7 @@ new triggers.Trigger(stack, 'MyDefaultPropTrigger', {
 
 const testCase = new integ.IntegTest(app, 'TriggerTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 testCase.assertions.awsApiCall('SQS', 'receiveMessage', {
