@@ -72,5 +72,6 @@ const app = new App();
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller', {
   testCases: [stack],
+  diffAssets: true,
 });
 app.synth();
