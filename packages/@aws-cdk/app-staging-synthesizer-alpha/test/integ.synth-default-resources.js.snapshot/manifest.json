@@ -81,12 +81,6 @@
         "stackName": "StagingStack-default-resourcesmax"
       },
       "metadata": {
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Template size exceeds limit: 1318536/1000000. Split resources into multiple stacks or set suppressTemplateIndentation to reduce template size."
-          }
-        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
