@@ -38,5 +38,6 @@ new IntegTest(app, 'integ-test', {
   testCases: [testCase],
   enableLookups: true,
   stackUpdateWorkflow: false,
+  diffAssets: true,
 });
 

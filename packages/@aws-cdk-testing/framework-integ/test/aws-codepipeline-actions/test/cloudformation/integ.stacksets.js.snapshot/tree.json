@@ -124,14 +124,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "StackSetPipelineStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "StackSetPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -605,13 +597,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.54"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               },
               "Cfn": {
@@ -679,7 +671,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/StackSet/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           },
                           "DefaultPolicy": {
@@ -909,7 +901,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.54"
+                      "version": "10.2.55"
                     }
                   },
                   "Instances": {
@@ -973,7 +965,7 @@
                             "path": "StackSetPipelineStack/Pipeline/Cfn/Instances/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.54"
+                              "version": "10.2.55"
                             }
                           },
                           "DefaultPolicy": {
@@ -1050,13 +1042,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.54"
+                      "version": "10.2.55"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               }
             },
@@ -1118,7 +1110,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.54"
+          "version": "10.2.55"
         }
       }
     },
