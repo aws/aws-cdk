@@ -1,0 +1,13 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "amazon-linux-2-5-codebuild/DefaultTest": {
+      "stacks": [
+        "codebuild-project-amazonlinux-2-5"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "amazon-linux-2-5-codebuild/DefaultTest/DeployAssert",
+      "assertionStackName": "amazonlinux25codebuildDefaultTestDeployAssertB1E0750B"
+    }
+  }
+}
