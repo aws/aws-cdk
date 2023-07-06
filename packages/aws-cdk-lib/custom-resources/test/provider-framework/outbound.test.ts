@@ -1,22 +1,20 @@
-import { GetFunctionResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
-import * as aws from 'aws-sdk';
+import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 import { invokeFunction } from '../../lib/provider-framework/runtime/outbound';
 
-jest.mock('aws-sdk', () => {
-  return {
-    Lambda: class {
-      public invoke() {
-        return { promise: () => mockInvoke() };
-      }
+const mockInvoke = jest.fn();
+const mockWaitUntilFunctionActive = jest.fn();
+const mockLambda = {
+  invoke: mockInvoke,
+};
 
-      public waitFor() {
-        return { promise: () => mockWaitFor() };
-      }
-    },
+jest.mock('@aws-sdk/client-lambda', () => {
+  return {
+    Lambda: jest.fn().mockImplementation(() => {
+      return mockLambda;
+    }),
+    waitUntilFunctionActive: (...args: any[]) => mockWaitUntilFunctionActive(...args),
   };
 });
-
-let mockInvoke: () => Promise<aws.Lambda.InvocationResponse>;
 
 const req: InvokeCommandInput = {
   FunctionName: 'Whatever',
@@ -30,7 +28,7 @@ let invokeCount: number = 0;
 let expectedFunctionStates: string[] = [];
 let receivedFunctionStates: string[] = [];
 
-const mockWaitFor = async (): Promise<GetFunctionResponse> => {
+mockWaitUntilFunctionActive.mockImplementation(async () => {
   let state = expectedFunctionStates.pop();
   while (state !== 'Active') {
     receivedFunctionStates.push(state!);
@@ -48,7 +46,7 @@ const mockWaitFor = async (): Promise<GetFunctionResponse> => {
       State: 'Active',
     },
   };
-};
+});
 
 describe('invokeFunction tests', () => {
   afterEach(() => {
@@ -59,14 +57,14 @@ describe('invokeFunction tests', () => {
 
   // Success cases
   test('Inactive function that reactivates does not throw error', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 0) {
         invokeCount++;
         throw new Error('Better luck next time');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('Active');
     expectedFunctionStates.push('Pending');
@@ -77,14 +75,14 @@ describe('invokeFunction tests', () => {
   });
 
   test('Active function does not run waitFor or retry invoke', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 1) {
         invokeCount++;
         throw new Error('This should not happen in this test');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('Active');
 
@@ -95,14 +93,14 @@ describe('invokeFunction tests', () => {
 
   // Failure cases
   test('Inactive function that goes back to inactive throws error', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 0) {
         invokeCount++;
         throw new Error('Better luck next time');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('Inactive');
     expectedFunctionStates.push('Pending');
@@ -114,14 +112,14 @@ describe('invokeFunction tests', () => {
   });
 
   test('Inactive function that goes to failed throws error', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 0) {
         invokeCount++;
         throw new Error('Better luck next time');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('Failed');
     expectedFunctionStates.push('Pending');
@@ -133,14 +131,14 @@ describe('invokeFunction tests', () => {
   });
 
   test('Inactive function that returns other value throws error', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 0) {
         invokeCount++;
         throw new Error('Better luck next time');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('NewFunctionWhoDis');
     expectedFunctionStates.push('Pending');
@@ -152,14 +150,14 @@ describe('invokeFunction tests', () => {
   });
 
   test('Wait for stops on terminal responses', async () => {
-    mockInvoke = async () => {
+    mockInvoke.mockImplementation(async () => {
       if (invokeCount == 0) {
         invokeCount++;
         throw new Error('Better luck next time');
       }
       invokeCount++;
-      return { Payload: req.Payload };
-    };
+      return { Payload: req.Payload } as InvocationResponse;
+    });
 
     expectedFunctionStates.push('SomethingElse');
     expectedFunctionStates.push('Pending');

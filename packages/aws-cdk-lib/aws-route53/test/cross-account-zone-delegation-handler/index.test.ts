@@ -17,7 +17,7 @@ jest.mock('@aws-sdk/client-sts', () => {
   return {
     STS: jest.fn().mockImplementation(() => {
       return mockStsClient;;
-    })
+    }),
   };
 });
 
@@ -25,7 +25,7 @@ jest.mock('@aws-sdk/client-route-53', () => {
   return {
     Route53: jest.fn().mockImplementation(() => {
       return mockRoute53Client;
-    })
+    }),
   };
 });
 
