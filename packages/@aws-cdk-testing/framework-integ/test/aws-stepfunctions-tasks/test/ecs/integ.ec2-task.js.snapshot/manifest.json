@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-ecs-integ2.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ff984c777e8723d7cc676798ba0204239c4059ecb279a35dc0d7c5124abe3d0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3be3861b160a5c4b786a665bc563d4af7f3789d729e9568e720d7e14d398b6c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,10 +201,10 @@
             "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
           }
         ],
-        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899"
+            "data": "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A"
           }
         ],
         "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/ASG": [
@@ -331,6 +331,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLaunchTemplateProfile7159126B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

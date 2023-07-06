@@ -1,0 +1,270 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-iam-instance-profile": {
+        "id": "aws-cdk-iam-instance-profile",
+        "path": "aws-cdk-iam-instance-profile",
+        "children": {
+          "MyRole": {
+            "id": "MyRole",
+            "path": "aws-cdk-iam-instance-profile/MyRole",
+            "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "aws-cdk-iam-instance-profile/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-iam-instance-profile/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MyInstanceProfile": {
+            "id": "MyInstanceProfile",
+            "path": "aws-cdk-iam-instance-profile/MyInstanceProfile",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-iam-instance-profile/MyInstanceProfile/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "MyRoleF48FFE04"
+                      }
+                    ],
+                    "instanceProfileName": "my-instance-profile",
+                    "path": "/sample/path/"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.InstanceProfile",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfileByArn": {
+            "id": "ImportedProfileByArn",
+            "path": "aws-cdk-iam-instance-profile/ImportedProfileByArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfileByArnWithPath": {
+            "id": "ImportedProfileByArnWithPath",
+            "path": "aws-cdk-iam-instance-profile/ImportedProfileByArnWithPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfileByArnWithPathMultiple": {
+            "id": "ImportedProfileByArnWithPathMultiple",
+            "path": "aws-cdk-iam-instance-profile/ImportedProfileByArnWithPathMultiple",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "AttributesWithRole": {
+            "id": "AttributesWithRole",
+            "path": "aws-cdk-iam-instance-profile/AttributesWithRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "AttributesPathMultiple": {
+            "id": "AttributesPathMultiple",
+            "path": "aws-cdk-iam-instance-profile/AttributesPathMultiple",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfileBy": {
+            "id": "ImportedProfileBy",
+            "path": "aws-cdk-iam-instance-profile/ImportedProfileBy",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByArn": {
+            "id": "NameForProfileImportedByArn",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByArnPath": {
+            "id": "NameForProfileImportedByArnPath",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByArnPath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByArnPathMultiple": {
+            "id": "NameForProfileImportedByArnPathMultiple",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByArnPathMultiple",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByAttributesWithRole": {
+            "id": "NameForProfileImportedByAttributesWithRole",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByAttributesWithRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByAttributesPathMultiple": {
+            "id": "NameForProfileImportedByAttributesPathMultiple",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByAttributesPathMultiple",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NameForProfileImportedByName": {
+            "id": "NameForProfileImportedByName",
+            "path": "aws-cdk-iam-instance-profile/NameForProfileImportedByName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-iam-instance-profile/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-iam-instance-profile/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "iam-instance-profile-test": {
+        "id": "iam-instance-profile-test",
+        "path": "iam-instance-profile-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "iam-instance-profile-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "iam-instance-profile-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "iam-instance-profile-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "iam-instance-profile-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "iam-instance-profile-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -667,38 +667,110 @@
                   "version": "0.0.0"
                 }
               },
-              "DefaultAutoScalingGroup": {
-                "id": "DefaultAutoScalingGroup",
-                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup",
+              "Cluster": {
+                "id": "Cluster",
+                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/Cluster",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
+                  "aws:cdk:cloudformation:props": {
+                    "capacityProviders": [
+                      {
+                        "Ref": "MyProvider82D075B0"
+                      }
+                    ],
+                    "cluster": {
+                      "Ref": "ClusterEB0386A7"
+                    },
+                    "defaultCapacityProviderStrategy": []
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnClusterCapacityProviderAssociations",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "MyAutoScalingGroupSG": {
+            "id": "MyAutoScalingGroupSG",
+            "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroupSG",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroupSG/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroupSG",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "securityGroupIngress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "ipProtocol": "tcp",
+                        "fromPort": 32768,
+                        "toPort": 65535,
+                        "description": "from 0.0.0.0/0:32768-65535"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MyAutoScalingGroup": {
+            "id": "MyAutoScalingGroup",
+            "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup",
+            "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole",
                 "children": {
-                  "InstanceSecurityGroup": {
-                    "id": "InstanceSecurityGroup",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
                               }
-                            ],
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "Vpc8378EB38"
                             }
-                          }
+                          ],
+                          "Version": "2012-10-17"
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
@@ -711,9 +783,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "InstanceRole": {
-                    "id": "InstanceRole",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole",
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy",
                     "children": {
                       "ImportInstanceRole": {
                         "id": "ImportInstanceRole",
@@ -725,17 +797,24 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource",
+                        "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
+                            "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "sts:AssumeRole",
+                                  "Action": [
+                                    "ecs:DeregisterContainerInstance",
+                                    "ecs:RegisterContainerInstance",
+                                    "ecs:Submit*"
+                                  ],
                                   "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "ec2.amazonaws.com"
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ClusterEB0386A7",
+                                      "Arn"
+                                    ]
                                   }
                                 }
                               ],
@@ -779,45 +858,23 @@
                                           "Arn"
                                         ]
                                       }
-                                    },
-                                    {
-                                      "Action": [
-                                        "ecs:Poll",
-                                        "ecs:StartTelemetrySession"
-                                      ],
-                                      "Condition": {
-                                        "ArnEquals": {
-                                          "ecs:cluster": {
-                                            "Fn::GetAtt": [
-                                              "ClusterEB0386A7",
-                                              "Arn"
-                                            ]
-                                          }
-                                        }
-                                      },
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
-                                        "ecr:GetAuthorizationToken",
-                                        "ecs:DiscoverPollEndpoint",
-                                        "logs:CreateLogStream",
-                                        "logs:PutLogEvents"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
                                     }
-                                  ],
-                                  "Version": "2012-10-17"
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
                                 },
-                                "policyName": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
-                                "roles": [
-                                  {
-                                    "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
-                                  }
-                                ]
-                              }
+                                {
+                                  "Action": [
+                                    "ecr:GetAuthorizationToken",
+                                    "ecs:DiscoverPollEndpoint",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
@@ -835,18 +892,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
-                  },
-                  "InstanceProfile": {
-                    "id": "InstanceProfile",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceProfile",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
-                      "aws:cdk:cloudformation:props": {
-                        "roles": [
-                          {
-                            "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
-                          }
-                        ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "MyAutoScalingGroupInstanceRoleDFBF3134"
                       }
                     },
                     "constructInfo": {
@@ -858,33 +919,14 @@
                     "id": "LaunchConfig",
                     "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchConfig",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                       "aws:cdk:cloudformation:props": {
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "t2.micro",
-                        "iamInstanceProfile": {
-                          "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-                        },
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
-                                {
-                                  "Ref": "ClusterEB0386A7"
-                                },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "MyAutoScalingGroupInstanceProfile729989CC",
+                                "Arn"
                               ]
                             ]
                           }
@@ -1193,7 +1235,7 @@
                                   "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                                   "version": "0.0.0"
                                 }
-                              }
+                              ]
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_sns.Subscription",
@@ -1228,9 +1270,9 @@
                               "aws:cdk:cloudformation:props": {
                                 "tags": [
                                   {
-                                    "key": "Name",
-                                    "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                                  }
+                                    "Ref": "ClusterEB0386A7"
+                                  },
+                                  " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
                                 ]
                               }
                             },
@@ -1560,7 +1602,7 @@
                               {
                                 "type": "forward",
                                 "targetGroupArn": {
-                                  "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+                                  "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
                                 }
                               }
                             ],
@@ -1576,17 +1618,17 @@
                           "version": "0.0.0"
                         }
                       },
-                      "ECSTargetGroupweb90Group": {
-                        "id": "ECSTargetGroupweb90Group",
-                        "path": "aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group",
+                      "ECSTargetGroupweb80Group": {
+                        "id": "ECSTargetGroupweb80Group",
+                        "path": "aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource",
+                            "path": "aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                               "aws:cdk:cloudformation:props": {
-                                "port": 90,
+                                "port": 80,
                                 "protocol": "TCP",
                                 "targetType": "instance",
                                 "vpcId": {
@@ -1687,11 +1729,6 @@
                             "portMappings": [
                               {
                                 "containerPort": 80,
-                                "hostPort": 0,
-                                "protocol": "tcp"
-                              },
-                              {
-                                "containerPort": 90,
                                 "hostPort": 0,
                                 "protocol": "tcp"
                               }
@@ -1897,10 +1934,10 @@
                           },
                           {
                             "targetGroupArn": {
-                              "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+                              "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
                             },
                             "containerName": "web",
-                            "containerPort": 90
+                            "containerPort": 80
                           }
                         ],
                         "schedulingStrategy": "REPLICA",

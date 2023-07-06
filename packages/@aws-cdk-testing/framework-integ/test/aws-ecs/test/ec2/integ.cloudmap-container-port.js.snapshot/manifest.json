@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98f1f659fd8af3eb92acfed630098070dae0533f5930e53897232885f6f20527.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2137214b2de0d9d04157ab2368c4092ca0702af5ebf8a6baeadddb73e300f629.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -135,10 +135,10 @@
             "data": "FargateClustercapacityInstanceProfile8294296C"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/LaunchConfig": [
+        "/aws-ecs-integ/FargateCluster/capacity/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityLaunchConfig9B95CCB7"
+            "data": "FargateClustercapacityLaunchTemplateD01E44DB"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/ASG": [
@@ -247,6 +247,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FargateClustercapacityLaunchTemplateProfile4BF7EF9F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLaunchTemplateProfile4BF7EF9F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
