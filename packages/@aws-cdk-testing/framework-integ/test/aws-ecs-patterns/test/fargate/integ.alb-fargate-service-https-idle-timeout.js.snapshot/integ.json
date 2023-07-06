@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "idleTimeoutTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-alb-fg-idletimeout"
       ],
-      "assertionStack": "idleTimeoutTest/DefaultTest/DeployAssert"
+      "assertionStack": "idleTimeoutTest/DefaultTest/DeployAssert",
+      "assertionStackName": "idleTimeoutTestDefaultTestDeployAssert276553CB"
     }
   }
 }

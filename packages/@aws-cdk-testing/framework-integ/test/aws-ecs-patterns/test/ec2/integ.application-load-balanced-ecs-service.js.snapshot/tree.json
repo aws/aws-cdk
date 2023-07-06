@@ -715,23 +715,15 @@
                         "description": "Allow all outbound traffic by default",
                         "ipProtocol": "-1"
                       }
-                    ],
-                    "securityGroupIngress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "ipProtocol": "tcp",
-                        "fromPort": 32768,
-                        "toPort": 65535,
-                        "description": "from 0.0.0.0/0:32768-65535"
-                      }
-                    ],
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               }
@@ -977,7 +969,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                   "version": "0.0.0"
                 }
               },
@@ -1083,6 +1075,46 @@
             "id": "SecondAutoScalingGroup",
             "path": "aws-ecs-integ-alb/SecondAutoScalingGroup",
             "children": {
+              "InstanceSecurityGroup": {
+                "id": "InstanceSecurityGroup",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-integ-alb/SecondAutoScalingGroup"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
               "InstanceRole": {
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/InstanceRole",
@@ -1315,7 +1347,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
                   "version": "0.0.0"
                 }
               },
@@ -1853,7 +1885,12 @@
                         },
                         "deploymentConfiguration": {
                           "maximumPercent": 200,
-                          "minimumHealthyPercent": 50
+                          "minimumHealthyPercent": 50,
+                          "alarms": {
+                            "alarmNames": [],
+                            "enable": false,
+                            "rollback": false
+                          }
                         },
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,

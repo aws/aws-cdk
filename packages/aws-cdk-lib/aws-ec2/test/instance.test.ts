@@ -406,6 +406,57 @@ describe('instance', () => {
 
   });
 
+  test('instance can be created with Private IP Address AND Associate Public IP Address', () => {
+    const privateIpAddress = '10.0.0.2';
+    // GIVEN
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PUBLIC },
+      securityGroup,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      privateIpAddress: privateIpAddress,
+      associatePublicIpAddress: true,
+    });
+
+    // THEN
+    // PrivateIpAddress AND NetworkInterfaces cannot both be present
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      PrivateIpAddress: Match.absent(),
+    });
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+      Properties: {
+        NetworkInterfaces: [{
+          PrivateIpAddress: privateIpAddress,
+          AssociatePublicIpAddress: true,
+          DeviceIndex: '0',
+          GroupSet: [
+            {
+              'Fn::GetAtt': [
+                'SecurityGroupDD263621',
+                'GroupId',
+              ],
+            },
+          ],
+          SubnetId: {
+            Ref: 'VPCPublicSubnet1SubnetB4246D30',
+          },
+        }],
+      },
+      DependsOn: [
+        'InstanceInstanceRoleE9785DE5',
+        'VPCPublicSubnet1DefaultRoute91CEF279',
+        'VPCPublicSubnet1RouteTableAssociation0B0896DC',
+        'VPCPublicSubnet2DefaultRouteB7481BBA',
+        'VPCPublicSubnet2RouteTableAssociation5A808732',
+      ],
+    });
+
+  });
+
   test('instance requires IMDSv2', () => {
     // WHEN
     const instance = new Instance(stack, 'Instance', {
