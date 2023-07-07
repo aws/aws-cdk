@@ -69,7 +69,10 @@
    "Properties": {
     "OriginRequestPolicyConfig": {
      "CookiesConfig": {
-      "CookieBehavior": "none"
+      "CookieBehavior": "whitelist",
+      "Cookies": [
+       "cookie1"
+      ]
      },
      "HeadersConfig": {
       "HeaderBehavior": "allViewerAndWhitelistCloudFront",
@@ -79,7 +82,10 @@
      },
      "Name": "ACustomOriginRequestPolicy",
      "QueryStringsConfig": {
-      "QueryStringBehavior": "none"
+      "QueryStringBehavior": "allExcept",
+      "QueryStrings": [
+       "querystringparam"
+      ]
      }
     }
    }
