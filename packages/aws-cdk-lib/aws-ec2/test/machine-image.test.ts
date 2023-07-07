@@ -96,6 +96,34 @@ test('can make and use a Generic SSM image', () => {
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
 
+test('can make and use a SSM resolve image', () => {
+  // WHEN
+  const image = new ec2.SsmParameterResolveImage('testParam');
+
+  // THEN
+  const details = image.getImage();
+  expect(details.imageId).toEqual('resolve:ssm:testParam');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
+test('can make and use a SSM resolve image with parameter version', () => {
+  // WHEN
+  const image = new ec2.SsmParameterResolveImage('testParam', { parameterVersion: '2' });
+
+  // THEN
+  const details = image.getImage();
+  expect(details.imageId).toEqual('resolve:ssm:testParam:2');
+});
+
+test('can make and use a SSM resolve image with fromSsmParameterResolve', () => {
+  // WHEN
+  const image = ec2.MachineImage.fromSsmParameterResolve('testParam', { parameterVersion: '2' });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('resolve:ssm:testParam:2');
+});
+
 test('WindowsImage retains userdata if given', () => {
   // WHEN
   const ud = ec2.UserData.forWindows();
