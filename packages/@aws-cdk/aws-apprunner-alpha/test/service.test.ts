@@ -1233,6 +1233,27 @@ test('autoDeploymentsEnabled flag is NOT set', () => {
   });
 });
 
+test('serviceName is set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const serviceName = 'demo-service';
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    serviceName: serviceName,
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ServiceName: serviceName,
+  });
+});
+
 testDeprecated('Using both environmentVariables and environment should throw an error', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');

@@ -1073,6 +1073,7 @@ export class Service extends cdk.Resource {
     }
 
     const resource = new CfnService(this, 'Resource', {
+      serviceName: this.props.serviceName,
       instanceConfiguration: {
         cpu: this.props.cpu?.unit,
         memory: this.props.memory?.unit,
