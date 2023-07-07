@@ -544,6 +544,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 ```
 
+Period allows you to set the default period for the widget:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  period: Duration.minutes(15),
+}));
+```
+
 ### Text widget
 
 A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
