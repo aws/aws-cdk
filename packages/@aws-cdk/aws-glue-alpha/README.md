@@ -499,7 +499,7 @@ new glue.Table(this, 'MyTable', {
 A `DataQualityRuleset` specifies a data quality ruleset with DQDL rules applied to a specified AWS Glue table. For example, to create a data quality ruleset for a given table:
 
 ```ts
-new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
+new glue.DataQualityRuleset(this, 'MyDataQualityRuleset', {
   clientToken: 'client_token',
   description: 'description',
   rulesetName: 'ruleset_name',
