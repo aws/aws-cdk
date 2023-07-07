@@ -281,6 +281,9 @@ describe('export writer provider', () => {
           'ap-southeast-3': {
             value: 'nodejs16.x',
           },
+          'ap-southeast-4': {
+            value: 'nodejs16.x',
+          },
           'ca-central-1': {
             value: 'nodejs16.x',
           },
@@ -849,6 +852,9 @@ describe('export writer provider', () => {
             value: 'nodejs16.x',
           },
           'ap-southeast-3': {
+            value: 'nodejs16.x',
+          },
+          'ap-southeast-4': {
             value: 'nodejs16.x',
           },
           'ca-central-1': {
