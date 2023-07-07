@@ -4,6 +4,7 @@ import {
   CfnInstanceProfile,
   Role,
   ServicePrincipal,
+  InstanceProfile,
 } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import {
@@ -368,6 +369,45 @@ describe('LaunchTemplate', () => {
     });
   });
 
+  test('Given instance profile', () => {
+    // GIVEN
+    const role = new Role(stack, 'TestRole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+    const instanceProfile = new InstanceProfile(stack, 'InstanceProfile', {
+      role,
+    });
+
+    // WHEN
+    const template = new LaunchTemplate(stack, 'Template', {
+      instanceProfile,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
+      Roles: [
+        {
+          Ref: 'TestRole6C9272DF',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        IamInstanceProfile: {
+          Arn: {
+            'Fn::GetAtt': [
+              'InstanceProfile9F2F41CB',
+              'Arn',
+            ],
+          },
+        },
+      },
+    });
+    expect(template.role).toBeDefined();
+    expect(template.grantPrincipal).toBeDefined();
+  });
+
   describe('feature flag @aws-cdk/aws-ec2:launchTemplateDefaultUserData', () => {
     test('Given machineImage (Linux)', () => {
       // WHEN
@@ -393,6 +433,46 @@ describe('LaunchTemplate', () => {
       const template = new LaunchTemplate(stack, 'Template', {
         machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
       });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.WINDOWS);
+      expect(template.userData).toBeDefined();
+    });
+  });
+
+  describe('feature flag @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig', () => {
+    test('Given machineImage (Linux)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new AmazonLinuxImage(),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+        LaunchTemplateData: {
+          ImageId: {
+            Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami.*Parameter'),
+          },
+        },
+      });
+      expect(template.osType).toBe(OperatingSystemType.LINUX);
+      expect(template.userData).toBeDefined();
+    });
+
+    test('Given machineImage (Windows)', () => {
+      // WHEN
+      stack.node.setContext(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+      const template = new LaunchTemplate(stack, 'Template', {
+        machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
+      });
+
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
         LaunchTemplateData: {
@@ -625,6 +705,70 @@ describe('LaunchTemplate', () => {
         MetadataOptions: {
           HttpTokens: 'required',
         },
+      },
+    });
+  });
+
+  test('Associate public IP address', () => {
+    // GIVEN
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      associatePublicIpAddress: true,
+      securityGroup: sg,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        NetworkInterfaces: [
+          {
+            DeviceIndex: 0,
+            AssociatePublicIpAddress: true,
+            Groups: [
+              {
+                'Fn::GetAtt': [
+                  'SGADB53937',
+                  'GroupId',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('Dissociate public IP address', () => {
+    // GIVEN
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      associatePublicIpAddress: false,
+      securityGroup: sg,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        NetworkInterfaces: [
+          {
+            DeviceIndex: 0,
+            AssociatePublicIpAddress: false,
+            Groups: [
+              {
+                'Fn::GetAtt': [
+                  'SGADB53937',
+                  'GroupId',
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
   });

@@ -1,27 +1,27 @@
 {
-  "version": "30.1.0",
+  "version": "32.0.0",
   "artifacts": {
-    "lambda-test-assets-file.assets": {
+    "aws-glue-data-quality-ruleset.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "lambda-test-assets-file.assets.json",
+        "file": "aws-glue-data-quality-ruleset.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "lambda-test-assets-file": {
+    "aws-glue-data-quality-ruleset": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "lambda-test-assets-file.template.json",
+        "templateFile": "aws-glue-data-quality-ruleset.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8249562dd7d7c3c4d1805e0679e5abc010db332ea4d793c29cd87709e51c09ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9515accbd6b765c36fbffa5adb190fc8f6d1f67573ab2655ede370368887799.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "lambda-test-assets-file.assets"
+          "aws-glue-data-quality-ruleset.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,63 +30,69 @@
         }
       },
       "dependencies": [
-        "lambda-test-assets-file.assets"
+        "aws-glue-data-quality-ruleset.assets"
       ],
       "metadata": {
-        "/lambda-test-assets-file/MyRubyLambda/ServiceRole/Resource": [
+        "/aws-glue-data-quality-ruleset/DataBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRubyLambdaServiceRoleDC227070"
+            "data": "DataBucketE3889A50"
           }
         ],
-        "/lambda-test-assets-file/MyRubyLambda/Resource": [
+        "/aws-glue-data-quality-ruleset/MyDatabase/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRubyLambdaAFED834F"
+            "data": "MyDatabase1E2517DB"
           }
         ],
-        "/lambda-test-assets-file/Exports/Output{\"Ref\":\"MyRubyLambdaAFED834F\"}": [
+        "/aws-glue-data-quality-ruleset/CSVTable/Table": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
+            "data": "CSVTableE499CABA"
           }
         ],
-        "/lambda-test-assets-file/BootstrapVersion": [
+        "/aws-glue-data-quality-ruleset/DataQualityRuleset/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataQualityRulesetBB177ADB"
+          }
+        ],
+        "/aws-glue-data-quality-ruleset/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/lambda-test-assets-file/CheckBootstrapVersion": [
+        "/aws-glue-data-quality-ruleset/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "lambda-test-assets-file"
+      "displayName": "aws-glue-data-quality-ruleset"
     },
-    "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
+    "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestDefaultTestDeployAssertE3E7D2A4.assets.json",
+        "file": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestDefaultTestDeployAssertE3E7D2A4": {
+    "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
+        "templateFile": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c59dda0d702dcd8abf7543a59a0d1674204853ef08c6a0d552f9fb2776428e25.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+          "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -95,54 +101,23 @@
         }
       },
       "dependencies": [
-        "lambda-test-assets-file",
-        "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+        "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7.assets"
       ],
       "metadata": {
-        "/IntegTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383Invoke42FF4B85"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/glue-data-quality-ruleset/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/glue-data-quality-ruleset/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest/DefaultTest/DeployAssert"
+      "displayName": "glue-data-quality-ruleset/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
