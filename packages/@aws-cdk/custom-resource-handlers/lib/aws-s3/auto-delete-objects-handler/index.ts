@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { S3 } from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
-const s3 = new S3();
+const s3 = new S3({});
 
 export const handler = makeHandler(autoDeleteHandler);
 
@@ -39,14 +39,14 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
  * @param bucketName the bucket name
  */
 async function emptyBucket(bucketName: string) {
-  const listedObjects = await s3.listObjectVersions({ Bucket: bucketName }).promise();
+  const listedObjects = await s3.listObjectVersions({ Bucket: bucketName });
   const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
   if (contents.length === 0) {
     return;
   }
 
   const records = contents.map((record: any) => ({ Key: record.Key, VersionId: record.VersionId }));
-  await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } }).promise();
+  await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } });
 
   if (listedObjects?.IsTruncated) {
     await emptyBucket(bucketName);
@@ -80,6 +80,6 @@ async function onDelete(bucketName?: string) {
  * been removed before we get to this Delete event.
  */
 async function isBucketTaggedForDeletion(bucketName: string) {
-  const response = await s3.getBucketTagging({ Bucket: bucketName }).promise();
-  return response.TagSet.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
+  const response = await s3.getBucketTagging({ Bucket: bucketName });
+  return response.TagSet?.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
 }
