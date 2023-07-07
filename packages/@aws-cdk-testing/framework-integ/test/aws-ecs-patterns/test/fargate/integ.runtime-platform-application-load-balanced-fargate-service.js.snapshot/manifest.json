@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-runtime-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -138,10 +132,7 @@
         "/aws-ecs-runtime-integ/ScheduledFargateTask/ScheduledTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ScheduledFargateTaskScheduledTaskDef521FA675",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ScheduledFargateTaskScheduledTaskDef521FA675"
           }
         ],
         "/aws-ecs-runtime-integ/ScheduledFargateTask/ScheduledTaskDef/ScheduledContainer/LogGroup/Resource": [
@@ -241,6 +232,12 @@
         ]
       },
       "displayName": "Integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

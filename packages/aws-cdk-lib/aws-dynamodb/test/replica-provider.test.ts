@@ -1,4 +1,5 @@
-import * as AWS from 'aws-sdk-mock';
+import { DescribeTableCommand, DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
 import * as sinon from 'sinon';
 import { OnEventRequest } from '../../custom-resources/lib/provider-framework/types';
 import { isCompleteHandler, onEventHandler } from '../lib/replica-handler';
@@ -13,8 +14,6 @@ beforeAll(() => {
 afterAll(() => {
   global.console.log = oldConsoleLog;
 });
-
-AWS.setSDK(require.resolve('aws-sdk'));
 
 const REGION = 'eu-west-2';
 
@@ -33,14 +32,16 @@ const createEvent: OnEventRequest = {
   ResourceType: 'resource-type',
 };
 
+const ddbMock = mockClient(DynamoDBClient);
+
 afterEach(() => {
-  AWS.restore();
+  ddbMock.reset();
 });
 
 test('on event', async () => {
   const updateTableMock = sinon.fake.resolves({});
 
-  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+  ddbMock.on(UpdateTableCommand).callsFake(updateTableMock);
 
   const data = await onEventHandler(createEvent);
 
@@ -61,16 +62,16 @@ test('on event', async () => {
 });
 
 test("on Update event from CFN calls updateTable with Create if a replica in the region doesn't exist", async () => {
-  AWS.mock('DynamoDB', 'describeTable', sinon.fake.resolves({
+  ddbMock.on(DescribeTableCommand).resolves({
     Table: {
       Replicas: [
         // no replicas exist yet
       ],
     },
-  }));
+  });
 
   const updateTableMock = sinon.fake.resolves({});
-  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+  ddbMock.on(UpdateTableCommand).callsFake(updateTableMock);
 
   const data = await onEventHandler({
     ...createEvent,
@@ -97,16 +98,16 @@ test("on Update event from CFN calls updateTable with Create if a replica in the
 });
 
 test("on Update event from CFN calls doesn't call updateTable if a replica in the region does exist", async () => {
-  AWS.mock('DynamoDB', 'describeTable', sinon.fake.resolves({
+  ddbMock.on(DescribeTableCommand).resolves({
     Table: {
       Replicas: [
         { RegionName: REGION },
       ],
     },
-  }));
+  });
 
   const updateTableMock = sinon.fake.resolves({});
-  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+  ddbMock.on(UpdateTableCommand).callsFake(updateTableMock);
 
   await onEventHandler({
     ...createEvent,
@@ -122,7 +123,7 @@ test("on Update event from CFN calls doesn't call updateTable if a replica in th
 test('on event calls updateTable with Delete', async () => {
   const updateTableMock = sinon.fake.resolves({});
 
-  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+  ddbMock.on(UpdateTableCommand).callsFake(updateTableMock);
 
   const data = await onEventHandler({
     ...createEvent,
@@ -149,7 +150,7 @@ test('is complete for create returns false without replicas', async () => {
     Table: {},
   });
 
-  AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+  ddbMock.on(DescribeTableCommand).callsFake(describeTableMock);
 
   const data = await isCompleteHandler(createEvent);
 
@@ -168,7 +169,7 @@ test('is complete for create returns false when replica is not active', async ()
     },
   });
 
-  AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+  ddbMock.on(DescribeTableCommand).callsFake(describeTableMock);
 
   const data = await isCompleteHandler(createEvent);
 
@@ -188,7 +189,7 @@ test('is complete for create returns false when table is not active', async () =
     },
   });
 
-  AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+  ddbMock.on(DescribeTableCommand).callsFake(describeTableMock);
 
   const data = await isCompleteHandler(createEvent);
 
@@ -208,7 +209,7 @@ test('is complete for create returns true when replica is active', async () => {
     },
   });
 
-  AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+  ddbMock.on(DescribeTableCommand).callsFake(describeTableMock);
 
   const data = await isCompleteHandler(createEvent);
 
@@ -228,7 +229,7 @@ test('is complete for delete returns true when replica is gone', async () => {
     },
   });
 
-  AWS.mock('DynamoDB', 'describeTable', describeTableMock);
+  ddbMock.on(DescribeTableCommand).callsFake(describeTableMock);
 
   const data = await isCompleteHandler({
     ...createEvent,

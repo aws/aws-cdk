@@ -147,6 +147,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 
 new IntegTest(app, 'integ-product', {
   testCases: [stack],
+  diffAssets: true,
   enableLookups: true,
 });
 

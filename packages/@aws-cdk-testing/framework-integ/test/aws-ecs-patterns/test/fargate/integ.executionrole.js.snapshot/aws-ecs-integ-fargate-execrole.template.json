@@ -630,6 +630,11 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -691,7 +696,9 @@
      "Ref": "Vpc8378EB38"
     }
    },
-   "DependsOn": ["L3TaskDefTaskRole21C75D10"]
+   "DependsOn": [
+    "L3TaskDefTaskRole21C75D10"
+   ]
   },
   "L3ServiceSecurityGroupfromawsecsintegfargateexecroleL3LBSecurityGroup8CDEB2C1806437B462": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -713,7 +720,9 @@
     },
     "ToPort": 80
    },
-   "DependsOn": ["L3TaskDefTaskRole21C75D10"]
+   "DependsOn": [
+    "L3TaskDefTaskRole21C75D10"
+   ]
   }
  },
  "Outputs": {
