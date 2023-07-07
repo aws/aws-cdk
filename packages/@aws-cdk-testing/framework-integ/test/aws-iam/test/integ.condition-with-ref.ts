@@ -26,6 +26,7 @@ class MyStack extends Stack {
 const app = new App();
 new IntegTest(app, 'iam-test-condition-with-ref', {
   testCases: [new MyStack(app, 'test-condition-with-ref')],
+  diffAssets: true,
 })
 ;
 app.synth();
