@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/964b32295395d41c365adc652e06c616fd313a47c10a28f5e3447bd6872984db.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fbe50a73082c95e6e3651fa9513f731c8172117a4b5e7193b0d18e3d9d802935.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,10 +195,10 @@
             "data": "FleetInstanceProfileC6192A66"
           }
         ],
-        "/aws-cdk-asg-integ/Fleet/LaunchConfig": [
+        "/aws-cdk-asg-integ/Fleet/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36"
+            "data": "FleetLaunchTemplate3FC2FEAE"
           }
         ],
         "/aws-cdk-asg-integ/Fleet/ASG": [
@@ -248,9 +242,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "FleetLaunchTemplateProfileB169EB6D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetLaunchTemplateProfileB169EB6D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-asg-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

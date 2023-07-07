@@ -24,7 +24,7 @@ for (const ep of entryPoints) {
   void esbuild.build({
     entryPoints: [ep],
     outfile: `${ep.slice(0, ep.lastIndexOf('.'))}.js`,
-    external: ['aws-sdk'],
+    external: ['@aws-sdk/*'],
     format: 'cjs',
     platform: 'node',
     bundle: true,
