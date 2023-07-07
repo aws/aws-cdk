@@ -10,7 +10,11 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    if (path.extname(fileOrDir) === '.ts' && !fileOrDir.includes('.d.ts') && !fileOrDir.includes('nodejs-entrypoint')) {
+    // Only minify + bundle 'index.ts' files.
+    // The reason why they are called 'index.ts' is that aws-cdk-lib expects that
+    // as the file name and it is more intuitive to keep the same name rather than
+    // rename as we copy it out.
+    if (fileOrDir.includes('index.ts')) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -23,7 +27,7 @@ recFolderStructure(bindingsDir);
 for (const ep of entryPoints) {
   void esbuild.build({
     entryPoints: [ep],
-    outfile: `${ep.slice(0, ep.lastIndexOf('.'))}.js`,
+    outfile: calculateOutfile(ep),
     external: ['@aws-sdk/*'],
     format: 'cjs',
     platform: 'node',
@@ -35,4 +39,15 @@ for (const ep of entryPoints) {
     sourcemap: false,
     tsconfig: 'tsconfig.json',
   });
+}
+
+function calculateOutfile(file: string) {
+  // turn ts extension into js extension
+  file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
+
+  // replace /lib with /dist
+  const fileContents = file.split(path.sep);
+  fileContents[fileContents.lastIndexOf('lib')] = 'dist';
+
+  return fileContents.join(path.sep);
 }
