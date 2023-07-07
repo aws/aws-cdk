@@ -141,6 +141,7 @@ pipeline.addStage({
 
 new integ.IntegTest(app, 'codepipeline-elastic-beanstalk-deploy', {
   testCases: [stack],
+  diffAssets: true,
   stackUpdateWorkflow: false,
 });
 
