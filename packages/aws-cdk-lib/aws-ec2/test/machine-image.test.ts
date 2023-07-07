@@ -101,7 +101,7 @@ test('can make and use a SSM resolve image', () => {
   const image = new ec2.SsmParameterResolveImage('testParam');
 
   // THEN
-  const details = image.getImage();
+  const details = image.getImage(stack);
   expect(details.imageId).toEqual('resolve:ssm:testParam');
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
@@ -111,7 +111,7 @@ test('can make and use a SSM resolve image with parameter version', () => {
   const image = new ec2.SsmParameterResolveImage('testParam', { parameterVersion: '2' });
 
   // THEN
-  const details = image.getImage();
+  const details = image.getImage(stack);
   expect(details.imageId).toEqual('resolve:ssm:testParam:2');
 });
 
