@@ -807,7 +807,8 @@
                                           "VirtualNodeName"
                                         ]
                                       },
-                                      "weight": 1
+                                      "weight": 1,
+                                      "port": 1234
                                     }
                                   ]
                                 },
@@ -1264,7 +1265,7 @@
                 "path": "appmesh-routes-port-matchers/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1310,7 +1311,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.55"
         }
       }
     },
