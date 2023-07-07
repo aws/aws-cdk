@@ -965,9 +965,17 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 }
 
 function createExecutionRole(scope: Construct, id: string): iam.IRole {
-  return new iam.Role(scope, id, {
+  const execRole = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     // needed for cross-account access with TagParameterContainerImage
     roleName: PhysicalName.GENERATE_IF_NEEDED,
   });
+
+  // all jobs will fail without this if they produce any output at all when no logging is specified
+  execRole.addToPrincipalPolicy(new iam.PolicyStatement({
+    actions: ['logs:CreateLogStream'],
+    resources: ['*'],
+  }));
+
+  return execRole;
 }

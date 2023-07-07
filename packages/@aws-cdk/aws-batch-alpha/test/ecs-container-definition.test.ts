@@ -1,4 +1,3 @@
-
 import { Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
@@ -46,7 +45,15 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('ecs container defaults', () => {
@@ -60,6 +67,42 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        },
+        ...pascalCaseExpectedProps.ContainerProperties,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'logs:CreateLogStream',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'EcsContainerExecutionRoleDefaultPolicy6F59CD37',
+      Roles: [{
+        Ref: 'EcsContainerExecutionRole3B199293',
+      }],
     });
   });
 
@@ -78,6 +121,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
         Command: ['echo', 'foo'],
+
       },
     });
   });
@@ -185,7 +229,40 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('respects logging and creates an execution role for EC2 and Fargate containers', () => {
+  test('creates an execution role by default', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        },
+        ...pascalCaseExpectedProps.ContainerProperties,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('respects logging', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
@@ -221,11 +298,19 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'ecs-tasks.amazonaws.com' },
-        }],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+          /*{
+            Action: 'logs:CreateLogStream',
+            Effect: 'Allow',
+            Principal: { Resource: '*' },
+          },
+          */
+        ],
         Version: '2012-10-17',
       },
     });
@@ -564,7 +649,15 @@ describe('EC2 containers', () => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsEc2ContainerExecutionRole90E18680', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('respects addUlimit()', () => {
@@ -708,7 +801,15 @@ describe('Fargate containers', () => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
-    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, {
+      ...defaultExpectedProps,
+      containerProperties: {
+        ...defaultExpectedProps.containerProperties,
+        executionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        } as any,
+      },
+    });
   });
 
   test('create executionRole by default', () => {

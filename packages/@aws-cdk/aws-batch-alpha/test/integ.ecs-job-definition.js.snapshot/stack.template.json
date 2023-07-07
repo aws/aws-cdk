@@ -490,6 +490,27 @@
     }
    }
   },
+  "myContainerExecutionRoleDefaultPolicy42DA929E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myContainerExecutionRoleDefaultPolicy42DA929E",
+    "Roles": [
+     {
+      "Ref": "myContainerExecutionRoleEBACF86C"
+     }
+    ]
+   }
+  },
   "ECSJobDefn48425E25": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
@@ -589,6 +610,27 @@
     }
    }
   },
+  "myFargateContainerExecutionRoleDefaultPolicy4FF431BF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myFargateContainerExecutionRoleDefaultPolicy4FF431BF",
+    "Roles": [
+     {
+      "Ref": "myFargateContainerExecutionRoleB9EB79EA"
+     }
+    ]
+   }
+  },
   "ECSFargateJobDefn327BE725": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
@@ -680,6 +722,14 @@
      "Statement": [
       {
        "Action": [
+        "ecr:GetAuthorizationToken",
+        "logs:CreateLogStream"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
         "ecr:GetDownloadUrlForLayer"
@@ -708,11 +758,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": "ecr:GetAuthorizationToken",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"

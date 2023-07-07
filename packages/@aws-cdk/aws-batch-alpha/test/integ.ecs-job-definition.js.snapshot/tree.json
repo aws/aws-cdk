@@ -839,6 +839,45 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/myContainer/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/myContainer/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "logs:CreateLogStream",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "myContainerExecutionRoleDefaultPolicy42DA929E",
+                            "roles": [
+                              {
+                                "Ref": "myContainerExecutionRoleEBACF86C"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -848,8 +887,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSJobDefn": {
@@ -948,7 +987,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -992,6 +1031,45 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/myFargateContainer/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/myFargateContainer/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "logs:CreateLogStream",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "myFargateContainerExecutionRoleDefaultPolicy4FF431BF",
+                            "roles": [
+                              {
+                                "Ref": "myFargateContainerExecutionRoleB9EB79EA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1001,8 +1079,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsFargateContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSFargateJobDefn": {
@@ -1086,7 +1164,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1171,6 +1249,14 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "ecr:GetAuthorizationToken",
+                                    "logs:CreateLogStream"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
                                     "ecr:BatchCheckLayerAvailability",
                                     "ecr:BatchGetImage",
                                     "ecr:GetDownloadUrlForLayer"
@@ -1199,11 +1285,6 @@
                                       ]
                                     ]
                                   }
-                                },
-                                {
-                                  "Action": "ecr:GetAuthorizationToken",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -1235,8 +1316,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.52"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "ECSDockerJobDefn": {
@@ -1287,7 +1368,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1326,7 +1407,7 @@
                 "path": "BatchEcsJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.52"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -1372,7 +1453,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.52"
+          "version": "10.2.55"
         }
       }
     },

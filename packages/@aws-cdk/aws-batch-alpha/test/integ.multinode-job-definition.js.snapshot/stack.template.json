@@ -17,6 +17,27 @@
     }
    }
   },
+  "myContainerExecutionRoleDefaultPolicy42DA929E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myContainerExecutionRoleDefaultPolicy42DA929E",
+    "Roles": [
+     {
+      "Ref": "myContainerExecutionRoleEBACF86C"
+     }
+    ]
+   }
+  },
   "SingleContainerMultiNodeJob1118AC82": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
@@ -75,6 +96,27 @@
      ],
      "Version": "2012-10-17"
     }
+   }
+  },
+  "multinodecontainerExecutionRoleDefaultPolicy2AAB071A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "multinodecontainerExecutionRoleDefaultPolicy2AAB071A",
+    "Roles": [
+     {
+      "Ref": "multinodecontainerExecutionRoleAB7AA30A"
+     }
+    ]
    }
   },
   "MultiContainerMultiNodeJobBA8ED368": {
@@ -159,6 +201,27 @@
      ],
      "Version": "2012-10-17"
     }
+   }
+  },
+  "multiContainerExecutionRoleDefaultPolicyE3E7D32C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "multiContainerExecutionRoleDefaultPolicyE3E7D32C",
+    "Roles": [
+     {
+      "Ref": "multiContainerExecutionRole317DED72"
+     }
+    ]
    }
   }
  },

@@ -79,6 +79,27 @@
     }
    }
   },
+  "containerExecutionRoleDefaultPolicyF00DA4D6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:CreateLogStream",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "containerExecutionRoleDefaultPolicyF00DA4D6",
+    "Roles": [
+     {
+      "Ref": "containerExecutionRoleFD602179"
+     }
+    ]
+   }
+  },
   "MyJob8719E923": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
