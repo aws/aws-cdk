@@ -5,6 +5,7 @@
       "stacks": [
         "sqs-bucket-notifications"
       ],
+      "diffAssets": true,
       "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
       "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
     }

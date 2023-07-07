@@ -223,16 +223,4 @@ describe.each([batch.EcsJobDefinition, batch.EksJobDefinition, batch.MultiNodeJo
       },
     });
   });
-
-  /*
-  test('can be imported from name', () => {
-    // WHEN
-    const importedJob = JobDefinition.fromJobDefinitionName(stack, 'job-def-clone', 'job-def-name');
-
-    // THEN
-    expect(importedJob.jobDefinitionName).toEqual('job-def-name');
-    expect(importedJob.jobDefinitionArn)
-      .toEqual(`arn:${Aws.PARTITION}:batch:${Aws.REGION}:${Aws.ACCOUNT_ID}:job-definition/job-def-name`);
-  });
-  */
 });

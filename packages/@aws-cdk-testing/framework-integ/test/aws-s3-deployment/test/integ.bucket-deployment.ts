@@ -108,6 +108,7 @@ const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
 // Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
+  diffAssets: true,
 });
 const listObjectsCall = integTest.assertions.awsApiCall('S3', 'listObjects', {
   Bucket: testCase.bucket5.bucketName,

@@ -79,7 +79,7 @@ class LambdaFunctionProvider extends Construct {
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Runtime: 'nodejs14.x',
+        Runtime: 'nodejs18.x',
         Code: {
           S3Bucket: asset.bucketName,
           S3Key: asset.objectKey,
