@@ -4,7 +4,7 @@
     "integ-tests/DefaultTest": {
       "stacks": [
         "synthesize-default-resources",
-        "StagingStack-default-resources-ACCOUNT-REGION"
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION"
       ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"

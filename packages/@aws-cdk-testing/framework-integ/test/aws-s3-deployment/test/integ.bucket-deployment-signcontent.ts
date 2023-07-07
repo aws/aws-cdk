@@ -48,4 +48,5 @@ const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-signobjec
 
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
+  diffAssets: true,
 });
