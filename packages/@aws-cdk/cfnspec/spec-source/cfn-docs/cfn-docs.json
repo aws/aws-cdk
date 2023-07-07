@@ -1654,6 +1654,7 @@
     },
     "AWS::ApiGatewayV2::ApiMapping": {
       "attributes": {
+        "ApiMappingId": "The API mapping resource ID.",
         "Ref": "`Ref` returns the API mapping resource ID."
       },
       "description": "The `AWS::ApiGatewayV2::ApiMapping` resource contains an API mapping. An API mapping relates a path of your custom domain name to a stage of your API. A custom domain name can have multiple API mappings, but the paths can't overlap. A custom domain can map only to APIs of the same protocol type. For more information, see [CreateApiMapping](https://docs.aws.amazon.com/apigatewayv2/latest/api-reference/domainnames-domainname-apimappings.html#CreateApiMapping) in the *Amazon API Gateway V2 API Reference* .",
@@ -2619,7 +2620,16 @@
       "description": "The properties that are applied when the custom connector is being used as a source.",
       "properties": {
         "CustomProperties": "Custom properties that are required to use the custom connector as a source.",
+        "DataTransferApi": "",
         "EntityName": "The entity specified in the custom connector as a source in the flow."
+      }
+    },
+    "AWS::AppFlow::Flow.DataTransferApi": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Name": "",
+        "Type": ""
       }
     },
     "AWS::AppFlow::Flow.DatadogSourceProperties": {
@@ -18215,7 +18225,7 @@
     },
     "AWS::ECS::Service.DeploymentCircuitBreaker": {
       "attributes": {},
-      "description": "> The deployment circuit breaker can only be used for services using the rolling update ( `ECS` ) deployment type. \n\nThe *deployment circuit breaker* determines whether a service deployment will fail if the service can't reach a steady state. If it is turned on, a service deployment will transition to a failed state and stop launching new tasks. You can also configure Amazon ECS to roll back your service to the last completed deployment after a failure. For more information, see [Rolling update](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) in the *Amazon Elastic Container Service Developer Guide* .",
+      "description": "> The deployment circuit breaker can only be used for services using the rolling update ( `ECS` ) deployment type. \n\nThe *deployment circuit breaker* determines whether a service deployment will fail if the service can't reach a steady state. If it is turned on, a service deployment will transition to a failed state and stop launching new tasks. You can also configure Amazon ECS to roll back your service to the last completed deployment after a failure. For more information, see [Rolling update](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nFor more information about API failure reasons, see [API failure reasons](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/api_failures_messages.html) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
         "Enable": "Determines whether to use the deployment circuit breaker logic for the service.",
         "Rollback": "Determines whether to configure Amazon ECS to roll back the service if a service deployment fails. If rollback is on, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
@@ -18344,7 +18354,7 @@
         "PidMode": "The process namespace to use for the containers in the task. The valid values are `host` or `task` . If `host` is specified, then all containers within the tasks that specified the `host` PID mode on the same container instance share the same process namespace with the host Amazon EC2 instance. If `task` is specified, all containers within the specified task share the same process namespace. If no value is specified, the default is a private namespace. For more information, see [PID settings](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#pid-settings---pid) in the *Docker run reference* .\n\nIf the `host` PID mode is used, be aware that there is a heightened risk of undesired process namespace expose. For more information, see [Docker security](https://docs.aws.amazon.com/https://docs.docker.com/engine/security/security/) .\n\n> This parameter is not supported for Windows containers or tasks run on AWS Fargate .",
         "PlacementConstraints": "An array of placement constraint objects to use for tasks.\n\n> This parameter isn't supported for tasks run on AWS Fargate .",
         "ProxyConfiguration": "The configuration details for the App Mesh proxy.\n\nYour Amazon ECS container instances require at least version 1.26.0 of the container agent and at least version 1.26.0-1 of the `ecs-init` package to use a proxy configuration. If your container instances are launched from the Amazon ECS optimized AMI version `20190301` or later, they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "RequiresCompatibilities": "The task launch types the task definition was validated against. For more information, see [Amazon ECS launch types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "RequiresCompatibilities": "The task launch types the task definition was validated against. The valid values are `EC2` , `FARGATE` , and `git diff` . For more information, see [Amazon ECS launch types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "RuntimePlatform": "The operating system that your tasks definitions run on. A platform family is specified only for tasks using the Fargate launch type.\n\nWhen you specify a task definition in a service, this value must match the `runtimePlatform` value of the service.",
         "Tags": "The metadata that you apply to the task definition to help you categorize and organize them. Each tag consists of a key and an optional value. You define both of them.\n\nThe following basic restrictions apply to tags:\n\n- Maximum number of tags per resource - 50\n- For each resource, each tag key must be unique, and each tag key can have only one value.\n- Maximum key length - 128 Unicode characters in UTF-8\n- Maximum value length - 256 Unicode characters in UTF-8\n- If your tagging schema is used across multiple services and resources, remember that other services may have restrictions on allowed characters. Generally allowed characters are: letters, numbers, and spaces representable in UTF-8, and the following characters: + - = . _ : / @.\n- Tag keys and values are case-sensitive.\n- Do not use `aws:` , `AWS:` , or any upper or lowercase combination of such as a prefix for either keys or values as it is reserved for AWS use. You cannot edit or delete tag keys or values with this prefix. Tags with this prefix do not count against your tags per resource limit.",
         "TaskRoleArn": "The short name or full Amazon Resource Name (ARN) of the AWS Identity and Access Management role that grants containers in the task permission to call AWS APIs on your behalf. For more information, see [Amazon ECS Task Role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nIAM roles for tasks on Windows require that the `-EnableTaskIAMRole` option is set when you launch the Amazon ECS-optimized Windows AMI. Your containers must also run some configuration code to use the feature. For more information, see [Windows IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -18395,8 +18405,8 @@
         "RepositoryCredentials": "The private repository authentication credentials to use.",
         "ResourceRequirements": "The type and amount of a resource to assign to a container. The only supported resource is a GPU.",
         "Secrets": "The secrets to pass to the container. For more information, see [Specifying Sensitive Data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "StartTimeout": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a `COMPLETE` , `SUCCESS` , or `HEALTHY` status. If a `startTimeout` value is specified for containerB and it doesn't reach the desired status within that time then containerA gives up and not start. This results in the task transitioning to a `STOPPED` state.\n\n> When the `ECS_CONTAINER_START_TIMEOUT` container agent configuration variable is used, it's enforced independently from this start timeout value. \n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nFor tasks using the EC2 launch type, your container instances require at least version `1.26.0` of the container agent to use a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version `1.26.0-1` of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "StopTimeout": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nThe max stop timeout value is 120 seconds and if the parameter is not specified, the default value of 30 seconds is used.\n\nFor tasks that use the EC2 launch type, if the `stopTimeout` parameter isn't specified, the value set for the Amazon ECS container agent configuration variable `ECS_CONTAINER_STOP_TIMEOUT` is used. If neither the `stopTimeout` parameter or the `ECS_CONTAINER_STOP_TIMEOUT` agent configuration variable are set, then the default values of 30 seconds for Linux containers and 30 seconds on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to use a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "StartTimeout": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a `COMPLETE` , `SUCCESS` , or `HEALTHY` status. If a `startTimeout` value is specified for containerB and it doesn't reach the desired status within that time then containerA gives up and not start. This results in the task transitioning to a `STOPPED` state.\n\n> When the `ECS_CONTAINER_START_TIMEOUT` container agent configuration variable is used, it's enforced independently from this start timeout value. \n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nFor tasks using the EC2 launch type, your container instances require at least version `1.26.0` of the container agent to use a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version `1.26.0-1` of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nThe valid values are 2-120 seconds.",
+        "StopTimeout": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nThe max stop timeout value is 120 seconds and if the parameter is not specified, the default value of 30 seconds is used.\n\nFor tasks that use the EC2 launch type, if the `stopTimeout` parameter isn't specified, the value set for the Amazon ECS container agent configuration variable `ECS_CONTAINER_STOP_TIMEOUT` is used. If neither the `stopTimeout` parameter or the `ECS_CONTAINER_STOP_TIMEOUT` agent configuration variable are set, then the default values of 30 seconds for Linux containers and 30 seconds on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to use a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nThe valid values are 2-120 seconds.",
         "SystemControls": "A list of namespaced kernel parameters to set in the container. This parameter maps to `Sysctls` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--sysctl` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> We don't recommended that you specify network-related `systemControls` parameters for multiple containers in a single task that also uses either the `awsvpc` or `host` network modes. For tasks that use the `awsvpc` network mode, the container that's started last determines which `systemControls` parameters take effect. For tasks that use the `host` network mode, it changes the container instance's namespaced kernel parameters as well as the containers.",
         "Ulimits": "A list of `ulimits` to set in the container. This parameter maps to `Ulimits` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--ulimit` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . Valid naming values are displayed in the [Ulimit](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html) data type. This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`\n\n> This parameter is not supported for Windows containers.",
         "User": "The user to use inside the container. This parameter maps to `User` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--user` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> When running tasks using the `host` network mode, don't run containers using the root user (UID 0). We recommend using a non-root user for better security. \n\nYou can specify the `user` using the following formats. If specifying a UID or GID, you must specify it as a positive integer.\n\n- `user`\n- `user:group`\n- `uid`\n- `uid:gid`\n- `user:gid`\n- `uid:group`\n\n> This parameter is not supported for Windows containers.",
@@ -18667,7 +18677,7 @@
         "Scale": "A floating-point percentage of your desired number of tasks to place and keep running in the task set.",
         "Service": "The short name or full Amazon Resource Name (ARN) of the service to create the task set in.",
         "ServiceRegistries": "The details of the service discovery registries to assign to this task set. For more information, see [Service discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) .",
-        "TaskDefinition": "The task definition for the tasks in the task set to use."
+        "TaskDefinition": "The task definition for the tasks in the task set to use. If a revision isn't specified, the latest `ACTIVE` revision is used."
       }
     },
     "AWS::ECS::TaskSet.AwsVpcConfiguration": {
@@ -22550,19 +22560,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> The Amazon Linux 2023 OS is not available in the China Regions. > Support is ending in 2023 for the Windows Server 2012 and Amazon Linux (AL1) operating systems. If you have active fleets using these operating systems, you can continue to create new builds using these until their end of support. All other users must use Windows Server 2016, Amazon Linux 2, or Amazon Linux 2023. For more information, including specific end-of-support dates, see the Amazon GameLift FAQs for [Windows Server](https://docs.aws.amazon.com/gamelift/faq/win2012/) and [Linux Server](https://docs.aws.amazon.com/gamelift/faq/al1/) .",
-        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
+        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
+      "description": "",
       "properties": {
-        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
-        "Key": "The name of the zip file that contains the build files or script files.",
-        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
-        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
+        "Bucket": "",
+        "Key": "",
+        "ObjectVersion": "",
+        "RoleArn": ""
       }
     },
     "AWS::GameLift::Fleet": {
@@ -26208,6 +26218,7 @@
       },
       "description": "The `AWS::InternetMonitor::Monitor` resource is an Internet Monitor resource type that contains information about how you create a monitor in Amazon CloudWatch Internet Monitor. A monitor in Internet Monitor provides visibility into performance and availability between your applications hosted on AWS and your end users, using a traffic profile that it creates based on the application resources that you add: Virtual Private Clouds (VPCs), Amazon CloudFront distributions, or WorkSpaces directories.\n\nInternet Monitor also alerts you to internet issues that impact your application in the city-networks (geographies and networks) where your end users use it. With Internet Monitor, you can quickly pinpoint the locations and providers that are affected, so that you can address the issue.\n\nFor more information, see [Using Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.html) in the *Amazon CloudWatch User Guide* .",
       "properties": {
+        "HealthEventsConfig": "",
         "InternetMeasurementsLogDelivery": "Publish internet measurements for a monitor for all city-networks (up to the 500,000 service limit) to another location, such as an Amazon S3 bucket. Measurements are also published to Amazon CloudWatch Logs for the first 500 (by traffic volume) city-networks (client locations and ASNs, typically internet service providers or ISPs).",
         "MaxCityNetworksToMonitor": "The maximum number of city-networks to monitor for your resources. A city-network is the location (city) where clients access your application resources from and the network, such as an internet service provider, that clients access the resources through.\n\nFor more information, see [Choosing a city-network maximum value](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/IMCityNetworksMaximum.html) in *Using Amazon CloudWatch Internet Monitor* .",
         "MonitorName": "The name of the monitor. A monitor name can contain only alphanumeric characters, dashes (-), periods (.), and underscores (_).",
@@ -26217,6 +26228,14 @@
         "Status": "The status of a monitor. The accepted values that you can specify for `Status` are `ACTIVE` and `INACTIVE` .",
         "Tags": "The tags for a monitor, listed as a set of *key:value* pairs.",
         "TrafficPercentageToMonitor": "The percentage of the internet-facing traffic for your application that you want to monitor. You can also, optionally, set a limit for the number of city-networks (client locations and ASNs, typically internet service providers) that Internet Monitor will monitor traffic for. The city-networks maximum limit caps the number of city-networks that Internet Monitor monitors for your application, regardless of the percentage of traffic that you choose to monitor."
+      }
+    },
+    "AWS::InternetMonitor::Monitor.HealthEventsConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AvailabilityScoreThreshold": "",
+        "PerformanceScoreThreshold": ""
       }
     },
     "AWS::InternetMonitor::Monitor.InternetMeasurementsLogDelivery": {
@@ -50540,9 +50559,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "The refresh properties of a dataset.",
+      "description": "",
       "properties": {
-        "RefreshConfiguration": "The refresh configuration for a dataset."
+        "RefreshConfiguration": ""
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -50578,7 +50597,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
+        "StaticValues": ""
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50624,9 +50643,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "The incremental refresh configuration for a dataset.",
+      "description": "",
       "properties": {
-        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
+        "LookbackWindow": ""
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50701,18 +50720,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "The lookback window setup of an incremental refresh configuration.",
+      "description": "",
       "properties": {
-        "ColumnName": "The name of the lookback window column.",
-        "Size": "The lookback window column size.",
-        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
+        "ColumnName": "",
+        "Size": "",
+        "SizeUnit": ""
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
+        "DateTimeStaticValues": "",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50729,10 +50748,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
+      "description": "",
       "properties": {
-        "NewDefaultValues": "The new default values for the parameter.",
-        "NewParameterName": "The new name for the parameter.",
+        "NewDefaultValues": "",
+        "NewParameterName": "",
         "ParameterName": ""
       }
     },
@@ -50754,9 +50773,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "The refresh configuration of a dataset.",
+      "description": "",
       "properties": {
-        "IncrementalRefresh": "The incremental refresh for the dataset."
+        "IncrementalRefresh": ""
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -56106,7 +56125,7 @@
         "CertificateDetails": "The details of the DB instance's server certificate.",
         "CertificateRotationRestart": "Specifies whether the DB instance is restarted when you rotate your SSL/TLS certificate.\n\nBy default, the DB instance is restarted when you rotate your SSL/TLS certificate. The certificate is not updated until the DB instance is restarted.\n\n> Set this parameter only if you are *not* using SSL/TLS to connect to the DB instance. \n\nIf you are using SSL/TLS to connect to the DB instance, follow the appropriate instructions for your DB engine to rotate your SSL/TLS certificate:\n\n- For more information about rotating your SSL/TLS certificate for RDS DB engines, see [Rotating Your SSL/TLS Certificate.](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide.*\n- For more information about rotating your SSL/TLS certificate for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .\n\nThis setting doesn't apply to RDS Custom DB instances.",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
-        "CopyTagsToSnapshot": "Spcifies whether to copy tags from the DB instance to snapshots of the DB instance. By default, tags are not copied.\n\nThis setting doesn't apply to Amazon Aurora DB instances. Copying tags to snapshots is managed by the DB cluster. Setting this value for an Aurora DB instance has no effect on the DB cluster setting.",
+        "CopyTagsToSnapshot": "Specifies whether to copy tags from the DB instance to snapshots of the DB instance. By default, tags are not copied.\n\nThis setting doesn't apply to Amazon Aurora DB instances. Copying tags to snapshots is managed by the DB cluster. Setting this value for an Aurora DB instance has no effect on the DB cluster setting.",
         "CustomIAMInstanceProfile": "The instance profile associated with the underlying Amazon EC2 instance of an RDS Custom DB instance.\n\nThis setting is required for RDS Custom.\n\nConstraints:\n\n- The profile must exist in your account.\n- The profile must have an IAM role that Amazon EC2 has permissions to assume.\n- The instance profile name and the associated IAM role name must start with the prefix `AWSRDSCustom` .\n\nFor the list of permissions required for the IAM role, see [Configure IAM and your VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/custom-setup-orcl.html#custom-setup-orcl.iam-vpc) in the *Amazon RDS User Guide* .",
         "DBClusterIdentifier": "The identifier of the DB cluster that the instance will belong to.",
         "DBClusterSnapshotIdentifier": "The identifier for the RDS for MySQL Multi-AZ DB cluster snapshot to restore from.\n\nFor more information on Multi-AZ DB clusters, see [Multi-AZ DB cluster deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html) in the *Amazon RDS User Guide* .\n\nConstraints:\n\n- Must match the identifier of an existing Multi-AZ DB cluster snapshot.\n- Can't be specified when `DBSnapshotIdentifier` is specified.\n- Must be specified when `DBSnapshotIdentifier` isn't specified.\n- If you are restoring from a shared manual Multi-AZ DB cluster snapshot, the `DBClusterSnapshotIdentifier` must be the ARN of the shared snapshot.\n- Can't be the identifier of an Aurora DB cluster snapshot.\n- Can't be the identifier of an RDS for PostgreSQL Multi-AZ DB cluster snapshot.",
@@ -56380,12 +56399,12 @@
       },
       "description": "The `AWS::RDS::GlobalCluster` resource creates or updates an Amazon Aurora global database spread across multiple AWS Regions.\n\nThe global database contains a single primary cluster with read-write capability, and a read-only secondary cluster that receives data from the primary cluster through high-speed replication performed by the Aurora storage subsystem.\n\nYou can create a global database that is initially empty, and then add a primary cluster and a secondary cluster to it.\n\nFor information about Aurora global databases, see [Working with Amazon Aurora Global Databases](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html) in the *Amazon Aurora User Guide* .",
       "properties": {
-        "DeletionProtection": "The deletion protection setting for the new global database. The global database can't be deleted when deletion protection is enabled.",
-        "Engine": "The name of the database engine to be used for this DB cluster.\n\nIf this property isn't specified, the database engine is derived from the source DB cluster specified by the `SourceDBClusterIdentifier` property.\n\n> If the `SourceDBClusterIdentifier` property isn't specified, this property is required. If the `SourceDBClusterIdentifier` property is specified, make sure this property isn't specified.",
-        "EngineVersion": "The engine version of the Aurora global database.",
-        "GlobalClusterIdentifier": "The cluster identifier of the global database cluster.",
-        "SourceDBClusterIdentifier": "The DB cluster identifier or Amazon Resource Name (ARN) to use as the primary cluster of the global database.\n\n> If the `Engine` property isn't specified, this property is required. If the `Engine` property is specified, make sure this property isn't specified.",
-        "StorageEncrypted": "The storage encryption setting for the global database cluster."
+        "DeletionProtection": "Specifies whether to enable deletion protection for the new global database cluster. The global database can't be deleted when deletion protection is enabled.",
+        "Engine": "The database engine to use for this global database cluster.\n\nValid Values: `aurora-mysql | aurora-postgresql`\n\nConstraints:\n\n- Can't be specified if `SourceDBClusterIdentifier` is specified. In this case, Amazon Aurora uses the engine of the source DB cluster.",
+        "EngineVersion": "The engine version to use for this global database cluster.\n\nConstraints:\n\n- Can't be specified if `SourceDBClusterIdentifier` is specified. In this case, Amazon Aurora uses the engine version of the source DB cluster.",
+        "GlobalClusterIdentifier": "The cluster identifier for this global database cluster. This parameter is stored as a lowercase string.",
+        "SourceDBClusterIdentifier": "The Amazon Resource Name (ARN) to use as the primary cluster of the global database.\n\nIf you provide a value for this parameter, don't specify values for the following settings because Amazon Aurora uses the values from the specified source DB cluster:\n\n- `DatabaseName`\n- `Engine`\n- `EngineVersion`\n- `StorageEncrypted`",
+        "StorageEncrypted": "Specifies whether to enable storage encryption for the new global database cluster.\n\nConstraints:\n\n- Can't be specified if `SourceDBClusterIdentifier` is specified. In this case, Amazon Aurora uses the setting from the source DB cluster."
       }
     },
     "AWS::RDS::OptionGroup": {
@@ -57415,14 +57434,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57430,18 +57449,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57450,7 +57469,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57460,15 +57479,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -59539,7 +59558,9 @@
       }
     },
     "AWS::SNS::TopicPolicy": {
-      "attributes": {},
+      "attributes": {
+        "Id": ""
+      },
       "description": "The `AWS::SNS::TopicPolicy` resource associates Amazon SNS topics with a policy. For an example snippet, see [Declaring an Amazon SNS policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-iam.html#scenario-sns-policy) in the *AWS CloudFormation User Guide* .",
       "properties": {
         "PolicyDocument": "A policy document that contains permissions to add to the specified SNS topics.",
