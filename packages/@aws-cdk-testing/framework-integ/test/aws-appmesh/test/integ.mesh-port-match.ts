@@ -65,7 +65,7 @@ httpRouter.addRoute('http-route', {
 
 grpcRouter.addRoute('grpc-route', {
   routeSpec: appmesh.RouteSpec.grpc({
-    weightedTargets: [{ virtualNode: grpcNode }],
+    weightedTargets: [{ virtualNode: grpcNode, port: 1234 }],
     match: {
       port: 1234,
     },
