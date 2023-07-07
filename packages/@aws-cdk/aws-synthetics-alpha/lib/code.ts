@@ -126,7 +126,7 @@ export class AssetCode extends Code {
    * Requires canary file name matches the handler name.
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html
    */
-  validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily) {
+  private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily) {
     if (!this.asset) {
       throw new Error("'validateCanaryAsset' must be called after 'this.asset' is instantiated");
     }
