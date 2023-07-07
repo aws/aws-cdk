@@ -74,6 +74,7 @@ new IntegTest(app, 'FlowLogs', {
   testCases: [
     new TestStack(app, 'FlowLogsTestStack'),
   ],
+  diffAssets: true,
 });
 
 app.synth();

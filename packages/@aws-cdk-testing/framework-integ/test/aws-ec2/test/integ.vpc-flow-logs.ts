@@ -125,6 +125,7 @@ const integ = new IntegTest(app, 'FlowLogs', {
     featureFlagTest,
     new DependencyTestStack(app, 'DependencyTestStack'),
   ],
+  diffAssets: true,
 });
 
 const objects = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
