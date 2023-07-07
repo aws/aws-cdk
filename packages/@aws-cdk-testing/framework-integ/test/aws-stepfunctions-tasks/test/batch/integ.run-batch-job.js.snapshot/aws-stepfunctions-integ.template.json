@@ -531,6 +531,14 @@
      "Statement": [
       {
        "Action": [
+        "ecr:GetAuthorizationToken",
+        "logs:CreateLogStream"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
         "ecr:GetDownloadUrlForLayer"
@@ -559,11 +567,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": "ecr:GetAuthorizationToken",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
