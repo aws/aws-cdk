@@ -1632,6 +1632,60 @@ describe('cluster', () => {
     });
   });
 
+  describe('Correct Bottlerocket AMI is set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-default-asg', {
+      instanceType: new ec2.InstanceType('c5.large'),
+      machineImage: new ecs.BottleRocketImage(),
+    });
+    cluster.addCapacity('bottlerocket-ecs-1-asg', {
+      instanceType: new ec2.InstanceType('c5.xlarge'),
+      machineImage: new ecs.BottleRocketImage(
+        {
+          variant: ecs.BottlerocketEcsVariant.AWS_ECS_1,
+        },
+      ),
+    });
+    cluster.addCapacity('bottlerocket-nvidia-asg', {
+      instanceType: new ec2.InstanceType('g5g.xlarge'),
+      machineImage: new ecs.BottleRocketImage(
+        {
+          variant: ecs.BottlerocketEcsVariant.AWS_ECS_1_NVIDIA,
+        },
+      ),
+    });
+
+    test('default bottlerocket AMI', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: {
+          // TODO: Find correct value
+          Ref: 'dsfjslk',
+        },
+      });
+    });
+
+    test('bottlerocket AMI with ecs-1 variant, explicitly set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: {
+          // TODO: Find correct value
+          Ref: 'dsfjslk',
+        },
+      });
+    });
+
+    test('bottlerocket AMI with ecs-1-nvidia variant, explicitly set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: {
+          // TODO: Find correct value
+          Ref: 'dsfjslk',
+        },
+      });
+    });
+  });
+
   testDeprecated('cluster capacity with bottlerocket AMI, by setting machineImageType', () => {
     // GIVEN
     const app = new cdk.App();
