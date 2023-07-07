@@ -1900,7 +1900,7 @@ To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amaz
 
 ```ts
 const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
-  machineImage: ec2.MachineImage.fromSsmParameterResolve('parameterName');
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName');
 });
 ```
 

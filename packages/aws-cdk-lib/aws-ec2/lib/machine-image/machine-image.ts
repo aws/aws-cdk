@@ -168,7 +168,7 @@ export abstract class MachineImage {
    *
    */
   public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
-    return new SsmParameterResolveImage(parameterName, options);
+    return new ResolveSsmParameterAtLaunchImage(parameterName, options);
   }
 
   /**
@@ -237,7 +237,7 @@ export class GenericSSMParameterImage implements IMachineImage {
  *
  * The AMI ID would be selected at instance launch time.
  */
-export class SsmParameterResolveImage implements IMachineImage {
+export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
   /**
    * Name of the SSM parameter we're looking up
    */

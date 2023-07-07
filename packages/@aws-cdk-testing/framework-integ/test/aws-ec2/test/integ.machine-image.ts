@@ -37,7 +37,7 @@ export class TestCase extends Stack {
       value: 'ami-06ca3ca175f37dd66',
     });
 
-    const machineImage = ec2.MachineImage.fromSsmParameterResolve('myAmi');
+    const machineImage = ec2.MachineImage.resolveSsmParameterAtLaunch('myAmi');
     new ec2.Instance(this, 'ssm-resolve-instance', { instanceType, machineImage, vpc });
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'LT', { instanceType, machineImage });

@@ -98,7 +98,7 @@ test('can make and use a Generic SSM image', () => {
 
 test('can make and use a SSM resolve image', () => {
   // WHEN
-  const image = new ec2.SsmParameterResolveImage('testParam');
+  const image = new ec2.ResolveSsmParameterAtLaunchImage('testParam');
 
   // THEN
   const details = image.getImage(stack);
@@ -108,16 +108,16 @@ test('can make and use a SSM resolve image', () => {
 
 test('can make and use a SSM resolve image with parameter version', () => {
   // WHEN
-  const image = new ec2.SsmParameterResolveImage('testParam', { parameterVersion: '2' });
+  const image = new ec2.ResolveSsmParameterAtLaunchImage('testParam', { parameterVersion: '2' });
 
   // THEN
   const details = image.getImage(stack);
   expect(details.imageId).toEqual('resolve:ssm:testParam:2');
 });
 
-test('can make and use a SSM resolve image with fromSsmParameterResolve', () => {
+test('can make and use a SSM resolve image with resolveSsmParameterAtLaunch', () => {
   // WHEN
-  const image = ec2.MachineImage.fromSsmParameterResolve('testParam', { parameterVersion: '2' });
+  const image = ec2.MachineImage.resolveSsmParameterAtLaunch('testParam', { parameterVersion: '2' });
 
   // THEN
   const details = image.getImage(stack);
