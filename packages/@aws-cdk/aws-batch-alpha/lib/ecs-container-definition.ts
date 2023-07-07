@@ -2,10 +2,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
+import { Lazy, PhysicalName, Size, Stack } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -510,7 +511,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.cpu = props.cpu;
     this.command = props.command;
     this.environment = props.environment;
-    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
+    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
@@ -964,18 +965,17 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   };
 }
 
-function createExecutionRole(scope: Construct, id: string): iam.IRole {
+function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {
   const execRole = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     // needed for cross-account access with TagParameterContainerImage
     roleName: PhysicalName.GENERATE_IF_NEEDED,
   });
 
-  // all jobs will fail without this if they produce any output at all when no logging is specified
-  execRole.addToPrincipalPolicy(new iam.PolicyStatement({
-    actions: ['logs:CreateLogStream'],
-    resources: ['*'],
-  }));
+  if (!logging) {
+    // all jobs will fail without this if they produce any output at all when no logging is specified
+    LogGroup.fromLogGroupName(scope, 'batchDefaultLogGroup', '/aws/batch/job').grantWrite(execRole);
+  }
 
   return execRole;
 }
