@@ -167,7 +167,7 @@ export abstract class MachineImage {
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
    *
    */
-  public static fromSsmParameterResolve(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+  public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
     return new SsmParameterResolveImage(parameterName, options);
   }
 
