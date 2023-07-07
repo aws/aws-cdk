@@ -1,3 +1,47 @@
+# CloudFormation Resource Specification v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::ApiMapping ApiMappingId (__added__)
+* AWS::SNS::TopicPolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html
+* AWS::SNS::TopicPolicy Id (__added__)
+
+## Property Changes
+
+* AWS::InternetMonitor::Monitor HealthEventsConfig (__added__)
+* AWS::SNS::TopicPolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-policydocument
+* AWS::SNS::TopicPolicy Topics.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-topics
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topicpolicy.html#cfn-sns-topicpolicy-topics
+
+## Property Type Changes
+
+* AWS::AppFlow::Flow.DataTransferApi (__added__)
+* AWS::InternetMonitor::Monitor.HealthEventsConfig (__added__)
+* AWS::AppFlow::Flow.CustomConnectorSourceProperties DataTransferApi (__added__)
+
+# CloudFormation Resource Specification (us-west-2) v130.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v129.0.0
 
 ## New Resource Types
