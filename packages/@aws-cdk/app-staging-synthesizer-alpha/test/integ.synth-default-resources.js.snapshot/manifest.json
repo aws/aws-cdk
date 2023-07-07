@@ -66,24 +66,6 @@
             "type": "aws:cdk:logicalId",
             "data": "lambdaecrtwo03D31DB7"
           }
-        ],
-        "lambdaecr2ServiceRole2EA363D2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaecr2ServiceRole2EA363D2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "lambdaecr2615DAF68": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaecr2615DAF68",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "synthesize-default-resources"
@@ -139,12 +121,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucketAutoDeleteObjectsCustomResource800E998D"
-          }
-        ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [

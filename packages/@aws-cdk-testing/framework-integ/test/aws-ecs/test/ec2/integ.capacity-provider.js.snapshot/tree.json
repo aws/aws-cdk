@@ -977,40 +977,91 @@
                   "version": "0.0.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "integ-ec2-capacity-provider/ASG/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "iamInstanceProfile": {
-                      "Ref": "ASGInstanceProfile0A2834D7"
-                    },
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "ASGInstanceSecurityGroup0525485D",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "userData": {
-                      "Fn::Base64": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "#!/bin/bash\necho ECS_CLUSTER=",
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "integ-ec2-capacity-provider/ASG/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-ec2-capacity-provider/ASG/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "ASGInstanceProfile0A2834D7",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
                             {
-                              "Ref": "EC2CPClusterD5F0FD32"
+                              "Fn::GetAtt": [
+                                "ASGInstanceSecurityGroup0525485D",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                                }
+                              ]
                             },
-                            " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                          ]
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "#!/bin/bash\necho ECS_CLUSTER=",
+                                  {
+                                    "Ref": "EC2CPClusterD5F0FD32"
+                                  },
+                                  " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -1027,8 +1078,16 @@
                   "aws:cdk:cloudformation:props": {
                     "maxSize": "1",
                     "minSize": "1",
-                    "launchConfigurationName": {
-                      "Ref": "ASGLaunchConfigC00AF12B"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "ASGLaunchTemplate0CA92847"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "ASGLaunchTemplate0CA92847",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "tags": [
                       {
@@ -1570,7 +1629,12 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50
+                      "minimumHealthyPercent": 50,
+                      "alarms": {
+                        "alarmNames": [],
+                        "enable": false,
+                        "rollback": false
+                      }
                     },
                     "enableEcsManagedTags": false,
                     "schedulingStrategy": "REPLICA",
