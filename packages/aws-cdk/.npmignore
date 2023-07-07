@@ -31,3 +31,4 @@ junit.xml
 
 generate.sh
 lib/vendor/noctilucent/Dockerfile
+tmp/
