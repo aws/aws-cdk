@@ -59,7 +59,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
-    "@types/workerpool": "^6.1.1",
+    "@types/workerpool": "^6.4.0",
     "@types/yargs": "^15.0.15",
     "jest": "^27.5.1"
   },
@@ -72,7 +72,7 @@
     "aws-cdk": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "workerpool": "^6.3.1",
+    "workerpool": "^6.4.0",
     "yargs": "^16.2.0"
   },
   "repository": {
