@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
+import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
 
@@ -77,6 +78,13 @@ export interface DashboardProps {
    * @default - No widgets
    */
   readonly widgets?: IWidget[][]
+
+  /**
+   * Initial list of dashboard variables
+   *
+   * @default - No variables
+   */
+  readonly variables?: IVariable[];
 }
 
 /**
@@ -99,6 +107,8 @@ export class Dashboard extends Resource {
   public readonly dashboardArn: string;
 
   private readonly rows: IWidget[] = [];
+
+  private readonly variables: IVariable[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
@@ -130,6 +140,7 @@ export class Dashboard extends Resource {
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
+            variables: this.variables.length > 0 ? this.variables.map(variable => variable.toJson()) : undefined,
           });
         },
       }),
@@ -140,6 +151,8 @@ export class Dashboard extends Resource {
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
     });
+
+    (props.variables || []).forEach(variable => this.addVariable(variable));
 
     this.dashboardArn = Stack.of(this).formatArn({
       service: 'cloudwatch',
@@ -170,6 +183,15 @@ export class Dashboard extends Resource {
 
     const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
     this.rows.push(w);
+  }
+
+  /**
+   * Add a variable to the dashboard.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html
+   */
+  public addVariable(variable: IVariable) {
+    this.variables.push(variable);
   }
 }
 

@@ -711,3 +711,56 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 Here, the dashboard would show the metrics for the last 7 days.
+
+### Dashboard variables
+
+Dashboard variables are a convenient way to create flexible dashboards which allow to quickly display different content depending
+on the value of an input field within a dashboard. They allow to create a dashboard on which it's possible to quickly switch between
+different Lambda functions, Amazon EC2 instances etc.
+
+You can learn more about Dashboard variables in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html)
+
+There are two types of dashboard variables available: a property variable and a pattern variable.
+- Property variable allows to change any JSON property in the JSON source of a dashboard like `region`. It can also change dimension name for a metric.
+- Pattern variable allows to use a regular expression pattern to change all of a JSON property or only part of it.
+
+The **property variable** to change the `region` property can be added to the dashboard as follows:
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.ValueDashboardVariable({
+    type: cw.VariableType.PROPERTY,
+    value: 'region',
+    inputType: cw.VariableInputType.RADIO,
+    id: 'region',
+    label: 'Region',
+    defaultValue: 'us-east-1',
+    visible: true,
+    values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+  })],
+});
+```
+
+This example shows how to change `region` everywhere, assuming the current dashboard is showing region `us-east-1` already, by using **pattern variable**
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.ValueDashboardVariable({
+    type: cw.VariableType.PATTERN,
+    value: 'us-east-1',
+    inputType: cw.VariableInputType.INPUT,
+    id: 'region2',
+    label: 'RegionPattern',
+    defaultValue: 'us-east-1',
+    visible: true,
+  })],
+});
+```
+
+You can add a variable after object instantiation with the method
+`addVariable()`.

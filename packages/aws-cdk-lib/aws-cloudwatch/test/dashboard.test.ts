@@ -1,6 +1,14 @@
 import { Template, Annotations, Match } from '../../assertions';
 import { App, Duration, Stack } from '../../core';
-import { Dashboard, GraphWidget, PeriodOverride, TextWidget, MathExpression, TextWidgetBackground } from '../lib';
+import {
+  Dashboard,
+  GraphWidget,
+  PeriodOverride,
+  TextWidget,
+  MathExpression,
+  TextWidgetBackground,
+  SearchDashboardVariable, VariableInputType, VariableType, ValueDashboardVariable,
+} from '../lib';
 
 describe('Dashboard', () => {
   test('widgets in different adds are laid out underneath each other', () => {
@@ -230,6 +238,80 @@ describe('Dashboard', () => {
     const template = Annotations.fromStack(stack);
     template.hasWarning('/MyStack/MyDashboard', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
+
+  test('has different variables', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard', {
+      variables: [new ValueDashboardVariable({
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        inputType: VariableInputType.SELECT,
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: 'us-east-1',
+        visible: true,
+        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+      })],
+    });
+
+    // WHEN
+    dashboard.addVariable(new SearchDashboardVariable({
+      defaultValue: '__FIRST',
+      id: 'InstanceId',
+      label: 'Instance',
+      inputType: VariableInputType.SELECT,
+      type: VariableType.PROPERTY,
+      value: 'InstanceId',
+      searchExpression: '{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"',
+      populateFrom: 'InstanceId',
+      visible: true,
+    }));
+
+    dashboard.addVariable(new ValueDashboardVariable({
+      type: VariableType.PROPERTY,
+      value: 'region',
+      inputType: VariableInputType.INPUT,
+      id: 'region1',
+      label: 'RegionProperty',
+      defaultValue: 'us-east-1',
+      visible: true,
+    }));
+
+    dashboard.addVariable(new ValueDashboardVariable({
+      type: VariableType.PATTERN,
+      value: 'us-east-1',
+      inputType: VariableInputType.INPUT,
+      id: 'region2',
+      label: 'RegionPattern',
+      defaultValue: 'us-east-1',
+      visible: true,
+    }));
+
+    dashboard.addVariable(new ValueDashboardVariable({
+      type: VariableType.PROPERTY,
+      value: 'region',
+      inputType: VariableInputType.RADIO,
+      id: 'region3',
+      label: 'RegionRadio',
+      defaultValue: 'us-east-1',
+      visible: true,
+      values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+      { defaultValue: '__FIRST', id: 'InstanceId', inputType: 'select', label: 'Instance', populateFrom: 'InstanceId', property: 'InstanceId', search: '{AWS/EC2,InstanceId} MetricName="CPUUtilization"', type: 'property', visible: true },
+      { defaultValue: 'us-east-1', id: 'region1', inputType: 'input', label: 'RegionProperty', property: 'region', type: 'property', visible: true },
+      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'radio', label: 'RegionRadio', property: 'region', type: 'property', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+    ]);
+
+  });
 });
 
 /**
@@ -245,4 +327,19 @@ function hasWidgets(props: any, widgets: any[]) {
     throw e;
   }
   expect(actualWidgets).toEqual(expect.arrayContaining(widgets));
+}
+
+/**
+ * Returns a property predicate that checks that the given Dashboard has the indicated variables
+ */
+function hasVariables(props: any, variables: any[]) {
+  let actualVariables: any[] = [];
+  try {
+    actualVariables = JSON.parse(props.DashboardBody).variables;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error parsing', props);
+    throw e;
+  }
+  expect(actualVariables).toEqual(expect.arrayContaining(variables));
 }
