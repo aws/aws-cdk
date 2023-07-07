@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { createModuleDefinitionFromCfnNamespace, createLibraryReadme } from '../lib';
+import { createModuleDefinitionFromCfnNamespace, createLibraryReadme, ModuleDefinition } from '../lib';
 
 describe('createModuleDefinitionFromCfnNamespace', () => {
   test('base case', () => {
@@ -13,13 +13,15 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleBaseName: 'EC2',
       packageName: '@aws-cdk/aws-ec2',
       dotnetPackage: 'Amazon.CDK.AWS.EC2',
+      goModuleName: 'github.com/aws/aws-cdk-go/awscdk/v2/awsec2',
+      goPackageName: 'awsec2',
       javaGroupId: 'software.amazon.awscdk',
-      javaPackage: 'services.ec2',
+      javaPackage: 'software.amazon.awscdk.services.ec2',
       javaArtifactId: 'ec2',
       pythonDistName: 'aws-cdk.aws-ec2',
       pythonModuleName: 'aws_cdk.aws_ec2',
       submoduleName: 'aws_ec2',
-    });
+    } satisfies ModuleDefinition);
   });
 
   test('Serverless is special-cased to SAM', () => {
@@ -32,13 +34,15 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleBaseName: 'SAM',
       packageName: '@aws-cdk/aws-sam',
       dotnetPackage: 'Amazon.CDK.AWS.SAM',
+      goModuleName: 'github.com/aws/aws-cdk-go/awscdk/v2/awssam',
+      goPackageName: 'awssam',
       javaGroupId: 'software.amazon.awscdk',
-      javaPackage: 'services.sam',
+      javaPackage: 'software.amazon.awscdk.services.sam',
       javaArtifactId: 'sam',
       pythonDistName: 'aws-cdk.aws-sam',
       pythonModuleName: 'aws_cdk.aws_sam',
       submoduleName: 'aws_sam',
-    });
+    } satisfies ModuleDefinition);
   });
 
   test('Java artifacts use different package/artifact when module family is not AWS', () => {
@@ -51,13 +55,15 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       moduleBaseName: 'ASK',
       packageName: '@aws-cdk/alexa-ask',
       dotnetPackage: 'Amazon.CDK.Alexa.ASK',
+      goModuleName: 'github.com/aws/aws-cdk-go/awscdk/v2/alexaask',
+      goPackageName: 'alexaask',
       javaGroupId: 'software.amazon.awscdk',
-      javaPackage: 'alexa.ask',
+      javaPackage: 'software.amazon.awscdk.alexa.ask',
       javaArtifactId: 'alexa-ask',
       pythonDistName: 'aws-cdk.alexa-ask',
       pythonModuleName: 'aws_cdk.alexa_ask',
       submoduleName: 'alexa_ask',
-    });
+    } satisfies ModuleDefinition);
   });
 });
 
