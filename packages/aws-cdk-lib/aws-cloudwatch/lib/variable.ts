@@ -1,32 +1,26 @@
-
 export enum VariableInputType {
-
   /**
-     * Freeform text input box
-     */
+   * Freeform text input box
+   */
   INPUT = 'input',
-
   /**
-     * A dropdown of pre-defined values, or values filled in from a metric search query
-     */
+   * A dropdown of pre-defined values, or values filled in from a metric search query
+   */
   RADIO = 'radio',
-
   /**
-     * A set of pre-defined radio buttons, which can also be defined from a metric search query
-     */
+   * A set of pre-defined radio buttons, which can also be defined from a metric search query
+   */
   SELECT = 'select',
 }
 
 export enum VariableType {
-
   /**
-     * A property variable changes the values of all instances of a property in the list of widgets in the dashboard.
-     */
+   * A property variable changes the values of all instances of a property in the list of widgets in the dashboard.
+   */
   PROPERTY = 'property',
-
   /**
-     * A pattern variable is one that changes a regex pattern across the dashboard JSON
-     */
+   * A pattern variable is one that changes a regex pattern across the dashboard JSON
+   */
   PATTERN = 'pattern',
 }
 
@@ -34,45 +28,37 @@ export enum VariableType {
  * A single dashboard variable
  */
 export interface IVariable {
-
   /**
-     * Return the variable JSON for use in the dashboard
-     */
+   * Return the variable JSON for use in the dashboard
+   */
   toJson(): any;
 }
 
 export interface IDashboardVariable {
-
   /**
    * Type of the variable
    */
   readonly type: VariableType;
-
   /**
    * The way the variable value is selected
    */
   readonly inputType: VariableInputType;
-
   /**
    * Pattern or property value to replace
    */
   readonly value: string;
-
   /**
    * Unique id
    */
   readonly id: string;
-
   /**
    * Optional label in the toolbar
    */
   readonly label?: string;
-
   /**
    * Optional default value
    */
   readonly defaultValue: any;
-
   /**
    * Whether the variable is visible
    */
@@ -101,14 +87,12 @@ export abstract class DashboardVariable implements IVariable {
 }
 
 export interface IVariableValue {
-
   /**
    * Optional label for the selected item
    *
    * @default - value
    */
   readonly label?: string;
-
   /**
    * Value of the selected item
    */
@@ -116,7 +100,6 @@ export interface IVariableValue {
 }
 
 export interface IValueDashboardVariable extends IDashboardVariable {
-
   /**
    * List of custom values for the variable
    *
@@ -150,15 +133,13 @@ export class ValueDashboardVariable extends DashboardVariable {
  * The variable populated from the metric search
  */
 export interface ISearchDashboardVariable extends IDashboardVariable {
-
   /**
-     * Search expression
-     */
+   * Search expression
+   */
   readonly searchExpression: string;
-
   /**
-     * Optional dimension name from the search
-     */
+   * Optional dimension name from the search
+   */
   readonly populateFrom?: string;
 }
 
