@@ -755,5 +755,27 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 });
 ```
 
+The following example generates a Lambda function variable, with a radio button for each function. Functions are discovered by a metric query search.
+The `defaultValue` with `__FIRST` indicates that the  default value will be the first value returned from the search.
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.SearchDashboardVariable({
+    defaultValue: '__FIRST',
+    id: 'functionName',
+    label: 'Function',
+    inputType: cw.VariableInputType.RADIO,
+    type: cw.VariableType.PATTERN,
+    value: 'originalFuncNameInDashboard',
+    searchExpression: '{AWS/Lambda,FunctionName} MetricName=\"Duration\"',
+    populateFrom: 'FunctionName',
+    visible: true,
+  })],
+});
+```
+
 You can add a variable after object instantiation with the method
 `dashboard.addVariable()`.

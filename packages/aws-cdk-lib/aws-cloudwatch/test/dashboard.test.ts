@@ -239,7 +239,34 @@ describe('Dashboard', () => {
     template.hasWarning('/MyStack/MyDashboard', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
 
-  test('has different variables', () => {
+  test('dashboard has initial select/pattern variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    new Dashboard(stack, 'Dashboard', {
+      variables: [new ValueDashboardVariable({
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        inputType: VariableInputType.SELECT,
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: 'us-east-1',
+        visible: true,
+        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+      })],
+    });
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+    ]);
+
+  });
+
+  test('dashboard has initial and added variable', () => {
     // GIVEN
     const stack = new Stack();
     const dashboard = new Dashboard(stack, 'Dashboard', {
@@ -255,6 +282,32 @@ describe('Dashboard', () => {
       })],
     });
 
+    dashboard.addVariable(new ValueDashboardVariable({
+      type: VariableType.PATTERN,
+      value: 'us-east-1',
+      inputType: VariableInputType.INPUT,
+      id: 'region2',
+      label: 'RegionPattern',
+      defaultValue: 'us-east-1',
+      visible: true,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
+    ]);
+
+  });
+
+  test('dashboard has property/select search variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
     // WHEN
     dashboard.addVariable(new SearchDashboardVariable({
       defaultValue: '__FIRST',
@@ -268,16 +321,22 @@ describe('Dashboard', () => {
       visible: true,
     }));
 
-    dashboard.addVariable(new ValueDashboardVariable({
-      type: VariableType.PROPERTY,
-      value: 'region',
-      inputType: VariableInputType.INPUT,
-      id: 'region1',
-      label: 'RegionProperty',
-      defaultValue: 'us-east-1',
-      visible: true,
-    }));
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: '__FIRST', id: 'InstanceId', inputType: 'select', label: 'Instance', populateFrom: 'InstanceId', property: 'InstanceId', search: '{AWS/EC2,InstanceId} MetricName="CPUUtilization"', type: 'property', visible: true },
+    ]);
 
+  });
+
+  test('dashboard has input/pattern value variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
+    // WHEN
     dashboard.addVariable(new ValueDashboardVariable({
       type: VariableType.PATTERN,
       value: 'us-east-1',
@@ -288,6 +347,22 @@ describe('Dashboard', () => {
       visible: true,
     }));
 
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
+    ]);
+
+  });
+
+  test('dashboard has property/radio value variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
+    // WHEN
     dashboard.addVariable(new ValueDashboardVariable({
       type: VariableType.PROPERTY,
       value: 'region',
@@ -304,10 +379,6 @@ describe('Dashboard', () => {
     expect(Object.keys(resources).length).toEqual(1);
     const key = Object.keys(resources)[0];
     hasVariables(resources[key].Properties, [
-      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
-      { defaultValue: '__FIRST', id: 'InstanceId', inputType: 'select', label: 'Instance', populateFrom: 'InstanceId', property: 'InstanceId', search: '{AWS/EC2,InstanceId} MetricName="CPUUtilization"', type: 'property', visible: true },
-      { defaultValue: 'us-east-1', id: 'region1', inputType: 'input', label: 'RegionProperty', property: 'region', type: 'property', visible: true },
-      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
       { defaultValue: 'us-east-1', id: 'region3', inputType: 'radio', label: 'RegionRadio', property: 'region', type: 'property', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
     ]);
 
