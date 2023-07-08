@@ -80,7 +80,9 @@ export interface DashboardProps {
   readonly widgets?: IWidget[][]
 
   /**
-   * Initial list of dashboard variables
+   * A list of dashboard variables
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html#cloudwatch_dashboard_variables_types
    *
    * @default - No variables
    */
