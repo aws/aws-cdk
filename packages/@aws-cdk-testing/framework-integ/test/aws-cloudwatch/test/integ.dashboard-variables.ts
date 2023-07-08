@@ -1,33 +1,49 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Dashboard, Metric, Stats, GraphWidget, SearchDashboardVariable, VariableInputType, VariableType } from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 class DashboardVariablesIntegrationTest extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const dashboard = new Dashboard(this, 'Dash');
+    const dashboard = new cloudwatch.Dashboard(this, 'Dash', {
+      variables: [new cloudwatch.ValueDashboardVariable({
+        type: cloudwatch.VariableType.PATTERN,
+        value: 'RegionPlaceholder',
+        inputType: cloudwatch.VariableInputType.RADIO,
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: 'us-east-1',
+        visible: true,
+        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+      })],
+    });
 
-    const widget = new GraphWidget({
+    dashboard.addWidgets(new cloudwatch.TextWidget({
+      markdown: 'The dashboard is showing RegionPlaceholder region',
+      background: cloudwatch.TextWidgetBackground.TRANSPARENT,
+    }));
+
+    const widget = new cloudwatch.GraphWidget({
       title: 'My fancy graph',
       left: [
-        new Metric({
+        new cloudwatch.Metric({
           namespace: 'AWS/S3',
           metricName: 'BucketSizeBytes',
           label: '[BucketName: ${PROP(\'Dim.BucketName\')}] BucketSizeBytes',
-          statistic: Stats.MAXIMUM,
+          statistic: cloudwatch.Stats.MAXIMUM,
           dimensionsMap: { StorageType: 'StandardStorage', BucketName: 'my-bucket' },
         }),
       ],
     });
 
     // The dashboard variable which changes BucketName property on the dashboard
-    dashboard.addVariable(new SearchDashboardVariable({
+    dashboard.addVariable(new cloudwatch.SearchDashboardVariable({
       defaultValue: '__FIRST',
       id: 'BucketName',
       label: 'BucketName',
-      inputType: VariableInputType.SELECT,
-      type: VariableType.PROPERTY,
+      inputType: cloudwatch.VariableInputType.SELECT,
+      type: cloudwatch.VariableType.PROPERTY,
       value: 'BucketName',
       searchExpression: '{AWS/S3,BucketName,StorageType} MetricName=\"BucketSizeBytes\"',
       populateFrom: 'BucketName',
