@@ -707,17 +707,17 @@ Here, the dashboard would show the metrics for the last 7 days.
 
 ### Dashboard variables
 
-Dashboard variables are a convenient way to create flexible dashboards which allow to quickly display different content depending
-on the value of an input field within a dashboard. They allow to create a dashboard on which it's possible to quickly switch between
-different Lambda functions, Amazon EC2 instances etc.
+Dashboard variables are a convenient way to create flexible dashboards that display different content depending
+on the value of an input field within a dashboard. They create a dashboard on which it's possible to quickly switch between
+different Lambda functions, Amazon EC2 instances, etc.
 
 You can learn more about Dashboard variables in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html)
 
 There are two types of dashboard variables available: a property variable and a pattern variable.
-- Property variable allows to change any JSON property in the JSON source of a dashboard like `region`. It can also change dimension name for a metric.
-- Pattern variable allows to use a regular expression pattern to change all of a JSON property or only part of it.
+- Property variables can change any JSON property in the JSON source of a dashboard like `region`. It can also change the dimension name for a metric.
+- Pattern variables use a regular expression pattern to change all or part of a JSON property.
 
-The **property variable** to change the `region` property can be added to the dashboard as follows:
+A use case of a **property variable** is a dashboard with the ability to toggle the `region` property to see the same dashboard in different regions:
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
@@ -756,4 +756,4 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 You can add a variable after object instantiation with the method
-`addVariable()`.
+`dashboard.addVariable()`.
