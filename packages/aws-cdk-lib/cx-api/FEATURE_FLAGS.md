@@ -101,7 +101,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true
   }
 }
 ```
@@ -144,7 +145,6 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | (fix) | 1.98.0 | `false` | `true` |
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
-| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -159,8 +159,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
   }
 }
 ```
@@ -1034,6 +1033,7 @@ provided.
 **Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
+    
 
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
@@ -1047,7 +1047,7 @@ multi-az with standby enabled.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
+| V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
 

@@ -856,7 +856,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       multi-az with standby enabled.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
   },
