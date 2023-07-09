@@ -146,6 +146,13 @@ export interface FileAssetSource {
    * @default false
    */
   readonly deployTime?: boolean;
+
+  /**
+   * Whether or not the asset is a template file.
+   *
+   * @default false
+   */
+  readonly isTemplateFile?: boolean;
 }
 
 export interface DockerImageAssetSource {

@@ -227,6 +227,7 @@ export class NestedStack extends Stack {
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      isTemplateFile: true,
     });
 
     this.addResourceMetadata(this.resource, 'TemplateURL');
