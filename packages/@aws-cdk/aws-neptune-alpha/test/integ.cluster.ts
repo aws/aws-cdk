@@ -41,7 +41,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   kmsKey,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoMinorVersionUpgrade: true,
-  cloudwatchLogsExports: [LogType.AUDIT],
+  cloudwatchLogsExports: [LogType.AUDIT, new LogType('slowquery')],
   cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
 });
 
