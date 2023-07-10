@@ -20,7 +20,7 @@ class ServiceCatalogStack extends Stack {
           cloudFormationTemplate: sc.CloudFormationTemplate.fromProductStack(
             new SampleProductStack(this, 'SampleProductStack', {
               assetBucket: new s3.Bucket(this, 'AssetBucket', {
-                bucketName: 'colifran-asset-bucket',
+                bucketName: `asset-bucket-${this.account}-${this.region}`,
               }),
             }),
           ),
