@@ -32,6 +32,15 @@ const api = new GraphqlApi(stack, 'Api', {
         expires: undefined,
       },
     },
+    additionalAuthorizationModes: [
+      {
+        authorizationType: AuthorizationType.API_KEY,
+        apiKeyConfig: {
+          name: 'Custom',
+          description: 'Custom Description',
+        },
+      },
+    ],
   },
 });
 
