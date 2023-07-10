@@ -12,7 +12,7 @@ class ServiceCatalogStack extends Stack {
     super(scope, id);
 
     const assetBucket = new s3.Bucket(this, 'AssetBucket', {
-      bucketName: `asset-bucket-${this.account}-${this.region}`,
+      bucketName: 'asset-bucket-123456789012',
     });
 
     new sc.CloudFormationProduct(this, 'SampleProduct', {
