@@ -531,11 +531,30 @@
      "Statement": [
       {
        "Action": [
-        "ecr:GetAuthorizationToken",
-        "logs:CreateLogStream"
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:/aws/batch/job:*"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -567,6 +586,11 @@
          ]
         ]
        }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
