@@ -5,6 +5,7 @@ import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { GlueStartJobRun } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Stack verification steps:
@@ -58,6 +59,11 @@ const stateMachine = new sfn.StateMachine(stack, 'State Machine', {
 
 new cdk.CfnOutput(stack, 'State Machine ARN Output', {
   value: stateMachine.stateMachineArn,
+});
+
+new IntegTest(app, 'AwsSfnIntegTest', {
+  testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

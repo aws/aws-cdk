@@ -7,6 +7,7 @@ const stack = new cdk.Stack(app, 'integ-apprunner-ecr-public');
 
 // Scenario 1: Create the service from ECR public
 const service1 = new Service(stack, 'Service1', {
+  serviceName: 'service1',
   source: Source.fromEcrPublic({
     imageConfiguration: {
       port: 8000,
