@@ -48,7 +48,9 @@ describe('ProductStack', () => {
     const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
     Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
       Code: {
-        S3Bucket: 'test-asset-bucket',
+        S3Bucket: {
+          'Fn::ImportValue': 'MyStack:ExportsOutputRefTestAssetBucket9434EFAE96F48642',
+        },
         S3Key: 'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
       },
     });
@@ -119,7 +121,9 @@ describe('ProductStack', () => {
     const template = JSON.parse(fs.readFileSync(path.join(portfolioStage.outdir, templateFileUrl), 'utf-8'));
     Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
       Code: {
-        S3Bucket: 'test-asset-bucket',
+        S3Bucket: {
+          'Fn::ImportValue': 'PortfolioStage-NestedStack:ExportsOutputRefTestAssetBucket9434EFAE96F48642',
+        },
         S3Key: 'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
       },
     });
@@ -178,7 +182,7 @@ describe('ProductStack', () => {
     app.synth();
 
     // THEN
-    Template.fromJSON(Template.fromStack(stack)).hasResourceProperties('Custom:CDKBucketDeployment', {
+    Template.fromJSON(Template.fromStack(stack)).hasResourceProperties('Custom::CDKBucketDeployment', {
       SourceBucketNames: [
         {
           'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
@@ -189,32 +193,12 @@ describe('ProductStack', () => {
       ],
       SourceObjectKeys: [
         'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
-        '419729a667a59c05d7d1dc036e0c3abb0b3a8156040c30ab824cb77a8172e55c.json',
+        'e43b9c8cdc205ec6630fcc0a6ac2b9d2b160c676dd68ea17959a327b3063e281.json',
       ],
       DestinationBucketName: {
         Ref: 'AssetBucket1D025086',
       },
     });
-  });
-
-  test('fails if bucketName is not specified in product stack with assets', () => {
-    // GIVEN
-    const app = new cdk.App(
-      { outdir: 'cdk.out' },
-    );
-    const mainStack = new cdk.Stack(app, 'MyStack');
-    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
-    });
-    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
-      assetBucket: testAssetBucket,
-    });
-
-    // THEN
-    expect(() => {
-      new s3_assets.Asset(productStack, 'testAsset', {
-        path: path.join(__dirname, 'assets'),
-      });
-    }).toThrow('A bucketName must be provided to use Assets');
   });
 
   test('fails if Asset bucket is not defined in product stack with assets', () => {
