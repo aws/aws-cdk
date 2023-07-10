@@ -379,7 +379,7 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
         SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
-        SourceMarkers: cdk.Lazy.any({
+        SourceMarkers: cdk.Lazy.uncachedAny({
           produce: () => {
             return this.sources.reduce((acc, source) => {
               if (source.markers) {
