@@ -1,3 +1,5 @@
+import * as eks from '@aws-sdk/client-eks';
+import * as sts from '@aws-sdk/client-sts';
 import * as sdk from 'aws-sdk';
 import { EksClient } from '../lib/cluster-resource-handler/common';
 
@@ -6,16 +8,16 @@ import { EksClient } from '../lib/cluster-resource-handler/common';
  * made.
  */
 export let actualRequest: {
-  configureAssumeRoleRequest?: sdk.STS.AssumeRoleRequest;
-  createClusterRequest?: sdk.EKS.CreateClusterRequest;
-  describeClusterRequest?: sdk.EKS.DescribeClusterRequest;
-  describeUpdateRequest?: sdk.EKS.DescribeUpdateRequest;
-  deleteClusterRequest?: sdk.EKS.DeleteClusterRequest;
-  updateClusterConfigRequest?: sdk.EKS.UpdateClusterConfigRequest;
-  updateClusterVersionRequest?: sdk.EKS.UpdateClusterVersionRequest;
-  createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
-  describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
-  deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
+  configureAssumeRoleRequest?: sts.AssumeRoleRequest;
+  createClusterRequest?: eks.CreateClusterRequest;
+  describeClusterRequest?: eks.DescribeClusterRequest;
+  describeUpdateRequest?: eks.DescribeUpdateRequest;
+  deleteClusterRequest?: eks.DeleteClusterRequest;
+  updateClusterConfigRequest?: eks.UpdateClusterConfigRequest;
+  updateClusterVersionRequest?: eks.UpdateClusterVersionRequest;
+  createFargateProfile?: eks.CreateFargateProfileRequest;
+  describeFargateProfile?: eks.DescribeFargateProfileRequest;
+  deleteFargateProfile?: eks.DeleteFargateProfileRequest;
 } = { };
 
 /**
