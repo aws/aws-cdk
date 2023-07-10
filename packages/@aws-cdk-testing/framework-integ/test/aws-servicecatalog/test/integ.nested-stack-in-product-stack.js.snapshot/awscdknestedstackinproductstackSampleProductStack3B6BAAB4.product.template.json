@@ -15,11 +15,7 @@
               {
                 "Ref": "AWS::URLSuffix"
               },
-              "/",
-              {
-                "Fn::ImportValue": "aws-cdk-nested-stack-in-product-stack:ExportsOutputRefAssetBucket1D0250868713D7D0"
-              },
-              "/9ef191e76a46156162631af22147c9cbe501c30c829d27cf676551ecca3f25db.json"
+              "/asset-bucket-123456789012/7d50a577b40c04517d7ed596ceace8488f0b67a4c6fa861d5f29c5e8c8882d63.json"
             ]
           ]
         }

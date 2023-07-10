@@ -18,21 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "asset-bucket-",
-                          {
-                            "Ref": "AWS::AccountId"
-                          },
-                          "-",
-                          {
-                            "Ref": "AWS::Region"
-                          }
-                        ]
-                      ]
-                    },
+                    "bucketName": "asset-bucket-123456789012",
                     "tags": [
                       {
                         "key": "aws-cdk:cr-owned:cea6ac02",
@@ -154,9 +140,7 @@
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
                             "code": {
-                              "s3Bucket": {
-                                "Fn::ImportValue": "aws-cdk-nested-stack-in-product-stack:ExportsOutputRefAssetBucket1D0250868713D7D0"
-                              },
+                              "s3Bucket": "asset-bucket-123456789012",
                               "s3Key": "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip"
                             },
                             "role": {
@@ -274,9 +258,7 @@
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
                             "code": {
-                              "s3Bucket": {
-                                "Fn::ImportValue": "aws-cdk-nested-stack-in-product-stack:ExportsOutputRefAssetBucket1D0250868713D7D0"
-                              },
+                              "s3Bucket": "asset-bucket-123456789012",
                               "s3Key": "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
                             },
                             "role": {
@@ -328,11 +310,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/",
-                              {
-                                "Fn::ImportValue": "aws-cdk-nested-stack-in-product-stack:ExportsOutputRefAssetBucket1D0250868713D7D0"
-                              },
-                              "/9ef191e76a46156162631af22147c9cbe501c30c829d27cf676551ecca3f25db.json"
+                              "/asset-bucket-123456789012/7d50a577b40c04517d7ed596ceace8488f0b67a4c6fa861d5f29c5e8c8882d63.json"
                             ]
                           ]
                         }
@@ -716,7 +694,7 @@
                         "disableTemplateValidation": false,
                         "info": {
                           "LoadTemplateFromURL": {
-                            "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/690a955a634fd247554740d8dce8fe78b69591edf9417bc74313a8916a424ad8.json"
+                            "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e16283b1156a3e7df105890726fb6b539dc55e45dc656b980bfece157513eb4.json"
                           }
                         }
                       }
@@ -732,24 +710,6 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_servicecatalog.CloudFormationProduct",
               "version": "0.0.0"
-            }
-          },
-          "Exports": {
-            "id": "Exports",
-            "path": "aws-cdk-nested-stack-in-product-stack/Exports",
-            "children": {
-              "Output{\"Ref\":\"AssetBucket1D025086\"}": {
-                "id": "Output{\"Ref\":\"AssetBucket1D025086\"}",
-                "path": "aws-cdk-nested-stack-in-product-stack/Exports/Output{\"Ref\":\"AssetBucket1D025086\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {
