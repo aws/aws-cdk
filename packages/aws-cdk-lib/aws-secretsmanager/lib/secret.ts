@@ -4,7 +4,7 @@ import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
 import * as cxapi from '../../cx-api';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
@@ -450,7 +450,18 @@ abstract class SecretBase extends Resource implements ISecret {
    * then we need to add a suffix to capture the full ARN's format.
    */
   protected get arnForPolicies() {
-    return this.secretFullArn ? this.secretFullArn : `${this.secretArn}-??????`;
+    return Lazy.uncachedString({
+      produce: (context: IResolveContext) => {
+        const consumingStack = Stack.of(context.scope);
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !consumingStack._crossRegionReferences) || !this.secretFullArn) {
+          return `${this.secretArn}-??????`;
+        } else {
+          return this.secretArn;
+        }
+      },
+    });
   }
 
   /**
