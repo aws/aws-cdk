@@ -32,15 +32,15 @@ export class ProductStack extends cdk.Stack {
   private _parentProductStackHistory?: ProductStackHistory;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
-
   private assetBucket?: IBucket;
 
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
+    const parentStack = findParentStack(scope);
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer(props.assetBucket),
+      synthesizer: new ProductStackSynthesizer(parentStack.synthesizer, props.assetBucket),
     });
 
-    this._parentStack = findParentStack(scope);
+    this._parentStack = parentStack;
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;

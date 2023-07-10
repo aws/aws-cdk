@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { CfnBucket, IBucket } from '../../../aws-s3';
-import { BucketDeployment, Source } from '../../../aws-s3-deployment';
+import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
+import { BucketDeployment, ISource, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { ProductStack } from '../product-stack';
 
@@ -10,39 +10,22 @@ import { ProductStack } from '../product-stack';
  * Interoperates with the StackSynthesizer of the parent stack.
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
-  private readonly assetBucket?: IBucket;
-  private bucketDeployment?: BucketDeployment;
+  private parentAssetBucket?: IBucket;
+  private sources: ISource[] = [];
 
-  constructor(assetBucket?: IBucket) {
+  constructor(private readonly parentDeployment: cdk.IStackSynthesizer, private readonly assetBucket?: IBucket) {
     super();
-    this.assetBucket = assetBucket;
   }
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
     if (!this.assetBucket) {
       throw new Error('An Asset Bucket must be provided to use Assets');
     }
-    const outdir = cdk.App.of(this.boundStack)?.outdir ?? 'cdk.out';
-    const assetPath = `${outdir}/${asset.fileName}`;
-    if (!this.bucketDeployment) {
-      const parentStack = (this.boundStack as ProductStack)._getParentStack();
-      if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
-        cdk.Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
-          ' referenced Bucket. Please make sure your bucket has the correct permissions');
-      }
-      this.bucketDeployment = new BucketDeployment(parentStack, 'AssetsBucketDeployment', {
-        sources: [Source.asset(assetPath)],
-        destinationBucket: this.assetBucket,
-        extract: false,
-        prune: false,
-      });
-    } else {
-      this.bucketDeployment.addSource(Source.asset(assetPath));
-    }
 
-    const physicalName = this.physicalNameOfBucket(this.assetBucket);
+    const source = this.createSource(asset);
+    this.sources.push(source);
 
-    const bucketName = physicalName;
+    const bucketName = this.physicalNameOfBucket(this.assetBucket);
     if (!asset.fileName) {
       throw new Error('Asset file name is undefined');
     }
@@ -68,11 +51,47 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     return resolvedName;
   }
 
+  private createSource(asset: cdk.FileAssetSource) {
+    let source: ISource;
+    if (asset.isTemplateFile) {
+      const location = this.parentDeployment.addFileAsset(asset);
+      if (!this.parentAssetBucket) {
+        this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
+      }
+      source = Source.bucket(this.parentAssetBucket, location.objectKey);
+    } else {
+      const outdir = cdk.App.of(this.boundStack)?.outdir ?? 'cdk.out';
+      const assetPath = `${outdir}/${asset.fileName}`;
+      source = Source.asset(assetPath);
+    }
+    return source;
+  }
+
+  private createDeploymentBucket() {
+    if (!this.assetBucket) {
+      throw new Error('An Asset Bucket must be provided to use Assets');
+    }
+    const parentStack = (this.boundStack as ProductStack)._getParentStack();
+    if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
+      cdk.Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
+        ' referenced Bucket. Please make sure your bucket has the correct permissions');
+    }
+    new BucketDeployment(parentStack, 'AssetsBucketDeployment', {
+      sources: this.sources,
+      destinationBucket: this.assetBucket,
+      extract: false,
+      prune: false,
+    });
+  }
+
   public addDockerImageAsset(_asset: cdk.DockerImageAssetSource): cdk.DockerImageAssetLocation {
     throw new Error('Service Catalog Product Stacks cannot use Assets');
   }
 
   public synthesize(session: cdk.ISynthesisSession): void {
+    if (this.sources.length > 0) {
+      this.createDeploymentBucket();
+    }
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
     this.synthesizeTemplate(session);
