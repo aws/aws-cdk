@@ -197,6 +197,26 @@ describe('ProductStack', () => {
     });
   });
 
+  test('fails if bucketName is not specified in product stack with assets', () => {
+    // GIVEN
+    const app = new cdk.App(
+      { outdir: 'cdk.out' },
+    );
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    // THEN
+    expect(() => {
+      new s3_assets.Asset(productStack, 'testAsset', {
+        path: path.join(__dirname, 'assets'),
+      });
+    }).toThrow('A bucketName must be provided to use Assets');
+  });
+
   test('fails if Asset bucket is not defined in product stack with assets', () => {
     // GIVEN
     const app = new cdk.App();
