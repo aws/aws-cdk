@@ -92,9 +92,25 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       PolicyDocument: {
         Statement: [
           {
-            Action: 'logs:CreateLogStream',
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',

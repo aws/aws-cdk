@@ -62,9 +62,31 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "logs:CreateLogStream",
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
                                   "Effect": "Allow",
-                                  "Resource": "*"
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -93,11 +115,19 @@
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/myContainer/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "SingleContainerMultiNodeJob": {
@@ -157,7 +187,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.MultiNodeJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -215,9 +245,31 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "logs:CreateLogStream",
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
                                   "Effect": "Allow",
-                                  "Resource": "*"
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -246,11 +298,19 @@
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/multinodecontainer/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "MultiContainerMultiNodeJob": {
@@ -334,7 +394,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.MultiNodeJobDefinition",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -392,9 +452,31 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "logs:CreateLogStream",
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
                                   "Effect": "Allow",
-                                  "Resource": "*"
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -423,11 +505,19 @@
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/multiContainer/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
             }
           },
           "BootstrapVersion": {

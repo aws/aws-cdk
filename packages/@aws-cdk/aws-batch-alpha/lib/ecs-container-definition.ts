@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size, Stack } from 'aws-cdk-lib/core';
+import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
