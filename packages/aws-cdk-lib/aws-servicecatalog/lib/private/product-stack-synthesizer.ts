@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
 import { BucketDeployment, ISource, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';

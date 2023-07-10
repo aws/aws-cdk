@@ -156,7 +156,11 @@ describe('ProductStack', () => {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        new s3.Bucket(this, 'SampleBucketInNestedStack');
+        new lambda.Function(this, 'HelloHandler', {
+          runtime: lambda.Runtime.PYTHON_3_9,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+          handler: 'index.handler',
+        });
       }
     }
 
@@ -167,10 +171,30 @@ describe('ProductStack', () => {
         new SampleNestedStack(this, 'SampleNestedStack');
       }
     }
-    new ServiceCatalogSampleStack(app, 'ServicecatalogSampleStack');
+
+    const stack = new ServiceCatalogSampleStack(app, 'ServicecatalogSampleStack');
 
     // WHEN
     app.synth();
+
+    // THEN
+    Template.fromJSON(Template.fromStack(stack)).hasResourceProperties('Custom:CDKBucketDeployment', {
+      SourceBucketNames: [
+        {
+          'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+        },
+        {
+          'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+        },
+      ],
+      SourceObjectKeys: [
+        'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
+        '419729a667a59c05d7d1dc036e0c3abb0b3a8156040c30ab824cb77a8172e55c.json',
+      ],
+      DestinationBucketName: {
+        Ref: 'AssetBucket1D025086',
+      },
+    });
   });
 
   test('fails if bucketName is not specified in product stack with assets', () => {
