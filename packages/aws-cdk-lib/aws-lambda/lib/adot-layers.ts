@@ -184,6 +184,11 @@ export enum AdotLambdaExecWrapper {
    * propagation for HTTP requests.
    */
   STREAM_HANDLER = '/opt/otel-stream-handler',
+
+  /**
+   * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
+   */
+  INSTRUMENT_HANDLER = '/opt/otel-instrument',
 }
 
 abstract class AdotLambdaLayerVersion {
