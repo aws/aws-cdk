@@ -377,8 +377,8 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.list({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
-        SourceObjectKeys: cdk.Lazy.list({ produce: () => this.sources.map(source => source.zipObjectKey) }),
+        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
+        SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
         SourceMarkers: cdk.Lazy.any({
           produce: () => {
             return this.sources.reduce((acc, source) => {
