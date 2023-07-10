@@ -23,7 +23,47 @@ describe('AppSync API Key Authorization', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
   });
 
-  test('AppSync creates api key from additionalAuthorizationModes', () => {
+  test('AppSync creates only one default api key from defaultAuthorization and additionalAuthorizationModes', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
+        additionalAuthorizationModes: [
+          { authorizationType: appsync.AuthorizationType.API_KEY },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+  });
+
+  test('AppSync creates one defauld api key from defaultAuthorization and one custom api key from additionalAuthorizationModes', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { name: 'Custom', description: 'Custom Description' },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
+      Description: 'Custom Description',
+    });
+  });
+
+  test('AppSync creates only one default api key from additionalAuthorizationModes when added once', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -38,6 +78,54 @@ describe('AppSync API Key Authorization', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+  });
+
+  test('AppSync creates only one default api key from additionalAuthorizationModes when added twice', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+        additionalAuthorizationModes: [
+          { authorizationType: appsync.AuthorizationType.API_KEY },
+          { authorizationType: appsync.AuthorizationType.API_KEY },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+  });
+
+  test('AppSync creates two custom api key from additionalAuthorizationModes when added twice', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { name: 'Custom 1', description: 'Custom Description 1' },
+          },
+          {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { name: 'Custom 2', description: 'Custom Description 2' },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
+      Description: 'Custom Description 1',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
+      Description: 'Custom Description 2',
+    });
   });
 
   test('AppSync does not create unspecified api key from additionalAuthorizationModes', () => {
