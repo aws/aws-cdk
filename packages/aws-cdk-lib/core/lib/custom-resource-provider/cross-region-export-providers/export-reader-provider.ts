@@ -6,7 +6,7 @@ import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
 import { Intrinsic } from '../../private/intrinsic';
 import { Stack } from '../../stack';
-import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider } from '../custom-resource-provider';
+import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
 
 /**
  * Properties for an ExportReader
@@ -37,7 +37,7 @@ export class ExportReader extends Construct {
     const resourceType = 'Custom::CrossRegionExportReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'cross-region-ssm-reader-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: stack.formatArn({

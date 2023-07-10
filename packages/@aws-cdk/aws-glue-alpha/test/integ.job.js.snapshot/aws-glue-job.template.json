@@ -176,6 +176,7 @@
      "arg2": "value2",
      "--conf": "valueConf"
     },
+    "ExecutionClass": "STANDARD",
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
     },
@@ -354,7 +355,7 @@
     "Tags": {
      "key": "value"
     },
-    "WorkerType": "G.025X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob30ServiceRole8E675579": {
@@ -533,6 +534,7 @@
      "arg2": "value2",
      "--conf": "valueConf"
     },
+    "ExecutionClass": "STANDARD",
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
     },
@@ -890,6 +892,7 @@
      "arg2": "value2",
      "--conf": "valueConf"
     },
+    "ExecutionClass": "STANDARD",
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
     },
@@ -1415,6 +1418,7 @@
     "Command": {
      "Name": "glueray",
      "PythonVersion": "3.9",
+     "Runtime": "Ray2.4",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -1446,6 +1450,129 @@
      "key": "value"
     },
     "WorkerType": "Z.2X"
+   }
+  },
+  "EtlJobWithFLEXServiceRoleBA7C99A5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EtlJobWithFLEXServiceRoleDefaultPolicyEA63C5FE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EtlJobWithFLEXServiceRoleDefaultPolicyEA63C5FE",
+    "Roles": [
+     {
+      "Ref": "EtlJobWithFLEXServiceRoleBA7C99A5"
+     }
+    ]
+   }
+  },
+  "EtlJobWithFLEX928B4212": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJobWithFLEXServiceRoleBA7C99A5",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python"
+    },
+    "ExecutionClass": "FLEX",
+    "GlueVersion": "3.0",
+    "Name": "EtlJobWithFLEX",
+    "NumberOfWorkers": 10,
+    "WorkerType": "G.1X"
    }
   }
  },

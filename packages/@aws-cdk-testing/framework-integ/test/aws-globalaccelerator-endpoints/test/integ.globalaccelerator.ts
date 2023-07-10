@@ -4,6 +4,7 @@ import * as ga from 'aws-cdk-lib/aws-globalaccelerator';
 import { App, Stack } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as endpoints from 'aws-cdk-lib/aws-globalaccelerator-endpoints';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class GaStack extends Stack {
   constructor(scope: constructs.Construct, id: string) {
@@ -49,4 +50,8 @@ class GaStack extends Stack {
 }
 
 const app = new App();
-new GaStack(app, 'integ-globalaccelerator');
+const stack = new GaStack(app, 'integ-globalaccelerator');
+new IntegTest(app, 'GlobalAcceleratorInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
