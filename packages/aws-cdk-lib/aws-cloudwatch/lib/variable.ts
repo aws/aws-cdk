@@ -92,7 +92,6 @@ export abstract class DashboardVariable implements IVariable {
       label: this.baseProps.label,
     };
   }
-
 }
 
 export interface IVariableValue {
@@ -167,5 +166,4 @@ export class SearchDashboardVariable extends DashboardVariable {
       populateFrom: this.props.populateFrom,
     };
   }
-
 }
