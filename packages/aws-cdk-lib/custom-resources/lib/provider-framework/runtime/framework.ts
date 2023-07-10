@@ -148,7 +148,9 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
 
 function parseJsonPayload(payload: any): any {
   if (!payload) { return { }; }
-  const text = payload.toString();
+  // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
+  // can be cast into a buffer and then decoded.
+  let text = new TextDecoder().decode(Buffer.from(payload));
   try {
     return JSON.parse(text);
   } catch {

@@ -27,6 +27,8 @@ The `glue.JobExecutable` allows you to specify the type of job, the language to 
 
 `glue.Code` allows you to refer to the different code assets required by the job, either from an existing S3 location or from a local file path.
 
+`glue.ExecutionClass` allows you to specify `FLEX` or `STANDARD`. `FLEX` is appropriate for non-urgent jobs such as pre-production jobs, testing, and one-time data loads.
+
 ### Spark Jobs
 
 These jobs run in an Apache Spark environment managed by AWS Glue.
@@ -491,3 +493,23 @@ new glue.Table(this, 'MyTable', {
 | array(itemType: Type)               	| Function 	| An array of some other type                                       	|
 | map(keyType: Type, valueType: Type) 	| Function 	| A map of some primitive key type to any value type                	|
 | struct(collumns: Column[])          	| Function 	| Nested structure containing individually named and typed collumns 	|
+
+## Data Quality Ruleset
+
+A `DataQualityRuleset` specifies a data quality ruleset with DQDL rules applied to a specified AWS Glue table. For example, to create a data quality ruleset for a given table:
+
+```ts
+new glue.DataQualityRuleset(this, 'MyDataQualityRuleset', {
+  clientToken: 'client_token',
+  description: 'description',
+  rulesetName: 'ruleset_name',
+  rulesetDqdl: 'ruleset_dqdl',
+  tags: {
+    key1: 'value1',
+    key2: 'value2',
+  },
+  targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
+});
+```
+
+For more information, see [AWS Glue Data Quality](https://docs.aws.amazon.com/glue/latest/dg/glue-data-quality.html).
