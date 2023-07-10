@@ -1,27 +1,27 @@
 {
   "version": "32.0.0",
   "artifacts": {
-    "integ-distribution-policies.assets": {
+    "aws-cdk-cloudwatch-singlevaluewidget-period-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-distribution-policies.assets.json",
+        "file": "aws-cdk-cloudwatch-singlevaluewidget-period-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-distribution-policies": {
+    "aws-cdk-cloudwatch-singlevaluewidget-period-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-distribution-policies.template.json",
+        "templateFile": "aws-cdk-cloudwatch-singlevaluewidget-period-integ.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17ab10021b77a5b225de54b10a02740bc6d638269786a643726871c66180f980.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4dda261a18b29095c14be79773ff2c9cee39ed1fa347c6b46432c448eb55bfe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-distribution-policies.assets"
+          "aws-cdk-cloudwatch-singlevaluewidget-period-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,91 +30,43 @@
         }
       },
       "dependencies": [
-        "integ-distribution-policies.assets"
+        "aws-cdk-cloudwatch-singlevaluewidget-period-integ.assets"
       ],
       "metadata": {
-        "/integ-distribution-policies/CachePolicy/Resource": [
+        "/aws-cdk-cloudwatch-singlevaluewidget-period-integ/Dashboard/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CachePolicy26D8A535"
+            "data": "Dashboard9E4231ED"
           }
         ],
-        "/integ-distribution-policies/MinTtlParam": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MinTtlParam"
-          }
-        ],
-        "/integ-distribution-policies/DefaultTtlParam": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultTtlParam"
-          }
-        ],
-        "/integ-distribution-policies/MaxTtlParam": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MaxTtlParam"
-          }
-        ],
-        "/integ-distribution-policies/CachePolicyWithRef/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CachePolicyWithRefD7C98251"
-          }
-        ],
-        "/integ-distribution-policies/OriginRequestPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OriginRequestPolicy3EFDB4FA"
-          }
-        ],
-        "/integ-distribution-policies/ResponseHeadersPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ResponseHeadersPolicy13DBF9E0"
-          }
-        ],
-        "/integ-distribution-policies/Dist/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistB3B78991"
-          }
-        ],
-        "/integ-distribution-policies/Dist-2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Dist24014FEC1"
-          }
-        ],
-        "/integ-distribution-policies/BootstrapVersion": [
+        "/aws-cdk-cloudwatch-singlevaluewidget-period-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-distribution-policies/CheckBootstrapVersion": [
+        "/aws-cdk-cloudwatch-singlevaluewidget-period-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-distribution-policies"
+      "displayName": "aws-cdk-cloudwatch-singlevaluewidget-period-integ"
     },
-    "DistributionPoliciesDefaultTestDeployAssert1B8724D9.assets": {
+    "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "DistributionPoliciesDefaultTestDeployAssert1B8724D9.assets.json",
+        "file": "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "DistributionPoliciesDefaultTestDeployAssert1B8724D9": {
+    "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "DistributionPoliciesDefaultTestDeployAssert1B8724D9.template.json",
+        "templateFile": "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -122,7 +74,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "DistributionPoliciesDefaultTestDeployAssert1B8724D9.assets"
+          "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -131,23 +83,23 @@
         }
       },
       "dependencies": [
-        "DistributionPoliciesDefaultTestDeployAssert1B8724D9.assets"
+        "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0.assets"
       ],
       "metadata": {
-        "/DistributionPolicies/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/singlevaluewidget-with-period/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/DistributionPolicies/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/singlevaluewidget-with-period/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "DistributionPolicies/DefaultTest/DeployAssert"
+      "displayName": "singlevaluewidget-with-period/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
