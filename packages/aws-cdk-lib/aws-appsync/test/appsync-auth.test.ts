@@ -23,30 +23,13 @@ describe('AppSync API Key Authorization', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
   });
 
-  test('AppSync creates only one default api key from defaultAuthorization and additionalAuthorizationModes', () => {
-    // WHEN
-    new appsync.GraphqlApi(stack, 'api', {
-      name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      authorizationConfig: {
-        defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
-        additionalAuthorizationModes: [
-          { authorizationType: appsync.AuthorizationType.API_KEY },
-        ],
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
-  });
-
   test('AppSync creates one defauld api key from defaultAuthorization and one custom api key from additionalAuthorizationModes', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
         additionalAuthorizationModes: [
           {
             authorizationType: appsync.AuthorizationType.API_KEY,
@@ -71,24 +54,6 @@ describe('AppSync API Key Authorization', () => {
       authorizationConfig: {
         defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
         additionalAuthorizationModes: [
-          { authorizationType: appsync.AuthorizationType.API_KEY },
-        ],
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
-  });
-
-  test('AppSync creates only one default api key from additionalAuthorizationModes when added twice', () => {
-    // WHEN
-    new appsync.GraphqlApi(stack, 'api', {
-      name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      authorizationConfig: {
-        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-        additionalAuthorizationModes: [
-          { authorizationType: appsync.AuthorizationType.API_KEY },
           { authorizationType: appsync.AuthorizationType.API_KEY },
         ],
       },
@@ -155,6 +120,43 @@ describe('AppSync API Key Authorization', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 0);
+  });
+
+  test('appsync fails when multiple default API_KEY', () => {
+    // THEN
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+        authorizationConfig: {
+          defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
+          additionalAuthorizationModes: [{
+            authorizationType: appsync.AuthorizationType.API_KEY,
+          }],
+        },
+      });
+    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+  });
+
+  test('appsync fails when repeated API_KEY names', () => {
+    // THEN
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+        authorizationConfig: {
+          defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
+          additionalAuthorizationModes: [{
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { name: 'Custom' },
+          },
+          {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { name: 'Custom' },
+          }],
+        },
+      });
+    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync creates configured api key with additionalAuthorizationModes', () => {

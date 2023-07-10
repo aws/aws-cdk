@@ -487,7 +487,7 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @default - no api key
    */
-  public readonly apiKey?: string;
+  public readonly apiKey?: string | string[];
 
   /**
    * the CloudWatch Log Group for this API
@@ -496,7 +496,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
-  private apiKeyResource?: CfnApiKey;
+  private apiKeyResource?: CfnApiKey | CfnApiKey[];
   private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
@@ -544,14 +544,17 @@ export class GraphqlApi extends GraphqlApiBase {
       domainNameAssociation.addDependency(this.domainNameResource);
     }
 
-    if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
-      const config = modes.find((mode: AuthorizationMode) => {
-        return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
-      })?.apiKeyConfig;
-      this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependency(this.schemaResource);
-      this.apiKey = this.apiKeyResource.attrApiKey;
-    }
+    const apiKeyResources = modes
+      .filter((mode) => mode.authorizationType === AuthorizationType.API_KEY)
+      .map((mode) => {
+        const config = mode.apiKeyConfig && mode.apiKeyConfig;
+        const apiKeyResource = this.createAPIKey(config);
+        apiKeyResource.addDependency(this.schemaResource);
+        return apiKeyResource;
+      });
+    this.apiKeyResource = apiKeyResources.length > 1 ? apiKeyResources : apiKeyResources[0];
+    const apiKeys = apiKeyResources.map(({ attrApiKey }) => attrApiKey);
+    this.apiKey = apiKeys.length > 1 ? apiKeys : apiKeys[0];
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
       const config = modes.find((mode: AuthorizationMode) => {
@@ -640,6 +643,14 @@ export class GraphqlApi extends GraphqlApiBase {
         throw new Error('Missing Lambda Configuration');
       }
     });
+    const distintApiKeyNameCount = modes
+      .filter((mode) => mode.authorizationType === AuthorizationType.API_KEY)
+      .map((mode) => mode.apiKeyConfig?.name)
+      .reduce((acc, name) => acc.add(name), new Set())
+      .size;
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length !== distintApiKeyNameCount) {
+      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
