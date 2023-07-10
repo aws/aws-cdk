@@ -1843,16 +1843,26 @@ Launch templates enable you to store launch parameters so that you do not have t
 an instance. For information on Launch Templates please see the
 [official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
 
-The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
+The following demonstrates how to create a launch template with an Amazon Machine Image, security group, and an instance profile.
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 declare const vpc: ec2.Vpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.latestAmazonLinux2022(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
   }),
+  instanceProfile,
 });
 ```
 
@@ -1884,6 +1894,14 @@ const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
 });
 
 launchTemplate.addSecurityGroup(sg2);
+```
+
+To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html) in launch templates and resolve the AMI IDs at instance launch time:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName');
+});
 ```
 
 ## Detailed Monitoring

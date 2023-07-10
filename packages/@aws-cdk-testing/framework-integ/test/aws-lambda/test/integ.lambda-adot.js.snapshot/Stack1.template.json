@@ -166,7 +166,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -263,7 +263,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -360,7 +360,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
@@ -457,7 +457,7 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-handler"
+      "AWS_LAMBDA_EXEC_WRAPPER": "/opt/otel-instrument"
      }
     },
     "Handler": "index.handler",
