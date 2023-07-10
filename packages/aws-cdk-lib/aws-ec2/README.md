@@ -1896,6 +1896,14 @@ const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
 launchTemplate.addSecurityGroup(sg2);
 ```
 
+To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html) in launch templates and resolve the AMI IDs at instance launch time:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName');
+});
+```
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).

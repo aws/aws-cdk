@@ -157,6 +157,21 @@ export abstract class MachineImage {
   }
 
   /**
+   * An image specified in SSM parameter store that will be resolved at instance launch time.
+   *
+   * The AMI ID will be resolved at instance launch time.
+   *
+   * @param parameterName The name of SSM parameter containing the AMI ID
+   * @param options The parameter image options
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
+   *
+   */
+  public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+    return new ResolveSsmParameterAtLaunchImage(parameterName, options);
+  }
+
+  /**
    * Look up a shared Machine Image using DescribeImages
    *
    * The most recent, available, launchable image matching the given filter
@@ -176,7 +191,7 @@ export abstract class MachineImage {
 }
 
 /**
- * Select the image based on a given SSM parameter
+ * Select the image based on a given SSM parameter at deployment time of the CloudFormation Stack.
  *
  * This Machine Image automatically updates to the latest version on every
  * deployment. Be aware this will cause your instances to be replaced when a
@@ -208,6 +223,40 @@ export class GenericSSMParameterImage implements IMachineImage {
       imageId: ami,
       osType: this.os,
       userData: this.userData ?? (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+    };
+  }
+}
+
+/**
+ * Select the image based on a given SSM parameter at instance launch time.
+ *
+ * This Machine Image comes with an imageId as `resolve:ssm:parameter-name` or `resolve:ssm:parameter-name:version` format
+ * as described in the document:
+ *
+ * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
+ *
+ * The AMI ID would be selected at instance launch time.
+ */
+export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
+  /**
+   * Name of the SSM parameter we're looking up
+   */
+  public readonly parameterName: string;
+
+  constructor(parameterName: string, private readonly props: SsmParameterImageOptions = {}) {
+    this.parameterName = parameterName;
+  }
+
+  /**
+   * Return the image to use in the given context
+   */
+  public getImage(_: Construct): MachineImageConfig {
+    const versionString = this.props.parameterVersion ? `:${this.props.parameterVersion}` : '';
+    const osType = this.props.os ?? OperatingSystemType.LINUX;
+    return {
+      imageId: `resolve:ssm:${this.parameterName}${versionString}`,
+      osType,
+      userData: this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -250,10 +299,17 @@ export interface SsmParameterImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * The version of the SSM parameter.
+   *
+   * @default no version specified.
+   */
+  readonly parameterVersion?: string;
 }
 
 /**
- * Select the image based on a given SSM parameter
+ * Select the image based on a given SSM parameter at deployment time of the CloudFormation Stack.
  *
  * This Machine Image automatically updates to the latest version on every
  * deployment. Be aware this will cause your instances to be replaced when a
