@@ -102,7 +102,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
-    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": false
   }
 }
 ```
@@ -1047,7 +1047,7 @@ multi-az with standby enabled.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| V2NEXT | `false` | `false` |
 
 **Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
 
