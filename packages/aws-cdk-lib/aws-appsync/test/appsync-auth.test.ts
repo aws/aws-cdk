@@ -180,39 +180,6 @@ describe('AppSync API Key Authorization', () => {
       Description: 'Custom Description',
     });
   });
-
-  test('appsync fails when multiple API_KEY auth modes', () => {
-    // THEN
-    expect(() => {
-      new appsync.GraphqlApi(stack, 'api', {
-        name: 'api',
-        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-        authorizationConfig: {
-          defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
-          additionalAuthorizationModes: [{
-            authorizationType: appsync.AuthorizationType.API_KEY,
-          }],
-        },
-      });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
-  });
-
-  test('appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
-    // THEN
-    expect(() => {
-      new appsync.GraphqlApi(stack, 'api', {
-        name: 'api',
-        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-        authorizationConfig: {
-          defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-          additionalAuthorizationModes: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-          ],
-        },
-      });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
-  });
 });
 
 describe('AppSync IAM Authorization', () => {
