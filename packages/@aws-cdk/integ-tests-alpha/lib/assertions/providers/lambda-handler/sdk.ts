@@ -57,6 +57,7 @@ function getServiceClient(sdkPkg: V3SdkPkg): any {
     const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
     return new ServiceClient({});
   } catch (e) {
+    console.error(e);
     throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
   }
 }
