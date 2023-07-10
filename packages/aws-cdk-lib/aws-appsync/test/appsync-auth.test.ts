@@ -181,21 +181,6 @@ describe('AppSync API Key Authorization', () => {
     });
   });
 
-  test('appsync fails when empty default and API_KEY in additional', () => {
-    // THEN
-    expect(() => {
-      new appsync.GraphqlApi(stack, 'api', {
-        name: 'api',
-        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-        authorizationConfig: {
-          additionalAuthorizationModes: [{
-            authorizationType: appsync.AuthorizationType.API_KEY,
-          }],
-        },
-      });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
-  });
-
   test('appsync fails when multiple API_KEY auth modes', () => {
     // THEN
     expect(() => {

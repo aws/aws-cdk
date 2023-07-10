@@ -640,9 +640,6 @@ export class GraphqlApi extends GraphqlApiBase {
         throw new Error('Missing Lambda Configuration');
       }
     });
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
-      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
-    }
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
     }
