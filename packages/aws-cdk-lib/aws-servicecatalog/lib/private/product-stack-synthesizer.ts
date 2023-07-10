@@ -1,4 +1,4 @@
-import { IBucket, Bucket } from '../../../aws-s3';
+import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
 import { BucketDeployment, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { ProductStack } from '../product-stack';
@@ -44,11 +44,24 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       this.deploymentBucket.addSource(source);
     }
 
-    const bucketName = this.assetBucket.bucketName;
+    const bucketName = this.physicalNameOfBucket(this.assetBucket);
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
 
     return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
+  }
+
+  private physicalNameOfBucket(bucket: IBucket) {
+    let resolvedName;
+    if (cdk.Resource.isOwnedResource(bucket)) {
+      resolvedName = cdk.Stack.of(bucket).resolve((bucket.node.defaultChild as CfnBucket).bucketName);
+    } else {
+      resolvedName = bucket.bucketName;
+    }
+    if (resolvedName === undefined) {
+      throw new Error('A bucketName must be provided to use Assets');
+    }
+    return resolvedName;
   }
 
   public addDockerImageAsset(_asset: cdk.DockerImageAssetSource): cdk.DockerImageAssetLocation {
