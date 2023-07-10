@@ -13,6 +13,7 @@ export enum PeriodOverride {
    * Period of all graphs on the dashboard automatically adapt to the time range of the dashboard.
    */
   AUTO = 'auto',
+
   /**
    * Period set for each graph will be used
    */

@@ -3,10 +3,12 @@ export enum VariableInputType {
    * Freeform text input box
    */
   INPUT = 'input',
+
   /**
    * A dropdown of pre-defined values, or values filled in from a metric search query
    */
   RADIO = 'radio',
+
   /**
    * A set of pre-defined radio buttons, which can also be defined from a metric search query
    */
@@ -18,6 +20,7 @@ export enum VariableType {
    * A property variable changes the values of all instances of a property in the list of widgets in the dashboard.
    */
   PROPERTY = 'property',
+
   /**
    * A pattern variable is one that changes a regex pattern across the dashboard JSON
    */
@@ -39,26 +42,32 @@ export interface IDashboardVariable {
    * Type of the variable
    */
   readonly type: VariableType;
+
   /**
    * The way the variable value is selected
    */
   readonly inputType: VariableInputType;
+
   /**
    * Pattern or property value to replace
    */
   readonly value: string;
+
   /**
    * Unique id
    */
   readonly id: string;
+
   /**
    * Optional label in the toolbar
    */
   readonly label?: string;
+
   /**
    * Optional default value
    */
   readonly defaultValue: any;
+
   /**
    * Whether the variable is visible
    */
@@ -126,7 +135,6 @@ export class ValueDashboardVariable extends DashboardVariable {
       values: this.props.values ? this.props.values.map(value => ({ label: value.label, value: value.value })) : undefined,
     };
   }
-
 }
 
 /**
