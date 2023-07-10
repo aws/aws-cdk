@@ -11,6 +11,10 @@ class ServiceCatalogStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const assetBucket = new s3.Bucket(this, 'AssetBucket', {
+      bucketName: `asset-bucket-${this.account}-${this.region}`,
+    });
+
     new sc.CloudFormationProduct(this, 'SampleProduct', {
       productName: 'Sample Product',
       owner: 'owner',
@@ -19,9 +23,7 @@ class ServiceCatalogStack extends Stack {
           productVersionName: 'v1',
           cloudFormationTemplate: sc.CloudFormationTemplate.fromProductStack(
             new SampleProductStack(this, 'SampleProductStack', {
-              assetBucket: new s3.Bucket(this, 'AssetBucket', {
-                bucketName: `asset-bucket-${this.account}-${this.region}`,
-              }),
+              assetBucket,
             }),
           ),
         },
