@@ -9,7 +9,7 @@ import { ProductStack } from '../product-stack';
  * Interoperates with the StackSynthesizer of the parent stack.
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
-  private deploymentBucket?: BucketDeployment;
+  private bucketDeployment?: BucketDeployment;
   private parentAssetBucket?: IBucket;
 
   constructor(private readonly parentDeployment: cdk.IStackSynthesizer, private readonly assetBucket?: IBucket) {
@@ -28,20 +28,20 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const objectKey = location.objectKey;
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
-    if (!this.deploymentBucket) {
+    if (!this.bucketDeployment) {
       const parentStack = (this.boundStack as ProductStack)._getParentStack();
       if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
         cdk.Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
           ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
-      this.deploymentBucket = new BucketDeployment(parentStack, 'AssetsBucketDeployment', {
+      this.bucketDeployment = new BucketDeployment(parentStack, 'AssetsBucketDeployment', {
         sources: [source],
         destinationBucket: this.assetBucket,
         extract: false,
         prune: false,
       });
     } else {
-      this.deploymentBucket.addSource(source);
+      this.bucketDeployment.addSource(source);
     }
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
