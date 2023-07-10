@@ -1,0 +1,31 @@
+{
+  "Resources": {
+    "SampleNestedStackNestedStackSampleNestedStackNestedStackResource97FFAE0A": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::ImportValue": "aws-cdk-nested-stack-in-product-stack:ExportsOutputRefAssetBucket1D0250868713D7D0"
+              },
+              "/9ef191e76a46156162631af22147c9cbe501c30c829d27cf676551ecca3f25db.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}
