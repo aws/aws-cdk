@@ -79,13 +79,11 @@ class EksClusterStack extends Stack {
 
     this.assertManifestWithoutValidation();
 
-    this.assertSimpleHelmChart();
-
     this.assertHelmChartAsset();
 
     this.assertSimpleCdk8sChart();
 
-    this.assertCreateNamespace();
+    this.assertCreateNamespaceAndSimpleHelmChart();
 
     this.assertServiceAccount();
 
@@ -116,7 +114,7 @@ class EksClusterStack extends Stack {
     });
   }
 
-  private assertCreateNamespace() {
+  private assertCreateNamespaceAndSimpleHelmChart() {
     // deploy an nginx ingress in a namespace
     const nginxNamespace = this.cluster.addManifest('nginx-namespace', {
       apiVersion: 'v1',
@@ -157,13 +155,6 @@ class EksClusterStack extends Stack {
     const chart = new Chart(app, 'Chart', this.cluster);
 
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
-  }
-  private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
-    this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      repository: 'https://kubernetes.github.io/dashboard/',
-    });
   }
 
   private assertHelmChartAsset() {

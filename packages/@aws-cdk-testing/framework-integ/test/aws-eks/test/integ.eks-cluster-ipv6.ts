@@ -105,13 +105,11 @@ class EksClusterStack extends Stack {
 
     this.assertManifestWithoutValidation();
 
-    this.assertSimpleHelmChart();
-
     this.assertHelmChartAsset();
 
     this.assertSimpleCdk8sChart();
 
-    this.assertCreateNamespace();
+    this.assertCreateNamespaceAndSimpleHelmChart();
 
     this.assertServiceAccount();
 
@@ -148,7 +146,7 @@ class EksClusterStack extends Stack {
     });
   }
 
-  private assertCreateNamespace() {
+  private assertCreateNamespaceAndSimpleHelmChart() {
     // deploy an nginx ingress in a namespace
     const nginxNamespace = this.cluster.addManifest('nginx-namespace', {
       apiVersion: 'v1',
@@ -189,13 +187,6 @@ class EksClusterStack extends Stack {
     const chart = new Chart(app, 'Chart', this.cluster);
 
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
-  }
-  private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
-    this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      repository: 'https://kubernetes.github.io/dashboard/',
-    });
   }
 
   private assertHelmChartAsset() {
@@ -349,7 +340,7 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test-ipv6', {
   env: { region: 'us-east-1' },
 });
 
@@ -368,7 +359,7 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
   testCases: [stack],
   diffAssets: true,
   cdkCommandOptions: {
