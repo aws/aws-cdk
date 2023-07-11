@@ -22560,19 +22560,19 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that your game server binaries run on. This value determines the type of fleet resources that you use for this build. If your game build contains multiple executables, they all must run on the same operating system. You must specify a valid operating system in this request. There is no default value. You can't change a build's operating system later.\n\n> The Amazon Linux 2023 OS is not available in the China Regions. > Support is ending in 2023 for the Windows Server 2012 and Amazon Linux (AL1) operating systems. If you have active fleets using these operating systems, you can continue to create new builds using these until their end of support. All other users must use Windows Server 2016, Amazon Linux 2, or Amazon Linux 2023. For more information, including specific end-of-support dates, see the Amazon GameLift FAQs for [Windows Server](https://docs.aws.amazon.com/gamelift/faq/win2012/) and [Linux Server](https://docs.aws.amazon.com/gamelift/faq/al1/) .",
-        "ServerSdkVersion": "The Amazon GameLift Server SDK version used to develop your game server.",
+        "ServerSdkVersion": "A server SDK version you used when integrating your game server build with Amazon GameLift. For more information see [Integrate games with custom game servers](https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html) . By default Amazon GameLift sets this value to `4.0.2` .",
         "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
     "AWS::GameLift::Build.StorageLocation": {
       "attributes": {},
-      "description": "",
+      "description": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
       "properties": {
-        "Bucket": "",
-        "Key": "",
-        "ObjectVersion": "",
-        "RoleArn": ""
+        "Bucket": "An Amazon S3 bucket identifier. Thename of the S3 bucket.\n\n> Amazon GameLift doesn't support uploading from Amazon S3 buckets with names that contain a dot (.).",
+        "Key": "The name of the zip file that contains the build files or script files.",
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
