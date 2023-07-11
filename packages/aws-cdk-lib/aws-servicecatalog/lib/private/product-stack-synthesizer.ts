@@ -30,7 +30,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         cdk.Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
           ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
-      this.bucketDeployment = new BucketDeployment(parentStack, `${cdk.Names.uniqueId(this.boundStack)}-AssetsBucketDeployment`, {
+      this.bucketDeployment = (parentStack.node.findChild('AssetsBucketDeployment') as BucketDeployment) ?? new BucketDeployment(parentStack, `${cdk.Names.uniqueId(this.boundStack)}-AssetsBucketDeployment`, {
         sources: [Source.asset(assetPath)],
         destinationBucket: this.assetBucket,
         extract: false,
