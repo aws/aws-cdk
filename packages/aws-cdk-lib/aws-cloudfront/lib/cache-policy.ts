@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Stack, Token } from '../../core';
+import { Duration, Names, Resource, Stack, Token, withResolved } from '../../core';
 
 /**
  * Represents a Cache Policy
@@ -140,8 +140,15 @@ export class CachePolicy extends Resource implements ICachePolicy {
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
-    const defaultTtl = Math.max((props.defaultTtl ?? Duration.days(1)).toSeconds(), minTtl);
-    const maxTtl = Math.max((props.maxTtl ?? Duration.days(365)).toSeconds(), defaultTtl);
+    let defaultTtl = (props.defaultTtl ?? Duration.days(1)).toSeconds();
+    let maxTtl = (props.maxTtl ?? Duration.days(365)).toSeconds();
+
+    withResolved(defaultTtl, minTtl, () => {
+      defaultTtl = Math.max(defaultTtl, minTtl);
+    });
+    withResolved(maxTtl, defaultTtl, () => {
+      maxTtl = Math.max(maxTtl, defaultTtl);
+    });
 
     const resource = new CfnCachePolicy(this, 'Resource', {
       cachePolicyConfig: {

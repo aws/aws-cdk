@@ -55,6 +55,7 @@ const app = new App();
 
 new integ.IntegTest(app, 'EvaluateExpressionInteg', {
   testCases: [new TestStack(app, 'cdk-sfn-evaluate-expression-integ')],
+  diffAssets: true,
 });
 
 app.synth();
