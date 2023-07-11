@@ -744,14 +744,14 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 const dashboard = new cw.Dashboard(this, 'Dash', {
   defaultInterval: Duration.days(7),
   variables: [new cw.ValueDashboardVariable({
-    type: cw.VariableType.PROPERTY,
-    value: 'region',
-    inputType: cw.VariableInputType.RADIO,
     id: 'region',
+    type: cw.VariableType.PROPERTY,
     label: 'Region',
-    defaultValue: 'us-east-1',
-    visible: true,
+    inputType: cw.VariableInputType.RADIO,
+    value: 'region',
     values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+    defaultValue: cw.DefaultValue.of('us-east-1'),
+    visible: true,
   })],
 });
 ```
@@ -763,19 +763,20 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 const dashboard = new cw.Dashboard(this, 'Dash', {
   defaultInterval: Duration.days(7),
   variables: [new cw.ValueDashboardVariable({
-    type: cw.VariableType.PATTERN,
-    value: 'us-east-1',
-    inputType: cw.VariableInputType.INPUT,
     id: 'region2',
+    type: cw.VariableType.PATTERN,
     label: 'RegionPattern',
-    defaultValue: 'us-east-1',
+    inputType: cw.VariableInputType.INPUT,
+    value: 'us-east-1',
+    defaultValue: cw.DefaultValue.of('us-east-1'),
     visible: true,
   })],
 });
 ```
 
 The following example generates a Lambda function variable, with a radio button for each function. Functions are discovered by a metric query search.
-The `defaultValue` with `__FIRST` indicates that the  default value will be the first value returned from the search.
+The `values` with `cw.SearchValues.from('AWS/Lambda', ['FunctionName'], 'Duration', 'FunctionName')` indicates that the values will be populated from `FunctionName` values retrieved from the search expression `{AWS/Lambda,FunctionName} MetricName=\"Duration\"`.
+The `defaultValue` with `cw.DefaultValue.FIRST` indicates that the  default value will be the first value returned from the search.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
@@ -783,18 +784,16 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 const dashboard = new cw.Dashboard(this, 'Dash', {
   defaultInterval: Duration.days(7),
   variables: [new cw.SearchDashboardVariable({
-    defaultValue: '__FIRST',
     id: 'functionName',
+    type: cw.VariableType.PATTERN,
     label: 'Function',
     inputType: cw.VariableInputType.RADIO,
-    type: cw.VariableType.PATTERN,
     value: 'originalFuncNameInDashboard',
-    searchExpression: '{AWS/Lambda,FunctionName} MetricName=\"Duration\"',
-    populateFrom: 'FunctionName',
+    values: cw.SearchValues.from('AWS/Lambda', ['FunctionName'], 'Duration', 'FunctionName'),
+    defaultValue: cw.DefaultValue.FIRST,
     visible: true,
   })],
 });
 ```
 
-You can add a variable after object instantiation with the method
-`dashboard.addVariable()`.
+You can add a variable after object instantiation with the method `dashboard.addVariable()`.

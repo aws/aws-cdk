@@ -13,7 +13,7 @@ class DashboardVariablesIntegrationTest extends Stack {
         inputType: cloudwatch.VariableInputType.RADIO,
         id: 'region3',
         label: 'RegionPatternWithValues',
-        defaultValue: 'us-east-1',
+        defaultValue: cloudwatch.DefaultValue.of('us-east-1'),
         visible: true,
         values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
       })],
@@ -39,14 +39,13 @@ class DashboardVariablesIntegrationTest extends Stack {
 
     // The dashboard variable which changes BucketName property on the dashboard
     dashboard.addVariable(new cloudwatch.SearchDashboardVariable({
-      defaultValue: '__FIRST',
+      defaultValue: cloudwatch.DefaultValue.FIRST,
       id: 'BucketName',
       label: 'BucketName',
       inputType: cloudwatch.VariableInputType.SELECT,
       type: cloudwatch.VariableType.PROPERTY,
       value: 'BucketName',
-      searchExpression: '{AWS/S3,BucketName,StorageType} MetricName=\"BucketSizeBytes\"',
-      populateFrom: 'BucketName',
+      values: cloudwatch.SearchValues.from('AWS/S3', ['BucketName', 'StorageType'], 'BucketSizeBytes', 'BucketName'),
       visible: true,
     }));
 

@@ -37,6 +37,27 @@ export interface IVariable {
   toJson(): any;
 }
 
+/**
+ * Default value for use with {@link VariableInputType.RADIO} amd {@link VariableInputType.SELECT} dashboard variables
+ */
+export class DefaultValue {
+
+  /**
+   * A special value for use with {@link SearchDashboardVariable} to have the default value be the first value returned from search
+   */
+  public static FIRST = new DefaultValue('__FIRST');
+
+  /**
+   * Create a default value
+   * @param value the value to be used as default
+   */
+  public static of(value: any) {
+    return new DefaultValue(value);
+  }
+
+  private constructor(public readonly value: any) { }
+}
+
 export interface DashboardVariableOptions {
   /**
    * Type of the variable
@@ -70,7 +91,7 @@ export interface DashboardVariableOptions {
    *
    * @default - no default value is set
    */
-  readonly defaultValue?: any;
+  readonly defaultValue?: DefaultValue;
 
   /**
    * Whether the variable is visible
@@ -93,7 +114,7 @@ export abstract class DashboardVariable implements IVariable {
       type: this.baseOptions.type,
       inputType: this.baseOptions.inputType,
       id: this.baseOptions.id,
-      defaultValue: this.baseOptions.defaultValue,
+      defaultValue: this.baseOptions.defaultValue?.value,
       visible: this.baseOptions.visible,
       label: this.baseOptions.label,
     };
@@ -151,22 +172,40 @@ export class ValueDashboardVariable extends DashboardVariable {
 }
 
 /**
+ * A helper class to build the necessary search expression for populating values for use with {@link SearchDashboardVariable}
+ */
+export class SearchValues {
+  /**
+   * Create values from the dimension specified by populateFrom, that is used in the search expression built using namespace, dimensions and metricName, and populate value
+   */
+  public static from(namespace: string, dimensions: string[], metricName: string, populateFrom: string) {
+    if (dimensions.length === 0) {
+      throw new Error('Empty dimensions provided. Please specify one dimension at least');
+    }
+    if (!dimensions.includes(populateFrom)) {
+      throw new Error(`populateFrom (${populateFrom}) is not present in dimensions`);
+    }
+    const components = [namespace, ...dimensions];
+    return new SearchValues(`{${components.join(',')}} MetricName=\"${metricName}\"`, populateFrom);
+  }
+
+  /**
+   * Create a search expression for use
+   *
+   * @param expression search expression that specifies a namespace, dimension name(s) and a metric name. For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
+   * @param populateFrom dimension the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from. For example `InstanceId`
+   */
+  public constructor(public readonly expression: string, public readonly populateFrom: string) { }
+}
+
+/**
  * Options for {@link SearchDashboardVariable}
  */
 export interface SearchDashboardVariableOptions extends DashboardVariableOptions {
   /**
-   * A search expression that specifies a namespace, dimension name and a metric name.
-   *
-   * For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
+   * Values to populate {@link SearchDashboardVariable}
    */
-  readonly searchExpression: string;
-
-  /**
-   * The dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from.
-   *
-   * For example `InstanceId`
-   */
-  readonly populateFrom: string;
+  readonly values: SearchValues;
 }
 
 /**
@@ -188,8 +227,8 @@ export class SearchDashboardVariable extends DashboardVariable {
     const base = super.toJson();
     return {
       ...base,
-      search: this.options.searchExpression,
-      populateFrom: this.options.populateFrom,
+      search: this.options.values.expression,
+      populateFrom: this.options.values.populateFrom,
     };
   }
 }
