@@ -213,6 +213,16 @@ export interface CanaryProps {
    * @default false
    */
   readonly enableAutoDeleteLambdas?: boolean;
+
+  /**
+   * Lifecycle rules for the generated canary artifact bucket. Has no effect
+   * if a bucket is passed to `artifactsBucketLocation`. If you pass a bucket
+   * to `artifactsBucketLocation`, you can add lifecycle rules to the bucket
+   * itself.
+   *
+   * @default - no rules applied to the generated bucket.
+   */
+  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
 }
 
 /**
@@ -269,6 +279,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       enforceSSL: true,
+      lifecycleRules: props.artifactsBucketLifecycleRules,
     });
 
     this.role = props.role ?? this.createDefaultRole(props);

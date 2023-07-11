@@ -24,7 +24,6 @@ To illustrate how to use a canary, assume your application defines the following
 ```console
 % curl "https://api.example.com/user/books/topbook/"
 The Hitchhikers Guide to the Galaxy
-
 ```
 
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
@@ -81,7 +80,6 @@ The Canary code will be executed in a lambda function created by Synthetics on y
 
 To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
 
-
 ### Canary Schedule
 
 You can specify the schedule on which a canary runs by providing a
@@ -103,7 +101,6 @@ const schedule = synthetics.Schedule.cron({
 ```
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
-
 
 ### Canary DeleteLambdaResourcesOnCanaryDeletion
 
@@ -235,5 +232,26 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   evaluationPeriods: 2,
   threshold: 90,
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+});
+```
+
+### Artifacts
+
+You can pass an S3 bucket to store artifacts from canary runs. If you do not,
+one will be auto-generated when the canary is created. You may add
+[lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
+to the auto-generated bucket.
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  artifactsBucketLifecycleRules: [{
+    expiration: Duration.days(30),
+  }],
 });
 ```
