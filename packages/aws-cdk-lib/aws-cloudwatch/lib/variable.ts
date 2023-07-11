@@ -132,7 +132,6 @@ class SearchValues extends Values {
  * Default value for use in {@link DashboardVariableOptions}
  */
 export class DefaultValue {
-
   /**
    * A special value for use with search expressions to have the default value be the first value returned from search
    */
@@ -206,9 +205,8 @@ export interface DashboardVariableOptions {
  * Dashboard Variable
  */
 export class DashboardVariable implements IVariable {
-
   public constructor(private readonly options: DashboardVariableOptions) {
-    if (options.inputType != VariableInputType.INPUT && !options.values) {
+    if (options.inputType !== VariableInputType.INPUT && !options.values) {
       throw new Error(`Variable with inputType (${options.inputType}) requires values to be set`);
     }
     if (options.inputType == VariableInputType.INPUT && options.values) {
