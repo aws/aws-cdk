@@ -483,11 +483,18 @@ export class GraphqlApi extends GraphqlApiBase {
   public readonly modes: AuthorizationType[];
 
   /**
-   * the configured API key, if present
+   * the first configured API key, if present
    *
    * @default - no api key
    */
-  public readonly apiKey?: string | string[];
+  public readonly apiKey?: string;
+
+  /**
+   * the configured API keys, if present
+   *
+   * @default - no api keys
+   */
+  public readonly apiKeys?: CfnApiKey[];
 
   /**
    * the CloudWatch Log Group for this API
@@ -496,7 +503,6 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
-  private apiKeyResource?: CfnApiKey | CfnApiKey[];
   private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
@@ -544,7 +550,7 @@ export class GraphqlApi extends GraphqlApiBase {
       domainNameAssociation.addDependency(this.domainNameResource);
     }
 
-    const apiKeyResources = modes
+    this.apiKeys = modes
       .filter((mode) => mode.authorizationType === AuthorizationType.API_KEY)
       .map((mode) => {
         const config = mode.apiKeyConfig && mode.apiKeyConfig;
@@ -552,9 +558,7 @@ export class GraphqlApi extends GraphqlApiBase {
         apiKeyResource.addDependency(this.schemaResource);
         return apiKeyResource;
       });
-    this.apiKeyResource = apiKeyResources.length > 1 ? apiKeyResources : apiKeyResources[0];
-    const apiKeys = apiKeyResources.map(({ attrApiKey }) => attrApiKey);
-    this.apiKey = apiKeys.length > 1 ? apiKeys : apiKeys[0];
+    this.apiKey = this.apiKeys[0]?.attrApiKey;
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
       const config = modes.find((mode: AuthorizationMode) => {
