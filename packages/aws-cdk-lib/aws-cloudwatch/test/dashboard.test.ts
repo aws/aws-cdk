@@ -1,13 +1,16 @@
-import { Template, Annotations, Match } from '../../assertions';
-import { App, Duration, Stack } from '../../core';
+import {Annotations, Match, Template} from '../../assertions';
+import {App, Duration, Stack} from '../../core';
 import {
   Dashboard,
   GraphWidget,
-  PeriodOverride,
-  TextWidget,
   MathExpression,
+  PeriodOverride,
+  SearchDashboardVariable,
+  TextWidget,
   TextWidgetBackground,
-  SearchDashboardVariable, VariableInputType, VariableType, ValueDashboardVariable,
+  ValueDashboardVariable,
+  VariableInputType,
+  VariableType,
 } from '../lib';
 
 describe('Dashboard', () => {
@@ -381,7 +384,34 @@ describe('Dashboard', () => {
     hasVariables(resources[key].Properties, [
       { defaultValue: 'us-east-1', id: 'region3', inputType: 'radio', label: 'RegionRadio', property: 'region', type: 'property', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
     ]);
+  });
 
+  test('search dashboard variable fails if unsupported input inputType', () => {
+    expect(() => new SearchDashboardVariable({
+      defaultValue: '__FIRST',
+      id: 'InstanceId',
+      label: 'Instance',
+      inputType: VariableInputType.INPUT,
+      type: VariableType.PROPERTY,
+      value: 'InstanceId',
+      searchExpression: '{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"',
+      populateFrom: 'InstanceId',
+      visible: true,
+    })).toThrow(/Unsupported inputType INPUT. Please choose either SELECT or RADIO/);
+  });
+
+  test('value dashboard variable fails if no values provided for select or radio inputType', () => {
+    [VariableInputType.SELECT, VariableInputType.RADIO].forEach(inputType => {
+      expect(() => new ValueDashboardVariable({
+        inputType,
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: 'us-east-1',
+        visible: true,
+      })).toThrow(`Variable with input type ${inputType} requires values to be provided.`);
+    });
   });
 });
 

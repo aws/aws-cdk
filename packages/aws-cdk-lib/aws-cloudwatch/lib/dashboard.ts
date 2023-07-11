@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
-import { IVariable } from './variable';
+import { Variable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
 
@@ -87,7 +87,7 @@ export interface DashboardProps {
    *
    * @default - No variables
    */
-  readonly variables?: IVariable[];
+  readonly variables?: Variable[];
 }
 
 /**
@@ -111,7 +111,7 @@ export class Dashboard extends Resource {
 
   private readonly rows: IWidget[] = [];
 
-  private readonly variables: IVariable[] = [];
+  private readonly variables: Variable[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
@@ -193,7 +193,7 @@ export class Dashboard extends Resource {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html
    */
-  public addVariable(variable: IVariable) {
+  public addVariable(variable: Variable) {
     this.variables.push(variable);
   }
 }

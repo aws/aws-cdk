@@ -30,14 +30,14 @@ export enum VariableType {
 /**
  * A single dashboard variable
  */
-export interface IVariable {
+export interface Variable {
   /**
    * Return the variable JSON for use in the dashboard
    */
   toJson(): any;
 }
 
-export interface IDashboardVariable {
+export interface DashboardVariableOptions {
   /**
    * Type of the variable
    */
@@ -60,24 +60,30 @@ export interface IDashboardVariable {
 
   /**
    * Optional label in the toolbar
+   *
+   * @default - the variable's value
    */
   readonly label?: string;
 
   /**
    * Optional default value
+   *
+   * @default - no default value is set
    */
-  readonly defaultValue: any;
+  readonly defaultValue?: any;
 
   /**
    * Whether the variable is visible
+   *
+   * @default - true
    */
   readonly visible?: boolean;
 }
 
-export abstract class DashboardVariable implements IVariable {
-  private readonly baseProps: IDashboardVariable;
+export abstract class DashboardVariable implements Variable {
+  private readonly baseProps: DashboardVariableOptions;
 
-  protected constructor(props: IDashboardVariable) {
+  protected constructor(props: DashboardVariableOptions) {
     this.baseProps = props;
   }
 
@@ -94,76 +100,96 @@ export abstract class DashboardVariable implements IVariable {
   }
 }
 
-export interface IVariableValue {
+export interface VariableValue {
   /**
    * Optional label for the selected item
    *
-   * @default - value
+   * @default - the variable's value
    */
   readonly label?: string;
+
   /**
    * Value of the selected item
    */
   readonly value: string;
 }
 
-export interface IValueDashboardVariable extends IDashboardVariable {
+/**
+ * Options for {@link ValueDashboardVariable}
+ */
+export interface ValueDashboardVariableOptions extends DashboardVariableOptions {
   /**
-   * List of custom values for the variable
+   * List of custom values for the variable.
+   * It is required for variables of types {@link VariableInputType.RADIO} and {@link VariableInputType.SELECT}
    *
-   * @default - No values
+   * @default - no values
    */
-  readonly values?: IVariableValue[];
+  readonly values?: VariableValue[];
 }
 
 /**
- * The variable populated from the custom values
+ * A dashboard variable supporting all {@link VariableInputType}.
  */
 export class ValueDashboardVariable extends DashboardVariable {
-  private readonly props: IValueDashboardVariable;
+  private readonly options: ValueDashboardVariableOptions;
 
-  constructor(props: IValueDashboardVariable) {
-    super(props);
-    this.props = props;
+  constructor(options: ValueDashboardVariableOptions) {
+    super(options);
+    if (options.inputType != VariableInputType.INPUT && (options.values || []).length == 0) {
+      throw new Error(`Variable with input type ${options.inputType} requires values to be provided.`);
+    }
+    this.options = options;
   }
 
   toJson(): any {
     const base = super.toJson();
     return {
       ...base,
-      values: this.props.values ? this.props.values.map(value => ({ label: value.label, value: value.value })) : undefined,
+      values: this.options.values ? this.options.values.map(value => ({ label: value.label, value: value.value })) : undefined,
     };
   }
 }
 
 /**
- * The variable populated from the metric search
+ * Options for {@link SearchDashboardVariable}
  */
-export interface ISearchDashboardVariable extends IDashboardVariable {
+export interface SearchDashboardVariableOptions extends DashboardVariableOptions {
   /**
-   * Search expression
+   * A search expression that specifies a namespace, dimension name and a metric name.
+   *
+   * For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
    */
   readonly searchExpression: string;
+
   /**
-   * Optional dimension name from the search
+   * The dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from.
+   *
+   * For example `InstanceId`
    */
-  readonly populateFrom?: string;
+  readonly populateFrom: string;
 }
 
+/**
+ * A dashboard variable with inputType {@link VariableInputType.SELECT} or {@link VariableInputType.RADIO} that populates
+ * the list of choices from a specific dimension in the given search expression
+ */
 export class SearchDashboardVariable extends DashboardVariable {
-  private readonly props: ISearchDashboardVariable;
+  private readonly options: SearchDashboardVariableOptions;
 
-  constructor(props: ISearchDashboardVariable) {
-    super(props);
-    this.props = props;
+  constructor(options: SearchDashboardVariableOptions) {
+    super(options);
+    if (options.inputType === VariableInputType.INPUT) {
+      throw new Error('Unsupported inputType INPUT. Please choose either SELECT or RADIO');
+    }
+    this.options = options;
   }
 
   toJson(): any {
     const base = super.toJson();
     return {
       ...base,
-      search: this.props.searchExpression,
-      populateFrom: this.props.populateFrom,
+      search: this.options.searchExpression,
+      populateFrom: this.options.populateFrom,
     };
   }
 }
