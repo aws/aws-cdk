@@ -113,9 +113,10 @@ export interface DefaultStagingStackOptions {
   readonly autoDeleteStagingAssets?: boolean;
 
   /**
-   * The name to deploy the stack with. The prefix will be appended
-   * before the appId, which is required to be part of the stack name
-   * to ensure uniqueness.
+   * Specify a custom prefix to be used as the staging stack name and
+   * construct ID. The prefix will be appended before the appId, which
+   * is required to be part of the stack name and construct ID to
+   * ensure uniqueness.
    *
    * @default 'StagingStack'
    */
