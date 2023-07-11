@@ -775,7 +775,7 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 The following example generates a Lambda function variable, with a radio button for each function. Functions are discovered by a metric query search.
-The `defaultValue` with `__FIRST` indicates that the  default value will be the first value returned from the search.
+The `defaultValue` with `__FIRST` indicates that the default value will be the first value returned from the search.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
