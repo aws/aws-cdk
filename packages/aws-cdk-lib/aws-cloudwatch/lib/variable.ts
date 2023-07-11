@@ -52,26 +52,46 @@ export interface VariableValue {
 }
 
 /**
+ * Search components for use with {@link Values.fromSearchComponents}
+ */
+export interface SearchComponents {
+  /**
+   * The namespace to be used in the search expression
+   */
+  readonly namespace: string,
+
+  /**
+   * The list of dimensions to be used in the search expression
+   */
+  readonly dimensions: string[],
+
+  /**
+   * The metric name to be used in the search expression
+   */
+  readonly metricName: string,
+
+  /**
+   * The dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from
+   */
+  readonly populateFrom: string,
+}
+
+/**
  * A class for providing values for use with {@link VariableInputType.SELECT} and {@link VariableInputType.RADIO} dashboard variables
  */
 export abstract class Values {
   /**
    * Create values from the components of search expression
-   *
-   * @param namespace the namespace to be used in the search expression
-   * @param dimensions the list of dimensions to be used in the search expression
-   * @param metricName the metric name to be used in the search expression
-   * @param populateFrom the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from
    */
-  public static fromSearchComponents(namespace: string, dimensions: string[], metricName: string, populateFrom: string): Values {
-    if (dimensions.length === 0) {
+  public static fromSearchComponents(components: SearchComponents): Values {
+    if (components.dimensions.length === 0) {
       throw new Error('Empty dimensions provided. Please specify one dimension at least');
     }
-    if (!dimensions.includes(populateFrom)) {
-      throw new Error(`populateFrom (${populateFrom}) is not present in dimensions`);
+    if (!components.dimensions.includes(components.populateFrom)) {
+      throw new Error(`populateFrom (${components.populateFrom}) is not present in dimensions`);
     }
-    const components = [namespace, ...dimensions];
-    return new SearchValues(`{${components.join(',')}} MetricName=\"${metricName}\"`, populateFrom);
+    const metricSchema = [components.namespace, ...components.dimensions];
+    return Values.fromSearch(`{${metricSchema.join(',')}} MetricName=\"${components.metricName}\"`, components.populateFrom);
   }
 
   /**
@@ -141,11 +161,11 @@ export class DefaultValue {
    * Create a default value
    * @param value the value to be used as default
    */
-  public static of(value: any) {
+  public static value(value: any) {
     return new DefaultValue(value);
   }
 
-  private constructor(public readonly value: any) { }
+  private constructor(public readonly val: any) { }
 }
 
 /**
@@ -210,7 +230,7 @@ export class DashboardVariable implements IVariable {
       throw new Error(`Variable with inputType (${options.inputType}) requires values to be set`);
     }
     if (options.inputType == VariableInputType.INPUT && options.values) {
-      throw new Error('Unsupported inputType INPUT. Please choose either SELECT or RADIO');
+      throw new Error('inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove \'values\' from options.');
     }
   }
 
@@ -220,7 +240,7 @@ export class DashboardVariable implements IVariable {
       type: this.options.type,
       inputType: this.options.inputType,
       id: this.options.id,
-      defaultValue: this.options.defaultValue?.value,
+      defaultValue: this.options.defaultValue?.val,
       visible: this.options.visible,
       label: this.options.label,
       ...this.options.values?.toJson(),

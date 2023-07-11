@@ -251,7 +251,7 @@ describe('Dashboard', () => {
         inputType: VariableInputType.SELECT,
         id: 'region3',
         label: 'RegionPatternWithValues',
-        defaultValue: DefaultValue.of('us-east-1'),
+        defaultValue: DefaultValue.value('us-east-1'),
         visible: true,
         values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
@@ -277,7 +277,7 @@ describe('Dashboard', () => {
         inputType: VariableInputType.SELECT,
         id: 'region3',
         label: 'RegionPatternWithValues',
-        defaultValue: DefaultValue.of('us-east-1'),
+        defaultValue: DefaultValue.value('us-east-1'),
         visible: true,
         values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
@@ -289,7 +289,7 @@ describe('Dashboard', () => {
       inputType: VariableInputType.INPUT,
       id: 'region2',
       label: 'RegionPattern',
-      defaultValue: DefaultValue.of('us-east-1'),
+      defaultValue: DefaultValue.value('us-east-1'),
       visible: true,
     }));
 
@@ -317,7 +317,12 @@ describe('Dashboard', () => {
       inputType: VariableInputType.SELECT,
       type: VariableType.PROPERTY,
       value: 'InstanceId',
-      values: Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
+      values: Values.fromSearchComponents({
+        namespace: 'AWS/EC2',
+        dimensions: ['InstanceId'],
+        metricName: 'CPUUtilization',
+        populateFrom: 'InstanceId',
+      }),
       visible: true,
     }));
 
@@ -342,7 +347,7 @@ describe('Dashboard', () => {
       inputType: VariableInputType.INPUT,
       id: 'region2',
       label: 'RegionPattern',
-      defaultValue: DefaultValue.of('us-east-1'),
+      defaultValue: DefaultValue.value('us-east-1'),
       visible: true,
     }));
 
@@ -367,7 +372,7 @@ describe('Dashboard', () => {
       inputType: VariableInputType.RADIO,
       id: 'region3',
       label: 'RegionRadio',
-      defaultValue: DefaultValue.of('us-east-1'),
+      defaultValue: DefaultValue.value('us-east-1'),
       visible: true,
       values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
     }));
@@ -389,9 +394,14 @@ describe('Dashboard', () => {
       inputType: VariableInputType.INPUT,
       type: VariableType.PROPERTY,
       value: 'InstanceId',
-      values: Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
+      values: Values.fromSearchComponents({
+        namespace: 'AWS/EC2',
+        dimensions: ['InstanceId'],
+        metricName: 'CPUUtilization',
+        populateFrom: 'InstanceId',
+      }),
       visible: true,
-    })).toThrow(/Unsupported inputType INPUT. Please choose either SELECT or RADIO/);
+    })).toThrow(/inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove 'values' from options/);
   });
 
   test('dashboard variable fails if no values provided for select or radio inputType', () => {
@@ -402,20 +412,28 @@ describe('Dashboard', () => {
         value: 'us-east-1',
         id: 'region3',
         label: 'RegionPatternWithValues',
-        defaultValue: DefaultValue.of('us-east-1'),
+        defaultValue: DefaultValue.value('us-east-1'),
         visible: true,
       })).toThrow(`Variable with inputType (${inputType}) requires values to be set`);
     });
   });
 
   test('search values fail if empty dimensions', () => {
-    expect(() => Values.fromSearchComponents('AWS/EC2', [], 'CPUUtilization', 'InstanceId'))
-      .toThrow(/Empty dimensions provided. Please specify one dimension at least/);
+    expect(() => Values.fromSearchComponents({
+      namespace: 'AWS/EC2',
+      dimensions: [],
+      metricName: 'CPUUtilization',
+      populateFrom: 'InstanceId',
+    })).toThrow(/Empty dimensions provided. Please specify one dimension at least/);
   });
 
   test('search values fail if populateFrom is not present in dimensions', () => {
-    expect(() => Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'DontExist'))
-      .toThrow('populateFrom (DontExist) is not present in dimensions');
+    expect(() => Values.fromSearchComponents({
+      namespace: 'AWS/EC2',
+      dimensions: ['InstanceId'],
+      metricName: 'CPUUtilization',
+      populateFrom: 'DontExist',
+    })).toThrow('populateFrom (DontExist) is not present in dimensions');
   });
 });
 

@@ -750,13 +750,14 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
     inputType: cw.VariableInputType.RADIO,
     value: 'region',
     values: cw.Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
-    defaultValue: cw.DefaultValue.of('us-east-1'),
+    defaultValue: cw.DefaultValue.value('us-east-1'),
     visible: true,
   })],
 });
 ```
 
 This example shows how to change `region` everywhere, assuming the current dashboard is showing region `us-east-1` already, by using **pattern variable**
+
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
@@ -768,7 +769,7 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
     label: 'RegionPattern',
     inputType: cw.VariableInputType.INPUT,
     value: 'us-east-1',
-    defaultValue: cw.DefaultValue.of('us-east-1'),
+    defaultValue: cw.DefaultValue.value('us-east-1'),
     visible: true,
   })],
 });
@@ -776,7 +777,7 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 
 The following example generates a Lambda function variable, with a radio button for each function. Functions are discovered by a metric query search.
 The `values` with `cw.Values.fromSearchComponents` indicates that the values will be populated from `FunctionName` values retrieved from the search expression `{AWS/Lambda,FunctionName} MetricName=\"Duration\"`.
-The `defaultValue` with `cw.DefaultValue.FIRST` indicates that the  default value will be the first value returned from the search.
+The `defaultValue` with `cw.DefaultValue.FIRST` indicates that the default value will be the first value returned from the search.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
@@ -789,7 +790,13 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
     label: 'Function',
     inputType: cw.VariableInputType.RADIO,
     value: 'originalFuncNameInDashboard',
-    values: cw.Values.fromSearchComponents('AWS/Lambda', ['FunctionName'], 'Duration', 'FunctionName'), // equivalent to cw.Values.fromSearch('{AWS/Lambda,FunctionName} MetricName=\"Duration\"', 'FunctionName'),
+    // equivalent to cw.Values.fromSearch('{AWS/Lambda,FunctionName} MetricName=\"Duration\"', 'FunctionName')
+    values: cw.Values.fromSearchComponents({
+      namespace: 'AWS/Lambda',
+      dimensions: ['FunctionName'],
+      metricName: 'Duration',
+      populateFrom: 'FunctionName',
+    }),
     defaultValue: cw.DefaultValue.FIRST,
     visible: true,
   })],

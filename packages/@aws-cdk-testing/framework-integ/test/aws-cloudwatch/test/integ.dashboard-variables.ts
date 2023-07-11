@@ -13,7 +13,7 @@ class DashboardVariablesIntegrationTest extends Stack {
         inputType: cloudwatch.VariableInputType.RADIO,
         id: 'region3',
         label: 'RegionPatternWithValues',
-        defaultValue: cloudwatch.DefaultValue.of('us-east-1'),
+        defaultValue: cloudwatch.DefaultValue.value('us-east-1'),
         visible: true,
         values: cloudwatch.Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
@@ -45,7 +45,12 @@ class DashboardVariablesIntegrationTest extends Stack {
       inputType: cloudwatch.VariableInputType.SELECT,
       type: cloudwatch.VariableType.PROPERTY,
       value: 'BucketName',
-      values: cloudwatch.Values.fromSearchComponents('AWS/S3', ['BucketName', 'StorageType'], 'BucketSizeBytes', 'BucketName'),
+      values: cloudwatch.Values.fromSearchComponents({
+        namespace: 'AWS/S3',
+        dimensions: ['BucketName', 'StorageType'],
+        metricName: 'BucketSizeBytes',
+        populateFrom: 'BucketName',
+      }),
       visible: true,
     }));
 
