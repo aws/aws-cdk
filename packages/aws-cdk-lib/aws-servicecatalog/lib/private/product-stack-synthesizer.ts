@@ -14,7 +14,7 @@ export interface ProductStackSynthesizerProps {
   /**
    * The bucket used to store assets and enable ProductStack asset support.
    *
-   * @default - No ProductStack asset suppor
+   * @default - No bucket provided and assets will not be supported
    */
   readonly assetBucket?: IBucket;
 
