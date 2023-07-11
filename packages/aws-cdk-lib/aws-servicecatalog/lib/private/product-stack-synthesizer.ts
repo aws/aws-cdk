@@ -4,16 +4,32 @@ import * as cdk from '../../../core';
 import { ProductStack } from '../product-stack';
 
 /**
+ * Product stack synthesizer props.
+ */
+export interface ProductStackSynthesizerProps {
+  /**
+   * The bucket used to store assets and enable ProductStack asset support.
+   *
+   * @default - No ProductStack asset suppor
+   */
+  readonly assetBucket?: IBucket;
+}
+
+/**
  * Deployment environment for an AWS Service Catalog product stack.
  *
  * Interoperates with the StackSynthesizer of the parent stack.
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
+  private parentStack: cdk.Stack;
+  private assetBucket?: IBucket;
   private bucketDeployment?: BucketDeployment;
   private parentAssetBucket?: IBucket;
 
-  constructor(private readonly parentDeployment: cdk.IStackSynthesizer, private readonly assetBucket?: IBucket) {
+  constructor(props: ProductStackSynthesizerProps = {}) {
     super();
+    this.parentStack = (this.boundStack as ProductStack)._getParentStack();
+    this.assetBucket = props.assetBucket;
   }
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
@@ -21,7 +37,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new Error('An Asset Bucket must be provided to use Assets');
     }
 
-    const location = this.parentDeployment.addFileAsset(asset);
+    const location = this.parentStack.synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
       this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
     }
@@ -29,12 +45,11 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
     if (!this.bucketDeployment) {
-      const parentStack = (this.boundStack as ProductStack)._getParentStack();
       if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
-        cdk.Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
+        cdk.Annotations.of(this.parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
           ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
-      this.bucketDeployment = new BucketDeployment(parentStack, 'AssetsBucketDeployment', {
+      this.bucketDeployment = new BucketDeployment(this.parentStack, 'AssetsBucketDeployment', {
         sources: [source],
         destinationBucket: this.assetBucket,
         extract: false,

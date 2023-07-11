@@ -37,7 +37,7 @@ export class ProductStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     const parentStack = findParentStack(scope);
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer(parentStack.synthesizer, props.assetBucket),
+      synthesizer: new ProductStackSynthesizer({ assetBucket: props.assetBucket }),
     });
 
     this._parentStack = parentStack;
