@@ -19,14 +19,14 @@ export interface ProductStackSynthesizerProps {
   readonly assetBucket?: IBucket;
 
   /**
-   * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket
+   * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket.
    *
    * @default - No encryption is used
    */
   readonly serverSideEncryption? : ServerSideEncryption;
 
   /**
-   * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets
+   * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets.
    *
    * @default - No KMS KeyId and SSE_KMS encryption cannot be used
    */
