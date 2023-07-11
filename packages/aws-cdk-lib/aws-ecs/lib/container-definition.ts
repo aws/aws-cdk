@@ -707,16 +707,18 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
-   * Set HostPort to 0 When netowork mode is Brdige
+   * This method sets the host port to 0 if the network mode is Bridge and neither
+   * the host port nor the container port range is already set.
    */
   private addHostPortIfNeeded(pm: PortMapping) :PortMapping {
-    const newPM = {
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE || pm.hostPort !== undefined || pm.containerPortRange !== undefined) {
+      return pm;
+    }
+
+    return {
       ...pm,
+      hostPort: 0,
     };
-    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) return newPM;
-    if (pm.hostPort !== undefined) return newPM;
-    newPM.hostPort = 0;
-    return newPM;
   }
 
   /**
@@ -750,6 +752,11 @@ export class ContainerDefinition extends Construct {
     if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       return 0;
     }
+
+    if (defaultPortMapping.containerPort === undefined) {
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+    }
+
     return defaultPortMapping.containerPort;
   }
 
@@ -761,6 +768,11 @@ export class ContainerDefinition extends Construct {
       throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
+
+    if (defaultPortMapping.containerPort === undefined) {
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+    }
+
     return defaultPortMapping.containerPort;
   }
 
@@ -1073,7 +1085,21 @@ export interface PortMapping {
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    */
-  readonly containerPort: number;
+  readonly containerPort?: number;
+
+  /**
+   * The port number range on the container that's bound to the dynamically mapped host port range.
+   *
+   * The following rules apply when you specify a `containerPortRange`:
+   *
+   * - You must use either the `bridge` network mode or the `awsvpc` network mode.
+   * - The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the `ecs-init` package
+   * - You can specify a maximum of 100 port ranges per container.
+   * - A port can only be included in one port mapping per container.
+   * - You cannot specify overlapping port ranges.
+   * - The first port in the range must be less than last port in the range.
+   */
+  readonly containerPortRange?: string;
 
   /**
    * The port number on the container instance to reserve for your container.
@@ -1149,6 +1175,20 @@ export class PortMap {
     if (!this.isValidPorts()) {
       const pm = this.portmapping;
       throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.networkmode}`);
+    }
+
+    if (this.portmapping.containerPort === undefined && this.portmapping.containerPortRange === undefined) {
+      throw new Error('Either "containerPort" or "containerPortRange" must be set.');
+    }
+
+    if (this.portmapping.containerPortRange !== undefined) {
+      if (this.portmapping.hostPort !== undefined || this.portmapping.containerPort !== undefined) {
+        throw new Error('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+      }
+
+      if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
+        throw new Error('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+      }
     }
   }
 
@@ -1272,6 +1312,7 @@ export class AppProtocol {
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
     containerPort: pm.containerPort,
+    containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
     appProtocol: pm.appProtocol?.value,

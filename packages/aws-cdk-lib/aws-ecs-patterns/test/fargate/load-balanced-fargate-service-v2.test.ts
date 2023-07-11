@@ -837,4 +837,27 @@ describe('When Network Load Balancer', () => {
       },
     });
   });
+
+  test('Fargate multinetworkloadbalanced construct errors when container port range is set for essential container', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('MainContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      portMappings: [{
+        containerPortRange: '8080-8081',
+      }],
+    });
+
+    // THEN
+    expect(() => {
+      new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+    }).toThrow('The first port mapping added to the essential container must expose a single port');
+  });
 });

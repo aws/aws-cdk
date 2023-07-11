@@ -50,6 +50,90 @@ describe('container definition', () => {
         }).toThrow();
       });
 
+      test('throws when neither PortMapping.containerPort nor PortMapping.containerPortRange is set', () => {
+        // GIVEN
+        const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {});
+
+        // THEN
+        expect(() => portMap.validate()).toThrow('Either "containerPort" or "containerPortRange" must be set.');
+      });
+
+      test('throws when PortMapping.containerPortRange is used along with PortMapping.containerPort', () => {
+        // GIVEN
+        const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+          containerPort: 8080,
+          containerPortRange: '8080-8081',
+        });
+
+        // THEN
+        expect(() => portMap.validate()).toThrow('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+      });
+
+      test('throws when PortMapping.containerPortRange is used along with PortMapping.hostPort', () => {
+        // GIVEN
+        const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+          hostPort: 8080,
+          containerPortRange: '8080-8081',
+        });
+
+        // THEN
+        expect(() => portMap.validate()).toThrow('Cannot set "hostPort" or "containerPort" while using the port range for the container.');
+      });
+
+      describe('throws when PortMapping.containerPortRange is used with an unsupported network mode', () => {
+        test('when network mode is Host', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.HOST, {
+            containerPortRange: '8080-8081',
+          });
+
+          // THEN
+          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+        });
+
+        test('when network mode is NAT', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.NAT, {
+            containerPortRange: '8080-8081',
+          });
+
+          // THEN
+          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+        });
+
+        test('when network mode is None', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.NONE, {
+            containerPortRange: '8080-8081',
+          });
+
+          // THEN
+          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+        });
+      });
+
+      describe('ContainerPortRange can be used with AwsVpc or Bridge network mode', () => {
+        test('when network mode is AwsVpc', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.AWS_VPC, {
+            containerPortRange: '8080-8081',
+          });
+
+          // THEN
+          expect(() => portMap.validate()).not.toThrow();
+        });
+
+        test('when network mode is Bridge', () => {
+          // GIVEN
+          const portMap = new ecs.PortMap(ecs.NetworkMode.BRIDGE, {
+            containerPortRange: '8080-8081',
+          });
+
+          // THEN
+          expect(() => portMap.validate()).not.toThrow();
+        });
+      });
+
       describe('ContainerPort should not eqaul Hostport', () => {
         test('when AWS_VPC Networkmode', () => {
           // GIVEN
@@ -661,7 +745,7 @@ describe('container definition', () => {
     });
 
     describe('With network mode Bridge', () => {
-      test('when Host port is empty ', () => {
+      test('host post is forcefully set to 0 when both it and containerPortRange are not set', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -671,16 +755,16 @@ describe('container definition', () => {
         const container = taskDefinition.addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
+          portMappings: [{
+            containerPort: 8080,
+          }],
         });
 
-        container.addPortMappings({
-          containerPort: 8080,
-        });
-
-        // THEN no exception raises
+        // THEN
+        expect(container.portMappings[0].hostPort).toEqual(0);
       });
 
-      test('when Host port is not empty ', () => {
+      test('host post is left unchanged when it is set already', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -690,14 +774,33 @@ describe('container definition', () => {
         const container = taskDefinition.addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
+          portMappings: [{
+            containerPort: 8080,
+            hostPort: 8084,
+          }],
         });
 
-        container.addPortMappings({
-          containerPort: 8080,
-          hostPort: 8084,
+        // THEN
+        expect(container.portMappings[0].hostPort).toEqual(8084);
+      });
+
+      test('host post is left undefined when containerPortRange is set', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
-        // THEN no exception raises
+        const container = taskDefinition.addContainer('Container', {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          memoryLimitMiB: 2048,
+          portMappings: [{
+            containerPortRange: '8080-8081',
+          }],
+        });
+
+        // THEN
+        expect(container.portMappings[0].hostPort).toBeUndefined();
       });
 
       test('allows adding links', () => {
@@ -788,6 +891,25 @@ describe('container definition', () => {
         expect(actual).toEqual(expected);
       }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
     });
+
+    test('throws when calling containerPort with the first PortMapping not exposing a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+
+      const container = taskDefinition.addContainer('MyContainer', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        memoryLimitMiB: 2048,
+        portMappings: [{
+          containerPortRange: '8080-8081',
+        }],
+      });
+
+      // THEN
+      expect(() => container.containerPort).toThrow('The first port mapping of the container MyContainer must expose a single port.');
+    });
   });
 
   describe('Ingress Port', () => {
@@ -834,6 +956,25 @@ describe('container definition', () => {
           expect(actual).toEqual(expected);
         }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
       });
+    });
+
+    test('throws when calling ingressPort with the first PortMapping not exposing a single port', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+
+      const container = taskDefinition.addContainer('MyContainer', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        memoryLimitMiB: 2048,
+        portMappings: [{
+          containerPortRange: '8080-8081',
+        }],
+      });
+
+      // THEN
+      expect(() => container.ingressPort).toThrow('The first port mapping of the container MyContainer must expose a single port.');
     });
 
     describe('With network mode Host ', () => {
