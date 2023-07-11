@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { CfnBucket, IBucket } from '../../../aws-s3';
-import { BucketDeployment, Source } from '../../../aws-s3-deployment';
+import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { ProductStack } from '../product-stack';
 
@@ -11,16 +11,26 @@ import { ProductStack } from '../product-stack';
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private readonly assetBucket?: IBucket;
+  private readonly serverSideEncryption? : ServerSideEncryption;
+  private readonly serverSideEncryptionAwsKmsKeyId? : string;
   private bucketDeployment?: BucketDeployment;
 
-  constructor(assetBucket?: IBucket) {
+  constructor(assetBucket?: IBucket, serverSideEncryption? : ServerSideEncryption, serverSideEncryptionAwsKmsKeyId? : string) {
     super();
     this.assetBucket = assetBucket;
+    this.serverSideEncryption = serverSideEncryption;
+    this.serverSideEncryptionAwsKmsKeyId = serverSideEncryptionAwsKmsKeyId;
   }
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
     if (!this.assetBucket) {
       throw new Error('An Asset Bucket must be provided to use Assets');
+    }
+    if (this.serverSideEncryption == ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
+      throw new Error('A KMS Key must be provided to use SSE_KMS');
+    }
+    if (this.serverSideEncryption != ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
+      throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
     const outdir = cdk.App.of(this.boundStack)?.outdir ?? 'cdk.out';
     const assetPath = `${outdir}/${asset.fileName}`;
@@ -35,14 +45,14 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         destinationBucket: this.assetBucket,
         extract: false,
         prune: false,
+        serverSideEncryption: this.serverSideEncryption,
+        serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
       });
     } else {
       this.bucketDeployment.addSource(Source.asset(assetPath));
     }
 
-    const physicalName = this.physicalNameOfBucket(this.assetBucket);
-
-    const bucketName = physicalName;
+    const bucketName = this.physicalNameOfBucket(this.assetBucket);;
     if (!asset.fileName) {
       throw new Error('Asset file name is undefined');
     }
