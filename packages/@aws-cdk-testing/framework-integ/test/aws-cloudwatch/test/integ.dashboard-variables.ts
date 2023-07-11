@@ -7,7 +7,7 @@ class DashboardVariablesIntegrationTest extends Stack {
     super(scope, id, props);
 
     const dashboard = new cloudwatch.Dashboard(this, 'Dash', {
-      variables: [new cloudwatch.ValueDashboardVariable({
+      variables: [new cloudwatch.DashboardVariable({
         type: cloudwatch.VariableType.PATTERN,
         value: 'RegionPlaceholder',
         inputType: cloudwatch.VariableInputType.RADIO,
@@ -15,7 +15,7 @@ class DashboardVariablesIntegrationTest extends Stack {
         label: 'RegionPatternWithValues',
         defaultValue: cloudwatch.DefaultValue.of('us-east-1'),
         visible: true,
-        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+        values: cloudwatch.Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
     });
 
@@ -38,14 +38,14 @@ class DashboardVariablesIntegrationTest extends Stack {
     });
 
     // The dashboard variable which changes BucketName property on the dashboard
-    dashboard.addVariable(new cloudwatch.SearchDashboardVariable({
+    dashboard.addVariable(new cloudwatch.DashboardVariable({
       defaultValue: cloudwatch.DefaultValue.FIRST,
       id: 'BucketName',
       label: 'BucketName',
       inputType: cloudwatch.VariableInputType.SELECT,
       type: cloudwatch.VariableType.PROPERTY,
       value: 'BucketName',
-      values: cloudwatch.SearchValues.from('AWS/S3', ['BucketName', 'StorageType'], 'BucketSizeBytes', 'BucketName'),
+      values: cloudwatch.Values.fromSearchComponents('AWS/S3', ['BucketName', 'StorageType'], 'BucketSizeBytes', 'BucketName'),
       visible: true,
     }));
 

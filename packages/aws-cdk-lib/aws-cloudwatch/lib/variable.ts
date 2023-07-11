@@ -37,13 +37,104 @@ export interface IVariable {
   toJson(): any;
 }
 
+export interface VariableValue {
+  /**
+   * Optional label for the selected item
+   *
+   * @default - the variable's value
+   */
+  readonly label?: string;
+
+  /**
+   * Value of the selected item
+   */
+  readonly value: string;
+}
+
 /**
- * Default value for use with dashboard variables
+ * A class for providing values for use with {@link VariableInputType.SELECT} and {@link VariableInputType.RADIO} dashboard variables
+ */
+export abstract class Values {
+  /**
+   * Create values from the components of search expression
+   *
+   * @param namespace the namespace to be used in the search expression
+   * @param dimensions the list of dimensions to be used in the search expression
+   * @param metricName the metric name to be used in the search expression
+   * @param populateFrom the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from
+   */
+  public static fromSearchComponents(namespace: string, dimensions: string[], metricName: string, populateFrom: string): Values {
+    if (dimensions.length === 0) {
+      throw new Error('Empty dimensions provided. Please specify one dimension at least');
+    }
+    if (!dimensions.includes(populateFrom)) {
+      throw new Error(`populateFrom (${populateFrom}) is not present in dimensions`);
+    }
+    const components = [namespace, ...dimensions];
+    return new SearchValues(`{${components.join(',')}} MetricName=\"${metricName}\"`, populateFrom);
+  }
+
+  /**
+   * Create values from a search expression
+   *
+   * @param expression search expression that specifies a namespace, dimension name(s) and a metric name. For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
+   * @param populateFrom dimension the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from. For example `InstanceId`
+   */
+  public static fromSearch(expression: string, populateFrom: string): Values {
+    return new SearchValues(expression, populateFrom);
+  }
+
+  /**
+   * Create values from an array of possible variable values
+   */
+  public static fromValues(...values: VariableValue[]): Values {
+    if (values.length == 0) {
+      throw new Error('Empty values is not allowed');
+    }
+    return new StaticValues(values);
+  }
+
+  public abstract toJson(): any;
+}
+
+class StaticValues extends Values {
+  constructor(private readonly values: VariableValue[]) {
+    super();
+  }
+
+  toJson(): any {
+    return {
+      values: this.values.map(value => ({ label: value.label, value: value.value })),
+    };
+  }
+}
+
+class SearchValues extends Values {
+  /**
+   * Create a search expression for use
+   *
+   * @param expression search expression that specifies a namespace, dimension name(s) and a metric name. For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
+   * @param populateFrom dimension the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from. For example `InstanceId`
+   */
+  public constructor(public readonly expression: string, public readonly populateFrom: string) {
+    super();
+  }
+
+  toJson(): any {
+    return {
+      search: this.expression,
+      populateFrom: this.populateFrom,
+    };
+  }
+}
+
+/**
+ * Default value for use in {@link DashboardVariableOptions}
  */
 export class DefaultValue {
 
   /**
-   * A special value for use with {@link SearchDashboardVariable} to have the default value be the first value returned from search
+   * A special value for use with search expressions to have the default value be the first value returned from search
    */
   public static readonly FIRST = new DefaultValue('__FIRST');
 
@@ -58,6 +149,9 @@ export class DefaultValue {
   private constructor(public readonly value: any) { }
 }
 
+/**
+ * Options for {@link DashboardVariable}
+ */
 export interface DashboardVariableOptions {
   /**
    * Type of the variable
@@ -87,6 +181,13 @@ export interface DashboardVariableOptions {
   readonly label?: string;
 
   /**
+   * Optional values (required for {@link VariableInputType.RADIO} and {@link VariableInputType.SELECT} dashboard variables).
+   *
+   * @default - no values
+   */
+  readonly values?: Values;
+
+  /**
    * Optional default value
    *
    * @default - no default value is set
@@ -101,134 +202,30 @@ export interface DashboardVariableOptions {
   readonly visible?: boolean;
 }
 
-export abstract class DashboardVariable implements IVariable {
-  private readonly baseOptions: DashboardVariableOptions;
-
-  protected constructor(options: DashboardVariableOptions) {
-    this.baseOptions = options;
-  }
-
-  toJson(): any {
-    return {
-      [this.baseOptions.type]: this.baseOptions.value,
-      type: this.baseOptions.type,
-      inputType: this.baseOptions.inputType,
-      id: this.baseOptions.id,
-      defaultValue: this.baseOptions.defaultValue?.value,
-      visible: this.baseOptions.visible,
-      label: this.baseOptions.label,
-    };
-  }
-}
-
-export interface VariableValue {
-  /**
-   * Optional label for the selected item
-   *
-   * @default - the variable's value
-   */
-  readonly label?: string;
-
-  /**
-   * Value of the selected item
-   */
-  readonly value: string;
-}
-
 /**
- * Options for {@link ValueDashboardVariable}
+ * Dashboard Variable
  */
-export interface ValueDashboardVariableOptions extends DashboardVariableOptions {
-  /**
-   * List of custom values for the variable.
-   * It is required for variables of types {@link VariableInputType.RADIO} and {@link VariableInputType.SELECT}
-   *
-   * @default - no values
-   */
-  readonly values?: VariableValue[];
-}
+export class DashboardVariable implements IVariable {
 
-/**
- * A dashboard variable supporting all {@link VariableInputType}.
- */
-export class ValueDashboardVariable extends DashboardVariable {
-  private readonly options: ValueDashboardVariableOptions;
-
-  constructor(options: ValueDashboardVariableOptions) {
-    super(options);
-    if (options.inputType != VariableInputType.INPUT && (options.values || []).length == 0) {
-      throw new Error(`Variable with input type ${options.inputType} requires values to be provided.`);
+  public constructor(private readonly options: DashboardVariableOptions) {
+    if (options.inputType != VariableInputType.INPUT && !options.values) {
+      throw new Error(`Variable with inputType (${options.inputType}) requires values to be set`);
     }
-    this.options = options;
-  }
-
-  toJson(): any {
-    const base = super.toJson();
-    return {
-      ...base,
-      values: this.options.values ? this.options.values.map(value => ({ label: value.label, value: value.value })) : undefined,
-    };
-  }
-}
-
-/**
- * A helper class to build the necessary search expression for populating values for use with {@link SearchDashboardVariable}
- */
-export class SearchValues {
-  /**
-   * Create values from the dimension specified by populateFrom, that is used in the search expression built using namespace, dimensions and metricName, and populate value
-   */
-  public static from(namespace: string, dimensions: string[], metricName: string, populateFrom: string) {
-    if (dimensions.length === 0) {
-      throw new Error('Empty dimensions provided. Please specify one dimension at least');
-    }
-    if (!dimensions.includes(populateFrom)) {
-      throw new Error(`populateFrom (${populateFrom}) is not present in dimensions`);
-    }
-    const components = [namespace, ...dimensions];
-    return new SearchValues(`{${components.join(',')}} MetricName=\"${metricName}\"`, populateFrom);
-  }
-
-  /**
-   * Create a search expression for use
-   *
-   * @param expression search expression that specifies a namespace, dimension name(s) and a metric name. For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
-   * @param populateFrom dimension the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from. For example `InstanceId`
-   */
-  public constructor(public readonly expression: string, public readonly populateFrom: string) { }
-}
-
-/**
- * Options for {@link SearchDashboardVariable}
- */
-export interface SearchDashboardVariableOptions extends DashboardVariableOptions {
-  /**
-   * Values to populate {@link SearchDashboardVariable}
-   */
-  readonly values: SearchValues;
-}
-
-/**
- * A dashboard variable with inputType {@link VariableInputType.SELECT} or {@link VariableInputType.RADIO} that populates
- * the list of choices from a specific dimension in the given search expression
- */
-export class SearchDashboardVariable extends DashboardVariable {
-  private readonly options: SearchDashboardVariableOptions;
-
-  constructor(options: SearchDashboardVariableOptions) {
-    super(options);
-    if (options.inputType === VariableInputType.INPUT) {
+    if (options.inputType == VariableInputType.INPUT && options.values) {
       throw new Error('Unsupported inputType INPUT. Please choose either SELECT or RADIO');
     }
-    this.options = options;
   }
 
   toJson(): any {
-    const base = super.toJson();
     return {
-      ...base,
-      search: this.options.values.expression,
-      populateFrom: this.options.values.populateFrom,
+      [this.options.type]: this.options.value,
+      type: this.options.type,
+      inputType: this.options.inputType,
+      id: this.options.id,
+      defaultValue: this.options.defaultValue?.value,
+      visible: this.options.visible,
+      label: this.options.label,
+      ...this.options.values?.toJson(),
     };
   }
 }

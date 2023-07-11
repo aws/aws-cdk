@@ -1,14 +1,12 @@
 import { Annotations, Match, Template } from '../../assertions';
 import { App, Duration, Stack } from '../../core';
 import {
-  Dashboard, DefaultValue,
+  Dashboard, DashboardVariable, DefaultValue,
   GraphWidget,
   MathExpression,
   PeriodOverride,
-  SearchDashboardVariable, SearchValues,
   TextWidget,
-  TextWidgetBackground,
-  ValueDashboardVariable,
+  TextWidgetBackground, Values,
   VariableInputType,
   VariableType,
 } from '../lib';
@@ -247,7 +245,7 @@ describe('Dashboard', () => {
     const stack = new Stack();
     // WHEN
     new Dashboard(stack, 'Dashboard', {
-      variables: [new ValueDashboardVariable({
+      variables: [new DashboardVariable({
         type: VariableType.PATTERN,
         value: 'us-east-1',
         inputType: VariableInputType.SELECT,
@@ -255,7 +253,7 @@ describe('Dashboard', () => {
         label: 'RegionPatternWithValues',
         defaultValue: DefaultValue.of('us-east-1'),
         visible: true,
-        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+        values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
     });
 
@@ -273,7 +271,7 @@ describe('Dashboard', () => {
     // GIVEN
     const stack = new Stack();
     const dashboard = new Dashboard(stack, 'Dashboard', {
-      variables: [new ValueDashboardVariable({
+      variables: [new DashboardVariable({
         type: VariableType.PATTERN,
         value: 'us-east-1',
         inputType: VariableInputType.SELECT,
@@ -281,11 +279,11 @@ describe('Dashboard', () => {
         label: 'RegionPatternWithValues',
         defaultValue: DefaultValue.of('us-east-1'),
         visible: true,
-        values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+        values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
       })],
     });
 
-    dashboard.addVariable(new ValueDashboardVariable({
+    dashboard.addVariable(new DashboardVariable({
       type: VariableType.PATTERN,
       value: 'us-east-1',
       inputType: VariableInputType.INPUT,
@@ -312,14 +310,14 @@ describe('Dashboard', () => {
     const dashboard = new Dashboard(stack, 'Dashboard');
 
     // WHEN
-    dashboard.addVariable(new SearchDashboardVariable({
+    dashboard.addVariable(new DashboardVariable({
       defaultValue: DefaultValue.FIRST,
       id: 'InstanceId',
       label: 'Instance',
       inputType: VariableInputType.SELECT,
       type: VariableType.PROPERTY,
       value: 'InstanceId',
-      values: SearchValues.from('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
+      values: Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
       visible: true,
     }));
 
@@ -330,7 +328,6 @@ describe('Dashboard', () => {
     hasVariables(resources[key].Properties, [
       { defaultValue: '__FIRST', id: 'InstanceId', inputType: 'select', label: 'Instance', populateFrom: 'InstanceId', property: 'InstanceId', search: '{AWS/EC2,InstanceId} MetricName="CPUUtilization"', type: 'property', visible: true },
     ]);
-
   });
 
   test('dashboard has input/pattern value variable', () => {
@@ -339,7 +336,7 @@ describe('Dashboard', () => {
     const dashboard = new Dashboard(stack, 'Dashboard');
 
     // WHEN
-    dashboard.addVariable(new ValueDashboardVariable({
+    dashboard.addVariable(new DashboardVariable({
       type: VariableType.PATTERN,
       value: 'us-east-1',
       inputType: VariableInputType.INPUT,
@@ -356,7 +353,6 @@ describe('Dashboard', () => {
     hasVariables(resources[key].Properties, [
       { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
     ]);
-
   });
 
   test('dashboard has property/radio value variable', () => {
@@ -365,7 +361,7 @@ describe('Dashboard', () => {
     const dashboard = new Dashboard(stack, 'Dashboard');
 
     // WHEN
-    dashboard.addVariable(new ValueDashboardVariable({
+    dashboard.addVariable(new DashboardVariable({
       type: VariableType.PROPERTY,
       value: 'region',
       inputType: VariableInputType.RADIO,
@@ -373,7 +369,7 @@ describe('Dashboard', () => {
       label: 'RegionRadio',
       defaultValue: DefaultValue.of('us-east-1'),
       visible: true,
-      values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }],
+      values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
     }));
 
     // THEN
@@ -385,32 +381,22 @@ describe('Dashboard', () => {
     ]);
   });
 
-  test('search dashboard variable fails if unsupported input inputType', () => {
-    expect(() => new SearchDashboardVariable({
+  test('dashboard variable fails if unsupported input inputType', () => {
+    expect(() => new DashboardVariable({
       defaultValue: DefaultValue.FIRST,
       id: 'InstanceId',
       label: 'Instance',
       inputType: VariableInputType.INPUT,
       type: VariableType.PROPERTY,
       value: 'InstanceId',
-      values: SearchValues.from('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
+      values: Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'InstanceId'),
       visible: true,
     })).toThrow(/Unsupported inputType INPUT. Please choose either SELECT or RADIO/);
   });
 
-  test('search values fail if empty dimensions', () => {
-    expect(() => SearchValues.from('AWS/EC2', [], 'CPUUtilization', 'InstanceId'))
-      .toThrow(/Empty dimensions provided. Please specify one dimension at least/);
-  });
-
-  test('search values fail if populateFrom is not present in dimensions', () => {
-    expect(() => SearchValues.from('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'DontExist'))
-      .toThrow('populateFrom (DontExist) is not present in dimensions');
-  });
-
-  test('value dashboard variable fails if no values provided for select or radio inputType', () => {
+  test('dashboard variable fails if no values provided for select or radio inputType', () => {
     [VariableInputType.SELECT, VariableInputType.RADIO].forEach(inputType => {
-      expect(() => new ValueDashboardVariable({
+      expect(() => new DashboardVariable({
         inputType,
         type: VariableType.PATTERN,
         value: 'us-east-1',
@@ -418,8 +404,18 @@ describe('Dashboard', () => {
         label: 'RegionPatternWithValues',
         defaultValue: DefaultValue.of('us-east-1'),
         visible: true,
-      })).toThrow(`Variable with input type ${inputType} requires values to be provided.`);
+      })).toThrow(`Variable with inputType (${inputType}) requires values to be set`);
     });
+  });
+
+  test('search values fail if empty dimensions', () => {
+    expect(() => Values.fromSearchComponents('AWS/EC2', [], 'CPUUtilization', 'InstanceId'))
+      .toThrow(/Empty dimensions provided. Please specify one dimension at least/);
+  });
+
+  test('search values fail if populateFrom is not present in dimensions', () => {
+    expect(() => Values.fromSearchComponents('AWS/EC2', ['InstanceId'], 'CPUUtilization', 'DontExist'))
+      .toThrow('populateFrom (DontExist) is not present in dimensions');
   });
 });
 
