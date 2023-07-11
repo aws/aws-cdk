@@ -784,7 +784,7 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
 const dashboard = new cw.Dashboard(this, 'Dash', {
   defaultInterval: Duration.days(7),
-  variables: [new cw.SearchDashboardVariable({
+  variables: [new cw.DashboardVariable({
     id: 'functionName',
     type: cw.VariableType.PATTERN,
     label: 'Function',
