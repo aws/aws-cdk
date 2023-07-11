@@ -45,7 +45,7 @@ export class DefaultValue {
   /**
    * A special value for use with {@link SearchDashboardVariable} to have the default value be the first value returned from search
    */
-  public static FIRST = new DefaultValue('__FIRST');
+  public static readonly FIRST = new DefaultValue('__FIRST');
 
   /**
    * Create a default value
