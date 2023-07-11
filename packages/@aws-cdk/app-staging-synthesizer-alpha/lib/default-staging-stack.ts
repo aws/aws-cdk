@@ -111,6 +111,15 @@ export interface DefaultStagingStackOptions {
    * @default true
    */
   readonly autoDeleteStagingAssets?: boolean;
+
+  /**
+   * The name to deploy the stack with. The prefix will be appended
+   * before the appId, which is required to be part of the stack name
+   * to ensure uniqueness.
+   *
+   * @default 'StagingStack'
+   */
+  readonly stagingStackNamePrefix?: string;
 }
 
 /**
@@ -159,12 +168,13 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
           new UsingAppStagingSynthesizer(stack, `UsingAppStagingSynthesizer/${stack.stackName}`);
         }
 
-        const stackId = `StagingStack-${appId}-${context.environmentString}`;
+        const stackPrefix = options.stagingStackNamePrefix ?? 'StagingStack';
+        // Stack name does not need to contain environment because appId is unique inside an env
+        const stackName = `${stackPrefix}-${appId}`;
+        const stackId = `${stackName}-${context.environmentString}`;
         return new DefaultStagingStack(app, stackId, {
           ...options,
-
-          // Does not need to contain environment because stack names are unique inside an env anyway
-          stackName: `StagingStack-${appId}`,
+          stackName,
           env: {
             account: stack.account,
             region: stack.region,
