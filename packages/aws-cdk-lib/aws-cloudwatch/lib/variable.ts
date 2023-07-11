@@ -38,7 +38,7 @@ export interface IVariable {
 }
 
 /**
- * Default value for use with {@link VariableInputType.RADIO} amd {@link VariableInputType.SELECT} dashboard variables
+ * Default value for use with dashboard variables
  */
 export class DefaultValue {
 
