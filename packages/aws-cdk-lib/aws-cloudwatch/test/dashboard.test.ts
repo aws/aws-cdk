@@ -1,5 +1,5 @@
-import {Annotations, Match, Template} from '../../assertions';
-import {App, Duration, Stack} from '../../core';
+import { Annotations, Match, Template } from '../../assertions';
+import { App, Duration, Stack } from '../../core';
 import {
   Dashboard,
   GraphWidget,

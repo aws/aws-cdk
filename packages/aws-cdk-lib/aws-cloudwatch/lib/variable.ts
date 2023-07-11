@@ -30,7 +30,7 @@ export enum VariableType {
 /**
  * A single dashboard variable
  */
-export interface Variable {
+export interface IVariable {
   /**
    * Return the variable JSON for use in the dashboard
    */
@@ -80,22 +80,22 @@ export interface DashboardVariableOptions {
   readonly visible?: boolean;
 }
 
-export abstract class DashboardVariable implements Variable {
-  private readonly baseProps: DashboardVariableOptions;
+export abstract class DashboardVariable implements IVariable {
+  private readonly baseOptions: DashboardVariableOptions;
 
-  protected constructor(props: DashboardVariableOptions) {
-    this.baseProps = props;
+  protected constructor(options: DashboardVariableOptions) {
+    this.baseOptions = options;
   }
 
   toJson(): any {
     return {
-      [this.baseProps.type]: this.baseProps.value,
-      type: this.baseProps.type,
-      inputType: this.baseProps.inputType,
-      id: this.baseProps.id,
-      defaultValue: this.baseProps.defaultValue,
-      visible: this.baseProps.visible,
-      label: this.baseProps.label,
+      [this.baseOptions.type]: this.baseOptions.value,
+      type: this.baseOptions.type,
+      inputType: this.baseOptions.inputType,
+      id: this.baseOptions.id,
+      defaultValue: this.baseOptions.defaultValue,
+      visible: this.baseOptions.visible,
+      label: this.baseOptions.label,
     };
   }
 }
