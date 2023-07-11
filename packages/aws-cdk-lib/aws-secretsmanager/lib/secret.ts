@@ -458,7 +458,7 @@ abstract class SecretBase extends Resource implements ISecret {
             !consumingStack._crossRegionReferences) || !this.secretFullArn) {
           return `${this.secretArn}-??????`;
         } else {
-          return this.secretArn;
+          return this.secretFullArn;
         }
       },
     });
