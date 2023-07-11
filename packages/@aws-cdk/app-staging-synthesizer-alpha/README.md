@@ -260,7 +260,7 @@ cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    autoDeleteStagingAsset: false,
+    autoDeleteStagingAssets: false,
   }),
 });
 ```
