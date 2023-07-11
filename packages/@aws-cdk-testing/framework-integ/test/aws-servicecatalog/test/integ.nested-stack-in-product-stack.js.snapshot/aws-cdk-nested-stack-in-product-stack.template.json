@@ -3,7 +3,7 @@
   "AssetBucket1D025086": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "asset-bucket-586193817576-us-east-1",
+    "BucketName": "asset-bucket-12345678-test-region",
     "Tags": [
      {
       "Key": "aws-cdk:cr-owned:cea6ac02",
@@ -18,7 +18,7 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-586193817576-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
     },
     "Description": "/opt/awscli/aws"
@@ -34,14 +34,14 @@
      ]
     },
     "SourceBucketNames": [
-     "cdk-hnb659fds-assets-586193817576-us-east-1",
-     "cdk-hnb659fds-assets-586193817576-us-east-1",
-     "cdk-hnb659fds-assets-586193817576-us-east-1"
+     "cdk-hnb659fds-assets-12345678-test-region",
+     "cdk-hnb659fds-assets-12345678-test-region",
+     "cdk-hnb659fds-assets-12345678-test-region"
     ],
     "SourceObjectKeys": [
      "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
      "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip",
-     "4384bc7c110c99ee6916309a5435b8334467fe7ef55a08c6fa26d4dc21a3063c.json"
+     "f9ff6c6c057913ad2646bc0ae7d4fc4a9a1682382db55fbf5302b79c66c580c3.json"
     ],
     "SourceMarkers": [
      {},
@@ -109,7 +109,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::cdk-hnb659fds-assets-586193817576-us-east-1"
+           ":s3:::cdk-hnb659fds-assets-12345678-test-region"
           ]
          ]
         },
@@ -121,7 +121,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::cdk-hnb659fds-assets-586193817576-us-east-1/*"
+           ":s3:::cdk-hnb659fds-assets-12345678-test-region/*"
           ]
          ]
         }
@@ -179,7 +179,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-586193817576-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
     },
     "Role": {
@@ -217,7 +217,7 @@
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-assets-586193817576-us-east-1/1964839fb9a99743c8ccf6b0b5e3f15340e56cdb8874fc58aa1f5a06128f4f53.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/6bae96d8b7b79d7e7a5e68867bb5b17cf9404dfbe9fd390ca4d80368350bcff2.json"
        }
       },
       "Name": "v1"
