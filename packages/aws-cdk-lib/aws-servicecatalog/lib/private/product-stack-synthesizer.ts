@@ -1,12 +1,16 @@
 import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
 import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
-import { ProductStack } from '../product-stack';
 
 /**
  * Product stack synthesizer props.
  */
 export interface ProductStackSynthesizerProps {
+  /**
+   * The parent stack of the stack that this synthesizer is bound to.
+   */
+  readonly parentStack: cdk.Stack;
+
   /**
    * The bucket used to store assets and enable ProductStack asset support.
    *
@@ -42,9 +46,9 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private bucketDeployment?: BucketDeployment;
   private parentAssetBucket?: IBucket;
 
-  constructor(props: ProductStackSynthesizerProps = {}) {
+  constructor(props: ProductStackSynthesizerProps) {
     super();
-    this.parentStack = (this.boundStack as ProductStack)._getParentStack();
+    this.parentStack = props.parentStack;
     this.assetBucket = props.assetBucket;
     this.serverSideEncryption = props.serverSideEncryption;
     this.serverSideEncryptionAwsKmsKeyId = props.serverSideEncryptionAwsKmsKeyId;
@@ -62,10 +66,10 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const objectKey = location.objectKey;
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
-    if (this.serverSideEncryption == ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
+    if (this.serverSideEncryption === ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
       throw new Error('A KMS Key must be provided to use SSE_KMS');
     }
-    if (this.serverSideEncryption != ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
+    if (this.serverSideEncryption !== ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
       throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 

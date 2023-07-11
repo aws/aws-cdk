@@ -54,6 +54,7 @@ export class ProductStack extends cdk.Stack {
     const parentStack = findParentStack(scope);
     super(scope, id, {
       synthesizer: new ProductStackSynthesizer({
+        parentStack,
         assetBucket: props.assetBucket,
         serverSideEncryption: props.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: props.serverSideEncryptionAwsKmsKeyId,
