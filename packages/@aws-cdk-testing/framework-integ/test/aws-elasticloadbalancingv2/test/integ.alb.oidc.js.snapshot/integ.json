@@ -5,6 +5,7 @@
       "stacks": [
         "IntegAlbOidc"
       ],
+      "diffAssets": true,
       "assertionStack": "IntegTestAlbOidc/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestAlbOidcDefaultTestDeployAssert2476ECB6"
     }

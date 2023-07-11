@@ -6,6 +6,7 @@
         "aws-cdk-sdk-js",
         "aws-cdk-sdk-js-v3"
       ],
+      "diffAssets": true,
       "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }

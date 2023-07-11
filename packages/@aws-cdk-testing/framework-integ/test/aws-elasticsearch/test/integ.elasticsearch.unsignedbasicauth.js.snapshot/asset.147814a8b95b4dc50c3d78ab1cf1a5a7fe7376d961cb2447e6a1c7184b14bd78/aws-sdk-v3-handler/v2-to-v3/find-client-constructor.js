@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.findV3ClientConstructor = void 0;
+function findV3ClientConstructor(pkg) {
+    const [_clientName, ServiceClient] = Object.entries(pkg).find(([name]) => {
+        // Services expose a base __Client class that we don't want ever
+        return name.endsWith('Client') && name !== '__Client';
+    });
+    return ServiceClient;
+}
+exports.findV3ClientConstructor = findV3ClientConstructor;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmluZC1jbGllbnQtY29uc3RydWN0b3IuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaW5kLWNsaWVudC1jb25zdHJ1Y3Rvci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSxTQUFnQix1QkFBdUIsQ0FBQyxHQUFXO0lBQ2pELE1BQU0sQ0FBQyxXQUFXLEVBQUUsYUFBYSxDQUFDLEdBQUcsTUFBTSxDQUFDLE9BQU8sQ0FBQyxHQUFHLENBQUMsQ0FBQyxJQUFJLENBQzNELENBQUMsQ0FBQyxJQUFJLENBQUMsRUFBRSxFQUFFO1FBQ1QsZ0VBQWdFO1FBQ2hFLE9BQU8sSUFBSSxDQUFDLFFBQVEsQ0FBQyxRQUFRLENBQUMsSUFBSSxJQUFJLEtBQUssVUFBVSxDQUFDO0lBQ3hELENBQUMsQ0FNRCxDQUFDO0lBQ0gsT0FBTyxhQUFhLENBQUM7QUFDdkIsQ0FBQztBQWJELDBEQWFDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGZ1bmN0aW9uIGZpbmRWM0NsaWVudENvbnN0cnVjdG9yKHBrZzogT2JqZWN0KSB7XG4gIGNvbnN0IFtfY2xpZW50TmFtZSwgU2VydmljZUNsaWVudF0gPSBPYmplY3QuZW50cmllcyhwa2cpLmZpbmQoXG4gICAgKFtuYW1lXSkgPT4ge1xuICAgICAgLy8gU2VydmljZXMgZXhwb3NlIGEgYmFzZSBfX0NsaWVudCBjbGFzcyB0aGF0IHdlIGRvbid0IHdhbnQgZXZlclxuICAgICAgcmV0dXJuIG5hbWUuZW5kc1dpdGgoJ0NsaWVudCcpICYmIG5hbWUgIT09ICdfX0NsaWVudCc7XG4gICAgfSxcbiAgKSBhcyBbc3RyaW5nLCB7XG4gICAgbmV3IChjb25maWc6IGFueSk6IHtcbiAgICAgIHNlbmQ6IChjb21tYW5kOiBhbnkpID0+IFByb21pc2U8YW55PlxuICAgICAgY29uZmlnOiBhbnlcbiAgICB9XG4gIH1dO1xuICByZXR1cm4gU2VydmljZUNsaWVudDtcbn1cbiJdfQ==

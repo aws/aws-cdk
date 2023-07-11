@@ -605,3 +605,5 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
 }
+
+export * from './runtime/utils';
