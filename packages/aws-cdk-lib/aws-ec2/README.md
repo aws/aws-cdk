@@ -957,6 +957,7 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
   allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')]
+  contributorInsightsEnabled: true
 });
 ```
 

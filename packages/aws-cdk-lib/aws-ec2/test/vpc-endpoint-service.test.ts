@@ -1,3 +1,4 @@
+import * as elbv2 from '../../../aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Template } from '../../assertions';
 import { ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
@@ -74,7 +75,7 @@ describe('vpc endpoint service', () => {
 
     });
 
-    test('with acceptance requried', () => {
+    test('with acceptance required', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -90,6 +91,34 @@ describe('vpc endpoint service', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
+        ServiceId: {
+          Ref: 'EndpointServiceED36BE1F',
+        },
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
+      });
+
+    });
+
+    test('with contributor insights enabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'MyVPC');
+
+      // WHEN
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
+      new VpcEndpointService(stack, 'VpcEndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: true,
+        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
+        contributorInsightsEnabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        ContributorInsightsEnabled: true,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
