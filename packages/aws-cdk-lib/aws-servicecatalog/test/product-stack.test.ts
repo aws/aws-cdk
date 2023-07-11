@@ -2,9 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { Template } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import { BucketEncryption } from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
+import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import * as servicecatalog from '../lib';
@@ -19,7 +22,7 @@ describe('ProductStack', () => {
 
     // THEN
     expect(productStack._getAssetBucket()).toBeUndefined();
-  }),
+  });
 
   test('Used defined Asset bucket in product stack with assets', () => {
     // GIVEN
@@ -250,7 +253,7 @@ describe('ProductStack', () => {
     expect(() => {
       new servicecatalog.ProductStack(group, 'ProductStack');
     }).toThrow(/must be defined within scope of another non-product stack/);
-  }),
+  });
 
   test('can be defined as a direct child or an indirect child of a Stack', () => {
     // GIVEN
@@ -292,6 +295,115 @@ describe('ProductStack', () => {
         SNSTopicProduct20605D98: {
           Type: 'AWS::SNS::Topic',
         },
+      },
+    });
+  });
+
+  test('fails if KMS encryption for assetBucket enabled without a KMS key', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      serverSideEncryption: ServerSideEncryption.AWS_KMS,
+    });
+
+    // THEN
+    expect(() => {
+      new s3_assets.Asset(productStack, 'testAsset', {
+        path: path.join(__dirname, 'assets'),
+      });
+    }).toThrow('A KMS Key must be provided to use SSE_KMS');
+  });
+
+  test('fails if KMS key is provided without KMS encryption for assetBucket enabled', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testKmsKey = new kms.Key(mainStack, 'TestKmsKey');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      serverSideEncryptionAwsKmsKeyId: testKmsKey.keyId,
+    });
+
+    // THEN
+    expect(() => {
+      new s3_assets.Asset(productStack, 'testAsset', {
+        path: path.join(__dirname, 'assets'),
+      });
+    }).toThrow('A SSE_KMS encryption must be enabled if you provide KMS Key');
+  });
+
+  test('BucketDeployment with SSE_KMS encryption for assetBucket enabled', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testKmsKey = new kms.Key(mainStack, 'TestKmsKey');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+      encryptionKey: testKmsKey,
+      encryption: BucketEncryption.KMS,
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      serverSideEncryption: ServerSideEncryption.AWS_KMS,
+      serverSideEncryptionAwsKmsKeyId: testKmsKey.keyId,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(productStack._getAssetBucket()).toBeDefined();
+    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    Template.fromJSON(mainStackTemplate).hasResourceProperties('Custom::CDKBucketDeployment', {
+      SystemMetadata: {
+        sse: 'aws:kms',
+        'sse-kms-key-id': {
+          Ref: 'TestKmsKeyF793768B',
+        },
+      },
+    });
+  });
+
+  test('BucketDeployment with SSE_S3 encryption for assetBucket enabled', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+      encryption: BucketEncryption.S3_MANAGED,
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      serverSideEncryption: ServerSideEncryption.AES_256,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(productStack._getAssetBucket()).toBeDefined();
+    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    Template.fromJSON(mainStackTemplate).hasResourceProperties('Custom::CDKBucketDeployment', {
+      SystemMetadata: {
+        sse: 'AES256',
       },
     });
   });

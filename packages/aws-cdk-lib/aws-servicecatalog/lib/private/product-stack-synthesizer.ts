@@ -1,5 +1,5 @@
 import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
-import { BucketDeployment, Source } from '../../../aws-s3-deployment';
+import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { ProductStack } from '../product-stack';
 
@@ -13,6 +13,18 @@ export interface ProductStackSynthesizerProps {
    * @default - No ProductStack asset suppor
    */
   readonly assetBucket?: IBucket;
+
+  /**
+   * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket
+   * @default No encryption is used
+   */
+  readonly serverSideEncryption? : ServerSideEncryption;
+
+  /**
+   * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets
+   * @default No KMS KeyId and SSE_KMS encryption cannot be used
+   */
+  readonly serverSideEncryptionAwsKmsKeyId? : string;
 }
 
 /**
@@ -21,8 +33,10 @@ export interface ProductStackSynthesizerProps {
  * Interoperates with the StackSynthesizer of the parent stack.
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
-  private parentStack: cdk.Stack;
-  private assetBucket?: IBucket;
+  private readonly parentStack: cdk.Stack;
+  private readonly assetBucket?: IBucket;
+  private readonly serverSideEncryption? : ServerSideEncryption;
+  private readonly serverSideEncryptionAwsKmsKeyId? : string;
   private bucketDeployment?: BucketDeployment;
   private parentAssetBucket?: IBucket;
 
@@ -30,6 +44,8 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     super();
     this.parentStack = (this.boundStack as ProductStack)._getParentStack();
     this.assetBucket = props.assetBucket;
+    this.serverSideEncryption = props.serverSideEncryption;
+    this.serverSideEncryptionAwsKmsKeyId = props.serverSideEncryptionAwsKmsKeyId;
   }
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
@@ -44,6 +60,13 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const objectKey = location.objectKey;
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
+    if (this.serverSideEncryption == ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
+      throw new Error('A KMS Key must be provided to use SSE_KMS');
+    }
+    if (this.serverSideEncryption != ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
+      throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
+    }
+
     if (!this.bucketDeployment) {
       if (!cdk.Resource.isOwnedResource(this.assetBucket)) {
         cdk.Annotations.of(this.parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
@@ -54,12 +77,17 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         destinationBucket: this.assetBucket,
         extract: false,
         prune: false,
+        serverSideEncryption: this.serverSideEncryption,
+        serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
       });
     } else {
       this.bucketDeployment.addSource(source);
     }
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
+    if (!asset.fileName) {
+      throw new Error('Asset file name is undefined');
+    }
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
 

@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
 import { IBucket } from '../../aws-s3';
+import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
 
 /**
@@ -16,6 +17,18 @@ export interface ProductStackProps {
    * @default No Bucket provided and Assets will not be supported.
    */
   readonly assetBucket?: IBucket;
+
+  /**
+   * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket
+   * @default No encryption is used
+   */
+  readonly serverSideEncryption? : ServerSideEncryption;
+
+  /**
+   * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets
+   * @default No KMS KeyId and SSE_KMS encryption cannot be used
+   */
+  readonly serverSideEncryptionAwsKmsKeyId? : string;
 }
 
 /**
@@ -37,7 +50,11 @@ export class ProductStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     const parentStack = findParentStack(scope);
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer({ assetBucket: props.assetBucket }),
+      synthesizer: new ProductStackSynthesizer({
+        assetBucket: props.assetBucket,
+        serverSideEncryption: props.serverSideEncryption,
+        serverSideEncryptionAwsKmsKeyId: props.serverSideEncryptionAwsKmsKeyId,
+      }),
     });
 
     this._parentStack = parentStack;
