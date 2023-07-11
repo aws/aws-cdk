@@ -1,4 +1,4 @@
-import { App, Stack, NestedStack } from 'aws-cdk-lib';
+import { App, Stack, NestedStack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as sc from 'aws-cdk-lib/aws-servicecatalog';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -8,11 +8,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new App();
 
 class ServiceCatalogStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
 
     const assetBucket = new s3.Bucket(this, 'AssetBucket', {
-      bucketName: 'asset-bucket-123456789012',
+      bucketName: `asset-bucket-${this.account}-${this.region}`,
     });
 
     new sc.CloudFormationProduct(this, 'SampleProduct', {
@@ -59,5 +59,10 @@ class SampleProductStack extends sc.ProductStack {
 }
 
 new IntegTest(app, 'aws-cdk-nested-stack-in-product-stack-integ', {
-  testCases: [new ServiceCatalogStack(app, 'aws-cdk-nested-stack-in-product-stack')],
+  testCases: [new ServiceCatalogStack(app, 'aws-cdk-nested-stack-in-product-stack', {
+    env: {
+      account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
+      region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
+    },
+  })],
 });

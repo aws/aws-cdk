@@ -11,20 +11,20 @@
     },
     "aws-cdk-nested-stack-in-product-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://586193817576/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-nested-stack-in-product-stack.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9913dea197d8fd3970dbbe3c6dc4e6c0241b026df4ae619f516a62f704f29b92.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::586193817576:role/cdk-hnb659fds-deploy-role-586193817576-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::586193817576:role/cdk-hnb659fds-cfn-exec-role-586193817576-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-586193817576-us-east-1/930fbd3fc472bbe3c690b16888af92643b2e499c28aa843a27cab4444859860e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-nested-stack-in-product-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::586193817576:role/cdk-hnb659fds-lookup-role-586193817576-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -45,7 +45,10 @@
         "/aws-cdk-nested-stack-in-product-stack/AssetsBucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-nested-stack-in-product-stack/AssetsBucketDeployment/CustomResource/Default": [

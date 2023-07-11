@@ -15,7 +15,7 @@
               {
                 "Ref": "AWS::URLSuffix"
               },
-              "/asset-bucket-123456789012/7d50a577b40c04517d7ed596ceace8488f0b67a4c6fa861d5f29c5e8c8882d63.json"
+              "/asset-bucket-586193817576-us-east-1/4384bc7c110c99ee6916309a5435b8334467fe7ef55a08c6fa26d4dc21a3063c.json"
             ]
           ]
         }

@@ -35,7 +35,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "asset-bucket-123456789012",
+     "S3Bucket": "asset-bucket-586193817576-us-east-1",
      "S3Key": "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip"
     },
     "Role": {
@@ -86,7 +86,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "asset-bucket-123456789012",
+     "S3Bucket": "asset-bucket-586193817576-us-east-1",
      "S3Key": "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
     },
     "Role": {
