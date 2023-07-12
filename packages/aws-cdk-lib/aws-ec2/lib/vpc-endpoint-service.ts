@@ -164,7 +164,7 @@ export interface VpcEndpointServiceProps {
    * @default false
    *
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsights?: boolean;
 
   /**
    * IAM users, IAM roles, or AWS accounts to allow inbound connections from.
