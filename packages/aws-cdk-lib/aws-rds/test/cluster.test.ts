@@ -1935,10 +1935,8 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
     });
 
     // WHEN
@@ -1968,10 +1966,8 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
     });
 
     // WHEN
@@ -2001,10 +1997,8 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
 
@@ -2045,10 +2039,8 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
 
