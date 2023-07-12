@@ -282,10 +282,8 @@ test('secret rotation without immediate rotation', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
-    Parameters: {
-      RotateImmediatelyOnUpdate: false,
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+    RotateImmediatelyOnUpdate: false,
   });
 });
 
