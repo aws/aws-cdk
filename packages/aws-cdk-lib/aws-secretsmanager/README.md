@@ -200,8 +200,7 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
 });
 ```
 
-By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, 
-set the `rotateImmediatelyOnUpdate` property to false:
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, set the `rotateImmediatelyOnUpdate` property to false:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
