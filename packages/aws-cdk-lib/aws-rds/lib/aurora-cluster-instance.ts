@@ -329,7 +329,7 @@ export class ClusterInstance implements IClusterInstance {
    * Add a provisioned instance to the cluster
    *
    * @example
-   * ClusterInstance.provisioned('ClusterInstance', {
+   * rds.ClusterInstance.provisioned('ClusterInstance', {
    *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
    * });
    */

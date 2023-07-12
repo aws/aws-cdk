@@ -108,6 +108,7 @@ below) and supply the intended destination:
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+
 declare const fn: lambda.Function;
 declare const logGroup: logs.LogGroup;
 
@@ -350,12 +351,14 @@ Example:
 
 ```ts
 import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
-const s3Destination = new destinations.S3Bucket(this, 'audit-bucket-id');
+const bucket = new s3.Bucket(this, 'audit-bucket');
+const s3Destination = new destinations.S3Bucket(bucket);
 
 const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
@@ -366,7 +369,7 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
   description: 'policy description',
   identifiers: [logs.DataIdentifier.DRIVERSLICENSE_US, new logs.DataIdentifier('EmailAddress')],
   logGroupAuditDestination: logGroupDestination,
-  s3BucketAuditDestination: s3Destination,
+  s3BucketAuditDestination: bucket,
   deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,
 });
 

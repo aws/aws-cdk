@@ -633,12 +633,12 @@ import * as regionInfo from 'aws-cdk-lib/region-info';
 
 class MyFact implements regionInfo.IFact {
   public readonly region = 'us-east-1';
-  public readonly name = regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
-  public readonly value = lambda.Runtime.NODEJS_18_X.name,
+  public readonly name = regionInfo.FactName.DEFAULT_CR_NODE_VERSION;
+  public readonly value = lambda.Runtime.NODEJS_18_X.name;
 }
 
 // change custom resource default runtime
-regionInfo.Fact.register(myFact(), true);
+regionInfo.Fact.register(new MyFact(), true);
 
 new cr.AwsCustomResource(this, 'GetParameter', {
   resourceType: 'Custom::SSMParameter',

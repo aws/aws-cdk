@@ -487,7 +487,8 @@
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-apigatewayv2-alpha": "*",
       "@aws-cdk/aws-batch-alpha": "*",
-      "@aws-cdk/aws-kinesisfirehose-alpha": "*"
+      "@aws-cdk/aws-kinesisfirehose-alpha": "*",
+      "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "*"
     }
   },
   "awslint": {
