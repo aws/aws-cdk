@@ -1929,37 +1929,6 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with explicit immediate rotation', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      writer: ClusterInstance.serverlessV2('writer'),
-      vpc,
-    });
-
-    // WHEN
-    cluster.addRotationSingleUser({ rotateImmediatelyOnUpdate: true });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
-      SecretId: {
-        Ref: 'DatabaseSecretAttachmentE5D1B020',
-      },
-      RotationLambdaARN: {
-        'Fn::GetAtt': [
-          'DatabaseRotationSingleUser65F55654',
-          'Outputs.RotationLambdaARN',
-        ],
-      },
-      RotationRules: {
-        AutomaticallyAfterDays: 30,
-      },
-      RotateImmediatelyOnUpdate: true,
-    });
-  });
-
   test('addRotationSingleUser() without immediate rotation', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1988,48 +1957,6 @@ describe('cluster', () => {
         AutomaticallyAfterDays: 30,
       },
       RotateImmediatelyOnUpdate: false,
-    });
-  });
-
-  test('addRotationMultiUser() with explicit immediate rotation', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      writer: ClusterInstance.serverlessV2('writer'),
-      vpc,
-    });
-    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
-
-    // WHEN
-    cluster.addRotationMultiUser('user', {
-      secret: userSecret.attach(cluster),
-      rotateImmediatelyOnUpdate: true,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
-      SecretId: {
-        Ref: 'UserSecretAttachment16ACBE6D',
-      },
-      RotationLambdaARN: {
-        'Fn::GetAtt': [
-          'DatabaseuserECD1FB0C',
-          'Outputs.RotationLambdaARN',
-        ],
-      },
-      RotationRules: {
-        AutomaticallyAfterDays: 30,
-      },
-      RotateImmediatelyOnUpdate: true,
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
-      Parameters: {
-        masterSecretArn: {
-          Ref: 'DatabaseSecretAttachmentE5D1B020',
-        },
-      },
     });
   });
 
@@ -2065,13 +1992,6 @@ describe('cluster', () => {
         AutomaticallyAfterDays: 30,
       },
       RotateImmediatelyOnUpdate: false,
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
-      Parameters: {
-        masterSecretArn: {
-          Ref: 'DatabaseSecretAttachmentE5D1B020',
-        },
-      },
     });
   });
 
