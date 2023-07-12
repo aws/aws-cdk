@@ -1929,6 +1929,160 @@ describe('cluster', () => {
     });
   });
 
+  test('addRotationSingleUser() with rotateImmediatelyOnUpdate as true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser({ rotateImmediatelyOnUpdate: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: true,
+    });
+  });
+
+  test('addRotationSingleUser() with rotateImmediatelyOnUpdate as false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser({ rotateImmediatelyOnUpdate: false });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
+    });
+  });
+
+  test('addRotationMultiUser() with rotateImmediatelyOnUpdate as true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      rotateImmediatelyOnUpdate: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
+  test('addRotationMultiUser() with rotateImmediatelyOnUpdate as false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      rotateImmediatelyOnUpdate: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+      RotateImmediatelyOnUpdate: false,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
   test('throws when trying to add rotation to a cluster without secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
