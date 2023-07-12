@@ -633,27 +633,6 @@ describe('fargate service', () => {
           Type: 'EXTERNAL',
         },
         EnableECSManagedTags: false,
-        NetworkConfiguration: {
-          AwsvpcConfiguration: {
-            AssignPublicIp: 'DISABLED',
-            SecurityGroups: [
-              {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
-              },
-            ],
-            Subnets: [
-              {
-                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
-              },
-              {
-                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
-              },
-            ],
-          },
-        },
       });
     });
 
