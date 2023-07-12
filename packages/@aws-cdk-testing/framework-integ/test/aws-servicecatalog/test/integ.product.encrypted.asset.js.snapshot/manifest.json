@@ -84,7 +84,10 @@
         "/integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/CustomResource/Default": [

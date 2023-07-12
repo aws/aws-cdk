@@ -585,6 +585,14 @@
                   "version": "0.0.0"
                 }
               },
+              "ParentAssetBucket": {
+                "id": "ParentAssetBucket",
+                "path": "integ-servicecatalog-product-encrypted-asset/S3AssetProduct/ParentAssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              },
               "HelloHandler2": {
                 "id": "HelloHandler2",
                 "path": "integ-servicecatalog-product-encrypted-asset/S3AssetProduct/HelloHandler2",
@@ -775,32 +783,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Asset1": {
-                "id": "Asset1",
-                "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset1",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset1/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset1/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
               "CustomResource": {
                 "id": "CustomResource",
                 "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/CustomResource",
@@ -816,32 +798,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Asset2": {
-                "id": "Asset2",
-                "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset2",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset2/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/AssetsBucketDeployment/Asset2/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               }
@@ -1105,13 +1061,13 @@
             "id": "TestProduct",
             "path": "integ-servicecatalog-product-encrypted-asset/TestProduct",
             "children": {
-              "Template492cd2a08509": {
-                "id": "Template492cd2a08509",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template492cd2a08509",
+              "Template6a4a316a565a": {
+                "id": "Template6a4a316a565a",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template6a4a316a565a",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template492cd2a08509/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template6a4a316a565a/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1119,7 +1075,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template492cd2a08509/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template6a4a316a565a/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1131,13 +1087,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Template77185cb33408": {
-                "id": "Template77185cb33408",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template77185cb33408",
+              "Template5cf0070dc839": {
+                "id": "Template5cf0070dc839",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template5cf0070dc839",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template77185cb33408/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template5cf0070dc839/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1145,7 +1101,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template77185cb33408/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template5cf0070dc839/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
