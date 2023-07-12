@@ -62,7 +62,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    * Whether to enable the built-in Contributor Insights rules provided by AWS PrivateLink.
    *
    */
-  public readonly contributorInsightsEnabled: boolean;
+  public readonly contributorInsightsEnabled?: boolean;
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
@@ -101,7 +101,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
     this.acceptanceRequired = props.acceptanceRequired ?? true;
-    this.contributorInsightsEnabled = props.contributorInsights ?? false;
+    this.contributorInsightsEnabled = props.contributorInsights;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
       throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
