@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
@@ -14,7 +15,7 @@ import {
 
 describe('cluster new api', () => {
   describe('errors are thrown', () => {
-    test('when old and new props are provided', () => {
+    testDeprecated('when old and new props are provided', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -65,7 +66,7 @@ describe('cluster new api', () => {
       }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
     });
 
-    test('when both vpc and instanceProps.vpc are provided', () => {
+    testDeprecated('when both vpc and instanceProps.vpc are provided', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -85,7 +86,7 @@ describe('cluster new api', () => {
       }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
     });
 
-    test('when both vpcSubnets and instanceProps.vpcSubnets are provided', () => {
+    testDeprecated('when both vpcSubnets and instanceProps.vpcSubnets are provided', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -207,7 +208,7 @@ describe('cluster new api', () => {
   });
 
   describe('migrate from instanceProps', () => {
-    test('template contains no changes', () => {
+    testDeprecated('template contains no changes', () => {
       // GIVEN
       const stack1 = testStack();
       const stack2 = testStack();
@@ -744,7 +745,7 @@ describe('cluster new api', () => {
 });
 
 describe('cluster', () => {
-  test('creating a Cluster also creates 2 DB Instances', () => {
+  testDeprecated('creating a Cluster also creates 2 DB Instances', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -785,7 +786,7 @@ describe('cluster', () => {
     });
   });
 
-  test('validates that the number of instances is not a deploy-time value', () => {
+  testDeprecated('validates that the number of instances is not a deploy-time value', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const parameter = new cdk.CfnParameter(stack, 'Param', { type: 'Number' });
@@ -801,7 +802,7 @@ describe('cluster', () => {
     }).toThrow('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
   });
 
-  test('can create a cluster with a single instance', () => {
+  testDeprecated('can create a cluster with a single instance', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -853,7 +854,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can create a cluster with ROLLING instance update behaviour', () => {
+  testDeprecated('can create a cluster with ROLLING instance update behaviour', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -883,7 +884,7 @@ describe('cluster', () => {
     expect(instances.filter(it => !dependantInstances.includes(it))).toHaveLength(1);
   });
 
-  test('can create a cluster with imported vpc and security group', () => {
+  testDeprecated('can create a cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
@@ -916,7 +917,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with parameter group', () => {
+  testDeprecated('cluster with parameter group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -948,7 +949,7 @@ describe('cluster', () => {
     });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'", () => {
+  testDeprecated("sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'", () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -968,7 +969,7 @@ describe('cluster', () => {
     });
   });
 
-  test('creates a secret when master credentials are not specified', () => {
+  testDeprecated('creates a secret when master credentials are not specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1024,7 +1025,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create an encrypted cluster with custom KMS key', () => {
+  testDeprecated('create an encrypted cluster with custom KMS key', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1053,7 +1054,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with instance parameter group', () => {
+  testDeprecated('cluster with instance parameter group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1084,7 +1085,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with inline parameter group', () => {
+  testDeprecated('cluster with inline parameter group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1130,7 +1131,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with inline parameter group and parameterGroup arg fails', () => {
+  testDeprecated('cluster with inline parameter group and parameterGroup arg fails', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1160,7 +1161,7 @@ describe('cluster', () => {
     }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
-  test('instance with inline parameter group and parameterGroup arg fails', () => {
+  testDeprecated('instance with inline parameter group and parameterGroup arg fails', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1190,7 +1191,7 @@ describe('cluster', () => {
     }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
-  test('instance with IPv4 network type', () => {
+  testDeprecated('instance with IPv4 network type', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1209,7 +1210,7 @@ describe('cluster', () => {
     });
   });
 
-  test('instance with dual-stack network type', () => {
+  testDeprecated('instance with dual-stack network type', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1229,7 +1230,7 @@ describe('cluster', () => {
   });
 
   describe('performance insights', () => {
-    test('cluster with all performance insights properties', () => {
+    testDeprecated('cluster with all performance insights properties', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1255,7 +1256,7 @@ describe('cluster', () => {
       });
     });
 
-    test('setting performance insights fields enables performance insights', () => {
+    testDeprecated('setting performance insights fields enables performance insights', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1278,7 +1279,7 @@ describe('cluster', () => {
       });
     });
 
-    test('throws if performance insights fields are set but performance insights is disabled', () => {
+    testDeprecated('throws if performance insights fields are set but performance insights is disabled', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1299,7 +1300,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with disable automatic upgrade of minor version', () => {
+  testDeprecated('cluster with disable automatic upgrade of minor version', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1318,7 +1319,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with allow upgrade of major version', () => {
+  testDeprecated('cluster with allow upgrade of major version', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1337,7 +1338,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with disallow remove backups', () => {
+  testDeprecated('cluster with disallow remove backups', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1356,7 +1357,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster using a specific version of MySQL', () => {
+  testDeprecated('create a cluster using a specific version of MySQL', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1382,7 +1383,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster using a specific version of Postgresql', () => {
+  testDeprecated('create a cluster using a specific version of Postgresql', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1408,7 +1409,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster exposes different read and write endpoints', () => {
+  testDeprecated('cluster exposes different read and write endpoints', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1501,7 +1502,7 @@ describe('cluster', () => {
     expect(cluster.instanceEndpoints.map(endpoint => endpoint.socketAddress)).toEqual(['instance-addr:3306']);
   });
 
-  test('cluster supports metrics', () => {
+  testDeprecated('cluster supports metrics', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -1527,7 +1528,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with enabled monitoring (legacy)', () => {
+  testDeprecated('cluster with enabled monitoring (legacy)', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1636,7 +1637,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with imported monitoring role', () => {
+  testDeprecated('create a cluster with imported monitoring role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1672,7 +1673,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser()', () => {
+  testDeprecated('addRotationSingleUser()', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1703,7 +1704,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationMultiUser()', () => {
+  testDeprecated('addRotationMultiUser()', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1742,7 +1743,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
+  testDeprecated('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -1807,7 +1808,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
+  testDeprecated('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
@@ -1874,7 +1875,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with VPC interface endpoint', () => {
+  testDeprecated('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpcIsolatedOnly = new ec2.Vpc(stack, 'Vpc', { natGateways: 0 });
@@ -1929,7 +1930,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws when trying to add rotation to a cluster without secret', () => {
+  testDeprecated('throws when trying to add rotation to a cluster without secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1951,7 +1952,7 @@ describe('cluster', () => {
     expect(() => cluster.addRotationSingleUser()).toThrow(/without a secret/);
   });
 
-  test('throws when trying to add single user rotation multiple times', () => {
+  testDeprecated('throws when trying to add single user rotation multiple times', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1971,7 +1972,7 @@ describe('cluster', () => {
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
   });
 
-  test('create a cluster with s3 import role', () => {
+  testDeprecated('create a cluster with s3 import role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2019,7 +2020,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with s3 import buckets', () => {
+  testDeprecated('create a cluster with s3 import buckets', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2103,7 +2104,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with s3 import bucket adds supported feature name to IAM role', () => {
+  testDeprecated('cluster with s3 import bucket adds supported feature name to IAM role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2140,7 +2141,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it', () => {
+  testDeprecated('throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2183,7 +2184,7 @@ describe('cluster', () => {
     }).toThrow(/s3Export is not supported for Postgres version: 10.4. Use a version that supports the s3Export feature./);
   });
 
-  test('cluster with s3 export bucket adds supported feature name to IAM role', () => {
+  testDeprecated('cluster with s3 export bucket adds supported feature name to IAM role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2220,7 +2221,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with s3 export role', () => {
+  testDeprecated('create a cluster with s3 export role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2268,7 +2269,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with s3 export buckets', () => {
+  testDeprecated('create a cluster with s3 export buckets', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2359,7 +2360,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with s3 import and export buckets', () => {
+  testDeprecated('create a cluster with s3 import and export buckets', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2421,7 +2422,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster with s3 import and export buckets and custom parameter group', () => {
+  testDeprecated('create a cluster with s3 import and export buckets and custom parameter group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2492,7 +2493,7 @@ describe('cluster', () => {
     });
   });
 
-  test('PostgreSQL cluster with s3 export buckets does not generate custom parameter group and specifies the correct port', () => {
+  testDeprecated('PostgreSQL cluster with s3 export buckets does not generate custom parameter group and specifies the correct port', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2532,7 +2533,7 @@ describe('cluster', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
-  test('unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets', () => {
+  testDeprecated('unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2580,7 +2581,7 @@ describe('cluster', () => {
     });
   });
 
-  test("Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word", () => {
+  testDeprecated("Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word", () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2601,7 +2602,7 @@ describe('cluster', () => {
     });
   });
 
-  test('MySQL cluster without S3 exports or imports references the correct default ParameterGroup', () => {
+  testDeprecated('MySQL cluster without S3 exports or imports references the correct default ParameterGroup', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2627,7 +2628,7 @@ describe('cluster', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
-  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import/export, instead of aurora_load/select_from_s3_role', () => {
+  testDeprecated('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import/export, instead of aurora_load/select_from_s3_role', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2654,7 +2655,7 @@ describe('cluster', () => {
     assert.resourceCountIs('AWS::IAM::Role', 1);
   });
 
-  test('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
+  testDeprecated('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2680,7 +2681,7 @@ describe('cluster', () => {
     })).toThrow();
   });
 
-  test('throws when s3ImportRole and s3ImportBuckets properties are both specified', () => {
+  testDeprecated('throws when s3ImportRole and s3ImportBuckets properties are both specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2706,7 +2707,7 @@ describe('cluster', () => {
     })).toThrow();
   });
 
-  test('can set CloudWatch log exports', () => {
+  testDeprecated('can set CloudWatch log exports', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2731,7 +2732,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can set CloudWatch log retention', () => {
+  testDeprecated('can set CloudWatch log retention', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2774,7 +2775,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws if given unsupported CloudWatch log exports', () => {
+  testDeprecated('throws if given unsupported CloudWatch log exports', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2795,7 +2796,7 @@ describe('cluster', () => {
     }).toThrow(/Unsupported logs for the current engine type: thislogdoesnotexist,neitherdoesthisone/);
   });
 
-  test('can set deletion protection', () => {
+  testDeprecated('can set deletion protection', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2820,7 +2821,7 @@ describe('cluster', () => {
     });
   });
 
-  test('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
+  testDeprecated('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = testStack(app, 'TestStack');
@@ -2848,7 +2849,7 @@ describe('cluster', () => {
     expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
   });
 
-  test('create a cluster from a snapshot', () => {
+  testDeprecated('create a cluster from a snapshot', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -2905,7 +2906,7 @@ describe('cluster', () => {
     Annotations.fromStack(stack).hasWarning('/Default/Database', Match.stringLikeRegexp('Generated credentials will not be applied to cluster'));
   });
 
-  test('can generate a new snapshot password', () => {
+  testDeprecated('can generate a new snapshot password', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -2943,7 +2944,7 @@ describe('cluster', () => {
     });
   });
 
-  test('fromGeneratedSecret with replica regions', () => {
+  testDeprecated('fromGeneratedSecret with replica regions', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -2967,7 +2968,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws if generating a new password without a username', () => {
+  testDeprecated('throws if generating a new password without a username', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -2981,7 +2982,7 @@ describe('cluster', () => {
     })).toThrow(/`snapshotCredentials` `username` must be specified when `generatePassword` is set to true/);
   });
 
-  test('can set a new snapshot password from an existing Secret', () => {
+  testDeprecated('can set a new snapshot password from an existing Secret', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -3006,7 +3007,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster from a snapshot with encrypted storage', () => {
+  testDeprecated('create a cluster from a snapshot with encrypted storage', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -3027,7 +3028,7 @@ describe('cluster', () => {
     });
   });
 
-  test('create a cluster from a snapshot with single user secret rotation', () => {
+  testDeprecated('create a cluster from a snapshot with single user secret rotation', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3051,7 +3052,7 @@ describe('cluster', () => {
     });
   });
 
-  test('throws when trying to add single user rotation multiple times on cluster from snapshot', () => {
+  testDeprecated('throws when trying to add single user rotation multiple times on cluster from snapshot', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3071,7 +3072,7 @@ describe('cluster', () => {
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
   });
 
-  test('create a cluster from a snapshot with multi user secret rotation', () => {
+  testDeprecated('create a cluster from a snapshot with multi user secret rotation', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3113,7 +3114,7 @@ describe('cluster', () => {
     });
   });
 
-  test('reuse an existing subnet group', () => {
+  testDeprecated('reuse an existing subnet group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3137,7 +3138,7 @@ describe('cluster', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBSubnetGroup', 0);
   });
 
-  test('defaultChild returns the DB Cluster', () => {
+  testDeprecated('defaultChild returns the DB Cluster', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3157,7 +3158,7 @@ describe('cluster', () => {
     expect(cluster.node.defaultChild instanceof CfnDBCluster).toBeTruthy();
   });
 
-  test('fromGeneratedSecret', () => {
+  testDeprecated('fromGeneratedSecret', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3189,7 +3190,7 @@ describe('cluster', () => {
     });
   });
 
-  test('fromGeneratedSecret with replica regions', () => {
+  testDeprecated('fromGeneratedSecret with replica regions', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3215,7 +3216,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can set custom name to database secret by fromSecret', () => {
+  testDeprecated('can set custom name to database secret by fromSecret', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3240,7 +3241,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can set custom name to database secret by fromGeneratedSecret', () => {
+  testDeprecated('can set custom name to database secret by fromGeneratedSecret', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3261,7 +3262,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can set public accessibility for database cluster with instances in private subnet', () => {
+  testDeprecated('can set public accessibility for database cluster with instances in private subnet', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3284,7 +3285,7 @@ describe('cluster', () => {
     });
   });
 
-  test('can set public accessibility for database cluster with instances in public subnet', () => {
+  testDeprecated('can set public accessibility for database cluster with instances in public subnet', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3307,7 +3308,7 @@ describe('cluster', () => {
     });
   });
 
-  test('database cluster instances in public subnet should by default have publiclyAccessible set to true', () => {
+  testDeprecated('database cluster instances in public subnet should by default have publiclyAccessible set to true', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3329,7 +3330,7 @@ describe('cluster', () => {
     });
   });
 
-  test('changes the case of the cluster identifier', () => {
+  testDeprecated('changes the case of the cluster identifier', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3348,7 +3349,7 @@ describe('cluster', () => {
     });
   });
 
-  test('does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+  testDeprecated('does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
     // GIVEN
     const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
     const stack = testStack(app);
@@ -3368,7 +3369,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot default', () => {
+  testDeprecated('cluster with copyTagsToSnapshot default', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3387,7 +3388,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot disabled', () => {
+  testDeprecated('cluster with copyTagsToSnapshot disabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3407,7 +3408,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot enabled', () => {
+  testDeprecated('cluster with copyTagsToSnapshot enabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3427,7 +3428,7 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster has BacktrackWindow in seconds', () => {
+  testDeprecated('cluster has BacktrackWindow in seconds', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3447,7 +3448,7 @@ describe('cluster', () => {
     });
   });
 
-  test('DB instances should not have engine version set when part of a cluster', () => {
+  testDeprecated('DB instances should not have engine version set when part of a cluster', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -3464,7 +3465,7 @@ describe('cluster', () => {
   });
 });
 
-test.each([
+testDeprecated.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
   [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
@@ -3498,7 +3499,7 @@ test.each([
   });
 });
 
-test.each([
+testDeprecated.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
   [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
