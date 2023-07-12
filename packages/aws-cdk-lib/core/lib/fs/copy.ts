@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
+import { matchIncludePatterns } from './include';
 import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 
@@ -39,19 +40,33 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
-        fs.symlinkSync(target, destFilePath);
+        if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
+          const destDirPath = path.dirname(destFilePath);
+          if (!fs.existsSync(destDirPath)) {
+            fs.mkdirSync(destDirPath, { recursive: true });
+          }
+          fs.symlinkSync(target, destFilePath);
+        }
         stat = undefined;
       }
     }
 
     if (stat && stat.isDirectory()) {
-      fs.mkdirSync(destFilePath);
+      if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
+        fs.mkdirSync(destFilePath, { recursive: true });
+      }
       copyDirectory(sourceFilePath, destFilePath, options, rootDir);
       stat = undefined;
     }
 
     if (stat && stat.isFile()) {
-      fs.copyFileSync(sourceFilePath, destFilePath);
+      if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
+        const destDirPath = path.dirname(destFilePath);
+        if (!fs.existsSync(destDirPath)) {
+          fs.mkdirSync(destDirPath, { recursive: true });
+        }
+        fs.copyFileSync(sourceFilePath, destFilePath);
+      }
       stat = undefined;
     }
   }

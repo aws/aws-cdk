@@ -73,6 +73,14 @@ interface FileOptions {
    * @default IgnoreMode.GLOB
    */
   readonly ignoreMode?: IgnoreMode;
+
+  /**
+   * File paths matching the patterns will be included, based on simple glob patterns.
+   * Has no effect on Assets bundled using the `bundling` property.
+   *
+   * @default - nothing is include
+   */
+  readonly include?: string[];
 }
 
 /**

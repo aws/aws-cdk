@@ -122,6 +122,105 @@ describe('fs copy', () => {
     ]);
 
   });
+
+  test('include a file in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include a file with relative path in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'subdir2/subdir3/file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include a root file', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file1.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+    ]);
+  });
+
+  test('include some files in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file1.txt',
+        'file2.txt',
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+      'subdir (D)',
+      '    file2.txt',
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include all files in sub directories', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'subdir2/**/*',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    empty-subdir (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {
