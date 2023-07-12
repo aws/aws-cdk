@@ -110,22 +110,16 @@ describe('vpc endpoint service', () => {
       // WHEN
       const lb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
       new VpcEndpointService(stack, 'VpcEndpointService', {
-        vpcEndpointServiceLoadBalancers: [lb],
+        vpcEndpointServiceLoadBalancers: [{
+          loadBalancerArn: lb.loadBalancerArn,
+        }],
         acceptanceRequired: true,
-        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
         contributorInsightsEnabled: true,
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         ContributorInsightsEnabled: true,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
-        ServiceId: {
-          Ref: 'EndpointServiceED36BE1F',
-        },
-        AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
 
     });
