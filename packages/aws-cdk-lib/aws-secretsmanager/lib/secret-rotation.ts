@@ -264,7 +264,7 @@ export interface SecretRotationProps {
    * Specifies whether to rotate the secret immediately or wait until the next
    * scheduled rotation window.
    *
-   * @default - secret is rotated immediately
+   * @default true
    */
   readonly rotateImmediatelyOnUpdate?: boolean;
 }
