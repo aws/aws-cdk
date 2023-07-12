@@ -109,6 +109,22 @@ secret.addRotationSchedule('RotationSchedule', {
 });
 ```
 
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this
+behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, 
+set the `rotateImmediatelyOnUpdate` property to false:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const fn: lambda.Function;
+const secret = new secretsmanager.Secret(this, 'Secret');
+
+secret.addRotationSchedule('RotationSchedule', {
+  rotationLambda: fn,
+  automaticallyAfter: Duration.days(15),
+  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
+});
+
 Note: The required permissions for Lambda to call SecretsManager and the other way round are automatically granted based on [AWS Documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions.html) as long as the Lambda is not imported.
 
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
@@ -122,7 +138,6 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
-  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
 });
 ```
 
