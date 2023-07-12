@@ -19,7 +19,8 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
-    }
+    },
+    "ServiceName": "service1"
    }
   }
  },
@@ -37,6 +38,58 @@
        ]
       }
      ]
+    ]
+   }
+  },
+  "ServiceName": {
+   "Value": {
+    "Fn::Select": [
+     1,
+     {
+      "Fn::Split": [
+       "/",
+       {
+        "Fn::Select": [
+         5,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "Service1EDCC8134",
+             "ServiceArn"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ServiceId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Service1EDCC8134",
+     "ServiceId"
+    ]
+   }
+  },
+  "ServiceStatus": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Service1EDCC8134",
+     "Status"
+    ]
+   }
+  },
+  "ServiceArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Service1EDCC8134",
+     "ServiceArn"
     ]
    }
   }

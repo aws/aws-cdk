@@ -27,15 +27,25 @@ const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceType: '',
 };
 
-const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
-jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
-  describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
+const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+jest.mock('@aws-sdk/client-redshift-data', () => {
+  return {
+    RedshiftData: class {
+      executeStatement = mockExecuteStatement;
+      describeStatement = jest.fn(async () => ({ Status: 'FINISHED' }));
+    },
+  };
 });
-const mockGetSecretValue = jest.fn(() => ({ promise: jest.fn(() => ({ SecretString: JSON.stringify({ password }) })) }));
-jest.mock('aws-sdk/clients/secretsmanager', () => class {
-  getSecretValue = mockGetSecretValue;
-});
+
+const mockGetSecretValue = jest.fn(async () => ({
+  SecretString: JSON.stringify({ password }),
+}));
+jest.mock('@aws-sdk/client-secrets-manager', () => ({
+  SecretsManager: class {
+    getSecretValue = mockGetSecretValue;
+  },
+}));
+
 import { handler as manageUser } from '../../lib/private/database-query-provider/user';
 
 beforeEach(() => {
@@ -151,7 +161,7 @@ describe('update', () => {
 
   test('does not replace if password changes', async () => {
     const newPassword = 'newPassword';
-    mockGetSecretValue.mockImplementationOnce(() => ({ promise: jest.fn(() => ({ SecretString: JSON.stringify({ password: newPassword }) })) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: newPassword }) }));
 
     await expect(manageUser(resourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,

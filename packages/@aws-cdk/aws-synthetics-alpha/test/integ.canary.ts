@@ -60,6 +60,11 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
     handler: 'canary.handler',
     code: Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: cdk.Duration.days(30),
+    },
+  ],
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
 });
 
