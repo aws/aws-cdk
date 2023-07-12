@@ -654,6 +654,12 @@ You can optionally choose to configure your cluster to use IPv6 using the [`ipFa
 ```ts
 declare const vpc: ec2.Vpc;
 
+function _associate_subnet_with_v6_cidr(count: number, subnet: ec2.ISubnet) {
+  const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
+  cfnSubnet.ipv6CidrBlock = Fn.select(count, Fn.cidr(Fn.select(0, this.vpc.vpcIpv6CidrBlocks), 256, (128 - 64).toString()));
+  cfnSubnet.assignIpv6AddressOnCreation = true;
+}
+
 // make an ipv6 cidr
 const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
   vpcId: vpc.vpcId,
@@ -667,10 +673,11 @@ for (let subnet of subnets) {
   // Wait for the ipv6 cidr to complete
   subnet.node.addDependency(ipv6cidr);
   this._associate_subnet_with_v6_cidr(subnetcount, subnet);
-  subnetcount++;
+  subnetcount = subnetcount + 1;
 }
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_27,
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
   vpcSubnets: [{ subnets: vpc.publicSubnets }],

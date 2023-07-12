@@ -634,7 +634,7 @@ import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const elbAlarm: cloudwatch.Alarm;
+declare const elbAlarm: cw.Alarm;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
@@ -653,7 +653,7 @@ new cw.Alarm(this, 'CPUAlarm', {
   evaluationPeriods: 2,
   threshold: 80,
 });
-service.enableDeploymentAlarms([cpuAlarmName], AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([cpuAlarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
 ```
 > Note: Deployment alarms are only available when `deploymentController` is set
 > to `DeploymentControllerType.ECS`, which is the default.
@@ -705,13 +705,12 @@ const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
 });
 
 // Using `myAlarm.alarmName` here will cause a circular dependency
-service.enableDeploymentAlarms([cpuAlarmName], AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([cpuAlarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
 ```
 
 Option 2, defining a physical name for the service:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const cluster: ecs.Cluster;
@@ -723,17 +722,17 @@ const service = new ecs.FargateService(this, 'Service', {
   taskDefinition,
 });
 
-const cpuMetric = new cw.Metric(
+const cpuMetric = new cw.Metric({
   metricName: 'CPUUtilization',
   namespace: 'AWS/ECS',
-  period: cdk.Duration.minutes(5),
+  period: Duration.minutes(5),
   statistic: 'Average',
   dimensionsMap: {
     ClusterName: cluster.clusterName,
     // Using `service.serviceName` here will cause a circular dependency
     ServiceName: serviceName,
   },
-);
+});
 const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
   alarmName: 'cpuAlarmName',
   metric: cpuMetric,

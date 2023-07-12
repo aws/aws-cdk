@@ -24,7 +24,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   readers: [
     rds.ClusterInstance.provisioned('reader1', { promotionTier: 1 }),
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
@@ -127,7 +127,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
-  ]
+  ],
   vpc,
 });
 ```
@@ -223,7 +223,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
     // will be put in promotion tier 2 and will not scale with the writer
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpc,
 });
 ```
@@ -276,7 +276,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
     // will be put in promotion tier 2 and will not scale with the writer
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpc,
 });
 ```
