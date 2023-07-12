@@ -429,7 +429,7 @@ export class DockerImage extends BundlingDockerImage {
     return result;
   }
 
-  private cacheOptionToFlag(option: DockerCacheOption): string {
+  private static cacheOptionToFlag(option: DockerCacheOption): string {
     let flag = `type=${option.type}`;
     if (option.params) {
       flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
