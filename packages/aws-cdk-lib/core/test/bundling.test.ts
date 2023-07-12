@@ -137,12 +137,12 @@ describe('bundling', () => {
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
     fingerprintStub.callsFake(() => imageHash);
-    const cacheTo = { type: 'local', params: { dest: "path/to/local/dir" } };
+    const cacheTo = { type: 'local', params: { dest: 'path/to/local/dir' } };
     const cacheFrom1 = {
-      type: 's3', params: { region: 'us-west-2', bucket: 'my-bucket', name: 'foo' }
+      type: 's3', params: { region: 'us-west-2', bucket: 'my-bucket', name: 'foo' },
     };
     const cacheFrom2 = {
-      type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' }
+      type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' },
     };
 
     const image = DockerImage.fromBuild('docker-path', { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] });

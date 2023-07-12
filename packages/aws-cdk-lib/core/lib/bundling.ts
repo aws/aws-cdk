@@ -1,10 +1,10 @@
 import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
+import { DockerCacheOption } from './assets';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
-import { DockerCacheOption } from './assets';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -361,9 +361,6 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
-  /** The Docker image */
-  public readonly image: string;
-
   constructor(image: string, _imageHash?: string) {
     // It is preferable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
@@ -436,6 +433,9 @@ export class DockerImage extends BundlingDockerImage {
     }
     return flag;
   }
+
+  /** The Docker image */
+  public readonly image: string;
 }
 
 /**
