@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbfcc646c8225dd32d69798b87a8a94086dd89a2b3137bdf4e0ec96d79cdd4cb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8dd0c72ae74118e7b13f5ad3ad3bd3daaa9115456be74990c685759252458a6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,6 +207,12 @@
             "data": "myContainerExecutionRoleEBACF86C"
           }
         ],
+        "/stack/myContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myContainerExecutionRoleDefaultPolicy42DA929E"
+          }
+        ],
         "/stack/ECSJobDefn/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -217,6 +223,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myFargateContainerExecutionRoleB9EB79EA"
+          }
+        ],
+        "/stack/myFargateContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myFargateContainerExecutionRoleDefaultPolicy4FF431BF"
           }
         ],
         "/stack/ECSFargateJobDefn/Resource": [
