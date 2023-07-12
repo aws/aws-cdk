@@ -106,6 +106,13 @@ export interface DockerImageAssetInvalidationOptions {
   readonly buildSecrets?: boolean;
 
   /**
+   * Use `buildSSH` while calculating the asset hash
+   * 
+   * @default true
+   */
+  readonly buildSSH?: boolean;
+
+  /**
    * Use `target` while calculating the asset hash
    *
    * @default true
@@ -222,6 +229,23 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * };
    */
   readonly buildSecrets?: { [key: string]: string }
+
+  /**
+   * SSH agent socket or keys to pass to the `docker build` command.
+   * 
+   * Docker BuildKit must be enabled to use the ssh flag
+   * 
+   * @see https://docs.docker.com/build/buildkit/
+   * 
+   * @default - no --ssh flag
+   * 
+   * @example
+   * import { DockerBuildSSH } from `aws-cdk-lib`;
+   * 
+   * const sshFlag = 'default';
+   * 
+   */
+  readonly buildSSH?: string;
 
   /**
    * Docker target to build to
@@ -365,6 +389,10 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerBuildSecrets?: { [key: string]: string };
 
   /**
+   * SSH agent socket or keys to pass to the `docker build` command.
+   */
+  private readonly dockerBuildSSH?: string;
+  /**
    * Outputs to pass to the `docker build` command.
    */
   private readonly dockerOutputs?: string[];
@@ -446,6 +474,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
     if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
+    if (props.invalidation?.buildSSH !== false && props.buildSSH) {extraHash.buildSSH = props.buildSSH; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
@@ -477,6 +506,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildSecrets = props.buildSecrets;
+    this.dockerBuildSSH = props.buildSSH;
     this.dockerBuildTarget = props.target;
     this.dockerOutputs = props.outputs;
     this.dockerCacheFrom = props.cacheFrom;
@@ -487,6 +517,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
       dockerBuildSecrets: this.dockerBuildSecrets,
+      dockerBuildSSH: this.dockerBuildSSH,
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
@@ -530,6 +561,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSSH;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;

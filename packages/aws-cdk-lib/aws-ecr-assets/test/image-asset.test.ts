@@ -151,6 +151,7 @@ describe('image asset', () => {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, outputs: ['123'] });
     const asset8 = new DockerImageAsset(stack, 'Asset8', { directory, buildSecrets: { mySecret: DockerBuildSecret.fromSrc('abc.txt') } });
+    const asset9 = new DockerImageAsset(stack, 'Asset9', { directory, buildSSH: 'default'});
 
     expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
     expect(asset2.assetHash).toEqual('36bf205fb9adc5e45ba1c8d534158a0aed96d190eff433af1d90f3b94f96e751');

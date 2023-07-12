@@ -64,6 +64,15 @@ export interface DockerImageSource {
   readonly dockerBuildArgs?: { [name: string]: string };
 
   /**
+   * SSH agent socket or keys
+   * 
+   * Requires building with docker buildkit.
+   * 
+   * @default - No ssh flag is set
+   */
+  readonly dockerBuildSSH?: string;
+
+  /**
    * Additional build secrets
    *
    * Only allowed when `directory` is set.
