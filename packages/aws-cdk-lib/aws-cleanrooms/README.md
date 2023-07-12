@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as cleanrooms from '@aws-cdk/aws-cleanrooms';
+import * as cleanrooms from 'aws-cdk-lib/aws-cleanrooms';
 ```
 
 <!--BEGIN CFNONLY DISCLAIMER-->
