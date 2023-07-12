@@ -106,24 +106,9 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
   automaticallyAfter: Duration.days(15),
+  rotateImmediatelyOnUpdate: false, // default is true
 });
 ```
-
-By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this
-behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, 
-set the `rotateImmediatelyOnUpdate` property to false:
-
-```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
-declare const fn: lambda.Function;
-const secret = new secretsmanager.Secret(this, 'Secret');
-
-secret.addRotationSchedule('RotationSchedule', {
-  rotationLambda: fn,
-  automaticallyAfter: Duration.days(15),
-  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
-});
 
 Note: The required permissions for Lambda to call SecretsManager and the other way round are automatically granted based on [AWS Documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-required-permissions.html) as long as the Lambda is not imported.
 
@@ -212,6 +197,28 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
   masterSecret: myMasterSecret, // The secret used for the rotation
   target: myDatabase,
   vpc: myVpc,
+});
+```
+
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, 
+set the `rotateImmediatelyOnUpdate` property to false:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const myUserSecret: secretsmanager.Secret;
+declare const myMasterSecret: secretsmanager.Secret;
+declare const myDatabase: ec2.IConnectable;
+declare const myVpc: ec2.Vpc;
+
+new secretsmanager.SecretRotation(this, 'SecretRotation', {
+  application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+  secret: myUserSecret, // The secret that will be rotated
+  masterSecret: myMasterSecret, // The secret used for the rotation
+  target: myDatabase,
+  vpc: myVpc,
+  automaticallyAfter: cdk.Duration.days(7),
+  rotateImmediatelyOnUpdate: false,
 });
 ```
 
