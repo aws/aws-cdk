@@ -662,8 +662,8 @@ const ipv6cidr = new ec2.CfnVPCCidrBlock(this, 'CIDR6', {
 
 // connect the ipv6 cidr to all vpc subnets
 let subnetcount = 0;
-let subnets = [...vpc.publicSubnets, ...vpc.privateSubnets];
-for ( let subnet of subnets) {
+const subnets = vpc.publicSubnets.concat(vpc.privateSubnets);
+for (let subnet of subnets) {
   // Wait for the ipv6 cidr to complete
   subnet.node.addDependency(ipv6cidr);
   this._associate_subnet_with_v6_cidr(subnetcount, subnet);
@@ -673,9 +673,8 @@ for ( let subnet of subnets) {
 const cluster = new eks.Cluster(this, 'hello-eks', {
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
-  vpcSubnets: [{ subnets: [...vpc.publicSubnets] }],
+  vpcSubnets: [{ subnets: vpc.publicSubnets }],
 });
-
 ```
 
 ### Kubectl Support

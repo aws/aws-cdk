@@ -631,15 +631,17 @@ changes the status of the primary deployment to COMPLETED.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const elbAlarm: cloudwatch.Alarm; 
+declare const elbAlarm: cloudwatch.Alarm;
+
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   deploymentAlarms: {
-    alarms: [elbAlarm.alarmName]
-    behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+    alarms: [elbAlarm.alarmName],
+    behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
   },
 });
 
@@ -685,8 +687,10 @@ there are two options to avoid the circular dependency.
 Option 1, defining a physical name for the alarm:
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
+
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
@@ -705,9 +709,11 @@ service.enableDeploymentAlarms([cpuAlarmName], AlarmBehavior.FAIL_ON_ALARM);
 ```
 
 Option 2, defining a physical name for the service:
+
 ```ts
-import * as cdk from 'aws-cdk-lib'
+import * as cdk from 'aws-cdk-lib';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 const serviceName = 'MyFargateService';
@@ -718,8 +724,8 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 
 const cpuMetric = new cw.Metric(
-  metricName: 'CPUUtilization'
-  namespace: 'AWS/ECS'
+  metricName: 'CPUUtilization',
+  namespace: 'AWS/ECS',
   period: cdk.Duration.minutes(5),
   statistic: 'Average',
   dimensionsMap: {
@@ -729,13 +735,13 @@ const cpuMetric = new cw.Metric(
   },
 );
 const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
-  alarmName: cpuAlarmName,
+  alarmName: 'cpuAlarmName',
   metric: cpuMetric,
   evaluationPeriods: 2,
   threshold: 80,
 });
 
-service.enableDeploymentAlarms([myAlarm.alarmName], AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([myAlarm.alarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
 ```
 
 This issue only applies if the metrics to alarm on are emitted by the service

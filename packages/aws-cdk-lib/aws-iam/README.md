@@ -382,28 +382,28 @@ const policyDocument = {
       "Sid": "FirstStatement",
       "Effect": "Allow",
       "Action": ["iam:ChangePassword"],
-      "Resource": "*"
+      "Resource": ["*"],
     },
     {
       "Sid": "SecondStatement",
       "Effect": "Allow",
-      "Action": "s3:ListAllMyBuckets",
-      "Resource": "*"
+      "Action": ["s3:ListAllMyBuckets"],
+      "Resource": ["*"],
     },
     {
       "Sid": "ThirdStatement",
       "Effect": "Allow",
       "Action": [
         "s3:List*",
-        "s3:Get*"
+        "s3:Get*",
       ],
       "Resource": [
         "arn:aws:s3:::confidential-data",
-        "arn:aws:s3:::confidential-data/*"
+        "arn:aws:s3:::confidential-data/*",
       ],
-      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
-    }
-  ]
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}},
+    },
+  ],
 };
 
 const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
