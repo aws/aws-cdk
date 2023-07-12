@@ -361,6 +361,17 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
+  private static cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
+  }
+
+  /** The Docker image */
+  public readonly image: string;
+
   constructor(image: string, _imageHash?: string) {
     // It is preferable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
@@ -425,17 +436,6 @@ export class DockerImage extends BundlingDockerImage {
     reset(deprecated);
     return result;
   }
-
-  private static cacheOptionToFlag(option: DockerCacheOption): string {
-    let flag = `type=${option.type}`;
-    if (option.params) {
-      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
-    }
-    return flag;
-  }
-
-  /** The Docker image */
-  public readonly image: string;
 }
 
 /**
