@@ -836,6 +836,14 @@
                               }
                             }
                           ]
+                        },
+                        "lifecycleConfiguration": {
+                          "rules": [
+                            {
+                              "expirationInDays": 30,
+                              "status": "Enabled"
+                            }
+                          ]
                         }
                       }
                     },
