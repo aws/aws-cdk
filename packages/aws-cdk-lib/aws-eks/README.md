@@ -654,9 +654,9 @@ You can optionally choose to configure your cluster to use IPv6 using the [`ipFa
 ```ts
 declare const vpc: ec2.Vpc;
 
-function _associate_subnet_with_v6_cidr(count: number, subnet: ec2.ISubnet) {
+function associateSubnetWithV6Cidr(scope: Construct, count: number, subnet: ec2.ISubnet) {
   const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
-  cfnSubnet.ipv6CidrBlock = Fn.select(count, Fn.cidr(Fn.select(0, this.vpc.vpcIpv6CidrBlocks), 256, (128 - 64).toString()));
+  cfnSubnet.ipv6CidrBlock = Fn.select(count, Fn.cidr(Fn.select(0, scope.vpc.vpcIpv6CidrBlocks), 256, (128 - 64).toString()));
   cfnSubnet.assignIpv6AddressOnCreation = true;
 }
 
@@ -672,7 +672,7 @@ const subnets = vpc.publicSubnets.concat(vpc.privateSubnets);
 for (let subnet of subnets) {
   // Wait for the ipv6 cidr to complete
   subnet.node.addDependency(ipv6cidr);
-  this._associate_subnet_with_v6_cidr(subnetcount, subnet);
+  associateSubnetWithV6Cidr(this, subnetcount, subnet);
   subnetcount = subnetcount + 1;
 }
 

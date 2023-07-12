@@ -349,7 +349,7 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
@@ -367,7 +367,7 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
   identifiers: [logs.DataIdentifier.DRIVERSLICENSE_US, new logs.DataIdentifier('EmailAddress')],
   logGroupAuditDestination: logGroupDestination,
   s3BucketAuditDestination: s3Destination,
-  deliveryStreamAuditDestination: deliveryStream.deliveryStreamName,
+  deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,
 });
 
 new logs.LogGroup(this, 'LogGroupLambda', {
