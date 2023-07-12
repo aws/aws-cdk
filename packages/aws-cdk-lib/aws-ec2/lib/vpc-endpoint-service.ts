@@ -101,7 +101,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
     this.acceptanceRequired = props.acceptanceRequired ?? true;
-    this.contributorInsightsEnabled = props.contributorInsights;
+    this.contributorInsightsEnabled = props.contributorInsights ?? false;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
       throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');

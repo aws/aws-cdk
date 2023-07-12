@@ -16,7 +16,7 @@ class TestStack extends cdk.Stack {
     new ec2.VpcEndpointService(this, 'vpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [loadBalancer],
       acceptanceRequired: true,
-      contributorInsightsEnabled: true,
+      contributorInsights: true,
     });
   }
 

@@ -114,7 +114,7 @@ describe('vpc endpoint service', () => {
           loadBalancerArn: lb.loadBalancerArn,
         }],
         acceptanceRequired: true,
-        contributorInsightsEnabled: true,
+        contributorInsights: true,
       });
 
       // THEN
