@@ -1929,7 +1929,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with rotateImmediatelyOnUpdate as true', () => {
+  test('addRotationSingleUser() with explicit immediate rotation', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1962,7 +1962,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with rotateImmediatelyOnUpdate as false', () => {
+  test('addRotationSingleUser() without immediate rotation', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1995,7 +1995,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationMultiUser() with rotateImmediatelyOnUpdate as true', () => {
+  test('addRotationMultiUser() with explicit immediate rotation', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2039,7 +2039,7 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationMultiUser() with rotateImmediatelyOnUpdate as false', () => {
+  test('addRotationMultiUser() without immediate rotation', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -2055,7 +2055,7 @@ describe('cluster', () => {
     // WHEN
     cluster.addRotationMultiUser('user', {
       secret: userSecret.attach(cluster),
-      rotateImmediatelyOnUpdate: true,
+      rotateImmediatelyOnUpdate: false,
     });
 
     // THEN
