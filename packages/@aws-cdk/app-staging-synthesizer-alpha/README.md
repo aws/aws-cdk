@@ -249,6 +249,22 @@ const app = new App({
 });
 ```
 
+### Auto Delete Staging Assets on Deletion
+
+By default, the staging resources will be cleaned up on stack deletion. That means that the
+S3 Bucket and ECR Repositories are set to `RemovalPolicy.DESTROY` and have `autoDeleteObjects`
+or `autoDeleteImages` turned on. This creates custom resources under the hood to facilitate
+cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    autoDeleteStagingAssets: false,
+  }),
+});
+```
+
 ## Using a Custom Staging Stack per Environment
 
 If you want to customize some behavior that is not configurable via properties,
