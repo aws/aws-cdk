@@ -145,8 +145,7 @@ describe('bundling', () => {
       type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' }
     };
 
-
-    const image = DockerImage.fromBuild('docker-path', { cacheTo });
+    const image = DockerImage.fromBuild('docker-path', { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] });
     image.run();
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
