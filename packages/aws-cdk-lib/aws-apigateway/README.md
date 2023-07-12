@@ -66,8 +66,8 @@ To give an IAM User or Role permission to invoke a method, use `grantExecute`:
 declare const api: apigateway.RestApi;
 declare const user: iam.User;
 
-const books = api.root.addResource('books');
-books.grantExecute(user);
+const method = api.root.addResource('books').addMethod('GET');
+method.grantExecute(user);
 ```
 
 ## AWS Lambda-backed APIs

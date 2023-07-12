@@ -640,7 +640,7 @@ const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   deploymentAlarms: {
-    alarms: [elbAlarm.alarmName],
+    alarmNames: [elbAlarm.alarmName],
     behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
   },
 });
@@ -653,8 +653,11 @@ new cw.Alarm(this, 'CPUAlarm', {
   evaluationPeriods: 2,
   threshold: 80,
 });
-service.enableDeploymentAlarms([cpuAlarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([cpuAlarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
 ```
+
 > Note: Deployment alarms are only available when `deploymentController` is set
 > to `DeploymentControllerType.ECS`, which is the default.
 
@@ -705,7 +708,9 @@ const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
 });
 
 // Using `myAlarm.alarmName` here will cause a circular dependency
-service.enableDeploymentAlarms([cpuAlarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([cpuAlarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
 ```
 
 Option 2, defining a physical name for the service:
@@ -740,7 +745,9 @@ const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
   threshold: 80,
 });
 
-service.enableDeploymentAlarms([myAlarm.alarmName], ecs.AlarmBehavior.FAIL_ON_ALARM);
+service.enableDeploymentAlarms([myAlarm.alarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
 ```
 
 This issue only applies if the metrics to alarm on are emitted by the service

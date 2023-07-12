@@ -355,7 +355,7 @@ const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
-const s3Destination = new s3.Bucket(this, 'audit-bucket-id');
+const s3Destination = new destinations.S3Bucket(this, 'audit-bucket-id');
 
 const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],

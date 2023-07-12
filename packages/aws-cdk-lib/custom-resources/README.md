@@ -631,13 +631,16 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 ```ts
 import * as regionInfo from 'aws-cdk-lib/region-info';
 
+class MyFact implements regionInfo.IFact {
+  public readonly region = 'us-east-1';
+  public readonly name = regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
+  public readonly value = lambda.Runtime.NODEJS_18_X.name,
+}
+
 // change custom resource default runtime
-regionInfo.Fact.register({
-  region: 'us-east-1', // your region
-  name: regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
-  value: lambda.Runtime.NODEJS_18_X.name,
-}, true);
-new AwsCustomResource(this, 'GetParameter', {
+regionInfo.Fact.register(myFact(), true);
+
+new cr.AwsCustomResource(this, 'GetParameter', {
   resourceType: 'Custom::SSMParameter',
   onUpdate: {
     service: '@aws-sdk/client-ssm', // 'SSM' in v2
@@ -646,7 +649,7 @@ new AwsCustomResource(this, 'GetParameter', {
       Name: 'foo',
       WithDecryption: true,
     },
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
   },
 });
 ```
