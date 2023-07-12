@@ -991,6 +991,50 @@ describe('fargate service', () => {
         NetworkConfiguration: Match.absent(),
       });
     });
+
+    test('network configuration exists when explicitly specifying a deployment controller type other than EXTERNAL', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.ECS,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'ExternalServiceSecurityGroup45E0A4FC',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      });
+    });
   });
 
   describe('when enabling service connect', () => {
