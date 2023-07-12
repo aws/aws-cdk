@@ -149,6 +149,35 @@ test('An existing role can be specified instead of auto-created', () => {
   });
 });
 
+test('An auto-generated bucket can have lifecycle rules', () => {
+  // GIVEN
+  const stack = new Stack();
+  const lifecycleRules = [{
+    expiration: Duration.days(30),
+  }];
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    artifactsBucketLifecycleRules: lifecycleRules,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    LifecycleConfiguration: {
+      Rules: [
+        {
+          ExpirationInDays: 30,
+        },
+      ],
+    },
+  });
+});
+
 test('An existing bucket and prefix can be specified instead of auto-created', () => {
   // GIVEN
   const stack = new Stack();
