@@ -455,7 +455,7 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantRead(grantee: iam.IGrantable): iam.Grant | undefined {
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
@@ -469,7 +469,7 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantWrite(grantee: iam.IGrantable): iam.Grant | undefined {
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
@@ -483,7 +483,7 @@ export class Table extends Resource implements ITable {
    *
    * @param grantee the principal
    */
-  public grantReadWrite(grantee: iam.IGrantable): iam.Grant | undefined {
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.bucket) {
       if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
