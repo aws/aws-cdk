@@ -9,6 +9,7 @@ env:
 phases:
   install:
     commands:
+      - codebuild-breakpoint
 
       # baked in our image.
       # this also takes care of launching the docker daemon.
