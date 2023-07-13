@@ -30,6 +30,18 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       ? fs.statSync(sourceFilePath)
       : fs.lstatSync(sourceFilePath);
 
+    const included = !options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath);
+
+    if (stat && (stat.isSymbolicLink() || stat.isFile())) {
+      if (!included) {
+        continue;
+      }
+      const destDirPath = path.dirname(destFilePath);
+      if (!fs.existsSync(destDirPath)) {
+        fs.mkdirSync(destDirPath, { recursive: true });
+      }
+    }
+
     if (stat && stat.isSymbolicLink()) {
       const target = fs.readlinkSync(sourceFilePath);
 
@@ -40,19 +52,13 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
-        if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
-          const destDirPath = path.dirname(destFilePath);
-          if (!fs.existsSync(destDirPath)) {
-            fs.mkdirSync(destDirPath, { recursive: true });
-          }
-          fs.symlinkSync(target, destFilePath);
-        }
+        fs.symlinkSync(target, destFilePath);
         stat = undefined;
       }
     }
 
     if (stat && stat.isDirectory()) {
-      if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
+      if (included) {
         fs.mkdirSync(destFilePath, { recursive: true });
       }
       copyDirectory(sourceFilePath, destFilePath, options, rootDir);
@@ -60,13 +66,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
     }
 
     if (stat && stat.isFile()) {
-      if (!options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath)) {
-        const destDirPath = path.dirname(destFilePath);
-        if (!fs.existsSync(destDirPath)) {
-          fs.mkdirSync(destDirPath, { recursive: true });
-        }
-        fs.copyFileSync(sourceFilePath, destFilePath);
-      }
+      fs.copyFileSync(sourceFilePath, destFilePath);
       stat = undefined;
     }
   }
