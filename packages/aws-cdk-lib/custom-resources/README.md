@@ -387,6 +387,27 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
 
 ```
 
+### Customizing Provider Function environment encryption key
+
+Sometimes it may be useful to manually set a AWS KMS key for the Provider Function Lambda and therefore
+be able to view, manage and audit the key usage.
+
+```ts
+declare const onEvent: lambda.Function;
+declare const isComplete: lambda.Function;
+declare const myRole: iam.Role;
+
+const key = new kms.Key(this, 'MyKey');
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionEnvEncryption: key,   // Optional
+});
+
+```
+
 ## Custom Resources for AWS APIs
 
 Sometimes a single API call can fill the gap in the CloudFormation coverage. In
