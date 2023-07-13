@@ -128,6 +128,78 @@ describe('ProductStack', () => {
     });
   });
 
+  test('nested stack in product stack', () => {
+    // GIVEN
+    const app = new cdk.App();
+
+    class ServiceCatalogSampleStack extends cdk.Stack {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new servicecatalog.CloudFormationProduct(this, 'SampleProduct', {
+          productName: 'Sample Product',
+          owner: 'owner',
+          productVersions: [
+            {
+              productVersionName: 'v1',
+              cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+                new SampleProductStack(this, 'SampleProductStack', {
+                  assetBucket: new s3.Bucket(this, 'AssetBucket', {
+                    bucketName: 'test-asset-bucket',
+                  }),
+                }),
+              ),
+            },
+          ],
+        });
+      }
+    }
+
+    class SampleNestedStack extends cdk.NestedStack {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new lambda.Function(this, 'HelloHandler', {
+          runtime: lambda.Runtime.PYTHON_3_9,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+          handler: 'index.handler',
+        });
+      }
+    }
+
+    class SampleProductStack extends servicecatalog.ProductStack {
+      constructor(scope: Construct, id: string, props: servicecatalog.ProductStackProps) {
+        super(scope, id, props);
+
+        new SampleNestedStack(this, 'SampleNestedStack');
+      }
+    }
+
+    const stack = new ServiceCatalogSampleStack(app, 'ServicecatalogSampleStack');
+
+    // WHEN
+    app.synth();
+
+    // THEN
+    Template.fromJSON(Template.fromStack(stack)).hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceBucketNames: [
+        {
+          'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+        },
+        {
+          'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+        },
+      ],
+      SourceObjectKeys: [
+        'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
+        'da185071753dd5fcd7bd1ff5f2882a5449980d60ed72cf65fe2b779dbbb30eeb.json',
+      ],
+      DestinationBucketName: {
+        Ref: 'AssetBucket1D025086',
+      },
+    });
+  });
+
   test('fails if bucketName is not specified in product stack with assets', () => {
     // GIVEN
     const app = new cdk.App(
