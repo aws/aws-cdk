@@ -1,5 +1,6 @@
 # AWS CDK Custom Resources
 
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Provider Framework
 
@@ -344,7 +345,10 @@ This sample demonstrates the following concepts:
 
 #### S3Assert
 
-Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+Checks that the textual contents of an S3 object matches a certain value. The check will be retried
+for 5 minutes as long as the object is not found or the value is different. See the source code for the
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts)
+and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
 
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
@@ -384,7 +388,6 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionName: 'the-lambda-name',   // Optional
 });
-
 ```
 
 ### Customizing Provider Function environment encryption key
@@ -393,6 +396,8 @@ Sometimes it may be useful to manually set a AWS KMS key for the Provider Functi
 be able to view, manage and audit the key usage.
 
 ```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 declare const onEvent: lambda.Function;
 declare const isComplete: lambda.Function;
 declare const myRole: iam.Role;
@@ -405,7 +410,6 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionEnvEncryption: key,   // Optional
 });
-
 ```
 
 ## Custom Resources for AWS APIs
@@ -676,7 +680,3 @@ new cr.AwsCustomResource(this, 'GetParameter', {
 ```
 
 If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.
-
----
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
