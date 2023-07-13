@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-import-cluster-test"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

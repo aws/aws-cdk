@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b2023d97d0771e6f8a5b28f785080100bc287da0656d0d38298cc4e59cfb098.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ab95709037165a6e49574da048b0a7a23a3fb6c89754a4dd11832805929bdc2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -447,16 +447,16 @@
             "data": "awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
           }
         ],
-        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
-          }
-        ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestKubectlLayer2638D675Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkekshelmtestKubectlLayer2638D675Ref"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
           }
         ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestVpcPrivateSubnet1Subnet3D2B5C0BRef": [

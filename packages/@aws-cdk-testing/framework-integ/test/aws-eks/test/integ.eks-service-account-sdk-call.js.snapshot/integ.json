@@ -5,6 +5,7 @@
       "stacks": [
         "aws-eks-service-account-sdk-calls-test"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksserviceaccountsdkcallDefaultTestDeployAssertC5196707"
     }

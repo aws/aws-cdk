@@ -3,10 +3,10 @@
   "TestPortfolio4AC794EB": {
    "Type": "AWS::ServiceCatalog::Portfolio",
    "Properties": {
-    "DisplayName": "TestPortfolio",
-    "ProviderName": "TestProvider",
     "AcceptLanguage": "en",
-    "Description": "This is our Service Catalog Portfolio"
+    "Description": "This is our Service Catalog Portfolio",
+    "DisplayName": "TestPortfolio",
+    "ProviderName": "TestProvider"
    }
   },
   "TestPortfolioPortfolioProductAssociation9c99ebba36fc70F2C75A": {
@@ -329,12 +329,6 @@
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
@@ -346,6 +340,12 @@
       "Ref": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900
    },
@@ -402,7 +402,7 @@
       "DisableTemplateValidation": true,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/c6a724b9f87d5f730d400d518f32edba51cf14c851d05c5eea07a9170b9e510a.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/febf69072bf0640316efdf49d6c38d247fef7de32412b570eaf45f5ca3657784.json"
        }
       },
       "Name": "testAssetProduct"

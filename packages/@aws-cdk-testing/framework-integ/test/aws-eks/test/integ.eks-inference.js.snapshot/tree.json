@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -75,7 +72,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -97,9 +97,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -109,7 +106,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -142,12 +142,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -186,14 +186,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -228,9 +228,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -258,7 +255,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -280,9 +280,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -292,7 +289,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -325,12 +325,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -355,9 +355,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -385,7 +382,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -407,9 +407,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -419,7 +416,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -452,12 +452,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
@@ -482,9 +482,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -512,7 +509,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -534,9 +534,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -546,7 +543,10 @@
                             "key": "Name",
                             "value": "aws-cdk-eks-cluster-inference-test/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -579,12 +579,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
@@ -624,11 +624,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -950,7 +950,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:443",
                         "fromPort": 443,
                         "groupId": {
@@ -959,6 +958,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
@@ -979,7 +979,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
                         "fromPort": 443,
                         "groupId": {
@@ -988,6 +987,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "Cluster9EE0221C",
@@ -1199,7 +1199,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:443",
                         "fromPort": 443,
                         "groupId": {
@@ -1208,6 +1207,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
@@ -1228,7 +1228,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "-1",
                         "description": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
@@ -1236,6 +1235,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "-1",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
@@ -1255,7 +1255,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
                         "fromPort": 443,
                         "groupId": {
@@ -1264,6 +1263,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "Cluster9EE0221C",
@@ -1284,7 +1284,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443",
                         "fromPort": 443,
                         "groupId": {
@@ -1293,6 +1292,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "ClusterControlPlaneSecurityGroupD274242C",
@@ -1313,7 +1313,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535",
                         "fromPort": 1025,
                         "groupId": {
@@ -1322,6 +1321,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "Cluster9EE0221C",
@@ -1342,7 +1342,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535",
                         "fromPort": 1025,
                         "groupId": {
@@ -1351,6 +1350,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "ClusterControlPlaneSecurityGroupD274242C",
@@ -1371,7 +1371,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "-1",
                         "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
@@ -1379,6 +1378,7 @@
                             "ClusterSecurityGroupId"
                           ]
                         },
+                        "ipProtocol": "-1",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "Cluster9EE0221C",
@@ -1563,14 +1563,24 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
                       "aws:cdk:cloudformation:props": {
+                        "amiType": "AL2_x86_64",
                         "clusterName": {
                           "Ref": "Cluster9EE0221C"
                         },
+                        "forceUpdateEnabled": true,
+                        "instanceTypes": [
+                          "m5.large"
+                        ],
                         "nodeRole": {
                           "Fn::GetAtt": [
                             "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
                             "Arn"
                           ]
+                        },
+                        "scalingConfig": {
+                          "desiredSize": 2,
+                          "maxSize": 2,
+                          "minSize": 2
                         },
                         "subnets": [
                           {
@@ -1579,17 +1589,7 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           }
-                        ],
-                        "amiType": "AL2_x86_64",
-                        "forceUpdateEnabled": true,
-                        "instanceTypes": [
-                          "m5.large"
-                        ],
-                        "scalingConfig": {
-                          "desiredSize": 2,
-                          "maxSize": 2,
-                          "minSize": 2
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1647,7 +1647,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "-1",
                             "description": "from awscdkeksclusterinferencetestClusterInferenceInstancesInstanceSecurityGroupAC01F26F:ALL TRAFFIC",
                             "groupId": {
                               "Fn::GetAtt": [
@@ -1655,6 +1654,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
@@ -1674,7 +1674,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "tcp",
                             "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:443",
                             "fromPort": 443,
                             "groupId": {
@@ -1683,6 +1682,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "Cluster9EE0221C",
@@ -1703,7 +1703,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "tcp",
                             "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:443",
                             "fromPort": 443,
                             "groupId": {
@@ -1712,6 +1711,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "ClusterControlPlaneSecurityGroupD274242C",
@@ -1732,7 +1732,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "tcp",
                             "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:1025-65535",
                             "fromPort": 1025,
                             "groupId": {
@@ -1741,6 +1740,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "Cluster9EE0221C",
@@ -1761,7 +1761,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "tcp",
                             "description": "from awscdkeksclusterinferencetestClusterControlPlaneSecurityGroupDA4CA86F:1025-65535",
                             "fromPort": 1025,
                             "groupId": {
@@ -1770,6 +1769,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "ClusterControlPlaneSecurityGroupD274242C",
@@ -1790,7 +1790,6 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                           "aws:cdk:cloudformation:props": {
-                            "ipProtocol": "-1",
                             "description": "from awscdkeksclusterinferencetestClusterClusterSecurityGroupAFDB8D50:ALL TRAFFIC",
                             "groupId": {
                               "Fn::GetAtt": [
@@ -1798,6 +1797,7 @@
                                 "GroupId"
                               ]
                             },
+                            "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
                                 "Cluster9EE0221C",
@@ -1933,6 +1933,14 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-cdk-eks-cluster-inference-test/Cluster/InferenceInstances/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -2100,8 +2108,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
-                        "maxSize": "1",
-                        "minSize": "1",
                         "launchTemplate": {
                           "launchTemplateId": {
                             "Ref": "ClusterInferenceInstancesLaunchTemplateA0BB0AA4"
@@ -2113,6 +2119,8 @@
                             ]
                           }
                         },
+                        "maxSize": "1",
+                        "minSize": "1",
                         "tags": [
                           {
                             "key": {
@@ -2349,12 +2357,6 @@
                           },
                           "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
                         },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "OnEventHandlerServiceRole15A26729",
-                            "Arn"
-                          ]
-                        },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
                           "variables": {
@@ -2367,6 +2369,12 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
+                        "role": {
+                          "Fn::GetAtt": [
+                            "OnEventHandlerServiceRole15A26729",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "nodejs18.x",
                         "timeout": 60
                       }
@@ -2481,12 +2489,6 @@
                           },
                           "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
                         },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "IsCompleteHandlerServiceRole5810CC58",
-                            "Arn"
-                          ]
-                        },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
                           "variables": {
@@ -2499,6 +2501,12 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
+                        "role": {
+                          "Fn::GetAtt": [
+                            "IsCompleteHandlerServiceRole5810CC58",
+                            "Arn"
+                          ]
+                        },
                         "runtime": "nodejs18.x",
                         "timeout": 60
                       }
@@ -2704,12 +2712,6 @@
                               },
                               "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
-                            },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
@@ -2731,6 +2733,12 @@
                               }
                             },
                             "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -2925,12 +2933,6 @@
                               },
                               "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkisCompleteServiceRoleB1087139",
-                                "Arn"
-                              ]
-                            },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
@@ -2949,6 +2951,12 @@
                               }
                             },
                             "handler": "framework.isComplete",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkisCompleteServiceRoleB1087139",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -3143,12 +3151,6 @@
                               },
                               "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonTimeoutServiceRole28643D26",
-                                "Arn"
-                              ]
-                            },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
@@ -3167,6 +3169,12 @@
                               }
                             },
                             "handler": "framework.onTimeout",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonTimeoutServiceRole28643D26",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900
                           }
@@ -3385,7 +3393,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/730ab9bde59256911c9f3a3805ab8084ae6487ff15814e3d596190abefc5a053.json"
+                          "/34b23ebe2c96ab11af6be9fa220c5a794b14107883de85a1ab7d3d544a1447c9.json"
                         ]
                       ]
                     }
@@ -3448,9 +3456,6 @@
                           },
                           "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
                         },
-                        "role": {
-                          "Ref": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
-                        },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
                         "layers": [
@@ -3462,6 +3467,9 @@
                           }
                         ],
                         "memorySize": 1024,
+                        "role": {
+                          "Ref": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
+                        },
                         "runtime": "python3.7",
                         "timeout": 900,
                         "vpcConfig": {
@@ -3739,12 +3747,6 @@
                               },
                               "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
-                            },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
                               "variables": {
@@ -3757,6 +3759,12 @@
                               }
                             },
                             "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
                             "runtime": "nodejs18.x",
                             "timeout": 900,
                             "vpcConfig": {
@@ -3801,17 +3809,17 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
-                "id": "reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn",
+              "reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
+                "id": "reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref",
+                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
-                "id": "reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref",
+              "reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
+                "id": "reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn",
+                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3857,6 +3865,29 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
+                    "parameters": {
+                      "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
+                      "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
+                        "Fn::GetAtt": [
+                          "ClusterKubectlHandlerRole94549F93",
+                          "Arn"
+                        ]
+                      },
+                      "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": {
+                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                      },
+                      "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet2Subnet006B3B78Ref": {
+                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                      },
+                      "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId": {
+                        "Fn::GetAtt": [
+                          "Cluster9EE0221C",
+                          "ClusterSecurityGroupId"
+                        ]
+                      }
+                    },
                     "templateUrl": {
                       "Fn::Join": [
                         "",
@@ -3873,32 +3904,9 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/8269c69be10d18e10bd7d48b166ee59d5a1e209cf34ce69ff70cfa4f07bf89e0.json"
+                          "/1306e6285fc292b6cf0b99ad7685af7db62e104d61b7071787531c1fbddd2525.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": {
-                        "Fn::GetAtt": [
-                          "ClusterKubectlHandlerRole94549F93",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
-                        "Ref": "KubectlLayer600207B5"
-                      },
-                      "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": {
-                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                      },
-                      "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet2Subnet006B3B78Ref": {
-                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                      },
-                      "referencetoawscdkeksclusterinferencetestClusterF6AC11E0ClusterSecurityGroupId": {
-                        "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "ClusterSecurityGroupId"
-                        ]
-                      }
                     }
                   }
                 },

@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-cluster-bottlerocket-ng-test"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterbottlerocketngDefaultTestDeployAssert6C42FFE7"
     }

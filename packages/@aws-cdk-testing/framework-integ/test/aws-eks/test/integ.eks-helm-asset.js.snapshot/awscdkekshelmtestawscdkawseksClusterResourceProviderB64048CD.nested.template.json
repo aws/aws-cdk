@@ -52,12 +52,6 @@
      },
      "S3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "OnEventHandlerServiceRole15A26729",
-      "Arn"
-     ]
-    },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
      "Variables": {
@@ -70,6 +64,12 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "OnEventHandlerServiceRole15A26729",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 60
    },
@@ -117,12 +117,6 @@
      },
      "S3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "IsCompleteHandlerServiceRole5810CC58",
-      "Arn"
-     ]
-    },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
      "Variables": {
@@ -135,6 +129,12 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "IsCompleteHandlerServiceRole5810CC58",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 60
    },
@@ -251,12 +251,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -278,6 +272,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -388,12 +388,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkisCompleteServiceRoleB1087139",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -412,6 +406,12 @@
      }
     },
     "Handler": "framework.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkisCompleteServiceRoleB1087139",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },
@@ -522,12 +522,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonTimeoutServiceRole28643D26",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -546,6 +540,12 @@
      }
     },
     "Handler": "framework.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonTimeoutServiceRole28643D26",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900
    },

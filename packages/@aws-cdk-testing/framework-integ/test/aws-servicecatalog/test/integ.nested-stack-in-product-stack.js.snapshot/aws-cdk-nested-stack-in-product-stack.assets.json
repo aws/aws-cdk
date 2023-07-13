@@ -57,7 +57,7 @@
         }
       }
     },
-    "f9ff6c6c057913ad2646bc0ae7d4fc4a9a1682382db55fbf5302b79c66c580c3": {
+    "75d608df75f61dac3fdadd6450401e430ffcdcc3face2dbe3c656ebf102bb8c1": {
       "source": {
         "path": "awscdknestedstackinproductstackSampleProductStackSampleNestedStackE8E78B4E.nested.template.json",
         "packaging": "file"
@@ -65,13 +65,13 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "f9ff6c6c057913ad2646bc0ae7d4fc4a9a1682382db55fbf5302b79c66c580c3.json",
+          "objectKey": "75d608df75f61dac3fdadd6450401e430ffcdcc3face2dbe3c656ebf102bb8c1.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
       }
     },
-    "6bae96d8b7b79d7e7a5e68867bb5b17cf9404dfbe9fd390ca4d80368350bcff2": {
+    "b19855fc4d79148d4a4bcf46bdec84d2838a1ff6787e8aa2eaa98c0f7d8b9ac8": {
       "source": {
         "path": "awscdknestedstackinproductstackSampleProductStack3B6BAAB4.product.template.json",
         "packaging": "file"
@@ -79,13 +79,13 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "6bae96d8b7b79d7e7a5e68867bb5b17cf9404dfbe9fd390ca4d80368350bcff2.json",
+          "objectKey": "b19855fc4d79148d4a4bcf46bdec84d2838a1ff6787e8aa2eaa98c0f7d8b9ac8.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
       }
     },
-    "7501cc4dab5573ca280c76ec23f5f91f462edd4329476f28523adaa32f6cec2d": {
+    "ba18bfbb3384019a2c62e3de7deb433f76c43587d1a01a4ead4d30e466252748": {
       "source": {
         "path": "aws-cdk-nested-stack-in-product-stack.template.json",
         "packaging": "file"
@@ -93,7 +93,7 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "7501cc4dab5573ca280c76ec23f5f91f462edd4329476f28523adaa32f6cec2d.json",
+          "objectKey": "ba18bfbb3384019a2c62e3de7deb433f76c43587d1a01a4ead4d30e466252748.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
