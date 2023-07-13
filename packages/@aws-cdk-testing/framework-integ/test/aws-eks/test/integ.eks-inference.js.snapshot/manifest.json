@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ddc0d706edb15c574360c10f835c94d0d7bd0b52e972f4a620fb3c04a140edd0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bff4cdd4b29122392d5c57fb039379b577e2ac7f0c8623d5d4445384f7ad9df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -537,16 +537,16 @@
             "data": "awscdkeksclusterinferencetestawscdkawseksKubectlProviderframeworkonEvent96006823Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestKubectlLayerC250C540Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusterinferencetestClusterKubectlHandlerRole9FB34EF2Arn"
           }
         ],
         "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": [
@@ -643,15 +643,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesLaunchTemplateProfileECB30F9A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
