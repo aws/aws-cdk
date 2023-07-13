@@ -392,6 +392,22 @@ beforehand.
 This can be useful for configuring routing using a combination of gateways:
 for more information see [Routing](#routing) below.
 
+### Disabling the creation of the default internet gateway
+
+If you need to control the creation of the internet gateway explicitly,
+you can disable the creation of the default one using the `createInternetGateway`
+property:
+
+```ts
+const vpc = new ec2.Vpc(this, "VPC", {
+  createInternetGateway: false,
+  subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PUBLIC,
+      name: 'Public',
+    }]
+});
+```
+
 #### Routing
 
 It's possible to add routes to any subnets using the `addRoute()` method. If for
@@ -1894,6 +1910,14 @@ const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
 });
 
 launchTemplate.addSecurityGroup(sg2);
+```
+
+To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html) in launch templates and resolve the AMI IDs at instance launch time:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName');
+});
 ```
 
 ## Detailed Monitoring
