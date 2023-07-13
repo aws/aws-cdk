@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node18 --platform=node --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
