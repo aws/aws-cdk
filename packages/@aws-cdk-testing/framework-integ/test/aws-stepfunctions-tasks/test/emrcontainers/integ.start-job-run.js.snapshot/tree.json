@@ -1119,7 +1119,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2507,7 +2507,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.69"
                     }
                   }
                 },
@@ -2586,7 +2586,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2719,7 +2719,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3108,7 +3108,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9f53c114c4dc11f3f2ee9d16fc22fdbaad28d631f8ab7740a90eb7a941ae666b.json"
+                          "/5d4904edd735607bb47b3308a7d74e85903677c5a3bb58c914035a75263c9b89.json"
                         ]
                       ]
                     },
@@ -3142,7 +3142,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "Virtual Cluster": {
@@ -3384,7 +3384,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -4208,7 +4208,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -4254,7 +4254,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },

@@ -53,15 +53,15 @@
         }
       }
     },
-    "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc": {
+    "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642": {
       "source": {
-        "path": "asset.292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip",
+        "path": "asset.e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip",
+          "objectKey": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -92,7 +92,7 @@
         }
       }
     },
-    "fc130f16d7629187d57c382928b1445b00bc760f0d0e9a2979eb85b8e61873e1": {
+    "e72a4b1deb408ead7326a19f73e7036ddbb54c87abc1cab02b2a8cc894eeb423": {
       "source": {
         "path": "awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProvider65D285A0.nested.template.json",
         "packaging": "file"
@@ -100,12 +100,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fc130f16d7629187d57c382928b1445b00bc760f0d0e9a2979eb85b8e61873e1.json",
+          "objectKey": "e72a4b1deb408ead7326a19f73e7036ddbb54c87abc1cab02b2a8cc894eeb423.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "270eaa77919680b613ea9441a17ac9919e30a816938bbd3b445aed1f14d3f746": {
+    "7964d095ec0df901cd12aec354ee30c0ccdd7150ad1b023c6d75345fa2576750": {
       "source": {
         "path": "aws-stepfunctions-tasks-eks-call-integ-test.template.json",
         "packaging": "file"
@@ -113,7 +113,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "270eaa77919680b613ea9441a17ac9919e30a816938bbd3b445aed1f14d3f746.json",
+          "objectKey": "7964d095ec0df901cd12aec354ee30c0ccdd7150ad1b023c6d75345fa2576750.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1119,7 +1119,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2451,7 +2451,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.69"
                     }
                   }
                 },
@@ -2530,7 +2530,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2663,7 +2663,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3052,7 +3052,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/49f5eff2dfc3c5c2b1970a08d40582ef26598ddbcd1d5afe60f77345ad75d184.json"
+                          "/5864bf1dee16164adaca45b9c61d5d1455e03558b5527e066057c3eff7f4e7d7.json"
                         ]
                       ]
                     },
@@ -3086,7 +3086,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "JobExecutionRole": {
@@ -3629,7 +3629,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -3675,7 +3675,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },
