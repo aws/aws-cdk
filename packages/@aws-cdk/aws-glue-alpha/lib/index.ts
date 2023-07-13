@@ -3,6 +3,7 @@
 export * from './code';
 export * from './connection';
 export * from './data-format';
+export * from './data-quality-ruleset';
 export * from './database';
 export * from './job';
 export * from './job-executable';

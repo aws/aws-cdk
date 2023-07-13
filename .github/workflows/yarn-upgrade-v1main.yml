@@ -1,9 +1,6 @@
 name: Yarn Upgrade v1-main
 
 on:
-  schedule:
-    # Every wednesday at 13:37 UTC
-    - cron: 37 13 * * 3
   workflow_dispatch: {}
 
 jobs:
@@ -39,16 +36,16 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install Tools
         run: |-
-          npm -g install lerna npm-check-updates
+          npm -g install npm-check-updates
       - name: Build CLI
-        run: lerna run build --scope aws-cdk --include-dependencies --stream
+        run: npx lerna run build --scope aws-cdk --include-dependencies --stream
       - name: Build Integ Runner
-        run: lerna run build --scope @aws-cdk/integ-runner --include-dependencies --stream
+        run: npx lerna run build --scope @aws-cdk/integ-runner --include-dependencies --stream
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
         run: |-
-          echo "list=$(lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
+          echo "list=$(npx lerna ls --all --json 2>/dev/null | jq -r 'map(.name) | join(",")')" >> $GITHUB_OUTPUT
       - name: Run "ncu -u"
         # We special-case some @types because they need to be pinned to specific versions due to breaking changes in minor upgrades https://github.com/DefinitelyTyped/DefinitelyTyped/issues/64266
         # We special-case typescript because it's not semantically versioned
@@ -60,8 +57,8 @@ jobs:
           ncu --upgrade --filter=typescript --target=patch
           ncu --upgrade --reject=@types/node,@types/prettier,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
-          lerna exec --parallel ncu -- --upgrade --filter=typescript,lerna --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          npx lerna exec --parallel ncu -- --upgrade --filter=typescript,lerna --target=patch
+          npx lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
