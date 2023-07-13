@@ -124,14 +124,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-s3-bucket-auto-delete-objects/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -253,7 +245,7 @@
                 "path": "cdk-integ-s3-bucket-auto-delete-objects/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.54"
+                  "version": "10.2.55"
                 }
               },
               "DeployAssert": {
@@ -299,7 +291,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.54"
+          "version": "10.2.55"
         }
       }
     },
