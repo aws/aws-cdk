@@ -5,6 +5,7 @@
       "stacks": [
         "aws-stepfunctions-tasks-emr-containers-start-job-run-test"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

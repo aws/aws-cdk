@@ -107,8 +107,8 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
       return status;
     } catch (describeFargateProfileError: any) {
-      if (describeFargateProfileError.code === 'ResourceNotFoundException') {
-        this.log('received ResourceNotFoundException, this means the profile has been deleted (or never existed)');
+      if (describeFargateProfileError.$metadata.httpStatusCode === 404) {
+        this.log('received 404, this means the profile has been deleted (or never existed)');
         return 'NOT_FOUND';
       }
 
