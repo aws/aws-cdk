@@ -28,7 +28,8 @@ export class FileSystem {
    *
    * The fingerprint will also include:
    * 1. An extra string if defined in `options.extra`.
-   * 2. The symlink follow mode value.
+   * 2. The set of exclude patterns, if defined in `options.exclude`
+   * 3. The symlink follow mode value.
    *
    * @param fileOrDirectory The directory or file to fingerprint
    * @param options Fingerprinting options
