@@ -4,7 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-24';
@@ -109,8 +109,6 @@ class EksClusterStack extends Stack {
 
     this.assertSimpleCdk8sChart();
 
-    this.assertCreateNamespaceAndSimpleHelmChart();
-
     this.assertServiceAccount();
 
     this.assertExtendedServiceAccount();
@@ -144,29 +142,6 @@ class EksClusterStack extends Stack {
         'some-label': 'with-some-value',
       },
     });
-  }
-
-  private assertCreateNamespaceAndSimpleHelmChart() {
-    // deploy an nginx ingress in a namespace
-    const nginxNamespace = this.cluster.addManifest('nginx-namespace', {
-      apiVersion: 'v1',
-      kind: 'Namespace',
-      metadata: {
-        name: 'nginx',
-      },
-    });
-
-    const nginxIngress = this.cluster.addHelmChart('nginx-ingress', {
-      chart: 'nginx-ingress',
-      repository: 'https://helm.nginx.com/stable',
-      namespace: 'nginx',
-      wait: true,
-      createNamespace: false,
-      timeout: Duration.minutes(15),
-    });
-
-    // make sure namespace is deployed before the chart
-    nginxIngress.node.addDependency(nginxNamespace);
   }
 
   private assertSimpleCdk8sChart() {

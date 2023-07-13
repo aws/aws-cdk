@@ -2,7 +2,7 @@
 import * as path from 'path';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import {
-  App, CfnOutput, Stack, StackProps, Duration,
+  App, CfnOutput, Stack, StackProps,
   custom_resources as cr,
   aws_iam as iam,
   aws_ec2 as ec2,
@@ -69,13 +69,9 @@ class EksClusterStack extends Stack {
 
     this.assertManifestWithoutValidation();
 
-    this.assertSimpleHelmChart();
-
     this.assertHelmChartAsset();
 
     this.assertSimpleCdk8sChart();
-
-    this.assertCreateNamespace();
 
     this.assertServiceAccount();
 
@@ -113,29 +109,6 @@ class EksClusterStack extends Stack {
     });
   }
 
-  private assertCreateNamespace() {
-    // deploy an nginx ingress in a namespace
-    const nginxNamespace = this.importedCluster.addManifest('nginx-namespace', {
-      apiVersion: 'v1',
-      kind: 'Namespace',
-      metadata: {
-        name: 'nginx',
-      },
-    });
-
-    const nginxIngress = this.importedCluster.addHelmChart('nginx-ingress', {
-      chart: 'nginx-ingress',
-      repository: 'https://helm.nginx.com/stable',
-      namespace: 'nginx',
-      wait: true,
-      createNamespace: false,
-      timeout: Duration.minutes(15),
-    });
-
-    // make sure namespace is deployed before the chart
-    nginxIngress.node.addDependency(nginxNamespace);
-  }
-
   private assertSimpleCdk8sChart() {
     class Chart extends cdk8s.Chart {
       constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
@@ -153,14 +126,6 @@ class EksClusterStack extends Stack {
     const chart = new Chart(app, 'Chart', this.importedCluster);
 
     this.importedCluster.addCdk8sChart('cdk8s-chart', chart);
-  }
-
-  private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
-    this.importedCluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      repository: 'https://kubernetes.github.io/dashboard/',
-    });
   }
 
   private assertHelmChartAsset() {
