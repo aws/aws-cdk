@@ -1,3 +1,4 @@
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -8,7 +9,6 @@ import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { Column } from './schema';
 
 /**
@@ -191,7 +191,7 @@ export interface TableProps {
   readonly connection?: IConnection;
 
   /**
-   * The data source location of the glue table, (e.g. `default_db.public.example` for Redshift).
+   * The data source location of the glue table, (e.g. `default_db_public_example` for Redshift).
    *
    * If this property is set, it will override both `bucket` and `s3Prefix`.
    *
@@ -456,10 +456,11 @@ export class Table extends Resource implements ITable {
    * @param grantee the principal
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant | undefined {
-    if (!this.bucket) return;
     const ret = this.grant(grantee, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
-    this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
+    if (this.bucket) {
+      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
+      this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
+    }
     return ret;
   }
 
@@ -469,10 +470,11 @@ export class Table extends Resource implements ITable {
    * @param grantee the principal
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant | undefined {
-    if (!this.bucket) return;
     const ret = this.grant(grantee, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
-    this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
+    if (this.bucket) {
+      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
+      this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
+    }
     return ret;
   }
 
@@ -482,10 +484,11 @@ export class Table extends Resource implements ITable {
    * @param grantee the principal
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant | undefined {
-    if (!this.bucket) return;
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-    this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
+    if (this.bucket) {
+      if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+      this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
+    }
     return ret;
   }
 
