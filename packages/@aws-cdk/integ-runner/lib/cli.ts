@@ -111,7 +111,7 @@ export async function main(args: string[]) {
   });
 
   const testsToRun: IntegTestWorkerConfig[] = [];
-  const destructiveChanges: DestructiveChange[] = [];
+  const destructiveChanges: Map<string, DestructiveChange[]> = new Map();
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   let testsSucceeded = false;
   validateWatchArgs({
@@ -130,7 +130,8 @@ export async function main(args: string[]) {
         verbose: options.verbose,
       });
       for (const failure of failedSnapshots) {
-        destructiveChanges.push(...failure.destructiveChanges ?? []);
+        logger.warning(`Failed: ${failure.fileName}`);
+        destructiveChanges.set(failure.fileName, failure.destructiveChanges ?? []);
       }
       if (!options.force) {
         testsToRun.push(...failedSnapshots);
@@ -182,7 +183,7 @@ export async function main(args: string[]) {
     void pool.terminate();
   }
 
-  if (destructiveChanges.length > 0) {
+  if (destructiveChanges.size > 0) {
     printDestructiveChanges(destructiveChanges);
     throw new Error('Some changes were destructive!');
   }
@@ -224,12 +225,14 @@ function validateWatchArgs(args: {
   }
 }
 
-function printDestructiveChanges(changes: DestructiveChange[]): void {
-  if (changes.length > 0) {
-    logger.warning('!!! This test contains %s !!!', chalk.bold('destructive changes'));
-    changes.forEach(change => {
-      logger.warning('    Stack: %s - Resource: %s - Impact: %s', change.stackName, change.logicalId, change.impact);
-    });
+function printDestructiveChanges(changesPerTest: Map<string, DestructiveChange[]>): void {
+  if (changesPerTest.size > 0) {
+    logger.warning('!!! These tests contains %s !!!', chalk.bold('destructive changes'));
+    for (const [fileName, changes] of changesPerTest.entries()) {
+      for (const change of changes) {
+        logger.warning('    Filename: %s - Stack: %s - Resource: %s - Impact: %s', fileName, change.stackName, change.logicalId, change.impact);
+      }
+    }
     logger.warning('!!! If these destructive changes are necessary, please indicate this on the PR !!!');
   }
 }
