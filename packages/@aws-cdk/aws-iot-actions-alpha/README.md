@@ -33,6 +33,7 @@ Currently supported are:
 - Publish messages on SNS topics
 - Write messages into columns of DynamoDB
 - Put messages IoT Events input
+- Send messages to HTTPS endpoints
 
 ## Republish a message to another MQTT topic
 
@@ -345,4 +346,29 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     }),
   ],
 });
+```
+
+## Send Messages to HTTPS Endpoints
+
+The code snippet below creates an AWS IoT Rule that sends messages
+to an HTTPS endpoint when it is triggered:
+
+```ts
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+    ),
+  });
+
+  topicRule.addAction(
+    new actions.HttpsAction('https://example.com/endpoint', {
+      confirmationUrl: 'https://example.com',
+      headers: [
+        { key: 'key0', value: 'value0' },
+        { key: 'key1', value: 'value1' },
+      ],
+      auth: { serviceName: 'serviceName', signingRegion: 'us-east-1' },
+    }),
+  );
+}
 ```
