@@ -1,4 +1,4 @@
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -31,6 +31,17 @@ describe('Schedule Group', () => {
     const resource = group.node.findChild('Resource') as CfnScheduleGroup;
     expect(resource).toBeInstanceOf(CfnScheduleGroup);
     expect(resource.name).toEqual(group.groupName);
+  });
+
+  test('creates a group with removal policy', () => {
+    const props: GroupProps = {
+      removalPolicy: RemovalPolicy.RETAIN,
+    };
+    new Group(stack, 'TestGroup', props);
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::ScheduleGroup', {
+      DeletionPolicy: 'Retain',
+    });
   });
 
   test('creates a group with specified name', () => {
@@ -89,6 +100,7 @@ describe('Schedule Group', () => {
 
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
+      group: group,
       target: new targets.LambdaInvoke({
         role,
         input: ScheduleTargetInput.fromText('test'),
@@ -96,13 +108,12 @@ describe('Schedule Group', () => {
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
+      group: group,
       target: new targets.LambdaInvoke({
         role,
         input: ScheduleTargetInput.fromText('test'),
       }, func),
     });
-
-    group.addSchedules(schedule1, schedule2);
 
     expect(schedule1.group).toEqual(group);
     expect(schedule2.group).toEqual(group);

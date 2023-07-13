@@ -98,44 +98,31 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
 
 ### Grouping Schedules
 
-Your AWS account comes with a default scheduler group, which you can access in CDK with:
+Your AWS account comes with a default scheduler group. You can access default group in CDK with:
 
- ```text
- const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
- ```
+```text
+const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+```
 
- When creating a new schedule, you can also add the schedule to a custom scheduling group managed by you:
+If not specified a schedule is added to the default group. However, uou can also add the schedule to a custom scheduling group managed by you:
 
- ```text
- const group = new Group(this, "Group", {
-     groupName: "MyGroup",
- });
+```text
+const group = new Group(this, "Group", {
+    groupName: "MyGroup",
+});
 
- const target = new targets.LambdaInvoke(props.func, {
-     input: ScheduleTargetInput.fromObject({
-         "payload": "useful",
-     }),
- });
+const target = new targets.LambdaInvoke(props.func, {
+    input: ScheduleTargetInput.fromObject({
+        "payload": "useful",
+    }),
+});
 
- const schedule1 = new Schedule(this, 'Schedule1', {
-     scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
-     target,
- });
-
- const schedule2 = new Schedule(this, 'Schedule2', {
-     scheduleExpression: ScheduleExpression.rate(Duration.minutes(5)),
-     target,
- });
-
- group.addSchedules(schedule1, schedule2);
- 
- // You can also assign groups in a schedule constructor:
- const schedule3 = new Schedule(this, 'Schedule2', {
-     scheduleExpression: ScheduleExpression.rate(Duration.minutes(5)),
-     group,
-     target,
- });
- ```
+new Schedule(this, 'Schedule', {
+    scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
+    target,
+    group
+});
+```
 
 ## Scheduler Targets
 
@@ -202,4 +189,26 @@ TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https:
 
 ### Metrics for a Group
 
-TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https://github.com/aws/aws-cdk-rfcs/blob/master/text/0474-event-bridge-scheduler-l2.md)
+To view metrics for a specific group you can use methods on class `Group`:
+
+```text
+const group = new Group(this, "Group", {
+    groupName: "MyGroup"
+});
+
+new Alarm(this, 'MyGroupErrorAlarm', {
+    metric: group.metricAllErrors(),
+    threshold: 0
+});
+
+// Or use default group
+const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+new Alarm(this, 'DefaultGroupErrorAlarm', {
+    metric: defaultGroup.metricAllErrors(),
+    threshold: 0
+});
+```
+
+See full list of metrics and their description at
+[Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/scheduler/latest/UserGuide/monitoring-cloudwatch.html)
+in the *AWS Event Bridge Scheduler User Guide*.

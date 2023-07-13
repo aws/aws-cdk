@@ -1,4 +1,4 @@
-import { Lazy, Resource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
 import { IGroup } from '../group';
@@ -61,7 +61,7 @@ export class Schedule extends Resource implements ISchedule {
       flexibleTimeWindow: { mode: 'OFF' },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
-      groupName: Lazy.string({ produce: () => this.group?.groupName }),
+      groupName: this.group?.groupName,
       target: {
         ...props.target.bind(this),
       },

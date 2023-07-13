@@ -3,8 +3,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { Arn, ArnFormat, Aws, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { Schedule } from './private';
-import { ISchedule } from './schedule';
 
 export interface GroupProps {
   /**
@@ -38,12 +36,6 @@ export interface IGroup extends IResource {
    * @attribute
    */
   readonly groupArn: string;
-
-  /**
-   * Add schedules to this schedule group.
-   * @param schedules
-   */
-  addSchedules(...schedules: ISchedule[]): void;
 
   /**
    * Return the given named metric for this group schedules
@@ -134,31 +126,21 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @attribute
    */
-  abstract readonly groupName: string;
+  public abstract readonly groupName: string;
 
   /**
    * The arn of the schedule group
    *
    * @attribute
    */
-  abstract readonly groupArn: string;
-
-  addSchedules(...schedules: ISchedule[]): void {
-    schedules.forEach(schedule => {
-      // Temporary using ISchedule as parameter for this method,
-      // and checking for Schedule type, until class Schedule is moved from private to public
-      if (schedule instanceof Schedule) {
-        schedule.group = this;
-      }
-    });
-  }
+  public abstract readonly groupArn: string;
 
   /**
    * Return the given named metric for this group schedules
    *
    * @default - sum over 5 minutes
    */
-  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Scheduler',
       metricName,
@@ -175,7 +157,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationThrottleCount', props);
   }
 
@@ -184,7 +166,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricAttempts(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricAttempts(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationAttemptCount', props);
   }
 
@@ -193,7 +175,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricTargetErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricTargetErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('TargetErrorCount', props);
   }
 
@@ -202,7 +184,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricTargetThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricTargetThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('TargetErrorThrottledCount', props);
   }
 
@@ -211,7 +193,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricDropped(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricDropped(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationDroppedCount', props);
   }
 
@@ -229,7 +211,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (errorCode) {
       return this.metric(`InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`, props);
     }
@@ -242,14 +224,14 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
   /**
    * Grant the indicated permissions on this group to the given principal
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
@@ -272,7 +254,7 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Grant list and get schedule permissions for schedules in this group to the given principal
    */
-  grantReadSchedules(identity: iam.IGrantable) {
+  public grantReadSchedules(identity: iam.IGrantable) {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['scheduler:GetSchedule', 'scheduler:ListSchedules'],
@@ -284,7 +266,7 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Grant create and update schedule permissions for schedules in this group to the given principal
    */
-  grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
+  public grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule'],
@@ -296,7 +278,7 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
    */
-  grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {
+  public grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['scheduler:DeleteSchedule'],
@@ -314,7 +296,7 @@ export class Group extends GroupBase {
    * @param id construct id
    * @param groupArn the ARN of the group to import (e.g. `arn:aws:scheduler:region:account-id:schedule-group/group-name`)
    */
-  static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
+  public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
     const arnComponents = Stack.of(scope).splitArn(groupArn, ArnFormat.SLASH_RESOURCE_NAME);
     const groupName = arnComponents.resourceName!;
     class Import extends GroupBase {
@@ -330,7 +312,7 @@ export class Group extends GroupBase {
    * @param scope construct scope
    * @param id construct id
    */
-  static fromDefaultGroup(scope: Construct, id: string): IGroup {
+  public static fromDefaultGroup(scope: Construct, id: string): IGroup {
     return Group.fromGroupName(scope, id, 'default');
   }
 
@@ -341,7 +323,7 @@ export class Group extends GroupBase {
    * @param id construct id
    * @param groupName the name of the existing group to import
    */
-  static fromGroupName(scope: Construct, id: string, groupName: string): IGroup {
+  public static fromGroupName(scope: Construct, id: string, groupName: string): IGroup {
     const groupArn = Stack.of(scope).formatArn({
       service: 'scheduler',
       resource: 'schedule-group',
@@ -350,10 +332,10 @@ export class Group extends GroupBase {
     return Group.fromGroupArn(scope, id, groupArn);
   }
 
-  readonly groupName: string;
-  readonly groupArn: string;
+  public readonly groupName: string;
+  public readonly groupArn: string;
 
-  constructor(scope: Construct, id: string, props: GroupProps) {
+  public constructor(scope: Construct, id: string, props: GroupProps) {
     super(scope, id, {
       physicalName: props.groupName ?? PhysicalName.GENERATE_IF_NEEDED,
     });
@@ -361,6 +343,8 @@ export class Group extends GroupBase {
     const group = new CfnScheduleGroup(this, 'Resource', {
       name: this.physicalName,
     });
+
+    group.applyRemovalPolicy(props.removalPolicy);
 
     this.groupArn = this.getResourceArnAttribute(group.attrArn, {
       service: 'scheduler',
