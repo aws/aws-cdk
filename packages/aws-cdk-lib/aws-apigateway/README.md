@@ -63,9 +63,11 @@ book.addMethod('DELETE');
 To give an IAM User or Role permission to invoke a method, use `grantExecute`:
 
 ```ts
-declare user: iam.User;
-const books = api.root.addResource('books');
-books.grantExecute(user);
+declare const api: apigateway.RestApi;
+declare const user: iam.User;
+
+const method = api.root.addResource('books').addMethod('GET');
+method.grantExecute(user);
 ```
 
 ## AWS Lambda-backed APIs
