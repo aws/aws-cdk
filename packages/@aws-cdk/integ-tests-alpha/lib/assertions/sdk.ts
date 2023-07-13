@@ -121,6 +121,7 @@ export class AwsApiCall extends ApiCallBase {
 
   public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
     this._assertAtPath = path;
+    this.outputPaths ??= [];
     this.outputPaths.push(path);
     this.expectedResult = expected.result;
     this.flattenResponse = 'true';
