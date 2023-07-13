@@ -98,11 +98,11 @@ history when CloudFormation deletes your state machine.
 Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
 
 ```ts
-new sfn.StateMachine(stack, 'StateMachineFromString', {
+new sfn.StateMachine(this, 'StateMachineFromString', {
   definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
 });
 
-new sfn.StateMachine(stack, 'StateMachineFromFile', {
+new sfn.StateMachine(this, 'StateMachineFromFile', {
   definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
 });
 ```

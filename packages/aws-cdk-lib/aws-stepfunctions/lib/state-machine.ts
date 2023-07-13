@@ -647,8 +647,7 @@ export interface DefinitionConfig {
 }
 
 export abstract class DefinitionBody {
-
-  public static fromFile(path: string, options: s3_assets.AssetOptions): DefinitionBody {
+  public static fromFile(path: string, options?: s3_assets.AssetOptions): DefinitionBody {
     return new FileDefinitionBody(path, options);
   }
 
@@ -661,11 +660,9 @@ export abstract class DefinitionBody {
   }
 
   public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps): DefinitionConfig;
-
 }
 
 export class FileDefinitionBody extends DefinitionBody {
-
   constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
@@ -682,11 +679,9 @@ export class FileDefinitionBody extends DefinitionBody {
       },
     };
   }
-
 }
 
 export class StringDefinitionBody extends DefinitionBody {
-
   constructor(public readonly body: string) {
     super();
   }
@@ -699,7 +694,6 @@ export class StringDefinitionBody extends DefinitionBody {
 }
 
 export class ChainDefinitionBody extends DefinitionBody {
-
   constructor(public readonly chainable: IChainable) {
     super();
   }
@@ -714,5 +708,4 @@ export class ChainDefinitionBody extends DefinitionBody {
       definitionString: Stack.of(scope).toJsonString(graph.toGraphJson()),
     };
   }
-
 }

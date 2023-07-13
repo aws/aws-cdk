@@ -21,10 +21,12 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
   writer: rds.ClusterInstance.provisioned('writer', {
+    publiclyAccessible: false,
+  }),
   readers: [
     rds.ClusterInstance.provisioned('reader1', { promotionTier: 1 }),
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
@@ -38,7 +40,7 @@ To adopt Aurora I/O-Optimized. Speicify `DBClusterStorageType.AURORA_IOPT1` on t
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_2 }),
-  credentials: rds.Credentials.fromUsername('adminuser', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
+  credentials: rds.Credentials.fromUsername('adminuser', { password: SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.X2G, ec2.InstanceSize.XLARGE),
     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -92,7 +94,9 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 
 Database cluster instances may be updated in bulk or on a rolling basis.
 
-An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the `instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`. This adds a dependency between each instance so the update is performed on only one instance at a time.
+An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the
+`instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`.
+This adds a dependency between each instance so the update is performed on only one instance at a time.
 
 Use `InstanceUpdateBehavior.BULK` to update all instances at once.
 
@@ -100,10 +104,10 @@ Use `InstanceUpdateBehavior.BULK` to update all instances at once.
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
-  writer: rds.ClusterInstance.provisioned({
+  writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   }),
-  readers [rds.ClusterInstance.provisioned('reader')],
+  readers: [rds.ClusterInstance.provisioned('reader')],
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING, // Optional - defaults to rds.InstanceUpdateBehaviour.BULK
   vpc,
 });
@@ -127,7 +131,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
-  ]
+  ],
   vpc,
 });
 ```
@@ -150,7 +154,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
-  ]
+  ],
   vpc,
 });
 
@@ -223,7 +227,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
     // will be put in promotion tier 2 and will not scale with the writer
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpc,
 });
 ```
@@ -276,7 +280,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
     // will be put in promotion tier 2 and will not scale with the writer
     rds.ClusterInstance.serverlessV2('reader2'),
-  ]
+  ],
   vpc,
 });
 ```
@@ -303,7 +307,7 @@ For example, in order to migrate from this deprecated config:
 
 ```ts
 declare const vpc: ec2.Vpc;
-const cluster = new rds.DatabaseCluster(stack, 'Database', {
+const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
   }),
@@ -332,18 +336,20 @@ const instanceProps = {
 };
 
 declare const vpc: ec2.Vpc;
-const cluster = new rds.DatabaseCluster(stack, 'Database', {
+const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
   }),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   vpc,
-  writer: ClusterInstance.provisioned('Instance1', {
-    ...instanceProps,
+  writer: rds.ClusterInstance.provisioned('Instance1', {
+    instanceType: instanceProps.instanceType,
+    isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
   }),
   readers: [
-    ClusterInstance.provisioned('Instance2', {
-      ...instanceProps,
+    rds.ClusterInstance.provisioned('Instance2', {
+      instanceType: instanceProps.instanceType,
+      isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
     }),
   ],
 });

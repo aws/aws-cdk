@@ -19,7 +19,7 @@
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "cdk-generate-synthetic-examples": "^0.1.287",
+    "cdk-generate-synthetic-examples": "^0.1.291",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",

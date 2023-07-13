@@ -220,8 +220,8 @@ const httpDs = api.addHttpDataSource(
     authorizationConfig: {
       signingRegion: 'us-east-1',
       signingServiceName: 'states',
-    }
-  }
+    },
+  },
 );
 
 httpDs.createResolver('MutationCallStepFunctionResolver', {
@@ -302,12 +302,14 @@ events. More information can be found
 CDK stack file `app-stack.ts`:
 
 ```ts
-const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {
+import * as events from 'aws-cdk-lib/aws-events';
+
+const api = new appsync.GraphqlApi(this, 'EventBridgeApi', {
   name: 'EventBridgeApi',
   schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.eventbridge.graphql')),
 });
 
-const bus = new events.EventBus(stack, 'DestinationEventBus', {});
+const bus = new events.EventBus(this, 'DestinationEventBus', {});
 
 const dataSource = api.addEventBridgeDataSource('NoneDS', bus);
 
@@ -468,15 +470,15 @@ sources and resolvers, an `apiId` is sufficient.
 By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
 For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
 at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
-If visbility is not set, the service will default to `GLOBAL`.
+If visibility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
 
 ```ts
-const api = new appsync.GraphqlApi(stack, 'api', {
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'MyPrivateAPI',
   schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.schema.graphql')),
-  visbility: appsync.Visibility.PRIVATE,
+  visibility: appsync.Visibility.PRIVATE,
 });
 ```
 

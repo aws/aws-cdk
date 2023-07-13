@@ -233,7 +233,7 @@ const node = new appmesh.VirtualNode(this, 'node', {
 
 By using a key-value pair indexed signature, you can specify json key pairs to customize the log entry pattern. You can also use text format as below. You can only specify one of these 2 formats.
 
-```ts
+```text
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
 ```
 

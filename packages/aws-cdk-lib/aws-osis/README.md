@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as osis from '@aws-cdk/aws-osis';
+import * as osis from 'aws-cdk-lib/aws-osis';
 ```
 
 <!--BEGIN CFNONLY DISCLAIMER-->

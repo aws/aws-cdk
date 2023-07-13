@@ -365,26 +365,27 @@ can use the `tags` array. Both of these fields can be used together or separatel
 to set tags on the triggered task.
 
 ```ts
-import * as ecs from "aws-cdk-lib/aws-ecs"
-declare const cluster: ecs.ICluster
-declare const taskDefinition: ecs.TaskDefinition
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
 rule.addTarget(
-  new targets.EcsTask( {
-      cluster: cluster,
-      taskDefinition: taskDefinition,
-      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
-      tags: [
-        {
-          key: 'my-tag',
-          value: 'my-tag-value',
-        },
-      ],
-    })
+  new targets.EcsTask({
+    cluster: cluster,
+    taskDefinition: taskDefinition,
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+    tags: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  }),
 );
 ```
 
@@ -395,9 +396,11 @@ If you want to detach the public IP address from the task, you have to set the f
 You can specify the flag `true` only when the launch type is set to FARGATE.
 
 ```ts
-import * as ecs from "aws-cdk-lib/aws-ecs"
-declare const cluster: ecs.ICluster
-declare const taskDefinition: ecs.TaskDefinition
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
@@ -411,7 +414,6 @@ rule.addTarget(
     subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
   }),
 );
-declare const rule: events.Rule
 ```
 
 ### enable Amazon ECS Exec for ECS Task
@@ -419,9 +421,10 @@ declare const rule: events.Rule
 If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
 
 ```ts
-import * as ecs from "aws-cdk-lib/aws-ecs"
-declare const cluster: ecs.ICluster
-declare const taskDefinition: ecs.TaskDefinition
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
