@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-cluster-test"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {
