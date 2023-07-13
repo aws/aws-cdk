@@ -38,6 +38,7 @@ describe('Match include patterns', () => {
     const patterns :string[] = ['some/**/*.txt'];
     const ignores = [
       '/tmp/other/file.txt',
+      '/tmp/some/important/file.log',
     ];
     const permits = [
       '/tmp/some/important/file.txt',
