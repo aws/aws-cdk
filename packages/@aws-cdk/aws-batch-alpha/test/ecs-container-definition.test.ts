@@ -517,8 +517,6 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  // TODO: need test for secret grantRead()
-
   test('respects user', () => {
   // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
