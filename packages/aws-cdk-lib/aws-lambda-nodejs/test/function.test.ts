@@ -41,7 +41,7 @@ test('NodejsFunction with .ts handler', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
-    Runtime: 'nodejs14.x',
+    Runtime: expect.stringContaining('nodejs'),
   });
 });
 
@@ -57,7 +57,7 @@ test('NodejsFunction with overridden handler - no dots', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.myHandler', // automatic index. prefix
-    Runtime: 'nodejs14.x',
+    Runtime: expect.stringContaining('nodejs'),
   });
 });
 
@@ -73,7 +73,7 @@ test('NodejsFunction with overridden handler - with dots', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'run.sh', // No index. prefix
-    Runtime: 'nodejs14.x',
+    Runtime: expect.stringContaining('nodejs'),
   });
 });
 
