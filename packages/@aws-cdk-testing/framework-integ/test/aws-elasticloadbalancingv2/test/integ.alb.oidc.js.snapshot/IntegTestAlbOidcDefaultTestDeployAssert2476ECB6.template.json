@@ -18,7 +18,8 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1683259223329"
+    "outputPaths": [],
+    "salt": "1688681225678"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -113,12 +114,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "032b2e4fece97305307a8662e267281db7bec3b05398ddda60963270175e6664.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
