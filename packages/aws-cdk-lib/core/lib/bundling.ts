@@ -133,7 +133,7 @@ export interface BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
-  
+
   /**
    * Platform to build for. _Requires Docker Buildx_.
    *
