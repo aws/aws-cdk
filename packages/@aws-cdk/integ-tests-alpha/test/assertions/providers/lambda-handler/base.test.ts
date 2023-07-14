@@ -18,7 +18,8 @@ interface MyHandlerResponse {
 interface CloudFormationResponse extends Omit<AWSLambda.CloudFormationCustomResourceResponse, 'Data'> {
   readonly Data: any;
 }
-
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+jest.mock('../../../../lib/assertions/providers/lambda-handler/sdk-v2-to-v3', () => require('aws-cdk-lib/custom-resources'));
 const s3Mock = mockClient(S3Client);
 const sfnMock = mockClient(SFNClient);
 describe('CustomResourceHandler', () => {

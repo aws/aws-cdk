@@ -12,6 +12,8 @@ function sdkHandler() {
   };
   return new AwsApiCallHandler({} as any, context); // as any to ignore all type checks
 }
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+jest.mock('../../../../lib/assertions/providers/lambda-handler/sdk-v2-to-v3', () => require('aws-cdk-lib/custom-resources'));
 beforeAll(() => {
   jest.useFakeTimers();
   jest.spyOn(console, 'log').mockImplementation(() => { return true; });
