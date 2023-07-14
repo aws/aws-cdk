@@ -278,6 +278,8 @@ If your self managed Kafka cluster is only reachable via VPC also configure `vpc
 You can specify [event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html#filtering-msk-smak) 
 for managed and self managed Kafka clusters using the `filters` property:
 ```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
 // Your MSK cluster arn
 const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
 
