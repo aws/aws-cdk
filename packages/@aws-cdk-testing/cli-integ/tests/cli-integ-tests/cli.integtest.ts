@@ -335,6 +335,26 @@ integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
   );
 }));
 
+integTest('deploy with parameter with equal sign', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${fixture.stackNamePrefix}=bazinga`,
+    ],
+    captureStderr: false,
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
+    {
+      ParameterKey: 'TopicNameParam',
+      ParameterValue: `${fixture.stackNamePrefix}=bazinga`,
+    },
+  );
+}));
+
 integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', withDefaultFixture(async (fixture) => {
   // GIVEN
   await expect(fixture.cdkDeploy('param-test-1', {
