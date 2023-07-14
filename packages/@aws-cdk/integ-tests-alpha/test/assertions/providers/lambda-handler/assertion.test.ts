@@ -1,5 +1,6 @@
 import { AssertionRequest, AssertionResult, ExpectedResult } from '../../../../lib/assertions';
 import { Match } from '../../../../lib/assertions/match';
+import { getV3ClientPackageName, findV3ClientConstructor } from 'aws-cdk-lib/custom-resources';
 import { AssertionHandler } from '../../../../lib/assertions/providers/lambda-handler/assertion';
 
 function assertionHandler() {
@@ -9,8 +10,10 @@ function assertionHandler() {
   return new AssertionHandler({} as any, context); // as any to ignore all type checks
 }
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-jest.mock('../../../../lib/assertions/providers/lambda-handler/sdk-v2-to-v3', () => require('aws-cdk-lib/custom-resources'));
+// @ts-ignore
+global.getV3ClientPackageName = getV3ClientPackageName;
+// @ts-ignore
+global.findV3ClientConstructor = findV3ClientConstructor;
 beforeAll(() => {
   jest.useFakeTimers();
   jest.spyOn(console, 'log').mockImplementation(() => { return true; });

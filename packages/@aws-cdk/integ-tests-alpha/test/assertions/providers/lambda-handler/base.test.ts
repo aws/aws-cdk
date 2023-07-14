@@ -5,6 +5,7 @@ import { CustomResourceHandler } from '../../../../lib/assertions/providers/lamb
 import { mockClient } from 'aws-sdk-client-mock';
 import { ListBucketsCommand, ListBucketsOutput, S3Client } from '@aws-sdk/client-s3';
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { getV3ClientPackageName, findV3ClientConstructor } from 'aws-cdk-lib/custom-resources';
 import 'aws-sdk-client-mock-jest';
 
 interface MyHandlerRequest {
@@ -18,8 +19,11 @@ interface MyHandlerResponse {
 interface CloudFormationResponse extends Omit<AWSLambda.CloudFormationCustomResourceResponse, 'Data'> {
   readonly Data: any;
 }
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-jest.mock('../../../../lib/assertions/providers/lambda-handler/sdk-v2-to-v3', () => require('aws-cdk-lib/custom-resources'));
+
+// @ts-ignore
+global.getV3ClientPackageName = getV3ClientPackageName;
+// @ts-ignore
+global.findV3ClientConstructor = findV3ClientConstructor;
 const s3Mock = mockClient(S3Client);
 const sfnMock = mockClient(SFNClient);
 describe('CustomResourceHandler', () => {

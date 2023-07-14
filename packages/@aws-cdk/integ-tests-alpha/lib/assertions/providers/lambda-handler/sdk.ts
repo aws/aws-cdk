@@ -2,7 +2,16 @@
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
 import { decode } from './utils';
-import * as sdkV2ToV3 from './sdk-v2-to-v3';
+
+// These functions defined at 'aws-cdk-lib/custom-resources'.
+// However, 'aws-cdk-lib/custom-resources' exports the some constructs,
+// so when import the package, then bundle size is too large and lambda function is not working.
+// To avoid this issue, we using inject of esbuild (https://esbuild.github.io/api/#inject)
+declare const getV3ClientPackageName: (clientName: string) => string;
+declare const findV3ClientConstructor: (pkg: Object) => new (config: any) => {
+  send: (command: any) => Promise<any>;
+  config: any;
+};
 
 /**
  * Flattens a nested object
@@ -37,7 +46,7 @@ interface V3SdkPkg {
 }
 
 function getServicePackage(service: string): V3SdkPkg {
-  const packageName = sdkV2ToV3.getV3ClientPackageName(service);
+  const packageName = getV3ClientPackageName(service);
   try {
     /* eslint-disable-next-line @typescript-eslint/no-require-imports */
     const pkg = require(packageName);
@@ -54,7 +63,7 @@ function getServicePackage(service: string): V3SdkPkg {
 
 function getServiceClient(sdkPkg: V3SdkPkg): any {
   try {
-    const ServiceClient = sdkV2ToV3.findV3ClientConstructor(sdkPkg.pkg);
+    const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
     return new ServiceClient({});
   } catch (e) {
     console.error(e);
