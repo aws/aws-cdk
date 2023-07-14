@@ -2421,6 +2421,7 @@
         "ApplicationHostUrl": "The location of the SAPOData resource.",
         "ApplicationServicePath": "The application path to catalog service.",
         "ClientNumber": "The client number for the client creating the connection.",
+        "DisableSSO": "",
         "LogonLanguage": "The logon language of SAPOData instance.",
         "OAuthProperties": "The SAPOData OAuth properties required for OAuth type authentication.",
         "PortNumber": "The port number of the SAPOData instance.",
@@ -4558,7 +4559,7 @@
         "DisplayName": "The display name of the app block.",
         "Name": "The name of the app block.\n\n*Pattern* : `^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$`",
         "PackagingType": "The packaging type of the app block.",
-        "PostSetupScriptDetails": "The post setup script details of the app block.",
+        "PostSetupScriptDetails": "The post setup script details of the app block.\n\nThis only applies to app blocks with PackagingType `APPSTREAM2` .",
         "SetupScriptDetails": "The setup script details of the app block.",
         "SourceS3Location": "The source S3 location of the app block.",
         "Tags": "The tags of the app block."
@@ -4584,22 +4585,22 @@
     },
     "AWS::AppStream::AppBlockBuilder": {
       "attributes": {
-        "Arn": "The ARN of the app block builder.",
-        "CreatedTime": "The time when the app block builder was created.",
-        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the `Name` of the app block builder, such as `abcdefAppBlockBuilder` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+        "Arn": "",
+        "CreatedTime": "",
+        "Ref": ""
       },
       "description": "Creates an app block builder.",
       "properties": {
-        "AccessEndpoints": "The access endpoints of the app block builder.",
-        "AppBlockArns": "The ARN of the app block.\n\n*Maximum* : `1`",
+        "AccessEndpoints": "",
+        "AppBlockArns": "",
         "Description": "The description of the app block builder.",
         "DisplayName": "The display name of the app block builder.",
         "EnableDefaultInternetAccess": "Indicates whether default internet access is enabled for the app block builder.",
         "IamRoleArn": "The ARN of the IAM role that is applied to the app block builder.",
         "InstanceType": "The instance type of the app block builder.",
         "Name": "The name of the app block builder.",
-        "Platform": "The platform of the app block builder.\n\n*Allowed values* : `WINDOWS_SERVER_2019`",
-        "Tags": "The tags of the app block builder.",
+        "Platform": "The platform of the app block builder.\n\n`WINDOWS_SERVER_2019` is the only valid value.",
+        "Tags": "",
         "VpcConfig": "The VPC configuration for the app block builder."
       }
     },
@@ -6689,7 +6690,7 @@
         "SecurityGroupIds": "The Amazon EC2 security groups that are associated with instances launched in the compute environment. This parameter is required for Fargate compute resources, where it can contain up to 5 security groups. For Fargate compute resources, providing an empty list is handled as if this parameter wasn't specified and no change is made. For EC2 compute resources, providing an empty list removes the security groups from the compute resource.\n\nWhen updating a compute environment, changing the EC2 security groups requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .",
         "SpotIamFleetRole": "The Amazon Resource Name (ARN) of the Amazon EC2 Spot Fleet IAM role applied to a `SPOT` compute environment. This role is required if the allocation strategy set to `BEST_FIT` or if the allocation strategy isn't specified. For more information, see [Amazon EC2 spot fleet role](https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it. > To tag your Spot Instances on creation, the Spot Fleet IAM role specified here must use the newer *AmazonEC2SpotFleetTaggingRole* managed policy. The previously recommended *AmazonEC2SpotFleetRole* managed policy doesn't have the required permissions to tag Spot Instances. For more information, see [Spot instances not tagged on creation](https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#spot-instance-no-tag) in the *AWS Batch User Guide* .",
         "Subnets": "The VPC subnets where the compute resources are launched. Fargate compute resources can contain up to 16 subnets. For Fargate compute resources, providing an empty list will be handled as if this parameter wasn't specified and no change is made. For EC2 compute resources, providing an empty list removes the VPC subnets from the compute resource. For more information, see [VPCs and subnets](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the *Amazon VPC User Guide* .\n\nWhen updating a compute environment, changing the VPC subnets requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> AWS Batch on Amazon EC2 and AWS Batch on Amazon EKS support Local Zones. For more information, see [Local Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-local-zones) in the *Amazon EC2 User Guide for Linux Instances* , [Amazon EKS and AWS Local Zones](https://docs.aws.amazon.com/eks/latest/userguide/local-zones.html) in the *Amazon EKS User Guide* and [Amazon ECS clusters in Local Zones, Wavelength Zones, and AWS Outposts](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-regions-zones.html#clusters-local-zones) in the *Amazon ECS Developer Guide* .\n> \n> AWS Batch on Fargate doesn't currently support Local Zones.",
-        "Tags": "Key-value pair tags to be applied to EC2 resources that are launched in the compute environment. For AWS Batch , these take the form of `\"String1\": \"String2\"` , where `String1` is the tag key and `String2` is the tag value-for example, `{ \"Name\": \"Batch Instance - C4OnDemand\" }` . This is helpful for recognizing your AWS Batch instances in the Amazon EC2 console. These tags aren't seen when using the AWS Batch `ListTagsForResource` API operation.\n\nWhen updating a compute environment, changing this setting requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
+        "Tags": "Key-value pair tags to be applied to EC2 resources that are launched in the compute environment. For AWS Batch , these take the form of `\"String1\": \"String2\"` , where `String1` is the tag key and `String2` is the tag value-for example, `{ \"Name\": \"Batch Instance - C4OnDemand\" }` . This is helpful for recognizing your Batch instances in the Amazon EC2 console. These tags aren't seen when using the AWS Batch `ListTagsForResource` API operation.\n\nWhen updating a compute environment, changing this setting requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\n> This parameter isn't applicable to jobs that are running on Fargate resources. Don't specify it.",
         "Type": "The type of compute environment: `EC2` , `SPOT` , `FARGATE` , or `FARGATE_SPOT` . For more information, see [Compute environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the *AWS Batch User Guide* .\n\nIf you choose `SPOT` , you must also specify an Amazon EC2 Spot Fleet role with the `spotIamFleetRole` parameter. For more information, see [Amazon EC2 spot fleet role](https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html) in the *AWS Batch User Guide* .\n\nWhen updating compute environment, changing the type of a compute environment requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* .\n\nWhen updating the type of a compute environment, changing between `EC2` and `SPOT` or between `FARGATE` and `FARGATE_SPOT` will initiate an infrastructure update, but if you switch between `EC2` and `FARGATE` , AWS CloudFormation will create a new compute environment.",
         "UpdateToLatestImageVersion": "Specifies whether the AMI ID is updated to the latest one that's supported by AWS Batch when the compute environment has an infrastructure update. The default value is `false` .\n\n> An AMI ID can either be specified in the `imageId` or `imageIdOverride` parameters or be determined by the launch template that's specified in the `launchTemplate` parameter. If an AMI ID is specified any of these ways, this parameter is ignored. For more information about to update AMI IDs during an infrastructure update, see [Updating the AMI ID](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html#updating-compute-environments-ami) in the *AWS Batch User Guide* . \n\nWhen updating a compute environment, changing this setting requires an infrastructure update of the compute environment. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* ."
       }
@@ -7755,6 +7756,7 @@
       "description": "Enables query structure and specified queries that produce aggregate statistics.",
       "properties": {
         "AggregateColumns": "The columns that query runners are allowed to use in aggregation queries.",
+        "AllowedJoinOperators": "Which logical operators (if any) are to be used in an INNER JOIN match condition. Default is `AND` .",
         "DimensionColumns": "The columns that query runners are allowed to select, group by, or filter by.",
         "JoinColumns": "Columns in configured table that can be used in join statements and/or as aggregate columns. They can never be outputted directly.",
         "JoinRequired": "Control that requires member who runs query to do a join with their configured table and/or other configured table in query.",
@@ -7766,6 +7768,7 @@
       "attributes": {},
       "description": "A type of analysis rule that enables row-level analysis.",
       "properties": {
+        "AllowedJoinOperators": "Which logical operators (if any) are to be used in an INNER JOIN match condition. Default is `AND` .",
         "JoinColumns": "Columns that can be used to join a configured table with the table of the member who can query and other members' configured tables.",
         "ListColumns": "Columns that can be listed in the output."
       }
@@ -11527,14 +11530,14 @@
     },
     "AWS::Connect::HoursOfOperation": {
       "attributes": {
-        "HoursOfOperationArn": "The Amazon Resource Name (ARN) for the hours of operation.",
+        "HoursOfOperationArn": "The Amazon Resource Name (ARN) of the hours of operation.",
         "Ref": "`Ref` returns the hours of operation. For example:\n\n`{ \"Ref\": \"myHoursOfOperation\" }`"
       },
       "description": "Specifies hours of operation.",
       "properties": {
         "Config": "Configuration information for the hours of operation.",
         "Description": "The description for the hours of operation.",
-        "InstanceArn": "The Amazon Resource Name (ARN) for the instance.",
+        "InstanceArn": "The Amazon Resource Name (ARN) of the instance.",
         "Name": "The name for the hours of operation.",
         "Tags": "The tags used to organize, track, or control access for this resource. For example, { \"tags\": {\"key1\":\"value1\", \"key2\":\"value2\"} }.",
         "TimeZone": "The time zone for the hours of operation."
@@ -11667,7 +11670,7 @@
         "Description": "The description of the phone number.",
         "Prefix": "The prefix of the phone number. If provided, it must contain `+` as part of the country code.\n\n*Pattern* : `^\\\\+[0-9]{1,15}`",
         "Tags": "The tags used to organize, track, or control access for this resource. For example, { \"tags\": {\"key1\":\"value1\", \"key2\":\"value2\"} }.",
-        "TargetArn": "The Amazon Resource Name (ARN) for Amazon Connect instances or traffic distribution group that phone numbers are claimed to.",
+        "TargetArn": "The Amazon Resource Name (ARN) of Amazon Connect instances or traffic distribution group that phone numbers are claimed to.",
         "Type": "The type of phone number."
       }
     },
@@ -11786,7 +11789,7 @@
       "description": "The name of the event source.",
       "properties": {
         "EventSourceName": "The name of the event source.\n\n*Allowed values* : `OnPostCallAnalysisAvailable` | `OnRealTimeCallAnalysisAvailable` | `OnPostChatAnalysisAvailable` | `OnZendeskTicketCreate` | `OnZendeskTicketStatusUpdate` | `OnSalesforceCaseCreate`",
-        "IntegrationAssociationArn": "The Amazon Resource Name (ARN) for the integration association. `IntegrationAssociationArn` is required if `TriggerEventSource` is one of the following values: `OnZendeskTicketCreate` | `OnZendeskTicketStatusUpdate` | `OnSalesforceCaseCreate`"
+        "IntegrationAssociationArn": "The Amazon Resource Name (ARN) of the integration association. `IntegrationAssociationArn` is required if `TriggerEventSource` is one of the following values: `OnZendeskTicketCreate` | `OnZendeskTicketStatusUpdate` | `OnSalesforceCaseCreate`"
       }
     },
     "AWS::Connect::Rule.SendNotificationAction": {
@@ -11938,7 +11941,7 @@
     "AWS::Connect::UserHierarchyGroup": {
       "attributes": {
         "Ref": "`Ref` returns the user hierarchy group. For example:\n\n`{ \"Ref\": \"myUserHierarchyGroup\" }`",
-        "UserHierarchyGroupArn": "The Amazon Resource Name (ARN) for the user hierarchy group."
+        "UserHierarchyGroupArn": "The Amazon Resource Name (ARN) of the user hierarchy group."
       },
       "description": "Specifies a new user hierarchy group.",
       "properties": {
@@ -13697,7 +13700,7 @@
         "ActivationKey": "Specifies your DataSync agent's activation key. If you don't have an activation key, see [Activate your agent](https://docs.aws.amazon.com/datasync/latest/userguide/activate-agent.html) .",
         "AgentName": "Specifies a name for your agent. You can see this name in the DataSync console.",
         "SecurityGroupArns": "The Amazon Resource Names (ARNs) of the security groups used to protect your data transfer task subnets. See [SecurityGroupArns](https://docs.aws.amazon.com/datasync/latest/userguide/API_Ec2Config.html#DataSync-Type-Ec2Config-SecurityGroupArns) .\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`",
-        "SubnetArns": "Specifies the ARN of the subnet where you want to run your DataSync task when using a VPC endpoint. This is the subnet where DataSync creates and manages the [network interfaces](https://docs.aws.amazon.com/datasync/latest/userguide/datasync-network.html#required-network-interfaces) for your transfer.",
+        "SubnetArns": "Specifies the ARN of the subnet where you want to run your DataSync task when using a VPC endpoint. This is the subnet where DataSync creates and manages the [network interfaces](https://docs.aws.amazon.com/datasync/latest/userguide/datasync-network.html#required-network-interfaces) for your transfer. You can only specify one ARN.",
         "Tags": "Specifies labels that help you categorize, filter, and search for your AWS resources. We recommend creating at least one tag for your agent.",
         "VpcEndpointId": "The ID of the virtual private cloud (VPC) endpoint that the agent has access to. This is the client-side VPC endpoint, powered by AWS PrivateLink . If you don't have an AWS PrivateLink VPC endpoint, see [AWS PrivateLink and VPC endpoints](https://docs.aws.amazon.com//vpc/latest/userguide/endpoint-services-overview.html) in the *Amazon VPC User Guide* .\n\nFor more information about activating your agent in a private network based on a VPC, see [Using AWS DataSync in a Virtual Private Cloud](https://docs.aws.amazon.com/datasync/latest/userguide/datasync-in-vpc.html) in the *AWS DataSync User Guide.*\n\nA VPC endpoint ID looks like this: `vpce-01234d5aff67890e1` ."
       }
@@ -13993,7 +13996,7 @@
       },
       "description": "The `AWS::DataSync::StorageSystem` resource creates an AWS resource for an on-premises storage system that you want DataSync Discovery to collect information about. For more information, see [discovering your storage with DataSync Discovery.](https://docs.aws.amazon.com/datasync/latest/userguide/understanding-your-storage.html)",
       "properties": {
-        "AgentArns": "Specifies the Amazon Resource Name (ARN) of the DataSync agent that connects to and reads from your on-premises storage system's management interface.",
+        "AgentArns": "Specifies the Amazon Resource Name (ARN) of the DataSync agent that connects to and reads from your on-premises storage system's management interface. You can only specify one ARN.",
         "CloudWatchLogGroupArn": "Specifies the ARN of the Amazon CloudWatch log group for monitoring and logging discovery job events.",
         "Name": "Specifies a familiar name for your on-premises storage system.",
         "ServerConfiguration": "Specifies the server name and network port required to connect with the management interface of your on-premises storage system.",
@@ -15115,7 +15118,7 @@
     },
     "AWS::EC2::EC2Fleet.InstanceRequirementsRequest": {
       "attributes": {},
-      "description": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nWhen you specify multiple attributes, you get instance types that satisfy all of the specified attributes. If you specify multiple values for an attribute, you get instance types that satisfy any of the specified values.\n\nTo limit the list of instance types from which Amazon EC2 can identify matching instance types, you can use one of the following parameters, but not both in the same request:\n\n- `AllowedInstanceTypes` - The instance types to include in the list. All other instance types are ignored, even if they match your specified attributes.\n- `ExcludedInstanceTypes` - The instance types to exclude from the list, even if they match your specified attributes.\n\n> You must specify `VCpuCount` and `MemoryMiB` . All other attributes are optional. Any unspecified optional attribute is set to its default. \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
+      "description": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nYou must specify `VCpuCount` and `MemoryMiB` . All other attributes are optional. Any unspecified optional attribute is set to its default.\n\nWhen you specify multiple attributes, you get instance types that satisfy all of the specified attributes. If you specify multiple values for an attribute, you get instance types that satisfy any of the specified values.\n\nTo limit the list of instance types from which Amazon EC2 can identify matching instance types, you can use one of the following parameters, but not both in the same request:\n\n- `AllowedInstanceTypes` - The instance types to include in the list. All other instance types are ignored, even if they match your specified attributes.\n- `ExcludedInstanceTypes` - The instance types to exclude from the list, even if they match your specified attributes.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceType` .\n> \n> Attribute-based instance type selection is only supported when using Auto Scaling groups, EC2 Fleet, and Spot Fleet to launch instances. If you plan to use the launch template in the [launch instance wizard](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-instance-wizard.html) or with the [RunInstances API](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_RunInstances.html) , you can't specify `InstanceRequirements` . \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
       "properties": {
         "AcceleratorCount": "The minimum and maximum number of accelerators (GPUs, FPGAs, or AWS Inferentia chips) on an instance.\n\nTo exclude accelerator-enabled instance types, set `Max` to `0` .\n\nDefault: No minimum or maximum limits",
         "AcceleratorManufacturers": "Indicates whether instance types must have accelerators by specific manufacturers.\n\n- For instance types with NVIDIA devices, specify `nvidia` .\n- For instance types with AMD devices, specify `amd` .\n- For instance types with AWS devices, specify `amazon-web-services` .\n- For instance types with Xilinx devices, specify `xilinx` .\n\nDefault: Any manufacturer",
@@ -15542,7 +15545,7 @@
         "IamInstanceProfile": "The name of an IAM instance profile. To create a new IAM instance profile, use the [AWS::IAM::InstanceProfile](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-instanceprofile.html) resource.",
         "ImageId": "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template.",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
-        "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nWhen you change your EBS-backed instance type, instance restart or replacement behavior depends on the instance type compatibility between the old and new types. An instance that's backed by an instance store volume is always replaced. For more information, see [Change the instance type](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html) in the *Amazon EC2 User Guide* .\n\nDefault: `m1.small`",
+        "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nWhen you change your EBS-backed instance type, instance restart or replacement behavior depends on the instance type compatibility between the old and new types. An instance with an instance store volume as the root volume is always replaced. For more information, see [Change the instance type](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html) in the *Amazon EC2 User Guide* .",
         "Ipv6AddressCount": "The number of IPv6 addresses to associate with the primary network interface. Amazon EC2 chooses the IPv6 addresses from the range of your subnet. You cannot specify this option and the option to assign specific IPv6 addresses in the same request. You can specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
         "Ipv6Addresses": "The IPv6 addresses from the range of the subnet to associate with the primary network interface. You cannot specify this option and the option to assign a number of IPv6 addresses in the same request. You cannot specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
         "KernelId": "The ID of the kernel.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [PV-GRUB](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
@@ -15948,7 +15951,7 @@
         "ImageId": "The ID of the AMI. Alternatively, you can specify a Systems Manager parameter, which will resolve to an AMI ID on launch.\n\nValid formats:\n\n- `ami-17characters00000`\n- `resolve:ssm:parameter-name`\n- `resolve:ssm:parameter-name:version-number`\n- `resolve:ssm:parameter-name:label`\n\nFor more information, see [Use a Systems Manager parameter to find an AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html#using-systems-manager-parameter-to-find-AMI) in the *Amazon Elastic Compute Cloud User Guide* .",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
         "InstanceMarketOptions": "The market (purchasing) option for the instances.",
-        "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nIf you specify `InstanceRequirements` , you can't specify `InstanceType` .",
+        "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nYou must specify `VCpuCount` and `MemoryMiB` . All other attributes are optional. Any unspecified optional attribute is set to its default.\n\nWhen you specify multiple attributes, you get instance types that satisfy all of the specified attributes. If you specify multiple values for an attribute, you get instance types that satisfy any of the specified values.\n\nTo limit the list of instance types from which Amazon EC2 can identify matching instance types, you can use one of the following parameters, but not both in the same request:\n\n- `AllowedInstanceTypes` - The instance types to include in the list. All other instance types are ignored, even if they match your specified attributes.\n- `ExcludedInstanceTypes` - The instance types to exclude from the list, even if they match your specified attributes.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceType` .\n> \n> Attribute-based instance type selection is only supported when using Auto Scaling groups, EC2 Fleet, and Spot Fleet to launch instances. If you plan to use the launch template in the [launch instance wizard](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-instance-wizard.html) or with the [RunInstances API](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_RunInstances.html) , you can't specify `InstanceRequirements` . \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
         "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you specify `InstanceType` , you can't specify `InstanceRequirements` .",
         "KernelId": "The ID of the kernel.\n\nWe recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User Provided Kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
         "KeyName": "The name of the key pair. You can create a key pair using [CreateKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateKeyPair.html) or [ImportKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ImportKeyPair.html) .\n\n> If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.",
@@ -16940,7 +16943,7 @@
     },
     "AWS::EC2::SpotFleet.InstanceRequirementsRequest": {
       "attributes": {},
-      "description": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nWhen you specify multiple attributes, you get instance types that satisfy all of the specified attributes. If you specify multiple values for an attribute, you get instance types that satisfy any of the specified values.\n\nTo limit the list of instance types from which Amazon EC2 can identify matching instance types, you can use one of the following parameters, but not both in the same request:\n\n- `AllowedInstanceTypes` - The instance types to include in the list. All other instance types are ignored, even if they match your specified attributes.\n- `ExcludedInstanceTypes` - The instance types to exclude from the list, even if they match your specified attributes.\n\n> You must specify `VCpuCount` and `MemoryMiB` . All other attributes are optional. Any unspecified optional attribute is set to its default. \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
+      "description": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nYou must specify `VCpuCount` and `MemoryMiB` . All other attributes are optional. Any unspecified optional attribute is set to its default.\n\nWhen you specify multiple attributes, you get instance types that satisfy all of the specified attributes. If you specify multiple values for an attribute, you get instance types that satisfy any of the specified values.\n\nTo limit the list of instance types from which Amazon EC2 can identify matching instance types, you can use one of the following parameters, but not both in the same request:\n\n- `AllowedInstanceTypes` - The instance types to include in the list. All other instance types are ignored, even if they match your specified attributes.\n- `ExcludedInstanceTypes` - The instance types to exclude from the list, even if they match your specified attributes.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceType` .\n> \n> Attribute-based instance type selection is only supported when using Auto Scaling groups, EC2 Fleet, and Spot Fleet to launch instances. If you plan to use the launch template in the [launch instance wizard](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-instance-wizard.html) or with the [RunInstances API](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_RunInstances.html) , you can't specify `InstanceRequirements` . \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
       "properties": {
         "AcceleratorCount": "The minimum and maximum number of accelerators (GPUs, FPGAs, or AWS Inferentia chips) on an instance.\n\nTo exclude accelerator-enabled instance types, set `Max` to `0` .\n\nDefault: No minimum or maximum limits",
         "AcceleratorManufacturers": "Indicates whether instance types must have accelerators by specific manufacturers.\n\n- For instance types with NVIDIA devices, specify `nvidia` .\n- For instance types with AMD devices, specify `amd` .\n- For instance types with AWS devices, specify `amazon-web-services` .\n- For instance types with Xilinx devices, specify `xilinx` .\n\nDefault: Any manufacturer",
@@ -18340,7 +18343,7 @@
       "attributes": {
         "Ref": "`Ref` returns the Amazon Resource Name (ARN).\n\nIn the following example, the `Ref` function returns the ARN of the `MyTaskDefinition` task definition, such as `arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1` .\n\n`{ \"Ref\": \"MyTaskDefinition\" }`"
       },
-      "description": "The details of a task definition which describes the container and volume definitions of an Amazon Elastic Container Service task. You can specify which Docker images to use, the required resources, and other configurations related to launching the task definition through an Amazon ECS service or task.",
+      "description": "Registers a new task definition from the supplied `family` and `containerDefinitions` . Optionally, you can add data volumes to your containers with the `volumes` parameter. For more information about task definition parameters and defaults, see [Amazon ECS Task Definitions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_defintions.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nYou can specify a role for your task with the `taskRoleArn` parameter. When you specify a role for a task, its containers can then use the latest versions of the AWS CLI or SDKs to make API requests to the AWS services that are specified in the policy that's associated with the role. For more information, see [IAM Roles for Tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nYou can specify a Docker networking mode for the containers in your task definition with the `networkMode` parameter. The available network modes correspond to those described in [Network settings](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#/network-settings) in the Docker run reference. If you specify the `awsvpc` network mode, the task is allocated an elastic network interface, and you must specify a `NetworkConfiguration` when you create a service or run a task with the task definition. For more information, see [Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
         "ContainerDefinitions": "A list of container definitions in JSON format that describe the different containers that make up your task. For more information about container definition parameters and defaults, see [Amazon ECS Task Definitions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_defintions.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "Cpu": "The number of `cpu` units used by the task. If you use the EC2 launch type, this field is optional. Any value can be used. If you use the Fargate launch type, this field is required. You must use one of the following values. The value that you choose determines your range of valid values for the `memory` parameter.\n\nThe CPU units cannot be less than 1 vCPU when you use Windows containers on Fargate.\n\n- 256 (.25 vCPU) - Available `memory` values: 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB)\n- 512 (.5 vCPU) - Available `memory` values: 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB)\n- 1024 (1 vCPU) - Available `memory` values: 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB), 6144 (6 GB), 7168 (7 GB), 8192 (8 GB)\n- 2048 (2 vCPU) - Available `memory` values: 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB)\n- 4096 (4 vCPU) - Available `memory` values: 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)\n- 8192 (8 vCPU) - Available `memory` values: 16 GB and 60 GB in 4 GB increments\n\nThis option requires Linux platform `1.4.0` or later.\n- 16384 (16vCPU) - Available `memory` values: 32GB and 120 GB in 8 GB increments\n\nThis option requires Linux platform `1.4.0` or later.",
@@ -18354,7 +18357,7 @@
         "PidMode": "The process namespace to use for the containers in the task. The valid values are `host` or `task` . If `host` is specified, then all containers within the tasks that specified the `host` PID mode on the same container instance share the same process namespace with the host Amazon EC2 instance. If `task` is specified, all containers within the specified task share the same process namespace. If no value is specified, the default is a private namespace. For more information, see [PID settings](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#pid-settings---pid) in the *Docker run reference* .\n\nIf the `host` PID mode is used, be aware that there is a heightened risk of undesired process namespace expose. For more information, see [Docker security](https://docs.aws.amazon.com/https://docs.docker.com/engine/security/security/) .\n\n> This parameter is not supported for Windows containers or tasks run on AWS Fargate .",
         "PlacementConstraints": "An array of placement constraint objects to use for tasks.\n\n> This parameter isn't supported for tasks run on AWS Fargate .",
         "ProxyConfiguration": "The configuration details for the App Mesh proxy.\n\nYour Amazon ECS container instances require at least version 1.26.0 of the container agent and at least version 1.26.0-1 of the `ecs-init` package to use a proxy configuration. If your container instances are launched from the Amazon ECS optimized AMI version `20190301` or later, they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "RequiresCompatibilities": "The task launch types the task definition was validated against. The valid values are `EC2` , `FARGATE` , and `git diff` . For more information, see [Amazon ECS launch types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "RequiresCompatibilities": "The task launch types the task definition was validated against. The valid values are `EC2` , `FARGATE` , and `EXTERNAL` . For more information, see [Amazon ECS launch types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "RuntimePlatform": "The operating system that your tasks definitions run on. A platform family is specified only for tasks using the Fargate launch type.\n\nWhen you specify a task definition in a service, this value must match the `runtimePlatform` value of the service.",
         "Tags": "The metadata that you apply to the task definition to help you categorize and organize them. Each tag consists of a key and an optional value. You define both of them.\n\nThe following basic restrictions apply to tags:\n\n- Maximum number of tags per resource - 50\n- For each resource, each tag key must be unique, and each tag key can have only one value.\n- Maximum key length - 128 Unicode characters in UTF-8\n- Maximum value length - 256 Unicode characters in UTF-8\n- If your tagging schema is used across multiple services and resources, remember that other services may have restrictions on allowed characters. Generally allowed characters are: letters, numbers, and spaces representable in UTF-8, and the following characters: + - = . _ : / @.\n- Tag keys and values are case-sensitive.\n- Do not use `aws:` , `AWS:` , or any upper or lowercase combination of such as a prefix for either keys or values as it is reserved for AWS use. You cannot edit or delete tag keys or values with this prefix. Tags with this prefix do not count against your tags per resource limit.",
         "TaskRoleArn": "The short name or full Amazon Resource Name (ARN) of the AWS Identity and Access Management role that grants containers in the task permission to call AWS APIs on your behalf. For more information, see [Amazon ECS Task Role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nIAM roles for tasks on Windows require that the `-EnableTaskIAMRole` option is set when you launch the Amazon ECS-optimized Windows AMI. Your containers must also run some configuration code to use the feature. For more information, see [Windows IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -21899,7 +21902,7 @@
       "attributes": {},
       "description": "The configuration that Amazon FSx for Windows File Server uses to audit and log user accesses of files, folders, and file shares on the Amazon FSx for Windows File Server file system.",
       "properties": {
-        "AuditLogDestination": "The Amazon Resource Name (ARN) for the destination of the audit logs. The destination can be any Amazon CloudWatch Logs log group ARN or Amazon Kinesis Data Firehose delivery stream ARN.\n\nThe name of the Amazon CloudWatch Logs log group must begin with the `/aws/fsx` prefix. The name of the Amazon Kinesis Data Firehouse delivery stream must begin with the `aws-fsx` prefix.\n\nThe destination ARN (either CloudWatch Logs log group or Kinesis Data Firehose delivery stream) must be in the same AWS partition, AWS Region , and AWS account as your Amazon FSx file system.",
+        "AuditLogDestination": "The Amazon Resource Name (ARN) for the destination of the audit logs. The destination can be any Amazon CloudWatch Logs log group ARN or Amazon Kinesis Data Firehose delivery stream ARN.\n\nThe name of the Amazon CloudWatch Logs log group must begin with the `/aws/fsx` prefix. The name of the Amazon Kinesis Data Firehose delivery stream must begin with the `aws-fsx` prefix.\n\nThe destination ARN (either CloudWatch Logs log group or Kinesis Data Firehose delivery stream) must be in the same AWS partition, AWS Region , and AWS account as your Amazon FSx file system.",
         "FileAccessAuditLogLevel": "Sets which attempt type is logged by Amazon FSx for file and folder accesses.\n\n- `SUCCESS_ONLY` - only successful attempts to access files or folders are logged.\n- `FAILURE_ONLY` - only failed attempts to access files or folders are logged.\n- `SUCCESS_AND_FAILURE` - both successful attempts and failed attempts to access files or folders are logged.\n- `DISABLED` - access auditing of files and folders is turned off.",
         "FileShareAccessAuditLogLevel": "Sets which attempt type is logged by Amazon FSx for file share accesses.\n\n- `SUCCESS_ONLY` - only successful attempts to access file shares are logged.\n- `FAILURE_ONLY` - only failed attempts to access file shares are logged.\n- `SUCCESS_AND_FAILURE` - both successful attempts and failed attempts to access file shares are logged.\n- `DISABLED` - access auditing of file shares is turned off."
       }
@@ -22116,7 +22119,7 @@
         "JunctionPath": "Specifies the location in the SVM's namespace where the volume is mounted. This parameter is required. The `JunctionPath` must have a leading forward slash, such as `/vol3` .",
         "OntapVolumeType": "Specifies the type of volume you are creating. Valid values are the following:\n\n- `RW` specifies a read/write volume. `RW` is the default.\n- `DP` specifies a data-protection volume. A `DP` volume is read-only and can be used as the destination of a NetApp SnapMirror relationship.\n\nFor more information, see [Volume types](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/volume-types) in the *Amazon FSx for NetApp ONTAP User Guide* .",
         "SecurityStyle": "Specifies the security style for the volume. If a volume's security style is not specified, it is automatically set to the root volume's security style. The security style determines the type of permissions that FSx for ONTAP uses to control data access. For more information, see [Volume security style](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-volumes.html#volume-security-style) in the *Amazon FSx for NetApp ONTAP User Guide* . Specify one of the following values:\n\n- `UNIX` if the file system is managed by a UNIX administrator, the majority of users are NFS clients, and an application accessing the data uses a UNIX user as the service account.\n- `NTFS` if the file system is managed by a Windows administrator, the majority of users are SMB clients, and an application accessing the data uses a Windows user as the service account.\n- `MIXED` if the file system is managed by both UNIX and Windows administrators and users consist of both NFS and SMB clients.",
-        "SizeInMegabytes": "Specifies the size of the volume, in megabytes (MB), that you are creating. Provide any whole number in the range of 20\u2013104857600 to specify the size of the volume.",
+        "SizeInMegabytes": "Specifies the size of the volume, in megabytes (MB), that you are creating.",
         "SnapshotPolicy": "Specifies the snapshot policy for the volume. There are three built-in snapshot policies:\n\n- `default` : This is the default policy. A maximum of six hourly snapshots taken five minutes past the hour. A maximum of two daily snapshots taken Monday through Saturday at 10 minutes after midnight. A maximum of two weekly snapshots taken every Sunday at 15 minutes after midnight.\n- `default-1weekly` : This policy is the same as the `default` policy except that it only retains one snapshot from the weekly schedule.\n- `none` : This policy does not take any snapshots. This policy can be assigned to volumes to prevent automatic snapshots from being taken.\n\nYou can also provide the name of a custom policy that you created with the ONTAP CLI or REST API.\n\nFor more information, see [Snapshot policies](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/snapshots-ontap.html#snapshot-policies) in the *Amazon FSx for NetApp ONTAP User Guide* .",
         "StorageEfficiencyEnabled": "Set to true to enable deduplication, compression, and compaction storage efficiency features on the volume, or set to false to disable them. This parameter is required.",
         "StorageVirtualMachineId": "Specifies the ONTAP SVM in which to create the volume.",
@@ -25224,6 +25227,7 @@
       "properties": {
         "DatastoreName": "The user generated name for the Data Store.",
         "DatastoreTypeVersion": "The FHIR version of the Data Store. The only supported version is R4.",
+        "IdentityProviderConfiguration": "",
         "PreloadDataConfig": "The preloaded data configuration for the Data Store. Only data preloaded from Synthea is supported.",
         "SseConfiguration": "The server-side encryption key configuration for a customer provided encryption key specified for creating a Data Store.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
@@ -25235,6 +25239,16 @@
       "properties": {
         "Nanos": "",
         "Seconds": ""
+      }
+    },
+    "AWS::HealthLake::FHIRDatastore.IdentityProviderConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AuthorizationStrategy": "",
+        "FineGrainedAuthorizationEnabled": "",
+        "IdpLambdaArn": "",
+        "Metadata": ""
       }
     },
     "AWS::HealthLake::FHIRDatastore.KmsEncryptionConfig": {
@@ -26597,14 +26611,14 @@
       "attributes": {},
       "description": "The configuration that determines how many retries are allowed for each failure type for a job.",
       "properties": {
-        "RetryCriteriaList": ""
+        "RetryCriteriaList": "The list of criteria that determines how many retries are allowed for each failure type for a job."
       }
     },
     "AWS::IoT::JobTemplate.JobExecutionsRolloutConfig": {
       "attributes": {},
       "description": "Allows you to create a staged rollout of a job.",
       "properties": {
-        "ExponentialRolloutRate": "",
+        "ExponentialRolloutRate": "The rate of increase for a job rollout. This parameter allows you to define an exponential rate for a job rollout.",
         "MaximumPerMinute": "The maximum number of things that will be notified of a pending job, per minute. This parameter allows you to create a staged rollout."
       }
     },
@@ -59102,9 +59116,18 @@
       "properties": {
         "AccessType": "The container for the type of connectivity used to access the Amazon S3 on Outposts endpoint. To use the Amazon VPC , choose `Private` . To use the endpoint with an on-premises network, choose `CustomerOwnedIp` . If you choose `CustomerOwnedIp` , you must also provide the customer-owned IP address pool (CoIP pool).\n\n> `Private` is the default access type value.",
         "CustomerOwnedIpv4Pool": "The ID of the customer-owned IPv4 address pool (CoIP pool) for the endpoint. IP addresses are allocated from this pool for the endpoint.",
+        "FailedReason": "",
         "OutpostId": "The ID of the Outpost.",
         "SecurityGroupId": "The ID of the security group to use with the endpoint.",
         "SubnetId": "The ID of the subnet."
+      }
+    },
+    "AWS::S3Outposts::Endpoint.FailedReason": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ErrorCode": "",
+        "Message": ""
       }
     },
     "AWS::S3Outposts::Endpoint.NetworkInterface": {
