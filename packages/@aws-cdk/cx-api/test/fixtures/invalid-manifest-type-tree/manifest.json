@@ -1,0 +1,17 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "Tree1": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree1.json"
+      }
+    },
+    "Tree2": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree2.json"
+      }
+    }
+  }
+}

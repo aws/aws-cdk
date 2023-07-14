@@ -1,0 +1,3506 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "bundled": {
+    "semver": "^7.5.1"
+  },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    }
+  },
+  "description": "Cloud executable protocol",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.0.11 (build 5e2d6be)",
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": false
+      }
+    }
+  },
+  "name": "@aws-cdk/cx-api",
+  "readme": {
+    "markdown": "# Cloud Executable API\n\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n## V2 Feature Flags\n\n* `@aws-cdk/aws-s3:createDefaultLoggingPolicy`\n\nEnable this feature flag to create an S3 bucket policy by default in cases where\nan AWS service would automatically create the Policy if one does not exist.\n\nFor example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy\nthat needs to be attached to the bucket. If you create the bucket without a policy and then add the\nbucket as the flow log destination, the service will automatically create the bucket policy with the\nnecessary permissions. If you were to then try and add your own bucket policy CloudFormation will throw\nand error indicating that a bucket policy already exists.\n\nIn cases where we know what the required policy is we can go ahead and create the policy so we can\nremain in control of it.\n\nhttps://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-s3:createDefaultLoggingPolicy\": true\n  }\n}\n```\n\n* `@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption`\n\nEnable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to\nonly the topic which it is subscribed to and not the whole SNS service of an account.\n\nPreviously the decryption was only restricted to the SNS service principal. To make the SQS subscription more\nsecure, it is a good practice to restrict the decryption further and only allow the connected SNS topic to decryption\nthe subscribed queue.\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption\": true\n  }\n}\n```\n\n* @aws-cdk/aws-apigateway:disableCloudWatchRole\n\nEnable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi\nto _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS\nenvironment which means that each time you create a RestApi in your account the ApiGateway account\nis overwritten. If at some point the newest RestApi is deleted, the ApiGateway Account and CloudWatch\nrole will also be deleted, breaking any existing ApiGateways that were depending on them.\n\nWhen this flag is enabled you should either create the ApiGateway account and CloudWatch role\nseparately _or_ only enable the cloudWatchRole on a single RestApi.\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-apigateway:disableCloudWatchRole\": true\n  }\n}\n```\n\n* `@aws-cdk/core:enablePartitionLiterals`\n\nEnable this feature flag to have `Stack.partition` return a literal string for a stack's partition\nwhen the stack has a known region configured.  If the region is undefined, or set to an unknown value, the\n`Stack.partition` will be the CloudFormation intrinsic value `AWS::Partition`.  Without this feature flag,\n`Stack.partition` always returns the CloudFormation intrinsic value `AWS::Partition`.\n\nThis feature will often simplify ARN strings in CDK generated templates, for example:\n\n```yaml\n Principal:\n   AWS:\n     Fn::Join:\n       - \"\"\n       - - \"arn:\"\n         - Ref: AWS::Partition\n         - :iam::123456789876:root\n```\n\nbecomes:\n\n```yaml\n Principal:\n   AWS: \"arn:aws:iam::123456789876:root\"\n```\n\n* `@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker`\n\nEnable this feature flag to avoid setting the \"ECS\" deployment controller when adding a circuit breaker to an\nECS Service, as this will trigger a full replacement which fails to deploy when using set service names.\nThis does not change any behaviour as the default deployment controller when it is not defined is ECS.\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker\": true\n  }\n}\n```\n\n* `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy`\n\nEnable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging\nrather than using the canned \\`LogDeliveryWrite\\` ACL. ACLs do not work when Object Ownership is\nenabled on the bucket.\n\nThis flag uses a Bucket Policy statement to allow Server Access Log delivery, following best\npractices for S3.\n\nhttps://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy\": true\n  }\n}\n```\n\n* `@aws-cdk/aws-rds:databaseProxyUniqueResourceName`\n\nEnable this feature flag to use unique resource names for each `DatabaseProxy`.\n\nPreviously, the default behavior for `DatabaseProxy` was to use `id` of the constructor for `dbProxyName`.\nIn this case, users couldn't deploy `DatabaseProxy`s that have the same `id` in the same region.\n\nThis is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-rds:databaseProxyUniqueResourceName\": true\n  }\n}\n```\n\n* `@aws-cdk/aws-redshift:columnId`\n\nEnable this feature flag to allow the CDK to track changes in Redshift columns through their `id` attribute. This is a breaking change, as the `name` attribute was currently being used to track changes to Redshift columns.\n\nEnabling this feature flag comes at a risk for existing Redshift columns, as the `name` attribute of a redshift column was currently being used. Therefore, to change a Redshift columns' `name` will essentially create a new column and delete the old one. This will cause data loss. If you choose to enable this flag, ensure that upon intial deployment (the first deployment after setting this feature flag), the `name` attribute of every column is not changed. After the intial deployment, you can freely change the `name` attribute of a column.\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-redshift:columnId\": true\n  }\n}\n```\n\n* `@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2`\n\nEnable this feature flag to use the \\`AmazonEMRServicePolicy_v2\\` managed policies for the EMR service role.\n\nThis is a feature flag as the old behavior will be deprecated, but some resources may require manual\nintervention since they might not have the appropriate tags propagated automatically.\n\nhttps://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2\": true\n  }\n}\n```\n\n* `@aws-cdk/core:includePrefixInUniqueNameGeneration`\n\nEnable this feature flag to include the stack's prefixes to the name generation process.\n\nNot doing so can cause the name of stack to exceed 128 characters:\n- The name generation ensures it doesn't exceed 128 characters\n- Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters\n\nThis is a feature flag as it changes the name generated for stacks. Any CDK application deployed prior this fix will\nmost likely be generated with a new name, causing the stack to be recreated with the new name, and then deleting the old one.\nFor applications running on production environments this can be unmanageable.\n\n_cdk.json_\n\n```json\n{\n  \"context\": {\n    \"@aws-cdk/core:includePrefixInUniqueNameGeneration\": true\n  }\n}\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/cx-api",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.CXAPI",
+      "packageId": "Amazon.CDK.CXAPI"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-cx-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.cxapi"
+    },
+    "js": {
+      "npm": "@aws-cdk/cx-api"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.cx-api",
+      "module": "aws_cdk.cx_api"
+    }
+  },
+  "types": {
+    "@aws-cdk/cx-api.AssemblyBuildOptions": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.AssemblyBuildOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 423
+      },
+      "name": "AssemblyBuildOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- if this option is not specified, runtime info will not be included",
+            "deprecated": "All template modifications that should result from this should\nhave already been inserted into the template.",
+            "stability": "deprecated",
+            "summary": "Include the specified runtime information (module versions) in manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 430
+          },
+          "name": "runtimeInfo",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cx-api.RuntimeInfo"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly:AssemblyBuildOptions"
+    },
+    "@aws-cdk/cx-api.AssetManifestArtifact": {
+      "assembly": "@aws-cdk/cx-api",
+      "base": "@aws-cdk/cx-api.CloudArtifact",
+      "docs": {
+        "stability": "stable",
+        "summary": "Asset manifest is a description of a set of assets which need to be built and published."
+      },
+      "fqn": "@aws-cdk/cx-api.AssetManifestArtifact",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/artifacts/asset-manifest-artifact.ts",
+          "line": 53
+        },
+        "parameters": [
+          {
+            "name": "assembly",
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "artifact",
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/artifacts/asset-manifest-artifact.ts",
+        "line": 12
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Use this method instead of `instanceof` to properly detect `AssetManifestArtifact`\ninstances, even when the construct library is symlinked.\n\nExplanation: in JavaScript, multiple copies of the `cx-api` library on\ndisk are seen as independent, completely different libraries. As a\nconsequence, the class `AssetManifestArtifact` in each copy of the `cx-api` library\nis seen as a different class, and an instance of one class will not test as\n`instanceof` the other class. `npm install` will not create installations\nlike this, but users may manually symlink construct libraries together or\nuse a monorepo tool: in those cases, multiple copies of the `cx-api`\nlibrary can be accidentally installed, and `instanceof` will behave\nunpredictably. It is safest to avoid using `instanceof`, and using\nthis type-testing method instead.",
+            "stability": "stable",
+            "summary": "Checks if `art` is an instance of this class."
+          },
+          "locationInModule": {
+            "filename": "lib/artifacts/asset-manifest-artifact.ts",
+            "line": 30
+          },
+          "name": "isAssetManifestArtifact",
+          "parameters": [
+            {
+              "name": "art",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "AssetManifestArtifact",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The Asset Manifest contents."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/asset-manifest-artifact.ts",
+            "line": 68
+          },
+          "name": "contents",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifest"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The file name of the asset manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/asset-manifest-artifact.ts",
+            "line": 37
+          },
+          "name": "file",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- Discover SSM parameter by reading stack",
+            "stability": "stable",
+            "summary": "Name of SSM parameter with bootstrap stack version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/asset-manifest-artifact.ts",
+            "line": 49
+          },
+          "name": "bootstrapStackVersionSsmParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Version of bootstrap stack required to deploy this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/asset-manifest-artifact.ts",
+            "line": 42
+          },
+          "name": "requiresBootstrapStackVersion",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/artifacts/asset-manifest-artifact:AssetManifestArtifact"
+    },
+    "@aws-cdk/cx-api.AwsCloudFormationStackProperties": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Artifact properties for CloudFormation stacks."
+      },
+      "fqn": "@aws-cdk/cx-api.AwsCloudFormationStackProperties",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-artifact.ts",
+        "line": 8
+      },
+      "name": "AwsCloudFormationStackProperties",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "A file relative to the assembly root which contains the CloudFormation template for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 12
+          },
+          "name": "templateFile",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Values for CloudFormation stack parameters that should be passed when the stack is deployed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 17
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- name derived from artifact ID",
+            "stability": "stable",
+            "summary": "The name to use for the CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 23
+          },
+          "name": "stackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Whether to enable termination protection for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 30
+          },
+          "name": "terminationProtection",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-artifact:AwsCloudFormationStackProperties"
+    },
+    "@aws-cdk/cx-api.CloudArtifact": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents an artifact within a cloud assembly."
+      },
+      "fqn": "@aws-cdk/cx-api.CloudArtifact",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/cloud-artifact.ts",
+          "line": 72
+        },
+        "parameters": [
+          {
+            "name": "assembly",
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "manifest",
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+            }
+          }
+        ],
+        "protected": true
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloud-artifact.ts",
+        "line": 36
+      },
+      "methods": [
+        {
+          "docs": {
+            "returns": "the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.",
+            "stability": "stable",
+            "summary": "Returns a subclass of `CloudArtifact` based on the artifact type defined in the artifact manifest."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 45
+          },
+          "name": "fromManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The cloud assembly from which to load the artifact."
+              },
+              "name": "assembly",
+              "type": {
+                "fqn": "@aws-cdk/cx-api.CloudAssembly"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The artifact ID."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The artifact manifest."
+              },
+              "name": "artifact",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+              }
+            }
+          ],
+          "returns": {
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudArtifact"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "returns": "all the metadata entries of a specific type in this artifact.",
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 99
+          },
+          "name": "findMetadataByType",
+          "parameters": [
+            {
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "fqn": "@aws-cdk/cx-api.MetadataEntryResult"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CloudArtifact",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 72
+          },
+          "name": "assembly",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.CloudAssembly"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns all the artifacts that this artifact depends on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 81
+          },
+          "name": "dependencies",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.CloudArtifact"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Defaults to the normal\nid. Should only be used in user interfaces.",
+            "stability": "stable",
+            "summary": "An identifier that shows where this artifact is located in the tree of nested assemblies, based on their manifests."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 143
+          },
+          "name": "hierarchicalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 72
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The artifact's manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 54
+          },
+          "name": "manifest",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The set of messages extracted from the artifact's metadata."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-artifact.ts",
+            "line": 59
+          },
+          "name": "messages",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.SynthesisMessage"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-artifact:CloudArtifact"
+    },
+    "@aws-cdk/cx-api.CloudAssembly": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a deployable cloud application."
+      },
+      "fqn": "@aws-cdk/cx-api.CloudAssembly",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Reads a cloud assembly from the specified directory."
+        },
+        "locationInModule": {
+          "filename": "lib/cloud-assembly.ts",
+          "line": 49
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "The root directory of the assembly."
+            },
+            "name": "directory",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "loadOptions",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.LoadManifestOptions"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 19
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a nested assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 168
+          },
+          "name": "getNestedAssembly",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The artifact ID of the nested assembly."
+              },
+              "name": "artifactId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a nested assembly artifact."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 150
+          },
+          "name": "getNestedAssemblyArtifact",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The artifact ID of the nested assembly."
+              },
+              "name": "artifactId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.NestedCloudAssemblyArtifact"
+            }
+          }
+        },
+        {
+          "docs": {
+            "deprecated": "renamed to `getStackByName` (or `getStackArtifact(id)`)",
+            "stability": "deprecated",
+            "summary": "Returns a CloudFormation stack artifact by name from this assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 99
+          },
+          "name": "getStack",
+          "parameters": [
+            {
+              "name": "stackName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "throws": "if there is no stack artifact with that id"
+            },
+            "returns": "a `CloudFormationStackArtifact` object.",
+            "stability": "stable",
+            "summary": "Returns a CloudFormation stack artifact from this assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 110
+          },
+          "name": "getStackArtifact",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the artifact id of the stack (can be obtained through `stack.artifactId`)."
+              },
+              "name": "artifactId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "throws": "if there is more than one stack with the same stack name. You can\nuse `getStackArtifact(stack.artifactId)` instead."
+            },
+            "remarks": "Will only search the current assembly.",
+            "returns": "a `CloudFormationStackArtifact` object.",
+            "stability": "stable",
+            "summary": "Returns a CloudFormation stack artifact from this assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 81
+          },
+          "name": "getStackByName",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the name of the CloudFormation stack."
+              },
+              "name": "stackName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "throws": "if there is no metadata artifact by that name"
+            },
+            "returns": "a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.",
+            "stability": "stable",
+            "summary": "Returns the tree metadata artifact from this assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 177
+          },
+          "name": "tree",
+          "returns": {
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/cx-api.TreeCloudArtifact"
+            }
+          }
+        },
+        {
+          "docs": {
+            "returns": "A `CloudArtifact` object or `undefined` if the artifact does not exist in this assembly.",
+            "stability": "stable",
+            "summary": "Attempts to find an artifact with a specific identity."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 66
+          },
+          "name": "tryGetArtifact",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The artifact ID."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudArtifact"
+            }
+          }
+        }
+      ],
+      "name": "CloudAssembly",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "All artifacts included in this assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 33
+          },
+          "name": "artifacts",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.CloudArtifact"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The root directory of the cloud assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 23
+          },
+          "name": "directory",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The raw assembly manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 43
+          },
+          "name": "manifest",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The nested assembly artifacts in this assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 207
+          },
+          "name": "nestedAssemblies",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.NestedCloudAssemblyArtifact"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Runtime information such as module versions used to synthesize this assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 38
+          },
+          "name": "runtime",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.RuntimeInfo"
+          }
+        },
+        {
+          "docs": {
+            "returns": "all the CloudFormation stack artifacts that are included in this assembly.",
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 196
+          },
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns all the stacks, including the ones in nested assemblies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 131
+          },
+          "name": "stacksRecursively",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The schema version of the assembly manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 28
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly:CloudAssembly"
+    },
+    "@aws-cdk/cx-api.CloudAssemblyBuilder": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable",
+        "summary": "Can be used to build a cloud assembly."
+      },
+      "fqn": "@aws-cdk/cx-api.CloudAssemblyBuilder",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Initializes a cloud assembly builder."
+        },
+        "locationInModule": {
+          "filename": "lib/cloud-assembly.ts",
+          "line": 275
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "The output directory, uses temporary directory if undefined."
+            },
+            "name": "outdir",
+            "optional": true,
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssemblyBuilderProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 256
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Adds an artifact into the cloud assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 292
+          },
+          "name": "addArtifact",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The ID of the artifact."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The artifact manifest."
+              },
+              "name": "manifest",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Reports that some context is missing in order for this cloud assembly to be fully synthesized."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 300
+          },
+          "name": "addMissing",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Missing context information."
+              },
+              "name": "missing",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.MissingContext"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Finalizes the cloud assembly into the output directory returns a `CloudAssembly` object that can be used to inspect the assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 313
+          },
+          "name": "buildAssembly",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cx-api.AssemblyBuildOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Creates a nested cloud assembly."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 341
+          },
+          "name": "createNestedAssembly",
+          "parameters": [
+            {
+              "name": "artifactId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "displayName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssemblyBuilder"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Delete the cloud assembly directory."
+          },
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 363
+          },
+          "name": "delete"
+        }
+      ],
+      "name": "CloudAssemblyBuilder",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The directory where assets of this Cloud Assembly should be stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 265
+          },
+          "name": "assetOutdir",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The root directory of the resulting cloud assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 260
+          },
+          "name": "outdir",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly:CloudAssemblyBuilder"
+    },
+    "@aws-cdk/cx-api.CloudAssemblyBuilderProps": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Construction properties for CloudAssemblyBuilder."
+      },
+      "fqn": "@aws-cdk/cx-api.CloudAssemblyBuilderProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 237
+      },
+      "name": "CloudAssemblyBuilderProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Same as the manifest outdir",
+            "stability": "stable",
+            "summary": "Use the given asset output directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 243
+          },
+          "name": "assetOutdir",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- This is a root assembly",
+            "stability": "stable",
+            "summary": "If this builder is for a nested assembly, the parent assembly builder."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 250
+          },
+          "name": "parentBuilder",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cx-api.CloudAssemblyBuilder"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly:CloudAssemblyBuilderProps"
+    },
+    "@aws-cdk/cx-api.CloudFormationStackArtifact": {
+      "assembly": "@aws-cdk/cx-api",
+      "base": "@aws-cdk/cx-api.CloudArtifact",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.CloudFormationStackArtifact",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/artifacts/cloudformation-artifact.ts",
+          "line": 144
+        },
+        "parameters": [
+          {
+            "name": "assembly",
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          },
+          {
+            "name": "artifactId",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "artifact",
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/artifacts/cloudformation-artifact.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Use this method instead of `instanceof` to properly detect `CloudFormationStackArtifact`\ninstances, even when the construct library is symlinked.\n\nExplanation: in JavaScript, multiple copies of the `cx-api` library on\ndisk are seen as independent, completely different libraries. As a\nconsequence, the class `CloudFormationStackArtifact` in each copy of the `cx-api` library\nis seen as a different class, and an instance of one class will not test as\n`instanceof` the other class. `npm install` will not create installations\nlike this, but users may manually symlink construct libraries together or\nuse a monorepo tool: in those cases, multiple copies of the `cx-api`\nlibrary can be accidentally installed, and `instanceof` will behave\nunpredictably. It is safest to avoid using `instanceof`, and using\nthis type-testing method instead.",
+            "stability": "stable",
+            "summary": "Checks if `art` is an instance of this class."
+          },
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 28
+          },
+          "name": "isCloudFormationStackArtifact",
+          "parameters": [
+            {
+              "name": "art",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "CloudFormationStackArtifact",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Any assets associated with this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 45
+          },
+          "name": "assets",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "@aws-cdk/cloud-assembly-schema.FileAssetMetadataEntry"
+                    },
+                    {
+                      "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry"
+                    }
+                  ]
+                }
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Should only be used in user\ninterfaces. If the stackName has not been set explicitly, or has been set\nto artifactId, it will return the hierarchicalId of the stack. Otherwise,\nit will return something like \"<hierarchicalId> (<stackName>)\"",
+            "stability": "stable",
+            "summary": "A string that represents this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 68
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The environment into which to deploy this artifact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 79
+          },
+          "name": "environment",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.Environment"
+          }
+        },
+        {
+          "docs": {
+            "deprecated": "renamed to `stackName`",
+            "stability": "deprecated",
+            "summary": "The physical name of this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 74
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The original name as defined in the CDK app."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 40
+          },
+          "name": "originalName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "CloudFormation parameters to pass to the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 50
+          },
+          "name": "parameters",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The physical name of this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 60
+          },
+          "name": "stackName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "CloudFormation tags to pass to the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The CloudFormation template for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 192
+          },
+          "name": "template",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The file name of the template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 35
+          },
+          "name": "templateFile",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Full path to the template file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 185
+          },
+          "name": "templateFullPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- No role is assumed (current credentials are used)",
+            "stability": "stable",
+            "summary": "The role that needs to be assumed to deploy the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 86
+          },
+          "name": "assumeRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- No external ID",
+            "stability": "stable",
+            "summary": "External ID to use when assuming role for cloudformation deployments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 93
+          },
+          "name": "assumeRoleExternalId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- Discover SSM parameter by reading stack",
+            "stability": "stable",
+            "summary": "Name of SSM parameter with bootstrap stack version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 128
+          },
+          "name": "bootstrapStackVersionSsmParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- No role is passed (currently assumed role/credentials are used)",
+            "stability": "stable",
+            "summary": "The role that is passed to CloudFormation to execute the change set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 100
+          },
+          "name": "cloudFormationExecutionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "default": "- No role is assumed (current credentials are used)",
+            "stability": "stable",
+            "summary": "The role to use to look up values from the target AWS account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 107
+          },
+          "name": "lookupRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.BootstrapRole"
+          }
+        },
+        {
+          "docs": {
+            "default": "- No bootstrap stack required",
+            "stability": "stable",
+            "summary": "Version of bootstrap stack required to deploy this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 121
+          },
+          "name": "requiresBootstrapStackVersion",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "default": "- Not uploaded yet, upload just before deploying",
+            "stability": "stable",
+            "summary": "If the stack template has already been included in the asset manifest, its asset URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 114
+          },
+          "name": "stackTemplateAssetObjectUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Whether termination protection is enabled for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 133
+          },
+          "name": "terminationProtection",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "default": "- false",
+            "stability": "stable",
+            "summary": "Whether this stack should be validated by the CLI after synthesis."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/cloudformation-artifact.ts",
+            "line": 140
+          },
+          "name": "validateOnSynth",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/artifacts/cloudformation-artifact:CloudFormationStackArtifact"
+    },
+    "@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to hosted zone context provider."
+      },
+      "fqn": "@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/endpoint-service-availability-zones.ts",
+        "line": 6
+      },
+      "name": "EndpointServiceAvailabilityZonesContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/endpoint-service-availability-zones.ts",
+            "line": 10
+          },
+          "name": "account",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/endpoint-service-availability-zones.ts",
+            "line": 15
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query service name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/endpoint-service-availability-zones.ts",
+            "line": 20
+          },
+          "name": "serviceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/endpoint-service-availability-zones:EndpointServiceAvailabilityZonesContextQuery"
+    },
+    "@aws-cdk/cx-api.Environment": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Models an AWS execution environment, for use within the CDK toolkit."
+      },
+      "fqn": "@aws-cdk/cx-api.Environment",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/environment.ts",
+        "line": 11
+      },
+      "name": "Environment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The AWS account this environment deploys into."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 16
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The arbitrary name of this environment (user-set, or at least user-meaningful)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 13
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The AWS region name where this environment deploys into."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 19
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/environment:Environment"
+    },
+    "@aws-cdk/cx-api.EnvironmentPlaceholderValues": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Return the appropriate values for the environment placeholders."
+      },
+      "fqn": "@aws-cdk/cx-api.EnvironmentPlaceholderValues",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/placeholders.ts",
+        "line": 81
+      },
+      "name": "EnvironmentPlaceholderValues",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 90
+          },
+          "name": "accountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the partition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 95
+          },
+          "name": "partition",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 85
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/placeholders:EnvironmentPlaceholderValues"
+    },
+    "@aws-cdk/cx-api.EnvironmentPlaceholders": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "remarks": "These can occur both in the Asset Manifest as well as the general\nCloud Assembly manifest.",
+        "stability": "stable",
+        "summary": "Placeholders which can be used manifests."
+      },
+      "fqn": "@aws-cdk/cx-api.EnvironmentPlaceholders",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/placeholders.ts",
+        "line": 7
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it\n(they're nominally independent tools).",
+            "stability": "stable",
+            "summary": "Replace the environment placeholders in all strings found in a complex object."
+          },
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 29
+          },
+          "name": "replace",
+          "parameters": [
+            {
+              "name": "object",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "name": "values",
+              "type": {
+                "fqn": "@aws-cdk/cx-api.EnvironmentPlaceholderValues"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "any"
+            }
+          },
+          "static": true
+        },
+        {
+          "async": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Like 'replace', but asynchronous."
+          },
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 41
+          },
+          "name": "replaceAsync",
+          "parameters": [
+            {
+              "name": "object",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "name": "provider",
+              "type": {
+                "fqn": "@aws-cdk/cx-api.IEnvironmentPlaceholderProvider"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "any"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "EnvironmentPlaceholders",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Insert this into the destination fields to be replaced with the current account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 16
+          },
+          "name": "CURRENT_ACCOUNT",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Insert this into the destination fields to be replaced with the current partition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 21
+          },
+          "name": "CURRENT_PARTITION",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Insert this into the destination fields to be replaced with the current region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 11
+          },
+          "name": "CURRENT_REGION",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/placeholders:EnvironmentPlaceholders"
+    },
+    "@aws-cdk/cx-api.EnvironmentUtils": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.EnvironmentUtils",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/environment.ts",
+        "line": 25
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Format an environment string from an account and region."
+          },
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 52
+          },
+          "name": "format",
+          "parameters": [
+            {
+              "name": "account",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "region",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Build an environment object from an account and region."
+          },
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 45
+          },
+          "name": "make",
+          "parameters": [
+            {
+              "name": "account",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "region",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.Environment"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/environment.ts",
+            "line": 26
+          },
+          "name": "parse",
+          "parameters": [
+            {
+              "name": "environment",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cx-api.Environment"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "EnvironmentUtils",
+      "symbolId": "lib/environment:EnvironmentUtils"
+    },
+    "@aws-cdk/cx-api.IEnvironmentPlaceholderProvider": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable",
+        "summary": "Return the appropriate values for the environment placeholders."
+      },
+      "fqn": "@aws-cdk/cx-api.IEnvironmentPlaceholderProvider",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/placeholders.ts",
+        "line": 101
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the account."
+          },
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 110
+          },
+          "name": "accountId",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the partition."
+          },
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 115
+          },
+          "name": "partition",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "async": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the region."
+          },
+          "locationInModule": {
+            "filename": "lib/placeholders.ts",
+            "line": 105
+          },
+          "name": "region",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "IEnvironmentPlaceholderProvider",
+      "symbolId": "lib/placeholders:IEnvironmentPlaceholderProvider"
+    },
+    "@aws-cdk/cx-api.KeyContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a discovered key."
+      },
+      "fqn": "@aws-cdk/cx-api.KeyContextResponse",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/key.ts",
+        "line": 4
+      },
+      "name": "KeyContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Id of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/key.ts",
+            "line": 9
+          },
+          "name": "keyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/key:KeyContextResponse"
+    },
+    "@aws-cdk/cx-api.LoadBalancerContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a discovered load balancer."
+      },
+      "fqn": "@aws-cdk/cx-api.LoadBalancerContextResponse",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/load-balancer.ts",
+        "line": 19
+      },
+      "name": "LoadBalancerContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Type of IP address."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 38
+          },
+          "name": "ipAddressType",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.LoadBalancerIpAddressType"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the load balancer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 23
+          },
+          "name": "loadBalancerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The hosted zone ID of the load balancer's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 28
+          },
+          "name": "loadBalancerCanonicalHostedZoneId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Load balancer's DNS name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 33
+          },
+          "name": "loadBalancerDnsName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Load balancer's security groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 43
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Load balancer's VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 48
+          },
+          "name": "vpcId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/load-balancer:LoadBalancerContextResponse"
+    },
+    "@aws-cdk/cx-api.LoadBalancerIpAddressType": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable",
+        "summary": "Load balancer ip address type."
+      },
+      "fqn": "@aws-cdk/cx-api.LoadBalancerIpAddressType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/context/load-balancer.ts",
+        "line": 4
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "IPV4 ip address."
+          },
+          "name": "IPV4"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Dual stack address."
+          },
+          "name": "DUAL_STACK"
+        }
+      ],
+      "name": "LoadBalancerIpAddressType",
+      "symbolId": "lib/context/load-balancer:LoadBalancerIpAddressType"
+    },
+    "@aws-cdk/cx-api.LoadBalancerListenerContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a discovered load balancer listener."
+      },
+      "fqn": "@aws-cdk/cx-api.LoadBalancerListenerContextResponse",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/load-balancer.ts",
+        "line": 54
+      },
+      "name": "LoadBalancerListenerContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the listener."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 58
+          },
+          "name": "listenerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The port the listener is listening on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 63
+          },
+          "name": "listenerPort",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The security groups of the load balancer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/load-balancer.ts",
+            "line": 68
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/context/load-balancer:LoadBalancerListenerContextResponse"
+    },
+    "@aws-cdk/cx-api.MetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "aws-cdk": "/core library."
+        },
+        "deprecated": "moved to package 'cloud-assembly-schema'",
+        "remarks": "This is necessary because its used as an input in the stable",
+        "see": "core.ConstructNode.metadata",
+        "stability": "deprecated",
+        "summary": "Backwards compatibility for when `MetadataEntry` was defined here."
+      },
+      "fqn": "@aws-cdk/cx-api.MetadataEntry",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.MetadataEntry"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 388
+      },
+      "name": "MetadataEntry",
+      "symbolId": "lib/cloud-assembly:MetadataEntry"
+    },
+    "@aws-cdk/cx-api.MetadataEntryResult": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.MetadataEntryResult",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.MetadataEntry"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/metadata.ts",
+        "line": 14
+      },
+      "name": "MetadataEntryResult",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The path in which this entry was defined."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/metadata.ts",
+            "line": 18
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/metadata:MetadataEntryResult"
+    },
+    "@aws-cdk/cx-api.MissingContext": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "aws-cdk": "/core library."
+        },
+        "deprecated": "moved to package 'cloud-assembly-schema'",
+        "remarks": "This is necessary because its used as an input in the stable",
+        "see": "core.Stack.reportMissingContext",
+        "stability": "deprecated",
+        "summary": "Backwards compatibility for when `MissingContext` was defined here."
+      },
+      "fqn": "@aws-cdk/cx-api.MissingContext",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 400
+      },
+      "name": "MissingContext",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "deprecated",
+            "summary": "The missing context key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 404
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "(This is the old untyped definition, which is necessary for backwards compatibility.\nSee cxschema for a type definition.)",
+            "stability": "deprecated",
+            "summary": "A set of provider-specific options."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 420
+          },
+          "name": "props",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "(This is the old untyped definition, which is necessary for backwards compatibility.\nSee cxschema for a type definition.)",
+            "stability": "deprecated",
+            "summary": "The provider from which we expect this context key to be obtained."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly.ts",
+            "line": 412
+          },
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly:MissingContext"
+    },
+    "@aws-cdk/cx-api.NestedCloudAssemblyArtifact": {
+      "assembly": "@aws-cdk/cx-api",
+      "base": "@aws-cdk/cx-api.CloudArtifact",
+      "docs": {
+        "stability": "stable",
+        "summary": "Asset manifest is a description of a set of assets which need to be built and published."
+      },
+      "fqn": "@aws-cdk/cx-api.NestedCloudAssemblyArtifact",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+          "line": 43
+        },
+        "parameters": [
+          {
+            "name": "assembly",
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "artifact",
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+        "line": 11
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Use this method instead of `instanceof` to properly detect `NestedCloudAssemblyArtifact`\ninstances, even when the construct library is symlinked.\n\nExplanation: in JavaScript, multiple copies of the `cx-api` library on\ndisk are seen as independent, completely different libraries. As a\nconsequence, the class `NestedCloudAssemblyArtifact` in each copy of the `cx-api` library\nis seen as a different class, and an instance of one class will not test as\n`instanceof` the other class. `npm install` will not create installations\nlike this, but users may manually symlink construct libraries together or\nuse a monorepo tool: in those cases, multiple copies of the `cx-api`\nlibrary can be accidentally installed, and `instanceof` will behave\nunpredictably. It is safest to avoid using `instanceof`, and using\nthis type-testing method instead.",
+            "stability": "stable",
+            "summary": "Checks if `art` is an instance of this class."
+          },
+          "locationInModule": {
+            "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+            "line": 29
+          },
+          "name": "isNestedCloudAssemblyArtifact",
+          "parameters": [
+            {
+              "name": "art",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "NestedCloudAssemblyArtifact",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The relative directory name of the asset manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+            "line": 36
+          },
+          "name": "directoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Display name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+            "line": 41
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Full path to the nested assembly directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+            "line": 54
+          },
+          "name": "fullPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The nested Assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/nested-cloud-assembly-artifact.ts",
+            "line": 63
+          },
+          "name": "nestedAssembly",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.CloudAssembly"
+          }
+        }
+      ],
+      "symbolId": "lib/artifacts/nested-cloud-assembly-artifact:NestedCloudAssemblyArtifact"
+    },
+    "@aws-cdk/cx-api.RuntimeInfo": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "aws-cdk": "/core library."
+        },
+        "deprecated": "moved to package 'cloud-assembly-schema'",
+        "remarks": "This is necessary because its used as an input in the stable",
+        "see": "core.ConstructNode.synth",
+        "stability": "deprecated",
+        "summary": "Backwards compatibility for when `RuntimeInfo` was defined here."
+      },
+      "fqn": "@aws-cdk/cx-api.RuntimeInfo",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.RuntimeInfo"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly.ts",
+        "line": 376
+      },
+      "name": "RuntimeInfo",
+      "symbolId": "lib/cloud-assembly:RuntimeInfo"
+    },
+    "@aws-cdk/cx-api.SecurityGroupContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a discovered SecurityGroup."
+      },
+      "fqn": "@aws-cdk/cx-api.SecurityGroupContextResponse",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/security-group.ts",
+        "line": 5
+      },
+      "name": "SecurityGroupContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This will be true\nwhen the security group has all-protocol egress permissions to access both\n`0.0.0.0/0` and `::/0`.",
+            "stability": "stable",
+            "summary": "Whether the security group allows all outbound traffic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/security-group.ts",
+            "line": 16
+          },
+          "name": "allowAllOutbound",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The security group's id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/security-group.ts",
+            "line": 9
+          },
+          "name": "securityGroupId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/security-group:SecurityGroupContextResponse"
+    },
+    "@aws-cdk/cx-api.SynthesisMessage": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.SynthesisMessage",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/metadata.ts",
+        "line": 26
+      },
+      "name": "SynthesisMessage",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/metadata.ts",
+            "line": 29
+          },
+          "name": "entry",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.MetadataEntry"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/metadata.ts",
+            "line": 28
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/metadata.ts",
+            "line": 27
+          },
+          "name": "level",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.SynthesisMessageLevel"
+          }
+        }
+      ],
+      "symbolId": "lib/metadata:SynthesisMessage"
+    },
+    "@aws-cdk/cx-api.SynthesisMessageLevel": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.SynthesisMessageLevel",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/metadata.ts",
+        "line": 8
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "INFO"
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "WARNING"
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "ERROR"
+        }
+      ],
+      "name": "SynthesisMessageLevel",
+      "symbolId": "lib/metadata:SynthesisMessageLevel"
+    },
+    "@aws-cdk/cx-api.TreeCloudArtifact": {
+      "assembly": "@aws-cdk/cx-api",
+      "base": "@aws-cdk/cx-api.CloudArtifact",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/cx-api.TreeCloudArtifact",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/artifacts/tree-cloud-artifact.ts",
+          "line": 31
+        },
+        "parameters": [
+          {
+            "name": "assembly",
+            "type": {
+              "fqn": "@aws-cdk/cx-api.CloudAssembly"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "artifact",
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/artifacts/tree-cloud-artifact.ts",
+        "line": 7
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Use this method instead of `instanceof` to properly detect `TreeCloudArtifact`\ninstances, even when the construct library is symlinked.\n\nExplanation: in JavaScript, multiple copies of the `cx-api` library on\ndisk are seen as independent, completely different libraries. As a\nconsequence, the class `TreeCloudArtifact` in each copy of the `cx-api` library\nis seen as a different class, and an instance of one class will not test as\n`instanceof` the other class. `npm install` will not create installations\nlike this, but users may manually symlink construct libraries together or\nuse a monorepo tool: in those cases, multiple copies of the `cx-api`\nlibrary can be accidentally installed, and `instanceof` will behave\nunpredictably. It is safest to avoid using `instanceof`, and using\nthis type-testing method instead.",
+            "stability": "stable",
+            "summary": "Checks if `art` is an instance of this class."
+          },
+          "locationInModule": {
+            "filename": "lib/artifacts/tree-cloud-artifact.ts",
+            "line": 25
+          },
+          "name": "isTreeCloudArtifact",
+          "parameters": [
+            {
+              "name": "art",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "TreeCloudArtifact",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/artifacts/tree-cloud-artifact.ts",
+            "line": 29
+          },
+          "name": "file",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/artifacts/tree-cloud-artifact:TreeCloudArtifact"
+    },
+    "@aws-cdk/cx-api.VpcContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a discovered VPC."
+      },
+      "fqn": "@aws-cdk/cx-api.VpcContextResponse",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/vpc.ts",
+        "line": 67
+      },
+      "name": "VpcContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "AZs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 84
+          },
+          "name": "availabilityZones",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "VPC id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 72
+          },
+          "name": "vpcId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(isolatedGroups)",
+            "stability": "stable",
+            "summary": "IDs of all isolated subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 133
+          },
+          "name": "isolatedSubnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(isolatedGroups)",
+            "stability": "stable",
+            "summary": "Name of isolated subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 140
+          },
+          "name": "isolatedSubnetNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(isolatedGroups)",
+            "stability": "stable",
+            "summary": "Route Table IDs of isolated subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 147
+          },
+          "name": "isolatedSubnetRouteTableIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the account id of the parent stack",
+            "stability": "stable",
+            "summary": "The ID of the AWS account that owns the VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 177
+          },
+          "name": "ownerAccountId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(privateGroups)",
+            "stability": "stable",
+            "summary": "IDs of all private subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 112
+          },
+          "name": "privateSubnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(privateGroups)",
+            "stability": "stable",
+            "summary": "Name of private subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 119
+          },
+          "name": "privateSubnetNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(privateGroups)",
+            "stability": "stable",
+            "summary": "Route Table IDs of private subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 126
+          },
+          "name": "privateSubnetRouteTableIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(publicGroups)",
+            "stability": "stable",
+            "summary": "IDs of all public subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 91
+          },
+          "name": "publicSubnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(publicGroups)",
+            "stability": "stable",
+            "summary": "Name of public subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 98
+          },
+          "name": "publicSubnetNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Element count: #(availabilityZones) · #(publicGroups)",
+            "stability": "stable",
+            "summary": "Route Table IDs of public subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 105
+          },
+          "name": "publicSubnetRouteTableIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Region of the parent stack",
+            "stability": "stable",
+            "summary": "The region in which the VPC is in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 170
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no subnet groups will be returned unless `VpcContextQuery.returnAsymmetricSubnets` is true",
+            "remarks": "Unlike the above properties, this will include asymmetric subnets,\nif the VPC has any.\nThis property will only be populated if `VpcContextQuery.returnAsymmetricSubnets`\nis true.",
+            "stability": "stable",
+            "summary": "The subnet groups discovered for the given VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 163
+          },
+          "name": "subnetGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.VpcSubnetGroup"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- CIDR information not available",
+            "stability": "stable",
+            "summary": "VPC cidr."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 79
+          },
+          "name": "vpcCidrBlock",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The VPN gateway ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 152
+          },
+          "name": "vpnGatewayId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/vpc:VpcContextResponse"
+    },
+    "@aws-cdk/cx-api.VpcSubnet": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A subnet representation that the VPC provider uses."
+      },
+      "fqn": "@aws-cdk/cx-api.VpcSubnet",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/vpc.ts",
+        "line": 20
+      },
+      "name": "VpcSubnet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The code of the availability zone this subnet is in (for example, 'us-west-2a')."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 28
+          },
+          "name": "availabilityZone",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The identifier of the route table for this subnet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 31
+          },
+          "name": "routeTableId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The identifier of the subnet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 22
+          },
+          "name": "subnetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- CIDR information not available",
+            "stability": "stable",
+            "summary": "CIDR range of the subnet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 38
+          },
+          "name": "cidr",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/context/vpc:VpcSubnet"
+    },
+    "@aws-cdk/cx-api.VpcSubnetGroup": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "remarks": "The included subnets do NOT have to be symmetric!",
+        "stability": "stable",
+        "summary": "A group of subnets returned by the VPC provider."
+      },
+      "fqn": "@aws-cdk/cx-api.VpcSubnetGroup",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/context/vpc.ts",
+        "line": 45
+      },
+      "name": "VpcSubnetGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the subnet group, determined by looking at the tags of of the subnets that belong to it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 51
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "There is no condition that the subnets have to be symmetric\nin the group.",
+            "stability": "stable",
+            "summary": "The subnets that are part of this group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 61
+          },
+          "name": "subnets",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.VpcSubnet"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The type of the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/context/vpc.ts",
+            "line": 54
+          },
+          "name": "type",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.VpcSubnetGroupType"
+          }
+        }
+      ],
+      "symbolId": "lib/context/vpc:VpcSubnetGroup"
+    },
+    "@aws-cdk/cx-api.VpcSubnetGroupType": {
+      "assembly": "@aws-cdk/cx-api",
+      "docs": {
+        "remarks": "Same as SubnetType in the @aws-cdk/aws-ec2 package,\nbut we can't use that because of cyclical dependencies.",
+        "stability": "stable",
+        "summary": "The type of subnet group."
+      },
+      "fqn": "@aws-cdk/cx-api.VpcSubnetGroupType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/context/vpc.ts",
+        "line": 6
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Public subnet group type."
+          },
+          "name": "PUBLIC"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Private subnet group type."
+          },
+          "name": "PRIVATE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Isolated subnet group type."
+          },
+          "name": "ISOLATED"
+        }
+      ],
+      "name": "VpcSubnetGroupType",
+      "symbolId": "lib/context/vpc:VpcSubnetGroupType"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "X1gkSZqAkaDaAVDXLK4BHMVyLp0gaRYH4uysYlYR4R8="
+}

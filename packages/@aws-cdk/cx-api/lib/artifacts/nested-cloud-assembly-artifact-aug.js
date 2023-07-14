@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const nested_cloud_assembly_artifact_1 = require("./nested-cloud-assembly-artifact");
+const cloud_assembly_1 = require("../cloud-assembly");
+const cacheSym = Symbol();
+/**
+ * The nested Assembly
+ *
+ * Declared in a different file to break circular dep between CloudAssembly and NestedCloudAssemblyArtifact
+ */
+Object.defineProperty(nested_cloud_assembly_artifact_1.NestedCloudAssemblyArtifact.prototype, 'nestedAssembly', {
+    get() {
+        if (!this[cacheSym]) {
+            this[cacheSym] = new cloud_assembly_1.CloudAssembly(this.fullPath);
+        }
+        return this[cacheSym];
+    },
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmVzdGVkLWNsb3VkLWFzc2VtYmx5LWFydGlmYWN0LWF1Zy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIm5lc3RlZC1jbG91ZC1hc3NlbWJseS1hcnRpZmFjdC1hdWcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxxRkFBK0U7QUFDL0Usc0RBQWtEO0FBRWxELE1BQU0sUUFBUSxHQUFHLE1BQU0sRUFBRSxDQUFDO0FBRTFCOzs7O0dBSUc7QUFDSCxNQUFNLENBQUMsY0FBYyxDQUFDLDREQUEyQixDQUFDLFNBQVMsRUFBRSxnQkFBZ0IsRUFBRTtJQUM3RSxHQUFHO1FBQ0QsSUFBSSxDQUFDLElBQUksQ0FBQyxRQUFRLENBQUMsRUFBRTtZQUNuQixJQUFJLENBQUMsUUFBUSxDQUFDLEdBQUcsSUFBSSw4QkFBYSxDQUFDLElBQUksQ0FBQyxRQUFRLENBQUMsQ0FBQztTQUNuRDtRQUNELE9BQU8sSUFBSSxDQUFDLFFBQVEsQ0FBQyxDQUFDO0tBQ3ZCO0NBQ0YsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTmVzdGVkQ2xvdWRBc3NlbWJseUFydGlmYWN0IH0gZnJvbSAnLi9uZXN0ZWQtY2xvdWQtYXNzZW1ibHktYXJ0aWZhY3QnO1xuaW1wb3J0IHsgQ2xvdWRBc3NlbWJseSB9IGZyb20gJy4uL2Nsb3VkLWFzc2VtYmx5JztcblxuY29uc3QgY2FjaGVTeW0gPSBTeW1ib2woKTtcblxuLyoqXG4gKiBUaGUgbmVzdGVkIEFzc2VtYmx5XG4gKlxuICogRGVjbGFyZWQgaW4gYSBkaWZmZXJlbnQgZmlsZSB0byBicmVhayBjaXJjdWxhciBkZXAgYmV0d2VlbiBDbG91ZEFzc2VtYmx5IGFuZCBOZXN0ZWRDbG91ZEFzc2VtYmx5QXJ0aWZhY3RcbiAqL1xuT2JqZWN0LmRlZmluZVByb3BlcnR5KE5lc3RlZENsb3VkQXNzZW1ibHlBcnRpZmFjdC5wcm90b3R5cGUsICduZXN0ZWRBc3NlbWJseScsIHtcbiAgZ2V0KCkge1xuICAgIGlmICghdGhpc1tjYWNoZVN5bV0pIHtcbiAgICAgIHRoaXNbY2FjaGVTeW1dID0gbmV3IENsb3VkQXNzZW1ibHkodGhpcy5mdWxsUGF0aCk7XG4gICAgfVxuICAgIHJldHVybiB0aGlzW2NhY2hlU3ltXTtcbiAgfSxcbn0pO1xuIl19

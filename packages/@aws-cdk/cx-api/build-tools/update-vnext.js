@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Load the `features.ts` source file, and replace the "V2NEXT" version markers with the actual current version
+ */
+const fs_1 = require("fs");
+const path = require("path");
+const flag_modeling_1 = require("../lib/private/flag-modeling");
+async function main() {
+    const featuresSourceFile = path.join(__dirname, '..', 'lib', 'features.ts');
+    let currentv2 = JSON.parse(await fs_1.promises.readFile(path.join(__dirname, '../../../../version.v2.json'), { encoding: 'utf-8' })).version;
+    currentv2 = currentv2?.match(/^[0-9\.]+/)?.[0]; // Make sure to only retain the actual version number, not any '-rc.X' suffix
+    if (!currentv2) {
+        throw new Error('Could not determine current v2 version number');
+    }
+    let source = await fs_1.promises.readFile(featuresSourceFile, { encoding: 'utf-8' });
+    source = source.replace(new RegExp(flag_modeling_1.MAGIC_V2NEXT, 'g'), currentv2);
+    await fs_1.promises.writeFile(featuresSourceFile, source, { encoding: 'utf-8' });
+}
+main().catch(e => {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    process.exitCode = 1;
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXBkYXRlLXZuZXh0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsidXBkYXRlLXZuZXh0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUE7O0dBRUc7QUFDSCwyQkFBb0M7QUFDcEMsNkJBQTZCO0FBQzdCLGdFQUE0RDtBQUU1RCxLQUFLLFVBQVUsSUFBSTtJQUNqQixNQUFNLGtCQUFrQixHQUFHLElBQUksQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLElBQUksRUFBRSxLQUFLLEVBQUUsYUFBYSxDQUFDLENBQUM7SUFFNUUsSUFBSSxTQUFTLEdBQXVCLElBQUksQ0FBQyxLQUFLLENBQUMsTUFBTSxhQUFFLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLDZCQUE2QixDQUFDLEVBQUUsRUFBRSxRQUFRLEVBQUUsT0FBTyxFQUFFLENBQUMsQ0FBQyxDQUFDLE9BQU8sQ0FBQztJQUN0SixTQUFTLEdBQUcsU0FBUyxFQUFFLEtBQUssQ0FBQyxXQUFXLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsNkVBQTZFO0lBRTdILElBQUksQ0FBQyxTQUFTLEVBQUU7UUFDZCxNQUFNLElBQUksS0FBSyxDQUFDLCtDQUErQyxDQUFDLENBQUM7S0FDbEU7SUFFRCxJQUFJLE1BQU0sR0FBRyxNQUFNLGFBQUUsQ0FBQyxRQUFRLENBQUMsa0JBQWtCLEVBQUUsRUFBRSxRQUFRLEVBQUUsT0FBTyxFQUFFLENBQUMsQ0FBQztJQUMxRSxNQUFNLEdBQUcsTUFBTSxDQUFDLE9BQU8sQ0FBQyxJQUFJLE1BQU0sQ0FBQyw0QkFBWSxFQUFFLEdBQUcsQ0FBQyxFQUFFLFNBQVMsQ0FBQyxDQUFDO0lBRWxFLE1BQU0sYUFBRSxDQUFDLFNBQVMsQ0FBQyxrQkFBa0IsRUFBRSxNQUFNLEVBQUUsRUFBRSxRQUFRLEVBQUUsT0FBTyxFQUFFLENBQUMsQ0FBQztBQUN4RSxDQUFDO0FBRUQsSUFBSSxFQUFFLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxFQUFFO0lBQ2Ysc0NBQXNDO0lBQ3RDLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUM7SUFDakIsT0FBTyxDQUFDLFFBQVEsR0FBRyxDQUFDLENBQUM7QUFDdkIsQ0FBQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIExvYWQgdGhlIGBmZWF0dXJlcy50c2Agc291cmNlIGZpbGUsIGFuZCByZXBsYWNlIHRoZSBcIlYyTkVYVFwiIHZlcnNpb24gbWFya2VycyB3aXRoIHRoZSBhY3R1YWwgY3VycmVudCB2ZXJzaW9uXG4gKi9cbmltcG9ydCB7IHByb21pc2VzIGFzIGZzIH0gZnJvbSAnZnMnO1xuaW1wb3J0ICogYXMgcGF0aCBmcm9tICdwYXRoJztcbmltcG9ydCB7IE1BR0lDX1YyTkVYVCB9IGZyb20gJy4uL2xpYi9wcml2YXRlL2ZsYWctbW9kZWxpbmcnO1xuXG5hc3luYyBmdW5jdGlvbiBtYWluKCkge1xuICBjb25zdCBmZWF0dXJlc1NvdXJjZUZpbGUgPSBwYXRoLmpvaW4oX19kaXJuYW1lLCAnLi4nLCAnbGliJywgJ2ZlYXR1cmVzLnRzJyk7XG5cbiAgbGV0IGN1cnJlbnR2Mjogc3RyaW5nIHwgdW5kZWZpbmVkID0gSlNPTi5wYXJzZShhd2FpdCBmcy5yZWFkRmlsZShwYXRoLmpvaW4oX19kaXJuYW1lLCAnLi4vLi4vLi4vLi4vdmVyc2lvbi52Mi5qc29uJyksIHsgZW5jb2Rpbmc6ICd1dGYtOCcgfSkpLnZlcnNpb247XG4gIGN1cnJlbnR2MiA9IGN1cnJlbnR2Mj8ubWF0Y2goL15bMC05XFwuXSsvKT8uWzBdOyAvLyBNYWtlIHN1cmUgdG8gb25seSByZXRhaW4gdGhlIGFjdHVhbCB2ZXJzaW9uIG51bWJlciwgbm90IGFueSAnLXJjLlgnIHN1ZmZpeFxuXG4gIGlmICghY3VycmVudHYyKSB7XG4gICAgdGhyb3cgbmV3IEVycm9yKCdDb3VsZCBub3QgZGV0ZXJtaW5lIGN1cnJlbnQgdjIgdmVyc2lvbiBudW1iZXInKTtcbiAgfVxuXG4gIGxldCBzb3VyY2UgPSBhd2FpdCBmcy5yZWFkRmlsZShmZWF0dXJlc1NvdXJjZUZpbGUsIHsgZW5jb2Rpbmc6ICd1dGYtOCcgfSk7XG4gIHNvdXJjZSA9IHNvdXJjZS5yZXBsYWNlKG5ldyBSZWdFeHAoTUFHSUNfVjJORVhULCAnZycpLCBjdXJyZW50djIpO1xuXG4gIGF3YWl0IGZzLndyaXRlRmlsZShmZWF0dXJlc1NvdXJjZUZpbGUsIHNvdXJjZSwgeyBlbmNvZGluZzogJ3V0Zi04JyB9KTtcbn1cblxubWFpbigpLmNhdGNoKGUgPT4ge1xuICAvLyBlc2xpbnQtZGlzYWJsZS1uZXh0LWxpbmUgbm8tY29uc29sZVxuICBjb25zb2xlLmVycm9yKGUpO1xuICBwcm9jZXNzLmV4aXRDb2RlID0gMTtcbn0pOyJdfQ==

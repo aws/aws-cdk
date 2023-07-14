@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY = void 0;
+/**
+ * This context key is used to determine the value of `stack.availabilityZones`
+ * when a stack is not associated with a specific account/region (env-agnostic).
+ *
+ * If this key is passed in the context, the values will be used. Otherwise, a
+ * system-fallback which uses `Fn::GetAZs` will be used.
+ */
+exports.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY = 'aws:cdk:availability-zones:fallback';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXZhaWxhYmlsaXR5LXpvbmVzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiYXZhaWxhYmlsaXR5LXpvbmVzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBOzs7Ozs7R0FNRztBQUNVLFFBQUEsc0NBQXNDLEdBQUcscUNBQXFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFRoaXMgY29udGV4dCBrZXkgaXMgdXNlZCB0byBkZXRlcm1pbmUgdGhlIHZhbHVlIG9mIGBzdGFjay5hdmFpbGFiaWxpdHlab25lc2BcbiAqIHdoZW4gYSBzdGFjayBpcyBub3QgYXNzb2NpYXRlZCB3aXRoIGEgc3BlY2lmaWMgYWNjb3VudC9yZWdpb24gKGVudi1hZ25vc3RpYykuXG4gKlxuICogSWYgdGhpcyBrZXkgaXMgcGFzc2VkIGluIHRoZSBjb250ZXh0LCB0aGUgdmFsdWVzIHdpbGwgYmUgdXNlZC4gT3RoZXJ3aXNlLCBhXG4gKiBzeXN0ZW0tZmFsbGJhY2sgd2hpY2ggdXNlcyBgRm46OkdldEFac2Agd2lsbCBiZSB1c2VkLlxuICovXG5leHBvcnQgY29uc3QgQVZBSUxBQklMSVRZX1pPTkVfRkFMTEJBQ0tfQ09OVEVYVF9LRVkgPSAnYXdzOmNkazphdmFpbGFiaWxpdHktem9uZXM6ZmFsbGJhY2snO1xuXG4vKipcbiAqIFJlc3BvbnNlIG9mIHRoZSBBWiBwcm92aWRlciBsb29rcyBsaWtlIHRoaXNcbiAqL1xuZXhwb3J0IHR5cGUgQXZhaWxhYmlsaXR5Wm9uZXNDb250ZXh0UmVzcG9uc2UgPSBzdHJpbmdbXTsiXX0=

@@ -336,12 +336,14 @@ export class Settings {
     const tags: Tag[] = [];
 
     for (const assignment of nonEmptyTags) {
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+      const equalsIndex = assignment.indexOf('=');
+      if (equalsIndex > -1) {
+        const key = assignment.substring(0, equalsIndex);
+        const value = assignment.substring(equalsIndex + 1);
+        debug('CLI argument tags: %s=%s', key, value);
         tags.push({
-          Key: parts[0],
-          Value: parts[1],
+          Key: key,
+          Value: value,
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);
