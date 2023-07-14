@@ -169,7 +169,7 @@ test('throws when entry does not exist', () => {
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function\.test\.Fn\.ts .*function\.test\.Fn\.js .*function\.test\.Fn\.mjs/);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function\.test\.Fn\.ts.*function\.test\.Fn\.js.*function\.test\.Fn\.mjs/);
 });
 
 test('throws with the wrong runtime family', () => {
