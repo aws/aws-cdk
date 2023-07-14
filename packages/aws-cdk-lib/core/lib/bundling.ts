@@ -265,7 +265,7 @@ export class BundlingDockerImage {
       ...options.network
         ? ['--network', options.network]
         : [],
-        ...options.platform
+      ...options.platform
         ? ['--platform', options.platform]
         : [],
       ...options.user
