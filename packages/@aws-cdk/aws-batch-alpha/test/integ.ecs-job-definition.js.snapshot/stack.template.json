@@ -645,7 +645,7 @@
        }
       },
       {
-       "Name": "A_NOTHER_ONE",
+       "Name": "ANOTHER_ONE",
        "ValueFrom": {
         "Fn::Join": [
          "",

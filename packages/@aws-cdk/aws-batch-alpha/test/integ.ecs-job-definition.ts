@@ -44,7 +44,7 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
     }],
     secrets: {
       MY_SECRET_ENV_VAR: batch.Secret.fromSecretsManager(new secretsmanager.Secret(stack, 'mySecret')),
-      A_NOTHER_ONE: batch.Secret.fromSecretsManagerVersion(new secretsmanager.Secret(stack, 'anotherSecret'), {
+      ANOTHER_ONE: batch.Secret.fromSecretsManagerVersion(new secretsmanager.Secret(stack, 'anotherSecret'), {
         versionId: 'foo',
         versionStage: 'bar',
       }),
