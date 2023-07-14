@@ -41,7 +41,7 @@ test('NodejsFunction with .ts handler', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
-    Runtime: expect.stringContaining('nodejs'),
+    Runtime: Match.stringLikeRegexp('nodejs'),
   });
 });
 
@@ -57,7 +57,7 @@ test('NodejsFunction with overridden handler - no dots', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.myHandler', // automatic index. prefix
-    Runtime: expect.stringContaining('nodejs'),
+    Runtime: Match.stringLikeRegexp('nodejs'),
   });
 });
 
@@ -73,7 +73,7 @@ test('NodejsFunction with overridden handler - with dots', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'run.sh', // No index. prefix
-    Runtime: expect.stringContaining('nodejs'),
+    Runtime: Match.stringLikeRegexp('nodejs'),
   });
 });
 
@@ -169,7 +169,7 @@ test('throws when entry does not exist', () => {
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function.test.Fn.ts, .*function.test.Fn.js or .*function.test.Fn.mjs/);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function\.test\.Fn\.ts .*function\.test\.Fn\.js .*function\.test\.Fn\.mjs/);
 });
 
 test('throws with the wrong runtime family', () => {
