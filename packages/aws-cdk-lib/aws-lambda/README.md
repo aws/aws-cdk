@@ -1077,6 +1077,19 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
+Also an `include` property allows you to specify particular files for assets.
+You can write based on simple glob patterns.
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    include: ['index.py', 'some/**/*.py'],
+  }),
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
+});
+```
+
 ## Language-specific APIs
 
 Language-specific higher level constructs are provided in separate modules:
