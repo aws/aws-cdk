@@ -392,6 +392,22 @@ beforehand.
 This can be useful for configuring routing using a combination of gateways:
 for more information see [Routing](#routing) below.
 
+### Disabling the creation of the default internet gateway
+
+If you need to control the creation of the internet gateway explicitly,
+you can disable the creation of the default one using the `createInternetGateway`
+property:
+
+```ts
+const vpc = new ec2.Vpc(this, "VPC", {
+  createInternetGateway: false,
+  subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PUBLIC,
+      name: 'Public',
+    }]
+});
+```
+
 #### Routing
 
 It's possible to add routes to any subnets using the `addRoute()` method. If for
@@ -1846,8 +1862,6 @@ an instance. For information on Launch Templates please see the
 The following demonstrates how to create a launch template with an Amazon Machine Image, security group, and an instance profile.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const vpc: ec2.Vpc;
 
 const role = new iam.Role(this, 'Role', {
@@ -1881,19 +1895,29 @@ new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 And the following demonstrates how to add one or more security groups to launch template.
 
 ```ts
-const sg1 = new ec2.SecurityGroup(stack, 'sg1', {
+declare const vpc: ec2.Vpc;
+
+const sg1 = new ec2.SecurityGroup(this, 'sg1', {
   vpc: vpc,
 });
-const sg2 = new ec2.SecurityGroup(stack, 'sg2', {
+const sg2 = new ec2.SecurityGroup(this, 'sg2', {
   vpc: vpc,
 });
 
-const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.latestAmazonLinux2022(),
   securityGroup: sg1,
 });
 
 launchTemplate.addSecurityGroup(sg2);
+```
+
+To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html) in launch templates and resolve the AMI IDs at instance launch time:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName'),
+});
 ```
 
 ## Detailed Monitoring
