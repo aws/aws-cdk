@@ -2,7 +2,18 @@
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
 import { decode } from './utils';
-import { getV3ClientPackageName, findV3ClientConstructor } from 'aws-cdk-lib/custom-resources';
+// Do not import!!!
+// import { getV3ClientPackageName, findV3ClientConstructor } from 'aws-cdk-lib/custom-resources';
+
+// These functions defined at 'aws-cdk-lib/custom-resources'.
+// However, 'aws-cdk-lib/custom-resources' exports the some constructs,
+// so when import the package, then bundle size is too large and lambda function is not working.
+// To avoid this issue, we using inject of esbuild (https://esbuild.github.io/api/#inject)
+declare const getV3ClientPackageName: (clientName: string) => string;
+declare const findV3ClientConstructor: (pkg: Object) => new (config: any) => {
+  send: (command: any) => Promise<any>;
+  config: any;
+};
 
 /**
  * Flattens a nested object
