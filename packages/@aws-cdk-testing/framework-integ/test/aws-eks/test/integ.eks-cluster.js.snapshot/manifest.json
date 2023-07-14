@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/92e7811f3ede075c99f523985e6cbe19e21b6e4dbffc8c126fb7a9d36411c8f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/0bdefc71f8bc08c8ae15817aa872a045eeca55590579d178bd74c108bddddcc0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -735,12 +735,6 @@
             "data": "ClustermanifestHelloApp078A45D8"
           }
         ],
-        "/aws-cdk-eks-cluster-test/Cluster/chart-dashboard/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Clusterchartdashboard4AA45F3F"
-          }
-        ],
         "/aws-cdk-eks-cluster-test/Cluster/chart-test-chart/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -751,18 +745,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Clustercdk8schartDADD257F"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/Cluster/manifest-nginx-namespace/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClustermanifestnginxnamespaceA68B4CE0"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/Cluster/chart-nginx-ingress/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Clusterchartnginxingress1193EC3F"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/MyServiceAccount/ConditionJson/Resource/Default": [
@@ -1111,42 +1093,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterNodesLaunchConfig7C420A27": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesLaunchConfig7C420A27",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterNodesArmLaunchConfigAAF61344": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmLaunchConfigAAF61344",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterBottlerocketNodesLaunchConfig76D7BEBE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterspotLaunchConfigCC19F2E6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterspotLaunchConfigCC19F2E6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -2421,6 +2421,14 @@
                       "version": "0.0.0"
                     }
                   },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/Nodes/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-cdk-eks-cluster-test/Cluster/Nodes/LaunchTemplate",
@@ -2968,6 +2976,14 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/NodesArm/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -3521,6 +3537,14 @@
                       "version": "0.0.0"
                     }
                   },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
                     "path": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/LaunchTemplate",
@@ -4068,6 +4092,14 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-cdk-eks-cluster-test/Cluster/spot/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -4934,34 +4966,6 @@
                   "version": "0.0.0"
                 }
               },
-              "chart-dashboard": {
-                "id": "chart-dashboard",
-                "path": "aws-cdk-eks-cluster-test/Cluster/chart-dashboard",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-test/Cluster/chart-dashboard/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-cluster-test/Cluster/chart-dashboard/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
-                  "version": "0.0.0"
-                }
-              },
               "chart-test-chart": {
                 "id": "chart-test-chart",
                 "path": "aws-cdk-eks-cluster-test/Cluster/chart-test-chart",
@@ -5015,62 +5019,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
-                  "version": "0.0.0"
-                }
-              },
-              "manifest-nginx-namespace": {
-                "id": "manifest-nginx-namespace",
-                "path": "aws-cdk-eks-cluster-test/Cluster/manifest-nginx-namespace",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-test/Cluster/manifest-nginx-namespace/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-cluster-test/Cluster/manifest-nginx-namespace/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
-                  "version": "0.0.0"
-                }
-              },
-              "chart-nginx-ingress": {
-                "id": "chart-nginx-ingress",
-                "path": "aws-cdk-eks-cluster-test/Cluster/chart-nginx-ingress",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-test/Cluster/chart-nginx-ingress/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-cluster-test/Cluster/chart-nginx-ingress/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
                   "version": "0.0.0"
                 }
               },
@@ -5503,7 +5451,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
+                          "s3Key": "5c9562d0ac61a1465a168c71e161265c2578a14a4236becaac93bf7f9fe70e92.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -5635,7 +5583,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "a46179e8334ce45c3cbb975d0dfe34028e095aa8dfa55496bbc7717623351649.zip"
+                          "s3Key": "5c9562d0ac61a1465a168c71e161265c2578a14a4236becaac93bf7f9fe70e92.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -6537,7 +6485,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/519b305117fceb7428dc60a80bdc7576be24b151717d52fb5ccc11ac4e7b5a14.json"
+                          "/f5b2fe51e82cfb76207ec840df1a2d7f8eb5969d1cd334a631bda5db433af4e2.json"
                         ]
                       ]
                     }
