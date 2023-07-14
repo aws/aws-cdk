@@ -5,6 +5,30 @@ import {
 import { IStream } from '../../aws-kinesis';
 import { IResource, Resource, RemovalPolicy } from '../../core';
 
+export interface CapacityOptions {
+  /**
+   *
+   */
+  readonly readCapacity?: Capacity;
+
+  /**
+   *
+   */
+  readonly writeCapacity?: Capacity;
+}
+
+export interface CapacityAutoScalingOptions {
+  /**
+   *
+   */
+  readonly maxCapacity: number;
+
+  /**
+   *
+   */
+  readonly minCapacity: number;
+}
+
 /**
  * Properties for configuring global secondary indexes at the replica level.
  */
@@ -203,8 +227,46 @@ export class GlobalTable extends GlobalTableBase {
   public replica() {}
 }
 
-export class Capacity {}
+/**
+ *
+ */
+export class Capacity {
+  /**
+   *
+   */
+  public static fixed() {
+    return new Capacity('FIXED');
+  }
 
-export class BillingMode {}
+  /**
+   *
+   */
+  public static autoscaled(options: CapacityAutoScalingOptions) {
+    return new Capacity('AUTOSCALED', options);
+  }
+
+  private constructor(public readonly strategy: string, public readonly options?: CapacityAutoScalingOptions) {}
+}
+
+/**
+ *
+ */
+export class BillingMode {
+  /**
+   *
+   */
+  public static onDemand() {
+    return new BillingMode('PAY_PER_REQUEST');
+  }
+
+  /**
+   *
+   */
+  public static provisioned(options: CapacityOptions) {
+    return new BillingMode('PROVISIONED', options);
+  }
+
+  private constructor(public readonly mode: string, public readonly options?: CapacityOptions) {}
+}
 
 export class TableEncryption {}
