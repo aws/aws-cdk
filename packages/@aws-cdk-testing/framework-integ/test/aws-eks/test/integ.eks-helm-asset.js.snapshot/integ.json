@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-helm-test"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-eks-helm/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
     }
