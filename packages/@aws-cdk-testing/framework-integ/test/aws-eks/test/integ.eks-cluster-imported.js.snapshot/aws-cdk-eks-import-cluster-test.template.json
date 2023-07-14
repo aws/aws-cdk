@@ -1067,7 +1067,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/160cbfd74172100e122360e2a22d4e73adb815b232c9dc133d615a65d2387071.json"
+       "/0bdca1424912ed6ee56765775dd651f0e2aa6c1c64e3cc9ee8461a7f1b1a464c.json"
       ]
      ]
     }
@@ -1224,33 +1224,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ImportedClusterchartdashboard15C78D53": {
-   "Type": "Custom::AWSCDK-EKS-HelmChart",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn"
-     ]
-    },
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "Release": "mportclustertestimportedclusterchartdashboard428d91dc",
-    "Chart": "kubernetes-dashboard",
-    "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
-    "CreateNamespace": true
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "ImportedClustercharttestchartDCD1CC85": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
@@ -1311,61 +1284,6 @@
     },
     "PruneLabel": "aws.cdk.eks/prune-c8749b9d51009b219cf6f00198b6945916526b00f6"
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ImportedClustermanifestnginxnamespace5677B435": {
-   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn"
-     ]
-    },
-    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"nginx\",\"labels\":{\"aws.cdk.eks/prune-c82885e4510bea5fd6e3935e97330d2f8b013b86a9\":\"\"}}}]",
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "PruneLabel": "aws.cdk.eks/prune-c82885e4510bea5fd6e3935e97330d2f8b013b86a9"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ImportedClusterchartnginxingress27D53230": {
-   "Type": "Custom::AWSCDK-EKS-HelmChart",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn"
-     ]
-    },
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "Release": "rtclustertestimportedclusterchartnginxingress47a466aa",
-    "Chart": "nginx-ingress",
-    "Wait": true,
-    "Timeout": "900s",
-    "Namespace": "nginx",
-    "Repository": "https://helm.nginx.com/stable"
-   },
-   "DependsOn": [
-    "ImportedClustermanifestnginxnamespace5677B435"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },

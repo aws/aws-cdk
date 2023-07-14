@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5cf24e2f61ed0423b825356bf3ec6cbc05e6f2210ba2fdabb487985d07196e8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49d71adf37e18cb3b7ce3d59b7db9a5b1df1e564138f90565fd1619305650166.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -477,12 +477,6 @@
             "data": "ImportedClustermanifestHelloApp2B4112AC"
           }
         ],
-        "/aws-cdk-eks-import-cluster-test/ImportedCluster/chart-dashboard/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedClusterchartdashboard15C78D53"
-          }
-        ],
         "/aws-cdk-eks-import-cluster-test/ImportedCluster/chart-test-chart/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -493,18 +487,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImportedClustercdk8schartDCFFBEC8"
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/ImportedCluster/manifest-nginx-namespace/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedClustermanifestnginxnamespace5677B435"
-          }
-        ],
-        "/aws-cdk-eks-import-cluster-test/ImportedCluster/chart-nginx-ingress/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedClusterchartnginxingress27D53230"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/ImportedCluster/MyServiceAccount/ConditionJson/Resource/Default": [
