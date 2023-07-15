@@ -92,6 +92,9 @@
   "aws-chatbot": [
     "AWS::Chatbot"
   ],
+  "aws-cleanrooms": [
+    "AWS::CleanRooms"
+  ],
   "aws-cloud9": [
     "AWS::Cloud9"
   ],
@@ -590,6 +593,9 @@
   ],
   "aws-ses": [
     "AWS::SES"
+  ],
+  "aws-shield": [
+    "AWS::Shield"
   ],
   "aws-signer": [
     "AWS::Signer"

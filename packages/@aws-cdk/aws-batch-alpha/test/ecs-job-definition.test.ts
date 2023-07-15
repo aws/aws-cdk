@@ -3,7 +3,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { DefaultTokenResolver, Size, StringConcat, Stack, Tokenization } from 'aws-cdk-lib';
 import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition } from '../lib';
 
-
 test('EcsJobDefinition respects propagateTags', () => {
   // GIVEN
   const stack = new Stack();

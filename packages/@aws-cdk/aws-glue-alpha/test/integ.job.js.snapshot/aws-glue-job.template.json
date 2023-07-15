@@ -190,7 +190,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob20SuccessMetricRule1759F889": {
@@ -354,7 +354,7 @@
     "Tags": {
      "key": "value"
     },
-    "WorkerType": "G.025X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob30ServiceRole8E675579": {
@@ -547,7 +547,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob30SuccessMetricRuleF8870F8A": {
@@ -904,7 +904,7 @@
      "key": "value"
     },
     "Timeout": 5,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "EtlJob40SuccessMetricRule00D3EF34": {
@@ -1415,6 +1415,7 @@
     "Command": {
      "Name": "glueray",
      "PythonVersion": "3.9",
+     "Runtime": "Ray2.4",
      "ScriptLocation": {
       "Fn::Join": [
        "",

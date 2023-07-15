@@ -20,7 +20,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob2.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -59,7 +59,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -165,19 +165,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -193,39 +193,39 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
                   "version": "0.0.0"
                 }
               },
-              "Codebeaf1c9f157c9b396ec6972f85317dbc": {
-                "id": "Codebeaf1c9f157c9b396ec6972f85317dbc",
-                "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc",
+              "Code2fe0fc936e45d982e718ad516d9c48b5": {
+                "id": "Code2fe0fc936e45d982e718ad516d9c48b5",
+                "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/Stage",
+                    "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob2.0/Codebeaf1c9f157c9b396ec6972f85317dbc/AssetBucket",
+                    "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -292,11 +292,11 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               },
@@ -345,19 +345,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-events.CfnRule",
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.Rule",
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -373,7 +373,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob2.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -412,7 +412,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -481,19 +481,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -536,17 +536,17 @@
                     "tags": {
                       "key": "value"
                     },
-                    "workerType": "G.025X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -562,7 +562,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob3.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -601,7 +601,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -707,19 +707,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -735,13 +735,13 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
                   "version": "0.0.0"
                 }
               },
@@ -808,11 +808,11 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               },
@@ -861,19 +861,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-events.CfnRule",
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.Rule",
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -889,7 +889,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob3.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -928,7 +928,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -997,19 +997,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1056,13 +1056,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -1078,7 +1078,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob4.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -1117,7 +1117,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1223,19 +1223,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1251,13 +1251,13 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
                   "version": "0.0.0"
                 }
               },
@@ -1324,11 +1324,11 @@
                       "key": "value"
                     },
                     "timeout": 5,
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               },
@@ -1377,19 +1377,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-events.CfnRule",
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.Rule",
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -1405,7 +1405,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob4.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -1444,7 +1444,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1513,19 +1513,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1572,13 +1572,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -1594,7 +1594,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/ShellJob/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -1633,7 +1633,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1702,19 +1702,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1759,13 +1759,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -1781,7 +1781,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/ShellJob39/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -1820,7 +1820,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -1889,19 +1889,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1946,13 +1946,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -1968,7 +1968,7 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/RayJob/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -2007,7 +2007,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -2076,19 +2076,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -2112,7 +2112,8 @@
                           ]
                         ]
                       },
-                      "pythonVersion": "3.9"
+                      "pythonVersion": "3.9",
+                      "runtime": "Ray2.4"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2135,13 +2136,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-glue.CfnJob",
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
               "version": "0.0.0"
             }
           },
@@ -2149,7 +2150,7 @@
             "id": "BootstrapVersion",
             "path": "aws-glue-job/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -2157,13 +2158,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-glue-job/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -2172,12 +2173,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.2.26"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

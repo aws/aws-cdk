@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { OriginRequestPolicy } from 'aws-cdk-lib/aws-cloudfront';
@@ -8,6 +9,24 @@ const stack = new cdk.Stack(app, 'integ-distribution-policies');
 
 const cachePolicy = new cloudfront.CachePolicy(stack, 'CachePolicy', {
   cachePolicyName: 'ACustomCachePolicy',
+});
+
+const paramMinTtl = new cdk.CfnParameter(stack, 'MinTtlParam', {
+  type: 'Number',
+  default: '1000',
+});
+const paramDefaultTtl = new cdk.CfnParameter(stack, 'DefaultTtlParam', {
+  type: 'Number',
+  default: '2000',
+});
+const paramMaxTtl = new cdk.CfnParameter(stack, 'MaxTtlParam', {
+  type: 'Number',
+  default: '3000',
+});
+const cachePolicyWithRef = new cloudfront.CachePolicy(stack, 'CachePolicyWithRef', {
+  minTtl: cdk.Duration.seconds(paramMinTtl.valueAsNumber),
+  defaultTtl: cdk.Duration.seconds(paramDefaultTtl.valueAsNumber),
+  maxTtl: cdk.Duration.seconds(paramMaxTtl.valueAsNumber),
 });
 
 const originRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginRequestPolicy', {
@@ -42,10 +61,14 @@ new cloudfront.Distribution(stack, 'Dist', {
 new cloudfront.Distribution(stack, 'Dist-2', {
   defaultBehavior: {
     origin: new TestOrigin('www.example-2.com'),
-    cachePolicy,
+    cachePolicy: cachePolicyWithRef,
     originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
     responseHeadersPolicy,
   },
+});
+
+new IntegTest(app, 'DistributionPolicies', {
+  testCases: [stack],
 });
 
 app.synth();

@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from 'aws-cdk-lib';
+import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
@@ -23,7 +23,6 @@ export interface EcsVolumeOptions {
    * the path on the container where this volume is mounted
    */
   readonly containerPath: string;
-
 
   /**
    * if set, the container will have readonly access to the volume
@@ -343,13 +342,14 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -459,13 +459,14 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -496,7 +497,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: secretsmanager.ISecret[];
+  public readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -554,12 +555,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
-      secrets: this.secrets?.map((secret) => {
+      secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
         return {
-          name: secret.secretName,
+          name,
           valueFrom: secret.secretArn,
         };
-      }),
+      }) : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
@@ -881,6 +882,13 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -904,6 +912,13 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The size for ephemeral storage.
+   *
+   * @default - 20 GiB
+   */
+  readonly ephemeralStorageSize?: Size;
 }
 
 /**
@@ -912,11 +927,22 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
+  public readonly ephemeralStorageSize?: Size;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
+    this.ephemeralStorageSize = props.ephemeralStorageSize;
+
+    // validates ephemeralStorageSize is within limits
+    if (props.ephemeralStorageSize) {
+      if (props.ephemeralStorageSize.toGibibytes() > 200) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+      } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
+        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+      }
+    }
   }
 
   /**
@@ -925,6 +951,9 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super._renderContainerDefinition(),
+      ephemeralStorage: this.ephemeralStorageSize? {
+        sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
+      } : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },

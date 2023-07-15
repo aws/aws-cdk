@@ -29,20 +29,23 @@ export function flatten(object: object): { [key: string]: any } {
   );
 }
 
+function getServiceClient(service: string): any {
+  const clientPackageName = `@aws-sdk/client-${service.toLowerCase()}`;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pkg = require(clientPackageName);
+    return new pkg[service]({});
+  } catch (e) {
+    // Just import a known client module
+    throw Error(`Service ${service} client package with name '${clientPackageName}' does not exist.`);
+  }
+}
 
 export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
   protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
-    // eslint-disable-next-line
-    const AWS: any = require('aws-sdk');
-    console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
+    const client = getServiceClient(request.service);
+    const response = await client[request.api](request.parameters && decode(request.parameters));
 
-
-    if (!Object.prototype.hasOwnProperty.call(AWS, request.service)) {
-      throw Error(`Service ${request.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
-    }
-
-    const service = new (AWS as any)[request.service]();
-    const response = await service[request.api](request.parameters && decode(request.parameters)).promise();
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.ResponseMetadata;
     const respond = {

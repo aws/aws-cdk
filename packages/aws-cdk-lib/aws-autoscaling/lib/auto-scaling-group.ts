@@ -1330,7 +1330,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity ?? 1;
-    const maxCapacity = props.maxCapacity ?? desiredCapacity ?? Math.max(minCapacity, 1);
+    const maxCapacity = props.maxCapacity ??
+      desiredCapacity ??
+      (Token.isUnresolved(minCapacity) ? minCapacity : Math.max(minCapacity, 1));
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -1800,7 +1802,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
   }
 
-
   private validateTargetGroup(): string[] {
     const errors = new Array<string>();
     if (this.hasCalledScaleOnRequestCount && this.targetGroupArns.length > 1) {
@@ -1985,7 +1986,6 @@ export class ScalingEvents {
    * Fleet termination launch events
    */
   public static readonly TERMINATION_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_TERMINATE, ScalingEvent.INSTANCE_TERMINATE_ERROR);
-
 
   /**
    * @internal
@@ -2260,7 +2260,6 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
           }
         }
       }
-
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
