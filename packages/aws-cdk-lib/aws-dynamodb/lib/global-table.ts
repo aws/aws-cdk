@@ -338,6 +338,14 @@ abstract class GlobalTableBase extends Resource implements IGlobalTable {
    * @attribute
    */
   public abstract tableStreamArn: string;
+
+  public addReplica(replica: ReplicaTableProps) {}
+
+  public addGlobalSecondaryIndex(globalSecondaryIndex: GlobalSecondaryIndexProps) {}
+
+  public addLocalSecondaryIndex(localSecondaryIndex: LocalSecondaryIndexProps) {}
+
+  public replica(region: string) {}
 }
 
 export class GlobalTable extends GlobalTableBase {
@@ -391,14 +399,6 @@ export class GlobalTable extends GlobalTableBase {
     this.tableId = this.resource.attrTableId;
     this.tableStreamArn = this.resource.attrStreamArn;
   }
-
-  public addReplica(replica: ReplicaTableProps) {}
-
-  public addGlobalSecondaryIndex(globalSecondaryIndex: GlobalSecondaryIndexProps) {}
-
-  public addLocalSecondaryIndex(localSecondaryIndex: LocalSecondaryIndexProps) {}
-
-  public replica(region: string) {}
 }
 
 /**
