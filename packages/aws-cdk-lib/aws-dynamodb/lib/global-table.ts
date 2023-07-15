@@ -3,15 +3,23 @@ import {
   TableClass, SchemaOptions, GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
 } from './table';
 import { IStream } from '../../aws-kinesis';
+import { IKey } from '../../aws-kms';
 import { IResource, Resource, RemovalPolicy, Duration } from '../../core';
 
-export interface CapacityOptions {
+/**
+ * Options to configure provisioned throughput for a table.
+ */
+export interface ThroughputOptions {
   /**
+   * The read capacity for read operations on the table.
+   *
    * @default 5
    */
   readonly readCapacity?: Capacity;
 
   /**
+   * The write capacity for write operations on the table.
+   *
    * @default 5
    */
   readonly writeCapacity?: Capacity;
@@ -66,6 +74,36 @@ export interface CapacityAutoScalingOptions {
 }
 
 /**
+ * Options used to configure the capacity modes.
+ */
+export interface CapacityOptions {
+  /**
+   *
+   */
+  readonly units?: number;
+
+  /**
+   *
+   */
+  readonly autoScalingOptions?: CapacityAutoScalingOptions;
+}
+
+/**
+ * Options used to configure the server-side table encryption types.
+ */
+export interface TableEncryptionOptions {
+  /**
+   *
+   */
+  readonly tableKey?: IKey;
+
+  /**
+   *
+   */
+  readonly replicaKeyArns?: { [region: string]: string };
+}
+
+/**
  * Properties for configuring global secondary indexes at the replica level.
  */
 export interface ReplicaGlobalSecondaryIndexProps {
@@ -80,9 +118,11 @@ export interface ReplicaGlobalSecondaryIndexProps {
   readonly readCapacity?: Capacity;
 
   /**
+   * Whether or not CloudWatch contributor insights is enabled for the index.
    *
+   * @default false
    */
-  readonly contributorInsightsEnbaled?: boolean;
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -145,7 +185,7 @@ export interface ReplicaTableProps extends TableOptions {
   /**
    * The read capacity for the replica.
    *
-   * @default
+   * @default 5
    */
   readonly readCapacity?: Capacity;
 
@@ -190,7 +230,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    * The billing mode used for all replicas in the global table. The billing mode is used to
    * specify how you are charged for read and write throughput and how you manage capacity.
    *
-   * @default
+   * @default BillingMode.onDemand()
    */
   readonly billingMode?: BillingMode;
 
@@ -271,14 +311,14 @@ export class Capacity {
    * Fixed capacity mode.
    */
   public static fixed(units: number) {
-    return new Capacity('FIXED', units);
+    return new Capacity('FIXED', { units });
   }
 
   /**
    * Autoscaled capacity mode.
    */
   public static autoscaled(options: CapacityAutoScalingOptions) {
-    return new Capacity('AUTOSCALED', undefined, options);
+    return new Capacity('AUTOSCALED', { autoScalingOptions: options });
   }
 
   /**
@@ -298,10 +338,10 @@ export class Capacity {
    */
   public readonly options?: CapacityAutoScalingOptions;
 
-  private constructor(mode: string, units: number | undefined, options?: CapacityAutoScalingOptions) {
+  private constructor(mode: string, options: CapacityOptions = {}) {
     this.mode = mode;
-    this.units = units;
-    this.options = options;
+    this.units = options.units;
+    this.options = options.autoScalingOptions;
   }
 }
 
@@ -320,7 +360,7 @@ export class BillingMode {
   /**
    * Provisioned billing mode.
    */
-  public static provisioned(options: CapacityOptions = {}) {
+  public static provisioned(options: ThroughputOptions = {}) {
     return new BillingMode('PROVISIONED', options);
   }
 
@@ -330,14 +370,65 @@ export class BillingMode {
   public readonly mode: string;
 
   /**
-   * The read and write capacity if the billing mode is provisioned.
+   * The read capacity.
    */
-  public readonly options?: CapacityOptions;
+  public readonly readCapacity?: Capacity;
 
-  private constructor(mode: string, options?: CapacityOptions) {
+  /**
+   * The write capacity.
+   */
+  public readonly writeCapacity?: Capacity;
+
+  private constructor(mode: string, options: ThroughputOptions = {}) {
     this.mode = mode;
-    this.options = options;
+    this.readCapacity = options.readCapacity;
+    this.writeCapacity = options.writeCapacity;
   }
 }
 
-export class TableEncryption {}
+/**
+ * The server-side encryption that will be applied to the replicas in the global table.
+ */
+export class TableEncryption {
+  /**
+   * Server-side KMS encryption with a master key owned by DynamoDB.
+   */
+  public static dynamoOwnedKey() {
+    return new TableEncryption('DYNAMO_OWNED');
+  }
+
+  /**
+   * Server-side KMS encryption with a master key managed by AWS.
+   */
+  public static awsManagedKey() {
+    return new TableEncryption('AWS_MANAGED');
+  }
+
+  /**
+   * Server-side KMS encryption with a master key managed by the customer.
+   */
+  public static customerManagedKey(tableKey: IKey, replicaKeyArns?: { [region: string]: string }) {
+    return new TableEncryption('CUSTOMER_MANAGED', { tableKey, replicaKeyArns });
+  }
+
+  /**
+   * The table encryption type.
+   */
+  public readonly encryptionType: string;
+
+  /**
+   *
+   */
+  public readonly tableKey?: IKey;
+
+  /**
+   *
+   */
+  public readonly replicaKeyArns?: { [region: string]: string };
+
+  private constructor(encryptionType: string, options: TableEncryptionOptions = {}) {
+    this.encryptionType = encryptionType;
+    this.tableKey = options.tableKey;
+    this.replicaKeyArns = options.replicaKeyArns;
+  }
+}
