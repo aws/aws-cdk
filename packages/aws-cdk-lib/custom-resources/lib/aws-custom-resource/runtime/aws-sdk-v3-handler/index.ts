@@ -6,6 +6,7 @@ import { execSync } from 'child_process';
 // fails in the CDK app executed with ts-node
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { findV3ClientConstructor } from './v2-to-v3/find-client-constructor';
 import { getV3ClientPackageName } from './v2-to-v3/get-v3-client-package-name';
 import { AwsSdkCall } from '../../aws-custom-resource';
 import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from '../shared';
@@ -106,12 +107,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
 
       awsSdk = await awsSdk;
-      const [_clientName, ServiceClient] = Object.entries(awsSdk).find( ([name]) => !name.startsWith('_') && name.endsWith('Client') ) as [string, {
-        new (config: any): {
-          send: (command: any) => Promise<any>
-          config: any
-        }
-      }];
+      const ServiceClient = findV3ClientConstructor(awsSdk);
+
       const client = new ServiceClient({
         apiVersion: call.apiVersion,
         credentials: credentials,

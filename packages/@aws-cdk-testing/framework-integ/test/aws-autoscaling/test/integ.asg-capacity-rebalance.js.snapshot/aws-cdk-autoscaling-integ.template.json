@@ -446,27 +446,68 @@
     ]
    }
   },
-  "CapacityRebalanceLaunchConfig697F1934": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "CapacityRebalanceLaunchTemplate3395D4AC": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "CapacityRebalanceInstanceProfile9E43DE91",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "CapacityRebalanceInstanceSecurityGroup9283543C",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-autoscaling-integ/CapacityRebalance/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-autoscaling-integ/CapacityRebalance/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
     },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "CapacityRebalanceInstanceProfile9E43DE91"
-    },
-    "SecurityGroups": [
+    "TagSpecifications": [
      {
-      "Fn::GetAtt": [
-       "CapacityRebalanceInstanceSecurityGroup9283543C",
-       "GroupId"
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-autoscaling-integ/CapacityRebalance/LaunchTemplate"
+       }
       ]
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
+    ]
    },
    "DependsOn": [
     "CapacityRebalanceInstanceRole548A8264"
@@ -478,8 +519,16 @@
     "MaxSize": "1",
     "MinSize": "1",
     "CapacityRebalance": true,
-    "LaunchConfigurationName": {
-     "Ref": "CapacityRebalanceLaunchConfig697F1934"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "CapacityRebalanceLaunchTemplate3395D4AC"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "CapacityRebalanceLaunchTemplate3395D4AC",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

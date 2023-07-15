@@ -26,7 +26,8 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
-    }
+    },
+    "ServiceName": "service1"
    }
   },
   "Service1InstanceRole8CBC81F1": {
