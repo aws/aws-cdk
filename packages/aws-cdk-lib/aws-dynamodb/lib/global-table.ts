@@ -402,6 +402,56 @@ export class GlobalTable extends GlobalTableBase {
 }
 
 /**
+ * Capacity types.
+ */
+export enum CapacityType {
+  /**
+   *
+   */
+  FIXED = 'FIXED',
+
+  /**
+   *
+   */
+  AUTOSCALED = 'AUTOSCALED',
+}
+
+/**
+ * Billing mode types.
+ */
+export enum BillingModeType {
+  /**
+   *
+   */
+  PAY_PER_REQUEST = 'PAY_PER_REQUEST',
+
+  /**
+   *
+   */
+  PROVISIONED = 'PROVISIONED',
+}
+
+/**
+ * Table encryption types.
+ */
+export enum TableEncryptionType {
+  /**
+   *
+   */
+  DYNAMO_OWNED = 'DYNAMO_OWNED',
+
+  /**
+   *
+   */
+  AWS_MANAGED = 'AWS_MANAGED',
+
+  /**
+   *
+   */
+  CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
+}
+
+/**
  * The capacity mode to use for table read and write throughput.
  */
 export class Capacity {
@@ -409,20 +459,20 @@ export class Capacity {
    * Fixed capacity mode.
    */
   public static fixed(units: number) {
-    return new Capacity('FIXED', { units });
+    return new Capacity(CapacityType.FIXED, { units });
   }
 
   /**
    * Autoscaled capacity mode.
    */
   public static autoscaled(options: CapacityAutoScalingOptions) {
-    return new Capacity('AUTOSCALED', { autoScalingOptions: options });
+    return new Capacity(CapacityType.AUTOSCALED, { autoScalingOptions: options });
   }
 
   /**
-   * The capacity mode being used.
+   * The capacity type being used.
    */
-  public readonly mode: string;
+  public readonly type: string;
 
   /**
    * The capacity units selected if the capacity mode is FIXED.
@@ -434,8 +484,8 @@ export class Capacity {
    */
   public readonly autoScalingOptions?: CapacityAutoScalingOptions;
 
-  private constructor(mode: string, options: CapacityOptions = {}) {
-    this.mode = mode;
+  private constructor(type: string, options: CapacityOptions = {}) {
+    this.type = type;
     this.units = options.units;
     this.autoScalingOptions = options.autoScalingOptions;
   }
@@ -450,20 +500,20 @@ export class BillingMode {
    * On demand billing mode.
    */
   public static onDemand() {
-    return new BillingMode('PAY_PER_REQUEST');
+    return new BillingMode(BillingModeType.PAY_PER_REQUEST);
   }
 
   /**
    * Provisioned billing mode.
    */
   public static provisioned(options: ThroughputOptions = {}) {
-    return new BillingMode('PROVISIONED', options);
+    return new BillingMode(BillingModeType.PROVISIONED, options);
   }
 
   /**
-   * The billing mode.
+   * The billing mode type.
    */
-  public readonly mode: string;
+  public readonly type: string;
 
   /**
    * The read capacity.
@@ -475,8 +525,8 @@ export class BillingMode {
    */
   public readonly writeCapacity?: Capacity;
 
-  private constructor(mode: string, options: ThroughputOptions = {}) {
-    this.mode = mode;
+  private constructor(type: string, options: ThroughputOptions = {}) {
+    this.type = type;
     this.readCapacity = options.readCapacity;
     this.writeCapacity = options.writeCapacity;
   }
@@ -490,27 +540,27 @@ export class TableEncryption {
    * Server-side KMS encryption with a master key owned by DynamoDB.
    */
   public static dynamoOwnedKey() {
-    return new TableEncryption('DYNAMO_OWNED');
+    return new TableEncryption(TableEncryptionType.DYNAMO_OWNED);
   }
 
   /**
    * Server-side KMS encryption with a master key managed by AWS.
    */
   public static awsManagedKey() {
-    return new TableEncryption('AWS_MANAGED');
+    return new TableEncryption(TableEncryptionType.AWS_MANAGED);
   }
 
   /**
    * Server-side KMS encryption with a master key managed by the customer.
    */
   public static customerManagedKey(tableKey: IKey, replicaKeyArns?: { [region: string]: string }) {
-    return new TableEncryption('CUSTOMER_MANAGED', { tableKey, replicaKeyArns });
+    return new TableEncryption(TableEncryptionType.CUSTOMER_MANAGED, { tableKey, replicaKeyArns });
   }
 
   /**
    * The table encryption type.
    */
-  public readonly encryptionType: string;
+  public readonly type: string;
 
   /**
    *
@@ -522,8 +572,8 @@ export class TableEncryption {
    */
   public readonly replicaKeyArns?: { [region: string]: string };
 
-  private constructor(encryptionType: string, options: TableEncryptionOptions = {}) {
-    this.encryptionType = encryptionType;
+  private constructor(type: string, options: TableEncryptionOptions = {}) {
+    this.type = type;
     this.tableKey = options.tableKey;
     this.replicaKeyArns = options.replicaKeyArns;
   }
