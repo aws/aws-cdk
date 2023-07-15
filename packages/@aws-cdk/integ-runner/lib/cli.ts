@@ -111,7 +111,7 @@ export async function main(args: string[]) {
   });
 
   const testsToRun: IntegTestWorkerConfig[] = [];
-  const destructiveChanges: Map<string, DestructiveChange[]> = new Map();
+  let destructiveChanges: boolean = false;
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   let testsSucceeded = false;
   validateWatchArgs({
@@ -131,7 +131,10 @@ export async function main(args: string[]) {
       });
       for (const failure of failedSnapshots) {
         logger.warning(`Failed: ${failure.fileName}`);
-        destructiveChanges.set(failure.fileName, failure.destructiveChanges ?? []);
+        if (failure.destructiveChanges && failure.destructiveChanges.length > 0) {
+          printDestructiveChanges(failure.destructiveChanges);
+          destructiveChanges = true;
+        }
       }
       if (!options.force) {
         testsToRun.push(...failedSnapshots);
@@ -183,8 +186,7 @@ export async function main(args: string[]) {
     void pool.terminate();
   }
 
-  if (destructiveChanges.size > 0) {
-    printDestructiveChanges(destructiveChanges);
+  if (destructiveChanges) {
     throw new Error('Some changes were destructive!');
   }
   if (failedSnapshots.length > 0) {
@@ -225,14 +227,12 @@ function validateWatchArgs(args: {
   }
 }
 
-function printDestructiveChanges(changesPerTest: Map<string, DestructiveChange[]>): void {
-  if (changesPerTest.size > 0) {
-    logger.warning('!!! These tests contains %s !!!', chalk.bold('destructive changes'));
-    for (const [fileName, changes] of changesPerTest.entries()) {
-      for (const change of changes) {
-        logger.warning('    Filename: %s - Stack: %s - Resource: %s - Impact: %s', fileName, change.stackName, change.logicalId, change.impact);
-      }
-    }
+function printDestructiveChanges(changes: DestructiveChange[]): void {
+  if (changes.length > 0) {
+    logger.warning('!!! This test contains %s !!!', chalk.bold('destructive changes'));
+    changes.forEach(change => {
+      logger.warning('    Stack: %s - Resource: %s - Impact: %s', change.stackName, change.logicalId, change.impact);
+    });
     logger.warning('!!! If these destructive changes are necessary, please indicate this on the PR !!!');
   }
 }
