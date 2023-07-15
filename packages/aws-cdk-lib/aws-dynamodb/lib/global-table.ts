@@ -46,7 +46,7 @@ export interface CapacityAutoScalingOptions {
   readonly targetValue: number;
 
   /**
-   *
+   * @default
    */
   readonly seedCapacity?: number;
 
@@ -270,11 +270,16 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly localSecondaryIndexes: LocalSecondaryIndexProps[];
 
   /**
+   * The server-side encryption to use on all replicas in the global table.
    *
+   * @default TableEncryption.dynamoOwnedKey()
    */
   readonly encryption?: TableEncryption;
 }
 
+/**
+ *
+ */
 export interface IGlobalTable extends IResource {
   /**
    * The ARN of the replica in the region that the stack is deployed to.
@@ -305,6 +310,9 @@ export interface IGlobalTable extends IResource {
   readonly tableStreamArn: string;
 }
 
+/**
+ *
+ */
 export interface GlobalTableAttributes {}
 
 /**
