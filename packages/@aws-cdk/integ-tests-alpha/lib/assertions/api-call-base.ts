@@ -135,15 +135,13 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   }
 
   public getAtt(attributeName: string): Reference {
-    this.outputPaths ??= [];
-    this.outputPaths.push(attributeName);
+    (this.outputPaths ??= []).push(attributeName);
     this.flattenResponse = 'true';
     return this.apiCallResource.getAtt(`apiCallResponse.${attributeName}`);
   }
 
   public getAttString(attributeName: string): string {
-    this.outputPaths ??= [];
-    this.outputPaths.push(attributeName);
+    (this.outputPaths ??= []).push(attributeName);
     this.flattenResponse = 'true';
     return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
