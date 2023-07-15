@@ -9,9 +9,6 @@
      },
      "S3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
     },
-    "Role": {
-     "Ref": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
-    },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
     "Layers": [
@@ -23,6 +20,9 @@
      }
     ],
     "MemorySize": 1024,
+    "Role": {
+     "Ref": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
+    },
     "Runtime": "python3.7",
     "Timeout": 900,
     "VpcConfig": {
@@ -148,12 +148,6 @@
      },
      "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
-      "Arn"
-     ]
-    },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
      "Variables": {
@@ -166,6 +160,12 @@
      }
     },
     "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 900,
     "VpcConfig": {
@@ -201,10 +201,10 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn": {
+  "referencetoawscdkeksclusterbottlerocketngtestKubectlLayer779BB176Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterbottlerocketngtestKubectlLayer779BB176Ref": {
+  "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterbottlerocketngtestVpcPrivateSubnet1Subnet2EA4083BRef": {
