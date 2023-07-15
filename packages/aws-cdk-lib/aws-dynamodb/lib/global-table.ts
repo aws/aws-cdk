@@ -3,30 +3,66 @@ import {
   TableClass, SchemaOptions, GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
 } from './table';
 import { IStream } from '../../aws-kinesis';
-import { IResource, Resource, RemovalPolicy } from '../../core';
+import { IResource, Resource, RemovalPolicy, Duration } from '../../core';
 
 export interface CapacityOptions {
   /**
-   *
+   * @default 5
    */
   readonly readCapacity?: Capacity;
 
   /**
-   *
+   * @default 5
    */
   readonly writeCapacity?: Capacity;
 }
 
+/**
+ * Options for configuring an auto scaling capacity strategy.
+ */
 export interface CapacityAutoScalingOptions {
   /**
-   *
+   * The maximum provisioned capacity units for the global table.
    */
   readonly maxCapacity: number;
 
   /**
-   *
+   * The minimum provisioned capacity units for the global table.
    */
   readonly minCapacity: number;
+
+  /**
+   * Defines a target value for the scaling policy.
+   */
+  readonly targetValue: number;
+
+  /**
+   *
+   */
+  readonly seedCapacity?: number;
+
+  /**
+   * Indicates whether scale in by the target tracking scaling policy is disabled.
+   *
+   * @default false
+   */
+  readonly disableScaleIn?: boolean;
+
+  /**
+   * The amount of time after a scale-in activity completes before another scale-in
+   * activity can start.
+   *
+   * @default
+   */
+  readonly scaleInCooldown?: Duration;
+
+  /**
+   * The amount of time after a scale-out activity completes before another scale-out
+   * activity can start.
+   *
+   * @default
+   */
+  readonly scaleOutCooldown?: Duration;
 }
 
 /**
@@ -218,55 +254,90 @@ export class GlobalTable extends GlobalTableBase {
     super(scope, id, { physicalName: props.tableName });
   }
 
-  public addReplica() {}
+  public addReplica(replica: ReplicaTableProps) {}
 
-  public addGlobalSecondaryIndex() {}
+  public addGlobalSecondaryIndex(globalSecondaryIndex: GlobalSecondaryIndexProps) {}
 
-  public addLocalSecondaryIndex() {}
+  public addLocalSecondaryIndex(localSecondaryIndex: LocalSecondaryIndexProps) {}
 
-  public replica() {}
+  public replica(region: string) {}
 }
 
 /**
- *
+ * The capacity mode to use for table read and write throughput.
  */
 export class Capacity {
   /**
-   *
+   * Fixed capacity mode.
    */
-  public static fixed() {
-    return new Capacity('FIXED');
+  public static fixed(units: number) {
+    return new Capacity('FIXED', units);
   }
 
   /**
-   *
+   * Autoscaled capacity mode.
    */
   public static autoscaled(options: CapacityAutoScalingOptions) {
-    return new Capacity('AUTOSCALED', options);
+    return new Capacity('AUTOSCALED', undefined, options);
   }
 
-  private constructor(public readonly strategy: string, public readonly options?: CapacityAutoScalingOptions) {}
+  /**
+   * The capacity mode being used.
+   */
+  public readonly mode: string;
+
+  /**
+   * The capacity units selected if the capacity mode is FIXED.
+   *
+   * NOTE: this value will be undefined if the capacity mode is AUTOSCALED.
+   */
+  public readonly units: number | undefined;
+
+  /**
+   * Capacity auto scaling configuration options.
+   */
+  public readonly options?: CapacityAutoScalingOptions;
+
+  private constructor(mode: string, units: number | undefined, options?: CapacityAutoScalingOptions) {
+    this.mode = mode;
+    this.units = units;
+    this.options = options;
+  }
 }
 
 /**
- *
+ * Represents the billing mode used to specify how you are charged for read and write
+ * throughput and how you manage capacity.
  */
 export class BillingMode {
   /**
-   *
+   * On demand billing mode.
    */
   public static onDemand() {
     return new BillingMode('PAY_PER_REQUEST');
   }
 
   /**
-   *
+   * Provisioned billing mode.
    */
-  public static provisioned(options: CapacityOptions) {
+  public static provisioned(options: CapacityOptions = {}) {
     return new BillingMode('PROVISIONED', options);
   }
 
-  private constructor(public readonly mode: string, public readonly options?: CapacityOptions) {}
+  /**
+   * The billing mode.
+   */
+  public readonly mode: string;
+
+  /**
+   * The read and write capacity if the billing mode is provisioned.
+   */
+  public readonly options?: CapacityOptions;
+
+  private constructor(mode: string, options?: CapacityOptions) {
+    this.mode = mode;
+    this.options = options;
+  }
 }
 
 export class TableEncryption {}
