@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CfnGlobalTable } from './dynamodb.generated';
 import {
   TableClass, SchemaOptions, GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
 } from './table';
@@ -274,14 +275,70 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly encryption?: TableEncryption;
 }
 
-export interface IGlobalTable extends IResource {}
+export interface IGlobalTable extends IResource {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableArn: string;
+
+  /**
+   * The name of the all replicas in the global table.
+   *
+   * @attribute
+   */
+  readonly tableName: string;
+
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableStreamArn: string;
+}
 
 export interface GlobalTableAttributes {}
 
 /**
  * Base class for a global table.
  */
-abstract class GlobalTableBase extends Resource implements IGlobalTable {}
+abstract class GlobalTableBase extends Resource implements IGlobalTable {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract tableArn: string;
+
+  /**
+   * The name of the all replicas in the global table.
+   *
+   * @attribute
+   */
+  public abstract tableName: string;
+
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract tableStreamArn: string;
+}
 
 export class GlobalTable extends GlobalTableBase {
   public static fromTableName(scope: Construct, id: string, tableName: string) {}
@@ -290,8 +347,49 @@ export class GlobalTable extends GlobalTableBase {
 
   public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes) {}
 
+  /**
+   * Returns the ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableArn: string;
+
+  /**
+   * Returns the name of the all replicas in the global table.
+   *
+   * @attribute
+   */
+  public readonly tableName: string;
+
+  /**
+   * Returns the ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableId: string;
+
+  /**
+   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableStreamArn: string;
+
+  private readonly resource: CfnGlobalTable;
+
   constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
+
+    this.resource = new CfnGlobalTable(this, 'Resource', {});
+
+    this.tableArn = this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+    this.tableName = this.getResourceNameAttribute(this.resource.ref);
+    this.tableId = this.resource.attrTableId;
+    this.tableStreamArn = this.resource.attrStreamArn;
   }
 
   public addReplica(replica: ReplicaTableProps) {}
@@ -328,20 +426,18 @@ export class Capacity {
 
   /**
    * The capacity units selected if the capacity mode is FIXED.
-   *
-   * NOTE: this value will be undefined if the capacity mode is AUTOSCALED.
    */
-  public readonly units: number | undefined;
+  public readonly units?: number;
 
   /**
    * Capacity auto scaling configuration options.
    */
-  public readonly options?: CapacityAutoScalingOptions;
+  public readonly autoScalingOptions?: CapacityAutoScalingOptions;
 
   private constructor(mode: string, options: CapacityOptions = {}) {
     this.mode = mode;
     this.units = options.units;
-    this.options = options.autoScalingOptions;
+    this.autoScalingOptions = options.autoScalingOptions;
   }
 }
 
