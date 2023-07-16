@@ -303,7 +303,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, stackParams.valuesForHotswap, cloudFormationStack, stackArtifact, hotswapMode,
+        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode,
       );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;

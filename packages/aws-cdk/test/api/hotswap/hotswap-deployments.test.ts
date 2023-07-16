@@ -6,16 +6,19 @@ import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
+let mockUpdateLambdaConfiguration: (params: Lambda.Types.UpdateFunctionConfigurationRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  mockUpdateLambdaConfiguration = jest.fn().mockReturnValue({});
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
+    updateFunctionConfiguration: mockUpdateLambdaConfiguration,
   });
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
@@ -691,20 +694,22 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
-      const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
+        SomeParameter: 'someValue',
+      });
 
       // THEN
-      await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
-      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+      expect(deployStackResult).not.toBeUndefined;
+      expect(mockUpdateLambdaConfiguration).toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
+        SomeParameter: 'someValue',
+      });
 
       // THEN
-      await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
-      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+      expect(deployStackResult).not.toBeUndefined;
+      expect(mockUpdateLambdaConfiguration).toHaveBeenCalled();
     }
   });
 });

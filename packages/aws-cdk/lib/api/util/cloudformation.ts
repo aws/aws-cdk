@@ -156,7 +156,7 @@ export class CloudFormationStack {
     if (!this.exists) { return {}; }
     const ret: Record<string, string> = {};
     for (const param of this.stack!.Parameters ?? []) {
-      ret[param.ParameterKey!] = param.ParameterValue!;
+      ret[param.ParameterKey!] = param.ResolvedValue ?? param.ParameterValue!;
     }
     return ret;
   }
@@ -473,16 +473,6 @@ export class ParameterValues {
       this.values[key] = value!;
       this.apiParameters.push({ ParameterKey: key, ParameterValue: value });
     }
-  }
-
-  /**
-   * The values for SSM parameters cannot be used in hotswap since they are only parameter names, not actual values.
-   * Excluding those values to be used with hotswap.
-   */
-  public get valuesForHotswap() {
-    return Object.fromEntries(
-      Object.entries(this.values).filter(([k, _])=>!this.formalParams[k]?.Type.startsWith('AWS::SSM::Parameter::Value')),
-    );
   }
 
   /**
