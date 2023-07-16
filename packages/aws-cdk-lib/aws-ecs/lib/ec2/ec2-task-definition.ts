@@ -26,7 +26,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    */
   readonly networkMode?: NetworkMode;
 
-  /*** An array of placement constraint objects to use for the task. You can
+  /** An array of placement constraint objects to use for the task. You can
    * specify a maximum of 10 constraints per task (this limit includes
    * constraints in the task definition and those specified at run time).
    *
