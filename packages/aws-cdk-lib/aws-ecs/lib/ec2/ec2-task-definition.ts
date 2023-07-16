@@ -145,7 +145,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     });
 
     // Validate the placement constraints
-    Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints || []);
+    Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints ?? []);
   }
 
 }
