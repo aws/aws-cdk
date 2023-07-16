@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { ResourceNotFoundException } from '@aws-sdk/client-eks';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
@@ -88,7 +89,8 @@ export class ClusterResourceHandler extends ResourceHandler {
       const resp = await this.eks.describeCluster({ name: this.clusterName });
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
     } catch (e: any) {
-      if (e.code === 'ResourceNotFoundException') {
+      // see https://aws.amazon.com/blogs/developer/service-error-handling-modular-aws-sdk-js/
+      if (e instanceof ResourceNotFoundException) {
         console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
       }
