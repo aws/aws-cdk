@@ -630,4 +630,81 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
     }
   });
+
+  test('Changes containing an SSM Parameter cannot be hotswapped', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Parameters: {
+        SomeParameter: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/some/parameter',
+        },
+      },
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+            Environment: {
+              Param: { Ref: 'SomeParameter' },
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Parameters: {
+          SomeParameter: {
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: '/some/parameter',
+          },
+        },
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: 'current-bucket',
+                S3Key: 'new-key',
+              },
+              Environment: {
+                Param: { Ref: 'SomeParameter' },
+                Key: 'Value',
+              },
+              FunctionName: 'my-function',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    if (hotswapMode === HotswapMode.FALL_BACK) {
+      // WHEN
+      const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
+      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+      // WHEN
+      const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
+      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+    }
+  });
 });

@@ -476,6 +476,16 @@ export class ParameterValues {
   }
 
   /**
+   * The values for SSM parameters cannot be used in hotswap since they are only parameter names, not actual values.
+   * Excluding those values to be used with hotswap.
+   */
+  public get valuesForHotswap() {
+    return Object.fromEntries(
+      Object.entries(this.values).filter(([k, _])=>!this.formalParams[k]?.Type.startsWith('AWS::SSM::Parameter::Value')),
+    );
+  }
+
+  /**
    * Whether this set of parameter updates will change the actual stack values
    */
   public hasChanges(currentValues: Record<string, string>): ParameterChanges {
