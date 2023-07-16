@@ -1291,7 +1291,7 @@ describe('ec2 task definition', () => {
     // THEN
     expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { placementConstraints: [invalidConstraint] });
-    }).toThrow(/Invalid placement constraint. Only memberOf is supported in the Ec2TaskDefinition class./);
+    }).toThrow(/Invalid placement constraint\(s\): distinctInstance. Only 'memberOf' is currently supported in the Ec2TaskDefinition class./);
   });
 
 });

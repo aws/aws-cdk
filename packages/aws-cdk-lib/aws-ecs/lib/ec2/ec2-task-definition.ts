@@ -30,10 +30,6 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * specify a maximum of 10 constraints per task (this limit includes
    * constraints in the task definition and those specified at run time).
    *
-   * Note: The `distinctInstances()` method is not supported when creating
-   * an `Ec2TaskDefinition`, and can only be used when creating a new service or running a
-   * task.
-   *
    * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
@@ -127,7 +123,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     }) ?? [];
 
     if (invalidConstraints.length > 0) {
-      throw new Error('Invalid placement constraint. Only memberOf is supported in the Ec2TaskDefinition class.');
+      const invalidConstraintTypes = invalidConstraints.map(
+        constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
+      throw new Error(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`);
     }
   }
 
