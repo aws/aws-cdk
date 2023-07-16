@@ -121,7 +121,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     // List of valid constraints https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html
     const validConstraints = new Set(['memberOf']);
 
-    /// Check if any of the placement constraints are not valid
+    // Check if any of the placement constraints are not valid
     const invalidConstraints = constraints?.filter(constraint => {
       return constraint.toJson().some(constraintProperty => !validConstraints.has(constraintProperty.type));
     }) ?? [];
