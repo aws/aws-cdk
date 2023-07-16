@@ -114,9 +114,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   }
 
   /**
- * Validates the placement constraints to make sure they are supported.
-  * Currently, only 'memberOf' is a valid constraint for an Ec2TaskDefinition.
-  */
+   * Validates the placement constraints to make sure they are supported.
+   * Currently, only 'memberOf' is a valid constraint for an Ec2TaskDefinition.
+   */
   private static validatePlacementConstraints(constraints?: PlacementConstraint[]) {
     // List of valid constraints https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html
     const validConstraints = new Set(['memberOf']);
