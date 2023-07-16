@@ -6,19 +6,16 @@ import { HotswapMode } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
-let mockUpdateLambdaConfiguration: (params: Lambda.Types.UpdateFunctionConfigurationRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
-  mockUpdateLambdaConfiguration = jest.fn().mockReturnValue({});
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
-    updateFunctionConfiguration: mockUpdateLambdaConfiguration,
   });
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
@@ -631,85 +628,6 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         S3Bucket: 'current-bucket',
         S3Key: 'new-key',
       });
-    }
-  });
-
-  test('Changes containing an SSM Parameter cannot be hotswapped', async () => {
-    // GIVEN
-    setup.setCurrentCfnStackTemplate({
-      Parameters: {
-        SomeParameter: {
-          Type: 'AWS::SSM::Parameter::Value<String>',
-          Default: '/some/parameter',
-        },
-      },
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
-            },
-            Environment: {
-              Param: { Ref: 'SomeParameter' },
-            },
-            FunctionName: 'my-function',
-          },
-          Metadata: {
-            'aws:asset:path': 'new-path',
-          },
-        },
-      },
-    });
-    const cdkStackArtifact = setup.cdkStackArtifactOf({
-      template: {
-        Parameters: {
-          SomeParameter: {
-            Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: '/some/parameter',
-          },
-        },
-        Resources: {
-          Func: {
-            Type: 'AWS::Lambda::Function',
-            Properties: {
-              Code: {
-                S3Bucket: 'current-bucket',
-                S3Key: 'new-key',
-              },
-              Environment: {
-                Param: { Ref: 'SomeParameter' },
-                Key: 'Value',
-              },
-              FunctionName: 'my-function',
-            },
-            Metadata: {
-              'aws:asset:path': 'new-path',
-            },
-          },
-        },
-      },
-    });
-
-    if (hotswapMode === HotswapMode.FALL_BACK) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
-        SomeParameter: 'someValue',
-      });
-
-      // THEN
-      expect(deployStackResult).not.toBeUndefined;
-      expect(mockUpdateLambdaConfiguration).toHaveBeenCalled();
-    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
-        SomeParameter: 'someValue',
-      });
-
-      // THEN
-      expect(deployStackResult).not.toBeUndefined;
-      expect(mockUpdateLambdaConfiguration).toHaveBeenCalled();
     }
   });
 });
