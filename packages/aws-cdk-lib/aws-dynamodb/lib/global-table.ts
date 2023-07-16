@@ -99,7 +99,7 @@ export interface ReplicaGlobalSecondaryIndexOptions {
 /**
  * Common table configuration options between a global table and its replicas.
  */
-export interface TableOptions {
+interface TableOptions {
   /**
    * Whether or not CloudWatch contributor insights is enabled for all replicas in the
    * global table.
@@ -237,7 +237,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    *
    * @default TableEncryption.dynamoOwnedKey()
    */
-  readonly encryption?: TableEncryption;
+  readonly encryption?: Encryption;
 }
 
 /**
@@ -518,4 +518,4 @@ export class Billing {
   }
 }
 
-export class TableEncryption {}
+export class Encryption {}
