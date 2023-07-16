@@ -10,6 +10,9 @@ import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+const DEFAULT_MIN_CAPACITY = 1;
+const DEFAULT_MAX_CAPACITY = 10;
+const DEFAULT_TARGET_UTILIZATION = 70;
 
 /**
  * Options used to configure a Capacity instance.
@@ -51,13 +54,17 @@ export interface ThroughputOptions {
 export interface AutoscaledCapacityOptions {
   /**
    * The minimum capacity to scale to.
+   *
+   * @default 1
    */
-  readonly minCapacity: number;
+  readonly minCapacity?: number;
 
   /**
    * The maximum capacity to scale to.
+   *
+   * @default 10
    */
-  readonly maxCapacity: number;
+  readonly maxCapacity?: number;
 
   /**
    * The target utilization percentage.
@@ -155,7 +162,7 @@ export interface ReplicaTableOptions extends TableOptions {
   /**
    *
    */
-  readonly globalSecondaryIndexes: ReplicaGlobalSecondaryIndexOptions[];
+  readonly globalSecondaryIndexes?: ReplicaGlobalSecondaryIndexOptions[];
 }
 
 /**
@@ -233,16 +240,98 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly encryption?: TableEncryption;
 }
 
-export interface IGlobalTable extends IResource {}
+/**
+ * Represents a global table.
+ */
+export interface IGlobalTable extends IResource {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableArn: string;
 
+  /**
+   * The name of all replicas in the global table.
+   *
+   * @attribute
+   */
+  readonly tableName: string;
+
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableStreamArn: string;
+}
+
+/**
+ * Attributes of a global table.
+ */
 export interface GlobalTableAttributes {}
 
 /**
  * Base class for a global table.
  */
-abstract class GlobalTableBase extends Resource implements IGlobalTable {}
+abstract class GlobalTableBase extends Resource implements IGlobalTable {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableArn: string;
+
+  /**
+   * The name of all replicas in the global table.
+   *
+   * @attribute
+   */
+  public abstract readonly tableName: string;
+
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableStreamArn: string;
+}
 
 export class GlobalTable extends GlobalTableBase {
+  /**
+   * Returns the ARN of the replica in the region that the stack is deployed to.
+   */
+  public readonly tableArn: string;
+
+  /**
+   * Returns the name of all replicas in the global table.
+   */
+  public readonly tableName: string;
+
+  /**
+   * Returns the ID of the replica in the region that the stack is deployed to.
+   */
+  public readonly tableId: string;
+
+  /**
+   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
+   */
+  public readonly tableStreamArn: string;
+
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
   private readonly replicas: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
@@ -261,8 +350,28 @@ export class GlobalTable extends GlobalTableBase {
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: this.replicas,
       streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
+      timeToLiveSpecification: props.timeToLiveAttribute
+        ? { attributeName: props.timeToLiveAttribute, enabled: true }
+        : undefined,
+      billingMode: props.billing ? props.billing.mode : BillingMode.PAY_PER_REQUEST,
+      writeProvisionedThroughputSettings: props.billing
+        ? this.configureWriteProvisionedThroughput(props.billing)
+        : undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+    this.tableName = this.getResourceNameAttribute(resource.ref);
+    this.tableId = resource.attrTableId;
+    this.tableStreamArn = resource.attrStreamArn;
+
+    if (props.tableName) {
+      this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
+    }
   }
 
   private addKey(attribute: Attribute, keyType: string) {
@@ -279,6 +388,25 @@ export class GlobalTable extends GlobalTableBase {
     if (!existingDef) {
       this.attributeDefinitions.push({ attributeName: name, attributeType: type });
     }
+  }
+
+  private configureWriteProvisionedThroughput(billing: Billing) {
+    if (billing.mode === BillingMode.PAY_PER_REQUEST || !billing.writeCapacity) {
+      return undefined;
+    }
+    if (billing.writeCapacity.mode === CapacityMode.FIXED) {
+      throw new Error('The capacity mode for writeCapacity must be autoscaled');
+    }
+    const writeProvisionedThroughput: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty = {
+      writeCapacityAutoScalingSettings: {
+        minCapacity: billing.writeCapacity.minCapacity ?? DEFAULT_MIN_CAPACITY,
+        maxCapacity: billing.writeCapacity.maxCapacity ?? DEFAULT_MAX_CAPACITY,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: billing.writeCapacity.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
+        },
+      },
+    };
+    return writeProvisionedThroughput;
   }
 }
 
@@ -318,7 +446,7 @@ export class Capacity {
   /**
    * The capacity mode for read and write operations.
    */
-  public readonly mode?: string;
+  public readonly mode: string;
 
   /**
    * The capacity units for read and write operations.
