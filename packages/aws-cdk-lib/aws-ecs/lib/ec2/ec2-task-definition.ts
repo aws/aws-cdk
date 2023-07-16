@@ -35,7 +35,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * task.
    *
    * @default - No placement constraints.
-  */
+   */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
