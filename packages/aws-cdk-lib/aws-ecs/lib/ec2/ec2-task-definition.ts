@@ -135,7 +135,6 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
-
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EC2,
