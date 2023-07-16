@@ -129,7 +129,6 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     if (invalidConstraints.length > 0) {
       throw new Error('Invalid placement constraint. Only memberOf is supported in the Ec2TaskDefinition class.');
     }
-
   }
 
   /**
