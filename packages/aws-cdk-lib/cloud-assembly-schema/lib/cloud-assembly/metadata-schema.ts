@@ -163,7 +163,7 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
 
   /**
    * SSH agent socket or keys to pass to the `docker build` command
-   * 
+   *
    * @default no ssh arg is passed
    */
   readonly buildSSH?: string;

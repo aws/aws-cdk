@@ -107,7 +107,7 @@ export interface DockerImageAssetInvalidationOptions {
 
   /**
    * Use `buildSSH` while calculating the asset hash
-   * 
+   *
    * @default true
    */
   readonly buildSSH?: boolean;
@@ -232,18 +232,18 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
 
   /**
    * SSH agent socket or keys to pass to the `docker build` command.
-   * 
+   *
    * Docker BuildKit must be enabled to use the ssh flag
-   * 
+   *
    * @see https://docs.docker.com/build/buildkit/
-   * 
+   *
    * @default - no --ssh flag
-   * 
+   *
    * @example
    * import { DockerBuildSSH } from `aws-cdk-lib`;
-   * 
+   *
    * const sshFlag = 'default';
-   * 
+   *
    */
   readonly buildSSH?: string;
 

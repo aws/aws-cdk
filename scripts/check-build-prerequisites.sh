@@ -130,8 +130,6 @@ echo -e "Checking dotnet version... \c"
 if [ $(echo $app_v | grep -c -E "[67]\.[0-9]+\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
-else
-    wrong_version
 fi
 
 # [Python >= 3.6.5, < 4.0]

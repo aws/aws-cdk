@@ -65,9 +65,9 @@ export interface DockerImageSource {
 
   /**
    * SSH agent socket or keys
-   * 
+   *
    * Requires building with docker buildkit.
-   * 
+   *
    * @default - No ssh flag is set
    */
   readonly dockerBuildSSH?: string;
