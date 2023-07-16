@@ -92,7 +92,7 @@ export class Docker {
       'build',
       ...flatten(Object.entries(options.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       ...flatten(Object.entries(options.buildSecrets || {}).map(([k, v]) => ['--secret', `id=${k},${v}`])),
-      ...options.buildSSH ? ['--ssh', options.buildSSH]: [],
+      ...options.buildSSH ? ['--ssh', options.buildSSH] : [],
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
