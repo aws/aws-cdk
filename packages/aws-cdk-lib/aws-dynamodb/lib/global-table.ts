@@ -1,113 +1,76 @@
 import { Construct } from 'constructs';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
-  TableClass, SchemaOptions, GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
+  SchemaOptions, TableClass, BillingMode, Attribute,
+  GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
 } from './table';
 import { IStream } from '../../aws-kinesis';
-import { IKey } from '../../aws-kms';
-import { IResource, Resource, RemovalPolicy, Duration } from '../../core';
+import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+
+const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
+const HASH_KEY_TYPE = 'HASH';
+const RANGE_KEY_TYPE = 'RANGE';
+
+/**
+ * Options used to configure a Capacity instance.
+ */
+interface CapacityOptions {
+  /**
+   * The number of capacity units.
+   *
+   * @default - no capacity units
+   */
+  readonly units?: number;
+
+  /**
+   * Options for configuring autoscaled capacity mode.
+   *
+   * @default - no autoscaled capacity options.
+   */
+  readonly autoscaledCapacityOptions?: AutoscaledCapacityOptions;
+}
 
 /**
  * Options to configure provisioned throughput for a table.
  */
 export interface ThroughputOptions {
   /**
-   * The read capacity for read operations on the table.
    *
-   * @default 5
    */
   readonly readCapacity?: Capacity;
 
   /**
-   * The write capacity for write operations on the table.
    *
-   * @default 5
    */
   readonly writeCapacity?: Capacity;
 }
 
 /**
- * Options for configuring an auto scaling capacity strategy.
+ * Options used to configure autoscaled capacity mode.
  */
-export interface CapacityAutoScalingOptions {
+export interface AutoscaledCapacityOptions {
   /**
-   * The maximum provisioned capacity units for the global table.
-   */
-  readonly maxCapacity: number;
-
-  /**
-   * The minimum provisioned capacity units for the global table.
+   * The minimum capacity to scale to.
    */
   readonly minCapacity: number;
 
   /**
-   * Defines a target value for the scaling policy.
+   * The maximum capacity to scale to.
    */
-  readonly targetValue: number;
+  readonly maxCapacity: number;
 
   /**
-   * @default
-   */
-  readonly seedCapacity?: number;
-
-  /**
-   * Indicates whether scale in by the target tracking scaling policy is disabled.
+   * The target utilization percentage.
    *
-   * @default false
+   * @default 70
    */
-  readonly disableScaleIn?: boolean;
-
-  /**
-   * The amount of time after a scale-in activity completes before another scale-in
-   * activity can start.
-   *
-   * @default
-   */
-  readonly scaleInCooldown?: Duration;
-
-  /**
-   * The amount of time after a scale-out activity completes before another scale-out
-   * activity can start.
-   *
-   * @default
-   */
-  readonly scaleOutCooldown?: Duration;
+  readonly targetUtilizationPercent?: number;
 }
 
 /**
- * Options used to configure the capacity modes.
+ * Options used to configure a global secondary index for a replica table.
  */
-export interface CapacityOptions {
-  /**
-   *
-   */
-  readonly units?: number;
-
-  /**
-   *
-   */
-  readonly autoScalingOptions?: CapacityAutoScalingOptions;
-}
-
-/**
- * Options used to configure the server-side table encryption types.
- */
-export interface TableEncryptionOptions {
-  /**
-   *
-   */
-  readonly tableKey?: IKey;
-
-  /**
-   *
-   */
-  readonly replicaKeyArns?: { [region: string]: string };
-}
-
-/**
- * Properties for configuring global secondary indexes at the replica level.
- */
-export interface ReplicaGlobalSecondaryIndexProps {
+export interface ReplicaGlobalSecondaryIndexOptions {
   /**
    *
    */
@@ -123,24 +86,25 @@ export interface ReplicaGlobalSecondaryIndexProps {
    *
    * @default false
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsights?: boolean;
 }
 
 /**
- * Common table properties between global tables and replica tables.
+ * Common table configuration options between a global table and its replicas.
  */
 export interface TableOptions {
   /**
-   * Whether or not CloudWatch contributor insights is enabled.
+   * Whether or not CloudWatch contributor insights is enabled for all replicas in the
+   * global table.
    *
    * NOTE: This property is configurable on a per-replica basis.
    *
    * @default false
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsights?: boolean;
 
   /**
-   * Whether or not deletion protection is enabled.
+   * Whether or not deletion protection is enabled for all replicas in the global table.
    *
    * NOTE: This property is configurable on a per-replica basis.
    *
@@ -149,7 +113,7 @@ export interface TableOptions {
   readonly deletionProtection?: boolean;
 
   /**
-   * Whether or not point-in-time recovery is enabled.
+   * Whether or not point-in-time recovery is enabled for all replicas in the global table.
    *
    * NOTE: This property is configurable on a per-replica basis.
    *
@@ -158,44 +122,40 @@ export interface TableOptions {
   readonly pointInTimeRecovery?: boolean;
 
   /**
-   * The table class.
+   * The table class for all replicas in the global table.
    *
    * NOTE: This property is configurable on a per-replica basis.
    *
    * @default TableClass.STANDARD
    */
-  readonly tableClass?: TableClass;
+  readonly tableClass?: TableClass
 }
 
 /**
- * Properties for replica tables.
+ * Options used to configure a replica table.
  */
-export interface ReplicaTableProps extends TableOptions {
+export interface ReplicaTableOptions extends TableOptions {
   /**
    * The region in which the replica exists.
    */
   readonly region: string;
 
   /**
-   * Kinesis Data Stream configuration to capture item-level changes for the replica.
+   * The kinesis data stream configuration to capture item-level changes for the replica.
    *
-   * @default - no Kinesis Data Stream
+   * @default - no kinesis data stream
    */
   readonly kinesisStream?: IStream;
 
   /**
-   * The read capacity for the replica.
    *
-   * @default 5
    */
   readonly readCapacity?: Capacity;
 
   /**
-   * Global secondary indexes for the replica.
    *
-   * @default
    */
-  readonly globalSecondaryIndexes?: ReplicaGlobalSecondaryIndexProps[];
+  readonly globalSecondaryIndexes: ReplicaGlobalSecondaryIndexOptions[];
 }
 
 /**
@@ -205,11 +165,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   /**
    * The name of all replicas in the global table.
    *
-   * NOTE: If you specify a name, you cannot perform updates that require replacement of this
-   * resource. You can perform updates that require no or some interruption. If you must replace
-   * the resource, specify a new name.
-   *
-   * @default - generated by Cloudformation
+   * @default - generated by CloudFormation
    */
   readonly tableName?: string;
 
@@ -228,12 +184,12 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * The billing mode used for all replicas in the global table. The billing mode is used to
-   * specify how you are charged for read and write throughput and how you manage capacity.
+   * The billing used for all replicas in the global table. The billing is used to specify
+   * how you are charged for read and write throughput and how you manage capacity.
    *
    * @default BillingMode.onDemand()
    */
-  readonly billingMode?: BillingMode;
+  readonly billing?: Billing;
 
   /**
    * The list of replicas in the global table.
@@ -244,7 +200,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    *
    * @default - a single replica will exist in the region associated with the deployment stack
    */
-  readonly replicas?: ReplicaTableProps[];
+  readonly replicas?: ReplicaTableOptions[];
 
   /**
    * Global secondary indexes to be created on all replicas in the global table.
@@ -256,7 +212,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    *
    * @default - no global secondary indexes
    */
-  readonly globalSecondaryIndexes: GlobalSecondaryIndexProps[];
+  readonly globalSecondaryIndexes?: GlobalSecondaryIndexProps[];
 
   /**
    * Local secondary indexes to be created on all replicas in the global table.
@@ -267,7 +223,7 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    *
    * @default - no local secondary indexes
    */
-  readonly localSecondaryIndexes: LocalSecondaryIndexProps[];
+  readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
 
   /**
    * The server-side encryption to use on all replicas in the global table.
@@ -277,251 +233,145 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
   readonly encryption?: TableEncryption;
 }
 
-/**
- *
- */
-export interface IGlobalTable extends IResource {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableArn: string;
+export interface IGlobalTable extends IResource {}
 
-  /**
-   * The name of the all replicas in the global table.
-   *
-   * @attribute
-   */
-  readonly tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableStreamArn: string;
-}
-
-/**
- *
- */
 export interface GlobalTableAttributes {}
 
 /**
  * Base class for a global table.
  */
-abstract class GlobalTableBase extends Resource implements IGlobalTable {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract tableArn: string;
-
-  /**
-   * The name of the all replicas in the global table.
-   *
-   * @attribute
-   */
-  public abstract tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract tableStreamArn: string;
-
-  public addReplica(replica: ReplicaTableProps) {}
-
-  public addGlobalSecondaryIndex(globalSecondaryIndex: GlobalSecondaryIndexProps) {}
-
-  public addLocalSecondaryIndex(localSecondaryIndex: LocalSecondaryIndexProps) {}
-
-  public replica(region: string) {}
-}
+abstract class GlobalTableBase extends Resource implements IGlobalTable {}
 
 export class GlobalTable extends GlobalTableBase {
-  public static fromTableName(scope: Construct, id: string, tableName: string) {}
-
-  public static fromTableArn(scope: Construct, id: string, tableArn: string) {}
-
-  public static fromTableAttributes(scope: Construct, id: string, attrs: GlobalTableAttributes) {}
-
-  /**
-   * Returns the ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * Returns the name of the all replicas in the global table.
-   *
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * Returns the ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public readonly tableId: string;
-
-  /**
-   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public readonly tableStreamArn: string;
-
-  private readonly resource: CfnGlobalTable;
+  private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
+  private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly replicas: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
 
   constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
-    this.resource = new CfnGlobalTable(this, 'Resource', {});
+    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    if (props.sortKey) {
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+    }
 
-    this.tableArn = this.getResourceArnAttribute(this.resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
+    const resource = new CfnGlobalTable(this, 'Resource', {
+      tableName: this.physicalName,
+      keySchema: Lazy.any({ produce: () => this.keySchema }),
+      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
+      replicas: this.replicas,
+      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
     });
-    this.tableName = this.getResourceNameAttribute(this.resource.ref);
-    this.tableId = this.resource.attrTableId;
-    this.tableStreamArn = this.resource.attrStreamArn;
+    resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  private addKey(attribute: Attribute, keyType: string) {
+    this.registerAttribute(attribute);
+    this.keySchema.push({ attributeName: attribute.name, keyType });
+  }
+
+  private registerAttribute(attribute: Attribute) {
+    const { name, type } = attribute;
+    const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
+    if (existingDef && existingDef.attributeType !== type) {
+      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
+    }
+    if (!existingDef) {
+      this.attributeDefinitions.push({ attributeName: name, attributeType: type });
+    }
   }
 }
 
 /**
- * Capacity types.
+ * Capacity modes.
  */
-export enum CapacityType {
+export enum CapacityMode {
   /**
-   *
+   * Fixed
    */
   FIXED = 'FIXED',
 
   /**
-   *
+   * Autoscaled
    */
   AUTOSCALED = 'AUTOSCALED',
 }
 
 /**
- * Billing mode types.
- */
-export enum BillingModeType {
-  /**
-   *
-   */
-  PAY_PER_REQUEST = 'PAY_PER_REQUEST',
-
-  /**
-   *
-   */
-  PROVISIONED = 'PROVISIONED',
-}
-
-/**
- * Table encryption types.
- */
-export enum TableEncryptionType {
-  /**
-   *
-   */
-  DYNAMO_OWNED = 'DYNAMO_OWNED',
-
-  /**
-   *
-   */
-  AWS_MANAGED = 'AWS_MANAGED',
-
-  /**
-   *
-   */
-  CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
-}
-
-/**
- * The capacity mode to use for table read and write throughput.
+ * The capacity mode to use for read and write operations on all replicas in the global table.
  */
 export class Capacity {
   /**
    * Fixed capacity mode.
    */
   public static fixed(units: number) {
-    return new Capacity(CapacityType.FIXED, { units });
+    return new Capacity(CapacityMode.FIXED, { units });
   }
 
   /**
    * Autoscaled capacity mode.
    */
-  public static autoscaled(options: CapacityAutoScalingOptions) {
-    return new Capacity(CapacityType.AUTOSCALED, { autoScalingOptions: options });
+  public static autoscaled(options: AutoscaledCapacityOptions) {
+    return new Capacity(CapacityMode.AUTOSCALED, { autoscaledCapacityOptions: options });
   }
 
   /**
-   * The capacity type being used.
+   * The capacity mode for read and write operations.
    */
-  public readonly type: string;
+  public readonly mode?: string;
 
   /**
-   * The capacity units selected if the capacity mode is FIXED.
+   * The capacity units for read and write operations.
    */
   public readonly units?: number;
 
   /**
-   * Capacity auto scaling configuration options.
+   * The minimum capacity to scale to.
    */
-  public readonly autoScalingOptions?: CapacityAutoScalingOptions;
+  public readonly minCapacity?: number;
 
-  private constructor(type: string, options: CapacityOptions = {}) {
-    this.type = type;
+  /**
+   * The maximum capacity to scale to.
+   */
+  public readonly maxCapacity?: number;
+
+  /**
+   * The target utilization percentage.
+   */
+  public readonly targetUtilizationPercent?: number;
+
+  private constructor(mode: string, options: CapacityOptions = {}) {
+    this.mode = mode;
     this.units = options.units;
-    this.autoScalingOptions = options.autoScalingOptions;
+    this.minCapacity = options.autoscaledCapacityOptions?.minCapacity;
+    this.maxCapacity = options.autoscaledCapacityOptions?.maxCapacity;
+    this.targetUtilizationPercent = options.autoscaledCapacityOptions?.targetUtilizationPercent;
   }
 }
 
 /**
- * Represents the billing mode used to specify how you are charged for read and write
- * throughput and how you manage capacity.
+ * Represents the billing used to specify how you are charged for read and write throughput
+ * and how you manage capacity.
  */
-export class BillingMode {
+export class Billing {
   /**
-   * On demand billing mode.
+   * Configure on-demand billing.
    */
   public static onDemand() {
-    return new BillingMode(BillingModeType.PAY_PER_REQUEST);
+    return new Billing(BillingMode.PAY_PER_REQUEST);
   }
 
   /**
-   * Provisioned billing mode.
+   * Configure provisioned billing.
    */
-  public static provisioned(options: ThroughputOptions = {}) {
-    return new BillingMode(BillingModeType.PROVISIONED, options);
+  public static provisioned(options?: ThroughputOptions) {
+    return new Billing(BillingMode.PROVISIONED, options);
   }
 
   /**
-   * The billing mode type.
+   * The billing mode used for read and write operations.
    */
-  public readonly type: string;
+  public readonly mode: string;
 
   /**
    * The read capacity.
@@ -533,56 +383,11 @@ export class BillingMode {
    */
   public readonly writeCapacity?: Capacity;
 
-  private constructor(type: string, options: ThroughputOptions = {}) {
-    this.type = type;
+  private constructor(mode: string, options: ThroughputOptions = {}) {
+    this.mode = mode;
     this.readCapacity = options.readCapacity;
     this.writeCapacity = options.writeCapacity;
   }
 }
 
-/**
- * The server-side encryption that will be applied to the replicas in the global table.
- */
-export class TableEncryption {
-  /**
-   * Server-side KMS encryption with a master key owned by DynamoDB.
-   */
-  public static dynamoOwnedKey() {
-    return new TableEncryption(TableEncryptionType.DYNAMO_OWNED);
-  }
-
-  /**
-   * Server-side KMS encryption with a master key managed by AWS.
-   */
-  public static awsManagedKey() {
-    return new TableEncryption(TableEncryptionType.AWS_MANAGED);
-  }
-
-  /**
-   * Server-side KMS encryption with a master key managed by the customer.
-   */
-  public static customerManagedKey(tableKey: IKey, replicaKeyArns?: { [region: string]: string }) {
-    return new TableEncryption(TableEncryptionType.CUSTOMER_MANAGED, { tableKey, replicaKeyArns });
-  }
-
-  /**
-   * The table encryption type.
-   */
-  public readonly type: string;
-
-  /**
-   *
-   */
-  public readonly tableKey?: IKey;
-
-  /**
-   *
-   */
-  public readonly replicaKeyArns?: { [region: string]: string };
-
-  private constructor(type: string, options: TableEncryptionOptions = {}) {
-    this.type = type;
-    this.tableKey = options.tableKey;
-    this.replicaKeyArns = options.replicaKeyArns;
-  }
-}
+export class TableEncryption {}
