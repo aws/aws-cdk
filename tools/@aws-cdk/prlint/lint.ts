@@ -324,7 +324,7 @@ export class PullRequestLinter {
   }
 
   /**
-   * Assess whether or not a PR is ready for review from a core team member.
+   * Assess whether or not a PR is ready for review.
    * This is needed because some things that we need to evaluate are not filterable on
    * the builtin issue search. A PR is ready for review when:
    *
@@ -333,6 +333,13 @@ export class PullRequestLinter {
    *   3. PR linter is not failing OR the user has requested an exemption
    *   4. A maintainer has not requested changes
    *   5. A maintainer has not approved
+   *
+   * In addition, we differentiate between ready for review by a core team member
+   * (pr/needs-maintainer-review) or ready for review by core OR the trusted community
+   * (pr/needs-review). A PR is prioritized for core team review when:
+   *
+   *   6. It links to a p1 issue
+   *   7. It links to a p2 issue and has an approved community review
    */
   private async assessNeedsReview(
     pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
@@ -381,7 +388,7 @@ export class PullRequestLinter {
         || (prLinterFailed && !userRequestsExemption)
         // or a maintainer has already approved the PR
         || maintainerApproved
-        // or a trusted community member has requested changes on the PR
+        // or a trusted community member has requested changes on a p2 PR
         || (!fixesP1 && communityRequestedChanges)
     ) {
       readyForReview = false;
@@ -400,10 +407,9 @@ export class PullRequestLinter {
   }
 
   private addLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
-    // already has label
+    // already has label, so no-op
     if (pr.labels.some(l => l.name === label)) { return; }
     console.log(`adding ${label} to pr ${pr.number}`);
-    // add needs-review label
     this.client.issues.addLabels({
       issue_number: pr.number,
       owner: this.prParams.owner,
@@ -415,10 +421,9 @@ export class PullRequestLinter {
   }
 
   private removeLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
-    // does not have label
+    // does not have label, so no-op
     if (!pr.labels.some(l => l.name === label)) { return; }
     console.log(`removing ${label} to pr ${pr.number}`);
-    // add needs-review label
     this.client.issues.removeLabel({
       issue_number: pr.number,
       owner: this.prParams.owner,
