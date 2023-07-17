@@ -204,6 +204,8 @@ export interface TableProps {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/table-properties-crawler.html
    *
+   * @see https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_EXTERNAL_TABLE.html#r_CREATE_EXTERNAL_TABLE-parameters - under _"TABLE PROPERTIES"_
+   *
    * @example
    *
    *    declare const glueDatabase: glue.IDatabase;
