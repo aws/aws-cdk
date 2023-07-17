@@ -55,6 +55,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
 | [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
 | [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | V2NEXT | (fix) |
+| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -100,7 +101,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": false
   }
 }
 ```
@@ -1032,6 +1034,22 @@ provided.
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
     
+
+
+### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
+
+*Enables support for Multi-AZ with Standby deployment for opensearch domains* (default)
+
+If this is set, an opensearch domain will automatically be created with 
+multi-az with standby enabled.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
+
+**Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
 
 
 <!-- END details -->

@@ -39,6 +39,9 @@ class TestStack extends Stack {
         identityPoolId: identityPool.ref,
         userPoolId: userPool.userPoolId,
       },
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     });
   }
 }

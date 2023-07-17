@@ -23,6 +23,9 @@ class OpensSearch23Stack extends cdk.Stack {
       },
       nodeToNodeEncryption: true,
       enforceHttps: true,
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     });
 
     const api = new appsync.GraphqlApi(this, 'api', {

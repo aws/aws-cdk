@@ -26,6 +26,9 @@ class TestStack extends Stack {
           resources: ['*'],
         }),
       ],
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     };
 
     new opensearch.Domain(this, 'Domain', domainProps);

@@ -12,6 +12,7 @@ class TestStack extends Stack {
       capacity: {
         masterNodes: 2,
         warmNodes: 2,
+        multiAzWithStandbyEnabled: false,
       },
     });
   }

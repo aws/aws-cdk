@@ -427,7 +427,8 @@
      "ZoneAwarenessConfig": {
       "AvailabilityZoneCount": 2
      },
-     "ZoneAwarenessEnabled": true
+     "ZoneAwarenessEnabled": true,
+     "MultiAZWithStandbyEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
