@@ -1,10 +1,17 @@
 import { Construct } from 'constructs';
-import { IResource, RemovalPolicy, Resource } from '../../core';
+import { IResource, RemovalPolicy, Resource, Lazy } from '../../core';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
   TableClass, SecondaryIndexProps, SchemaOptions, Attribute,
   BillingMode,
+  ProjectionType,
 } from './table';
+import { propertySpecification } from '@aws-cdk/cfnspec';
+
+const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
+const HASH_KEY_TYPE = 'HASH';
+const RANGE_KEY_TYPE = 'RANGE';
+const DEFAULT_TARGET_UTILIZATION = 70;
 
 /**
  * Capacity modes used for read and write operations.
@@ -343,10 +350,49 @@ export class GlobalTable extends GlobalTableBase {
    */
   public readonly tableStreamArn: string;
 
+  private readonly billingMode: string;
+  private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
+  private readonly attributeDefintions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly globalSecondaryIndexes: GlobalSecondaryIndexOptions[];
+  private readonly secondaryIndexSchemas = new Map<string, boolean>();
+  private readonly nonKeyAttributes = new Set<string>();
+  private readonly writeProvisionedThroughput?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
+
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
-    const resource = new CfnGlobalTable(this, 'Resource', {});
+    if (props.billing) {
+      this.billingMode = props.billing.mode;
+      if (this.billingMode === BillingMode.PROVISIONED) {
+        this.writeProvisionedThroughput = this.configureWriteProvisioning(props.billing.writeCapacity);
+      }
+    } else {
+      this.billingMode = BillingMode.PAY_PER_REQUEST;
+    }
+
+    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    if (props.sortKey) {
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+    }
+
+    this.globalSecondaryIndexes = props.globalSecondaryIndexes ? [...props.globalSecondaryIndexes] : [];
+
+    const resource = new CfnGlobalTable(this, 'Resource', {
+      tableName: props.tableName,
+      keySchema: this.keySchema,
+      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefintions }),
+      replicas: Lazy.any({ produce: () => [] }),
+      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
+      timeToLiveSpecification: props.timeToLiveAttribute
+        ? { attributeName: props.timeToLiveAttribute, enabled: true }
+        : undefined,
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.configureGlobalSecondaryIndexes() }),
+      billingMode: this.billingMode,
+      writeProvisionedThroughputSettings: this.billingMode === BillingMode.PROVISIONED
+        ? this.writeProvisionedThroughput
+        : undefined,
+    });
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'dynamodb',
@@ -356,6 +402,113 @@ export class GlobalTable extends GlobalTableBase {
     this.tableName = this.getResourceNameAttribute(resource.ref);
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
+  }
+
+  private configureWriteProvisioning(writeCapacity?: Capacity): CfnGlobalTable.WriteProvisionedThroughputSettingsProperty | undefined {
+    if (!writeCapacity) {
+      return undefined;
+    }
+    if (writeCapacity.mode === CapacityMode.FIXED) {
+      throw new Error('Write capacity must be configured using autoscaled capacity mode');
+    }
+    return {
+      writeCapacityAutoScalingSettings: {
+        // min and max capacity are required for autoscaled capacity mode
+        minCapacity: writeCapacity.minCapacity!,
+        maxCapacity: writeCapacity.maxCapacity!,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: writeCapacity.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
+        },
+      },
+    };
+  }
+
+  private configureGlobalSecondaryIndexes() {
+    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
+    for (const index of this.globalSecondaryIndexes) {
+      this.validateProvisioning({ readCapacity: index.readCapacity, writeCapacity: index.writeCapacity });
+      this.validateIndexName(index.indexName);
+
+      const indexKeySchema = this.buildIndexKeySchema(index.partitionKey, index.sortKey);
+      const indexProjection = this.buildIndexProjection(index);
+
+      globalSecondaryIndexes.push({
+        indexName: index.indexName,
+        keySchema: indexKeySchema,
+        projection: indexProjection,
+        writeProvisionedThroughputSettings: this.billingMode === BillingMode.PROVISIONED
+          ? this.configureWriteProvisioning(index.writeCapacity) ?? this.writeProvisionedThroughput
+          : undefined,
+      });
+
+      this.secondaryIndexSchemas.set(index.indexName, true);
+    }
+    return globalSecondaryIndexes;
+  }
+
+  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
+    this.addAttributeDefinition(partitionKey);
+    const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
+      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
+    ];
+    if (sortKey) {
+      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+    }
+    return indexKeySchema;
+  }
+
+  private buildIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
+    if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
+      throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
+    }
+    if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
+      throw new Error(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
+    }
+    if (props.nonKeyAttributes) {
+      this.validateNonKeyAttributes(props.nonKeyAttributes);
+    }
+    return {
+      projectionType: props.projectionType,
+      nonKeyAttributes: props.nonKeyAttributes ?? undefined,
+    };
+  }
+
+  private addKey(key: Attribute, keyType: string) {
+    this.addAttributeDefinition(key);
+    this.keySchema.push({ attributeName: key.name, keyType });
+  }
+
+  private addAttributeDefinition(attribute: Attribute) {
+    const { name, type } = attribute;
+    const existingAttributeDef = this.attributeDefintions.find(def => def.attributeName === name);
+    // attribute definitions cannot be redefined
+    if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
+      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
+    }
+    if (!existingAttributeDef) {
+      this.attributeDefintions.push({ attributeName: name, attributeType: type });
+    }
+  }
+
+  private validateProvisioning(props: { readCapacity?: Capacity, writeCapacity?: Capacity }) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
+      if (props.readCapacity || props.writeCapacity) {
+        throw new Error('You cannot provision read and write capacity for a global table with on-demand billing mode');
+      }
+    }
+  }
+
+  private validateIndexName(indexName: string) {
+    if (this.secondaryIndexSchemas.has(indexName)) {
+      throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
+    }
+  }
+
+  private validateNonKeyAttributes(nonKeyAttributes: string[]) {
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 100) {
+      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+      throw new RangeError('A maximum number of nonKeyAttributes across all secondary indexes is 100');
+    }
   }
 }
 
