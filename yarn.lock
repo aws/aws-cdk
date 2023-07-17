@@ -2377,7 +2377,6 @@
     chalk "^4.1.2"
     semver "^7.5.1"
 
-
 "@jsii/check-node@1.84.0":
   version "1.84.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.84.0.tgz#cbed3a116b141e8dbef198dc161088bca603de0a"
@@ -2385,7 +2384,6 @@
   dependencies:
     chalk "^4.1.2"
     semver "^7.5.1"
-
 
 "@jsii/spec@1.81.0":
   version "1.81.0"
@@ -2400,7 +2398,6 @@
   integrity sha512-P2PCE4jlmuTh5Oj7Be2jdn5qyzIWHX4rcyYspddc0DLZAuLB/LRQYytrxgfdy4+NroGhrPeKPBoF9MwJ5CzfXA==
   dependencies:
     ajv "^8.12.0"
-
 
 "@lerna/child-process@7.0.2":
   version "7.0.2"
@@ -8909,7 +8906,6 @@ jsii-reflect@1.82.0:
     oo-ascii-tree "^1.82.0"
     yargs "^16.2.0"
 
-
 jsii-reflect@^1.82.0, jsii-reflect@^1.84.0:
   version "1.84.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.84.0.tgz#95b71dabcf3c5fc275e623a29a1d7091fc893e38"
@@ -8959,7 +8955,6 @@ jsii-rosetta@~5.0.8:
     workerpool "^6.4.0"
     yargs "^17.7.2"
 
-
 jsii@1.84.0, jsii@^1.84.0:
   version "1.84.0"
   resolved "https://registry.npmjs.org/jsii/-/jsii-1.84.0.tgz#57e631c85ac2d4ffcc2f59a9c68591fcfaf5667e"
@@ -8978,7 +8973,6 @@ jsii@1.84.0, jsii@^1.84.0:
     spdx-license-list "^6.6.0"
     typescript "~3.9.10"
     yargs "^16.2.0"
-
 
 jsii@5.0.x, jsii@~5.0.8:
   version "5.0.11"
