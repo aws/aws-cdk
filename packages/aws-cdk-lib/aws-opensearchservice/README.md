@@ -381,10 +381,10 @@ The domain can be configured to use [multi-AZ with standby](https://docs.aws.ama
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_3,
+  version: EngineVersion.OPENSEARCH_1_3,
   ebs: {
     volumeSize: 10,
-    volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+    volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
   },
   zoneAwareness: {
     enabled: true,
