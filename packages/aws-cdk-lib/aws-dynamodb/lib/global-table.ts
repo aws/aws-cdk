@@ -1,51 +1,22 @@
 import { Construct } from 'constructs';
-import { CfnGlobalTable } from './dynamodb.generated';
+import { IResource, Resource } from '../../core';
 import {
-  SchemaOptions, TableClass, BillingMode, Attribute,
-  GlobalSecondaryIndexProps, LocalSecondaryIndexProps,
+  TableClass, SecondaryIndexProps, SchemaOptions, Attribute,
 } from './table';
-import { IStream } from '../../aws-kinesis';
-import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
-
-const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
-const HASH_KEY_TYPE = 'HASH';
-const RANGE_KEY_TYPE = 'RANGE';
-const DEFAULT_MIN_CAPACITY = 1;
-const DEFAULT_MAX_CAPACITY = 10;
-const DEFAULT_TARGET_UTILIZATION = 70;
 
 /**
- * Options used to configure a Capacity instance.
+ * Capacity modes used for read and write operations.
  */
-interface CapacityOptions {
+export enum CapacityMode {
   /**
-   * The number of capacity units.
-   *
-   * @default - no capacity units
+   * Fixed capacity mode.
    */
-  readonly units?: number;
+  FIXED = 'FIXED',
 
   /**
-   * Options for configuring autoscaled capacity mode.
-   *
-   * @default - no autoscaled capacity options.
+   * Autoscaled capacity mode.
    */
-  readonly autoscaledCapacityOptions?: AutoscaledCapacityOptions;
-}
-
-/**
- * Options to configure provisioned throughput for a table.
- */
-export interface ThroughputOptions {
-  /**
-   *
-   */
-  readonly readCapacity?: Capacity;
-
-  /**
-   *
-   */
-  readonly writeCapacity?: Capacity;
+  AUTOSCALED = 'AUTOSCALED',
 }
 
 /**
@@ -54,20 +25,16 @@ export interface ThroughputOptions {
 export interface AutoscaledCapacityOptions {
   /**
    * The minimum capacity to scale to.
-   *
-   * @default 1
    */
-  readonly minCapacity?: number;
+  readonly minCapacity: number;
 
   /**
    * The maximum capacity to scale to.
-   *
-   * @default 10
    */
-  readonly maxCapacity?: number;
+  readonly maxCapacity: number;
 
   /**
-   * The target utilization percentage.
+   * The ratio of consumed capacity units to provisioned capacity units.
    *
    * @default 70
    */
@@ -75,45 +42,56 @@ export interface AutoscaledCapacityOptions {
 }
 
 /**
- * Options used to configure a global secondary index for a replica table.
+ * Options used to configure a global secondary index.
  */
-export interface ReplicaGlobalSecondaryIndexOptions {
+export interface GlobalSecondaryIndexOptions extends SecondaryIndexProps, SchemaOptions {
   /**
+   * The read capacity for the global secondary index.
    *
-   */
-  readonly indexName: string;
-
-  /**
+   * Note: This can only be provided if the table billing is provisioned.
    *
+   * @default - inherited from global table
    */
   readonly readCapacity?: Capacity;
 
   /**
-   * Whether or not CloudWatch contributor insights is enabled for the index.
+   * The write capacity for the global secondary index.
    *
-   * @default false
+   * Note: This can only be provided if the table billing is on-demand.
+   *
+   * @default - inherited from global table
    */
-  readonly contributorInsights?: boolean;
+  readonly writeCapacity?: Capacity;
 }
 
 /**
- * Common table configuration options between a global table and its replicas.
+ * Options used to configure a local secondary index.
+ */
+export interface LocalSecondaryIndexOptions extends SecondaryIndexProps {
+  /**
+   * The attribute of a sort key for the local secondary index.
+   */
+  readonly sortKey: Attribute;
+}
+
+/**
+ * Common configuration options between a global table and its replicas.
  */
 interface TableOptions {
   /**
    * Whether or not CloudWatch contributor insights is enabled for all replicas in the
    * global table.
    *
-   * NOTE: This property is configurable on a per-replica basis.
+   * Note: This property is configurable on a per-replica basis.
    *
    * @default false
    */
-  readonly contributorInsights?: boolean;
+  readonly constributorInsights?: boolean;
 
   /**
    * Whether or not deletion protection is enabled for all replicas in the global table.
    *
-   * NOTE: This property is configurable on a per-replica basis.
+   * Note: This property is configurable on a per-replica basis.
    *
    * @default false
    */
@@ -122,7 +100,7 @@ interface TableOptions {
   /**
    * Whether or not point-in-time recovery is enabled for all replicas in the global table.
    *
-   * NOTE: This property is configurable on a per-replica basis.
+   * Note: This property is configurable on a per-replica basis.
    *
    * @default false
    */
@@ -131,7 +109,7 @@ interface TableOptions {
   /**
    * The table class for all replicas in the global table.
    *
-   * NOTE: This property is configurable on a per-replica basis.
+   * Note: This property is configurable on a per-replica basis
    *
    * @default TableClass.STANDARD
    */
@@ -141,306 +119,41 @@ interface TableOptions {
 /**
  * Options used to configure a replica table.
  */
-export interface ReplicaTableOptions extends TableOptions {
-  /**
-   * The region in which the replica exists.
-   */
-  readonly region: string;
-
-  /**
-   * The kinesis data stream configuration to capture item-level changes for the replica.
-   *
-   * @default - no kinesis data stream
-   */
-  readonly kinesisStream?: IStream;
-
-  /**
-   *
-   */
-  readonly readCapacity?: Capacity;
-
-  /**
-   *
-   */
-  readonly globalSecondaryIndexes?: ReplicaGlobalSecondaryIndexOptions[];
-}
+export interface ReplicaTableOptions extends TableOptions {}
 
 /**
- * Properties for global tables.
+ * Properties of a global table.
  */
 export interface GlobalTableProps extends TableOptions, SchemaOptions {
-  /**
-   * The name of all replicas in the global table.
-   *
-   * @default - generated by CloudFormation
-   */
   readonly tableName?: string;
-
-  /**
-   * The name of the TTL attribute for all replicas in the global table.
-   *
-   * @default - TTL is disabled
-   */
-  readonly timeToLiveAttribute?: string;
-
-  /**
-   * The removal policy to apply to all replicas in the global table.
-   *
-   * @default RemovalPolicy.RETAIN
-   */
-  readonly removalPolicy?: RemovalPolicy;
-
-  /**
-   * The billing used for all replicas in the global table. The billing is used to specify
-   * how you are charged for read and write throughput and how you manage capacity.
-   *
-   * @default BillingMode.onDemand()
-   */
-  readonly billing?: Billing;
-
-  /**
-   * The list of replicas in the global table.
-   *
-   * NOTE: You can create a new global table with as many replicas as needed. You can add or
-   * remove replicas after table creation, but you can only add or remove a single replica in
-   * each update.
-   *
-   * @default - a single replica will exist in the region associated with the deployment stack
-   */
-  readonly replicas?: ReplicaTableOptions[];
-
-  /**
-   * Global secondary indexes to be created on all replicas in the global table.
-   *
-   * NOTE: You can create up to 20 global secondary indexes. You can only create or delete one global
-   * secondary index in a single stack operation. By default, each replica in your global table will
-   * have the same global secondary index settings. However, the `readCapacity` of a global secondary
-   * index can be set on a per-replica basis.
-   *
-   * @default - no global secondary indexes
-   */
-  readonly globalSecondaryIndexes?: GlobalSecondaryIndexProps[];
-
-  /**
-   * Local secondary indexes to be created on all replicas in the global table.
-   *
-   * NOTE: You can create up to five local secondary indexes. Each index is scoped to a given hash
-   * key value. The size of each hash key can be up to 10 gigabytes. Each replica in your global
-   * table will have the same local secondary index settings.
-   *
-   * @default - no local secondary indexes
-   */
-  readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
-
-  /**
-   * The server-side encryption to use on all replicas in the global table.
-   *
-   * @default TableEncryption.dynamoOwnedKey()
-   */
-  readonly encryption?: Encryption;
 }
 
-/**
- * Represents a global table.
- */
-export interface IGlobalTable extends IResource {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableArn: string;
+export interface IGlobalTable extends IResource {}
 
-  /**
-   * The name of all replicas in the global table.
-   *
-   * @attribute
-   */
-  readonly tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  readonly tableStreamArn: string;
-}
-
-/**
- * Attributes of a global table.
- */
-export interface GlobalTableAttributes {}
-
-/**
- * Base class for a global table.
- */
-abstract class GlobalTableBase extends Resource implements IGlobalTable {
-  /**
-   * The ARN of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableArn: string;
-
-  /**
-   * The name of all replicas in the global table.
-   *
-   * @attribute
-   */
-  public abstract readonly tableName: string;
-
-  /**
-   * The ID of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableId: string;
-
-  /**
-   * The ARN of the stream of the replica in the region that the stack is deployed to.
-   *
-   * @attribute
-   */
-  public abstract readonly tableStreamArn: string;
-}
+abstract class GlobalTableBase extends Resource implements IGlobalTable {}
 
 export class GlobalTable extends GlobalTableBase {
-  /**
-   * Returns the ARN of the replica in the region that the stack is deployed to.
-   */
-  public readonly tableArn: string;
-
-  /**
-   * Returns the name of all replicas in the global table.
-   */
-  public readonly tableName: string;
-
-  /**
-   * Returns the ID of the replica in the region that the stack is deployed to.
-   */
-  public readonly tableId: string;
-
-  /**
-   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
-   */
-  public readonly tableStreamArn: string;
-
-  private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
-  private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
-  private readonly replicas: CfnGlobalTable.ReplicaSpecificationProperty[] = [];
-
-  constructor(scope: Construct, id: string, props: GlobalTableProps) {
+  public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
-
-    this.addKey(props.partitionKey, HASH_KEY_TYPE);
-    if (props.sortKey) {
-      this.addKey(props.sortKey, RANGE_KEY_TYPE);
-    }
-
-    const resource = new CfnGlobalTable(this, 'Resource', {
-      tableName: this.physicalName,
-      keySchema: Lazy.any({ produce: () => this.keySchema }),
-      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
-      replicas: this.replicas,
-      streamSpecification: { streamViewType: NEW_AND_OLD_IMAGES },
-      timeToLiveSpecification: props.timeToLiveAttribute
-        ? { attributeName: props.timeToLiveAttribute, enabled: true }
-        : undefined,
-      billingMode: props.billing ? props.billing.mode : BillingMode.PAY_PER_REQUEST,
-      writeProvisionedThroughputSettings: props.billing
-        ? this.configureWriteProvisionedThroughput(props.billing)
-        : undefined,
-    });
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
-
-    if (props.tableName) {
-      this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
-    }
-  }
-
-  private addKey(attribute: Attribute, keyType: string) {
-    this.registerAttribute(attribute);
-    this.keySchema.push({ attributeName: attribute.name, keyType });
-  }
-
-  private registerAttribute(attribute: Attribute) {
-    const { name, type } = attribute;
-    const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
-    if (existingDef && existingDef.attributeType !== type) {
-      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
-    }
-    if (!existingDef) {
-      this.attributeDefinitions.push({ attributeName: name, attributeType: type });
-    }
-  }
-
-  private configureWriteProvisionedThroughput(billing: Billing) {
-    if (billing.mode === BillingMode.PAY_PER_REQUEST || !billing.writeCapacity) {
-      return undefined;
-    }
-    if (billing.writeCapacity.mode === CapacityMode.FIXED) {
-      throw new Error('The capacity mode for writeCapacity must be autoscaled');
-    }
-    const writeProvisionedThroughput: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty = {
-      writeCapacityAutoScalingSettings: {
-        minCapacity: billing.writeCapacity.minCapacity ?? DEFAULT_MIN_CAPACITY,
-        maxCapacity: billing.writeCapacity.maxCapacity ?? DEFAULT_MAX_CAPACITY,
-        targetTrackingScalingPolicyConfiguration: {
-          targetValue: billing.writeCapacity.targetUtilizationPercent ?? DEFAULT_TARGET_UTILIZATION,
-        },
-      },
-    };
-    return writeProvisionedThroughput;
   }
 }
 
 /**
- * Capacity modes.
- */
-export enum CapacityMode {
-  /**
-   * Fixed
-   */
-  FIXED = 'FIXED',
-
-  /**
-   * Autoscaled
-   */
-  AUTOSCALED = 'AUTOSCALED',
-}
-
-/**
- * The capacity mode to use for read and write operations on all replicas in the global table.
+ * The capacity mode and settings for read and write operations.
  */
 export class Capacity {
   /**
-   * Fixed capacity mode.
+   * Used to configure fixed capacity mode with specific capacity units.
    */
   public static fixed(units: number) {
-    return new Capacity(CapacityMode.FIXED, { units });
+    return new Capacity(CapacityMode.FIXED);
   }
 
   /**
-   * Autoscaled capacity mode.
+   * Used to configure autoscaled capacity mode with capacity autoscaled setting.
    */
   public static autoscaled(options: AutoscaledCapacityOptions) {
-    return new Capacity(CapacityMode.AUTOSCALED, { autoscaledCapacityOptions: options });
+    return new Capacity(CapacityMode.AUTOSCALED);
   }
 
   /**
@@ -449,73 +162,29 @@ export class Capacity {
   public readonly mode: string;
 
   /**
-   * The capacity units for read and write operations.
+   * The number of capacity units.
+   *
+   * Note: This is only set when the capacity mode is fixed.
    */
   public readonly units?: number;
 
   /**
    * The minimum capacity to scale to.
+   *
+   * Note: This is only set when the capacity mode is fixed.
    */
   public readonly minCapacity?: number;
 
   /**
    * The maximum capacity to scale to.
+   *
+   * Note: This is only set when the capacity mode is fixed.
    */
   public readonly maxCapacity?: number;
 
-  /**
-   * The target utilization percentage.
-   */
   public readonly targetUtilizationPercent?: number;
 
-  private constructor(mode: string, options: CapacityOptions = {}) {
+  private constructor(mode: string) {
     this.mode = mode;
-    this.units = options.units;
-    this.minCapacity = options.autoscaledCapacityOptions?.minCapacity;
-    this.maxCapacity = options.autoscaledCapacityOptions?.maxCapacity;
-    this.targetUtilizationPercent = options.autoscaledCapacityOptions?.targetUtilizationPercent;
   }
 }
-
-/**
- * Represents the billing used to specify how you are charged for read and write throughput
- * and how you manage capacity.
- */
-export class Billing {
-  /**
-   * Configure on-demand billing.
-   */
-  public static onDemand() {
-    return new Billing(BillingMode.PAY_PER_REQUEST);
-  }
-
-  /**
-   * Configure provisioned billing.
-   */
-  public static provisioned(options?: ThroughputOptions) {
-    return new Billing(BillingMode.PROVISIONED, options);
-  }
-
-  /**
-   * The billing mode used for read and write operations.
-   */
-  public readonly mode: string;
-
-  /**
-   * The read capacity.
-   */
-  public readonly readCapacity?: Capacity;
-
-  /**
-   * The write capacity.
-   */
-  public readonly writeCapacity?: Capacity;
-
-  private constructor(mode: string, options: ThroughputOptions = {}) {
-    this.mode = mode;
-    this.readCapacity = options.readCapacity;
-    this.writeCapacity = options.writeCapacity;
-  }
-}
-
-export class Encryption {}
