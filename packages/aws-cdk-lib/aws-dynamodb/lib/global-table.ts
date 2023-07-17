@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { IResource, RemovalPolicy, Resource } from '../../core';
+import { CfnGlobalTable } from './dynamodb.generated';
 import {
   TableClass, SecondaryIndexProps, SchemaOptions, Attribute,
   BillingMode,
@@ -235,15 +236,126 @@ export interface GlobalTableProps extends TableOptions, SchemaOptions {
    * @default - no local secondary indexes
    */
   readonly localSecondaryIndexes?: LocalSecondaryIndexOptions[];
+
+  // TODO: Add table encryption
 }
 
-export interface IGlobalTable extends IResource {}
+/**
+ * Represents an instance of a global table.
+ */
+export interface IGlobalTable extends IResource {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableArn: string;
 
-abstract class GlobalTableBase extends Resource implements IGlobalTable {}
+  /**
+   * The name of the global table.
+   *
+   * @attribute
+   */
+  readonly tableName: string;
 
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  readonly tableStreamArn: string;
+}
+
+/**
+ * Reference to a global table.
+ */
+export interface GlobalTableAttributes {}
+
+/**
+ * Base class for a global table.
+ */
+abstract class GlobalTableBase extends Resource implements IGlobalTable {
+  /**
+   * The ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableArn: string;
+
+  /**
+   * The name of the global table.
+   *
+   * @attribute
+   */
+  public abstract readonly tableName: string;
+
+  /**
+   * The ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableId: string;
+
+  /**
+   * The ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public abstract readonly tableStreamArn: string;
+}
+
+/**
+ * Provides a global table.
+ */
 export class GlobalTable extends GlobalTableBase {
+  /**
+   * Returns the ARN of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableArn: string;
+
+  /**
+   * Returns the name of the global table.
+   *
+   * @attribute
+   */
+  public readonly tableName: string;
+
+  /**
+   * Returns the ID of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableId: string;
+
+  /**
+   * Returns the ARN of the stream of the replica in the region that the stack is deployed to.
+   *
+   * @attribute
+   */
+  public readonly tableStreamArn: string;
+
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
+
+    const resource = new CfnGlobalTable(this, 'Resource', {});
+
+    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+    this.tableName = this.getResourceNameAttribute(resource.ref);
+    this.tableId = resource.attrTableId;
+    this.tableStreamArn = resource.attrStreamArn;
   }
 }
 
