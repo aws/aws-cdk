@@ -15,6 +15,7 @@ coverage
 # Build gear
 build-tools
 dist
+!custom-resource-handlers/dist/
 scripts
 .LAST_BUILD
 .LAST_PACKAGE
