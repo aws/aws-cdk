@@ -104,7 +104,7 @@ Your AWS account comes with a default scheduler group. You can access default gr
 const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
 ```
 
-If not specified a schedule is added to the default group. However, uou can also add the schedule to a custom scheduling group managed by you:
+If not specified a schedule is added to the default group. However, you can also add the schedule to a custom scheduling group managed by you:
 
 ```text
 const group = new Group(this, "Group", {
@@ -120,7 +120,7 @@ const target = new targets.LambdaInvoke(props.func, {
 new Schedule(this, 'Schedule', {
     scheduleExpression: ScheduleExpression.rate(Duration.minutes(10)),
     target,
-    group
+    group,
 });
 ```
 
@@ -193,19 +193,19 @@ To view metrics for a specific group you can use methods on class `Group`:
 
 ```text
 const group = new Group(this, "Group", {
-    groupName: "MyGroup"
+    groupName: "MyGroup",
 });
 
 new Alarm(this, 'MyGroupErrorAlarm', {
     metric: group.metricAllErrors(),
-    threshold: 0
+    threshold: 0,
 });
 
 // Or use default group
 const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
 new Alarm(this, 'DefaultGroupErrorAlarm', {
     metric: defaultGroup.metricAllErrors(),
-    threshold: 0
+    threshold: 0,
 });
 ```
 

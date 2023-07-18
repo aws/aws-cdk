@@ -50,7 +50,7 @@ export interface ScheduleProps {
  * An EventBridge Schedule
  */
 export class Schedule extends Resource implements ISchedule {
-  group?: IGroup;
+  public readonly group?: IGroup;
 
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id);
