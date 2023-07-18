@@ -12,7 +12,7 @@ import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicec
  *
  * 1. Deploy the stack:
  ```
- $ cdk deploy --app "node integ.product.js" integ-servicecatalog-product
+ $ CDK_DEFAULT_ACCOUNT=<account-od> CDK_DEFAULT_REGION=<region> cdk deploy --app "node integ.product.js" integ-servicecatalog-product
  ```
  *
  * 2. Obtain IAM Principal ARN that will provision product.
@@ -155,14 +155,5 @@ new IntegTest(app, 'integ-product', {
 portfolio.addProduct(product);
 
 new cdk.CfnOutput(stack, 'PortfolioId', { value: portfolio.portfolioId });
-
-// to allow the test to be deployed on a personal account
-// while still persisting fake details in the snapshots.
-if (!process.env.CDK_DEFAULT_ACCOUNT) {
-  throw new Error('Must set CDK_DEFAULT_ACCOUNT env variable');
-}
-if (!process.env.CDK_DEFAULT_REGION) {
-  throw new Error('Must set CDK_DEFAULT_REGION env variable');
-}
 
 app.synth();
