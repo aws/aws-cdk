@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"403.html\"}},{\"$ObjectLike\":{\"Key\":\"some-key\"}}]}}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1689690353817"
+    "salt": "1689711396269"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -82,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4aaa407b74dbd6967c84eac813ed9887916c28ce83a1f71013d8ad764ac618e0.zip"
+     "S3Key": "33cc97057bd20e4d2a8b75b52dc72cad7a3b45d78fa06a008ae302ab17b2075f.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

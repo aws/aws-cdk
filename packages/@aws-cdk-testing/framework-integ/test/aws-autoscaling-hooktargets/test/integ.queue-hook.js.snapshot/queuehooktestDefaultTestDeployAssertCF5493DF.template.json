@@ -13,12 +13,21 @@
     "api": "setDesiredCapacity",
     "parameters": {
      "AutoScalingGroupName": {
-      "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupASG3C6DFE3B7A0874DF"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupASG3C6DFE3B7A0874DF"
+        },
+        "\""
+       ]
+      ]
      },
-     "DesiredCapacity": 1
+     "DesiredCapacity": "1"
     },
     "flattenResponse": "false",
-    "salt": "1689689959260"
+    "salt": "1689711069264"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,7 +108,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4aaa407b74dbd6967c84eac813ed9887916c28ce83a1f71013d8ad764ac618e0.zip"
+     "S3Key": "33cc97057bd20e4d2a8b75b52dc72cad7a3b45d78fa06a008ae302ab17b2075f.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -129,7 +138,16 @@
     },
     "parameters": {
      "QueueUrl": {
-      "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefHookQueue3D68F56BCF6354BE"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefHookQueue3D68F56BCF6354BE"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
@@ -137,7 +155,7 @@
      "Messages.0.Body.LifecycleTransition",
      "Messages.0.Body.LifecycleActionToken"
     ],
-    "salt": "1689689959261"
+    "salt": "1689711069265"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -308,7 +326,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4aaa407b74dbd6967c84eac813ed9887916c28ce83a1f71013d8ad764ac618e0.zip"
+     "S3Key": "33cc97057bd20e4d2a8b75b52dc72cad7a3b45d78fa06a008ae302ab17b2075f.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -350,7 +368,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4aaa407b74dbd6967c84eac813ed9887916c28ce83a1f71013d8ad764ac618e0.zip"
+     "S3Key": "33cc97057bd20e4d2a8b75b52dc72cad7a3b45d78fa06a008ae302ab17b2075f.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -375,21 +393,48 @@
     "api": "completeLifecycleAction",
     "parameters": {
      "AutoScalingGroupName": {
-      "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupASG3C6DFE3B7A0874DF"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupASG3C6DFE3B7A0874DF"
+        },
+        "\""
+       ]
+      ]
      },
-     "LifecycleActionResult": "CONTINUE",
+     "LifecycleActionResult": "\"CONTINUE\"",
      "LifecycleActionToken": {
-      "Fn::GetAtt": [
-       "AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff",
-       "apiCallResponse.Messages.0.Body.LifecycleActionToken"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallSQSreceiveMessage1a19058edc984d85e0beb02f98d0d6ff",
+          "apiCallResponse.Messages.0.Body.LifecycleActionToken"
+         ]
+        },
+        "\""
+       ]
       ]
      },
      "LifecycleHookName": {
-      "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupLifecycleHookscaleoutB603BFDE12D86BC4"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-autoscalinghook-queue:ExportsOutputRefGroupLifecycleHookscaleoutB603BFDE12D86BC4"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1689689959264"
+    "salt": "1689711069269"
    },
    "DependsOn": [
     "AwsApiCallAutoScalingsetDesiredCapacity8d10985ccf5843cdfedb03afd84a535c",
