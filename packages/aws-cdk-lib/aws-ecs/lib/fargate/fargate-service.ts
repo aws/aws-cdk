@@ -147,7 +147,10 @@ export class FargateService extends BaseService implements IFargateService {
       securityGroups = props.securityGroups;
     }
 
-    this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    if (!props.deploymentController ||
+      (props.deploymentController.type !== DeploymentControllerType.EXTERNAL)) {
+      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    }
 
     this.node.addValidation({
       validate: () => this.taskDefinition.referencesSecretJsonField
