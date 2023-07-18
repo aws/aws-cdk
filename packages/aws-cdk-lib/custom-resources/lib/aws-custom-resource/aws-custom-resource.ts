@@ -428,7 +428,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
-        exclude: ['*.ts'],
+        exclude: ['*.ts', 'sdk-v3-handler.js'],
       }),
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
@@ -605,5 +605,3 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
 }
-
-export * from './runtime/utils';

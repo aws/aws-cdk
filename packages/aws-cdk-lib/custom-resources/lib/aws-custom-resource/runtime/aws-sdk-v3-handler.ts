@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { findV3ClientConstructor, getV3ClientPackageName } from '@aws-cdk/sdk-v2-to-v3-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
 // fails in the CDK app executed with ts-node
 /* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
-import * as AWSLambda from 'aws-lambda';
-import { findV3ClientConstructor } from './v2-to-v3/find-client-constructor';
-import { getV3ClientPackageName } from './v2-to-v3/get-v3-client-package-name';
-import { AwsSdkCall } from '../../aws-custom-resource';
-import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from '../shared';
+import type * as AWSLambda from 'aws-lambda';
+import { decodeCall, decodeSpecialValues, filterKeys, flatten, respond, startsWithOneOf } from './shared';
+import type { AwsSdkCall } from '../aws-custom-resource';
 
 let installedSdk: { [service: string]: boolean } = {};
 

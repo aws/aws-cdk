@@ -110,7 +110,10 @@
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "post": [
+      "node lib/assertions/providers/lambda-handler.bundle/index.js"
+    ]
   },
   "awslint": {
     "exclude": [
