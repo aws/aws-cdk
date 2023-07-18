@@ -200,9 +200,8 @@ function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[
     }
   }
 
-  // The response of describeTaskDefinition API contains several keys that must not exist as a request of registerTaskDefinition API.
-  // We remove these keys here.
-  // Compare these two structs:
+  // The describeTaskDefinition response contains several keys that must not exist in a registerTaskDefinition request.
+  // We remove these keys here, comparing these two structs:
   // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html#API_RegisterTaskDefinition_RequestSyntax
   // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html#API_DescribeTaskDefinition_ResponseSyntax
   [
@@ -217,7 +216,7 @@ function mergeTaskDefinitions(patch: {containerDefinitions: {[key:string]: any}[
   ].forEach(key=> delete (target.taskDefinition as any)[key]);
 
   if (target.tags !== undefined && target.tags.length > 0) {
-    // tags field is in different layer in describe result, moving to the intended location
+    // the tags field is in a different location in describeTaskDefinition response, moving it as intended for registerTaskDefinition request.
     (target.taskDefinition as any).tags = target.tags;
   }
 }
