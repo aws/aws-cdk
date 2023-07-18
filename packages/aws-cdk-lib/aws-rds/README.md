@@ -613,10 +613,9 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-
 declare const instance: rds.DatabaseInstance;
 declare const mySecurityGroup: ec2.SecurityGroup;
+
 instance.addRotationSingleUser({
   automaticallyAfter: Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
@@ -673,6 +672,20 @@ instance.addRotationSingleUser({
 ```
 
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
+
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, set the `rotateImmediatelyOnUpdate` property to false:
+
+```ts
+declare const instance: rds.DatabaseInstance;
+declare const mySecurityGroup: ec2.SecurityGroup;
+
+instance.addRotationSingleUser({
+  automaticallyAfter: Duration.days(7), // defaults to 30 days
+  excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+  securityGroup: mySecurityGroup, // defaults to an auto-created security group
+  rotateImmediatelyOnUpdate: false, // defaults to true
+});
+```
 
 ## IAM Authentication
 

@@ -259,6 +259,14 @@ export interface SecretRotationProps {
    * @default https://secretsmanager.<region>.amazonaws.com
    */
   readonly endpoint?: ec2.IInterfaceVpcEndpoint;
+
+  /**
+   * Specifies whether to rotate the secret immediately or wait until the next
+   * scheduled rotation window.
+   *
+   * @default true
+   */
+  readonly rotateImmediatelyOnUpdate?: boolean;
 }
 
 /**
@@ -342,6 +350,7 @@ export class SecretRotation extends Construct {
     props.secret.addRotationSchedule('RotationSchedule', {
       rotationLambda,
       automaticallyAfter: props.automaticallyAfter,
+      rotateImmediatelyOnUpdate: props.rotateImmediatelyOnUpdate,
     });
 
     // Prevent master secret deletion when rotation is in place
