@@ -11,6 +11,24 @@ describe('global table configuration', () => {
     // WHEN
     new GlobalTable(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({
+          minCapacity: 1,
+          maxCapacity: 10,
+        }),
+      }),
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi',
+          partitionKey: { name: 'gsiPk', type: AttributeType.STRING },
+          writeCapacity: Capacity.autoscaled({
+            minCapacity: 10,
+            maxCapacity: 50,
+            targetUtilizationPercent: 80,
+          }),
+        },
+      ],
     });
 
     // THEN

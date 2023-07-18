@@ -1,12 +1,10 @@
 import { Construct } from 'constructs';
-import { IResource, RemovalPolicy, Resource, Lazy } from '../../core';
 import { CfnGlobalTable } from './dynamodb.generated';
 import {
   TableClass, SecondaryIndexProps, SchemaOptions, Attribute,
-  BillingMode,
-  ProjectionType,
+  BillingMode, ProjectionType,
 } from './table';
-import { propertySpecification } from '@aws-cdk/cfnspec';
+import { IResource, RemovalPolicy, Resource, Lazy } from '../../core';
 
 const NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES';
 const HASH_KEY_TYPE = 'HASH';
@@ -361,6 +359,7 @@ export class GlobalTable extends GlobalTableBase {
   public constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, { physicalName: props.tableName });
 
+    // TODO: fix validation for provisioning
     if (props.billing) {
       this.billingMode = props.billing.mode;
       if (this.billingMode === BillingMode.PROVISIONED) {
@@ -468,7 +467,7 @@ export class GlobalTable extends GlobalTableBase {
       this.validateNonKeyAttributes(props.nonKeyAttributes);
     }
     return {
-      projectionType: props.projectionType,
+      projectionType: props.projectionType ?? ProjectionType.ALL,
       nonKeyAttributes: props.nonKeyAttributes ?? undefined,
     };
   }
