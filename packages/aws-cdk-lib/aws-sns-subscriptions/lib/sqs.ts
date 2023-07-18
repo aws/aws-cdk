@@ -40,13 +40,13 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
-    if ((this.queue.node.defaultChild as sqs.CfnQueue).kmsMasterKeyId == 'alias/aws/sqs') {
+    if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
       throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription');
     }
 
     // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
-    if (this.props.deadLetterQueue && (this.props.deadLetterQueue.node.defaultChild as sqs.CfnQueue).kmsMasterKeyId == 'alias/aws/sqs') {
+    if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
       throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue');
     }
 
