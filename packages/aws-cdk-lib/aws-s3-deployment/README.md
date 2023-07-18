@@ -362,19 +362,20 @@ to make from placeholders in a local file which will be resolved during deployme
 is especially useful in situations like creating an API from a spec file, where users might
 want to reference other CDK resources they have created.
 
-The syntax for template variables is `{{ variable-name }}` in your local file. Then, you would 
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
 specify the substitutions in CDK like this:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myLambdaFunction: lambda.Function;
+declare const destinationBucket: s3.Bucket;
 
 new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
   source: 'my-file.yaml',
   destinationBucket: destinationBucket,
   substitutions: {
-    variable-name: myLambdaFunction.functionName,
+    variableName: myLambdaFunction.functionName,
   },
 });
 ```
