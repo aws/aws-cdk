@@ -11,6 +11,9 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       version: opensearch.EngineVersion.ELASTICSEARCH_7_1,
       useUnsignedBasicAuth: true,
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     });
   }
 }
