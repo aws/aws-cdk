@@ -1079,6 +1079,7 @@ new lambda.Function(this, 'Function', {
 
 Also an `include` property allows you to specify particular files for assets.
 You can write based on simple glob patterns.
+If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
 
 ```ts
 new lambda.Function(this, 'Function', {

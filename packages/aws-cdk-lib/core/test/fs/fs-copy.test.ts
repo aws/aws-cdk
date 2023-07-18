@@ -221,6 +221,31 @@ describe('fs copy', () => {
       '        file3.txt',
     ]);
   });
+
+  test('takes priority if both include and exclude are specified for the same file', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      exclude: [
+        'file2.txt',
+      ],
+      include: [
+        'file1.txt',
+        'file2.txt',
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {

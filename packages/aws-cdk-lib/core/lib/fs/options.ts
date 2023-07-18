@@ -62,6 +62,7 @@ interface FileOptions {
   /**
    * File paths matching the patterns will be excluded. See `ignoreMode` to set the matching behavior.
    * Has no effect on Assets bundled using the `bundling` property.
+   * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
    *
    * @default - nothing is excluded
    */
@@ -77,6 +78,7 @@ interface FileOptions {
   /**
    * File paths matching the patterns will be included, based on simple glob patterns.
    * Has no effect on Assets bundled using the `bundling` property.
+   * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
    *
    * @default - everything is included
    */
