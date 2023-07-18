@@ -326,6 +326,7 @@ or one of the corresponding methods on `WindowsBuildImage`:
 
 or one of the corresponding methods on `LinuxArmBuildImage`:
 
+* `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
