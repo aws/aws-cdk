@@ -61,6 +61,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   });
 }
 
+export type ProcessFailedError = ProcessFailed
+
 class ProcessFailed extends Error {
   public readonly code = 'PROCESS_FAILED';
 

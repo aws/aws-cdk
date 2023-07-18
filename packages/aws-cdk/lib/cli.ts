@@ -1,22 +1,28 @@
-import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
-import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
+import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
-import { CdkToolkit } from '../lib/cdk-toolkit';
+import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
+import { MIGRATE_SUPPORTED_LANGUAGES, cliMigrate } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -32,7 +38,7 @@ const yargs = require('yargs');
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
-async function parseCommandLineArguments() {
+async function parseCommandLineArguments(args: string[]) {
   // Use the following configuration for array arguments:
   //
   //     { type: 'array', default: [], nargs: 1, requiresArg: true }
@@ -72,10 +78,10 @@ async function parseCommandLineArguments() {
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
-    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
+    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -90,6 +96,8 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
+      .option('example-permissions-boundary', { type: 'boolean', alias: ['epb', 'example-permissions-boundary'], desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' })
+      .option('custom-permissions-boundary', { type: 'string', alias: ['cpb', 'custom-permissions-boundary'], desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
@@ -102,7 +110,8 @@ async function parseCommandLineArguments() {
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
-      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
+      .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -112,8 +121,15 @@ async function parseCommandLineArguments() {
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
-      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet) (deprecated)', deprecated: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create (only if method is not direct)' })
+      .options('method', {
+        alias: 'm',
+        type: 'string',
+        choices: ['direct', 'change-set', 'prepare-change-set'],
+        requiresArg: true,
+        desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
+      })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
@@ -128,6 +144,13 @@ async function parseCommandLineArguments() {
       // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
       .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
       .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
@@ -147,7 +170,9 @@ async function parseCommandLineArguments() {
           "'true' by default, use --no-logs to turn off. " +
           "Only in effect if specified alongside the '--watch' option",
       })
-      .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
+      .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
+      .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
+      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -207,9 +232,15 @@ async function parseCommandLineArguments() {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -227,7 +258,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
@@ -237,6 +268,12 @@ async function parseCommandLineArguments() {
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+    )
+    .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('input-path', { type: 'string', alias: 'inputpath', desc: 'The path to the CloudFormation template to migrate' })
+      .option('output-path', { type: 'string', alias: 'outputpath', desc: 'The output path for the migrated cdk code' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -260,7 +297,7 @@ async function parseCommandLineArguments() {
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     ].join('\n\n'))
-    .argv;
+    .parse(args);
 }
 
 if (!process.stdout.isTTY) {
@@ -268,15 +305,31 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-async function initCommandLine() {
-  const argv = await parseCommandLineArguments();
+export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
+  const argv = await parseCommandLineArguments(args);
+
+  if (argv.debug) {
+    enableSourceMapSupport();
+  }
+
   if (argv.verbose) {
     setLogLevel(argv.verbose);
+
+    if (argv.verbose > 2) {
+      enableTracing(true);
+    }
   }
 
   if (argv.ci) {
     setCI(true);
   }
+
+  try {
+    await checkForPlatformWarnings();
+  } catch (e) {
+    debug(`Error while checking for platform warnings: ${e}`);
+  }
+
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -302,12 +355,21 @@ async function initCommandLine() {
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
+  const cloudFormation = new Deployments({ sdkProvider });
 
+  let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: execProgram,
+    synthesizer: synthesizer ?? (async (aws, config) => {
+      // Invoke 'execProgram', and copy the lock for the directory in the global
+      // variable here. It will be released when the CLI exits. Locks are not re-entrant
+      // so release it if we have to synthesize more than once (because of context lookups).
+      await outDirLock?.release();
+      const { assembly, lock } = await execProgram(aws, config);
+      outDirLock = lock;
+      return assembly;
+    }),
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -327,7 +389,7 @@ async function initCommandLine() {
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
@@ -348,6 +410,10 @@ async function initCommandLine() {
   try {
     return await main(cmd, argv);
   } finally {
+    // If we locked the 'cdk.out' directory, release it here.
+    await outDirLock?.release();
+
+    // Do PSAs here
     await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
@@ -389,7 +455,7 @@ async function initCommandLine() {
 
     const cli = new CdkToolkit({
       cloudExecutable,
-      cloudFormation,
+      deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
@@ -412,7 +478,7 @@ async function initCommandLine() {
         return cli.list(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
-        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
         return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -426,7 +492,7 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
+        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -441,12 +507,15 @@ async function initCommandLine() {
           execute: args.execute,
           tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
+          usePreviousParameters: args['previous-parameters'],
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
+            examplePermissionsBoundary: argv.examplePermissionsBoundary,
+            customPermissionsBoundary: argv.customPermissionsBoundary,
             trustedAccounts: arrayFromYargs(args.trust),
             trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
@@ -461,6 +530,30 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
+
+        if (args.execute !== undefined && args.method !== undefined) {
+          throw new Error('Can not supply both --[no-]execute and --method at the same time');
+        }
+
+        let deploymentMethod: DeploymentMethod | undefined;
+        switch (args.method) {
+          case 'direct':
+            if (args.changeSetName) {
+              throw new Error('--change-set-name cannot be used with method=direct');
+            }
+            deploymentMethod = { method: 'direct' };
+            break;
+          case 'change-set':
+            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName };
+            break;
+          case 'prepare-change-set':
+            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
+            break;
+          case undefined:
+            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            break;
+        }
+
         return cli.deploy({
           selector,
           exclusively: args.exclusively,
@@ -470,8 +563,7 @@ async function initCommandLine() {
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod,
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
@@ -479,10 +571,12 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
+          assetParallelism: configuration.settings.get(['assetParallelism']),
+          assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
         });
 
       case 'import':
@@ -490,8 +584,11 @@ async function initCommandLine() {
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            execute: args.execute,
+            changeSetName: args.changeSetName,
+          },
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           recordResourceMapping: args['record-resource-mapping'],
@@ -511,11 +608,14 @@ async function initCommandLine() {
           toolkitStackName,
           roleArn: args.roleArn,
           reuseAssets: args['build-exclude'],
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            changeSetName: args.changeSetName,
+          },
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -531,10 +631,11 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
+        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
-          return cli.synth(args.STACKS, true, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
         }
 
       case 'notices':
@@ -555,6 +656,9 @@ async function initCommandLine() {
         } else {
           return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
+      case 'migrate':
+        const migrateLanguage = configuration.settings.get(['language']);
+        return cliMigrate(args.inputpath, migrateLanguage, args.generateOnly, args.outputpath);
       case 'version':
         return data(version.DISPLAY_VERSION);
 
@@ -562,14 +666,13 @@ async function initCommandLine() {
         throw new Error('Unknown command: ' + command);
     }
   }
-
 }
 
 /**
  * Determine which version of bootstrapping
  * (legacy, or "new") should be used.
  */
-function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
   const isV1 = version.DISPLAY_VERSION.startsWith('1.');
   return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
 }
@@ -634,8 +737,29 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-export function cli() {
-  initCommandLine()
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
+  }
+
+  let hotswapMode: HotswapMode;
+  if (hotswap) {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
+  }
+
+  return hotswapMode;
+}
+
+export function cli(args: string[] = process.argv.slice(2)) {
+  exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {
         process.exitCode = value;

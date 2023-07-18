@@ -1,10 +1,10 @@
 import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
 import { getDocTag } from './util';
+import { Linter } from '../linter';
 
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
@@ -185,6 +185,8 @@ resourceLinter.add({
   },
 });
 
+/*
+// This rule is the worst
 resourceLinter.add({
   code: 'resource-attribute',
   message:
@@ -202,6 +204,7 @@ resourceLinter.add({
     }
   },
 });
+*/
 
 resourceLinter.add({
   code: 'grant-result',

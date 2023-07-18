@@ -2,6 +2,10 @@ version: 0.2
 
 # This buildspec is intended to be used by GitHub PR builds.
 
+env:
+  variables:
+    PR_BUILD: true
+
 phases:
   install:
     commands:
@@ -16,16 +20,15 @@ phases:
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
 
-      # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
-      # memory errors. Increasing this value allows our build to more consistently succeed
+      # Packing aws-cdk-lib can cause memory errors. Increasing this value
+      # allows our build to more consistently succeed
       - (command -v sysctl || yum install -y procps-ng) && /sbin/sysctl -w vm.max_map_count=2251954
   pre_build:
     commands:
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
-      - /bin/bash ./build.sh
-      - /bin/bash ./scripts/transform.sh
+      - /bin/bash ./build.sh --ci
       # After compilation, run Rosetta (using the cache if available).
       # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
       - /bin/bash ./scripts/run-rosetta.sh

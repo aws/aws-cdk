@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "LambdaDestChain3/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-chain"
+      ],
+      "assertionStack": "LambdaDestChain3/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaDestChain3DefaultTestDeployAssertB72F10E8"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as stream from 'stream';
-import { ConventionalCommit, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
+import { ConventionalCommit, createScopeVariations, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
 import { ReleaseOptions } from '../lib/types';
 
 // mock out Git interactions
@@ -15,6 +15,7 @@ const args: ReleaseOptions = {
   includeDateInChangelog: false,
   releaseAs: 'minor',
   versionFile: 'version.json',
+  repoRoot: '',
 };
 
 describe('getConventionalCommitsFromGitHistory', () => {
@@ -102,6 +103,10 @@ describe('filterCommits', () => {
 
     expect(filteredCommits.length).toEqual(1);
     expect(filteredCommits[0].scope).toEqual('aws-stable');
+  });
+
+  test('scope variants take alpha packages into account', () => {
+    expect(createScopeVariations(['@aws-cdk/aws-batch-alpha'])).toContain('batch');
   });
 });
 

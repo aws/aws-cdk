@@ -1,7 +1,6 @@
-import * as AWS from 'aws-sdk';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -10,73 +9,65 @@ export async function isHotswappableAppSyncChange(
   const isFunction = change.newValue.Type === 'AWS::AppSync::FunctionConfiguration';
 
   if (!isResolver && !isFunction) {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    return [];
   }
 
-  for (const updatedPropName in change.propertyUpdates) {
-    if (updatedPropName !== 'RequestMappingTemplate' && updatedPropName !== 'ResponseMappingTemplate') {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  const ret: ChangeHotswapResult = [];
+  if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
+    reportNonHotswappableChange(
+      ret,
+      change,
+      undefined,
+      'Pipeline resolvers cannot be hotswapped since they reference the FunctionId of the underlying functions, which cannot be resolved',
+    );
+    return ret;
+  }
+
+  const classifiedChanges = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
+
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
+  if (namesOfHotswappableChanges.length > 0) {
+    let physicalName: string | undefined = undefined;
+    const arn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
+    if (isResolver) {
+      const arnParts = arn?.split('/');
+      physicalName = arnParts ? `${arnParts[3]}.${arnParts[5]}` : undefined;
+    } else {
+      physicalName = arn;
     }
+    ret.push({
+      hotswappable: true,
+      resourceType: change.newValue.Type,
+      propsChanged: namesOfHotswappableChanges,
+      service: 'appsync',
+      resourceNames: [`${change.newValue.Type} '${physicalName}'`],
+      apply: async (sdk: ISDK) => {
+        if (!physicalName) {
+          return;
+        }
+
+        const sdkProperties: { [name: string]: any } = {
+          ...change.oldValue.Properties,
+          requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
+          responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
+        };
+        const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
+        const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
+
+        if (isResolver) {
+          await sdk.appsync().updateResolver(sdkRequestObject).promise();
+        } else {
+          const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
+          const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
+          await sdk.appsync().updateFunction({
+            ...sdkRequestObject,
+            functionId: functionId!,
+          }).promise();
+        }
+      },
+    });
   }
 
-  const resourceProperties = change.newValue.Properties;
-  if (isResolver && resourceProperties?.Kind === 'PIPELINE') {
-    // Pipeline resolvers can't be hotswapped as they reference
-    // the FunctionId of the underlying functions, which can't be resolved.
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
-
-  const resourcePhysicalName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? resourceProperties?.Name : undefined);
-  if (!resourcePhysicalName) {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
-
-  const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(resourceProperties);
-  const sdkCompatibleResourceProperties = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
-
-  if (isResolver) {
-    // Resolver physical name is the ARN in the format:
-    // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/types/<type>/resolvers/<field>.
-    // We'll use `<type>.<field>` as the resolver name.
-    const arnParts = resourcePhysicalName.split('/');
-    const resolverName = `${arnParts[3]}.${arnParts[5]}`;
-    return new ResolverHotswapOperation(resolverName, sdkCompatibleResourceProperties);
-  } else {
-    return new FunctionHotswapOperation(resourcePhysicalName, sdkCompatibleResourceProperties);
-  }
-}
-
-class ResolverHotswapOperation implements HotswapOperation {
-  public readonly service = 'appsync'
-  public readonly resourceNames: string[];
-
-  constructor(resolverName: string, private readonly updateResolverRequest: AWS.AppSync.UpdateResolverRequest) {
-    this.resourceNames = [`AppSync resolver '${resolverName}'`];
-  }
-
-  public async apply(sdk: ISDK): Promise<any> {
-    return sdk.appsync().updateResolver(this.updateResolverRequest).promise();
-  }
-}
-
-class FunctionHotswapOperation implements HotswapOperation {
-  public readonly service = 'appsync'
-  public readonly resourceNames: string[];
-
-  constructor(
-    private readonly functionName: string,
-    private readonly updateFunctionRequest: Omit<AWS.AppSync.UpdateFunctionRequest, 'functionId'>,
-  ) {
-    this.resourceNames = [`AppSync function '${functionName}'`];
-  }
-
-  public async apply(sdk: ISDK): Promise<any> {
-    const { functions } = await sdk.appsync().listFunctions({ apiId: this.updateFunctionRequest.apiId }).promise();
-    const { functionId } = functions?.find(fn => fn.name === this.functionName) ?? {};
-    const request = {
-      ...this.updateFunctionRequest,
-      functionId: functionId!,
-    };
-    return sdk.appsync().updateFunction(request).promise();
-  }
+  return ret;
 }

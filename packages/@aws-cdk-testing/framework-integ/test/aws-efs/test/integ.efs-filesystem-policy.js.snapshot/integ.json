@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "FileSystemPolicyTest/DefaultTest": {
+      "stacks": [
+        "test-efs-integ"
+      ],
+      "assertionStack": "FileSystemPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FileSystemPolicyTestDefaultTestDeployAssertD0596FC1"
+    }
+  }
+}

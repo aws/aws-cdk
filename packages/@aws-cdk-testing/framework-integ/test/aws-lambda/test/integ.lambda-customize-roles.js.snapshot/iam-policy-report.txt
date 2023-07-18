@@ -1,0 +1,36 @@
+<precreated-role> (integ-lambda-customize-roles/MyLambda/ServiceRole)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "lambda.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+[
+  "arn:(PARTITION):iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+]
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": [
+      "s3:GetObject*",
+      "s3:GetBucket*",
+      "s3:List*"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(integ-lambda-customize-roles/Bucket/Resource.Arn)",
+      "(integ-lambda-customize-roles/Bucket/Resource.Arn)/*"
+    ]
+  }
+]

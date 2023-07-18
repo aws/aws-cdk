@@ -1,0 +1,86 @@
+name: New Region
+description: Register a new region.
+title: "Register new region: [region]"
+labels: ["@aws-cdk/region-info", "feature-request", "p1", "effort/medium"]
+body:
+  - type: input
+    id: ROUTE_53_BUCKET_WEBSITE_ZONE_IDS
+    attributes:
+     label: AWS Route 53 Bucket Website Zone ID
+     description: |
+        See [Amazon Simple Storage Service endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_website_region_endpoints).
+
+  - type: input
+    id: EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS
+    attributes:
+      label: AWS Elastic Beanstalk Hosted Zone ID
+      description: |
+        See [AWS Elastic Beanstalk endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/elasticbeanstalk.html).
+
+  - type: input
+    id: ELBV2_ACCOUNTS
+    attributes:
+      label: AWS Elastic Beanstalk Load Balancer Account ID
+      description: |
+        See [Attach a policy to your S3 bucket](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy).
+
+  - type: input
+    id: DLC_REPOSITORY_ACCOUNTS
+    attributes:
+      label: AWS Deep Learning Container Account ID
+      description: |
+        See [Available Deep Learning Containers Images](https://aws.amazon.com/releasenotes/available-deep-learning-containers-images/).
+
+  - type: input
+    id: APPMESH_ECR_ACCOUNTS
+    attributes:
+      label: AWS AppMesh Envoy Proxy ECR Account ID
+      description: |
+        See [Envoy Image](https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html).
+
+  - type: input
+    id: CLOUDWATCH_LAMBDA_INSIGHTS_ARNS
+    attributes:
+      label: AWS CloudWatch Lambda Insights Extension ARN
+      description: |
+        See [1.0.178.0](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html#Lambda-Insights-extension-1.0.178.0).
+
+  - type: input
+    id: FIREHOSE_CIDR_BLOCKS
+    attributes:
+      label: AWS Kinesis Data Firehose CIDR Block
+      description: |
+        See [VPC Access to an Amazon Redshift Cluster](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-iam-rs-vpc).
+
+  - type: checkboxes
+    id: ADOT_LAMBDA_LAYER
+    attributes:
+      label: OpenTelemetry Lambda Support
+      description: |
+        [Supported in Region](https://aws-otel.github.io/docs/getting-started/lambda/lambda-js)?
+      options:
+        - label: "Yes"
+        - label: "No"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        🚀 Checklist:
+
+        * [ ] Add region in [AWS_CDK_METADATA](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L1) (commented out).
+        * [ ] Add region and zone id in [ROUTE_53_BUCKET_WEBSITE_ZONE_IDS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L40).
+        * [ ] Add region and zone id in [EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L77).
+        * [ ] Add region and account in [ELBV2_ACCOUNTS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L116).
+        * [ ] Add region and account in [DLC_REPOSITORY_ACCOUNTS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L149).
+        * [ ] Add region and account in [APPMESH_ECR_ACCOUNTS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L174).
+        * [ ] Add region and ARN in [CLOUDWATCH_LAMBDA_INSIGHTS_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L202) for `1.0.178.0`.
+        * [ ] Add region and CIDR block address in [FIREHOSE_CIDR_BLOCKS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L498).
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L529) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L608) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L689) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L768) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region and ARN in [ADOT_LAMBDA_LAYER_GENERIC_ARNS](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/build-tools/fact-tables.ts#L847) for most recent version in `x86_64` and `arm64`.
+        * [ ] Add region in [AWS_REGIONS_AND_RULES](https://github.com/aws/aws-cdk/blob/v2.65.0/packages/@aws-cdk/region-info/lib/aws-entities.ts).
+        * [ ] Run integ tests and update snapshots

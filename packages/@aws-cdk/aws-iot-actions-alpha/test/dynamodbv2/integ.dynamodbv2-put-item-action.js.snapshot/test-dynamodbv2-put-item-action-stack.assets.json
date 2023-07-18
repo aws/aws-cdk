@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "3d5ae52b69c9656b617087e12c3cbd7486ab8a18a0e5e927442d682ecc704529": {
+      "source": {
+        "path": "test-dynamodbv2-put-item-action-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3d5ae52b69c9656b617087e12c3cbd7486ab8a18a0e5e927442d682ecc704529.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

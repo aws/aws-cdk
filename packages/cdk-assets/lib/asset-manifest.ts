@@ -21,7 +21,7 @@ export class AssetManifest {
     try {
       const obj = Manifest.loadAssetManifest(fileName);
       return new AssetManifest(path.dirname(fileName), obj);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Canot read asset manifest '${fileName}': ${e.message}`);
     }
   }
@@ -35,7 +35,7 @@ export class AssetManifest {
     let st;
     try {
       st = fs.statSync(filePath);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
@@ -106,27 +106,37 @@ export class AssetManifest {
   }
 
   /**
-   * List of assets, splat out to destinations
+   * List of assets per destination
+   *
+   * Returns one asset for every publishable destination. Multiple asset
+   * destinations may share the same asset source.
    */
   public get entries(): IManifestEntry[] {
     return [
       ...makeEntries(this.manifest.files || {}, FileManifestEntry),
       ...makeEntries(this.manifest.dockerImages || {}, DockerImageManifestEntry),
     ];
+  }
 
-    function makeEntries<A, B, C>(
-      assets: Record<string, { source: A, destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+  /**
+   * List of file assets, splat out to destinations
+   */
+  public get files(): FileManifestEntry[] {
+    return makeEntries(this.manifest.files || {}, FileManifestEntry);
+  }
+}
 
-      const ret = new Array<C>();
-      for (const [assetId, asset] of Object.entries(assets)) {
-        for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
-        }
-      }
-      return ret;
+function makeEntries<A, B, C>(
+  assets: Record<string, { source: A, destinations: Record<string, B> }>,
+  ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+
+  const ret = new Array<C>();
+  for (const [assetId, asset] of Object.entries(assets)) {
+    for (const [destId, destination] of Object.entries(asset.destinations)) {
+      ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
     }
   }
+  return ret;
 }
 
 type AssetType = 'files' | 'dockerImages';
@@ -138,7 +148,7 @@ const ASSET_TYPES: AssetType[] = ['files', 'dockerImages'];
  */
 export interface IManifestEntry {
   /**
-   * The identifier of the asset
+   * The identifier of the asset and its destination
    */
   readonly id: DestinationIdentifier;
 
@@ -202,10 +212,16 @@ export class DockerImageManifestEntry implements IManifestEntry {
 
 /**
  * Identify an asset destination in an asset manifest
+ *
+ * When stringified, this will be a combination of the source
+ * and destination IDs.
  */
 export class DestinationIdentifier {
   /**
    * Identifies the asset, by source.
+   *
+   * The assetId will be the same between assets that represent
+   * the same physical file or image.
    */
   public readonly assetId: string;
 

@@ -1,6 +1,6 @@
+import { DockerFactory } from './docker';
 import { IAws } from '../aws';
 import { EventType } from '../progress';
-import { DockerFactory } from './docker';
 
 /**
  * Handler for asset building and publishing.
@@ -15,6 +15,11 @@ export interface IAssetHandler {
    * Publish the asset.
    */
   publish(): Promise<void>;
+
+  /**
+   * Return whether the asset already exists
+   */
+  isPublished(): Promise<boolean>;
 }
 
 export interface IHandlerHost {

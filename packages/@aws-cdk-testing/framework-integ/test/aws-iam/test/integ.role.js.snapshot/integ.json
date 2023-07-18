@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "integ-iam-role/DefaultTest": {
+      "stacks": [
+        "integ-iam-role-1"
+      ],
+      "assertionStack": "integ-iam-role/DefaultTest/DeployAssert",
+      "assertionStackName": "integiamroleDefaultTestDeployAssert48737E31"
+    }
+  }
+}

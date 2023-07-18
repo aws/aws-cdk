@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
@@ -390,7 +391,7 @@ describe('cli notices', () => {
       });
 
       expect(result).toEqual(`
-NOTICES
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 16603	Toggling off auto_delete_objects for Bucket empties the bucket
 

@@ -45,6 +45,16 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     await dockerForBuilding.tag(localTagName, initOnce.imageUri);
   }
 
+  public async isPublished(): Promise<boolean> {
+    try {
+      const initOnce = await this.initOnce({ quiet: true });
+      return initOnce.destinationAlreadyExists;
+    } catch (e: any) {
+      this.host.emitMessage(EventType.DEBUG, `${e.message}`);
+    }
+    return false;
+  }
+
   public async publish(): Promise<void> {
     const initOnce = await this.initOnce();
 
@@ -63,13 +73,16 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     await dockerForPushing.push(initOnce.imageUri);
   }
 
-  private async initOnce(): Promise<ContainerImageAssetHandlerInit> {
+  private async initOnce(options: { quiet?: boolean } = {}): Promise<ContainerImageAssetHandlerInit> {
     if (this.init) {
       return this.init;
     }
 
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
-    const ecr = await this.host.aws.ecrClient(destination);
+    const ecr = await this.host.aws.ecrClient({
+      ...destination,
+      quiet: options.quiet,
+    });
     const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
 
     const repoUri = await repositoryUri(ecr, destination.repositoryName);
@@ -167,10 +180,14 @@ class ContainerImageBuilder {
       directory: fullPath,
       tag: localTagName,
       buildArgs: source.dockerBuildArgs,
+      buildSecrets: source.dockerBuildSecrets,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,
       platform: source.platform,
+      outputs: source.dockerOutputs,
+      cacheFrom: source.cacheFrom,
+      cacheTo: source.cacheTo,
     });
   }
 
@@ -188,7 +205,7 @@ async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: strin
   try {
     await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ImageNotFoundException') { throw e; }
     return false;
   }
@@ -203,7 +220,7 @@ async function repositoryUri(ecr: AWS.ECR, repositoryName: string): Promise<stri
   try {
     const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
     return (response.repositories || [])[0]?.repositoryUri;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'RepositoryNotFoundException') { throw e; }
     return undefined;
   }

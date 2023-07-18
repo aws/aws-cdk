@@ -18,6 +18,15 @@ async function main() {
   const newSpec = await fs.readJSON(newSpecFile);
   const oldSpec = await fs.readJSON(oldSpecFile);
 
+  // Diff operates on PropertyTypes & ResourceTypes
+  // Ensure they always exist in the old spec
+  if (!oldSpec.PropertyTypes) {
+    oldSpec.PropertyTypes = {};
+  }
+  if (!oldSpec.ResourceTypes) {
+    oldSpec.ResourceTypes = {};
+  }
+
   const out = jsonDiff(oldSpec, newSpec);
 
   // Here's the magic output format of this thing
@@ -237,6 +246,10 @@ async function main() {
     if (Array.isArray(update)) {
       changes.push(`* ${namespace} ${prefix} (__changed__)`);
       for (const entry of update) {
+        if (entry.length === 1 && entry[0] === ' ') {
+          // This means that this element of the array is unchanged
+          continue;
+        }
         if (entry.length !== 2) {
           throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
         }
@@ -247,7 +260,7 @@ async function main() {
           case '-':
             throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
           case ' ':
-          // This entry is "context"
+            // This entry is "context"
             break;
           default:
             throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);

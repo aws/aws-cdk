@@ -1,0 +1,99 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.95"
+        }
+      },
+      "aws-cdk-codedeploy-lambda-config": {
+        "id": "aws-cdk-codedeploy-lambda-config",
+        "path": "aws-cdk-codedeploy-lambda-config",
+        "children": {
+          "LinearConfig": {
+            "id": "LinearConfig",
+            "path": "aws-cdk-codedeploy-lambda-config/LinearConfig",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-lambda-config/LinearConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeDeploy::DeploymentConfig",
+                  "aws:cdk:cloudformation:props": {
+                    "computePlatform": "Lambda",
+                    "deploymentConfigName": "awscdkcodedeploylambdaconfigLinearConfig655064A4.LambdaLinear5PercentEvery1Minutes",
+                    "trafficRoutingConfig": {
+                      "type": "TimeBasedLinear",
+                      "timeBasedLinear": {
+                        "linearInterval": 1,
+                        "linearPercentage": 5
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.CfnDeploymentConfig",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codedeploy.LambdaDeploymentConfig",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LambdaDeploymentConfigTest": {
+        "id": "LambdaDeploymentConfigTest",
+        "path": "LambdaDeploymentConfigTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaDeploymentConfigTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaDeploymentConfigTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.95"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaDeploymentConfigTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

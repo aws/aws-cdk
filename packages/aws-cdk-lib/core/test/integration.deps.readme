@@ -1,0 +1,5 @@
++--------------------------------------------------------------------------+
+| Since cdk-integ depends on cdk which depends on @aws-cdk/core (as a "dev |
+| dependency"), this integration test has been added to the package        |
+| @aws-cdk/aws-cloudformation under `test/integ.core-deps.ts`              |
++--------------------------------------------------------------------------+

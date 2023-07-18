@@ -3,6 +3,7 @@ export interface Lifecycles {
   changelog?: string;
   postchangelog?: string;
   commit?: string;
+  bumpHooks?: string;
 
   // we don't actually do tagging at all, but still support passing it as an option,
   // for conformance with standard-version (CDK doesn't use its tagging capabilities anyway)
@@ -42,6 +43,7 @@ export interface ReleaseOptions {
   verbose?: boolean;
   silent?: boolean;
   sign?: boolean;
+  repoRoot: string;
 
   /**
    * How to handle experimental changes in the changelog.

@@ -46,7 +46,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
     const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ssm();
     try {
       return await ssm.getParameter({ Name: parameterName }).promise();
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ParameterNotFound') {
         return {};
       }

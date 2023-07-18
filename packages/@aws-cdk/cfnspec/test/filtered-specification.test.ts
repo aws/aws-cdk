@@ -1,5 +1,5 @@
-import { filteredSpecification, resourceTypes, specification } from '../lib/index';
 import { validateSpecification } from './spec-validators';
+import { filteredSpecification, resourceTypes, specification } from '../lib/index';
 
 test('filteredSpecification(/^AWS::S3::.*/)', () => {
   const filteredSpec = filteredSpecification(/^AWS::S3::.*/);

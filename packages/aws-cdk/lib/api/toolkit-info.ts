@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { debug, warning } from '../logging';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap/bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap/bootstrap-props';
 import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
+import { debug, warning } from '../logging';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -89,7 +89,7 @@ export abstract class ToolkitInfo {
 
       ssmCache?.set(parameterName, asNumber);
       return asNumber;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ParameterNotFound') {
         throw new Error(`SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
       }
@@ -102,6 +102,7 @@ export abstract class ToolkitInfo {
   public abstract readonly bucketUrl: string;
   public abstract readonly bucketName: string;
   public abstract readonly version: number;
+  public abstract readonly variant: string;
   public abstract readonly bootstrapStack: CloudFormationStack;
 
   constructor(protected readonly sdk: ISDK) {
@@ -132,6 +133,10 @@ class ExistingToolkitInfo extends ToolkitInfo {
     return parseInt(this.bootstrapStack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
   }
 
+  public get variant() {
+    return this.bootstrapStack.parameters[BOOTSTRAP_VARIANT_PARAMETER] ?? DEFAULT_BOOTSTRAP_VARIANT;
+  }
+
   public get parameters(): Record<string, string> {
     return this.bootstrapStack.parameters ?? {};
   }
@@ -155,7 +160,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
     if (ssmParameterName !== undefined) {
       try {
         version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
 
         // This is a fallback! The bootstrap template that goes along with this change introduces
@@ -197,7 +202,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
       if (existingRepositoryUri) {
         return { repositoryUri: existingRepositoryUri };
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'RepositoryNotFoundException') { throw e; }
     }
 
@@ -258,6 +263,10 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
     throw new Error(this.errorMessage);
   }
 
+  public get variant(): string {
+    throw new Error(this.errorMessage);
+  }
+
   public async validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void> {
     if (ssmParameterName === undefined) {
       throw new Error(this.errorMessage);
@@ -266,7 +275,7 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
     let version: number;
     try {
       version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'AccessDeniedException') { throw e; }
 
       // This is a fallback! The bootstrap template that goes along with this change introduces

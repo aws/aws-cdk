@@ -8,7 +8,6 @@ import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
-
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
@@ -180,16 +179,10 @@ export class InitTemplate {
       return;
     }
 
-    const futureFlags: {[key: string]: any} = {};
-    Object.entries(cxapi.FUTURE_FLAGS)
-      .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
-      .forEach(([k, v]) => futureFlags[k] = v);
-
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...futureFlags,
-      ...cxapi.NEW_PROJECT_DEFAULT_CONTEXT,
+      ...cxapi.NEW_PROJECT_CONTEXT,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -203,13 +196,17 @@ interface ProjectInfo {
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
   return new Promise(async resolve => {
-    const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
-    const templateNames = await listDirectory(templatesDir);
-    const templates = new Array<InitTemplate>();
-    for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templatesDir, templateName));
+    try {
+      const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
+      const templateNames = await listDirectory(templatesDir);
+      const templates = new Array<InitTemplate>();
+      for (const templateName of templateNames) {
+        templates.push(await InitTemplate.fromName(templatesDir, templateName));
+      }
+      resolve(templates);
+    } catch {
+      resolve([]);
     }
-    resolve(templates);
   });
 }
 export async function availableInitLanguages(): Promise<string[]> {
@@ -250,7 +247,7 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+export async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir);
@@ -280,7 +277,7 @@ async function initializeGitRepository(workDir: string) {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
     await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
-  } catch (e) {
+  } catch {
     warning('Unable to initialize git repository for your project.');
   }
 }
@@ -313,7 +310,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   print(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
-  } catch (e) {
+  } catch (e: any) {
     warning(`${command} install failed: ` + e.message);
   }
 }
@@ -328,7 +325,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   print('Executing \'mvn package\'');
   try {
     await execute('mvn', ['package'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to package compiled code as JAR');
     warning(mvnPackageWarning);
   }
@@ -341,7 +338,7 @@ async function postInstallPython(cwd: string) {
   print(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
-  } catch (e) {
+  } catch {
     warning('Unable to create virtualenv automatically');
     warning(`Please run '${python} -m venv .venv'!`);
   }

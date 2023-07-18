@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "MskLogging/DefaultTest": {
+      "stacks": [
+        "aws-cdk-msk-integ"
+      ],
+      "assertionStack": "MskLogging/DefaultTest/DeployAssert",
+      "assertionStackName": "MskLoggingDefaultTestDeployAssertC2F074AF"
+    }
+  }
+}

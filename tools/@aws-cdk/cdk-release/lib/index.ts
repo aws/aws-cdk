@@ -1,6 +1,7 @@
 import { getConventionalCommitsFromGitHistory } from './conventional-commits';
 import { defaults } from './defaults';
 import { bump } from './lifecycles/bump';
+import { runBumpHooks } from './lifecycles/bumphooks';
 import { writeChangelogs } from './lifecycles/changelog';
 import { commit } from './lifecycles/commit';
 import { debug, debugObject } from './private/print';
@@ -19,6 +20,10 @@ export async function createRelease(opts: ReleaseOptions): Promise<void> {
   };
   debugObject(args, 'options are (including defaults)', args);
 
+  if (!args.repoRoot) {
+    throw new Error('repoRoot is required');
+  }
+
   const currentVersion = readVersion(args.versionFile);
   debugObject(args, 'Current version info', currentVersion);
 
@@ -28,11 +33,20 @@ export async function createRelease(opts: ReleaseOptions): Promise<void> {
   debug(args, 'Reading Git commits');
   const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion.stableVersion}`);
 
+  const packages = getProjectPackageInfos();
+
   debug(args, 'Writing Changelog');
-  const changelogResults = await writeChangelogs({ ...args, currentVersion, newVersion, commits, packages: getProjectPackageInfos() });
+  const changelogResults = await writeChangelogs({ ...args, currentVersion, newVersion, commits, packages });
+
+  debug(args, 'Running "on-bump" hooks');
+  const bumpHookedFiles = await runBumpHooks({ ...args, packages });
 
   debug(args, 'Committing result');
-  await commit(args, newVersion.stableVersion, [args.versionFile, ...changelogResults.map(r => r.filePath)]);
+  await commit(args, newVersion.stableVersion, [
+    args.versionFile,
+    ...changelogResults.map(r => r.filePath),
+    ...bumpHookedFiles,
+  ]);
 };
 
 function getProjectPackageInfos(): PackageInfo[] {

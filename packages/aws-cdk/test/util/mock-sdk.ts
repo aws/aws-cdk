@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, SdkForEnvironment } from '../../lib/api/aws-auth';
@@ -26,7 +27,7 @@ export interface MockSdkProviderOptions {
 /**
  * An SDK that allows replacing (some of) the clients
  *
- * Its the responsibility of the consumer to replace all calls that
+ * It's the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {
@@ -114,6 +115,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs, additionalProperties));
   }
 
+  public stubIam(stubs: SyncHandlerSubsetOf<AWS.IAM>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).iam = jest.fn().mockReturnValue(partialAwsService<AWS.IAM>(stubs, additionalProperties));
+  }
+
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
@@ -138,6 +143,7 @@ export class MockSdkProvider extends SdkProvider {
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
   public readonly lambda = jest.fn();
+  public readonly iam = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();

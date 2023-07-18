@@ -1,0 +1,540 @@
+{
+ "Resources": {
+  "ModelWithArtifactRole854ED848": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSageMakerFullAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ModelWithArtifactRoleDefaultPolicy63A6F076": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ModelWithArtifactRoleDefaultPolicy63A6F076",
+    "Roles": [
+     {
+      "Ref": "ModelWithArtifactRole854ED848"
+     }
+    ]
+   }
+  },
+  "ModelWithArtifactModel7EBC6421": {
+   "Type": "AWS::SageMaker::Model",
+   "Properties": {
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ModelWithArtifactRole854ED848",
+      "Arn"
+     ]
+    },
+    "PrimaryContainer": {
+     "Image": {
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+     },
+     "ModelDataUrl": {
+      "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
+     }
+    }
+   },
+   "DependsOn": [
+    "ModelWithArtifactRoleDefaultPolicy63A6F076",
+    "ModelWithArtifactRole854ED848"
+   ]
+  },
+  "EndpointConfigFD7B6F91": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialInstanceCount": 1,
+      "InitialVariantWeight": 1,
+      "InstanceType": "ml.t2.medium",
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithArtifactModel7EBC6421",
+        "ModelName"
+       ]
+      },
+      "VariantName": "firstVariant"
+     }
+    ]
+   }
+  },
+  "Endpoint8024A810": {
+   "Type": "AWS::SageMaker::Endpoint",
+   "Properties": {
+    "EndpointConfigName": {
+     "Fn::GetAtt": [
+      "EndpointConfigFD7B6F91",
+      "EndpointConfigName"
+     ]
+    }
+   }
+  },
+  "Invoker060A9026": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "InvokerDefaultPolicy3FF8208D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sagemaker:InvokeEndpoint",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "Endpoint8024A810"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "InvokerDefaultPolicy3FF8208D",
+    "Roles": [
+     {
+      "Ref": "Invoker060A9026"
+     }
+    ]
+   }
+  },
+  "InvocationsAlarmBC3830BD": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "Invocations",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "InvocationsPerInstanceAlarm82CBCF29": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "InvocationsPerInstance",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 4
+   }
+  },
+  "ModelLatencyAlarm96AC7D24": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 8,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "ModelLatency",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 7
+   }
+  },
+  "OverheadLatencyAlarm10D8981B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 11,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "OverheadLatency",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 10
+   }
+  },
+  "Invocation5XXErrorsAlarmF9BAF026": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 14,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "Invocation5XXErrors",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 13
+   }
+  },
+  "DiskUtilizationAlarmE19E4184": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 17,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "DiskUtilization",
+    "Namespace": "/aws/sagemaker/Endpoints",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 16
+   }
+  },
+  "CPUUtilizationAlarm4D91B4D0": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 20,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "CPUUtilization",
+    "Namespace": "/aws/sagemaker/Endpoints",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 19
+   }
+  },
+  "MemoryUtilizationAlarm544270BF": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 23,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "MemoryUtilization",
+    "Namespace": "/aws/sagemaker/Endpoints",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 22
+   }
+  },
+  "GPUUtilizationAlarmEC9BEC6F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 26,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "GPUUtilization",
+    "Namespace": "/aws/sagemaker/Endpoints",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 25
+   }
+  },
+  "GPUMemoryUtilizationAlarmD03813BC": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 29,
+    "Dimensions": [
+     {
+      "Name": "EndpointName",
+      "Value": {
+       "Fn::GetAtt": [
+        "Endpoint8024A810",
+        "EndpointName"
+       ]
+      }
+     },
+     {
+      "Name": "VariantName",
+      "Value": "firstVariant"
+     }
+    ],
+    "MetricName": "GPUMemoryUtilization",
+    "Namespace": "/aws/sagemaker/Endpoints",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 28
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

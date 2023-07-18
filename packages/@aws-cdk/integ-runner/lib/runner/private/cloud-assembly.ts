@@ -30,7 +30,7 @@ export class AssemblyManifestReader {
       const obj = Manifest.loadAssemblyManifest(fileName);
       return new AssemblyManifestReader(path.dirname(fileName), obj, fileName);
 
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
     }
   }
@@ -44,7 +44,7 @@ export class AssemblyManifestReader {
     let st;
     try {
       st = fs.statSync(filePath);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Cannot read integ manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
@@ -76,6 +76,25 @@ export class AssemblyManifestReader {
       stacks[artifactId] = template;
     }
     return stacks;
+  }
+
+  /**
+   * Get the nested stacks for a given stack
+   * returns a map of artifactId to CloudFormation template
+   */
+  public getNestedStacksForStack(stackId: string): Record<string, any> {
+    const nestedTemplates: string[] = this.getAssetManifestsForStack(stackId).flatMap(
+      manifest => manifest.files
+        .filter(asset => asset.source.path?.endsWith('.nested.template.json'))
+        .map(asset => asset.source.path!),
+    );
+
+    const nestedStacks: Record<string, any> = Object.fromEntries(nestedTemplates.map(templateFile => ([
+      templateFile.split('.', 1)[0],
+      fs.readJSONSync(path.resolve(this.directory, templateFile)),
+    ])));
+
+    return nestedStacks;
   }
 
   /**
@@ -111,18 +130,32 @@ export class AssemblyManifestReader {
     const assets: string[] = [];
     for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
       if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
-        assets.push(...this.assetsFromAssetManifest(artifact).map(asset => {
-          if (asset.type === 'file') {
+        assets.push(...this.assetsFromAssetManifest(artifact).flatMap(asset => {
+          if (asset.type === 'file' && !asset.source.path?.endsWith('nested.template.json')) {
             return asset.source.path!;
-          } else {
+          } else if (asset.type !== 'file') {
             return asset.source.directory!;
           }
+          return [];
         }));
       } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
         assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.path));
       }
     }
     return assets;
+  }
+
+  /**
+   * Return a list of asset artifacts for a given stack
+   */
+  public getAssetManifestsForStack(stackId: string): AssetManifest[] {
+    return Object.values(this.manifest.artifacts ?? {})
+      .filter(artifact =>
+        artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`)
+      .map(artifact => {
+        const fileName = (artifact.properties as AssetManifestProperties).file;
+        return AssetManifest.fromFile(path.join(this.directory, fileName));
+      });
   }
 
   /**
@@ -153,7 +186,7 @@ export class AssemblyManifestReader {
     assetManifest.entries.forEach(entry => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
-        if (source.path && source.path.startsWith('asset.')) {
+        if (source.path && (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))) {
           assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {

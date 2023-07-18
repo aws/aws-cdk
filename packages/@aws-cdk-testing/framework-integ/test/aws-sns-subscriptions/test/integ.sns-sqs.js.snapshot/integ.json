@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "SNS Subscriptions/DefaultTest": {
+      "stacks": [
+        "SnsToSqsStack"
+      ],
+      "assertionStack": "SNS Subscriptions/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSSubscriptionsDefaultTestDeployAssertD77125EB"
+    }
+  }
+}

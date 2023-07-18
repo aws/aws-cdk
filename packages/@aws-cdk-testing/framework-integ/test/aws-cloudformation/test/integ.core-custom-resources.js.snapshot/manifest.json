@@ -1,0 +1,100 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "custom-resource-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "custom-resource-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "custom-resource-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "custom-resource-test.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b724f17976eebd5e5ec6f838bd9cc66577d187ef286025c01d5d6c9ca099a368.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "custom-resource-test.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "custom-resource-test.assets"
+      ],
+      "metadata": {
+        "/custom-resource-test/Custom::ReflectCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderRoleB4B29AEC"
+          }
+        ],
+        "/custom-resource-test/Custom::ReflectCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomReflectCustomResourceProviderHandler2E189D0B"
+          }
+        ],
+        "/custom-resource-test/MyResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyResource"
+          }
+        ],
+        "/custom-resource-test/MyLengthyTypeResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLengthyTypeResource"
+          }
+        ],
+        "/custom-resource-test/Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ref"
+          }
+        ],
+        "/custom-resource-test/GetAtt.Attribute1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute1"
+          }
+        ],
+        "/custom-resource-test/GetAtt.Attribute2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAttAttribute2"
+          }
+        ],
+        "/custom-resource-test/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/custom-resource-test/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "custom-resource-test"
+    }
+  }
+}

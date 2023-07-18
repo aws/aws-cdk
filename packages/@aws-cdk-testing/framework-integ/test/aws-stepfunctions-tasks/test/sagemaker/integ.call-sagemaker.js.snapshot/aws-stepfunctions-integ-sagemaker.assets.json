@@ -1,0 +1,19 @@
+{
+  "version": "30.0.0",
+  "files": {
+    "d47626d7509ebce452cd585faf4d46fd90729820d5e478bdf0b77aa30c90f6de": {
+      "source": {
+        "path": "aws-stepfunctions-integ-sagemaker.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d47626d7509ebce452cd585faf4d46fd90729820d5e478bdf0b77aa30c90f6de.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

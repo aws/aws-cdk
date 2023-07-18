@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "QueuedMatchmakingConfiguration/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-queued-matchmaking-configuration"
+      ],
+      "assertionStack": "QueuedMatchmakingConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "QueuedMatchmakingConfigurationDefaultTestDeployAssert8FBBBB90"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+# Written in bash just because that's easier with all the file manipulation
+set -eu
+scriptdir=$(cd $(dirname $0) && pwd)
+version="$1"
+target_dir="$2"
+
+
+if [[ ! -f "$2/skip-tests.txt" ]]; then
+  echo "$2: does not look like a test root directory." >&2
+  exit 1
+fi
+
+
+candidate_dir="${scriptdir}/../resources/cli-regression-patches/v${version}"
+
+if [[ -f "$candidate_dir" ]]; then
+  cp -R "${candidate_dir}/"* "$2"
+fi

@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "c0cf7298d495571ea27cd12f71b05728f8f5c16edcb750559de0c18b960a455c": {
+      "source": {
+        "path": "AwsCdkFsxLustre.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c0cf7298d495571ea27cd12f71b05728f8f5c16edcb750559de0c18b960a455c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

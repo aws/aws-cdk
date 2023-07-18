@@ -1,0 +1,55 @@
+{
+ "Resources": {
+  "DashCCD7F836": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"My fancy graph\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"CDK/Test\",\"Metric\",{\"label\":\"Metric left 1 - p99\",\"stat\":\"p99\"}],[\"CDK/Test\",\"Metric\",{\"label\":\"Metric left 2 - TC_10P_90P\",\"stat\":\"TC(10%:90%)\"}],[\"CDK/Test\",\"Metric\",{\"label\":\"Metric left 3 - TS(5%:95%)\",\"stat\":\"TS(5%:95%)\"}],[\"CDK/Test\",\"Metric\",{\"label\":\"Metric right 1 - p90.1234\",\"stat\":\"p90.1234\",\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

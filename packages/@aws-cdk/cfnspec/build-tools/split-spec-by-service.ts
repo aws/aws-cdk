@@ -18,11 +18,13 @@ import { writeSorted } from './patch-set';
 import { CfnSpec, CfnSpecValidator, formatErrorInContext } from './validate-cfn';
 
 async function main(args: string[]) {
-  if (args.length < 2) {
-    throw new Error('Usage: split-spec-by-service <SPECFILE> <DIRECTORY>');
+  if (args.length < 3) {
+    throw new Error('Usage: split-spec-by-service <SPECFILE> <DIRECTORY> [<SERVICES>]');
   }
 
-  const [specFile, outDir] = args;
+  const [specFile, outDir, services] = args;
+  const allowedServices = services.trim().split(' ').filter(Boolean);
+
   log(`Loading specification: ${specFile}`);
   const spec: CfnSpec = await fs.readJson(specFile);
 
@@ -39,8 +41,17 @@ async function main(args: string[]) {
   }
 
   // Write out
-  log('Writing');
+  if (allowedServices.length > 0) {
+    log(`Writing: ${allowedServices.join(' ')}`);
+  } else {
+    log('Writing all services');
+  }
   for (const [svcName, svcSpec] of Object.entries(byService)) {
+    // Skip services that are not explicitly allowed
+    if (allowedServices.length > 0 && !allowedServices.includes(svcName)) {
+      continue;
+    }
+
     const successTarget = path.join(outDir, `000_${svcName}.json`);
     const rejectedTarget = path.join(outDir, `.000_${svcName}.rejected.json`);
 
@@ -95,7 +106,7 @@ async function main(args: string[]) {
 async function ensureGone(fileName: string) {
   try {
     await fs.unlink(fileName);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return; }
     throw e;
   }

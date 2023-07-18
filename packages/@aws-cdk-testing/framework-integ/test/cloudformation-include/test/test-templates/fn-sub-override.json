@@ -1,0 +1,16 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "bucket"
+      }
+    },
+    "AnotherBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Sub": "${Bucket}-${!Bucket}-${Bucket.DomainName}" }
+      }
+    }
+  }
+}

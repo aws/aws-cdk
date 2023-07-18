@@ -1,6 +1,6 @@
+/* eslint-disable import/order */
 import { ToolkitInfo } from '../../lib/api';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
-
 
 let mockSdk: MockSdk;
 beforeEach(() => {

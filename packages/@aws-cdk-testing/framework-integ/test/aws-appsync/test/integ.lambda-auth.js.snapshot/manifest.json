@@ -1,0 +1,171 @@
+{
+  "version": "29.0.0",
+  "artifacts": {
+    "appsync-lambda-auth.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsync-lambda-auth.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsync-lambda-auth": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-lambda-auth.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6318a3460f2277a0215d1d3dec988f54f73d1ebd0221c7a7cc4d2bcb6324b50f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsync-lambda-auth.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsync-lambda-auth.assets"
+      ],
+      "metadata": {
+        "/appsync-lambda-auth/func/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcServiceRoleA96CCB44"
+          }
+        ],
+        "/appsync-lambda-auth/func/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcC3A0C2E2"
+          }
+        ],
+        "/appsync-lambda-auth/func/api1-appsync": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcapi1appsync5C5BBFA1"
+          }
+        ],
+        "/appsync-lambda-auth/func/api2-appsync": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcapi2appsync0EE83EF2"
+          }
+        ],
+        "/appsync-lambda-auth/api1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api1A91238E2"
+          }
+        ],
+        "/appsync-lambda-auth/api1/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api1SchemaFFA53DB6"
+          }
+        ],
+        "/appsync-lambda-auth/api2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api2C4850CEA"
+          }
+        ],
+        "/appsync-lambda-auth/api2/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api2SchemaD5C26031"
+          }
+        ],
+        "/appsync-lambda-auth/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-lambda-auth/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "funcfuncapi1appsync58E50481": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcfuncapi1appsync58E50481",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "funcfuncapi2appsync8B273744": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcfuncapi2appsync8B273744",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "appsync-lambda-auth"
+    },
+    "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.assets"
+      ],
+      "metadata": {
+        "/GraphQlApiLambdaAuth/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GraphQlApiLambdaAuth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GraphQlApiLambdaAuth/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

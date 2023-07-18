@@ -14,7 +14,11 @@ account: '012345678913'
 
 # Account patterns used in the CHANGELOG
 account: '123456789012'
+
+111111111111
+222222222222
 123456789012
+333333333333
 
 # The account ID's of public facing ECR images for App Mesh Envoy
 # https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html

@@ -7,7 +7,7 @@ type Options = {
 export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtifact[], options: Options): Promise<void> {
   const { buildStackAssets } = options;
 
-  const buildingErrors: Error[] = [];
+  const buildingErrors: unknown[] = [];
 
   for (const stack of stacks) {
     try {

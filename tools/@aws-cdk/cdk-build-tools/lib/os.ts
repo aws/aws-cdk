@@ -15,19 +15,24 @@ interface ShellOptions {
  * Is platform-aware, handles errors nicely.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  const timer = (options.timers || new Timers()).start(command[0]);
+  const [cmd, ...args] = command;
+  const timer = (options.timers || new Timers()).start(cmd);
 
-  await makeShellScriptExecutable(command[0]);
+  await makeShellScriptExecutable(cmd);
 
-  const child = child_process.spawn(command[0], command.slice(1), {
-    // Need this for Windows where we want .cmd and .bat to be found as well.
-    shell: true,
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: {
-      ...process.env,
-      ...options.env,
-    },
-  });
+  // yarn exec runs the provided command with the correct environment for the workspace.
+  const child = child_process.spawn(
+    cmd,
+    args,
+    {
+      // Need this for Windows where we want .cmd and .bat to be found as well.
+      shell: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        ...options.env,
+      },
+    });
 
   const makeRed = process.stderr.isTTY ? chalk.red : (x: string) => x;
 
@@ -143,7 +148,7 @@ async function makeShellScriptExecutable(script: string) {
     if (await canExecute(script)) { return; }
     if (!await isShellScript(script)) { return; }
     await util.promisify(fs.chmod)(script, 0o755);
-  } catch (e) {
+  } catch (e: any) {
     // If it happens that this file doesn't exist, that's fine. It's
     // probably a file that can be found on the $PATH.
     if (e.code === 'ENOENT') { return; }
@@ -155,7 +160,7 @@ async function canExecute(fileName: string): Promise<boolean> {
   try {
     await util.promisify(fs.access)(fileName, fs.constants.X_OK);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'EACCES') { return false; }
     throw e;
   }

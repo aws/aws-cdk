@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { CfnLintFileSchema } from './_private_schema/cfn-lint';
 import * as schema from './schema';
+import { isPrimitiveAttribute, isListAttribute, isMapAttribute } from './schema';
 export { schema };
 export * from './canned-metrics';
 
@@ -9,7 +10,15 @@ export * from './canned-metrics';
  */
 export function specification(): schema.Specification {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../spec/specification.json');
+  const spec: schema.Specification = require('../spec/specification.json');
+
+  // Modify spec in place, remove complex attributes
+  for (const resource of Object.values(spec.ResourceTypes)) {
+    resource.Attributes = Object.fromEntries(Object.entries(resource.Attributes ?? [])
+      .filter(([_, attr]) => isPrimitiveAttribute(attr) || isListAttribute(attr) || isMapAttribute(attr) ));
+  }
+
+  return spec;
 }
 
 /**
@@ -19,7 +28,6 @@ export function docs(): schema.CloudFormationDocsFile {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('../spec/cfn-docs.json');
 }
-
 
 /**
  * Return the resource specification for the given typename
@@ -58,7 +66,7 @@ export function resourceAugmentation(typeName: string): schema.ResourceAugmentat
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`./augmentations/${fileName}.json`);
-  } catch (e) {
+  } catch {
     return {};
   }
 }

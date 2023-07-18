@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Wisdom"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.wisdom"
+    },
+    "python": {
+      "module": "aws_cdk.aws_wisdom"
+    }
+  }
+}

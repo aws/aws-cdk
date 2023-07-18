@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-redshift-reboot-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-redshift-cluster-create",
+        "aws-cdk-redshift-cluster-update"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34"
+    }
+  }
+}

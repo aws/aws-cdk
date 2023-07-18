@@ -1,0 +1,92 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.108"
+        }
+      },
+      "aws-cdk-sns-fifo-1": {
+        "id": "aws-cdk-sns-fifo-1",
+        "path": "aws-cdk-sns-fifo-1",
+        "children": {
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "aws-cdk-sns-fifo-1/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-sns-fifo-1/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoTopic": true,
+                    "topicName": "awscdksnsfifo1-MyTopic-4F8FC072.fifo"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sns.Topic",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SnsFifoNoNameTest": {
+        "id": "SnsFifoNoNameTest",
+        "path": "SnsFifoNoNameTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SnsFifoNoNameTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SnsFifoNoNameTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.108"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SnsFifoNoNameTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { memberFqn } from './util';
+import { Linter } from '../linter';
 
 export const integrationLinter = new Linter<IntegrationReflection>(assembly => assembly.interfaces
   .filter(IntegrationReflection.isIntegrationInterface)

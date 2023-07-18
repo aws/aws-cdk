@@ -27,7 +27,11 @@ junit.xml
 # Ignore this symlink, we recreate it at test time
 test/test-archive-follow/data/linked
 
-!**/*.integ.snapshot/**/asset.*/*.js
-!**/*.integ.snapshot/**/asset.*/*.d.ts
+# These files are needed for unit tests
+!test/test-data/cdk-integ.out*/
 
-!**/*.integ.snapshot/**/asset.*/**
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+

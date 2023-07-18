@@ -1,0 +1,19 @@
+{
+  "version": "29.0.0",
+  "files": {
+    "3546c78647ea20567832041c960a034787f9bfc0128226ea8fbc0894366a4dd0": {
+      "source": {
+        "path": "aws-cdk-logs-insights-querydefinition-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3546c78647ea20567832041c960a034787f9bfc0128226ea8fbc0894366a4dd0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

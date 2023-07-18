@@ -1,0 +1,209 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "integservicecatalogappregistryapplicationresourcesStack4399A149.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integservicecatalogappregistryapplicationresourcesStack4399A149.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integservicecatalogappregistryapplicationresourcesStack4399A149": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integservicecatalogappregistryapplicationresourcesStack4399A149.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integservicecatalogappregistryapplicationresourcesStack4399A149.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRegistryApplicationStack",
+        "integservicecatalogappregistryapplicationresourcesStack4399A149.assets"
+      ],
+      "metadata": {
+        "/integ-servicecatalogappregistry-application/resourcesStack": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/resourcesStack/AppRegistryAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRegistryAssociation"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/resourcesStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/resourcesStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalogappregistry-application/resourcesStack"
+    },
+    "integ-servicecatalogappregistry-application.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-servicecatalogappregistry-application.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-servicecatalogappregistry-application": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalogappregistry-application.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-servicecatalogappregistry-application.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRegistryApplicationStack",
+        "integ-servicecatalogappregistry-application.assets"
+      ],
+      "metadata": {
+        "/integ-servicecatalogappregistry-application": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/AppRegistryAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRegistryAssociation"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalogappregistry-application"
+    },
+    "AppRegistryApplicationStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppRegistryApplicationStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppRegistryApplicationStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppRegistryApplicationStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/096a2ebc1093f405e713a82ffa6755ace9d5244a06f746653f025546795d3a0a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppRegistryApplicationStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "AppRegistryApplicationAssociatorStack"
+      },
+      "dependencies": [
+        "AppRegistryApplicationStack.assets"
+      ],
+      "metadata": {
+        "/AppRegistryApplicationStack": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack."
+          }
+        ],
+        "/AppRegistryApplicationStack/DefaultCdkApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCdkApplication4573D5A3"
+          }
+        ],
+        "/AppRegistryApplicationStack/AppRegistryAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRegistryAssociation"
+          }
+        ],
+        "/AppRegistryApplicationStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppRegistryApplicationStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppRegistryApplicationStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

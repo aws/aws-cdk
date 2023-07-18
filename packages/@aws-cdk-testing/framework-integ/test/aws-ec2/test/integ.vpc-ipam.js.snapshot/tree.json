@@ -1,0 +1,499 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.123"
+        }
+      },
+      "aws-cdk-ec2-ipam-vpc": {
+        "id": "aws-cdk-ec2-ipam-vpc",
+        "path": "aws-cdk-ec2-ipam-vpc",
+        "children": {
+          "IPAM": {
+            "id": "IPAM",
+            "path": "aws-cdk-ec2-ipam-vpc/IPAM",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::IPAM",
+              "aws:cdk:cloudformation:props": {
+                "operatingRegions": [
+                  {
+                    "regionName": {
+                      "Ref": "AWS::Region"
+                    }
+                  }
+                ],
+                "tags": [
+                  {
+                    "key": "stack",
+                    "value": {
+                      "Ref": "AWS::StackId"
+                    }
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "Pool": {
+            "id": "Pool",
+            "path": "aws-cdk-ec2-ipam-vpc/Pool",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
+              "aws:cdk:cloudformation:props": {
+                "addressFamily": "ipv4",
+                "ipamScopeId": {
+                  "Fn::GetAtt": [
+                    "IPAM",
+                    "PrivateDefaultScopeId"
+                  ]
+                },
+                "autoImport": false,
+                "description": "Testing pool",
+                "locale": {
+                  "Ref": "AWS::Region"
+                },
+                "provisionedCidrs": [
+                  {
+                    "cidr": "100.100.0.0/16"
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "AwsIpamVpc": {
+            "id": "AwsIpamVpc",
+            "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "ipv4IpamPoolId": {
+                      "Ref": "Pool"
+                    },
+                    "ipv4NetmaskLength": 18,
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "privateSubnet1": {
+                "id": "privateSubnet1",
+                "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "AwsIpamVpcD3A1DAEE"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "AwsIpamVpcD3A1DAEE",
+                                    "CidrBlock"
+                                  ]
+                                },
+                                64,
+                                "8"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "AwsIpamVpcD3A1DAEE"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "AwsIpamVpcprivateSubnet1RouteTable2A97E440"
+                        },
+                        "subnetId": {
+                          "Ref": "AwsIpamVpcprivateSubnet1Subnet0AC8649F"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "privateSubnet2": {
+                "id": "privateSubnet2",
+                "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "AwsIpamVpcD3A1DAEE"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "AwsIpamVpcD3A1DAEE",
+                                    "CidrBlock"
+                                  ]
+                                },
+                                64,
+                                "8"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "AwsIpamVpcD3A1DAEE"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-ec2-ipam-vpc/AwsIpamVpc/privateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "AwsIpamVpcprivateSubnet2RouteTableDDE2D1BF"
+                        },
+                        "subnetId": {
+                          "Ref": "AwsIpamVpcprivateSubnet2Subnet577660DE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-ec2-ipam-vpc/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"AwsIpamVpcD3A1DAEE\",\"VpcId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"AwsIpamVpcD3A1DAEE\",\"VpcId\"]}",
+                "path": "aws-cdk-ec2-ipam-vpc/Exports/Output{\"Fn::GetAtt\":[\"AwsIpamVpcD3A1DAEE\",\"VpcId\"]}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.123"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Vpc-Ipam": {
+        "id": "Vpc-Ipam",
+        "path": "Vpc-Ipam",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Vpc-Ipam/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Vpc-Ipam/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.123"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Vpc-Ipam/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallEC2describeVpcs": {
+                    "id": "AwsApiCallEC2describeVpcs",
+                    "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.123"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "Vpc-Ipam/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "Vpc-Ipam/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.123"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

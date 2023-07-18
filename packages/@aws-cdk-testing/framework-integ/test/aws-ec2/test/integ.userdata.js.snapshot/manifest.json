@@ -1,0 +1,226 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-userdata.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-userdata.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-userdata": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-userdata.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa434cc1ff992a842bf49e877d51629335aecfa3bc83c6d97fa26ff243815038.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-userdata.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-userdata.assets"
+      ],
+      "metadata": {
+        "/integ-userdata/IntegUserdataVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcDE2938ED"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1RouteTable7B342D96"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1RouteTableAssociation724A6375"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1DefaultRoute8F93CC39"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1EIP41DE8CA6"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet1NATGatewayC9F60940"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2Subnet7EC040B5"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2RouteTable98BA8E97"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2RouteTableAssociationBA5DC07F"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2DefaultRoute90FCB645"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2EIP662D51E3"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPublicSubnet2NATGatewayB25F84D3"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet1Subnet4EFBF430"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet1RouteTable63E39754"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet1RouteTableAssociation176A5EB9"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet1DefaultRoute03370EF2"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet2SubnetAFD1E5B4"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet2RouteTable7944CD08"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet2RouteTableAssociation3B0C1389"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcPrivateSubnet2DefaultRouteA120F4F4"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcIGWB657C40E"
+          }
+        ],
+        "/integ-userdata/IntegUserdataVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegUserdataVpcVPCGWFA86AC6A"
+          }
+        ],
+        "/integ-userdata/WindowsInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsInstanceInstanceSecurityGroup3B6692A8"
+          }
+        ],
+        "/integ-userdata/WindowsInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsInstanceInstanceRoleB7D73766"
+          }
+        ],
+        "/integ-userdata/WindowsInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsInstanceInstanceProfile20441977"
+          }
+        ],
+        "/integ-userdata/WindowsInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsInstance4ABA347A"
+          }
+        ],
+        "/integ-userdata/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-userdata/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-userdata/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-userdata"
+    }
+  }
+}

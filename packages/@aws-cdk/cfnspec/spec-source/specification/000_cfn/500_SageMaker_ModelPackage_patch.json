@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+      "AWS::SageMaker::ModelPackage": {
+          "patch": {
+              "description": "Drop unrecognized and unnecessary singular Tag parameter",
+              "operations": [
+                  {
+                      "op": "remove",
+                      "path": "/Properties/Tag"
+                  }
+              ]
+          }
+      }
+  }
+}

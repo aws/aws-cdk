@@ -116,7 +116,7 @@ test('validate and fix', () => {
   try {
     bundle.pack();
     throw new Error('Expected packing to fail before fixing');
-  } catch (e) {
+  } catch {
     // this should fix the fact we don't generate
     // the project with the correct notice
     bundle.validate({ fix: true });

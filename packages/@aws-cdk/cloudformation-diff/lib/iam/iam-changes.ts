@@ -1,11 +1,11 @@
 import * as cfnspec from '@aws-cdk/cfnspec';
 import * as chalk from 'chalk';
+import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
+import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
 import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
-import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
-import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
 
 export interface IamChangesProps {
   propertyChanges: PropertyChange[];

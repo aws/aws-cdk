@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { CloudFormation } from 'aws-sdk';
 import { CloudFormationStack, Template } from '../../lib/api/util/cloudformation';
 import { instanceMockFrom } from '../util';

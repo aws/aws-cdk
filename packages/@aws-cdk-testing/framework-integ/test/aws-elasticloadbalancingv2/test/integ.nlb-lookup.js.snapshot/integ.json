@@ -1,0 +1,22 @@
+{
+  "enableLookups": true,
+  "version": "29.0.0",
+  "testCases": {
+    "elbv2-integ/DefaultTest": {
+      "stacks": [],
+      "assertionStack": "elbv2-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "elbv2integDefaultTestDeployAssert6120E394"
+    },
+    "aws-cdk-elbv2-integ-StackUnderTest/aws-cdk-elbv2-integ-StackUnderTestTestCase": {
+      "env": {
+        "account": "12345678",
+        "region": "test-region"
+      },
+      "stacks": [
+        "aws-cdk-elbv2-integ-StackUnderTest"
+      ],
+      "assertionStack": "aws-cdk-elbv2-integ-StackUnderTest/aws-cdk-elbv2-integ-StackUnderTestTestCase/DeployAssert",
+      "assertionStackName": "awscdkelbv2integStackUnderTestawscdkelbv2integStackUnderTestTestCaseDeployAssert8C1D9093"
+    }
+  }
+}

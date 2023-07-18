@@ -1,6 +1,6 @@
+/* eslint-disable import/order */
 import { RewritableBlock } from '../../../lib/api/util/display';
 import { stderr } from '../console-listener';
-
 
 describe('Rewritable Block Tests', () => {
   let block: RewritableBlock;

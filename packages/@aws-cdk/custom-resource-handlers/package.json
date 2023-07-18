@@ -1,0 +1,66 @@
+{
+  "name": "@aws-cdk/custom-resource-handlers",
+  "description": "CDK Custom Resources",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc -b && node scripts/minify-and-bundle-sources.js",
+    "integ": "integ-runner",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.1",
+    "jest": "^29.5.0",
+    "esbuild": "^0.17.19"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ecr": "^3.357.0",
+    "@aws-sdk/client-s3": "^3.357.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/custom-resource-handlers"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "cdk-package": {
+    "shrinkWrap": true
+  },
+  "nozem": {
+    "ostools": [
+      "unzip",
+      "diff",
+      "rm"
+    ]
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

@@ -1,0 +1,32 @@
+{
+ "Resources": {
+  "IntegNestedParameter04B9B8A01": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": {
+     "Ref": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+    },
+    "Name": "integ-nested-parameter0"
+   }
+  },
+  "IntegNestedParameter1DE6274D4": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": {
+     "Ref": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+    },
+    "Name": "integ-nested-parameter1"
+   }
+  }
+ },
+ "Parameters": {
+  "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
+   "Type": "String"
+  },
+  "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
+   "Type": "String"
+  }
+ }
+}

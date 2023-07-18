@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.ecs.patterns"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ECS.Patterns"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ecs_patterns"
+    }
+  }
+}

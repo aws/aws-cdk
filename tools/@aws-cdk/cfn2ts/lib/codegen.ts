@@ -33,6 +33,7 @@ export interface CodeGeneratorOptions {
  */
 export default class CodeGenerator {
   public readonly outputFile: string;
+  public readonly resources: Record<string, string> = {};
 
   private code = new CodeMaker();
 
@@ -72,6 +73,7 @@ export default class CodeGenerator {
       const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
       this.code.line();
 
+      this.resources[resourceName.specName!.fqn] = resourceName.className;
       this.emitResourceType(resourceName, resourceType);
       this.emitPropertyTypes(name, resourceName);
     }
@@ -384,7 +386,7 @@ export default class CodeGenerator {
    * Since resolve() deep-resolves, we only need to do this once.
    */
   private emitCloudFormationProperties(propsType: genspec.CodeName, propMap: Dictionary<string>, taggable: boolean): void {
-    this.code.openBlock('protected get cfnProperties(): { [key: string]: any } ');
+    this.code.openBlock('protected override get cfnProperties(): { [key: string]: any } ');
     this.code.indent('return {');
     for (const prop of Object.values(propMap)) {
       // handle tag rendering because of special cases
@@ -399,7 +401,7 @@ export default class CodeGenerator {
 
     this.code.line();
 
-    this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
+    this.code.openBlock('protected override renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
   }

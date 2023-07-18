@@ -17,9 +17,37 @@ dependencies.
 
 According to the kind of project you are developing:
 
-- For projects that are CDK libraries, declare them both under the `devDependencies`
-  **and** `peerDependencies` sections.
-- For CDK apps, declare them under the `dependencies` section only.
+For projects that are CDK libraries in NPM, declare them both under the `devDependencies` **and** `peerDependencies` sections.
+To make sure your library is compatible with the widest range of CDK versions: pick the minimum `aws-cdk-lib` version
+that your library requires; declare a range dependency with a caret on that version in peerDependencies, and declare a
+point version dependency on that version in devDependencies.
+
+For example, let's say the minimum version your library needs is `2.38.0`. Your `package.json` should look like this:
+
+```javascript
+{
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.38.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
+    "aws-cdk-lib": "2.38.0"
+  }
+}
+```
+
+For CDK apps, declare them under the `dependencies` section. Use a caret so you always get the latest version:
+
+```json
+{
+  "dependencies": {
+    "aws-cdk-lib": "^2.38.0",
+    "constructs": "^10.0.0"
+  }
+}
+```
+
 
 ### Use in your code
 
@@ -27,7 +55,7 @@ According to the kind of project you are developing:
 
 You can use a classic import to get access to each service namespaces:
 
-```ts
+```ts nofixture
 import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
 
 const app = new App();
@@ -40,7 +68,7 @@ new s3.Bucket(stack, 'TestBucket');
 
 Alternatively, you can use "barrel" imports:
 
-```ts
+```ts nofixture
 import { App, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -108,7 +136,7 @@ The following synthesizers are available:
   controlling who can assume the deploy role. This is the default stack
   synthesizer in CDKv2.
 - `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
-  asset locations, and the CLI's current permissions to deploy stacks. The
+  asset locations, and the CLI's current permissions to deploy stacks. This
   is the default stack synthesizer in CDKv1.
 - `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
   CLI's current permissions.
@@ -167,7 +195,8 @@ Nested stacks also support the use of Docker image and file assets.
 ## Accessing resources in a different stack
 
 You can access resources in a different stack, as long as they are in the
-same account and AWS Region. The following example defines the stack `stack1`,
+same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
+The following example defines the stack `stack1`,
 which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
 which takes the bucket from stack1 as a constructor property.
 
@@ -191,6 +220,56 @@ in the producing stack and an
 [Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
 in the consuming stack to transfer that information from one stack to the
 other.
+
+## Accessing resources in a different stack and region
+
+> **This feature is currently experimental**
+
+You can enable the Stack property `crossRegionReferences`
+in order to access resources in a different stack _and_ region. With this feature flag
+enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
+an ACM certificate in `us-east-1`.
+
+```ts
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  crossRegionReferences: true,
+});
+const cert = new acm.Certificate(stack1, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
+});
+
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  crossRegionReferences: true,
+});
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
+
+When the AWS CDK determines that the resource is in a different stack _and_ is in a different
+region, it will "export" the value by creating a custom resource in the producing stack which
+creates SSM Parameters in the consuming region for each exported value. The parameters will be
+created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
+In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
+is used to reference the SSM parameter which was created.
+
+In order to mimic strong references, a Custom Resource is also created in the consuming
+stack which marks the SSM parameters as being "imported". When a parameter has been successfully
+imported, the producing stack cannot update the value.
+
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+for more details on this feature.
 
 ### Removing automatic cross-stack references
 
@@ -409,6 +488,10 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+
 ## Custom Resources
 
 Custom Resources are CloudFormation resources that are implemented by arbitrary
@@ -459,7 +542,7 @@ various provider types (ordered from low-level to high-level):
 
 Legend:
 
-- **Compute type**: which type of compute can is used to execute the handler.
+- **Compute type**: which type of compute can be used to execute the handler.
 - **Error Handling**: whether errors thrown by handler code are automatically
   trapped and a FAILED response is submitted to CloudFormation. If this is
   "Manual", developers must take care of trapping errors. Otherwise, events
@@ -629,13 +712,13 @@ exports.handler = async (e) => {
 `sum.ts`:
 
 ```ts nofixture
+import { Construct } from 'constructs';
 import {
-  Construct,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
   Token,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 
 export interface SumProps {
   readonly lhs: number;
@@ -834,16 +917,62 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+#### CreationPolicy
+
+Some resources support a [CreationPolicy][creation-policy] to be specified as a CfnOption.
+
+The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are `CfnAutoScalingGroup`, `CfnInstance`, `CfnWaitCondition` and `CfnFleet`.
+
+The `CfnFleet` resource from the `aws-appstream` module supports specifying `startFleet` as
+a property of the creationPolicy on the resource options. Setting it to true will make AWS CloudFormation wait until the fleet is started before continuing with the creation of
+resources that depend on the fleet resource.
+
+```ts
+const fleet = new appstream.CfnFleet(this, 'Fleet', {
+  instanceType: 'stream.standard.small',
+  name: 'Fleet',
+  computeCapacity: {
+    desiredInstances: 1,
+  },
+  imageName: 'AppStream-AmazonLinux2-09-21-2022',
+});
+fleet.cfnOptions.creationPolicy = {
+  startFleet: true,
+};
+```
+
+The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance` from the
+`aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
+`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
+
+The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
+3 success signals to occur within 15 minutes before the status of the resource will be set to
+`CREATE_COMPLETE`.
+
+```ts
+declare const resource: CfnResource;
+
+resource.cfnOptions.creationPolicy = {
+  resourceSignal: {
+    count: 3,
+    timeout: 'PR15M',
+  }
+};
+```
+
+[creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
 
 ### Intrinsic Functions and Condition Expressions
 
@@ -1115,5 +1244,212 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+## App Context
+
+[Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.
+One common use case for context is to use it for enabling/disabling [feature flags](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html). There are several places
+where context can be specified. They are listed below in the order they are evaluated (items at the
+top take precedence over those below).
+
+- The `node.setContext()` method
+- The `postCliContext` prop when you create an `App`
+- The CLI via the `--context` CLI argument
+- The `cdk.json` file via the `context` key:
+- The `cdk.context.json` file:
+- The `~/.cdk.json` file via the `context` key:
+- The `context` prop when you create an `App`
+
+### Examples of setting context
+
+```ts
+new App({
+  context: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+```ts
+const app = new App();
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
+```
+
+```ts
+new App({
+  postCliContext: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+```console
+cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
+```
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+_cdk.context.json_
+
+```json
+{
+  "@aws-cdk/core:newStyleStackSynthesis": true
+}
+```
+
+_~/.cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+## IAM Permissions Boundary
+
+It is possible to apply an [IAM permissions boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+to all roles within a specific construct scope. The most common use case would
+be to apply a permissions boundary at the `Stage` level.
+
+```ts
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+});
+```
+
+Any IAM Roles or Users created within this Stage will have the default
+permissions boundary attached.
+
+For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
+
+## Policy Validation
+
+If you or your organization use (or would like to use) any policy validation tool, such as
+[CloudFormation
+Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
+[OPA](https://www.openpolicyagent.org/), to define constraints on your
+CloudFormation template, you can incorporate them into the CDK application.
+By using the appropriate plugin, you can make the CDK application check the
+generated CloudFormation templates against your policies immediately after
+synthesis. If there are any violations, the synthesis will fail and a report
+will be printed to the console or to a file (see below).
+
+> **Note**
+> This feature is considered experimental, and both the plugin API and the
+> format of the validation report are subject to change in the future.
+
+### For application developers
+
+To use one or more validation plugins in your application, use the
+`policyValidationBeta1` property of `Stage`:
+
+```ts fixture=validation-plugin
+// globally for the entire app (an app is a stage)
+const app = new App({
+  policyValidationBeta1: [
+    // These hypothetical classes implement IPolicyValidationPluginBeta1:
+    new ThirdPartyPluginX(),
+    new ThirdPartyPluginY(),
+  ],
+});
+
+// only apply to a particular stage
+const prodStage = new Stage(app, 'ProdStage', {
+  policyValidationBeta1: [
+    new ThirdPartyPluginX(),
+  ],
+});
+```
+
+Immediately after synthesis, all plugins registered this way will be invoked to
+validate all the templates generated in the scope you defined. In particular, if
+you register the templates in the `App` object, all templates will be subject to
+validation.
+
+> **Warning**
+> Other than modifying the cloud assembly, plugins can do anything that your CDK
+> application can. They can read data from the filesystem, access the network
+> etc. It's your responsibility as the consumer of a plugin to verify that it is
+> secure to use.
+
+By default, the report will be printed in a human readable format. If you want a
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
+context passing it directly to the application:
+
+```ts
+const app = new App({
+  context: { '@aws-cdk/core:validationReportJson': true },
+});
+```
+
+Alternatively, you can set this context key-value pair using the `cdk.json` or
+`cdk.context.json` files in your project directory (see
+[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+If you choose the JSON format, the CDK will print the policy validation report
+to a file called `policy-validation-report.json` in the cloud assembly
+directory. For the default, human-readable format, the report will be printed to
+the standard output.
+
+### For plugin authors
+
+The communication protocol between the CDK core module and your policy tool is
+defined by the `IPolicyValidationPluginBeta1` interface. To create a new plugin you must
+write a class that implements this interface. There are two things you need to
+implement: the plugin name (by overriding the `name` property), and the
+`validate()` method.
+
+The framework will call `validate()`, passing an `IPolicyValidationContextBeta1` object.
+The location of the templates to be validated is given by `templatePaths`. The
+plugin should return an instance of `PolicyValidationPluginReportBeta1`. This object
+represents the report that the user wil receive at the end of the synthesis.
+
+```ts fixture=validation-plugin
+class MyPlugin implements IPolicyValidationPluginBeta1 {
+  public readonly name = 'MyPlugin';
+
+  public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+    // First read the templates using context.templatePaths...
+
+    // ...then perform the validation, and then compose and return the report.
+    // Using hard-coded values here for better clarity:
+    return {
+      success: false,
+      violations: [{
+        ruleName: 'CKV_AWS_117',
+        description: 'Ensure that AWS Lambda function is configured inside a VPC',
+        fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+        violatingResources: [{
+          resourceLogicalId: 'MyFunction3BAA72D1',
+          templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+          locations: ['Properties/VpcConfig'],
+        }],
+      }],
+    };
+  }
+}
+```
+
+Note that plugins are not allowed to modify anything in the cloud assembly. Any
+attempt to do so will result in synthesis failure.
+
+If your plugin depends on an external tool, keep in mind that some developers may
+not have that tool installed in their workstations yet. To minimize friction, we
+highly recommend that you provide some installation script along with your
+plugin package, to automate the whole process. Better yet, run that script as
+part of the installation of your package. With `npm`, for example, you can run
+add it to the `postinstall`
+[script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
+file.
 
 <!--END CORE DOCUMENTATION-->

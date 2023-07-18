@@ -37,6 +37,21 @@ export function testDeprecated(name: string, fn: () => any, timeout?: number) {
   }, timeout);
 }
 
+export declare namespace testDeprecated {
+  const each: typeof test.each;
+}
+
+(testDeprecated as any).each = function(cases: ReadonlyArray<ReadonlyArray<any>>) {
+  const testRunner = (test.each as any).call(test, cases);
+  return (name: string, fn: (...testArgs: any[]) => any) => {
+    testRunner(name, (...testArgs: any[]) => {
+      const deprecated = DeprecatedSymbols.quiet();
+      fn(...testArgs);
+      DeprecatedSymbols.reset(deprecated);
+    });
+  };
+};
+
 namespace DeprecatedSymbols {
   export function quiet(): string | undefined {
     const deprecated = process.env.JSII_DEPRECATED;

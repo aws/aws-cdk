@@ -1,0 +1,207 @@
+{
+ "Resources": {
+  "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4": {
+   "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "purgeQueue",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1688651590939"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "sqs:PurgeQueue"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a5c310b46637b9f23d0cd48c7ae357074563c375a3a49f87ce643821594ca2b4.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefBucket25524B414E77B0447"
+     },
+     "Key": "image.png",
+     "Body": "Some content"
+    },
+    "flattenResponse": "false",
+    "salt": "1688651590939"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "expected": "{\"$StringLike\":\"image\\\\.png\"}",
+    "actualPath": "Messages.0.Body.Records.0.s3.object.key",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
+     },
+     "WaitTimeSeconds": 20
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Messages.0.Body.Records.0.s3.object.key"
+    ],
+    "salt": "1688651590940"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

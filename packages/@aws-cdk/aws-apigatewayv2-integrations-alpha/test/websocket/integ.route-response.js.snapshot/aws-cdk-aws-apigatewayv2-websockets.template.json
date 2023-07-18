@@ -1,0 +1,90 @@
+{
+ "Resources": {
+  "MyWebsocketApiEBAC53DF": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyWebsocketApi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "MyWebsocketApitestRouteSendMessageIntegration526C7CB6": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyWebsocketApiEBAC53DF"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": ""
+   }
+  },
+  "MyWebsocketApitestRoute893E635A": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyWebsocketApiEBAC53DF"
+    },
+    "RouteKey": "test",
+    "AuthorizationType": "NONE",
+    "RouteResponseSelectionExpression": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyWebsocketApitestRouteSendMessageIntegration526C7CB6"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyWebsocketApitestRouteResponse5A88D743": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyWebsocketApiEBAC53DF"
+    },
+    "RouteId": {
+     "Ref": "MyWebsocketApitestRoute893E635A"
+    },
+    "RouteResponseKey": "$default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

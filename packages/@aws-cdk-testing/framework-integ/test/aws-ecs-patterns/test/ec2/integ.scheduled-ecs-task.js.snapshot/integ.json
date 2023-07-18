@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "scheduledEc2TaskTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-ecs"
+      ],
+      "assertionStack": "scheduledEc2TaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "scheduledEc2TaskTestDefaultTestDeployAssertF02313CA"
+    }
+  }
+}

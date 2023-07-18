@@ -1,0 +1,147 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-gamelift-alias.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-gamelift-alias.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-gamelift-alias": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-gamelift-alias.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4908024ef4196d7db3a85db12e1098c88d43cc46adb561335d1712587bddc29.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-gamelift-alias.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-gamelift-alias.assets"
+      ],
+      "metadata": {
+        "/aws-gamelift-alias/Build/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRole1F57E904"
+          }
+        ],
+        "/aws-gamelift-alias/Build/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRoleDefaultPolicyCB7101C6"
+          }
+        ],
+        "/aws-gamelift-alias/Build/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Build45A36621"
+          }
+        ],
+        "/aws-gamelift-alias/BuildFleet/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleetServiceRole32D49FB4"
+          }
+        ],
+        "/aws-gamelift-alias/BuildFleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleet027ED403"
+          }
+        ],
+        "/aws-gamelift-alias/FleetAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetAlias81A5A097"
+          }
+        ],
+        "/aws-gamelift-alias/TerminalAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TerminalAliasF1014036"
+          }
+        ],
+        "/aws-gamelift-alias/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-gamelift-alias/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-gamelift-alias"
+    },
+    "AliasDefaultTestDeployAssert722FACAF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AliasDefaultTestDeployAssert722FACAF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AliasDefaultTestDeployAssert722FACAF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AliasDefaultTestDeployAssert722FACAF.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AliasDefaultTestDeployAssert722FACAF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AliasDefaultTestDeployAssert722FACAF.assets"
+      ],
+      "metadata": {
+        "/Alias/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Alias/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Alias/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

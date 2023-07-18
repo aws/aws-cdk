@@ -1,0 +1,118 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "aws-cdk-route53-cross-account-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-route53-cross-account-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-route53-cross-account-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-route53-cross-account-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f4ec979a8d1283c6acc22bc18d9484eeb277437d6478857bfc44713df18cf6c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-route53-cross-account-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-route53-cross-account-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentHostedZoneC2BD86E1"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildHostedZoneWithZoneId729259E6"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C47314C14718"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildHostedZoneWithZoneNameBC2C15F6"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC28807823206B47A"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-route53-cross-account-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-route53-cross-account-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,6 +1,15 @@
 import * as path from 'path';
+import { Octokit } from '@octokit/rest';
+import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
+import { Endpoints } from "@octokit/types";
+import { execSync } from 'child_process';
+
+export type GitHubPr =
+  Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+
+export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
 /**
  * Types of exemption labels in aws-cdk project.
@@ -9,7 +18,37 @@ enum Exemption {
   README = 'pr-linter/exempt-readme',
   TEST = 'pr-linter/exempt-test',
   INTEG_TEST = 'pr-linter/exempt-integ-test',
-  BREAKING_CHANGE = 'pr-linter/exempt-breaking-change'
+  BREAKING_CHANGE = 'pr-linter/exempt-breaking-change',
+  CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
+  REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
+  REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
+}
+
+export interface GithubStatusEvent {
+  readonly sha: string;
+  readonly state?: StatusEvent['state'];
+  readonly context?: string;
+}
+
+export interface GitHubLabel {
+  readonly name: string;
+}
+
+export interface GitHubFile {
+  readonly filename: string;
+}
+
+export interface Review {
+  id: number;
+  user: {
+    login: string;
+  };
+  body: string;
+  state: string;
+}
+
+export interface Comment {
+  id: number;
 }
 
 class LinterError extends Error {
@@ -25,6 +64,15 @@ class LinterError extends Error {
  * Some tests may return multiple failures.
  */
 class TestResult {
+  /**
+   * Create a test result from a potential failure
+   */
+  public static fromFailure(failureCondition: boolean, failureMessage: string): TestResult {
+    const ret = new TestResult();
+    ret.assessFailure(failureCondition, failureMessage);
+    return ret;
+  }
+
   public errorMessages: string[] = [];
 
   /**
@@ -44,18 +92,17 @@ class TestResult {
  * Represents a single test.
  */
 interface Test {
-  test: (pr: any, files: any[]) => TestResult;
+  test: (pr: GitHubPr, files: GitHubFile[]) => TestResult;
 }
 
 /**
  * Represents a set of tests and the conditions under which those rules exempt.
  */
 interface ValidateRuleSetOptions {
-
   /**
    * The function to test for exemption from the rules in testRuleSet.
    */
-  exemption?: (pr: any) => boolean;
+  exemption?: (pr: GitHubPr) => boolean;
 
   /**
    * The log message printed if the exemption is granted.
@@ -75,7 +122,7 @@ interface ValidateRuleSetOptions {
 class ValidationCollector {
   public errors: string[] = [];
 
-  constructor(private pr: any, private files: string[]) { }
+  constructor(private pr: GitHubPr, private files: GitHubFile[]) { }
 
   /**
    * Checks for exemption criteria and then validates against the ruleset when not exempt to it.
@@ -103,11 +150,10 @@ class ValidationCollector {
  * Props used to perform linting against the pull request.
  */
 export interface PullRequestLinterProps {
-
   /**
    * GitHub client scoped to pull requests. Imported via @actions/github.
    */
-  readonly client: any;
+  readonly client: Octokit;
 
   /**
    * Repository owner.
@@ -130,53 +176,289 @@ export interface PullRequestLinterProps {
  * in the body of the review, and dismiss any previous reviews upon changes to the pull request.
  */
 export class PullRequestLinter {
-  private readonly client: any;
-  private readonly prParams: { owner: string, repo: string, pull_number: number };
+  /**
+   * Find an open PR for the given commit.
+   * @param sha the commit sha to find the PR of
+   */
+  public static async getPRFromCommit(client: Octokit, owner: string, repo: string, sha: string): Promise<GitHubPr | undefined> {
+    const prs = await client.search.issuesAndPullRequests({
+      q: sha,
+    });
+    console.log('Found PRs: ', prs);
+    const foundPr = prs.data.items.find(pr => pr.state === 'open');
+    if (foundPr) {
+      // need to do this because the list PR response does not have
+      // all the necessary information
+      const pr = (await client.pulls.get({
+        owner,
+        repo,
+        pull_number: foundPr.number,
+      })).data;
+      console.log(`PR: ${foundPr.number}: `, pr);
+      // only process latest commit
+      if (pr.head.sha === sha) {
+        return pr;
+      }
+    }
+    return;
+  }
 
+  private readonly client: Octokit;
+  private readonly prParams: { owner: string, repo: string, pull_number: number };
+  private readonly issueParams: { owner: string, repo: string, issue_number: number };
+  private readonly trustedCommunity: string[] = [];
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
+    this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
   }
 
   /**
-   * Dismisses previous reviews by aws-cdk-automation when changes have been made to the pull request.
+   * Deletes the previous linter comment if it exists.
    */
-  private async dismissPreviousPRLinterReviews(): Promise<void> {
-    const reviews = await this.client.listReviews(this.prParams);
-    reviews.data.forEach(async (review: any) => {
-      if (review.user?.login === 'github-actions[bot]' && review.state !== 'DISMISSED') {
-        await this.client.dismissReview({
-          ...this.prParams,
-          review_id: review.id,
-          message: 'Pull Request updated. Dissmissing previous PRLinter Review.',
-        })
-      }
+  private async deletePRLinterComment(): Promise<void> {
+    // Since previous versions of this pr linter didn't add comments, we need to do this check first.
+    const comment = await this.findExistingComment();
+    if (comment) {
+      await this.client.issues.deleteComment({
+        ...this.issueParams,
+        comment_id: comment.id,
+      });
+    };
+  };
+
+  /**
+   * Dismisses previous reviews by aws-cdk-automation when the pull request succeeds the linter.
+   * @param existingReview The review created by a previous run of the linter
+   */
+  private async dismissPRLinterReview(existingReview?: Review): Promise<void> {
+    if (existingReview) {
+      await this.client.pulls.dismissReview({
+        ...this.prParams,
+        review_id: existingReview.id,
+        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.'
+      })
+    }
+  }
+
+  /**
+   * Creates a new review and comment for first run with failure or creates a new comment with new failures for existing reviews.
+   * @param failureMessages The failures received by the pr linter validation checks.
+   * @param existingReview The review created by a previous run of the linter.
+   */
+  private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
+    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+      + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
+      + 'If you would like to request an exemption from the status checks or clarification on feedback,'
+      + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
+    if (!existingReview) {
+      await this.client.pulls.createReview({
+        ...this.prParams,
+        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
+          + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
+          + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
+          +  ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
+        event: 'REQUEST_CHANGES',
+      })
+    }
+
+    await this.client.issues.createComment({
+      ...this.issueParams,
+      body,
     })
+
+    throw new LinterError(body);
+  }
+
+  /**
+   * Finds existing review, if present
+   * @returns Existing review, if present
+   */
+  private async findExistingReview(): Promise<Review | undefined> {
+    const reviews = await this.client.pulls.listReviews(this.prParams);
+    return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+  }
+
+  /**
+   * Finds existing comment from previous review, if present
+   * @returns Existing comment, if present
+   */
+  private async findExistingComment(): Promise<Comment | undefined> {
+    const comments = await this.client.issues.listComments(this.issueParams);
+    return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
 
   /**
    * Creates a new review, requesting changes, with the reasons that the linter did not pass.
-   * @param failureReasons The list of reasons why the linter failed
+   * @param result The result of the PR Linter run.
    */
-  private async communicateResult(failureReasons: string[]): Promise<void> {
-    const body = `The Pull Request Linter fails with the following errors:${this.formatErrors(failureReasons)}PRs must pass status checks before we can provide a meaningful review.`;
-      await this.client.createReview({ ...this.prParams, body, event: 'REQUEST_CHANGES', });
-      throw new LinterError(body);
+  private async communicateResult(result: ValidationCollector): Promise<void> {
+    const existingReview = await this.findExistingReview();
+    if (result.isValid()) {
+      console.log("✅  Success");
+      await this.dismissPRLinterReview(existingReview);
+    } else {
+      await this.createOrUpdatePRLinterReview(result.errors, existingReview);
+    }
+  }
+
+  /**
+   * Whether or not the codebuild job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
+  private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
+    const statuses = await this.client.repos.listCommitStatusesForRef({
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      ref: sha,
+    });
+    return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
+  }
+
+  public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
+    if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
+      await this.assessNeedsReview(pr);
+    }
+  }
+
+  /**
+   * Assess whether or not a PR is ready for review.
+   * This is needed because some things that we need to evaluate are not filterable on
+   * the builtin issue search. A PR is ready for review when:
+   *
+   *   1. Not a draft
+   *   2. Does not have any merge conflicts
+   *   3. PR linter is not failing OR the user has requested an exemption
+   *   4. A maintainer has not requested changes
+   *   5. A maintainer has not approved
+   *
+   * In addition, we differentiate between ready for review by a core team member
+   * (pr/needs-maintainer-review) or ready for review by core OR the trusted community
+   * (pr/needs-review). A PR is prioritized for core team review when:
+   *
+   *   6. It links to a p1 issue
+   *   7. It links to a p2 issue and has an approved community review
+   */
+  private async assessNeedsReview(
+    pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
+  ): Promise<void> {
+    const reviews = await this.client.pulls.listReviews(this.prParams);
+    // NOTE: MEMBER = a member of the organization that owns the repository
+    // COLLABORATOR = has been invited to collaborate on the repository
+    const maintainerRequestedChanges = reviews.data.some(
+      review => review.author_association === 'MEMBER'
+        && review.user?.login !== 'aws-cdk-automation'
+        && review.state === 'CHANGES_REQUESTED'
+    );
+    const maintainerApproved = reviews.data.some(
+      review => review.author_association === 'MEMBER'
+        && review.state === 'APPROVED'
+    );
+    const communityRequestedChanges = reviews.data.some(
+      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
+        && review.state !== 'APPROVED' // community members cannot request changes
+    )
+    const communityApproved = reviews.data.some(
+      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
+        && review.state === 'APPROVED'
+    );
+
+    const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
+    console.log('evaluation: ', JSON.stringify({
+      draft: pr.draft,
+      mergeable_state: pr.mergeable_state,
+      prLinterFailed,
+      maintainerRequestedChanges,
+      userRequestsExemption,
+    }, undefined, 2));
+
+    const fixesP1 = pr.labels.some(label => label.name === 'p1');
+    let readyForReview = true;
+    if (
+      // we don't need to review drafts
+      pr.draft
+        // or PRs with conflicts
+        || pr.mergeable_state === 'dirty'
+        // or PRs that already have changes requested by a maintainer
+        || maintainerRequestedChanges
+        // or the PR linter failed and the user didn't request an exemption
+        || (prLinterFailed && !userRequestsExemption)
+        // or a maintainer has already approved the PR
+        || maintainerApproved
+        // or a trusted community member has requested changes on a p2 PR
+        || (!fixesP1 && communityRequestedChanges)
+    ) {
+      readyForReview = false;
+    }
+
+    if (readyForReview && (fixesP1 || communityApproved)) {
+      this.addLabel('pr/needs-maintainer-review', pr);
+      this.removeLabel('pr/needs-review', pr);
+    } else if (readyForReview && !fixesP1) {
+      this.removeLabel('pr/needs-maintainer-review', pr);
+      this.addLabel('pr/needs-review', pr);
+    } else {
+      this.removeLabel('pr/needs-review', pr);
+      this.removeLabel('pr/needs-maintainer-review', pr);
+    }
+  }
+
+  private addLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+    // already has label, so no-op
+    if (pr.labels.some(l => l.name === label)) { return; }
+    console.log(`adding ${label} to pr ${pr.number}`);
+    this.client.issues.addLabels({
+      issue_number: pr.number,
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      labels: [
+        label,
+      ],
+    });
+  }
+
+  private removeLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+    // does not have label, so no-op
+    if (!pr.labels.some(l => l.name === label)) { return; }
+    console.log(`removing ${label} to pr ${pr.number}`);
+    this.client.issues.removeLabel({
+      issue_number: pr.number,
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      name: label,
+    });
+  }
+
+  /**
+   * Trusted community reviewers is derived from the source of truth at this wiki:
+   * https://github.com/aws/aws-cdk/wiki/Introducing-CDK-Community-PR-Reviews
+   */
+  private getTrustedCommunityMembers(): string[] {
+    if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
+
+    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8'}).toString();
+    const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
+    for (let i = 2; i < rawMdTable.length; i++) {
+      this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());
+    }
+    return this.trustedCommunity;
   }
 
   /**
    * Performs validations and communicates results via pull request comments, upon failure.
-   * This also dissmisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
+   * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
-  public async validate(): Promise<void> {
+  public async validatePullRequestTarget(sha: string): Promise<void> {
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
-    const pr = (await this.client.get(this.prParams)).data;
+    const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
 
     console.log(`⌛  Fetching files for PR number ${number}`);
-    const files = (await this.client.listFiles(this.prParams)).data;
+    const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
 
     console.log("⌛  Validating...");
 
@@ -207,6 +489,9 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       testRuleSet: [ { test: validateTitlePrefix } ]
     });
+    validationCollector.validateRuleSet({
+      testRuleSet: [ { test: validateTitleScope } ]
+    })
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
@@ -214,8 +499,26 @@ export class PullRequestLinter {
       testRuleSet: [ { test: assertStability } ]
     });
 
-    await this.dismissPreviousPRLinterReviews();
-    validationCollector.isValid() ? console.log("✅  Success") : await this.communicateResult(validationCollector.errors);
+    validationCollector.validateRuleSet({
+      exemption: shouldExemptCliIntegTested,
+      testRuleSet: [ { test: noCliChanges } ],
+    });
+
+    await this.deletePRLinterComment();
+    try {
+      await this.communicateResult(validationCollector);
+      // always assess the review, even if the linter fails
+    } finally {
+      // also assess whether the PR needs review or not
+      try {
+        const state = await this.codeBuildJobSucceeded(sha);
+        if (state) {
+          await this.assessNeedsReview(pr);
+        }
+      } catch (e) {
+        console.log(`assessing review failed for sha ${sha}: `, e);
+      }
+    }
   }
 
   private formatErrors(errors: string[]) {
@@ -223,87 +526,91 @@ export class PullRequestLinter {
   };
 }
 
-function isPkgCfnspec(pr: any): boolean {
+function isPkgCfnspec(pr: GitHubPr): boolean {
   return pr.title.indexOf("(cfnspec)") > -1;
 }
 
-function isFeature(pr: any): boolean {
+function isFeature(pr: GitHubPr): boolean {
   return pr.title.startsWith("feat")
 }
 
-function isFix(pr: any): boolean {
+function isFix(pr: GitHubPr): boolean {
   return pr.title.startsWith("fix")
 }
 
-function testChanged(files: any[]): boolean {
+function testChanged(files: GitHubFile[]): boolean {
   return files.filter(f => f.filename.toLowerCase().includes("test")).length != 0;
 }
 
-function integTestChanged(files: any[]): boolean {
+function integTestChanged(files: GitHubFile[]): boolean {
   return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
 }
 
-function integTestSnapshotChanged(files: any[]): boolean {
-  return files.filter(f => f.filename.toLowerCase().includes("integ.snapshot")).length != 0;
+function integTestSnapshotChanged(files: GitHubFile[]): boolean {
+  return files.filter(f => f.filename.toLowerCase().includes(".snapshot")).length != 0;
 }
 
-function readmeChanged(files: any[]): boolean {
+function readmeChanged(files: GitHubFile[]): boolean {
   return files.filter(f => path.basename(f.filename) == "README.md").length != 0;
 }
 
-function featureContainsReadme(pr: any, files: any[]): TestResult {
+function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr), 'Features must contain a change to a README file.');
   return result;
-};
+}
 
-function featureContainsTest(pr: any, files: any[]): TestResult {
+function featureContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !testChanged(files), 'Features must contain a change to a test file.');
   return result;
-};
+}
 
-function fixContainsTest(pr: any, files: any[]): TestResult {
+function fixContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && !testChanged(files), 'Fixes must contain a change to a test file.');
   return result;
-};
+}
 
-function featureContainsIntegTest(pr: any, files: any[]): TestResult {
+function featureContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Features must contain a change to an integration test file and the resulting snapshot.');
   return result;
-};
+}
 
-function fixContainsIntegTest(pr: any, files: any[]): TestResult {
+function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
-};
+}
 
-function shouldExemptReadme(pr: any): boolean {
+function shouldExemptReadme(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.README);
-};
+}
 
-function shouldExemptTest(pr: any): boolean {
+function shouldExemptTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.TEST);
-};
+}
 
-function shouldExemptIntegTest(pr: any): boolean {
+function shouldExemptIntegTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.INTEG_TEST);
-};
+}
 
-function shouldExemptBreakingChange(pr: any): boolean {
+function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
-};
+}
 
-function hasLabel(pr: any, labelName: string): boolean {
+function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
+}
+
+function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
-  })
-};
+  });
+}
 
 /**
  * Check that the 'BREAKING CHANGE:' note in the body is correct.
@@ -312,12 +619,12 @@ function hasLabel(pr: any, labelName: string): boolean {
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
  */
- function validateBreakingChangeFormat(pr: any, _files: any[]): TestResult {
+function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const title = pr.title;
   const body = pr.body;
   const result = new TestResult();
   const re = /^BREAKING.*$/m;
-  const m = re.exec(body);
+  const m = re.exec(body ?? '');
   if (m) {
     result.assessFailure(!m[0].startsWith('BREAKING CHANGE: '), `Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}').`);
     result.assessFailure(m[0].slice('BREAKING CHANGE:'.length).trim().length === 0, `The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause.`);
@@ -325,30 +632,65 @@ function hasLabel(pr: any, labelName: string): boolean {
     result.assessFailure(!titleRe.exec(title), 'The title of this pull request must specify the module name that the first breaking change should be associated to.');
   }
   return result;
-};
+}
 
 /**
  * Check that the PR title has the correct prefix.
  */
- function validateTitlePrefix(title: string): TestResult {
+function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test)(\([\w-]+\)){0,1}: /;
-  const m = titleRe.exec(title);
-  if (m) {
-      result.assessFailure(m[0] !== undefined, "The title of this pull request must specify the module name that the first breaking change should be associated to.");
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
+  const m = titleRe.exec(pr.title);
+  result.assessFailure(
+    !m,
+    "The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.");
+  return result;
+}
+
+/**
+ * Check that the PR title uses the typical convention for package names.
+ *
+ * For example, "fix(s3)" is preferred over "fix(aws-s3)".
+ */
+function validateTitleScope(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  const scopesExemptFromThisRule = [ 'aws-cdk-lib' ];
+  // Specific commit types are handled by `validateTitlePrefix`. This just checks whether
+  // the scope includes an `aws-` prefix or not.
+  // Group 1: Scope with parens - "(aws-<name>)"
+  // Group 2: Scope name - "aws-<name>"
+  // Group 3: Preferred scope name - "<name>"
+  const titleRe = /^\w+(\((aws-([\w_-]+))\))?: /;
+  const m = titleRe.exec(pr.title);
+  if (m && !scopesExemptFromThisRule.includes(m[2])) {
+    result.assessFailure(
+      !!(m[2] && m[3]),
+      `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+    );
   }
   return result;
-};
+}
 
-function assertStability(pr: any, _files: any[]): TestResult {
+function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const title = pr.title;
   const body = pr.body;
   const result = new TestResult();
-  const breakingStable = breakingModules(title, body).filter(mod => 'stable' === moduleStability(findModulePath(mod)));
+  const breakingStable = breakingModules(title, body ?? '').filter(mod => 'stable' === moduleStability(findModulePath(mod)));
   result.assessFailure(breakingStable.length > 0, `Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
   return result;
-};
+}
+
+function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const branch = `pull/${pr.number}/head`;
+
+  const cliCodeChanged = files.some(f => f.filename.toLowerCase().includes('packages/aws-cdk/lib/') && f.filename.endsWith('.ts'));
+
+  return TestResult.fromFailure(
+    cliCodeChanged,
+    `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`,
+  );
+}
 
 require('make-runnable/custom')({
-  printOutputFrame: false
+  printOutputFrame: false,
 });

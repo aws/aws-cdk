@@ -1,27 +1,6 @@
 #!/bin/bash
-#------------------------------------------------------------------
-# setup
-#------------------------------------------------------------------
-set -e
-scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/common.bash
+set -eu
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly.
 
-header Java
-
-#------------------------------------------------------------------
-
-if [[ "${1:-}" == "" ]]; then
-    templates="app sample-app"
-else
-    templates="$@"
-fi
-
-for template in $templates; do
-    echo "Trying Java template $template"
-
-    setup
-
-    cdk init -l java $template
-    mvn package
-    cdk synth
-done
+exec ${INTEG_TOOLS}/bin/run-suite --use-cli-release=$VERSION init-java

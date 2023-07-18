@@ -1,0 +1,36 @@
+{
+  "roles": [
+    {
+      "roleConstructPath": "integ-lambda-customize-roles/MyLambda/ServiceRole",
+      "roleName": "precreated-role",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [
+        "arn:(PARTITION):iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      ],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": [
+        {
+          "Action": [
+            "s3:GetObject*",
+            "s3:GetBucket*",
+            "s3:List*"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "(integ-lambda-customize-roles/Bucket/Resource.Arn)",
+            "(integ-lambda-customize-roles/Bucket/Resource.Arn)/*"
+          ]
+        }
+      ]
+    }
+  ]
+}

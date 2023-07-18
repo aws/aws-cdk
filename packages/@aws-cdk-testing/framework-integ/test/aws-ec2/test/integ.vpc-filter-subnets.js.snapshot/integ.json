@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "VPCFilterSubnets/DefaultTest": {
+      "stacks": [
+        "VPCFilterSubnetsTestStack"
+      ],
+      "assertionStack": "VPCFilterSubnets/DefaultTest/DeployAssert",
+      "assertionStackName": "VPCFilterSubnetsDefaultTestDeployAssertC02936E8"
+    }
+  }
+}

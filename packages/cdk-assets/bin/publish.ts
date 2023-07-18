@@ -1,8 +1,8 @@
+import { log, LogLevel } from './logging';
 import {
   AssetManifest, AssetPublishing, DefaultAwsClient, DestinationPattern, EventType,
   IPublishProgress, IPublishProgressListener,
 } from '../lib';
-import { log, LogLevel } from './logging';
 
 export async function publish(args: {
   path: string;

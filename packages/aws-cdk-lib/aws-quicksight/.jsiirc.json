@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.QuickSight"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.quicksight"
+    },
+    "python": {
+      "module": "aws_cdk.aws_quicksight"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "EvaluateExpressionInteg/DefaultTest": {
+      "stacks": [
+        "cdk-sfn-evaluate-expression-integ"
+      ],
+      "assertionStack": "EvaluateExpressionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionIntegDefaultTestDeployAssert03097648"
+    }
+  }
+}

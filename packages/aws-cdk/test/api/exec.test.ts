@@ -1,6 +1,7 @@
+/* eslint-disable import/order */
 jest.mock('child_process');
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cdk from '@aws-cdk/core';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import * as cdk from 'aws-cdk-lib';
 import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
@@ -90,7 +91,8 @@ test('cli does not throw when manifest version = schema version', async () => {
 
   config.settings.set(['app'], 'cdk.out');
 
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 
 }, TEN_SECOND_TIMEOUT);
 
@@ -107,7 +109,8 @@ test('cli does not throw when manifest version < schema version', async () => {
   // greater that the version created in the manifest, which is what we are testing for.
   const mockVersionNumber = ImportMock.mockFunction(cxschema.Manifest, 'version', semver.inc(currentSchemaVersion, 'major'));
   try {
-    await execProgram(sdkProvider, config);
+    const { lock } = await execProgram(sdkProvider, config);
+    await lock.release();
   } finally {
     mockVersionNumber.restore();
   }
@@ -128,9 +131,11 @@ test('bypasses synth when app points to a cloud assembly', async () => {
   writeOutputAssembly();
 
   // WHEN
-  const cloudAssembly = await execProgram(sdkProvider, config);
+  const { assembly: cloudAssembly, lock } = await execProgram(sdkProvider, config);
   expect(cloudAssembly.artifacts).toEqual([]);
   expect(cloudAssembly.directory).toEqual('cdk.out');
+
+  await lock.release();
 });
 
 test('the application set in --app is executed', async () => {
@@ -142,7 +147,8 @@ test('the application set in --app is executed', async () => {
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 });
 
 test('the application set in --app is executed as-is if it contains a filename that does not exist', async () => {
@@ -154,7 +160,8 @@ test('the application set in --app is executed as-is if it contains a filename t
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 });
 
 test('the application set in --app is executed with arguments', async () => {
@@ -166,7 +173,8 @@ test('the application set in --app is executed with arguments', async () => {
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 });
 
 test('application set in --app as `*.js` always uses handler on windows', async () => {
@@ -179,7 +187,8 @@ test('application set in --app as `*.js` always uses handler on windows', async 
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 });
 
 test('application set in --app is `*.js` and executable', async () => {
@@ -191,7 +200,8 @@ test('application set in --app is `*.js` and executable', async () => {
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 });
 
 test('cli throws when the `build` script fails', async () => {
@@ -220,9 +230,9 @@ test('cli does not throw when the `build` script succeeds', async () => {
   });
 
   // WHEN
-  await execProgram(sdkProvider, config);
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
 }, TEN_SECOND_TIMEOUT);
-
 
 function writeOutputAssembly() {
   const asm = testAssembly({

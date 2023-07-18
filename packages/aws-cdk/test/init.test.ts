@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -58,6 +59,7 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.csproj\"/));
   });
 
@@ -73,6 +75,7 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.fsproj\"/));
   });
 
@@ -85,6 +88,7 @@ describe('constructs version', () => {
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
   });
 
   cliTestWithDirSpaces('fsharp app with spaces', async (workDir) => {
@@ -96,6 +100,7 @@ describe('constructs version', () => {
     const fsproj = (await fs.readFile(fsprojFile, 'utf8')).split(/\r?\n/);
 
     expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
   });
 
   cliTest('create a Python app project', async (workDir) => {
@@ -151,14 +156,13 @@ describe('constructs version', () => {
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
           for (const [key, actual] of Object.entries(context)) {
-            expect(key in cxapi.FUTURE_FLAGS || key in cxapi.NEW_PROJECT_DEFAULT_CONTEXT).toBeTruthy();
-
-            expect(cxapi.FUTURE_FLAGS[key] ?? cxapi.NEW_PROJECT_DEFAULT_CONTEXT[key]).toEqual(actual);
+            expect(key in cxapi.NEW_PROJECT_CONTEXT).toBeTruthy();
+            expect(cxapi.NEW_PROJECT_CONTEXT[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json
           Object.keys(context).forEach(k => {
-            expect(cxapi.FUTURE_FLAGS_EXPIRED.includes(k)).toEqual(false);
+            expect(cxapi.CURRENT_VERSION_EXPIRED_FLAGS.includes(k)).toEqual(false);
           });
         });
       }

@@ -1,11 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { SdkProvider } from '../api';
-import { PluginHost } from '../api/plugin';
-import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
-import { replaceEnvPlaceholders } from '../api/util/placeholders';
-import { debug } from '../logging';
-import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
 import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
@@ -15,6 +9,12 @@ import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderP
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
+import { SdkProvider } from '../api';
+import { PluginHost } from '../api/plugin';
+import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
+import { replaceEnvPlaceholders } from '../api/util/placeholders';
+import { debug } from '../logging';
+import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
@@ -69,7 +69,7 @@ export async function provideContextValues(
       }, resolvedEnvironment, sdk);
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
-    } catch (e) {
+    } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };

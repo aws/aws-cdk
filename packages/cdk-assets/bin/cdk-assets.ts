@@ -1,8 +1,8 @@
 import * as yargs from 'yargs';
-import { AssetManifest } from '../lib';
 import { list } from './list';
 import { setLogThreshold, VERSION } from './logging';
 import { publish } from './publish';
+import { AssetManifest } from '../lib';
 
 async function main() {
   const argv = yargs

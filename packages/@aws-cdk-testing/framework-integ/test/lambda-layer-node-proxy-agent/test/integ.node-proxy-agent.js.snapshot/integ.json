@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "lambda-layer-node-proxy-agent-integ-test/DefaultTest": {
+      "stacks": [
+        "lambda-layer-node-proxy-agent-integ-stack"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "lambda-layer-node-proxy-agent-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212"
+    }
+  }
+}

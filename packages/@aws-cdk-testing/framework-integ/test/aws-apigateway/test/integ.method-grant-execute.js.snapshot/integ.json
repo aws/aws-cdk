@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "GrantExecuteTest/DefaultTest": {
+      "stacks": [
+        "GrantExecute"
+      ],
+      "assertionStack": "GrantExecuteTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GrantExecuteTestDefaultTestDeployAssertA66B6F20"
+    }
+  }
+}

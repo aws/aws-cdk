@@ -1,0 +1,125 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.108"
+        }
+      },
+      "custom-resource-test": {
+        "id": "custom-resource-test",
+        "path": "custom-resource-test",
+        "children": {
+          "Custom::ReflectCustomResourceProvider": {
+            "id": "Custom::ReflectCustomResourceProvider",
+            "path": "custom-resource-test/Custom::ReflectCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "custom-resource-test/Custom::ReflectCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "custom-resource-test/Custom::ReflectCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "custom-resource-test/Custom::ReflectCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "MyResource": {
+            "id": "MyResource",
+            "path": "custom-resource-test/MyResource",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "custom-resource-test/MyResource/Default",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "MyLengthyTypeResource": {
+            "id": "MyLengthyTypeResource",
+            "path": "custom-resource-test/MyLengthyTypeResource",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "custom-resource-test/MyLengthyTypeResource/Default",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "Ref": {
+            "id": "Ref",
+            "path": "custom-resource-test/Ref",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "GetAtt.Attribute1": {
+            "id": "GetAtt.Attribute1",
+            "path": "custom-resource-test/GetAtt.Attribute1",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "GetAtt.Attribute2": {
+            "id": "GetAtt.Attribute2",
+            "path": "custom-resource-test/GetAtt.Attribute2",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

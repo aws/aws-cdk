@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integtest-endpoint/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sagemaker-endpoint"
+      ],
+      "assertionStack": "integtest-endpoint/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestendpointDefaultTestDeployAssert02E18E07"
+    }
+  }
+}

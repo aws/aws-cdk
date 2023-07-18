@@ -1,0 +1,15 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "FlowLogs/DefaultTest": {
+      "stacks": [
+        "FlowLogsTestStack",
+        "FlowLogsFeatureFlag",
+        "DependencyTestStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
+      "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
+    }
+  }
+}
