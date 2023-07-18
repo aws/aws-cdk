@@ -4,12 +4,13 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Size, Stack } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
+import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 import { capitalizePropertyNames } from './utils';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
@@ -311,13 +312,13 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('respects secrets', () => {
+  test('respects secrets from secrestsmanager', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         secrets: {
-          envName: new Secret(stack, 'testSecret'),
+          envName: Secret.fromSecretsManager(new secretsmanager.Secret(stack, 'testSecret')),
         },
       }),
     });
@@ -335,10 +336,189 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
         ],
       },
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects versioned secrets from secrestsmanager', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        secrets: {
+          envName: Secret.fromSecretsManagerVersion(new secretsmanager.Secret(stack, 'testSecret'), {
+            versionId: 'versionID',
+            versionStage: 'stage',
+          }),
+        },
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Secrets: [
+          {
+            Name: 'envName',
+            ValueFrom: {
+              'Fn::Join': [
+                '', [
+                  { Ref: 'testSecretB96AD12C' },
+                  '::stage:versionID',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'testSecretB96AD12C' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects secrets from ssm', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        secrets: {
+          envName: Secret.fromSsmParameter(new ssm.StringParameter(stack, 'myParam', { stringValue: 'super secret' })),
+        },
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Secrets: [
+          {
+            Name: 'envName',
+            ValueFrom: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameter/',
+                  { Ref: 'myParam03610B68' },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameter/',
+                  { Ref: 'myParam03610B68' },
+                ],
+
+              ],
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('respects user', () => {
-    // WHEN
+  // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
