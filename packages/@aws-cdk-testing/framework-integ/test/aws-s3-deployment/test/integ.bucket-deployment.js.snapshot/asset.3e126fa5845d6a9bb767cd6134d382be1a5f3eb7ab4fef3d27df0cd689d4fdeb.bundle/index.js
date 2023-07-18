@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -194,7 +195,7 @@ ${indents.join("")}`));
             emit(`!! ${fail.message}
 `);
           }
-          scrapSet == null ? void 0 : scrapSet.delete(path);
+          scrapSet?.delete(path);
         }
         function recurse(r) {
           const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ""));
@@ -380,12 +381,10 @@ var init_sparse_matrix = __esm({
         this.matrix = /* @__PURE__ */ new Map();
       }
       get(row, col) {
-        var _a;
-        return (_a = this.matrix.get(row)) == null ? void 0 : _a.get(col);
+        return this.matrix.get(row)?.get(col);
       }
       row(row) {
-        var _a;
-        return Array.from(((_a = this.matrix.get(row)) == null ? void 0 : _a.entries()) ?? []);
+        return Array.from(this.matrix.get(row)?.entries() ?? []);
       }
       set(row, col, value) {
         let r = this.matrix.get(row);
@@ -12886,7 +12885,6 @@ var require_Aws_query = __commonJS({
       return (0, smithy_client_1.decorateServiceException)(exception, body);
     };
     var se_AssumeRoleRequest = (input, context) => {
-      var _a, _b, _c;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12896,7 +12894,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12912,7 +12910,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.Tags != null) {
         const memberEntries = se_tagListType(input.Tags, context);
-        if (((_b = input.Tags) == null ? void 0 : _b.length) === 0) {
+        if (input.Tags?.length === 0) {
           entries.Tags = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12922,7 +12920,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.TransitiveTagKeys != null) {
         const memberEntries = se_tagKeyListType(input.TransitiveTagKeys, context);
-        if (((_c = input.TransitiveTagKeys) == null ? void 0 : _c.length) === 0) {
+        if (input.TransitiveTagKeys?.length === 0) {
           entries.TransitiveTagKeys = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12945,7 +12943,6 @@ var require_Aws_query = __commonJS({
       return entries;
     };
     var se_AssumeRoleWithSAMLRequest = (input, context) => {
-      var _a;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12958,7 +12955,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -12975,7 +12972,6 @@ var require_Aws_query = __commonJS({
       return entries;
     };
     var se_AssumeRoleWithWebIdentityRequest = (input, context) => {
-      var _a;
       const entries = {};
       if (input.RoleArn != null) {
         entries["RoleArn"] = input.RoleArn;
@@ -12991,7 +12987,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13026,7 +13022,6 @@ var require_Aws_query = __commonJS({
       return entries;
     };
     var se_GetFederationTokenRequest = (input, context) => {
-      var _a, _b;
       const entries = {};
       if (input.Name != null) {
         entries["Name"] = input.Name;
@@ -13036,7 +13031,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.PolicyArns != null) {
         const memberEntries = se_policyDescriptorListType(input.PolicyArns, context);
-        if (((_a = input.PolicyArns) == null ? void 0 : _a.length) === 0) {
+        if (input.PolicyArns?.length === 0) {
           entries.PolicyArns = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13049,7 +13044,7 @@ var require_Aws_query = __commonJS({
       }
       if (input.Tags != null) {
         const memberEntries = se_tagListType(input.Tags, context);
-        if (((_b = input.Tags) == null ? void 0 : _b.length) === 0) {
+        if (input.Tags?.length === 0) {
           entries.Tags = [];
         }
         Object.entries(memberEntries).forEach(([key, value]) => {
@@ -13405,8 +13400,7 @@ var require_Aws_query = __commonJS({
     };
     var buildFormUrlencodedString = (formEntries) => Object.entries(formEntries).map(([key, value]) => (0, smithy_client_1.extendedEncodeURIComponent)(key) + "=" + (0, smithy_client_1.extendedEncodeURIComponent)(value)).join("&");
     var loadQueryErrorCode = (output, data) => {
-      var _a;
-      if (((_a = data.Error) == null ? void 0 : _a.Code) !== void 0) {
+      if (data.Error?.Code !== void 0) {
         return data.Error.Code;
       }
       if (output.statusCode == 404) {
@@ -15005,15 +14999,15 @@ var require_runtimeConfig_shared = __commonJS({
     var endpointResolver_1 = require_endpointResolver();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2019-06-10",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SSO",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SSO",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -15155,19 +15149,19 @@ var require_runtimeConfig = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -15349,7 +15343,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/federation/credentials`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/federation/credentials`;
       const query = (0, smithy_client_1.map)({
         role_name: [, (0, smithy_client_1.expectNonNull)(input.roleName, `roleName`)],
         account_id: [, (0, smithy_client_1.expectNonNull)(input.accountId, `accountId`)]
@@ -15372,7 +15366,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/assignment/roles`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/assignment/roles`;
       const query = (0, smithy_client_1.map)({
         next_token: [, input.nextToken],
         max_result: [() => input.maxResults !== void 0, () => input.maxResults.toString()],
@@ -15396,7 +15390,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/assignment/accounts`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/assignment/accounts`;
       const query = (0, smithy_client_1.map)({
         next_token: [, input.nextToken],
         max_result: [() => input.maxResults !== void 0, () => input.maxResults.toString()]
@@ -15419,7 +15413,7 @@ var require_Aws_restJson1 = __commonJS({
       const headers = (0, smithy_client_1.map)({}, isSerializableHeaderValue, {
         "x-amz-sso_bearer_token": input.accessToken
       });
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/logout`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/logout`;
       let body;
       return new protocol_http_1.HttpRequest({
         protocol,
@@ -16271,15 +16265,15 @@ var require_runtimeConfig_shared2 = __commonJS({
     var endpointResolver_1 = require_endpointResolver2();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2019-06-10",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SSO OIDC",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SSO OIDC",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -16315,19 +16309,19 @@ var require_runtimeConfig2 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -16605,7 +16599,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/token`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/token`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientId: [],
@@ -16633,7 +16627,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/client/register`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/client/register`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientName: [],
@@ -16656,7 +16650,7 @@ var require_Aws_restJson12 = __commonJS({
       const headers = {
         "content-type": "application/json"
       };
-      const resolvedPath = `${(basePath == null ? void 0 : basePath.endsWith("/")) ? basePath.slice(0, -1) : basePath || ""}/device_authorization`;
+      const resolvedPath = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}/device_authorization`;
       let body;
       body = JSON.stringify((0, smithy_client_1.take)(input, {
         clientId: [],
@@ -17993,15 +17987,15 @@ var require_runtimeConfig_shared3 = __commonJS({
     var endpointResolver_1 = require_endpointResolver3();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2011-06-15",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "STS",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "STS",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -18039,20 +18033,20 @@ var require_runtimeConfig3 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        credentialDefaultProvider: (config == null ? void 0 : config.credentialDefaultProvider) ?? (0, defaultStsRoleAssumers_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        credentialDefaultProvider: config?.credentialDefaultProvider ?? (0, defaultStsRoleAssumers_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -18626,15 +18620,15 @@ var require_runtimeConfig_shared4 = __commonJS({
     var endpointResolver_1 = require_endpointResolver4();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2016-11-23",
-      base64Decoder: (config == null ? void 0 : config.base64Decoder) ?? util_base64_1.fromBase64,
-      base64Encoder: (config == null ? void 0 : config.base64Encoder) ?? util_base64_1.toBase64,
-      disableHostPrefix: (config == null ? void 0 : config.disableHostPrefix) ?? false,
-      endpointProvider: (config == null ? void 0 : config.endpointProvider) ?? endpointResolver_1.defaultEndpointResolver,
-      logger: (config == null ? void 0 : config.logger) ?? new smithy_client_1.NoOpLogger(),
-      serviceId: (config == null ? void 0 : config.serviceId) ?? "SFN",
-      urlParser: (config == null ? void 0 : config.urlParser) ?? url_parser_1.parseUrl,
-      utf8Decoder: (config == null ? void 0 : config.utf8Decoder) ?? util_utf8_1.fromUtf8,
-      utf8Encoder: (config == null ? void 0 : config.utf8Encoder) ?? util_utf8_1.toUtf8
+      base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
+      base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
+      disableHostPrefix: config?.disableHostPrefix ?? false,
+      endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
+      logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
+      serviceId: config?.serviceId ?? "SFN",
+      urlParser: config?.urlParser ?? url_parser_1.parseUrl,
+      utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
+      utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
     });
     exports.getRuntimeConfig = getRuntimeConfig;
   }
@@ -18672,20 +18666,20 @@ var require_runtimeConfig4 = __commonJS({
         ...config,
         runtime: "node",
         defaultsMode,
-        bodyLengthChecker: (config == null ? void 0 : config.bodyLengthChecker) ?? util_body_length_node_1.calculateBodyLength,
-        credentialDefaultProvider: (config == null ? void 0 : config.credentialDefaultProvider) ?? (0, client_sts_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
-        defaultUserAgentProvider: (config == null ? void 0 : config.defaultUserAgentProvider) ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: (config == null ? void 0 : config.maxAttempts) ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
-        region: (config == null ? void 0 : config.region) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
-        requestHandler: (config == null ? void 0 : config.requestHandler) ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
-        retryMode: (config == null ? void 0 : config.retryMode) ?? (0, node_config_provider_1.loadConfig)({
+        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
+        credentialDefaultProvider: config?.credentialDefaultProvider ?? (0, client_sts_1.decorateDefaultCredentialProvider)(credential_provider_node_1.defaultProvider),
+        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.defaultUserAgent)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
+        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS),
+        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS),
+        requestHandler: config?.requestHandler ?? new node_http_handler_1.NodeHttpHandler(defaultConfigProvider),
+        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
           ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
           default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
         }),
-        sha256: (config == null ? void 0 : config.sha256) ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: (config == null ? void 0 : config.streamCollector) ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: (config == null ? void 0 : config.useDualstackEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
-        useFipsEndpoint: (config == null ? void 0 : config.useFipsEndpoint) ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
+        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
+        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
+        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS),
+        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS)
       };
     };
     exports.getRuntimeConfig = getRuntimeConfig;
@@ -30789,6 +30783,523 @@ var require_lib4 = __commonJS({
   }
 });
 
+// ../sdk-v2-to-v3-adapter/lib/client-names.ts
+var CLIENT_NAMES;
+var init_client_names = __esm({
+  "../sdk-v2-to-v3-adapter/lib/client-names.ts"() {
+    "use strict";
+    CLIENT_NAMES = [
+      "ACM",
+      "ACMPCA",
+      "APIGateway",
+      "ARCZonalShift",
+      "AccessAnalyzer",
+      "Account",
+      "AlexaForBusiness",
+      "Amp",
+      "Amplify",
+      "AmplifyBackend",
+      "AmplifyUIBuilder",
+      "ApiGatewayManagementApi",
+      "ApiGatewayV2",
+      "AppConfig",
+      "AppConfigData",
+      "AppIntegrations",
+      "AppMesh",
+      "AppRunner",
+      "AppStream",
+      "AppSync",
+      "Appflow",
+      "ApplicationAutoScaling",
+      "ApplicationCostProfiler",
+      "ApplicationInsights",
+      "Athena",
+      "AuditManager",
+      "AugmentedAIRuntime",
+      "AutoScaling",
+      "AutoScalingPlans",
+      "Backup",
+      "BackupGateway",
+      "BackupStorage",
+      "Batch",
+      "Billingconductor",
+      "Braket",
+      "Budgets",
+      "CUR",
+      "Chime",
+      "ChimeSDKIdentity",
+      "ChimeSDKMediaPipelines",
+      "ChimeSDKMeetings",
+      "ChimeSDKMessaging",
+      "ChimeSDKVoice",
+      "Cloud9",
+      "CloudControl",
+      "CloudDirectory",
+      "CloudFormation",
+      "CloudFront",
+      "CloudHSM",
+      "CloudHSMV2",
+      "CloudSearch",
+      "CloudSearchDomain",
+      "CloudTrail",
+      "CloudWatch",
+      "CloudWatchEvents",
+      "CloudWatchLogs",
+      "CodeArtifact",
+      "CodeBuild",
+      "CodeCatalyst",
+      "CodeCommit",
+      "CodeDeploy",
+      "CodeGuruProfiler",
+      "CodeGuruReviewer",
+      "CodePipeline",
+      "CodeStar",
+      "CodeStarNotifications",
+      "CodeStarconnections",
+      "CognitoIdentity",
+      "CognitoIdentityServiceProvider",
+      "CognitoSync",
+      "Comprehend",
+      "ComprehendMedical",
+      "ComputeOptimizer",
+      "ConfigService",
+      "Connect",
+      "ConnectCampaigns",
+      "ConnectCases",
+      "ConnectContactLens",
+      "ConnectParticipant",
+      "ControlTower",
+      "CostExplorer",
+      "CustomerProfiles",
+      "DAX",
+      "DLM",
+      "DMS",
+      "DataBrew",
+      "DataExchange",
+      "DataPipeline",
+      "DataSync",
+      "Detective",
+      "DevOpsGuru",
+      "DeviceFarm",
+      "DirectConnect",
+      "DirectoryService",
+      "Discovery",
+      "DocDB",
+      "DocDBElastic",
+      "Drs",
+      "DynamoDB",
+      "DynamoDBStreams",
+      "EBS",
+      "EC2",
+      "EC2InstanceConnect",
+      "ECR",
+      "ECRPUBLIC",
+      "ECS",
+      "EFS",
+      "EKS",
+      "ELB",
+      "ELBv2",
+      "EMR",
+      "EMRServerless",
+      "EMRcontainers",
+      "ES",
+      "ElastiCache",
+      "ElasticBeanstalk",
+      "ElasticInference",
+      "ElasticTranscoder",
+      "EventBridge",
+      "Evidently",
+      "FMS",
+      "FSx",
+      "Finspace",
+      "Finspacedata",
+      "Firehose",
+      "Fis",
+      "ForecastQueryService",
+      "ForecastService",
+      "FraudDetector",
+      "GameLift",
+      "GameSparks",
+      "Glacier",
+      "GlobalAccelerator",
+      "Glue",
+      "Grafana",
+      "Greengrass",
+      "GreengrassV2",
+      "GroundStation",
+      "GuardDuty",
+      "Health",
+      "HealthLake",
+      "Honeycode",
+      "IAM",
+      "IVS",
+      "IdentityStore",
+      "Imagebuilder",
+      "Inspector",
+      "Inspector2",
+      "IoT1ClickDevicesService",
+      "IoT1ClickProjects",
+      "IoTAnalytics",
+      "IoTEvents",
+      "IoTEventsData",
+      "IoTFleetHub",
+      "IoTFleetWise",
+      "IoTJobsDataPlane",
+      "IoTRoboRunner",
+      "IoTSecureTunneling",
+      "IoTSiteWise",
+      "IoTThingsGraph",
+      "IoTTwinMaker",
+      "IoTWireless",
+      "Iot",
+      "IotData",
+      "IotDeviceAdvisor",
+      "Ivschat",
+      "KMS",
+      "Kafka",
+      "KafkaConnect",
+      "Kendra",
+      "Keyspaces",
+      "Kinesis",
+      "KinesisAnalytics",
+      "KinesisAnalyticsV2",
+      "KinesisVideo",
+      "KinesisVideoArchivedMedia",
+      "KinesisVideoMedia",
+      "KinesisVideoSignalingChannels",
+      "KinesisVideoWebRTCStorage",
+      "LakeFormation",
+      "Lambda",
+      "LexModelBuildingService",
+      "LexModelsV2",
+      "LexRuntime",
+      "LexRuntimeV2",
+      "LicenseManager",
+      "LicenseManagerLinuxSubscriptions",
+      "LicenseManagerUserSubscriptions",
+      "Lightsail",
+      "Location",
+      "LookoutEquipment",
+      "LookoutMetrics",
+      "LookoutVision",
+      "M2",
+      "MQ",
+      "MTurk",
+      "MWAA",
+      "MachineLearning",
+      "Macie",
+      "Macie2",
+      "ManagedBlockchain",
+      "MarketplaceCatalog",
+      "MarketplaceCommerceAnalytics",
+      "MarketplaceEntitlementService",
+      "MarketplaceMetering",
+      "MediaConnect",
+      "MediaConvert",
+      "MediaLive",
+      "MediaPackage",
+      "MediaPackageVod",
+      "MediaStore",
+      "MediaStoreData",
+      "MediaTailor",
+      "MemoryDB",
+      "Mgn",
+      "MigrationHub",
+      "MigrationHubConfig",
+      "MigrationHubOrchestrator",
+      "MigrationHubRefactorSpaces",
+      "MigrationHubStrategy",
+      "Mobile",
+      "Neptune",
+      "NetworkFirewall",
+      "NetworkManager",
+      "Nimble",
+      "OAM",
+      "Omics",
+      "OpenSearch",
+      "OpenSearchServerless",
+      "OpsWorks",
+      "OpsWorksCM",
+      "Organizations",
+      "Outposts",
+      "PI",
+      "Panorama",
+      "Personalize",
+      "PersonalizeEvents",
+      "PersonalizeRuntime",
+      "Pinpoint",
+      "PinpointEmail",
+      "PinpointSMSVoice",
+      "PinpointSMSVoiceV2",
+      "Pipes",
+      "Polly",
+      "Pricing",
+      "PrivateNetworks",
+      "Proton",
+      "QLDB",
+      "QLDBSession",
+      "QuickSight",
+      "RAM",
+      "RDS",
+      "RDSDataService",
+      "RUM",
+      "Rbin",
+      "Redshift",
+      "RedshiftData",
+      "RedshiftServerless",
+      "Rekognition",
+      "Resiliencehub",
+      "ResourceExplorer2",
+      "ResourceGroups",
+      "ResourceGroupsTaggingAPI",
+      "RoboMaker",
+      "RolesAnywhere",
+      "Route53",
+      "Route53Domains",
+      "Route53RecoveryCluster",
+      "Route53RecoveryControlConfig",
+      "Route53RecoveryReadiness",
+      "Route53Resolver",
+      "S3",
+      "S3Control",
+      "S3Outposts",
+      "SES",
+      "SESV2",
+      "SMS",
+      "SNS",
+      "SQS",
+      "SSM",
+      "SSMContacts",
+      "SSMIncidents",
+      "SSO",
+      "SSOAdmin",
+      "SSOOIDC",
+      "STS",
+      "SWF",
+      "SageMaker",
+      "SageMakerFeatureStoreRuntime",
+      "SageMakerGeospatial",
+      "SageMakerMetrics",
+      "SageMakerRuntime",
+      "SagemakerEdge",
+      "SavingsPlans",
+      "Scheduler",
+      "Schemas",
+      "SecretsManager",
+      "SecurityHub",
+      "SecurityLake",
+      "ServerlessApplicationRepository",
+      "ServiceCatalog",
+      "ServiceCatalogAppRegistry",
+      "ServiceDiscovery",
+      "ServiceQuotas",
+      "Shield",
+      "Signer",
+      "SimSpaceWeaver",
+      "SnowDeviceManagement",
+      "Snowball",
+      "SsmSap",
+      "StepFunctions",
+      "StorageGateway",
+      "Support",
+      "SupportApp",
+      "Synthetics",
+      "Textract",
+      "TimestreamQuery",
+      "TimestreamWrite",
+      "TranscribeService",
+      "Transfer",
+      "Translate",
+      "VoiceID",
+      "WAF",
+      "WAFRegional",
+      "WAFV2",
+      "WellArchitected",
+      "Wisdom",
+      "WorkDocs",
+      "WorkLink",
+      "WorkMail",
+      "WorkMailMessageFlow",
+      "WorkSpaces",
+      "WorkSpacesWeb",
+      "XRay"
+    ];
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/client-package-names-map.ts
+var CLIENT_PACKAGE_NAMES_MAP;
+var init_client_package_names_map = __esm({
+  "../sdk-v2-to-v3-adapter/lib/client-package-names-map.ts"() {
+    "use strict";
+    init_client_names();
+    CLIENT_PACKAGE_NAMES_MAP = {
+      ...CLIENT_NAMES.reduce(
+        (acc, name) => ({
+          ...acc,
+          [name]: `client-${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}`.replace("-chime-sdk", "-chime-sdk-").replace("client-amplify-", "client-amplify").replace("client-cloud-", "client-cloud").replace("client-code-", "client-code").replace("client-connect-", "client-connect").replace("client-data-", "client-data").replace("client-io-t", "client-iot-").replace("client-iot-fleet-", "client-iotfleet").replace("client-lookout-", "client-lookout").replace("client-media-", "client-media").replace("client-migration-hub-", "client-migrationhub").replace("client-pinpoint-sms", "client-pinpoint-sms-").replace("client-route53", "client-route53-").replace("client-sage-maker", "client-sagemaker").replace("client-security-", "client-security").replace("client-work-", "client-work")
+        }),
+        {}
+      ),
+      AccessAnalyzer: "client-accessanalyzer",
+      ACMPCA: "client-acm-pca",
+      APIGateway: "client-api-gateway",
+      ApiGatewayManagementApi: "client-apigatewaymanagementapi",
+      ApiGatewayV2: "client-apigatewayv2",
+      AppConfig: "client-appconfig",
+      AppConfigData: "client-appconfigdata",
+      AppIntegrations: "client-appintegrations",
+      AppRunner: "client-apprunner",
+      AppStream: "client-appstream",
+      AppSync: "client-appsync",
+      ApplicationCostProfiler: "client-applicationcostprofiler",
+      ARCZonalShift: "client-arc-zonal-shift",
+      AugmentedAIRuntime: "client-sage-maker-a2iruntime",
+      AuditManager: "client-auditmanager",
+      BackupStorage: "client-backupstorage",
+      CUR: "client-cost-and-usage-report-service",
+      CloudHSMV2: "client-cloudhsm-v2",
+      CodeGuruProfiler: "client-codeguruprofiler",
+      CodeStarconnections: "client-codestar-connections",
+      CognitoIdentityServiceProvider: "client-cognito-identity-provider",
+      ComprehendMedical: "client-comprehendmedical",
+      ConnectContactLens: "client-connect-contact-lens",
+      ControlTower: "client-controltower",
+      DMS: "client-database-migration-service",
+      DataPipeline: "client-data-pipeline",
+      Discovery: "client-application-discovery-service",
+      DevOpsGuru: "client-devops-guru",
+      DynamoDB: "client-dynamodb",
+      DynamoDBStreams: "client-dynamodb-streams",
+      DocDB: "client-docdb",
+      DocDBElastic: "client-docdb-elastic",
+      EC2InstanceConnect: "client-ec2-instance-connect",
+      ECRPUBLIC: "client-ecr-public",
+      ELB: "client-elastic-load-balancing",
+      ELBv2: "client-elastic-load-balancing-v2",
+      ElastiCache: "client-elasticache",
+      EMRcontainers: "client-emr-containers",
+      EMRServerless: "client-emr-serverless",
+      ES: "client-elasticsearch-service",
+      EventBridge: "client-eventbridge",
+      Finspacedata: "client-finspace-data",
+      ForecastQueryService: "client-forecastquery",
+      ForecastService: "client-forecast",
+      FraudDetector: "client-frauddetector",
+      GameLift: "client-gamelift",
+      GameSparks: "client-gamesparks",
+      GreengrassV2: "client-greengrassv2",
+      GroundStation: "client-groundstation",
+      GuardDuty: "client-guardduty",
+      HealthLake: "client-healthlake",
+      IdentityStore: "client-identitystore",
+      IoTAnalytics: "client-iotanalytics",
+      IotData: "client-iot-data-plane",
+      IotDeviceAdvisor: "client-iotdeviceadvisor",
+      IoTSecureTunneling: "client-iotsecuretunneling",
+      IoTSiteWise: "client-iotsitewise",
+      IoTThingsGraph: "client-iotthingsgraph",
+      IoTTwinMaker: "client-iottwinmaker",
+      IoTRoboRunner: "client-iot-roborunner",
+      KafkaConnect: "client-kafkaconnect",
+      KinesisVideoSignalingChannels: "client-kinesis-video-signaling",
+      KinesisVideoWebRTCStorage: "client-kinesis-video-webrtc-storage",
+      LakeFormation: "client-lakeformation",
+      LexRuntime: "client-lex-runtime-service",
+      ManagedBlockchain: "client-managedblockchain",
+      MigrationHubConfig: "client-migrationhub-config",
+      MigrationHubRefactorSpaces: "client-migration-hub-refactor-spaces",
+      NetworkManager: "client-networkmanager",
+      OpenSearch: "client-opensearch",
+      OpenSearchServerless: "client-opensearchserverless",
+      OpsWorks: "client-opsworks",
+      OpsWorksCM: "client-opsworkscm",
+      PrivateNetworks: "client-privatenetworks",
+      QLDBSession: "client-qldb-session",
+      QuickSight: "client-quicksight",
+      ResourceExplorer2: "client-resource-explorer-2",
+      RDSDataService: "client-rds-data",
+      RoboMaker: "client-robomaker",
+      RolesAnywhere: "client-rolesanywhere",
+      Route53: "client-route-53",
+      Route53Domains: "client-route-53-domains",
+      Route53Resolver: "client-route53resolver",
+      S3Control: "client-s3-control",
+      SageMakerFeatureStoreRuntime: "client-sagemaker-featurestore-runtime",
+      SavingsPlans: "client-savingsplans",
+      SecurityHub: "client-securityhub",
+      ServerlessApplicationRepository: "client-serverlessapplicationrepository",
+      ServiceCatalogAppRegistry: "client-service-catalog-appregistry",
+      ServiceDiscovery: "client-servicediscovery",
+      SimSpaceWeaver: "client-simspaceweaver",
+      SSMContacts: "client-ssm-contacts",
+      SSMIncidents: "client-ssm-incidents",
+      SSOAdmin: "client-sso-admin",
+      SSOOIDC: "client-sso-oidc",
+      StepFunctions: "client-sfn",
+      TranscribeService: "client-transcribe",
+      WAFRegional: "client-waf-regional",
+      WellArchitected: "client-wellarchitected",
+      WorkMailMessageFlow: "client-workmailmessageflow"
+    };
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/get-v3-client-package-name.ts
+var get_v3_client_package_name_exports = {};
+__export(get_v3_client_package_name_exports, {
+  getV3ClientPackageName: () => getV3ClientPackageName
+});
+var getV3ClientPackageName;
+var init_get_v3_client_package_name = __esm({
+  "../sdk-v2-to-v3-adapter/lib/get-v3-client-package-name.ts"() {
+    "use strict";
+    init_client_package_names_map();
+    getV3ClientPackageName = (clientName) => {
+      if (clientName in CLIENT_PACKAGE_NAMES_MAP) {
+        return `@aws-sdk/${CLIENT_PACKAGE_NAMES_MAP[clientName]}`;
+      }
+      throw new Error(`Client '${clientName}' is either deprecated or newly added. Please consider using the v3 package format (@aws-sdk/client-xxx).`);
+    };
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts
+var find_client_constructor_exports = {};
+__export(find_client_constructor_exports, {
+  findV3ClientConstructor: () => findV3ClientConstructor
+});
+function findV3ClientConstructor(pkg) {
+  const [_clientName, ServiceClient] = Object.entries(pkg).find(
+    ([name]) => {
+      return name.endsWith("Client") && name !== "__Client";
+    }
+  );
+  return ServiceClient;
+}
+var init_find_client_constructor = __esm({
+  "../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts"() {
+    "use strict";
+  }
+});
+
+// ../sdk-v2-to-v3-adapter/lib/index.js
+var require_lib5 = __commonJS({
+  "../sdk-v2-to-v3-adapter/lib/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.findV3ClientConstructor = exports.getV3ClientPackageName = void 0;
+    var get_v3_client_package_name_1 = (init_get_v3_client_package_name(), __toCommonJS(get_v3_client_package_name_exports));
+    Object.defineProperty(exports, "getV3ClientPackageName", { enumerable: true, get: function() {
+      return get_v3_client_package_name_1.getV3ClientPackageName;
+    } });
+    var find_client_constructor_1 = (init_find_client_constructor(), __toCommonJS(find_client_constructor_exports));
+    Object.defineProperty(exports, "findV3ClientConstructor", { enumerable: true, get: function() {
+      return find_client_constructor_1.findV3ClientConstructor;
+    } });
+  }
+});
+
 // lib/assertions/providers/lambda-handler/index.ts
 var lambda_handler_exports = {};
 __export(lambda_handler_exports, {
@@ -31095,6 +31606,7 @@ function decode(object) {
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
+var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
 function flatten(object) {
   return Object.assign(
     {},
@@ -31109,21 +31621,51 @@ function flatten(object) {
     }(object)
   );
 }
-function getServiceClient(service) {
-  const clientPackageName = `@aws-sdk/client-${service.toLowerCase()}`;
+function getServicePackage(service) {
+  const packageName = (0, import_sdk_v2_to_v3_adapter.getV3ClientPackageName)(service);
   try {
-    const pkg = require(clientPackageName);
-    return new pkg[service]({});
+    const pkg = require(packageName);
+    return {
+      service,
+      pkg,
+      packageName
+    };
   } catch (e) {
-    throw Error(`Service ${service} client package with name '${clientPackageName}' does not exist.`);
+    throw Error(`Service ${service} client package with name '${packageName}' does not exist.`);
   }
+}
+function getServiceClient(sdkPkg) {
+  try {
+    const ServiceClient = (0, import_sdk_v2_to_v3_adapter.findV3ClientConstructor)(sdkPkg.pkg);
+    return new ServiceClient({});
+  } catch (e) {
+    console.error(e);
+    throw Error(`No client constructor found within package: ${sdkPkg.packageName}`);
+  }
+}
+function getSdkCommand(sdkPkg, api) {
+  const commandName = api.endsWith("Command") ? api : `${api}Command`;
+  const command = Object.entries(sdkPkg.pkg).find(
+    ([name]) => name.toLowerCase() === commandName.toLowerCase()
+  )?.[1];
+  if (!command) {
+    throw new Error(`Unable to find command named: ${commandName} for api: ${api} in service package`);
+  }
+  return command;
 }
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
-    const client = getServiceClient(request2.service);
-    const response = await client[request2.api](request2.parameters && decode(request2.parameters));
+    const sdkPkg = getServicePackage(request2.service);
+    const client = getServiceClient(sdkPkg);
+    const Command = getSdkCommand(sdkPkg, request2.api);
+    const response = await client.send(
+      new Command(
+        (request2.parameters && decode(request2.parameters)) ?? {}
+      )
+    );
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.ResponseMetadata;
+    delete response.$metadata;
     const respond = {
       apiCallResponse: response
     };
@@ -31131,7 +31673,7 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
       ...flatten(respond)
     };
     let resp = respond;
-    if (request2.outputPaths) {
+    if (request2.outputPaths?.length) {
       resp = filterKeys(flatData, request2.outputPaths);
     } else if (request2.flattenResponse === "true") {
       resp = flatData;
@@ -31251,7 +31793,7 @@ async function isComplete(event, context) {
           }
         }, context);
         const assertionResult = await assertion.handleIsComplete();
-        if (!(assertionResult == null ? void 0 : assertionResult.failed)) {
+        if (!assertionResult?.failed) {
           await provider.respond({
             status: "SUCCESS",
             reason: "OK",
