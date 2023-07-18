@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node18 --platform=node --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -69,6 +69,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",
     "@aws-sdk/client-ec2": "^3.357.0",
     "@aws-sdk/client-s3": "^3.357.0",
     "@aws-sdk/client-sfn": "^3.357.0",
@@ -109,7 +110,10 @@
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "post": [
+      "node lib/assertions/providers/lambda-handler.bundle/index.js"
+    ]
   },
   "awslint": {
     "exclude": [

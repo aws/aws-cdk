@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSSMgetParameter": {
+  "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2": {
    "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
    "Properties": {
     "ServiceToken": {
@@ -14,12 +14,21 @@
     "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Type\":\"String\",\"Value\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\\\"#¤%&/()=?`´^*+~_-.,:;<>|\"}}}",
     "parameters": {
      "Name": {
-      "Fn::ImportValue": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+        },
+        "\""
+       ]
+      ]
      },
-     "WithDecryption": "TRUE:BOOLEAN"
+     "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1678454837587"
+    "salt": "1689703949818"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -68,12 +77,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "94538f4faad04c69d35659283adb9e0bbec4475988069ee83bf9f3740c94c2b2.zip"
+     "S3Key": "855b18ac2a744f847c78764c4effd335c5b424915174596732358882002a9b6e.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -87,10 +96,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSSMgetParameter": {
+  "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetParameter",
+     "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2",
      "assertion"
     ]
    }
