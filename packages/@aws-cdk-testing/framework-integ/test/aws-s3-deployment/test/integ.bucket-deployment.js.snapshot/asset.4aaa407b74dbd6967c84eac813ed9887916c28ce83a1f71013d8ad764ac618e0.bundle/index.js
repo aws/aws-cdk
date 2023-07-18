@@ -31664,7 +31664,6 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
       )
     );
     console.log(`SDK response received ${JSON.stringify(response)}`);
-    delete response.ResponseMetadata;
     delete response.$metadata;
     const respond = {
       apiCallResponse: response
@@ -31673,7 +31672,7 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
       ...flatten(respond)
     };
     let resp = respond;
-    if (request2.outputPaths?.length) {
+    if (request2.outputPaths) {
       resp = filterKeys(flatData, request2.outputPaths);
     } else if (request2.flattenResponse === "true") {
       resp = flatData;

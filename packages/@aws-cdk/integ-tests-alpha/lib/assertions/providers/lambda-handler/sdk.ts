@@ -97,7 +97,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
     };
 
     let resp: AwsApiCallResult | { [key: string]: string } = respond;
-    if (request.outputPaths?.length) {
+    if (request.outputPaths) {
       resp = filterKeys(flatData, request.outputPaths!);
     } else if (request.flattenResponse === 'true') {
       resp = flatData;
