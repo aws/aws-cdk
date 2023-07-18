@@ -149,10 +149,20 @@ new IntegTest(app, 'integ-product', {
   testCases: [stack],
   diffAssets: true,
   enableLookups: true,
+  stackUpdateWorkflow: false,
 });
 
 portfolio.addProduct(product);
 
 new cdk.CfnOutput(stack, 'PortfolioId', { value: portfolio.portfolioId });
+
+// to allow the test to be deployed on a personal account
+// while still persisting fake details in the snapshots.
+if (!process.env.CDK_DEFAULT_ACCOUNT) {
+  throw new Error('Must set CDK_DEFAULT_ACCOUNT env variable');
+}
+if (!process.env.CDK_DEFAULT_REGION) {
+  throw new Error('Must set CDK_DEFAULT_REGION env variable');
+}
 
 app.synth();
