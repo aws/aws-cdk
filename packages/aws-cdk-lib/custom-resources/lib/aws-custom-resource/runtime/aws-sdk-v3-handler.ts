@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -21,10 +22,10 @@ export function forceSdkInstallation() {
  * Installs latest AWS SDK v3
  */
 function installLatestSdk(packageName: string): void {
-  console.log('Installing latest AWS SDK v3');
+  console.log(`Installing latest AWS SDK v3: ${packageName}`);
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync(
-    `HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`,
+    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`,
   );
   installedSdk = {
     ...installedSdk,
@@ -43,14 +44,20 @@ async function loadAwsSdk(
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
       installLatestSdk(packageName);
-      awsSdk = await import(`/tmp/node_modules/${packageName}`).catch(async (e) => {
-        console.log(`Failed to install latest AWS SDK v3: ${e}`);
-        return import(packageName); // Fallback to pre-installed version
-      });
+      try {
+        // MUST use require here. Dynamic import() do not support importing from directories
+        awsSdk = require(`/tmp/node_modules/${packageName}`);
+      } catch (e) {
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pr-installed version. Error: ${e}`);
+        // MUST use require as dynamic import() does not support importing from directories
+        return require(packageName); // Fallback to pre-installed version
+      }
+
     } else if (installedSdk[packageName]) {
-      awsSdk = await import(`/tmp/node_modules/${packageName}`);
+      // MUST use require here. Dynamic import() do not support importing from directories
+      awsSdk = require(`/tmp/node_modules/${packageName}`);
     } else {
-      awsSdk = await import(packageName);
+      awsSdk = require(packageName);
     }
   } catch (error) {
     throw Error(`Package ${packageName} does not exist.`);
