@@ -29383,7 +29383,7 @@ var require_lib3 = __commonJS({
       var trail = encoder.end();
       return trail && trail.length > 0 ? Buffer2.concat([res, trail]) : res;
     };
-    iconv.decode = function decode2(buf, encoding, options) {
+    iconv.decode = function decode(buf, encoding, options) {
       if (typeof buf === "string") {
         if (!iconv.skipDecodeWarning) {
           console.error("Iconv-lite warning: decode()-ing strings is deprecated. Refer to https://github.com/ashtuchkin/iconv-lite/wiki/Use-Buffers-when-decoding");
@@ -31591,22 +31591,29 @@ var HttpHandler = class extends CustomResourceHandler {
   }
 };
 
+// lib/assertions/providers/lambda-handler/sdk.ts
+var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
+
 // lib/assertions/providers/lambda-handler/utils.ts
-function decode(object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case "TRUE:BOOLEAN":
-        return true;
-      case "FALSE:BOOLEAN":
-        return false;
-      default:
-        return v;
+function parseJsonPayload(payload) {
+  try {
+    const buffer = Buffer.from(payload);
+    return JSON.parse(new TextDecoder().decode(buffer));
+  } catch {
+    return payload;
+  }
+}
+function decodeParameters(obj) {
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
+    try {
+      return [key, JSON.parse(value)];
+    } catch {
+      return [key, value];
     }
-  });
+  }));
 }
 
 // lib/assertions/providers/lambda-handler/sdk.ts
-var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
 function flatten(object) {
   return Object.assign(
     {},
@@ -31658,11 +31665,12 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const sdkPkg = getServicePackage(request2.service);
     const client = getServiceClient(sdkPkg);
     const Command = getSdkCommand(sdkPkg, request2.api);
-    const response = await client.send(
-      new Command(
-        (request2.parameters && decode(request2.parameters)) ?? {}
-      )
-    );
+    const commandInput = (request2.parameters && decodeParameters(request2.parameters)) ?? {};
+    console.log(`SDK request to ${sdkPkg.service}.${request2.api} with parameters ${JSON.stringify(commandInput)}`);
+    const response = await client.send(new Command(commandInput));
+    if (response.Payload) {
+      response.Payload = parseJsonPayload(response.Payload);
+    }
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.$metadata;
     const respond = {

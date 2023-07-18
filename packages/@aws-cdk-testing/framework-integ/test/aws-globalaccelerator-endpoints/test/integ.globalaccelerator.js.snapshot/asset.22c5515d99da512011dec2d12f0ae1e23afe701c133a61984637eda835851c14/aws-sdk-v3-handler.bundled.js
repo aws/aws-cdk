@@ -645,9 +645,9 @@ function forceSdkInstallation() {
   installedSdk = {};
 }
 function installLatestSdk(packageName) {
-  console.log("Installing latest AWS SDK v3");
+  console.log(`Installing latest AWS SDK v3: ${packageName}`);
   (0, import_child_process.execSync)(
-    `HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`
+    `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${packageName} --omit=dev --no-package-lock --no-save --prefix /tmp`
   );
   installedSdk = {
     ...installedSdk,
@@ -659,14 +659,16 @@ async function loadAwsSdk(packageName, installLatestAwsSdk) {
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === "true") {
       installLatestSdk(packageName);
-      awsSdk = await import(`/tmp/node_modules/${packageName}`).catch(async (e) => {
-        console.log(`Failed to install latest AWS SDK v3: ${e}`);
-        return import(packageName);
-      });
+      try {
+        awsSdk = require(`/tmp/node_modules/${packageName}`);
+      } catch (e) {
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pr-installed version. Error: ${e}`);
+        return require(packageName);
+      }
     } else if (installedSdk[packageName]) {
-      awsSdk = await import(`/tmp/node_modules/${packageName}`);
+      awsSdk = require(`/tmp/node_modules/${packageName}`);
     } else {
-      awsSdk = await import(packageName);
+      awsSdk = require(packageName);
     }
   } catch (error) {
     throw Error(`Package ${packageName} does not exist.`);
