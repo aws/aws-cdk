@@ -3805,17 +3805,17 @@
           "version": "0.0.0"
         }
       },
-      "aws-cdk-eks-cluster": {
-        "id": "aws-cdk-eks-cluster",
-        "path": "aws-cdk-eks-cluster",
+      "aws-cdk-eks-import-cluster": {
+        "id": "aws-cdk-eks-import-cluster",
+        "path": "aws-cdk-eks-import-cluster",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-cdk-eks-cluster/DefaultTest",
+            "path": "aws-cdk-eks-import-cluster/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cdk-eks-cluster/DefaultTest/Default",
+                "path": "aws-cdk-eks-import-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.2.55"
@@ -3823,11 +3823,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-cdk-eks-cluster/DefaultTest/DeployAssert",
+                "path": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-cdk-eks-cluster/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -3835,7 +3835,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-cdk-eks-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
