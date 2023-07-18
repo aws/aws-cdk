@@ -48,7 +48,7 @@ describe('ADOT Lambda Layer', () => {
       fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromBucket(bucket, 'mock_key'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.PYTHON_3_10,
+        runtime: lambda.Runtime.PYTHON_3_11,
       });
     });
 
@@ -56,7 +56,7 @@ describe('ADOT Lambda Layer', () => {
       const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_18_0.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-wrapper-amd64-ver-1-18-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2',
       );
     });
 
@@ -64,7 +64,7 @@ describe('ADOT Lambda Layer', () => {
       const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-wrapper-amd64-ver-1-18-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2',
       );
     });
   });
