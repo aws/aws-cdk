@@ -222,7 +222,7 @@ describe('fs copy', () => {
     ]);
   });
 
-  test('takes priority if both include and exclude are specified for the same file', () => {
+  test('exclude takes priority if both include and exclude are specified for the same file', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
