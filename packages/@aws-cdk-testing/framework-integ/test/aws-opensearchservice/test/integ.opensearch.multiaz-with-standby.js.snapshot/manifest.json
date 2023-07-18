@@ -1,0 +1,111 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "cdk-integ-opensearch-multiaz-with-standby.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-opensearch-multiaz-with-standby.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-opensearch-multiaz-with-standby": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-opensearch-multiaz-with-standby.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/722892555255764f20f275e929016594c8562b137bbdfb5df2a004c9565301df.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-opensearch-multiaz-with-standby.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-opensearch-multiaz-with-standby.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-opensearch-multiaz-with-standby/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/cdk-integ-opensearch-multiaz-with-standby/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-opensearch-multiaz-with-standby/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-opensearch-multiaz-with-standby"
+    },
+    "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.assets"
+      ],
+      "metadata": {
+        "/IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

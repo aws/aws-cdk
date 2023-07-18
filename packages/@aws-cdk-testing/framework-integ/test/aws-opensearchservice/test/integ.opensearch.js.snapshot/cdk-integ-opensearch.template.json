@@ -114,7 +114,8 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
-     "ZoneAwarenessEnabled": false
+     "ZoneAwarenessEnabled": false,
+     "MultiAZWithStandbyEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
@@ -419,7 +420,8 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
-     "ZoneAwarenessEnabled": false
+     "ZoneAwarenessEnabled": false,
+     "MultiAZWithStandbyEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": false,
