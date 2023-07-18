@@ -1980,6 +1980,86 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
   });
 });
 
+each(testedOpenSearchVersions).describe('offPeakWindowOptions and softwareUpdateOptions properties', (engineVersion) => {
+  test('with offPeakWindowOptions', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      offPeakWindowOptions: {
+        enabled: true,
+        offPeakWindow: {
+          windowStartTime: {
+            hours: 10,
+            minutes: 0,
+          },
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      OffPeakWindowOptions: {
+        Enabled: true,
+        OffPeakWindow: {
+          WindowStartTime: {
+            Hours: 10,
+            Minutes: 0,
+          },
+        },
+      },
+    });
+  });
+
+  test('with softwareUpdateOptions', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      softwareUpdateOptions: {
+        autoSoftwareUpdateEnabled: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+      },
+    });
+  });
+
+  test('with invalid offPeakWindowOptions.offPeakWindow.windowStartTime', () => {
+    expect(() => {
+      new Domain(stack, 'Domain1', {
+        version: engineVersion,
+        offPeakWindowOptions: {
+          enabled: true,
+          offPeakWindow: {
+            windowStartTime: {
+              hours: 50,
+              minutes: 0,
+            },
+          },
+        },
+      });
+    }).toThrow(
+      /Hours must be a value between 0 and 23/,
+    );
+
+    expect(() => {
+      new Domain(stack, 'Domain2', {
+        version: engineVersion,
+        offPeakWindowOptions: {
+          enabled: true,
+          offPeakWindow: {
+            windowStartTime: {
+              hours: 10,
+              minutes: 90,
+            },
+          },
+        },
+      });
+    }).toThrow(
+      /Minutes must be a value between 0 and 59/,
+    );
+  });
+});
+
 function testGrant(
   expectedActions: string[],
   invocation: (user: iam.IPrincipal, domain: Domain) => void,

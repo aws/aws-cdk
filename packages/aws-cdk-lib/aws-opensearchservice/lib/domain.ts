@@ -328,6 +328,52 @@ export interface CustomEndpointOptions {
   readonly hostedZone?: route53.IHostedZone;
 }
 
+export interface WindowStartTime {
+  /**
+   * The start hour of the window in Coordinated Universal Time (UTC), using 24-hour time.
+   * For example, 17 refers to 5:00 P.M. UTC.
+   */
+  readonly hours: number;
+  /**
+   * The start minute of the window, in UTC.
+   */
+  readonly minutes: number;
+}
+
+export interface OffPeakWindow {
+  /**
+   * A custom start time for the off-peak window, in Coordinated Universal Time (UTC).
+   * The window length will always be 10 hours, so you can't specify an end time.
+   * For example, if you specify 11:00 P.M. UTC as a start time, the end time will automatically be set to 9:00 A.M.
+   */
+  readonly windowStartTime?: WindowStartTime;
+}
+
+/**
+ * Off-peak window settings for the domain.
+ */
+export interface OffPeakWindowOptions {
+  /**
+   * Specifies whether off-peak window settings are enabled for the domain.
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Off-peak window settings for the domain.
+   */
+  readonly offPeakWindow?: OffPeakWindow;
+}
+
+/**
+ * Options for configuring service software updates for a domain.
+ */
+export interface SoftwareUpdateOptions {
+  /**
+   * Specifies whether automatic service software updates are enabled for the domain.
+   */
+  readonly autoSoftwareUpdateEnabled?: boolean;
+}
+
 /**
  * Properties for an Amazon OpenSearch Service domain.
  */
@@ -511,6 +557,17 @@ export interface DomainProps {
    * @default - no custom domain endpoint will be configured
    */
   readonly customEndpoint?: CustomEndpointOptions;
+
+  /**
+   * Options for a domain's off-peak window, during which OpenSearch Service can perform mandatory
+   * configuration changes on the domain.
+   */
+  readonly offPeakWindowOptions?: OffPeakWindowOptions;
+
+  /**
+   * Options for configuring service software updates for a domain.
+   */
+  readonly softwareUpdateOptions?: SoftwareUpdateOptions;
 }
 
 /**
@@ -1558,6 +1615,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    this.validateWindowStartTime(props.offPeakWindowOptions?.offPeakWindow?.windowStartTime);
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1632,6 +1691,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         : undefined,
       advancedOptions: props.advancedOptions,
+      offPeakWindowOptions: props.offPeakWindowOptions ? {
+        enabled: props.offPeakWindowOptions.enabled,
+        offPeakWindow: props.offPeakWindowOptions.offPeakWindow && props.offPeakWindowOptions.offPeakWindow.windowStartTime ? {
+          windowStartTime: props.offPeakWindowOptions.offPeakWindow.windowStartTime,
+        } : undefined,
+      } : undefined,
+      softwareUpdateOptions: props.softwareUpdateOptions,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
@@ -1686,6 +1752,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
     if (unsignedBasicAuthEnabled) {
       this.addAccessPolicies(unsignedAccessPolicy);
+    }
+  }
+
+  /**
+   * Validate windowStartTime property according to
+   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-windowstarttime.html
+   */
+  private validateWindowStartTime(windowStartTime?: WindowStartTime) {
+    if (!windowStartTime) return;
+    if (windowStartTime.hours < 0 || windowStartTime.hours > 23) {
+      throw new Error(`Hours must be a value between 0 and 23, but got ${windowStartTime.hours}.`);
+    }
+    if (windowStartTime.minutes < 0 || windowStartTime.minutes > 59) {
+      throw new Error(`Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`);
     }
   }
 

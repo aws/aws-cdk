@@ -397,3 +397,39 @@ const domain = new Domain(this, 'Domain', {
   },
 });
 ```
+
+## Define off-peak windows
+
+The domain can be configured to use a daily 10-hour window considered as off-peak hours.
+
+> Visit [Defining off-peak windows for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html) for more details.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  offPeakWindowOptions: {
+    enabled: true,
+    offPeakWindow: {
+      windowStartTime: {
+        hours: 20,
+        minutes: 0,
+      },
+    },
+  },
+});
+```
+
+## Configuring service software updates
+
+The domain can be configured to use service software updates.
+
+> Visit [Service software updates in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html) for more details.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  softwareUpdateOptions: {
+    autoSoftwareUpdateEnabled: true,
+  },
+});
+```
