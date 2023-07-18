@@ -428,7 +428,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
-        exclude: ['*.ts', 'sdk-v3-handler.js'],
+        exclude: ['*.ts', 'aws-sdk-v3-handler.js'],
       }),
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
