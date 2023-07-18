@@ -2,7 +2,7 @@
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
 import { decode } from './utils';
-import { getV3ClientPackageName, findV3ClientConstructor } from 'aws-cdk-lib/custom-resources';
+import { getV3ClientPackageName, findV3ClientConstructor } from '@aws-cdk/sdk-v2-to-v3-adapter';
 
 /**
  * Flattens a nested object
