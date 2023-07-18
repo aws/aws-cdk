@@ -8,7 +8,6 @@ import { Construct } from 'constructs';
 import { DatabaseQueryHandlerProps } from './handler-props';
 import { Cluster } from '../cluster';
 import { DatabaseOptions } from '../database-options';
-import { builtInCustomResourceNodeRuntime } from 'aws-cdk-lib/custom-resources';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;
@@ -35,7 +34,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       code: lambda.Code.fromAsset(path.join(__dirname, 'database-query-provider'), {
         exclude: ['*.ts'],
       }),
-      runtime: builtInCustomResourceNodeRuntime(this),
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       timeout: cdk.Duration.minutes(1),
       uuid: '3de5bea7-27da-4796-8662-5efb56431b5f',
