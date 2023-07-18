@@ -19,7 +19,8 @@
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
      }
-    }
+    },
+    "ServiceName": "service1"
    }
   }
  },

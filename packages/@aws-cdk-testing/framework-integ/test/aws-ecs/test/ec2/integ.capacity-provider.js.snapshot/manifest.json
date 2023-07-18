@@ -219,10 +219,10 @@
             "data": "ASGInstanceProfile0A2834D7"
           }
         ],
-        "/integ-ec2-capacity-provider/ASG/LaunchConfig": [
+        "/integ-ec2-capacity-provider/ASG/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchConfigC00AF12B"
+            "data": "ASGLaunchTemplate0CA92847"
           }
         ],
         "/integ-ec2-capacity-provider/ASG/ASG": [
@@ -313,6 +313,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASGLaunchTemplateProfileB99C522F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLaunchTemplateProfileB99C522F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

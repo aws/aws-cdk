@@ -69,7 +69,7 @@ export class ClusterResourceProvider extends NestedStack {
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
-      runtime: cr.builtInCustomResourceNodeRuntime(this),
+      runtime: lambda.Runtime.NODEJS_18_X,
       environment: {
         AWS_STS_REGIONAL_ENDPOINTS: 'regional',
         ...props.environment,
@@ -86,7 +86,7 @@ export class ClusterResourceProvider extends NestedStack {
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'isComplete handler for EKS cluster resource provider',
-      runtime: cr.builtInCustomResourceNodeRuntime(this),
+      runtime: lambda.Runtime.NODEJS_18_X,
       environment: {
         AWS_STS_REGIONAL_ENDPOINTS: 'regional',
         ...props.environment,

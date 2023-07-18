@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Duration, Stack } from '../../../core';
@@ -416,6 +417,36 @@ describe('name', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: providerFunctionName,
+    });
+  });
+});
+
+describe('environment encryption', () => {
+  it('uses custom KMS key for environment encryption when present', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_14_X,
+      }),
+      providerFunctionEnvEncryption: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      KmsKeyArn: {
+        'Fn::GetAtt': [
+          'EnvVarEncryptKey1A7CABDB',
+          'Arn',
+        ],
+      },
     });
   });
 });
