@@ -64,6 +64,17 @@ describe('bucket', () => {
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'AES256',
+                  },
+                },
+              ],
+            },
+          },
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
@@ -333,6 +344,34 @@ describe('bucket', () => {
                 ],
               },
               'SSEAlgorithm': 'aws:kms:dsse',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('KMS key is generated if encryption is KMS and no encryptionKey is specified', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      'Description': 'Created by Default/MyBucket',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
             },
           },
         ],
@@ -2554,6 +2593,38 @@ describe('bucket', () => {
       });
 
     });
+    test('adds RedirectRules property with empty keyPrefixEquals condition', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRoutingRules: [{
+          hostName: 'www.example.com',
+          httpRedirectCode: '302',
+          protocol: s3.RedirectProtocol.HTTPS,
+          replaceKey: s3.ReplaceKey.prefixWith('test/'),
+          condition: {
+            httpErrorCodeReturnedEquals: '200',
+            keyPrefixEquals: '',
+          },
+        }],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RoutingRules: [{
+            RedirectRule: {
+              HostName: 'www.example.com',
+              HttpRedirectCode: '302',
+              Protocol: 'https',
+              ReplaceKeyPrefixWith: 'test/',
+            },
+            RoutingRuleCondition: {
+              HttpErrorCodeReturnedEquals: '200',
+              KeyPrefixEquals: '',
+            },
+          }],
+        },
+      });
+
+    });
     test('fails if routingRule condition object is empty', () => {
       const stack = new cdk.Stack();
       expect(() => {
@@ -2651,10 +2722,27 @@ describe('bucket', () => {
   test('if a kms key is specified, it implies bucket is encrypted with kms (dah)', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'k');
-
+    const key = new kms.Key(stack, 'MyKey');
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey: key });
     // THEN
-    new s3.Bucket(stack, 'b', { encryptionKey: key });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('Bucket with Server Access Logs', () => {

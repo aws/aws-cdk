@@ -2,6 +2,7 @@
 /// !cdk-integ VariablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
@@ -55,5 +56,11 @@ const app = new App({
   },
 });
 
-new PipelineStack(app, 'VariablePipelineStack');
+const stack = new PipelineStack(app, 'VariablePipelineStack');
+
+new IntegTest(app, 'VariablePipelineTest', {
+  testCases: [stack],
+  diffAssets: true,
+});
+
 app.synth();

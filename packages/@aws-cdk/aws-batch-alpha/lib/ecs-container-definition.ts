@@ -6,6 +6,7 @@ import { Lazy, PhysicalName, Size } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -342,13 +343,14 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -458,13 +460,14 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The secrets for the container. Can be referenced in your job definition.
+   * A map from environment variable names to the secrets for the container. Allows your job definitions
+   * to reference the secret by the environment variable name defined in this property.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - no secrets
    */
-  readonly secrets?: secretsmanager.ISecret[];
+  readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
 
   /**
    * The user name to use inside the container
@@ -495,7 +498,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: secretsmanager.ISecret[];
+  public readonly secrets?: { [envVarName: string]: secretsmanager.ISecret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
@@ -508,7 +511,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.cpu = props.cpu;
     this.command = props.command;
     this.environment = props.environment;
-    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
+    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
@@ -553,12 +556,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
-      secrets: this.secrets?.map((secret) => {
+      secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
         return {
-          name: secret.secretName,
+          name,
           valueFrom: secret.secretArn,
         };
-      }),
+      }) : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
@@ -962,10 +965,17 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   };
 }
 
-function createExecutionRole(scope: Construct, id: string): iam.IRole {
-  return new iam.Role(scope, id, {
+function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {
+  const execRole = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     // needed for cross-account access with TagParameterContainerImage
     roleName: PhysicalName.GENERATE_IF_NEEDED,
   });
+
+  if (!logging) {
+    // all jobs will fail without this if they produce any output at all when no logging is specified
+    LogGroup.fromLogGroupName(scope, 'batchDefaultLogGroup', '/aws/batch/job').grantWrite(execRole);
+  }
+
+  return execRole;
 }
