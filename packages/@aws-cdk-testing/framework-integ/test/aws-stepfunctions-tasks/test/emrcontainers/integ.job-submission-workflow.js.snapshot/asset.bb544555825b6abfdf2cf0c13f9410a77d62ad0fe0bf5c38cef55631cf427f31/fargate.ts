@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ResourceNotFoundException } from '@aws-sdk/client-eks';
 import * as aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { ResourceHandler } from './common';
 
@@ -107,7 +109,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
       return status;
     } catch (describeFargateProfileError: any) {
-      if (describeFargateProfileError.code === 'ResourceNotFoundException') {
+      if (describeFargateProfileError instanceof ResourceNotFoundException) {
         this.log('received ResourceNotFoundException, this means the profile has been deleted (or never existed)');
         return 'NOT_FOUND';
       }
