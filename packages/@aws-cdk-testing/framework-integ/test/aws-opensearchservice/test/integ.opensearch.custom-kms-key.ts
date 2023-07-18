@@ -3,6 +3,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -25,6 +26,9 @@ class TestStack extends Stack {
           resources: ['*'],
         }),
       ],
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     };
 
     new opensearch.Domain(this, 'Domain', domainProps);
@@ -32,5 +36,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-opensearch-custom-kms-key');
+const stack = new TestStack(app, 'cdk-integ-opensearch-custom-kms-key');
+
+new IntegTest(app, 'OpenSearchCustomKmsInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

@@ -20,9 +20,10 @@
     },
     "flattenResponse": "true",
     "outputPaths": [
+     "Clusters.0.ClusterParameterGroups.0.ParameterGroupName",
      "Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus"
     ],
-    "salt": "1688063057941"
+    "salt": "1689616490389"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -94,7 +95,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5afd122c605f8f3ce8ca9656e47d6db7acb702ecd2bc9823eadde03a2ceb9e8.zip"
+     "S3Key": "4b68460f3e95ba7666544bc5b3abded22c08631b615ecf4d805872c16b9d5a9b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -125,7 +126,8 @@
      "Source": "user"
     },
     "flattenResponse": "false",
-    "salt": "1688063057942"
+    "outputPaths": [],
+    "salt": "1689616490390"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -149,7 +151,8 @@
      "Source": "engine-default"
     },
     "flattenResponse": "false",
-    "salt": "1688063057942"
+    "outputPaths": [],
+    "salt": "1689616490390"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -374,3 +374,26 @@ const domain = new Domain(this, 'Domain', {
   },
 });
 ```
+
+## Enable support for Multi-AZ with Standby deployment
+
+The domain can be configured to use [multi-AZ with standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby).
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  ebs: {
+    volumeSize: 10,
+    volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+  },
+  zoneAwareness: {
+    enabled: true,
+    availabilityZoneCount: 3,
+  },
+  capacity: {
+    multiAzWithStandbyEnabled: true,
+    masterNodes: 3,
+    dataNodes: 3,
+  },
+});
+```
