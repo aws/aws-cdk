@@ -149,6 +149,36 @@ test('correctly passes CFN parameters when hotswapping', async () => {
   expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
 });
 
+test('correctly passes SSM parameters when hotswapping', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'SomeParameter', ParameterValue: 'ParameterName', ResolvedValue: 'SomeValue' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: testStack({
+      stackName: 'stack',
+      template: {
+        Parameters: {
+          SomeParameter: {
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'ParameterName',
+          },
+        },
+      },
+    }),
+    hotswap: HotswapMode.FALL_BACK,
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+});
+
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
   // WHEN
   await deployStack({
