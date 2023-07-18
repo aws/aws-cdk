@@ -1077,9 +1077,10 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
-Also an `include` property allows you to specify particular files for assets.
-You can write based on simple glob patterns.
-If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
+Also an `include` property allows you to specify particular files for assets. You can write based on simple glob patterns.
+
+If both `exclude` and `include` are specified for the same file, `exclude` takes priority. If matching the symlink but not its target,
+it is included (i.e. the `include` patterns check for symlinks by the path from which the link originates).
 
 ```ts
 new lambda.Function(this, 'Function', {
