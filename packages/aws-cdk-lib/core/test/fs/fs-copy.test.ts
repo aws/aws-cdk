@@ -246,6 +246,74 @@ describe('fs copy', () => {
       '        file3.txt',
     ]);
   });
+
+  test('include a symlink as a symlink path if SymlinkFollowMode NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.NEVER,
+      include: [
+        'external-link.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'external-link.txt => ../symlinks/normal-file.txt',
+    ]);
+  });
+
+  test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.NEVER,
+      include: [
+        'normal-file.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([]);
+  });
+
+  test('include a symlink that matches but whose target file path does not match if SymlinkFollowMode other than NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.ALWAYS,
+      include: [
+        'external-link.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'external-link.txt',
+    ]);
+  });
+
+  test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode other than NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.ALWAYS,
+      include: [
+        'normal-file.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([]);
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {
