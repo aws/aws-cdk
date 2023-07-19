@@ -179,7 +179,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-python-amd64-ver-1-13-0:1"
+        ":901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2"
        ]
       ]
      }
