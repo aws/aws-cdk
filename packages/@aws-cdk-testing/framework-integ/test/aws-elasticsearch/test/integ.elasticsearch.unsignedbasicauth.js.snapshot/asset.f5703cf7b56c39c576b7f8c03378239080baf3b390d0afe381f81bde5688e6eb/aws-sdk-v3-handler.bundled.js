@@ -747,7 +747,8 @@ async function handler(event, context) {
           data = flatData;
         }
       } catch (e) {
-        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
+        const exceptionName = e.name ?? e.constructor.name;
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)) {
           throw e;
         }
       }
