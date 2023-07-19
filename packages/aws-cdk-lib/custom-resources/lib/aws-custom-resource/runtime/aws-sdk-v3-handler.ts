@@ -154,7 +154,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           data = flatData;
         }
       } catch (e: any) {
-        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.constructor.name)) {
           throw e;
         }
       }
