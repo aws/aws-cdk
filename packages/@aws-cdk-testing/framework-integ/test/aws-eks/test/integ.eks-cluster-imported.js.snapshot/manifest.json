@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1bc81e193fc17b39e9cf938d6f06aa21800fefb6651bb4330f10e4c69032a7b0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d9a984477d2dc582b777258a9ad5707fb9edc526d02959e13c1b05ef178f11b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -606,19 +606,19 @@
       },
       "displayName": "aws-cdk-eks-import-cluster-test"
     },
-    "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets": {
+    "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets.json",
+        "file": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkeksclusterDefaultTestDeployAssertFBF4B356": {
+    "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkeksclusterDefaultTestDeployAssertFBF4B356.template.json",
+        "templateFile": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -626,7 +626,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets"
+          "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -635,23 +635,23 @@
         }
       },
       "dependencies": [
-        "awscdkeksclusterDefaultTestDeployAssertFBF4B356.assets"
+        "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-eks-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-eks-cluster/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-eks-import-cluster/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

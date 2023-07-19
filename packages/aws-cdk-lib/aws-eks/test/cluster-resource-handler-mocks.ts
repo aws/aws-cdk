@@ -27,8 +27,8 @@ export let simulateResponse: {
   describeClusterResponseMockStatus?: string;
   describeUpdateResponseMockStatus?: string;
   describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
-  deleteClusterErrorCode?: string;
-  describeClusterExceptionCode?: string;
+  deleteClusterError?: Error;
+  describeClusterException?: Error;
 } = { };
 
 export function reset() {
@@ -60,10 +60,8 @@ export const client: EksClient = {
 
   deleteCluster: async req => {
     actualRequest.deleteClusterRequest = req;
-    if (simulateResponse.deleteClusterErrorCode) {
-      const e = new Error('mock error');
-      (e as any).code = simulateResponse.deleteClusterErrorCode;
-      throw e;
+    if (simulateResponse.deleteClusterError) {
+      throw simulateResponse.deleteClusterError;
     }
     return {
       cluster: {
@@ -75,10 +73,8 @@ export const client: EksClient = {
   describeCluster: async req => {
     actualRequest.describeClusterRequest = req;
 
-    if (simulateResponse.describeClusterExceptionCode) {
-      const e = new Error('mock exception');
-      (e as any).code = simulateResponse.describeClusterExceptionCode;
-      throw e;
+    if (simulateResponse.describeClusterException) {
+      throw simulateResponse.describeClusterException;
     }
 
     return {
