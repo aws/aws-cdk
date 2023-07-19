@@ -7268,17 +7268,17 @@
     },
     "AWS::Budgets::Budget.AutoAdjustData": {
       "attributes": {},
-      "description": "",
+      "description": "Determine the budget amount for an auto-adjusting budget.",
       "properties": {
-        "AutoAdjustType": "",
-        "HistoricalOptions": ""
+        "AutoAdjustType": "The string that defines whether your budget auto-adjusts based on historical or forecasted data.",
+        "HistoricalOptions": "The parameters that define or describe the historical data that your auto-adjusting budget is based on."
       }
     },
     "AWS::Budgets::Budget.BudgetData": {
       "attributes": {},
       "description": "Represents the output of the `CreateBudget` operation. The content consists of the detailed metadata and data file information, and the current status of the `budget` object.\n\nThis is the Amazon Resource Name (ARN) pattern for a budget:\n\n`arn:aws:budgets::AccountId:budget/budgetName`",
       "properties": {
-        "AutoAdjustData": "",
+        "AutoAdjustData": "Determine the budget amount for an auto-adjusting budget.",
         "BudgetLimit": "The total amount of cost, usage, RI utilization, RI coverage, Savings Plans utilization, or Savings Plans coverage that you want to track with your budget.\n\n`BudgetLimit` is required for cost or usage budgets, but optional for RI or Savings Plans utilization or coverage budgets. RI and Savings Plans utilization or coverage budgets default to `100` . This is the only valid value for RI or Savings Plans utilization or coverage budgets. You can't use `BudgetLimit` with `PlannedBudgetLimits` for `CreateBudget` and `UpdateBudget` actions.",
         "BudgetName": "The name of a budget. The value must be unique within an account. `BudgetName` can't include `:` and `\\` characters. If you don't include value for `BudgetName` in the template, Billing and Cost Management assigns your budget a randomly generated name.",
         "BudgetType": "Specifies whether this budget tracks costs, usage, RI utilization, RI coverage, Savings Plans utilization, or Savings Plans coverage.",
@@ -7308,9 +7308,9 @@
     },
     "AWS::Budgets::Budget.HistoricalOptions": {
       "attributes": {},
-      "description": "",
+      "description": "The parameters that define or describe the historical data that your auto-adjusting budget is based on.",
       "properties": {
-        "BudgetAdjustmentPeriod": ""
+        "BudgetAdjustmentPeriod": "The number of budget periods included in the moving-average calculation that determines your auto-adjusted budget amount. The maximum value depends on the `TimeUnit` granularity of the budget:\n\n- For the `DAILY` granularity, the maximum value is `60` .\n- For the `MONTHLY` granularity, the maximum value is `12` .\n- For the `QUARTERLY` granularity, the maximum value is `4` .\n- For the `ANNUALLY` granularity, the maximum value is `1` ."
       }
     },
     "AWS::Budgets::Budget.Notification": {
@@ -10906,7 +10906,7 @@
     },
     "AWS::Comprehend::DocumentClassifier.DocumentClassifierDocuments": {
       "attributes": {},
-      "description": "The location of the training documents. This parameter is required in a request to create a native document model.",
+      "description": "The location of the training documents. This parameter is required in a request to create a semi-structured document classification model.",
       "properties": {
         "S3Uri": "The S3 URI location of the training documents specified in the S3Uri CSV file.",
         "TestS3Uri": "The S3 URI location of the test documents included in the TestS3Uri CSV file. This field is not required if you do not specify a test CSV file."
@@ -10923,7 +10923,7 @@
         "Documents": "The S3 location of the training documents. This parameter is required in a request to create a native document model.",
         "LabelDelimiter": "Indicates the delimiter used to separate each label for training a multi-label classifier. The default delimiter between labels is a pipe (|). You can use a different character as a delimiter (if it's an allowed character) by specifying it under Delimiter for labels. If the training documents use a delimiter other than the default or the delimiter you specify, the labels on that line will be combined to make a single unique label, such as LABELLABELLABEL.",
         "S3Uri": "The Amazon S3 URI for the input data. The S3 bucket must be in the same Region as the API endpoint that you are calling. The URI can point to a single input file or it can provide the prefix for a collection of input files.\n\nFor example, if you use the URI `S3://bucketName/prefix` , if the prefix is a single file, Amazon Comprehend uses that file as input. If more than one file begins with the prefix, Amazon Comprehend uses all of them as input.\n\nThis parameter is required if you set `DataFormat` to `COMPREHEND_CSV` .",
-        "TestS3Uri": "This specifies the Amazon S3 location where the test annotations for an entity recognizer are located. The URI must be in the same AWS Region as the API endpoint that you are calling."
+        "TestS3Uri": "This specifies the Amazon S3 location that contains the test annotations for the document classifier. The URI must be in the same AWS Region as the API endpoint that you are calling."
       }
     },
     "AWS::Comprehend::DocumentClassifier.DocumentClassifierOutputDataConfig": {
@@ -34582,7 +34582,7 @@
         "InstanceType": "The instance type of the runtime environment.",
         "KmsKeyId": "The identifier of a customer managed key.",
         "Name": "The name of the runtime environment.",
-        "PreferredMaintenanceWindow": "Configures the maintenance window you want for the runtime environment. If you do not provide a value, a random system-generated value will be assigned.",
+        "PreferredMaintenanceWindow": "Configures the maintenance window that you want for the runtime environment. The maintenance window must have the format `ddd:hh24:mi-ddd:hh24:mi` and must be less than 24 hours. The following two examples are valid maintenance windows: `sun:23:45-mon:00:15` or `sat:01:00-sat:03:00` .\n\nIf you do not provide a value, a random system-generated value will be assigned.",
         "PubliclyAccessible": "Specifies whether the runtime environment is publicly accessible.",
         "SecurityGroupIds": "The list of security groups for the VPC associated with this runtime environment.",
         "StorageConfigurations": "Defines the storage configuration for a runtime environment.",
@@ -34610,7 +34610,7 @@
       "attributes": {},
       "description": "Defines the details of a high availability configuration.",
       "properties": {
-        "DesiredCapacity": "The number of instances in a high availability configuration."
+        "DesiredCapacity": "The number of instances in a high availability configuration. The minimum possible value is 1 and the maximum is 100."
       }
     },
     "AWS::M2::Environment.StorageConfiguration": {
@@ -50573,9 +50573,9 @@
     },
     "AWS::QuickSight::DataSet.DataSetRefreshProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh properties of a dataset.",
       "properties": {
-        "RefreshConfiguration": ""
+        "RefreshConfiguration": "The refresh configuration for a dataset."
       }
     },
     "AWS::QuickSight::DataSet.DataSetUsageConfiguration": {
@@ -50611,7 +50611,7 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "StaticValues": ""
+        "StaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` ."
       }
     },
     "AWS::QuickSight::DataSet.DecimalDatasetParameter": {
@@ -50657,9 +50657,9 @@
     },
     "AWS::QuickSight::DataSet.IncrementalRefresh": {
       "attributes": {},
-      "description": "",
+      "description": "The incremental refresh configuration for a dataset.",
       "properties": {
-        "LookbackWindow": ""
+        "LookbackWindow": "The lookback window setup for an incremental refresh configuration."
       }
     },
     "AWS::QuickSight::DataSet.IngestionWaitPolicy": {
@@ -50734,18 +50734,18 @@
     },
     "AWS::QuickSight::DataSet.LookbackWindow": {
       "attributes": {},
-      "description": "",
+      "description": "The lookback window setup of an incremental refresh configuration.",
       "properties": {
-        "ColumnName": "",
-        "Size": "",
-        "SizeUnit": ""
+        "ColumnName": "The name of the lookback window column.",
+        "Size": "The lookback window column size.",
+        "SizeUnit": "The size unit that is used for the lookback window column. Valid values for this structure are `HOUR` , `DAY` , and `WEEK` ."
       }
     },
     "AWS::QuickSight::DataSet.NewDefaultValues": {
       "attributes": {},
       "description": "",
       "properties": {
-        "DateTimeStaticValues": "",
+        "DateTimeStaticValues": "A list of static default values for a given date time parameter. The valid format for this property is `yyyy-MM-dd\u2019T\u2019HH:mm:ss\u2019Z\u2019` .",
         "DecimalStaticValues": "",
         "IntegerStaticValues": "",
         "StringStaticValues": ""
@@ -50762,10 +50762,10 @@
     },
     "AWS::QuickSight::DataSet.OverrideDatasetParameterOperation": {
       "attributes": {},
-      "description": "",
+      "description": "A transform operation that overrides the dataset parameter values that are defined in another dataset.",
       "properties": {
-        "NewDefaultValues": "",
-        "NewParameterName": "",
+        "NewDefaultValues": "The new default values for the parameter.",
+        "NewParameterName": "The new name for the parameter.",
         "ParameterName": ""
       }
     },
@@ -50787,9 +50787,9 @@
     },
     "AWS::QuickSight::DataSet.RefreshConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "The refresh configuration of a dataset.",
       "properties": {
-        "IncrementalRefresh": ""
+        "IncrementalRefresh": "The incremental refresh for the dataset."
       }
     },
     "AWS::QuickSight::DataSet.RelationalTable": {
@@ -57448,14 +57448,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -57463,18 +57463,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -57483,7 +57483,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -57493,15 +57493,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
