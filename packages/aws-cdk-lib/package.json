@@ -182,7 +182,7 @@
     "ts-node": "^10.9.1",
     "sinon": "^9.2.4",
     "typescript": "~5.1.6",
-    "typescript-json-schema": "^0.58.1"
+    "typescript-json-schema": "^0.56.0"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"

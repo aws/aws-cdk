@@ -11963,7 +11963,7 @@ patch-package@^6.5.1:
     tmp "^0.0.33"
     yaml "^1.10.2"
 
-path-equal@^1.2.5:
+path-equal@^1.1.2:
   version "1.2.5"
   resolved "https://registry.npmjs.org/path-equal/-/path-equal-1.2.5.tgz#9fcbdd5e5daee448e96f43f3bac06c666b5e982a"
   integrity sha512-i73IctDr3F2W+bsOWDyyVm/lqsXO47aY9nsFZUjTT/aljSbkxHxxCoyZ9UUrM8jK0JVod+An+rl48RCsvWM+9g==
@@ -13919,15 +13919,15 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript-json-schema@^0.58.1:
-  version "0.58.1"
-  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.58.1.tgz#841fc5c9a05c894ce77a04b28025af4135a00b1f"
-  integrity sha512-EcmquhfGEmEJOAezLZC6CzY0rPNzfXuky+Z3zoXULEEncW8e13aAjmC2r8ppT1bvvDekJj1TJ4xVhOdkjYtkUA==
+typescript-json-schema@^0.56.0:
+  version "0.56.0"
+  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.56.0.tgz#de3fe196633197aa66b10191e78f51d5f6b45847"
+  integrity sha512-k/aSEqx89YR2z/f2y3VwoOGzlKTWern0EIey2qqEpMRP7HL4CI8udPElzJs4eFVkPowCLJ1yVBSzuIWIUF+mMA==
   dependencies:
     "@types/json-schema" "^7.0.9"
     "@types/node" "^16.9.2"
     glob "^7.1.7"
-    path-equal "^1.2.5"
+    path-equal "^1.1.2"
     safe-stable-stringify "^2.2.0"
     ts-node "^10.9.1"
     typescript "~4.9.5"
