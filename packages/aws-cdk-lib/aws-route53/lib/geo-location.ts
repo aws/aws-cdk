@@ -4,11 +4,10 @@
 export class GeoLocation {
   /**
    * Geolocation resource record based on continent code.
-   * @param continentCode Code of the continent. Valid codes are AF (Africa), AN (Antarctica), AS (Asia),
-   * EU (Europe), OC (Oceania), NA (North America), SA (South America).
+   * @param continentCode Continent.
    * @returns Continent-based geolocation record
    */
-  public static continent(continentCode: string) {
+  public static continent(continentCode: Continent) {
     return new GeoLocation(continentCode, undefined, undefined);
   }
 
@@ -16,6 +15,8 @@ export class GeoLocation {
    * Geolocation resource record based on country code.
    * @param countryCode Two-letter, uppercase country code for the country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   * @see https://docs.aws.amazon.com/Route53/latest/APIReference/API_GeoLocation.html#Route53-Type-GeoLocation-CountryCode
+   * @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
    * @returns Country-based geolocation record
    */
   public static country(countryCode: string) {
@@ -26,7 +27,8 @@ export class GeoLocation {
    * Geolocation resource record based on subdivision code (e.g. state of the United States).
    * @param subdivisionCode Code of the subdivision (e.g. state of the United States)
    * @param countryCode Country code (ISO 3166-1-alpha-2) of this record, by default US (United States).
-   * @returns Subdivision-based geolocation record
+   * @see https://pe.usps.com/text/pub28/28apb.htm
+   * @see https://docs.aws.amazon.com/Route53/latest/APIReference/API_GeoLocation.html#Route53-Type-GeoLocation-SubdivisionCode
    */
   public static subdivision(subdivisionCode: string, countryCode: string = 'US') {
     return new GeoLocation(undefined, countryCode, subdivisionCode);
@@ -40,21 +42,21 @@ export class GeoLocation {
     return new GeoLocation(undefined, '*', undefined);
   }
 
-  private static CONTINENT_REGEX = /\b(?:AF|AN|AS|EU|OC|NA|SA)\b/;
   private static COUNTRY_REGEX = /(^[A-Z]{2}|^\*{1})$/;
+  private static COUNTRY_FOR_SUBDIVISION_REGEX = /\b(?:UA|US)\b/;
   private static SUBDEVISION_REGEX = /^[A-Z0-9]{1,3}$/;
-
-  private static validateContinent(continent: string) {
-    if (!GeoLocation.CONTINENT_REGEX.test(continent)) {
-      // eslint-disable-next-line max-len
-      throw new Error(`Invalid format for continent: ${continent}, only these continent codes are valid: AF, AN, AS, EU, OC, NA, SA`);
-    }
-  }
 
   private static validateCountry(country: string) {
     if (!GeoLocation.COUNTRY_REGEX.test(country)) {
       // eslint-disable-next-line max-len
       throw new Error(`Invalid country format for country: ${country}, country should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+    }
+  }
+
+  private static validateCountryForSubdivision(country: string) {
+    if (!GeoLocation.COUNTRY_FOR_SUBDIVISION_REGEX.test(country)) {
+      // eslint-disable-next-line max-len
+      throw new Error(`Invalid country for subdivions geolocation: ${country}, only UA (Ukraine) and US (United states) are supported`);
     }
   }
 
@@ -65,16 +67,48 @@ export class GeoLocation {
     }
   }
 
-  private constructor(readonly continentCode: string | undefined, readonly countryCode: string | undefined,
+  private constructor(readonly continentCode: Continent | undefined, readonly countryCode: string | undefined,
     readonly subdivisionCode: string | undefined) {
-    if (continentCode) {
-      GeoLocation.validateContinent(continentCode);
+    if (subdivisionCode && countryCode) {
+      GeoLocation.validateCountryForSubdivision(countryCode);
+      GeoLocation.validateSubDivision(subdivisionCode);
     }
     if (countryCode) {
       GeoLocation.validateCountry(countryCode);
     }
-    if (subdivisionCode) {
-      GeoLocation.validateSubDivision(subdivisionCode);
-    }
   }
+}
+
+/**
+ * Continents for geolocation routing.
+ */
+export enum Continent {
+  /**
+   * Africa
+  */
+  AFRICA = 'AF',
+  /**
+   * Antarctica
+   */
+  ANTARCTICA = 'AN',
+  /**
+   * Asia
+   */
+  ASIA = 'AS',
+  /**
+   * Europe
+   */
+  EUROPE = 'EU',
+  /**
+   * Oceania
+   */
+  OCEANIA = 'OC',
+  /**
+   * North America
+   */
+  NORTH_AMERICA = 'NA',
+  /**
+   * South America
+   */
+  SOUTH_AMERICA = 'SA',
 }

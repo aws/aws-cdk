@@ -592,7 +592,7 @@ describe('record set', () => {
       zone,
       recordName: 'www',
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
-      geoLocation: route53.GeoLocation.continent('EU'),
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
     });
 
     // THEN

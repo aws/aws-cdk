@@ -1,16 +1,8 @@
 import * as route53 from '../lib';
 
 describe('geo location', () => {
-  test('invalid continent', () => {
-    const error = /Invalid format for continent: .*/;
-    expect(() => { route53.GeoLocation.continent('eu'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.continent('12'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.continent('abc'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.continent('A'); }).toThrow(error);
-  });
-
   test('valid continent', () => {
-    expect(route53.GeoLocation.continent('EU').continentCode).toEqual('EU');
+    expect(route53.GeoLocation.continent(route53.Continent.EUROPE).continentCode).toEqual('EU');
   });
 
   test('invalid country', () => {
@@ -33,6 +25,11 @@ describe('geo location', () => {
     expect(() => { route53.GeoLocation.subdivision('ABCD'); }).toThrow(error);
     expect(() => { route53.GeoLocation.subdivision('abc'); }).toThrow(error);
     expect(() => { route53.GeoLocation.subdivision('1234'); }).toThrow(error);
+  });
+
+  test('invalid country for subdivision', () => {
+    const error = /Invalid country for subdivions geolocation: .*/;
+    expect(() => { route53.GeoLocation.subdivision('DE', 'DE'); }).toThrow(error);
   });
 
   test('valid subdivision', () => {

@@ -126,7 +126,7 @@ declare const myZone: route53.HostedZone;
 new route53.ARecord(this, 'ARecordGeoLocationContinent', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.0', '5.6.7.0'),
-  geoLocation: route53.GeoLocation.continent('EU'), // Europe
+  geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
 });
 
 // country

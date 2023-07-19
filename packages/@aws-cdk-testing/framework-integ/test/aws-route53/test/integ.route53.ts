@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { ARecord, CaaAmazonRecord, CnameRecord, GeoLocation, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from 'aws-cdk-lib/aws-route53';
+import { ARecord, CaaAmazonRecord, CnameRecord, Continent, GeoLocation, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from 'aws-cdk-lib/aws-route53';
 
 const app = new cdk.App();
 
@@ -51,7 +51,7 @@ new ARecord(stack, 'GeoLocationContinent', {
   zone: privateZone,
   recordName: 'geolocation',
   target: RecordTarget.fromIpAddresses('1.2.3.0', '5.6.7.0'),
-  geoLocation: GeoLocation.continent('EU'),
+  geoLocation: GeoLocation.continent(Continent.EUROPE),
 });
 
 new ARecord(stack, 'GeoLocationCountry', {
