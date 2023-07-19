@@ -5,6 +5,7 @@
       "stacks": [
         "aws-cdk-eks-cluster-private-endpoint-test"
       ],
+      "diffAssets": true,
       "assertionStack": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA"
     }

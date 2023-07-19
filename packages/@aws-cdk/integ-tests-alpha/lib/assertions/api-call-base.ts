@@ -125,7 +125,7 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   protected expectedResult?: string;
   protected flattenResponse: string = 'false';
   protected stateMachineArn?: string;
-  protected outputPaths?: string[];
+  protected outputPaths: string[] | undefined;
 
   public abstract readonly provider: AssertionsProvider;
 

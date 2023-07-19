@@ -201,6 +201,18 @@
             "data": "mySecretE4D0A59C"
           }
         ],
+        "/stack/anotherSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "anotherSecret11974229"
+          }
+        ],
+        "/stack/ssm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssm85049941"
+          }
+        ],
         "/stack/myContainer/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
