@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { S3 } from '@aws-sdk/client-s3';
+import { S3, S3ServiceException } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -57,25 +58,27 @@ async function onDelete(bucketName?: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
-  if (!await isBucketTaggedForDeletion(bucketName)) {
-    process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.\n`);
-    return;
-  }
   try {
-    await emptyBucket(bucketName);
-  } catch (e: any) {
-    if (e.code !== 'NoSuchBucket') {
-      throw e;
+    if (!await isBucketTaggedForDeletion(bucketName)) {
+      console.log(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.`);
+      return;
     }
-    // Bucket doesn't exist. Ignoring
+    await emptyBucket(bucketName);
+  } catch (error: any) {
+    // Bucket doesn't exist, all is well
+    if (error instanceof S3ServiceException && error.name === 'NoSuchBucket') {
+      console.log(`Bucket '${bucketName}' does not exist.`);
+      return;
+    }
+    throw error;
   }
 }
 
 /**
- * The bucket will only be tagged for deletion if it's being deleted in the same
+ * The bucket will only be tagged for deletion if it is being deleted in the same
  * deployment as this Custom Resource.
  *
- * If the Custom Resource is every deleted before the bucket, it must be because
+ * If the Custom Resource is ever deleted before the bucket, it must be because
  * `autoDeleteObjects` has been switched to false, in which case the tag would have
  * been removed before we get to this Delete event.
  */
