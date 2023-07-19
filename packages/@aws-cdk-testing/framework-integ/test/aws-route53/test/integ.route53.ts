@@ -68,6 +68,12 @@ new ARecord(stack, 'GeoLocationSubDividion', {
   geoLocation: GeoLocation.subdivision('WA'),
 });
 
+new ARecord(stack, 'GeoLocationSubDividionUA', {
+  zone: privateZone,
+  target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.4'),
+  geoLocation: GeoLocation.subdivision('30', 'UA'), // Ukraine, Kyiv
+});
+
 new ARecord(stack, 'GeoLocationDefault', {
   zone: privateZone,
   recordName: 'geolocation',

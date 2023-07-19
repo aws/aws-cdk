@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4fb12839507cacf3ffafe8f8dc4048532c6ade71503daa13fd58318972218f71.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e880e43b77aa38d085edaa0d9718a0b2d38584b11562fbbfc3c259c42b9d8b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +177,12 @@
             "data": "GeoLocationSubDividion2CB12CFC"
           }
         ],
+        "/aws-cdk-route53-integ/GeoLocationSubDividionUA/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationSubDividionUA778564B1"
+          }
+        ],
         "/aws-cdk-route53-integ/GeoLocationDefault/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -217,6 +223,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "GeoLocationSubDividionUSA98E93D0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeoLocationSubDividionUSA98E93D0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

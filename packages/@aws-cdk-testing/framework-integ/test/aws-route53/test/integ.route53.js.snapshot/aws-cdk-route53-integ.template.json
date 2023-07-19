@@ -367,6 +367,26 @@
     "Type": "A"
    }
   },
+  "GeoLocationSubDividionUA778564B1": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "GeoLocation": {
+     "CountryCode": "UA",
+     "SubdivisionCode": "30"
+    },
+    "HostedZoneId": {
+     "Ref": "PrivateZone27242E85"
+    },
+    "Name": "cdk.local.",
+    "ResourceRecords": [
+     "1.2.3.4",
+     "5.6.7.4"
+    ],
+    "SetIdentifier": "GEO_COUNTRY_UA_SUBDIVISION_30",
+    "TTL": "1800",
+    "Type": "A"
+   }
+  },
   "GeoLocationDefaultF2DE9058": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {

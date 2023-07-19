@@ -716,6 +716,44 @@
               "version": "0.0.0"
             }
           },
+          "GeoLocationSubDividionUA": {
+            "id": "GeoLocationSubDividionUA",
+            "path": "aws-cdk-route53-integ/GeoLocationSubDividionUA",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationSubDividionUA/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "countryCode": "UA",
+                      "subdivisionCode": "30"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.4",
+                      "5.6.7.4"
+                    ],
+                    "setIdentifier": "GEO_COUNTRY_UA_SUBDIVISION_30",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
           "GeoLocationDefault": {
             "id": "GeoLocationDefault",
             "path": "aws-cdk-route53-integ/GeoLocationDefault",
