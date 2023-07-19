@@ -100,7 +100,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\"},\"ignoreErrorCodesMatching\":\"400\"}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsTimerC63340B0CustomResourcePolicy67B796AA"
@@ -170,7 +170,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53461bcc6b34ada50be0f965ef4717e2c9b95c6d41777bf05e67f39eae4dac14.zip"
+     "S3Key": "bcd6cbd1a0ae428e82d62918232daa28a9ecfac53e459e2bf638b3e64517448d.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -275,7 +275,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\"},\"ignoreErrorCodesMatching\":\"400\"}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96"
@@ -406,7 +406,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\"},\"ignoreErrorCodesMatching\":\"400\"}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsTimer37DF74C17CustomResourcePolicyAE930E1E"
