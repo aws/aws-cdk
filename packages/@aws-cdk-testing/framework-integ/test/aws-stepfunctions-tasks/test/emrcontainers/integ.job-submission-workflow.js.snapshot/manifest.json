@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-all-services-test.assets": {
       "type": "cdk:asset-manifest",
