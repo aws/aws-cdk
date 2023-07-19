@@ -4078,7 +4078,7 @@
     expect "^28.0.0"
     pretty-format "^28.0.0"
 
-"@types/jest@^29.5.3":
+"@types/jest@^29.5.1", "@types/jest@^29.5.3":
   version "29.5.3"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-29.5.3.tgz#7a35dc0044ffb8b56325c6802a4781a626b05777"
   integrity sha512-1Nq7YrO/vJE/FYnqYyw0FS8LdrjExSgIiHyKg7xPpn+yi8Q4huZryKnkJatN1ZRH89Kw2v33/8ZMB7DuZeSLlA==
@@ -9506,7 +9506,7 @@ jest@^29:
     import-local "^3.0.2"
     jest-cli "^29.5.0"
 
-jest@^29.6.1:
+jest@^29.5.0, jest@^29.6.1:
   version "29.6.1"
   resolved "https://registry.npmjs.org/jest/-/jest-29.6.1.tgz#74be1cb719c3abe439f2d94aeb18e6540a5b02ad"
   integrity sha512-Nirw5B4nn69rVUZtemCQhwxOBhm0nsp3hmtF4rzCeWD7BkjAXRIji7xWQfnTNbz9g0aVsBX6aZK3n+23LM6uDw==
