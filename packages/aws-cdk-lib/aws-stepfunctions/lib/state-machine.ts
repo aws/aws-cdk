@@ -408,7 +408,7 @@ export class StateMachine extends StateMachineBase {
   public readonly stateMachineType: StateMachineType;
 
   /**
-   * Identifier for the state machine revision
+   * Identifier for the state machine revision, which is an immutable, read-only snapshot of a state machine’s definition and configuration.
    * @attribute
    */
   public readonly stateMachineRevisionId: string;
