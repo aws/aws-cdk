@@ -119,6 +119,8 @@ fileSystem.grantRead(role);
 You can control this behavior with `allowAnonymousAccess`. The following example continues to allow anonymous client access.
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 const role = new iam.Role(this, 'ClientRole', {
   assumedBy: new iam.AnyPrincipal(),
 });
