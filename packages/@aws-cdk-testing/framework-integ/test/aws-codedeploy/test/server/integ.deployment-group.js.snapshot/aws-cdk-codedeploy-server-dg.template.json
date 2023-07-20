@@ -503,42 +503,83 @@
     ]
    }
   },
-  "ASGLaunchConfigC00AF12B": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "ASGLaunchTemplate0CA92847": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "m5.large",
-    "IamInstanceProfile": {
-     "Ref": "ASGInstanceProfile0A2834D7"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "ASGInstanceSecurityGroup0525485D",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\nset +e\nPKG_CMD=`which yum 2>/dev/null`\nset -e\nif [ -z \"$PKG_CMD\" ]; then\nPKG_CMD=apt-get\nelse\nPKG_CMD=yum\nfi\n$PKG_CMD update -y\nset +e\n$PKG_CMD install -y ruby2.0\nRUBY2_INSTALL=$?\nset -e\nif [ $RUBY2_INSTALL -ne 0 ]; then\n$PKG_CMD install -y ruby\nfi\nAWS_CLI_PACKAGE_NAME=awscli\nif [ \"$PKG_CMD\" = \"yum\" ]; then\nAWS_CLI_PACKAGE_NAME=aws-cli\nfi\n$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME\nTMP_DIR=`mktemp -d`\ncd $TMP_DIR\naws s3 cp s3://aws-codedeploy-",
-        {
-         "Ref": "AWS::Region"
-        },
-        "/latest/install . --region ",
-        {
-         "Ref": "AWS::Region"
-        },
-        "\nchmod +x ./install\n./install auto\nrm -fr $TMP_DIR"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ASGInstanceProfile0A2834D7",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "m5.large",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ASGInstanceSecurityGroup0525485D",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\nset +e\nPKG_CMD=`which yum 2>/dev/null`\nset -e\nif [ -z \"$PKG_CMD\" ]; then\nPKG_CMD=apt-get\nelse\nPKG_CMD=yum\nfi\n$PKG_CMD update -y\nset +e\n$PKG_CMD install -y ruby2.0\nRUBY2_INSTALL=$?\nset -e\nif [ $RUBY2_INSTALL -ne 0 ]; then\n$PKG_CMD install -y ruby\nfi\nAWS_CLI_PACKAGE_NAME=awscli\nif [ \"$PKG_CMD\" = \"yum\" ]; then\nAWS_CLI_PACKAGE_NAME=aws-cli\nfi\n$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME\nTMP_DIR=`mktemp -d`\ncd $TMP_DIR\naws s3 cp s3://aws-codedeploy-",
+         {
+          "Ref": "AWS::Region"
+         },
+         "/latest/install . --region ",
+         {
+          "Ref": "AWS::Region"
+         },
+         "\nchmod +x ./install\n./install auto\nrm -fr $TMP_DIR"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "ASGInstanceRoleDefaultPolicy7636D8BF",
@@ -550,8 +591,16 @@
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "ASGLaunchConfigC00AF12B"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "ASGLaunchTemplate0CA92847"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "ASGLaunchTemplate0CA92847",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -645,12 +694,6 @@
     "Threshold": 1
    }
   },
-  "CodeDeployGroupApplication13EFBDA6": {
-   "Type": "AWS::CodeDeploy::Application",
-   "Properties": {
-    "ComputePlatform": "Server"
-   }
-  },
   "CodeDeployGroupRole1D304F7A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -680,6 +723,12 @@
       ]
      }
     ]
+   }
+  },
+  "CodeDeployGroupApplication13EFBDA6": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "Server"
    }
   },
   "CodeDeployGroup58220FC8": {
