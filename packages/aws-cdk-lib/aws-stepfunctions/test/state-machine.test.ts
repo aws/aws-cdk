@@ -597,8 +597,8 @@ describe('State Machine', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachineVersion', {
-      StateMachineArn: { Ref: 'MyStateMachine' },
-      StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine', 'StateMachineRevisionId'] },
+      StateMachineArn: { Ref: 'MyStateMachine6C968CA5' },
+      StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine6C968CA5', 'StateMachineRevisionId'] },
     });
   });
 });
