@@ -407,6 +407,12 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineType: StateMachineType;
 
+  /**
+   * Identifier for the state machine revision
+   * @attribute
+   */
+  public readonly stateMachineRevisionId: string;
+
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -451,6 +457,7 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.stateMachineRevisionId = resource.attrStateMachineRevisionId;
   }
 
   /**
