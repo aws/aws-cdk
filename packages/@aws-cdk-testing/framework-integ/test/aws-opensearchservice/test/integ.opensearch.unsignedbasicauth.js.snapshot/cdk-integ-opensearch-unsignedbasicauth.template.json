@@ -38,6 +38,7 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
+     "MultiAZWithStandbyEnabled": false,
      "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
@@ -116,7 +117,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DomainAccessPolicyCustomResourcePolicyE61F1845"
@@ -188,15 +189,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5009f77d2e9161f4799d4facb1cb8859134a40234014484b4911e924c169c9cb.zip"
+     "S3Key": "f5703cf7b56c39c576b7f8c03378239080baf3b390d0afe381f81bde5688e6eb.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x",
     "Timeout": 120
    },

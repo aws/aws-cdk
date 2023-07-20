@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-server-dg.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d742c2278bd18d029a659e6a738e95504aa029f22f4bed4dd0925428d226940.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8e6ede2e8bf4d32dc013a76bff9a6bbde55993ddf3336f77a370c1fa0073da2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +195,10 @@
             "data": "ASGInstanceProfile0A2834D7"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/ASG/LaunchConfig": [
+        "/aws-cdk-codedeploy-server-dg/ASG/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchConfigC00AF12B"
+            "data": "ASGLaunchTemplate0CA92847"
           }
         ],
         "/aws-cdk-codedeploy-server-dg/ASG/ASG": [
@@ -231,16 +231,16 @@
             "data": "Alarm1F9009D71"
           }
         ],
-        "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Application/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CodeDeployGroupApplication13EFBDA6"
-          }
-        ],
         "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CodeDeployGroupRole1D304F7A"
+          }
+        ],
+        "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Application/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeDeployGroupApplication13EFBDA6"
           }
         ],
         "/aws-cdk-codedeploy-server-dg/CodeDeployGroup/Resource": [
@@ -259,6 +259,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASGLaunchTemplateProfileB99C522F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLaunchTemplateProfileB99C522F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

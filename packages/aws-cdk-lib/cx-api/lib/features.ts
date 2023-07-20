@@ -88,6 +88,8 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
+export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -807,6 +809,27 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: {
+    type: FlagType.BugFix,
+    summary: 'Generate a launch template when creating an AutoScalingGroup',
+    detailsMd: `
+      Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
+      Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+      December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+      will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit 
+      'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will 
+      attempt to set user data according to the OS of the machine image if explicit user data is not
+      provided.
+    `,
+    introducedIn: { v2: '2.88.0' },
+    compatibilityWithOldBehaviorMd: `
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    `,
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION]: {
     type: FlagType.BugFix,
     summary: 'Include the stack prefix in the stack name generation process',
@@ -824,6 +847,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables support for Multi-AZ with Standby deployment for opensearch domains',
+    detailsMd: `
+      If this is set, an opensearch domain will automatically be created with 
+      multi-az with standby enabled.
+    `,
+    introducedIn: { v2: '2.88.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
+  },
 };
 
 const CURRENT_MV = 'v2';

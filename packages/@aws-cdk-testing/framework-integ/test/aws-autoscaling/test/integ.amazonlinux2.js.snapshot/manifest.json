@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-autoscaling-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62dd6f0ccfbbd1354c9a66f975cb337502f0359aa6f302762d33e013a53ee141.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b29211119a9d2eb599994dfbcfd82de23230f506d22b5a9bc80d869e2526ddd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +189,10 @@
             "data": "FleetInstanceProfileC6192A66"
           }
         ],
-        "/aws-cdk-autoscaling-integ/Fleet/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/Fleet/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36"
+            "data": "FleetLaunchTemplate3FC2FEAE"
           }
         ],
         "/aws-cdk-autoscaling-integ/Fleet/ASG": [
@@ -224,9 +218,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "FleetLaunchTemplateProfileB169EB6D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetLaunchTemplateProfileB169EB6D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-autoscaling-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
