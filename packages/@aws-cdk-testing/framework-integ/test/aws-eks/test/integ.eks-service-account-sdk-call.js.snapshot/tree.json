@@ -1146,7 +1146,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2706,7 +2706,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.2.69"
                     }
                   }
                 },
@@ -2785,7 +2785,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3296,7 +3296,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
@@ -3372,7 +3372,7 @@
             "path": "aws-eks-service-account-sdk-calls-test/kplus-sa",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "S3BucketPinger": {
@@ -3798,7 +3798,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.2.69"
             }
           },
           "PingerResponse": {
@@ -3844,7 +3844,7 @@
                 "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -3890,7 +3890,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.2.69"
         }
       }
     },
