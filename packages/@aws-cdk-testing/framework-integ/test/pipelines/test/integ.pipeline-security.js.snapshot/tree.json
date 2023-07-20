@@ -669,6 +669,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                       "aws:cdk:cloudformation:props": {
+                        "artifactStore": {
+                          "type": "S3",
+                          "location": {
+                            "Ref": "TestPipelineArtifactsBucket026AF2F9"
+                          },
+                          "encryptionKey": {
+                            "type": "KMS",
+                            "id": {
+                              "Fn::GetAtt": [
+                                "TestPipelineArtifactsBucketEncryptionKey13258842",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "name": "TestPipeline",
+                        "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [
                             "TestPipelineRole63C35BBD",
@@ -1622,23 +1639,6 @@
                             ]
                           }
                         ],
-                        "artifactStore": {
-                          "type": "S3",
-                          "location": {
-                            "Ref": "TestPipelineArtifactsBucket026AF2F9"
-                          },
-                          "encryptionKey": {
-                            "type": "KMS",
-                            "id": {
-                              "Fn::GetAtt": [
-                                "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
-                        "name": "TestPipeline",
-                        "restartExecutionOnUpdate": true,
                         "tags": [
                           {
                             "key": "SECURITY_CHECK",
@@ -2191,6 +2191,15 @@
                                     "artifacts": {
                                       "type": "CODEPIPELINE"
                                     },
+                                    "cache": {
+                                      "type": "NO_CACHE"
+                                    },
+                                    "encryptionKey": {
+                                      "Fn::GetAtt": [
+                                        "TestPipelineArtifactsBucketEncryptionKey13258842",
+                                        "Arn"
+                                      ]
+                                    },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
                                       "image": "aws/codebuild/standard:6.0",
@@ -2214,15 +2223,6 @@
                                     "source": {
                                       "type": "CODEPIPELINE",
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"yarn install --frozen-lockfile\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"yarn build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}"
-                                    },
-                                    "cache": {
-                                      "type": "NO_CACHE"
-                                    },
-                                    "encryptionKey": {
-                                      "Fn::GetAtt": [
-                                        "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                        "Arn"
-                                      ]
                                     }
                                   }
                                 },
@@ -3327,13 +3327,13 @@
                               },
                               "s3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
                             },
+                            "handler": "index.handler",
                             "role": {
                               "Fn::GetAtt": [
                                 "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApproveServiceRole7594919D",
                                 "Arn"
                               ]
                             },
-                            "handler": "index.handler",
                             "runtime": "nodejs18.x",
                             "timeout": 300
                           }
@@ -3621,6 +3621,15 @@
                             "artifacts": {
                               "type": "NO_ARTIFACTS"
                             },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "encryptionKey": {
+                              "Fn::GetAtt": [
+                                "TestPipelineArtifactsBucketEncryptionKey13258842",
+                                "Arn"
+                              ]
+                            },
                             "environment": {
                               "type": "LINUX_CONTAINER",
                               "image": "aws/codebuild/standard:6.0",
@@ -3648,15 +3657,6 @@
                                   ]
                                 ]
                               }
-                            },
-                            "cache": {
-                              "type": "NO_CACHE"
-                            },
-                            "encryptionKey": {
-                              "Fn::GetAtt": [
-                                "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                "Arn"
-                              ]
                             }
                           }
                         },
@@ -3889,13 +3889,13 @@
                               },
                               "s3Key": "271a1a7bb81a361380921b21e8273a6acfe4867eba05fe530c4d05c065c17a65.zip"
                             },
+                            "handler": "index.handler",
                             "role": {
                               "Fn::GetAtt": [
                                 "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApproveServiceRole1358574A",
                                 "Arn"
                               ]
                             },
-                            "handler": "index.handler",
                             "runtime": "nodejs18.x",
                             "timeout": 300
                           }
@@ -4183,6 +4183,15 @@
                             "artifacts": {
                               "type": "NO_ARTIFACTS"
                             },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "encryptionKey": {
+                              "Fn::GetAtt": [
+                                "TestPipelineArtifactsBucketEncryptionKey13258842",
+                                "Arn"
+                              ]
+                            },
                             "environment": {
                               "type": "LINUX_CONTAINER",
                               "image": "aws/codebuild/standard:6.0",
@@ -4210,15 +4219,6 @@
                                   ]
                                 ]
                               }
-                            },
-                            "cache": {
-                              "type": "NO_CACHE"
-                            },
-                            "encryptionKey": {
-                              "Fn::GetAtt": [
-                                "TestPipelineArtifactsBucketEncryptionKey13258842",
-                                "Arn"
-                              ]
                             }
                           }
                         },
@@ -4313,11 +4313,11 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
+                        "endpoint": "test@email.com",
                         "protocol": "email",
                         "topicArn": {
                           "Ref": "SecurityChangesTopic9762A9B3"
-                        },
-                        "endpoint": "test@email.com"
+                        }
                       }
                     },
                     "constructInfo": {
