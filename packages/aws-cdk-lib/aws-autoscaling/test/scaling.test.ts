@@ -5,7 +5,6 @@ import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
 import * as autoscaling from '../lib';
-import { ScalingInterval } from '../lib';
 
 describe('scaling', () => {
   describe('target tracking policies', () => {
@@ -357,10 +356,10 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
 
     const numSteps = 41;
     const messagesPerTask = 20;
-    let steps: ScalingInterval[] = [];
+    let steps: autoscaling.ScalingInterval[] = [];
 
     for (let i = 0; i < numSteps; ++i) {
-      const step: ScalingInterval = {
+      const step: autoscaling.ScalingInterval = {
         lower: i * messagesPerTask,
         upper: i * (messagesPerTask + 1) - 1,
         change: i + 1,
