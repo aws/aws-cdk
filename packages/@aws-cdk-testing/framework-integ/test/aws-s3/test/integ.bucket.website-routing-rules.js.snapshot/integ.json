@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "cdk-integ-s3-bucket/DefaultTest": {
+      "stacks": [
+        "s3-bucket-routing"
+      ],
+      "assertionStack": "cdk-integ-s3-bucket/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3bucketDefaultTestDeployAssertB89636B8"
+    }
+  }
+}
