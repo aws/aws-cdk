@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -382,6 +383,37 @@ each([testedOpenSearchVersions]).test('can use tokens in capacity configuration'
       WarmType: {
         Ref: 'warmInstanceType',
       },
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in capacity configuration', (engineVersion) => {
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      multiAzWithStandbyEnabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
+  const stackWithFlag = new Stack(app, 'StackWithFlag', {
+    env: { account: '1234', region: 'testregion' },
+  });
+  stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
+  new Domain(stackWithFlag, 'Domain', {
+    version: engineVersion,
+  });
+
+  Template.fromStack(stackWithFlag).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      MultiAZWithStandbyEnabled: true,
     },
   });
 });

@@ -14,24 +14,33 @@
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "FlowLogsFeatureFlag:ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FlowLogsFeatureFlag:ExportsOutputRefVPCFlowLogsS3BucketFB7DC2BE6C269563"
+        },
+        "\""
+       ]
+      ]
      },
-     "MaxKeys": 1,
+     "MaxKeys": "1",
      "Prefix": {
       "Fn::Join": [
        "",
        [
-        "AWSLogs/",
+        "\"AWSLogs/",
         {
          "Ref": "AWS::AccountId"
         },
-        "/vpcflowlogs"
+        "/vpcflowlogs\""
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1688651594499"
+    "salt": "1689786424158"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -115,7 +124,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a5c310b46637b9f23d0cd48c7ae357074563c375a3a49f87ce643821594ca2b4.zip"
+     "S3Key": "03b57ee588236f1906245128e2e6ad34100b4527d9ae51dae2e4366f9e51881e.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
