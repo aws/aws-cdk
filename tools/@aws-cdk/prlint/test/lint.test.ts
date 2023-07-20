@@ -541,7 +541,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "labels": ["pr/needs-review"],
+        "labels": ["pr/needs-community-review"],
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -577,7 +577,7 @@ describe('integration tests required on features', () => {
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -592,7 +592,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -623,7 +623,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "labels": ["pr/needs-review"],
+        "labels": ["pr/needs-community-review"],
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -645,7 +645,7 @@ describe('integration tests required on features', () => {
           name: 'pr-linter/exemption-requested',
         },
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         },
       ];
 
@@ -660,7 +660,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -678,7 +678,7 @@ describe('integration tests required on features', () => {
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -693,7 +693,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -711,7 +711,7 @@ describe('integration tests required on features', () => {
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -726,7 +726,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -749,7 +749,7 @@ describe('integration tests required on features', () => {
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -764,7 +764,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });
@@ -782,7 +782,7 @@ describe('integration tests required on features', () => {
       });
       (pr as any).labels = [
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -815,7 +815,7 @@ describe('integration tests required on features', () => {
           name: 'pr-linter/exemption-requested',
         },
         {
-          name: 'pr/needs-review',
+          name: 'pr/needs-community-review',
         }
       ];
 
@@ -826,7 +826,7 @@ describe('integration tests required on features', () => {
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
         "issue_number": 1234,
-        "name": "pr/needs-review",
+        "name": "pr/needs-community-review",
         "owner": "aws",
         "repo": "aws-cdk",
       });

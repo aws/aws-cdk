@@ -336,7 +336,7 @@ export class PullRequestLinter {
    *
    * In addition, we differentiate between ready for review by a core team member
    * (pr/needs-maintainer-review) or ready for review by core OR the trusted community
-   * (pr/needs-review). A PR is prioritized for core team review when:
+   * (pr/needs-community-review). A PR is prioritized for core team review when:
    *
    *   6. It links to a p1 issue
    *   7. It links to a p2 issue and has an approved community review
@@ -396,12 +396,12 @@ export class PullRequestLinter {
 
     if (readyForReview && (fixesP1 || communityApproved)) {
       this.addLabel('pr/needs-maintainer-review', pr);
-      this.removeLabel('pr/needs-review', pr);
+      this.removeLabel('pr/needs-community-review', pr);
     } else if (readyForReview && !fixesP1) {
       this.removeLabel('pr/needs-maintainer-review', pr);
-      this.addLabel('pr/needs-review', pr);
+      this.addLabel('pr/needs-community-review', pr);
     } else {
-      this.removeLabel('pr/needs-review', pr);
+      this.removeLabel('pr/needs-community-review', pr);
       this.removeLabel('pr/needs-maintainer-review', pr);
     }
   }
