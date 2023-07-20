@@ -583,6 +583,16 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
+  /**
+   * Returns an ARN that represents all tasks within the cluster that match
+   * the task pattern specified. To represent all tasks, specify ``"*"``.
+   *
+   * @param keyPattern Task id pattern
+   */
+  public arnForTasks(keyPattern: string): string {
+    return `arn:${Stack.of(this).partition}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:task/${this.clusterName}/${keyPattern}`;
+  }
+
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     // clear the cache of the agent
     autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
