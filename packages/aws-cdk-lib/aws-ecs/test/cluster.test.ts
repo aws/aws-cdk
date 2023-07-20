@@ -1055,6 +1055,20 @@ describe('cluster', () => {
     expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
   });
 
+  test('arnForTasks returns a task arn from key pattern', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskIdPattern = 'taskIdPattern';
+
+    // THEN
+    const taskArn = cluster.arnForTasks(taskIdPattern);
+    expect(taskArn).toEqual(
+      `arn:aws:ecs:${cluster.env.region}:${cluster.env.account}:task/${cluster.clusterName}/${taskIdPattern}`,
+    );
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
