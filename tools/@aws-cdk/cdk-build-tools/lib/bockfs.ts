@@ -13,7 +13,7 @@ import * as os from 'os';
 import * as path_ from 'path';
 import * as fs from 'fs-extra';
 
-const bockFsRoot = fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs'));
+const bockFsRoot = fs.realpathSync(fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs')));
 let oldCwd: string | undefined;
 
 function bockfs(files: Record<string, string>) {
@@ -43,9 +43,20 @@ namespace bockfs {
 
   /**
    * Change to a fake directory
+   *
+   * @returns A template literal function to turn a fake path into a real path. Relative paths are assumed to be in the working dir.
    */
-  export function workingDirectory(fakePath: string) {
+  export function workingDirectory(fakePath: string): (parts: TemplateStringsArray) => string {
     process.chdir(path(fakePath));
+
+    return function (elements: TemplateStringsArray) {
+      const fullPath = elements.join('');
+      if (!fullPath.startsWith('/')) {
+        return path(path_.join(fakePath, fullPath));
+      }
+
+      return path(fullPath);
+    };
   }
 
   export function executable(...fakePaths: string[]) {

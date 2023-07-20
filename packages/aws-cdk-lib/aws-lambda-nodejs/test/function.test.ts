@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import { CodeConfig, Runtime } from '../../aws-lambda';
@@ -25,10 +24,43 @@ jest.mock('../lib/bundling', () => {
   };
 });
 
+const mockCallsites = jest.fn();
+jest.mock('../lib/util', () => ({
+  ...jest.requireActual('../lib/util'),
+  callsites: () => mockCallsites(),
+}));
+
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
   jest.clearAllMocks();
+});
+
+// We MUST use a fake file system here.
+// Using the real filesystem causes the tests to be flaky and fail at random.
+// This way we are guaranteed to have the fake files setup on each test run.
+bockfs({
+  '/home/project/package.json': '{}',
+  '/home/project/package-lock.json': '{}',
+  '/home/project/handler.tsx': '// nothing',
+  '/home/project/function.test.handler1.ts': '// nothing',
+  '/home/project/function.test.handler2.js': '// nothing',
+  '/home/project/function.test.handler3.mjs': '// nothing',
+  '/home/project/function.test.handler4.mts': '// nothing',
+  '/home/project/function.test.handler5.cts': '// nothing',
+  '/home/project/function.test.handler6.cjs': '// nothing',
+  '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
+});
+const bockPath = bockfs.workingDirectory('/home/project');
+
+// pretend the calling file is in a fake file path
+mockCallsites.mockImplementation(() => [
+  { getFunctionName: () => 'NodejsFunction' },
+  { getFileName: () => bockPath`function.test.ts` },
+]);
+
+afterAll(() => {
+  bockfs.restore();
 });
 
 test('NodejsFunction with .ts handler', () => {
@@ -151,15 +183,11 @@ test('throws when entry is not js/ts', () => {
 });
 
 test('accepts tsx', () => {
-  const entry = path.join(__dirname, 'handler.tsx');
-
-  fs.symlinkSync(path.join(__dirname, 'function.test.handler1.ts'), entry);
+  const entry = bockPath`handler.tsx`;
 
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry,
   })).not.toThrow();
-
-  fs.unlinkSync(entry);
 });
 
 test('throws when entry does not exist', () => {
@@ -196,7 +224,7 @@ test('resolves depsLockFilePath to an absolute path', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    depsLockFilePath: expect.stringMatching(/aws-cdk-lib\/package.json$/),
+    depsLockFilePath: bockPath`/home/project/package.json`,
   }));
 });
 
@@ -207,7 +235,7 @@ test('resolves entry to an absolute path', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-cdk-lib\/aws-lambda-nodejs\/lib\/index.ts$/),
+    entry: bockPath`/home/project/aws-lambda-nodejs/lib/index.ts`,
   }));
 });
 
