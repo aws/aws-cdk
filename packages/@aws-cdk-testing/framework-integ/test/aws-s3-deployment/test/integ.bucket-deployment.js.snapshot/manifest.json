@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a86d053bab0407628216427dab50f7580efe548c7e19be16b0592ace19ac5ae2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3a3184e0f01ba1e96e9ac5b1e2c63db60fe8f0cbc8dd631423d61ab984b9993.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -66,10 +66,7 @@
         "/test-bucket-deployments-2/DeployMe/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeAwsCliLayer5F9219E9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMeAwsCliLayer5F9219E9"
           }
         ],
         "/test-bucket-deployments-2/DeployMe/CustomResource/Default": [
@@ -237,10 +234,7 @@
         "/test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeWithEfsStorageAwsCliLayer1619A3EE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
           }
         ],
         "/test-bucket-deployments-2/DeployMeWithEfsStorage/CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Default": [
@@ -330,10 +324,7 @@
         "/test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployWithPrefixAwsCliLayerC9DDB597",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployWithPrefixAwsCliLayerC9DDB597"
           }
         ],
         "/test-bucket-deployments-2/DeployWithPrefix/CustomResource/Default": [
@@ -363,10 +354,7 @@
         "/test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployWithMetadataAwsCliLayer2C774B41",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployWithMetadataAwsCliLayer2C774B41"
           }
         ],
         "/test-bucket-deployments-2/DeployWithMetadata/CustomResource/Default": [
@@ -378,10 +366,7 @@
         "/test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeWithoutDeletingFilesOnDestinationAwsCliLayer4D54C41C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMeWithoutDeletingFilesOnDestinationAwsCliLayer4D54C41C"
           }
         ],
         "/test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/CustomResource/Default": [
@@ -393,10 +378,7 @@
         "/test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeWithExcludedFilesOnDestinationAwsCliLayer68F5E11D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMeWithExcludedFilesOnDestinationAwsCliLayer68F5E11D"
           }
         ],
         "/test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/CustomResource/Default": [
@@ -426,10 +408,7 @@
         "/test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeWithoutExtractingFilesOnDestinationAwsCliLayerC65F79D8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMeWithoutExtractingFilesOnDestinationAwsCliLayerC65F79D8"
           }
         ],
         "/test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/CustomResource/Default": [
@@ -459,10 +438,7 @@
         "/test-bucket-deployments-2/DeployMe5/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMe5AwsCliLayerF0F79631",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DeployMe5AwsCliLayerF0F79631"
           }
         ],
         "/test-bucket-deployments-2/DeployMe5/CustomResource/Default": [
@@ -508,7 +484,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5303ed1ee65aa74eefaaf9e2f9142c6a959a40534ed56308bb41ec1ca8a72ef4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e226db552c05d16d2a45c82ce6644a0737eccd6c3f7b19f799296aafcfc12465.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
