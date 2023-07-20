@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as verifiedpermissions from '@aws-cdk/aws-verifiedpermissions';
+import * as verifiedpermissions from 'aws-cdk-lib/aws-verifiedpermissions';
 ```
 
 <!--BEGIN CFNONLY DISCLAIMER-->

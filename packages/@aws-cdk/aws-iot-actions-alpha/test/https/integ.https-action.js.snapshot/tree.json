@@ -1,0 +1,201 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "IoTHttpsActionTestStack": {
+        "id": "IoTHttpsActionTestStack",
+        "path": "IoTHttpsActionTestStack",
+        "children": {
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "IoTHttpsActionTestStack/TopicRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IoTHttpsActionTestStack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "http": {
+                            "url": "https://example.com/endpoint",
+                            "confirmationUrl": "https://example.com",
+                            "headers": [
+                              {
+                                "key": "key0",
+                                "value": "value0"
+                              },
+                              {
+                                "key": "key1",
+                                "value": "value1"
+                              }
+                            ],
+                            "auth": {
+                              "sigv4": {
+                                "roleArn": {
+                                  "Fn::GetAtt": [
+                                    "TopicRuleTopicRuleActionRole246C4F77",
+                                    "Arn"
+                                  ]
+                                },
+                                "serviceName": "serviceName",
+                                "signingRegion": "us-east-1"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "sql": "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              },
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "IoTHttpsActionTestStack/TopicRule/TopicRuleActionRole",
+                "children": {
+                  "ImportTopicRuleActionRole": {
+                    "id": "ImportTopicRuleActionRole",
+                    "path": "IoTHttpsActionTestStack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IoTHttpsActionTestStack/TopicRule/TopicRuleActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "IoTHttpsActionTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "IoTHttpsActionTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IoTHttpsAction": {
+        "id": "IoTHttpsAction",
+        "path": "IoTHttpsAction",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IoTHttpsAction/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IoTHttpsAction/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.18"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IoTHttpsAction/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IoTHttpsAction/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IoTHttpsAction/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.18"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

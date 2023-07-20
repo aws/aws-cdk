@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6ef669e9b6f43f7d00e41ac6736cf59ae598653946caffc8cf8ce999e8311fc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6156adc5e94052a67460bd0e7561176c2091a0c1e48d3cc5d4198fad8289578a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,10 +201,10 @@
             "data": "EcsClustergravitonclusterInstanceProfileD1BBFAAE"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/LaunchConfig": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterLaunchConfig64183B57"
+            "data": "EcsClustergravitonclusterLaunchTemplate46854EA7"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/ASG": [
@@ -290,9 +284,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

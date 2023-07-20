@@ -93,8 +93,6 @@ const secret = new secretsmanager.Secret(this, 'Secret', { encryptionKey: key })
 secret.grantRead(otherAccount);
 ```
 
-## Rotating a Secret
-
 ### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
@@ -108,6 +106,7 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
   automaticallyAfter: Duration.days(15),
+  rotateImmediatelyOnUpdate: false, // default is true
 });
 ```
 
@@ -124,7 +123,6 @@ const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
-  rotateImmediatelyOnUpdate: false, // by default, Secrets Manager rotates the secret immediately
 });
 ```
 
@@ -199,6 +197,25 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
   masterSecret: myMasterSecret, // The secret used for the rotation
   target: myDatabase,
   vpc: myVpc,
+});
+```
+
+By default, any stack updates will cause AWS Secrets Manager to rotate a secret immediately. To prevent this behavior and wait until the next scheduled rotation window specified via the `automaticallyAfter` property, set the `rotateImmediatelyOnUpdate` property to false:
+
+```ts
+declare const myUserSecret: secretsmanager.Secret;
+declare const myMasterSecret: secretsmanager.Secret;
+declare const myDatabase: ec2.IConnectable;
+declare const myVpc: ec2.Vpc;
+
+new secretsmanager.SecretRotation(this, 'SecretRotation', {
+  application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+  secret: myUserSecret, // The secret that will be rotated
+  masterSecret: myMasterSecret, // The secret used for the rotation
+  target: myDatabase,
+  vpc: myVpc,
+  automaticallyAfter: Duration.days(7),
+  rotateImmediatelyOnUpdate: false,
 });
 ```
 

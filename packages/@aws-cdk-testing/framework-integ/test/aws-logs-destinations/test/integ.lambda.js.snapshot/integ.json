@@ -5,6 +5,7 @@
       "stacks": [
         "lambda-logssubscription-integ"
       ],
+      "diffAssets": true,
       "assertionStack": "LambdaInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaIntegDefaultTestDeployAssert7BC530B7"
     }

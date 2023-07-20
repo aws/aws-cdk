@@ -20,6 +20,9 @@ class TestStack extends Stack {
       },
       nodeToNodeEncryption: true,
       enforceHttps: true,
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     });
   }
 }

@@ -468,6 +468,7 @@
       "Action": {
        "WeightedTargets": [
         {
+         "Port": 1234,
          "VirtualNode": {
           "Fn::GetAtt": [
            "meshgrpcnode5DE90B75",

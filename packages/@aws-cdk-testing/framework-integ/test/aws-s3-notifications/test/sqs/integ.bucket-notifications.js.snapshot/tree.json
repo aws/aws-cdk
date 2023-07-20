@@ -453,6 +453,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Created by sqs-bucket-notifications/EncryptedQueue",
                         "keyPolicy": {
                           "Statement": [
                             {
@@ -514,8 +515,7 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "description": "Created by sqs-bucket-notifications/EncryptedQueue"
+                        }
                       }
                     },
                     "constructInfo": {

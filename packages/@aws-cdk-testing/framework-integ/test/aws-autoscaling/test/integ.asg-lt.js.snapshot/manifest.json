@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f0699c7863c01ee4fb7ccca4b192b311d9d6723f012b40f36bdf25a5db22f0c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a423d4fff781844206367e6e7467d7c38befc7540334ef730ae4a8a17de4a454.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -261,10 +261,10 @@
             "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
           }
         ],
-        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchConfig": [
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
+            "data": "AsgWithGp3BlockdeviceLaunchTemplateDFFAAF81"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/ASG": [

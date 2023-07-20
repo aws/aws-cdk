@@ -462,6 +462,36 @@ describe(AppStagingSynthesizer, () => {
     });
   });
 
+  test('auto delete assets can be turned off', () => {
+    // GIVEN
+    app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        autoDeleteStagingAssets: false,
+      }),
+    });
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+
+    const assetName = 'abcdef';
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+      assetName,
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    Template.fromJSON(getStagingResourceStack(asm).template).resourceCountIs('Custom::ECRAutoDeleteImages', 0);
+    Template.fromJSON(getStagingResourceStack(asm).template).resourceCountIs('Custom::S3AutoDeleteObjects', 0);
+  });
+
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {
       // GIVEN - App with Stack with specific environment

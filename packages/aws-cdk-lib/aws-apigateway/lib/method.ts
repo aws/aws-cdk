@@ -203,7 +203,7 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
-    this.methodResponses = options.methodResponses ?? [];
+    this.methodResponses = options.methodResponses ?? defaultMethodOptions.methodResponses ?? [];
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);

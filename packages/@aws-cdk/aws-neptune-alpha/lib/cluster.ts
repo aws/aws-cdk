@@ -116,13 +116,6 @@ export interface DatabaseClusterProps {
   readonly engineVersion?: EngineVersion;
 
   /**
-   * The port the Neptune cluster will listen on
-   *
-   * @default - The default engine port
-   */
-  readonly port?: number;
-
-  /**
    * How many days to retain the backup
    *
    * @default - cdk.Duration.days(1)
@@ -578,7 +571,6 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       engineVersion: props.engineVersion?.version,
       dbClusterIdentifier: props.dbClusterName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
-      port: props.port,
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,

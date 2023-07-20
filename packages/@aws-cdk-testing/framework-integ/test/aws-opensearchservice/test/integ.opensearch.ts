@@ -38,6 +38,9 @@ class TestStack extends Stack {
           resources: ['*'],
         }),
       ],
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     };
 
     // create 2 domains to ensure that Cloudwatch Log Group policy names dont conflict

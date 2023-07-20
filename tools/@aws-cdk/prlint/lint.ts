@@ -4,6 +4,7 @@ import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
 import { Endpoints } from "@octokit/types";
+import { execSync } from 'child_process';
 
 export type GitHubPr =
   Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
@@ -205,6 +206,7 @@ export class PullRequestLinter {
   private readonly client: Octokit;
   private readonly prParams: { owner: string, repo: string, pull_number: number };
   private readonly issueParams: { owner: string, repo: string, issue_number: number };
+  private readonly trustedCommunity: string[] = [];
 
   constructor(private readonly props: PullRequestLinterProps) {
     this.client = props.client;
@@ -322,7 +324,7 @@ export class PullRequestLinter {
   }
 
   /**
-   * Assess whether or not a PR is ready for review from a core team member.
+   * Assess whether or not a PR is ready for review.
    * This is needed because some things that we need to evaluate are not filterable on
    * the builtin issue search. A PR is ready for review when:
    *
@@ -330,6 +332,14 @@ export class PullRequestLinter {
    *   2. Does not have any merge conflicts
    *   3. PR linter is not failing OR the user has requested an exemption
    *   4. A maintainer has not requested changes
+   *   5. A maintainer has not approved
+   *
+   * In addition, we differentiate between ready for review by a core team member
+   * (pr/needs-maintainer-review) or ready for review by core OR the trusted community
+   * (pr/needs-review). A PR is prioritized for core team review when:
+   *
+   *   6. It links to a p1 issue
+   *   7. It links to a p2 issue and has an approved community review
    */
   private async assessNeedsReview(
     pr: Pick<GitHubPr, "mergeable_state" | "draft" | "labels" | "number">,
@@ -346,6 +356,15 @@ export class PullRequestLinter {
       review => review.author_association === 'MEMBER'
         && review.state === 'APPROVED'
     );
+    const communityRequestedChanges = reviews.data.some(
+      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
+        && review.state !== 'APPROVED' // community members cannot request changes
+    )
+    const communityApproved = reviews.data.some(
+      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
+        && review.state === 'APPROVED'
+    );
+
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
@@ -356,6 +375,8 @@ export class PullRequestLinter {
       userRequestsExemption,
     }, undefined, 2));
 
+    const fixesP1 = pr.labels.some(label => label.name === 'p1');
+    let readyForReview = true;
     if (
       // we don't need to review drafts
       pr.draft
@@ -367,30 +388,63 @@ export class PullRequestLinter {
         || (prLinterFailed && !userRequestsExemption)
         // or a maintainer has already approved the PR
         || maintainerApproved
+        // or a trusted community member has requested changes on a p2 PR
+        || (!fixesP1 && communityRequestedChanges)
     ) {
-      if (pr.labels.some(label => label.name === 'pr/needs-review')) {
-        console.log(`removing labels from pr ${pr.number}`);
-        this.client.issues.removeLabel({
-          owner: this.prParams.owner,
-          repo: this.prParams.repo,
-          issue_number: pr.number,
-          name: 'pr/needs-review',
-        });
-      }
-      return;
-    } else {
-      console.log(`adding labels to pr ${pr.number}`);
-      // add needs-review label
-      this.client.issues.addLabels({
-        issue_number: pr.number,
-        owner: this.prParams.owner,
-        repo: this.prParams.repo,
-        labels: [
-          'pr/needs-review',
-        ],
-      });
-      return;
+      readyForReview = false;
     }
+
+    if (readyForReview && (fixesP1 || communityApproved)) {
+      this.addLabel('pr/needs-maintainer-review', pr);
+      this.removeLabel('pr/needs-review', pr);
+    } else if (readyForReview && !fixesP1) {
+      this.removeLabel('pr/needs-maintainer-review', pr);
+      this.addLabel('pr/needs-review', pr);
+    } else {
+      this.removeLabel('pr/needs-review', pr);
+      this.removeLabel('pr/needs-maintainer-review', pr);
+    }
+  }
+
+  private addLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+    // already has label, so no-op
+    if (pr.labels.some(l => l.name === label)) { return; }
+    console.log(`adding ${label} to pr ${pr.number}`);
+    this.client.issues.addLabels({
+      issue_number: pr.number,
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      labels: [
+        label,
+      ],
+    });
+  }
+
+  private removeLabel(label: string, pr: Pick<GitHubPr, "labels" | "number">) {
+    // does not have label, so no-op
+    if (!pr.labels.some(l => l.name === label)) { return; }
+    console.log(`removing ${label} to pr ${pr.number}`);
+    this.client.issues.removeLabel({
+      issue_number: pr.number,
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      name: label,
+    });
+  }
+
+  /**
+   * Trusted community reviewers is derived from the source of truth at this wiki:
+   * https://github.com/aws/aws-cdk/wiki/Introducing-CDK-Community-PR-Reviews
+   */
+  private getTrustedCommunityMembers(): string[] {
+    if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
+
+    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8'}).toString();
+    const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
+    for (let i = 2; i < rawMdTable.length; i++) {
+      this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());
+    }
+    return this.trustedCommunity;
   }
 
   /**
@@ -470,7 +524,6 @@ export class PullRequestLinter {
   private formatErrors(errors: string[]) {
     return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
   };
-
 }
 
 function isPkgCfnspec(pr: GitHubPr): boolean {
@@ -505,49 +558,49 @@ function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr), 'Features must contain a change to a README file.');
   return result;
-};
+}
 
 function featureContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !testChanged(files), 'Features must contain a change to a test file.');
   return result;
-};
+}
 
 function fixContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && !testChanged(files), 'Fixes must contain a change to a test file.');
   return result;
-};
+}
 
 function featureContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Features must contain a change to an integration test file and the resulting snapshot.');
   return result;
-};
+}
 
 function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
-};
+}
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.README);
-};
+}
 
 function shouldExemptTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.TEST);
-};
+}
 
 function shouldExemptIntegTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.INTEG_TEST);
-};
+}
 
 function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
-};
+}
 
 function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
@@ -556,8 +609,8 @@ function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
-  })
-};
+  });
+}
 
 /**
  * Check that the 'BREAKING CHANGE:' note in the body is correct.
@@ -566,7 +619,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
  */
- function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestResult {
+function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const title = pr.title;
   const body = pr.body;
   const result = new TestResult();
@@ -579,12 +632,12 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
     result.assessFailure(!titleRe.exec(title), 'The title of this pull request must specify the module name that the first breaking change should be associated to.');
   }
   return result;
-};
+}
 
 /**
  * Check that the PR title has the correct prefix.
  */
- function validateTitlePrefix(pr: GitHubPr): TestResult {
+function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
   const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
   const m = titleRe.exec(pr.title);
@@ -592,7 +645,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
     !m,
     "The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.");
   return result;
-};
+}
 
 /**
  * Check that the PR title uses the typical convention for package names.
@@ -625,7 +678,7 @@ function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const breakingStable = breakingModules(title, body ?? '').filter(mod => 'stable' === moduleStability(findModulePath(mod)));
   result.assessFailure(breakingStable.length > 0, `Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
   return result;
-};
+}
 
 function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const branch = `pull/${pr.number}/head`;
@@ -634,9 +687,10 @@ function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
 
   return TestResult.fromFailure(
     cliCodeChanged,
-    `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`);
+    `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`,
+  );
 }
 
 require('make-runnable/custom')({
-  printOutputFrame: false
+  printOutputFrame: false,
 });

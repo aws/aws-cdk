@@ -1,3 +1,4 @@
+import { InvalidResourceId } from '@aws-sdk/client-ssm';
 import { handler } from '../../lib/custom-resource-provider/cross-region-export-providers/cross-region-ssm-writer-handler';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/custom-resource-provider/cross-region-export-providers/types';
 
@@ -5,7 +6,9 @@ let mockPutParameter: jest.Mock = jest.fn() ;
 let mocklistTagsForResource: jest.Mock = jest.fn();
 let mockDeleteParameters: jest.Mock = jest.fn();
 jest.mock('@aws-sdk/client-ssm', () => {
+  const actual = jest.requireActual('@aws-sdk/client-ssm');
   return {
+    ...actual,
     SSM: jest.fn(() => {
       return {
         putParameter: mockPutParameter,
@@ -111,9 +114,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
 
       // WHEN
-      mocklistTagsForResource.mockRejectedValue({
-        code: 'InvalidResourceId',
-      });
+      mocklistTagsForResource.mockRejectedValue(new InvalidResourceId({ message: 'Error Message', $metadata: {} }));
       await handler(event);
 
       // THEN

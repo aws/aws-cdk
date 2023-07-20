@@ -1,5 +1,6 @@
 # AWS CDK Custom Resources
 
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Provider Framework
 
@@ -344,7 +345,10 @@ This sample demonstrates the following concepts:
 
 #### S3Assert
 
-Checks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+Checks that the textual contents of an S3 object matches a certain value. The check will be retried
+for 5 minutes as long as the object is not found or the value is different. See the source code for the
+[construct](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts)
+and [handler](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
 
 The following example defines an `S3Assert` resource which waits until
 `myfile.txt` in `myBucket` exists and includes the contents `foo bar`:
@@ -384,7 +388,28 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   role: myRole,
   providerFunctionName: 'the-lambda-name',   // Optional
 });
+```
 
+### Customizing Provider Function environment encryption key
+
+Sometimes it may be useful to manually set a AWS KMS key for the Provider Function Lambda and therefore
+be able to view, manage and audit the key usage.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const onEvent: lambda.Function;
+declare const isComplete: lambda.Function;
+declare const myRole: iam.Role;
+
+const key = new kms.Key(this, 'MyKey');
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionEnvEncryption: key,   // Optional
+});
 ```
 
 ## Custom Resources for AWS APIs
@@ -631,13 +656,16 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 ```ts
 import * as regionInfo from 'aws-cdk-lib/region-info';
 
+class MyFact implements regionInfo.IFact {
+  public readonly region = 'us-east-1';
+  public readonly name = regionInfo.FactName.DEFAULT_CR_NODE_VERSION;
+  public readonly value = lambda.Runtime.NODEJS_18_X.name;
+}
+
 // change custom resource default runtime
-regionInfo.Fact.register({
-  region: 'us-east-1', // your region
-  name: regionInfo.FactName.DEFAULT_CR_NODE_VERSION,
-  value: lambda.Runtime.NODEJS_18_X.name,
-}, true);
-new AwsCustomResource(this, 'GetParameter', {
+regionInfo.Fact.register(new MyFact(), true);
+
+new cr.AwsCustomResource(this, 'GetParameter', {
   resourceType: 'Custom::SSMParameter',
   onUpdate: {
     service: '@aws-sdk/client-ssm', // 'SSM' in v2
@@ -646,13 +674,9 @@ new AwsCustomResource(this, 'GetParameter', {
       Name: 'foo',
       WithDecryption: true,
     },
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
+    physicalResourceId: cr.PhysicalResourceId.fromResponse('Parameter.ARN'),
   },
 });
 ```
 
 If you are using `NODEJS_18_X` or higher, you can also use the existing AWS SDK for JavaScript v2 style.
-
----
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

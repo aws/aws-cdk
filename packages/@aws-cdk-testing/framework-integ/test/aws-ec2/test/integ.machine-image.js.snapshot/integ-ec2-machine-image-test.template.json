@@ -617,97 +617,6 @@
     "amzn2InstanceRole3F1DBBD2"
    ]
   },
-  "al2022InstanceSecurityGroupD2B46A06": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "integ-ec2-machine-image-test/al2022/InstanceSecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "al2022InstanceRole6711C818": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ]
-   }
-  },
-  "al2022InstanceProfileAA7ED3DD": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "al2022InstanceRole6711C818"
-     }
-    ]
-   }
-  },
-  "al20225AC492C0": {
-   "Type": "AWS::EC2::Instance",
-   "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "IamInstanceProfile": {
-     "Ref": "al2022InstanceProfileAA7ED3DD"
-    },
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2022amikernel515x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t3.nano",
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "al2022InstanceSecurityGroupD2B46A06",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": {
-     "Ref": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
-   },
-   "DependsOn": [
-    "al2022InstanceRole6711C818"
-   ]
-  },
   "al2023InstanceSecurityGroupB018A9BC": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -798,16 +707,188 @@
    "DependsOn": [
     "al2023InstanceRoleECC2D6DD"
    ]
+  },
+  "AmiParameter": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "ami-06ca3ca175f37dd66",
+    "DataType": "aws:ec2:image",
+    "Name": "myAmi"
+   }
+  },
+  "ssmresolveinstanceInstanceSecurityGroupEACCDB27": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-ec2-machine-image-test/ssm-resolve-instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ssmresolveinstanceInstanceRoleCC771AEF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ]
+   }
+  },
+  "ssmresolveinstanceInstanceProfileAD70EB72": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ssmresolveinstanceInstanceRoleCC771AEF"
+     }
+    ]
+   }
+  },
+  "ssmresolveinstanceDC2C8573": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "test-region-1a",
+    "IamInstanceProfile": {
+     "Ref": "ssmresolveinstanceInstanceProfileAD70EB72"
+    },
+    "ImageId": "resolve:ssm:myAmi",
+    "InstanceType": "t3.nano",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "ssmresolveinstanceInstanceSecurityGroupEACCDB27",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "ssmresolveinstanceInstanceRoleCC771AEF"
+   ]
+  },
+  "LTC4631592": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": "resolve:ssm:myAmi",
+     "InstanceType": "t3.nano",
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ec2-machine-image-test/LT"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ec2-machine-image-test/LT"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "integ-ec2-machine-image-test/LT"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ASG46ED3070": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "MaxSize": "1",
+    "MinSize": "1",
+    "DesiredCapacity": "1",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "LTC4631592"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "LTC4631592",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     },
+     {
+      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
   }
  },
  "Parameters": {
   "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2"
-  },
-  "SsmParameterValueawsserviceamiamazonlinuxlatestal2022amikernel515x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
-   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.15-x86_64"
   },
   "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",

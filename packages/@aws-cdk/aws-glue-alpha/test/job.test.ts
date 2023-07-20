@@ -1049,5 +1049,53 @@ describe('Job', () => {
         }));
       });
     });
+
+    describe('validation for maxCapacity and workerType', () => {
+      test('maxCapacity with workerType and workerCount should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonEtl({
+            glueVersion: glue.GlueVersion.V1_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          maxCapacity: 10,
+          workerType: glue.WorkerType.G_1X,
+          workerCount: 10,
+        })).toThrow('maxCapacity cannot be used when setting workerType and workerCount');
+      });
+
+      test('maxCapacity with GlueVersion 2.0 or later should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonEtl({
+            glueVersion: glue.GlueVersion.V2_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          maxCapacity: 10,
+        })).toThrow('maxCapacity cannot be used when GlueVersion 2.0 or later');
+      });
+
+      test('workerType without workerCount should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonEtl({
+            glueVersion: glue.GlueVersion.V2_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          workerType: glue.WorkerType.G_1X,
+        })).toThrow('Both workerType and workerCount must be set');
+      });
+
+      test('workerCount without workerType should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonEtl({
+            glueVersion: glue.GlueVersion.V2_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          workerCount: 10,
+        })).toThrow('Both workerType and workerCount must be set');
+      });
+    });
   });
 });

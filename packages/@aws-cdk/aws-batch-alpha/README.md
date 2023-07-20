@@ -497,7 +497,7 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
 
 ### Secrets
 
-You can expose SecretsManager Secret ARNs to your container as environment variables.
+You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
 The following example defines the `MY_SECRET_ENV_VAR` environment variable that contains the
 ARN of the Secret defined by `mySecret`:
 
@@ -512,7 +512,7 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
     secrets: {
-      MY_SECRET_ENV_VAR: mySecret,
+      MY_SECRET_ENV_VAR: batch.Secret.fromSecretsManager(mySecret),
     }
   }),
 });

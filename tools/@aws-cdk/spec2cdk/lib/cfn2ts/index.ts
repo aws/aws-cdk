@@ -157,6 +157,7 @@ export async function generateAll(
       importLocations: {
         core: options.coreImport,
         coreHelpers: `${options.coreImport}/lib/helpers-internal`,
+        cloudwatch: options.cloudwatchImport,
       },
     },
   );

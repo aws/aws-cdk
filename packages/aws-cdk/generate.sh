@@ -18,10 +18,15 @@ HERE
 # Download noctilucent wasm-pack build
 NOCTILUCENT_VERSION=0.1.2
 PACK_URL=https://github.com/iph/noctilucent/releases/download/v${NOCTILUCENT_VERSION}/wasm-pack.zip
+zipfile=$PWD/tmp/noctilucent-wasm-${NOCTILUCENT_VERSION}.zip
 outdir=lib/vendor/noctilucent
 
-mkdir -p $outdir
-(cd $outdir && curl -sSfLo wasm-pack.zip "$PACK_URL" && unzip -o wasm-pack.zip)
+mkdir -p tmp
+if [[ ! -f "$zipfile" ]]; then
+    curl -sSfLo "$zipfile" "$PACK_URL"
+fi
+
+(cd $outdir && unzip -qo $zipfile)
 
 # Don't need these files
-rm $outdir/{.gitignore,README.md,package.json,wasm-pack.zip}
+rm -f $outdir/{.gitignore,README.md,package.json}

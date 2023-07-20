@@ -1,6 +1,6 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
-import { SSM } from '@aws-sdk/client-ssm';
+import { InvalidResourceId, SSM } from '@aws-sdk/client-ssm';
 import { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -113,7 +113,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
   } catch (e: any) {
     // an InvalidResourceId means that the parameter doesn't exist
     // which we should ignore since that means it's not in use
-    if (e.code === 'InvalidResourceId') {
+    if (e instanceof InvalidResourceId) {
       return new Set();
     }
     throw e;

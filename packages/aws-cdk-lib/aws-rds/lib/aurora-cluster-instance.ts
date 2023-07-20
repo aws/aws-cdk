@@ -135,7 +135,7 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    * @example
    * // existing cluster
    * declare const vpc: ec2.Vpc;
-   * const cluster = new rds.DatabaseCluster(stack, 'Database', {
+   * const cluster = new rds.DatabaseCluster(this, 'Database', {
    *   engine: rds.DatabaseClusterEngine.auroraMysql({
    *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
    *   }),
@@ -154,19 +154,20 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    *   isFromLegacyInstanceProps: true,
    * };
    *
-   * declare const vpc: ec2.Vpc;
-   * const cluster = new rds.DatabaseCluster(stack, 'Database', {
+   * const myCluster = new rds.DatabaseCluster(this, 'Database', {
    *   engine: rds.DatabaseClusterEngine.auroraMysql({
    *     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
    *   }),
    *   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
    *   vpc,
-   *   writer: ClusterInstance.provisioned('Instance1', {
-   *     ...instanceProps,
+   *   writer: rds.ClusterInstance.provisioned('Instance1', {
+   *     instanceType: instanceProps.instanceType,
+   *     isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
    *   }),
    *   readers: [
-   *     ClusterInstance.provisioned('Instance2', {
-   *       ...instanceProps,
+   *     rds.ClusterInstance.provisioned('Instance2', {
+   *       instanceType: instanceProps.instanceType,
+   *       isFromLegacyInstanceProps: instanceProps.isFromLegacyInstanceProps,
    *     }),
    *   ],
    * });
@@ -307,7 +308,7 @@ export interface ClusterInstanceOptions {
  * @example
  *
  * declare const vpc: ec2.Vpc;
- * const cluster = new rds.DatabaseCluster(this, 'Database', {
+ * const myCluster = new rds.DatabaseCluster(this, 'Database', {
  *   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
  *   writer: rds.ClusterInstance.provisioned('writer', {
  *     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
@@ -319,7 +320,7 @@ export interface ClusterInstanceOptions {
  *     rds.ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
  *     // will be put in promotion tier 2 and will not scale with the writer
  *     rds.ClusterInstance.serverlessV2('reader2'),
- *   ]
+ *   ],
  *   vpc,
  * });
  */
@@ -328,7 +329,7 @@ export class ClusterInstance implements IClusterInstance {
    * Add a provisioned instance to the cluster
    *
    * @example
-   * ClusterInstance.provisioned('ClusterInstance', {
+   * rds.ClusterInstance.provisioned('ClusterInstance', {
    *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
    * });
    */
@@ -343,7 +344,7 @@ export class ClusterInstance implements IClusterInstance {
    * Add a serverless v2 instance to the cluster
    *
    * @example
-   * ClusterInstance.serverlessV2('ClusterInstance', {
+   * rds.ClusterInstance.serverlessV2('ClusterInstance', {
    *   scaleWithWriter: true,
    * });
    */

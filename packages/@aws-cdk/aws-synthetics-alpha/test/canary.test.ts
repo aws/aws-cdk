@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -5,7 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Duration, Lazy, Stack } from 'aws-cdk-lib';
 import * as synthetics from '../lib';
 
-test('Basic canary properties work', () => {
+testDeprecated('Basic canary properties work', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -34,7 +35,7 @@ test('Basic canary properties work', () => {
   });
 });
 
-test('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
+testDeprecated('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -54,7 +55,7 @@ test('Can set `DeleteLambdaResourceOnCanaryDeletion`', () => {
   });
 });
 
-test('Canary can have generated name', () => {
+testDeprecated('Canary can have generated name', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -73,7 +74,7 @@ test('Canary can have generated name', () => {
   });
 });
 
-test('Name validation does not fail when using Tokens', () => {
+testDeprecated('Name validation does not fail when using Tokens', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -91,7 +92,7 @@ test('Name validation does not fail when using Tokens', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Synthetics::Canary', 1);
 });
 
-test('Throws when name is specified incorrectly', () => {
+testDeprecated('Throws when name is specified incorrectly', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -107,7 +108,7 @@ test('Throws when name is specified incorrectly', () => {
     .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
 
-test('Throws when name has more than 21 characters', () => {
+testDeprecated('Throws when name has more than 21 characters', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -123,7 +124,7 @@ test('Throws when name has more than 21 characters', () => {
     .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
 });
 
-test('An existing role can be specified instead of auto-created', () => {
+testDeprecated('An existing role can be specified instead of auto-created', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -149,7 +150,36 @@ test('An existing role can be specified instead of auto-created', () => {
   });
 });
 
-test('An existing bucket and prefix can be specified instead of auto-created', () => {
+testDeprecated('An auto-generated bucket can have lifecycle rules', () => {
+  // GIVEN
+  const stack = new Stack();
+  const lifecycleRules = [{
+    expiration: Duration.days(30),
+  }];
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    artifactsBucketLifecycleRules: lifecycleRules,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    LifecycleConfiguration: {
+      Rules: [
+        {
+          ExpirationInDays: 30,
+        },
+      ],
+    },
+  });
+});
+
+testDeprecated('An existing bucket and prefix can be specified instead of auto-created', () => {
   // GIVEN
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'mytestbucket');
@@ -171,7 +201,7 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
   });
 });
 
-test('Runtime can be specified', () => {
+testDeprecated('Runtime can be specified', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -190,7 +220,7 @@ test('Runtime can be specified', () => {
   });
 });
 
-test('Python runtime can be specified', () => {
+testDeprecated('Python runtime can be specified', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -209,7 +239,7 @@ test('Python runtime can be specified', () => {
   });
 });
 
-test('environment variables can be specified', () => {
+testDeprecated('environment variables can be specified', () => {
   // GIVEN
   const stack = new Stack();
   const environmentVariables = {
@@ -235,7 +265,7 @@ test('environment variables can be specified', () => {
   });
 });
 
-test('environment variables are skipped if not provided', () => {
+testDeprecated('environment variables are skipped if not provided', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -254,7 +284,7 @@ test('environment variables are skipped if not provided', () => {
   });
 });
 
-test('Runtime can be customized', () => {
+testDeprecated('Runtime can be customized', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -273,7 +303,7 @@ test('Runtime can be customized', () => {
   });
 });
 
-test('Schedule can be set with Rate', () => {
+testDeprecated('Schedule can be set with Rate', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -293,7 +323,7 @@ test('Schedule can be set with Rate', () => {
   });
 });
 
-test('Schedule can be set to 1 minute', () => {
+testDeprecated('Schedule can be set to 1 minute', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -313,7 +343,7 @@ test('Schedule can be set to 1 minute', () => {
   });
 });
 
-test('Schedule can be set with Cron', () => {
+testDeprecated('Schedule can be set with Cron', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -333,7 +363,7 @@ test('Schedule can be set with Cron', () => {
   });
 });
 
-test('Schedule can be set with Expression', () => {
+testDeprecated('Schedule can be set with Expression', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -353,7 +383,7 @@ test('Schedule can be set with Expression', () => {
   });
 });
 
-test('Schedule can be set to run once', () => {
+testDeprecated('Schedule can be set to run once', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -405,7 +435,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
     .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
 
-test('Can share artifacts bucket between canaries', () => {
+testDeprecated('Can share artifacts bucket between canaries', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -433,7 +463,7 @@ test('Can share artifacts bucket between canaries', () => {
   expect(canary1.artifactsBucket).toEqual(canary2.artifactsBucket);
 });
 
-test('can specify custom test', () => {
+testDeprecated('can specify custom test', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -462,7 +492,7 @@ test('can specify custom test', () => {
 });
 
 describe('canary in a vpc', () => {
-  test('can specify vpc', () => {
+  testDeprecated('can specify vpc', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
@@ -497,7 +527,7 @@ describe('canary in a vpc', () => {
     });
   });
 
-  test('default security group and subnets', () => {
+  testDeprecated('default security group and subnets', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
@@ -534,7 +564,7 @@ describe('canary in a vpc', () => {
     });
   });
 
-  test('provided security group', () => {
+  testDeprecated('provided security group', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
@@ -579,7 +609,7 @@ describe('canary in a vpc', () => {
   });
 });
 
-test('Role policy generated as expected', () => {
+testDeprecated('Role policy generated as expected', () => {
   // GIVEN
   const stack = new Stack();
 

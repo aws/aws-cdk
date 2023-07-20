@@ -1,7 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from 'aws-cdk-lib';
 import * as synthetics from '../lib';
 
-test('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
+testDeprecated('.metricXxx() methods can be used to obtain Metrics for the canary', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
 
@@ -41,7 +42,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
   }));
 });
 
-test('Metric can specify statistic', () => {
+testDeprecated('Metric can specify statistic', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
 

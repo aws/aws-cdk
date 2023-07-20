@@ -519,12 +519,12 @@ describe('integration tests required on features', () => {
       draft: false,
       mergeable_state: 'behind',
       number: 1234,
-      labels: [],
+      labels: [{ name: 'p2'}],
     };
     beforeEach(() => { 
       mockListReviews.mockImplementation(() => {
         return {
-          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'DISMISSED' }]
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'DISMISSED' }],
         }
       });
     })
@@ -548,11 +548,31 @@ describe('integration tests required on features', () => {
       expect(mockRemoveLabel.mock.calls).toEqual([]);
     });
 
+    test('needs a review and is p1', async () => {
+      // WHEN
+      pr.labels = [{ name: 'p1' }];
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "labels": ["pr/needs-maintainer-review"],
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+    });
+
     test('does not need a review because of request changes', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
         return {
-          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }]
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }],
         }
       });
       (pr as any).labels = [
@@ -583,7 +603,7 @@ describe('integration tests required on features', () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
         return {
-          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }]
+          data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }],
         }
       });
       (pr as any).labels = [
@@ -617,7 +637,7 @@ describe('integration tests required on features', () => {
           data: [
             { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
-          ]
+          ],
         }
       });
       (pr as any).labels = [
@@ -626,7 +646,7 @@ describe('integration tests required on features', () => {
         },
         {
           name: 'pr/needs-review',
-        }
+        },
       ];
 
       // WHEN
@@ -653,7 +673,7 @@ describe('integration tests required on features', () => {
         return {
           data: [
             { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'APPROVED' },
-          ]
+          ],
         }
       });
       (pr as any).labels = [
@@ -677,6 +697,105 @@ describe('integration tests required on features', () => {
         "owner": "aws",
         "repo": "aws-cdk",
       });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('needs a maintainer review if a community member has approved p2', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
+          ],
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "labels": ["pr/needs-maintainer-review"],
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+    });
+
+    test('trusted community member can "request changes" on p2 PR by commenting', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENT' },
+          ],
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        "issue_number": 1234,
+        "name": "pr/needs-review",
+        "owner": "aws",
+        "repo": "aws-cdk",
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('untrusted community member approval has no affect', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'untrusted' }, state: 'APPROVED' },
+          ],
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
 

@@ -24,6 +24,13 @@ export interface WeightedTarget {
    * @default 1
    */
   readonly weight?: number;
+
+  /**
+   * The port to match from the request.
+   *
+   * @default - do not match on port
+   */
+  readonly port?: number;
 }
 
 /**
@@ -603,6 +610,7 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
     renderedTargets.push({
       virtualNode: t.virtualNode.virtualNodeName,
       weight: t.weight == undefined ? 1 : t.weight,
+      port: t.port,
     });
   }
   return renderedTargets;

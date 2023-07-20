@@ -119,7 +119,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89c643a8a6c919d906e0b1cb079b0c5e131cf3cc19c05126f90fc118647fb08c.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -155,7 +155,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "292870ae2617f1c4d62ff18422e009afd534a342c17877fd1b931fb8d8a62abc.zip"
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -320,12 +320,6 @@
      },
      "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
@@ -337,6 +331,12 @@
       "Ref": "DeployAppAwsCliLayerAEF99B2F"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900
    },
@@ -393,14 +393,14 @@
   "instanceprofile": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
+    "InstanceProfileName": {
+     "Ref": "instanceprofilerole786BCBC7"
+    },
     "Roles": [
      {
       "Ref": "instanceprofilerole786BCBC7"
      }
-    ],
-    "InstanceProfileName": {
-     "Ref": "instanceprofilerole786BCBC7"
-    }
+    ]
    }
   },
   "beastalkapp": {
@@ -440,7 +440,7 @@
       "Value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2 v5.8.1 running Node.js 16"
+    "SolutionStackName": "64bit Amazon Linux 2 v5.8.3 running Node.js 16"
    },
    "DependsOn": [
     "beastalkapp",
@@ -538,6 +538,12 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineBucketB967BD35"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -617,13 +623,7 @@
       ],
       "Name": "Deploy"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "PipelineBucketB967BD35"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",

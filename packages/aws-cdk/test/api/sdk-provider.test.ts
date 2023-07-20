@@ -606,7 +606,7 @@ test('even when using a profile to assume another profile, STS calls goes throug
         throw error;
       }
     }
-    return FakeAgent;
+    return { ProxyAgent: FakeAgent };
   });
 
   // WHEN

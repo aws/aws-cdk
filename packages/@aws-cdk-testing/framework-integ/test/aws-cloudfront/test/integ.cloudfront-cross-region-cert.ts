@@ -50,6 +50,6 @@ new cloudfront.Distribution(cloudFrontStack, 'Distro', {
 
 new IntegTest(app, 'integ-cloudfront-cross-region-acm', {
   testCases: [cloudFrontStack],
-  diffAssets: false,
+  diffAssets: true,
   enableLookups: true,
 });

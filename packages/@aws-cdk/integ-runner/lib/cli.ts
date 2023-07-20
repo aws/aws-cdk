@@ -111,7 +111,7 @@ export async function main(args: string[]) {
   });
 
   const testsToRun: IntegTestWorkerConfig[] = [];
-  const destructiveChanges: DestructiveChange[] = [];
+  let destructiveChanges: boolean = false;
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   let testsSucceeded = false;
   validateWatchArgs({
@@ -130,7 +130,11 @@ export async function main(args: string[]) {
         verbose: options.verbose,
       });
       for (const failure of failedSnapshots) {
-        destructiveChanges.push(...failure.destructiveChanges ?? []);
+        logger.warning(`Failed: ${failure.fileName}`);
+        if (failure.destructiveChanges && failure.destructiveChanges.length > 0) {
+          printDestructiveChanges(failure.destructiveChanges);
+          destructiveChanges = true;
+        }
       }
       if (!options.force) {
         testsToRun.push(...failedSnapshots);
@@ -182,8 +186,7 @@ export async function main(args: string[]) {
     void pool.terminate();
   }
 
-  if (destructiveChanges.length > 0) {
-    printDestructiveChanges(destructiveChanges);
+  if (destructiveChanges) {
     throw new Error('Some changes were destructive!');
   }
   if (failedSnapshots.length > 0) {

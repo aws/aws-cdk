@@ -37,6 +37,38 @@ describe('ADOT Lambda Layer', () => {
     });
   });
 
+  describe('when the Python ADOT version is specified', () => {
+
+    let fn: lambda.Function;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
+      const bucket = new s3.Bucket(stack, 'CodeBucket');
+      fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromBucket(bucket, 'mock_key'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_11,
+      });
+    });
+
+    test('is added properly when the region information is available at synthesis time', () => {
+      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_18_0.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2',
+      );
+    });
+
+    test('is added properly when using "LATEST" version', () => {
+      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2',
+      );
+    });
+  });
+
   describe('when the stack region is not supported', () => {
     test('throws error if the region is not supported', () => {
       const app = new cdk.App();

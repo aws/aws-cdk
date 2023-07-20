@@ -184,6 +184,11 @@ export enum AdotLambdaExecWrapper {
    * propagation for HTTP requests.
    */
   STREAM_HANDLER = '/opt/otel-stream-handler',
+
+  /**
+   * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
+   */
+  INSTRUMENT_HANDLER = '/opt/otel-instrument',
 }
 
 abstract class AdotLambdaLayerVersion {
@@ -248,7 +253,32 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.13.0');
+  public static readonly LATEST = new AdotLambdaLayerPythonSdkVersion('1.18.0');
+
+  /**
+   * Version 1.18.0
+   */
+  public static readonly V1_18_0 = new AdotLambdaLayerPythonSdkVersion('1.18.0');
+
+  /**
+   * Version 1.17.0
+   */
+  public static readonly V1_17_0 = new AdotLambdaLayerPythonSdkVersion('1.17.0');
+
+  /**
+   * Version 1.16.0
+   */
+  public static readonly V1_16_0 = new AdotLambdaLayerPythonSdkVersion('1.16.0');
+
+  /**
+   * Version 1.15.0
+   */
+  public static readonly V1_15_0 = new AdotLambdaLayerPythonSdkVersion('1.15.0');
+
+  /**
+   * Version 1.14.0
+   */
+  public static readonly V1_14_0 = new AdotLambdaLayerPythonSdkVersion('1.14.0');
 
   /**
    * Version 1.13.0
