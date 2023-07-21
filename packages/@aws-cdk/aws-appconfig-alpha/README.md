@@ -27,11 +27,13 @@ In AWS AppConfig, an application is simply an organizational construct like a fo
 The name and description of an application are optional.
 
 Create a simple application:
+
 ```ts
 new appconfig.Application(this, 'MyApplication');
 ```
 
 Create an application with a name and description:
+
 ```ts
 new appconfig.Application(this, 'MyApplication', {
   name: 'App1',
@@ -57,6 +59,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 ```
 
 A hosted configuration with type:
+
 ```ts
 declare const application: appconfig.Application;
 
@@ -68,6 +71,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 ```
 
 A hosted configuration with validators:
+
 ```ts
 declare const application: appconfig.Application;
 declare const fn: lambda.Function;
@@ -83,6 +87,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 ```
 
 A hosted configuration with a deployment strategy:
+
 ```ts
 declare const application: appconfig.Application;
 
@@ -98,6 +103,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will only be a deployment if there is one environment associated to the AWS AppConfig application.
 
 A hosted configuration with `deployTo`:
+
 ```ts
 declare const application: appconfig.Application;
 declare const env: appconfig.Environment;
@@ -114,6 +120,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager (SSM) Parameter Store parameter, SSM document, or AWS CodePipeline. A sourced configuration takes in the location source construct and optionally a version number to deploy. On construction of a sourced configuration, the configuration is deployed only if a version number is specified.
 
 ### S3
+
 Use an Amazon S3 bucket to store a configuration.
 
 ```ts
@@ -130,6 +137,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 Use an encrypted bucket:
+
 ```ts
 declare const application: appconfig.Application;
 
@@ -145,6 +153,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 ### AWS Secrets Manager secret
+
 Use a Secrets Manager secret to store a configuration.
 
 ```ts
@@ -158,6 +167,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 Use a secret with a key:
+
 ```ts
 declare const application: appconfig.Application;
 declare const key: kms.Key;
@@ -174,6 +184,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 ### SSM Parameter Store parameter
+
 Use an SSM parameter to store a configuration.
 
 ```ts
@@ -188,6 +199,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 ### SSM document
+
 Use an SSM document to store a configuration.
 
 ```ts
@@ -201,6 +213,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 ### AWS CodePipeline
+
 Use an AWS CodePipeline pipeline to store a configuration.
 
 ```ts
@@ -216,6 +229,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 Similar to a hosted configuration, a sourced configuration can optionally take in a type, validators, a `deployTo` parameter, and a deployment strategy.
 
 A sourced configuration with type:
+
 ```ts
 declare const application: appconfig.Application;
 declare const bucket: s3.Bucket;
@@ -230,6 +244,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 A sourced configuration with validators:
+
 ```ts
 declare const application: appconfig.Application;
 declare const bucket: s3.Bucket;
@@ -246,6 +261,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ```
 
 A sourced configuration with a deployment strategy:
+
 ```ts
 declare const application: appconfig.Application;
 
@@ -261,6 +277,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will only be a deployment if there is one environment associated to the AWS AppConfig application.
 
 A sourced configuration with `deployTo`:
+
 ```ts
 declare const application: appconfig.Application;
 declare const bucket: s3.Bucket;
@@ -278,6 +295,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 For each AWS AppConfig application, you define one or more environments. An environment is a logical deployment group of AWS AppConfig targets, such as applications in a Beta or Production environment. You can also define environments for application subcomponents such as the Web, Mobile, and Back-end components for your application. You can configure Amazon CloudWatch alarms for each environment. The system monitors alarms during a configuration deployment. If an alarm is triggered, the system rolls back the configuration.
 
 Basic environment with monitors:
+
 ```ts
 declare const application: appconfig.Application;
 declare const alarm: cloudwatch.Alarm;
@@ -298,6 +316,7 @@ A deployment strategy defines how a configuration will roll out. The roll out is
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html
 
 Deployment strategy with predefined values:
+
 ```ts
 new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
   rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
@@ -305,6 +324,7 @@ new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
 ```
 
 Deployment strategy with custom values:
+
 ```ts
 new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
   rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(30), Duration.minutes(30)),
@@ -317,6 +337,7 @@ An extension augments your ability to inject logic or behavior at different poin
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
 
 ### AWS Lambda destination
+
 Use an AWS Lambda as the event destination for an extension.
 
 ```ts
@@ -333,6 +354,7 @@ new appconfig.Extension(this, 'MyExtension', {
 ```
 
 Lambda extension with parameters:
+
 ```ts
 declare const fn: lambda.Function;
 
@@ -352,6 +374,7 @@ new appconfig.Extension(this, 'MyExtension', {
 
 
 ### Amazon Simple Queue Service (SQS) destination
+
 Use a queue as the event destination for an extension.
 
 ```ts
@@ -368,6 +391,7 @@ new appconfig.Extension(this, 'MyExtension', {
 ```
 
 ### Amazon Simple Notification Service (SNS) destination
+
 Use an SNS topic as the event destination for an extension.
 
 ```ts
@@ -384,6 +408,7 @@ new appconfig.Extension(this, 'MyExtension', {
 ```
 
 ### Amazon EventBridge destination
+
 Use the default event bus as the event destination for an extension.
 
 ```ts
@@ -402,6 +427,7 @@ new appconfig.Extension(this, 'MyExtension', {
 You can also add extensions and their associations directly by calling `onDeploymentComplete()` or any other action point method on the AWS AppConfig application, configuration, or environment resource. To add an association to an existing extension, you can call `addExtension()` on the resource.
 
 Adding an association to an AWS AppConfig application:
+
 ```ts
 declare const application: appconfig.Application;
 declare const lambdaDestination: appconfig.LambdaDestination;
