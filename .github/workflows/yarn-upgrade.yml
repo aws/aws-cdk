@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: "*"
         env:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
