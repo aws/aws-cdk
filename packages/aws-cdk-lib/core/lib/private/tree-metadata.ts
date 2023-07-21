@@ -126,9 +126,6 @@ export class TreeMetadata extends Construct {
       if (currentNode.parent) {
         currentNode.parent = renderTreeWithSingleChild(currentNode.parent, currentNode);
       }
-      // we just reset the parent, but the currentNodeChild still has the original
-      // parent. Replace that as well
-      currentNode.children[currentNodeChild.id].parent = currentNode;
       return currentNode;
     }
 
