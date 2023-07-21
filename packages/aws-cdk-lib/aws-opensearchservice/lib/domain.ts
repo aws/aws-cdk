@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -73,6 +74,14 @@ export interface CapacityConfig {
    */
   readonly warmInstanceType?: string;
 
+  /**
+   * Indicates whether Multi-AZ with Standby deployment option is enabled.
+   * For more information, see [Multi-AZ with Standby]
+   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
+   *
+   * @default - no multi-az with standby
+   */
+  readonly multiAzWithStandbyEnabled?: boolean;
 }
 
 /**
@@ -1542,6 +1551,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    let multiAzWithStandbyEnabled = props.capacity?.multiAzWithStandbyEnabled;
+    if (multiAzWithStandbyEnabled === undefined) {
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY)) {
+        multiAzWithStandbyEnabled = true;
+      }
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1556,6 +1572,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           : undefined,
         instanceCount,
         instanceType,
+        multiAzWithStandbyEnabled,
         warmEnabled: warmEnabled
           ? warmEnabled
           : undefined,
