@@ -81,6 +81,7 @@ describe('non-nested stacks', () => {
     expect(plainTextOutput).toContain('Stack A');
     expect(plainTextOutput).toContain('Stack B');
 
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
     expect(exitCode).toBe(0);
   });
 
@@ -96,6 +97,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -121,6 +123,7 @@ describe('non-nested stacks', () => {
     });
 
     // THEN
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(1);
   });
 
@@ -255,7 +258,10 @@ Resources
          └─ [~] .Properties:
              └─ [~] .Prop:
                  ├─ [-] old-value
-                 └─ [+] new-value`);
+                 └─ [+] new-value
+
+
+✨  Number of stacks with differences: 3`);
 
     expect(exitCode).toBe(0);
   });
