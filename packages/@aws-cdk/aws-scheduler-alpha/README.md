@@ -191,21 +191,23 @@ TODO: Not yet implemented. See section in [L2 Event Bridge Scheduler RFC](https:
 
 To view metrics for a specific group you can use methods on class `Group`:
 
-```text
+```ts
 const group = new Group(this, "Group", {
     groupName: "MyGroup",
 });
 
-new Alarm(this, 'MyGroupErrorAlarm', {
-    metric: group.metricAllErrors(),
-    threshold: 0,
+new cloudwatch.Alarm(this, 'MyGroupErrorAlarm', {
+    metric: group.metricTargetErrors(),
+    evaluationPeriods: 1,
+    threshold: 0
 });
 
 // Or use default group
 const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
-new Alarm(this, 'DefaultGroupErrorAlarm', {
-    metric: defaultGroup.metricAllErrors(),
-    threshold: 0,
+new cloudwatch.Alarm(this, 'DefaultGroupErrorAlarm', {
+    metric: defaultGroup.metricTargetErrors(),
+    evaluationPeriods: 1,
+    threshold: 0
 });
 ```
 
