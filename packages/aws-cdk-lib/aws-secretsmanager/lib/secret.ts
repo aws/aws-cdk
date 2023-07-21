@@ -340,9 +340,22 @@ abstract class SecretBase extends Resource implements ISecret {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: ResourcePolicy;
+  private _arnForPolicies: string;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+    this._arnForPolicies = Lazy.uncachedString({
+      produce: (context: IResolveContext) => {
+        const consumingStack = Stack.of(context.scope);
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !consumingStack._crossRegionReferences) || !this.secretFullArn) {
+          return `${this.secretArn}-??????`;
+        } else {
+          return this.secretFullArn;
+        }
+      },
+    });
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
@@ -450,18 +463,7 @@ abstract class SecretBase extends Resource implements ISecret {
    * then we need to add a suffix to capture the full ARN's format.
    */
   protected get arnForPolicies() {
-    return Lazy.uncachedString({
-      produce: (context: IResolveContext) => {
-        const consumingStack = Stack.of(context.scope);
-        if (this.stack.account !== consumingStack.account ||
-          (this.stack.region !== consumingStack.region &&
-            !consumingStack._crossRegionReferences) || !this.secretFullArn) {
-          return `${this.secretArn}-??????`;
-        } else {
-          return this.secretFullArn;
-        }
-      },
-    });
+    return this._arnForPolicies;
   }
 
   /**
