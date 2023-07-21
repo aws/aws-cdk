@@ -492,6 +492,29 @@ describe(AppStagingSynthesizer, () => {
     Template.fromJSON(getStagingResourceStack(asm).template).resourceCountIs('Custom::S3AutoDeleteObjects', 0);
   });
 
+  test('stack prefix can be customized', () => {
+    // GIVEN
+    const prefix = 'Prefix';
+    app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        stagingStackNamePrefix: prefix,
+      }),
+    });
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    expect(getStagingResourceStack(asm, prefix).template).toBeDefined();
+  });
+
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {
       // GIVEN - App with Stack with specific environment
@@ -536,7 +559,7 @@ describe(AppStagingSynthesizer, () => {
   /**
    * Return the staging resource stack that is generated as part of the assembly
    */
-  function getStagingResourceStack(asm: CloudAssembly) {
-    return asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-east-1`);
+  function getStagingResourceStack(asm: CloudAssembly, prefix?: string) {
+    return asm.getStackArtifact(`${prefix ?? 'StagingStack'}-${APP_ID}-000000000000-us-east-1`);
   }
 });
