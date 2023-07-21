@@ -1,5 +1,96 @@
 {
  "Resources": {
+  "MyDeploymentStrategy60D31FB0": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 5,
+    "GrowthFactor": 15,
+    "Name": "BaseResourcesIntegTest-MyDeploymentStrategy-47021141",
+    "ReplicateTo": "NONE",
+    "GrowthType": "LINEAR"
+   }
+  },
+  "MyApplicationForEnv1F597ED9": {
+   "Type": "AWS::AppConfig::Application",
+   "Properties": {
+    "Name": "AppForEnvTest"
+   }
+  },
+  "MyAlarm696658B6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "MetricName": "dummy name",
+    "Namespace": "aws",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 10
+   }
+  },
+  "MyEnvironmentRoleC08961D3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "cloudwatch:DescribeAlarms",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "MyAlarm696658B6",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigMonitorAlarmPolicy"
+     }
+    ]
+   }
+  },
+  "MyEnvironment465E4DEA": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyApplicationForEnv1F597ED9"
+    },
+    "Name": "BaseResourcesIntegTest-MyEnvironment-4C2E6784",
+    "Description": "This is the environment for integ testing",
+    "Monitors": [
+     {
+      "AlarmArn": {
+       "Fn::GetAtt": [
+        "MyAlarm696658B6",
+        "Arn"
+       ]
+      },
+      "AlarmRoleArn": {
+       "Fn::GetAtt": [
+        "MyEnvironmentRoleC08961D3",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
   "MyFunctionServiceRole3C357FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -62,10 +153,10 @@
     "ApplicationId": {
      "Ref": "MyApplication5C63EC1D"
     },
-    "Name": "ExtensionIntegTest-MyApplication-MyEnv-E250FDB6"
+    "Name": "BaseResourcesIntegTest-MyApplication-MyEnv-4E0F42BE"
    }
   },
-  "MyLambdaExtensionRole16D01E02B2809": {
+  "MyLambdaExtensionRoleF0C204489D1C7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -111,7 +202,7 @@
     "Actions": {
      "PRE_CREATE_HOSTED_CONFIGURATION_VERSION": [
       {
-       "Name": "ExtensionIntegTest-MyLambdaExtension-34350A78",
+       "Name": "BaseResourcesIntegTest-MyLambdaExtension-58142690",
        "Uri": {
         "Fn::GetAtt": [
          "MyFunction3BAA72D1",
@@ -120,7 +211,7 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyLambdaExtensionRole16D01E02B2809",
+         "MyLambdaExtensionRoleF0C204489D1C7",
          "Arn"
         ]
        }
@@ -128,7 +219,7 @@
      ],
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "ExtensionIntegTest-MyLambdaExtension-34350A78",
+       "Name": "BaseResourcesIntegTest-MyLambdaExtension-58142690",
        "Uri": {
         "Fn::GetAtt": [
          "MyFunction3BAA72D1",
@@ -137,17 +228,17 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyLambdaExtensionRole16D01E02B2809",
+         "MyLambdaExtensionRoleF0C204489D1C7",
          "Arn"
         ]
        }
       }
      ]
     },
-    "Name": "ExtensionIntegTest-MyLambdaExtension-34350A78"
+    "Name": "BaseResourcesIntegTest-MyLambdaExtension-58142690"
    }
   },
-  "AssociationResource915FC": {
+  "AssociationResourceB35E7": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -192,7 +283,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyQueueExtensionRole6C837AF108E5C": {
+  "MyQueueExtensionRoleE768EF0708414": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -235,7 +326,7 @@
     "Actions": {
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "ExtensionIntegTest-MyQueueExtension-BAADC0DB",
+       "Name": "BaseResourcesIntegTest-MyQueueExtension-9EAFE797",
        "Uri": {
         "Fn::GetAtt": [
          "MyQueueE6CA6235",
@@ -244,17 +335,17 @@
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyQueueExtensionRole6C837AF108E5C",
+         "MyQueueExtensionRoleE768EF0708414",
          "Arn"
         ]
        }
       }
      ]
     },
-    "Name": "ExtensionIntegTest-MyQueueExtension-BAADC0DB"
+    "Name": "BaseResourcesIntegTest-MyQueueExtension-9EAFE797"
    }
   },
-  "AssociationResourceD5579": {
+  "AssociationResource2C7B3": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -297,7 +388,7 @@
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic"
   },
-  "MyTopicExtensionRoleE57D2F5B179C8": {
+  "MyTopicExtensionRoleC2D3485ED24A0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -337,23 +428,23 @@
     "Actions": {
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "ExtensionIntegTest-MyTopicExtension-E0A397E2",
+       "Name": "BaseResourcesIntegTest-MyTopicExtension-26713A73",
        "Uri": {
         "Ref": "MyTopic86869434"
        },
        "RoleArn": {
         "Fn::GetAtt": [
-         "MyTopicExtensionRoleE57D2F5B179C8",
+         "MyTopicExtensionRoleC2D3485ED24A0",
          "Arn"
         ]
        }
       }
      ]
     },
-    "Name": "ExtensionIntegTest-MyTopicExtension-E0A397E2"
+    "Name": "BaseResourcesIntegTest-MyTopicExtension-26713A73"
    }
   },
-  "AssociationResource3C704": {
+  "AssociationResource01F96": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -424,7 +515,7 @@
       }
      ]
     },
-    "Name": "ExtensionIntegTest-MyEventBusExtension-D5862AA1",
+    "Name": "BaseResourcesIntegTest-MyEventBusExtension-BD37EB44",
     "Parameters": {
      "testParam": {
       "Required": true
@@ -435,7 +526,7 @@
     }
    }
   },
-  "AssociationResourceB4F90": {
+  "AssociationResource33289": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
     "ExtensionIdentifier": {
@@ -483,7 +574,7 @@
    "Properties": {
     "DeploymentDurationInMinutes": 0,
     "GrowthFactor": 100,
-    "Name": "ExtensionIntegTest-MyDeployStrategy-6CB14495",
+    "Name": "BaseResourcesIntegTest-MyDeployStrategy-AEA1650E",
     "ReplicateTo": "NONE",
     "GrowthType": "LINEAR"
    }
@@ -495,16 +586,16 @@
      "Ref": "MyApplication5C63EC1D"
     },
     "LocationUri": "hosted",
-    "Name": "ExtensionIntegTest-HostedConfiguration-BB105928"
+    "Name": "BaseResourcesIntegTest-HostedConfiguration-ADE747D8"
    },
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole16D01E02B2809",
+    "MyLambdaExtensionRoleF0C204489D1C7",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole6C837AF108E5C",
+    "MyQueueExtensionRoleE768EF0708414",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRoleE57D2F5B179C8"
+    "MyTopicExtensionRoleC2D3485ED24A0"
    ]
   },
   "HostedConfiguration257746B4": {
@@ -522,16 +613,16 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole16D01E02B2809",
+    "MyLambdaExtensionRoleF0C204489D1C7",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole6C837AF108E5C",
+    "MyQueueExtensionRoleE768EF0708414",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRoleE57D2F5B179C8"
+    "MyTopicExtensionRoleC2D3485ED24A0"
    ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "HostedConfigurationDeploymentC3FEED44FE1F5": {
+  "HostedConfigurationDeployment4FDEB30757BA2": {
    "Type": "AWS::AppConfig::Deployment",
    "Properties": {
     "ApplicationId": {
@@ -553,11 +644,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
-    "MyLambdaExtensionRole16D01E02B2809",
+    "MyLambdaExtensionRoleF0C204489D1C7",
     "MyQueueExtension872C5D27",
-    "MyQueueExtensionRole6C837AF108E5C",
+    "MyQueueExtensionRoleE768EF0708414",
     "MyTopicExtension9B6DF691",
-    "MyTopicExtensionRoleE57D2F5B179C8"
+    "MyTopicExtensionRoleC2D3485ED24A0"
    ]
   }
  },

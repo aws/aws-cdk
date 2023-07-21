@@ -21,7 +21,7 @@ import {
   EventBridgeDestination,
 } from '../lib';
 
-class DeploymentStrategyTestStack extends Stack {
+class BaseResourcesTestStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -29,15 +29,9 @@ class DeploymentStrategyTestStack extends Stack {
     new DeploymentStrategy(this, 'MyDeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.linear(15, Duration.minutes(5)),
     });
-  }
-}
-
-class EnvironmentTestStack extends Stack {
-  constructor(scope: App, id: string) {
-    super(scope, id);
 
     // create resources needed for environment
-    const app = new Application(this, 'MyApplication', {
+    const appForEnv = new Application(this, 'MyApplicationForEnv', {
       name: 'AppForEnvTest',
     });
     const alarm = new Alarm(this, 'MyAlarm', {
@@ -51,7 +45,7 @@ class EnvironmentTestStack extends Stack {
 
     // create environment with all props defined
     new Environment(this, 'MyEnvironment', {
-      application: app,
+      application: appForEnv,
       description: 'This is the environment for integ testing',
       monitors: [
         {
@@ -59,12 +53,6 @@ class EnvironmentTestStack extends Stack {
         },
       ],
     });
-  }
-}
-
-class ExtensionTestStack extends Stack {
-  constructor(scope: App, id: string) {
-    super(scope, id);
 
     // create extension through lambda
     const lambda = new Function(this, 'MyFunction', {
@@ -151,7 +139,5 @@ class ExtensionTestStack extends Stack {
 }
 
 const app = new App();
-new DeploymentStrategyTestStack(app, 'DeploymentStrategyIntegTest');
-new EnvironmentTestStack(app, 'EnvironmentIntegTest');
-new ExtensionTestStack(app, 'ExtensionIntegTest');
+new BaseResourcesTestStack(app, 'BaseResourcesIntegTest');
 app.synth();

@@ -42,16 +42,14 @@ class AppConfigTestStack extends Stack {
 
     const taskDef = new FargateTaskDefinition(this, 'MyTaskDef');
     Application.addAgentToEcs(taskDef);
-  }
-}
-
-class ConfigurationTestStack extends Stack {
-  constructor(scope: App, id: string) {
-    super(scope, id);
 
     // create application for config profile
-    const app = new Application(this, 'MyAppConfig', {
+    const app = new Application(this, 'MyAppConfigForConfig', {
       name: 'AppForConfigTest',
+    });
+
+    const deploymentStrategy = new DeploymentStrategy(this, 'MyDeployStrategy', {
+      rolloutStrategy: RolloutStrategy.linear(100, Duration.minutes(0)),
     });
 
     // create basic config profile and add config version
@@ -64,9 +62,7 @@ class ConfigurationTestStack extends Stack {
         JsonSchemaValidator.fromInline(SCHEMA_STR),
         // JsonSchemaValidator.fromAsset('/Users/chenjane/Documents/appconfig-l2-constructs/test/schema.json'),
       ],
-      deploymentStrategy: new DeploymentStrategy(this, 'MyDeployStrategy', {
-        rolloutStrategy: RolloutStrategy.linear(100, Duration.minutes(0)),
-      }),
+      deploymentStrategy,
     });
 
     // create basic config profile from add config version from file
@@ -75,6 +71,7 @@ class ConfigurationTestStack extends Stack {
       application: app,
       content: ConfigurationContent.fromInline('This is the configuration content'),
       deployTo: [hostedEnvFromJson],
+      deploymentStrategy,
     });
 
     // ssm paramter as configuration source
@@ -97,6 +94,7 @@ class ConfigurationTestStack extends Stack {
       validators: [
         LambdaValidator.fromFunction(func),
       ],
+      deploymentStrategy,
     });
 
     // ssm document as configuration source
@@ -125,6 +123,7 @@ class ConfigurationTestStack extends Stack {
       location: ConfigurationSource.fromDocument(ssmDocument),
       versionNumber: '1',
       deployTo: [documentEnv],
+      deploymentStrategy,
     });
 
     // S3 as configuration source
@@ -205,5 +204,4 @@ class ConfigurationTestStack extends Stack {
 
 const app = new App();
 new AppConfigTestStack(app, 'AppConfigTestStack');
-new ConfigurationTestStack(app, 'ConfigurationTestStack');
 app.synth();

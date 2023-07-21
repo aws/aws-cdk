@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/164d69acf1d609b50f8233dd6885ca507280fa7113e0412b2260ecb1c0fdd8e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ca068785b92a8f6759f87a87d4425ede3c435875da9ee95f35797a9160991ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +51,348 @@
             "data": "MyTaskDef01F0D39B"
           }
         ],
+        "/AppConfigTestStack/MyAppConfigForConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfig6F100C5D"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/HostedEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigHostedEnvC5C2A47A"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/HostedEnvFromJson/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigHostedEnvFromJsonB5DD4263"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/ParameterEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigParameterEnvD693CA18"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/DocumentEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigDocumentEnv305DBDF6"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/BucketEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigBucketEnv948FC653"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/SecretEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigSecretEnv9B126AC7"
+          }
+        ],
+        "/AppConfigTestStack/MyAppConfigForConfig/SecretEnvWithKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigForConfigSecretEnvWithKeyE4ECE373"
+          }
+        ],
+        "/AppConfigTestStack/MyDeployStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeployStrategy062CAEA2"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfig/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigConfigurationProfile2E1A2BBC"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfig51D3877D"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfig/Deployment01472": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigDeployment014721B7FC88C"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfigFromJson/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfigFromJson/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromJsonD8CF9BE4"
+          }
+        ],
+        "/AppConfigTestStack/MyHostedConfigFromJson/DeploymentF1E08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromJsonDeploymentF1E08BB76287D"
+          }
+        ],
+        "/AppConfigTestStack/MyValidatorFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyValidatorFunctionServiceRole5CD02390"
+          }
+        ],
+        "/AppConfigTestStack/MyValidatorFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyValidatorFunctionA679CB3C"
+          }
+        ],
+        "/AppConfigTestStack/MyValidatorFunction/AppConfigPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyValidatorFunctionAppConfigPermission77CD11AC"
+          }
+        ],
+        "/AppConfigTestStack/MyParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyParameter18BA547D"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromParameter/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromParameterRole4E40C8BC"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromParameterDC204468"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromParameter/Deployment3F9D3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromParameterDeployment3F9D37F9B6500"
+          }
+        ],
+        "/AppConfigTestStack/MyDocument": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDocument"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromDocument/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromDocumentRole29FB4D3D"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromDocument/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromDocument79E66ABA"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromDocument/Deployment6916D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromDocumentDeployment6916D9B0093A5"
+          }
+        ],
+        "/AppConfigTestStack/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/AppConfigTestStack/DeployConfigInBucket/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployConfigInBucketAwsCliLayerFC57D055"
+          }
+        ],
+        "/AppConfigTestStack/DeployConfigInBucket/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployConfigInBucketCustomResource91997C5B"
+          }
+        ],
+        "/AppConfigTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/AppConfigTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/AppConfigTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromBucket/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromBucketDeploymentStrategy59D68C4F"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromBucket/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromBucketRole5749669F"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromBucket064B5420"
+          }
+        ],
+        "/AppConfigTestStack/MySecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecret8FE80B51"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecret/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecretDeploymentStrategy7E7398AA"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecret/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecretRole77E11CE7"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecret42EED9DC"
+          }
+        ],
+        "/AppConfigTestStack/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6"
+          }
+        ],
+        "/AppConfigTestStack/MySecretWithKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecretWithKey1F7B590B"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecretWithKey/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecretWithKeyDeploymentStrategy9FAC9F62"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecretWithKey/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecretWithKeyRole3C7B494A"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromSecretWithKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromSecretWithKey6F08D343"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/ArtifactsBucketEncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucket727923DD"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineArtifactsBucketPolicyDFDA675B"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleC0D47CA4"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineRoleDefaultPolicy34F09EFA"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineAED38ECF"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/beta/Source/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/beta/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelinebetaSourceCodePipelineActionRoleDefaultPolicy4F6DF82E"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/prod/Deploy/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineprodDeployCodePipelineActionRoleFAD07544"
+          }
+        ],
+        "/AppConfigTestStack/MyPipeline/prod/Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPipelineprodDeployCodePipelineActionRoleDefaultPolicyF1913519"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromPipeline/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromPipelineDeploymentStrategyF07EE763"
+          }
+        ],
+        "/AppConfigTestStack/MyConfigFromPipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromPipelineEA8471A4"
+          }
+        ],
         "/AppConfigTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,413 +407,6 @@
         ]
       },
       "displayName": "AppConfigTestStack"
-    },
-    "ConfigurationTestStack.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "ConfigurationTestStack.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "ConfigurationTestStack": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "ConfigurationTestStack.template.json",
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84bf9da281186e9e6b91d3e449780902d6bf29905425db79fe58c0be800fcdbe.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "ConfigurationTestStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "ConfigurationTestStack.assets"
-      ],
-      "metadata": {
-        "/ConfigurationTestStack/MyAppConfig/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigB4B63E75"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/HostedEnv/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigHostedEnvF39C847E"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/HostedEnvFromJson/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigHostedEnvFromJson9E6E36C4"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/ParameterEnv/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigParameterEnvD769FB19"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/DocumentEnv/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigDocumentEnv34B10223"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/BucketEnv/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigBucketEnvCBDFEF45"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/SecretEnv/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigSecretEnvE1102B63"
-          }
-        ],
-        "/ConfigurationTestStack/MyAppConfig/SecretEnvWithKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigSecretEnvWithKey9C93DA23"
-          }
-        ],
-        "/ConfigurationTestStack/MyDeployStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyDeployStrategy062CAEA2"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfig/ConfigurationProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigConfigurationProfile2E1A2BBC"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfig/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfig51D3877D"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfig/Deployment9C499": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigDeployment9C499363AF74C"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfigFromJson/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeploymentStrategyD857752B"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfigFromJson/ConfigurationProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfigFromJson/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonD8CF9BE4"
-          }
-        ],
-        "/ConfigurationTestStack/MyHostedConfigFromJson/Deployment96C56": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeployment96C56325185BB"
-          }
-        ],
-        "/ConfigurationTestStack/MyValidatorFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyValidatorFunctionServiceRole5CD02390"
-          }
-        ],
-        "/ConfigurationTestStack/MyValidatorFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyValidatorFunctionA679CB3C"
-          }
-        ],
-        "/ConfigurationTestStack/MyValidatorFunction/AppConfigPermission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyValidatorFunctionAppConfigPermission77CD11AC"
-          }
-        ],
-        "/ConfigurationTestStack/MyParameter/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyParameter18BA547D"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromParameter/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromParameterDeploymentStrategy8CC5FDD8"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromParameter/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromParameterRole4E40C8BC"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromParameter/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromParameterDC204468"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromParameter/DeploymentCC035": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromParameterDeploymentCC035F35CE6BA"
-          }
-        ],
-        "/ConfigurationTestStack/MyDocument": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyDocument"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromDocument/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromDocumentDeploymentStrategy23EE8CBE"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromDocument/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromDocumentRole29FB4D3D"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromDocument/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromDocument79E66ABA"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromDocument/DeploymentC72C9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromDocumentDeploymentC72C9BB46204B"
-          }
-        ],
-        "/ConfigurationTestStack/MyBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucketF68F3FF0"
-          }
-        ],
-        "/ConfigurationTestStack/DeployConfigInBucket/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployConfigInBucketAwsCliLayerFC57D055"
-          }
-        ],
-        "/ConfigurationTestStack/DeployConfigInBucket/CustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployConfigInBucketCustomResource91997C5B"
-          }
-        ],
-        "/ConfigurationTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
-          }
-        ],
-        "/ConfigurationTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
-          }
-        ],
-        "/ConfigurationTestStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromBucket/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromBucketDeploymentStrategy59D68C4F"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromBucket/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromBucketRole5749669F"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromBucket064B5420"
-          }
-        ],
-        "/ConfigurationTestStack/MySecret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySecret8FE80B51"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecret/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecretDeploymentStrategy7E7398AA"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecret/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecretRole77E11CE7"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecret42EED9DC"
-          }
-        ],
-        "/ConfigurationTestStack/MyKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyKey6AB29FA6"
-          }
-        ],
-        "/ConfigurationTestStack/MySecretWithKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySecretWithKey1F7B590B"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecretWithKey/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecretWithKeyDeploymentStrategy9FAC9F62"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecretWithKey/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecretWithKeyRole3C7B494A"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromSecretWithKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromSecretWithKey6F08D343"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/ArtifactsBucketEncryptionKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/ArtifactsBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineArtifactsBucket727923DD"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/ArtifactsBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineArtifactsBucketPolicyDFDA675B"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineRoleC0D47CA4"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineRoleDefaultPolicy34F09EFA"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineAED38ECF"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/beta/Source/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/beta/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelinebetaSourceCodePipelineActionRoleDefaultPolicy4F6DF82E"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/prod/Deploy/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineprodDeployCodePipelineActionRoleFAD07544"
-          }
-        ],
-        "/ConfigurationTestStack/MyPipeline/prod/Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyPipelineprodDeployCodePipelineActionRoleDefaultPolicyF1913519"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromPipeline/DeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromPipelineDeploymentStrategyF07EE763"
-          }
-        ],
-        "/ConfigurationTestStack/MyConfigFromPipeline/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromPipelineEA8471A4"
-          }
-        ],
-        "/ConfigurationTestStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ConfigurationTestStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "ConfigurationTestStack"
     },
     "Tree": {
       "type": "cdk:tree",

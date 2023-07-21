@@ -4,23 +4,23 @@
     "id": "App",
     "path": "",
     "children": {
-      "DeploymentStrategyIntegTest": {
-        "id": "DeploymentStrategyIntegTest",
-        "path": "DeploymentStrategyIntegTest",
+      "BaseResourcesIntegTest": {
+        "id": "BaseResourcesIntegTest",
+        "path": "BaseResourcesIntegTest",
         "children": {
           "MyDeploymentStrategy": {
             "id": "MyDeploymentStrategy",
-            "path": "DeploymentStrategyIntegTest/MyDeploymentStrategy",
+            "path": "BaseResourcesIntegTest/MyDeploymentStrategy",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "DeploymentStrategyIntegTest/MyDeploymentStrategy/Resource",
+                "path": "BaseResourcesIntegTest/MyDeploymentStrategy/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
                   "aws:cdk:cloudformation:props": {
                     "deploymentDurationInMinutes": 5,
                     "growthFactor": 15,
-                    "name": "DeploymentStrategyIntegTest-MyDeploymentStrategy-54B3AED9",
+                    "name": "BaseResourcesIntegTest-MyDeploymentStrategy-47021141",
                     "replicateTo": "NONE",
                     "growthType": "LINEAR"
                   }
@@ -36,39 +36,13 @@
               "version": "2.79.0"
             }
           },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "DeploymentStrategyIntegTest/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.79.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "DeploymentStrategyIntegTest/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "2.79.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "2.79.0"
-        }
-      },
-      "EnvironmentIntegTest": {
-        "id": "EnvironmentIntegTest",
-        "path": "EnvironmentIntegTest",
-        "children": {
-          "MyApplication": {
-            "id": "MyApplication",
-            "path": "EnvironmentIntegTest/MyApplication",
+          "MyApplicationForEnv": {
+            "id": "MyApplicationForEnv",
+            "path": "BaseResourcesIntegTest/MyApplicationForEnv",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "EnvironmentIntegTest/MyApplication/Resource",
+                "path": "BaseResourcesIntegTest/MyApplicationForEnv/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
                   "aws:cdk:cloudformation:props": {
@@ -88,11 +62,11 @@
           },
           "MyAlarm": {
             "id": "MyAlarm",
-            "path": "EnvironmentIntegTest/MyAlarm",
+            "path": "BaseResourcesIntegTest/MyAlarm",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "EnvironmentIntegTest/MyAlarm/Resource",
+                "path": "BaseResourcesIntegTest/MyAlarm/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                   "aws:cdk:cloudformation:props": {
@@ -118,15 +92,15 @@
           },
           "MyEnvironment": {
             "id": "MyEnvironment",
-            "path": "EnvironmentIntegTest/MyEnvironment",
+            "path": "BaseResourcesIntegTest/MyEnvironment",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "EnvironmentIntegTest/MyEnvironment/Role",
+                "path": "BaseResourcesIntegTest/MyEnvironment/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "EnvironmentIntegTest/MyEnvironment/Role/ImportRole",
+                    "path": "BaseResourcesIntegTest/MyEnvironment/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.79.0"
@@ -134,7 +108,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "EnvironmentIntegTest/MyEnvironment/Role/Resource",
+                    "path": "BaseResourcesIntegTest/MyEnvironment/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -185,14 +159,14 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "EnvironmentIntegTest/MyEnvironment/Resource",
+                "path": "BaseResourcesIntegTest/MyEnvironment/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
                   "aws:cdk:cloudformation:props": {
                     "applicationId": {
-                      "Ref": "MyApplication5C63EC1D"
+                      "Ref": "MyApplicationForEnv1F597ED9"
                     },
-                    "name": "EnvironmentIntegTest-MyEnvironment-8FDF92D8",
+                    "name": "BaseResourcesIntegTest-MyEnvironment-4C2E6784",
                     "description": "This is the environment for integ testing",
                     "monitors": [
                       {
@@ -223,43 +197,17 @@
               "version": "2.79.0"
             }
           },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "EnvironmentIntegTest/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.79.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "EnvironmentIntegTest/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "2.79.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "2.79.0"
-        }
-      },
-      "ExtensionIntegTest": {
-        "id": "ExtensionIntegTest",
-        "path": "ExtensionIntegTest",
-        "children": {
           "MyFunction": {
             "id": "MyFunction",
-            "path": "ExtensionIntegTest/MyFunction",
+            "path": "BaseResourcesIntegTest/MyFunction",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "ExtensionIntegTest/MyFunction/ServiceRole",
+                "path": "BaseResourcesIntegTest/MyFunction/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "ExtensionIntegTest/MyFunction/ServiceRole/ImportServiceRole",
+                    "path": "BaseResourcesIntegTest/MyFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.79.0"
@@ -267,7 +215,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "ExtensionIntegTest/MyFunction/ServiceRole/Resource",
+                    "path": "BaseResourcesIntegTest/MyFunction/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -312,7 +260,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyFunction/Resource",
+                "path": "BaseResourcesIntegTest/MyFunction/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -342,11 +290,11 @@
           },
           "MyApplication": {
             "id": "MyApplication",
-            "path": "ExtensionIntegTest/MyApplication",
+            "path": "BaseResourcesIntegTest/MyApplication",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyApplication/Resource",
+                "path": "BaseResourcesIntegTest/MyApplication/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
                   "aws:cdk:cloudformation:props": {
@@ -360,18 +308,18 @@
               },
               "MyEnv": {
                 "id": "MyEnv",
-                "path": "ExtensionIntegTest/MyApplication/MyEnv",
+                "path": "BaseResourcesIntegTest/MyApplication/MyEnv",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "ExtensionIntegTest/MyApplication/MyEnv/Resource",
+                    "path": "BaseResourcesIntegTest/MyApplication/MyEnv/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
                       "aws:cdk:cloudformation:props": {
                         "applicationId": {
                           "Ref": "MyApplication5C63EC1D"
                         },
-                        "name": "ExtensionIntegTest-MyApplication-MyEnv-E250FDB6"
+                        "name": "BaseResourcesIntegTest-MyApplication-MyEnv-4E0F42BE"
                       }
                     },
                     "constructInfo": {
@@ -393,15 +341,15 @@
           },
           "MyLambdaExtension": {
             "id": "MyLambdaExtension",
-            "path": "ExtensionIntegTest/MyLambdaExtension",
+            "path": "BaseResourcesIntegTest/MyLambdaExtension",
             "children": {
-              "Role16D01": {
-                "id": "Role16D01",
-                "path": "ExtensionIntegTest/MyLambdaExtension/Role16D01",
+              "RoleF0C20": {
+                "id": "RoleF0C20",
+                "path": "BaseResourcesIntegTest/MyLambdaExtension/RoleF0C20",
                 "children": {
-                  "ImportRole16D01": {
-                    "id": "ImportRole16D01",
-                    "path": "ExtensionIntegTest/MyLambdaExtension/Role16D01/ImportRole16D01",
+                  "ImportRoleF0C20": {
+                    "id": "ImportRoleF0C20",
+                    "path": "BaseResourcesIntegTest/MyLambdaExtension/RoleF0C20/ImportRoleF0C20",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.79.0"
@@ -409,7 +357,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "ExtensionIntegTest/MyLambdaExtension/Role16D01/Resource",
+                    "path": "BaseResourcesIntegTest/MyLambdaExtension/RoleF0C20/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -463,14 +411,14 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyLambdaExtension/Resource",
+                "path": "BaseResourcesIntegTest/MyLambdaExtension/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
                   "aws:cdk:cloudformation:props": {
                     "actions": {
                       "PRE_CREATE_HOSTED_CONFIGURATION_VERSION": [
                         {
-                          "Name": "ExtensionIntegTest-MyLambdaExtension-34350A78",
+                          "Name": "BaseResourcesIntegTest-MyLambdaExtension-58142690",
                           "Uri": {
                             "Fn::GetAtt": [
                               "MyFunction3BAA72D1",
@@ -479,7 +427,7 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyLambdaExtensionRole16D01E02B2809",
+                              "MyLambdaExtensionRoleF0C204489D1C7",
                               "Arn"
                             ]
                           }
@@ -487,7 +435,7 @@
                       ],
                       "ON_DEPLOYMENT_START": [
                         {
-                          "Name": "ExtensionIntegTest-MyLambdaExtension-34350A78",
+                          "Name": "BaseResourcesIntegTest-MyLambdaExtension-58142690",
                           "Uri": {
                             "Fn::GetAtt": [
                               "MyFunction3BAA72D1",
@@ -496,14 +444,14 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyLambdaExtensionRole16D01E02B2809",
+                              "MyLambdaExtensionRoleF0C204489D1C7",
                               "Arn"
                             ]
                           }
                         }
                       ]
                     },
-                    "name": "ExtensionIntegTest-MyLambdaExtension-34350A78"
+                    "name": "BaseResourcesIntegTest-MyLambdaExtension-58142690"
                   }
                 },
                 "constructInfo": {
@@ -517,9 +465,9 @@
               "version": "2.79.0"
             }
           },
-          "AssociationResource915FC": {
-            "id": "AssociationResource915FC",
-            "path": "ExtensionIntegTest/AssociationResource915FC",
+          "AssociationResourceB35E7": {
+            "id": "AssociationResourceB35E7",
+            "path": "BaseResourcesIntegTest/AssociationResourceB35E7",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -567,11 +515,11 @@
           },
           "MyQueue": {
             "id": "MyQueue",
-            "path": "ExtensionIntegTest/MyQueue",
+            "path": "BaseResourcesIntegTest/MyQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyQueue/Resource",
+                "path": "BaseResourcesIntegTest/MyQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -589,15 +537,15 @@
           },
           "MyQueueExtension": {
             "id": "MyQueueExtension",
-            "path": "ExtensionIntegTest/MyQueueExtension",
+            "path": "BaseResourcesIntegTest/MyQueueExtension",
             "children": {
-              "Role6C837": {
-                "id": "Role6C837",
-                "path": "ExtensionIntegTest/MyQueueExtension/Role6C837",
+              "RoleE768E": {
+                "id": "RoleE768E",
+                "path": "BaseResourcesIntegTest/MyQueueExtension/RoleE768E",
                 "children": {
-                  "ImportRole6C837": {
-                    "id": "ImportRole6C837",
-                    "path": "ExtensionIntegTest/MyQueueExtension/Role6C837/ImportRole6C837",
+                  "ImportRoleE768E": {
+                    "id": "ImportRoleE768E",
+                    "path": "BaseResourcesIntegTest/MyQueueExtension/RoleE768E/ImportRoleE768E",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.79.0"
@@ -605,7 +553,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "ExtensionIntegTest/MyQueueExtension/Role6C837/Resource",
+                    "path": "BaseResourcesIntegTest/MyQueueExtension/RoleE768E/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -656,14 +604,14 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyQueueExtension/Resource",
+                "path": "BaseResourcesIntegTest/MyQueueExtension/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
                   "aws:cdk:cloudformation:props": {
                     "actions": {
                       "ON_DEPLOYMENT_START": [
                         {
-                          "Name": "ExtensionIntegTest-MyQueueExtension-BAADC0DB",
+                          "Name": "BaseResourcesIntegTest-MyQueueExtension-9EAFE797",
                           "Uri": {
                             "Fn::GetAtt": [
                               "MyQueueE6CA6235",
@@ -672,14 +620,14 @@
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyQueueExtensionRole6C837AF108E5C",
+                              "MyQueueExtensionRoleE768EF0708414",
                               "Arn"
                             ]
                           }
                         }
                       ]
                     },
-                    "name": "ExtensionIntegTest-MyQueueExtension-BAADC0DB"
+                    "name": "BaseResourcesIntegTest-MyQueueExtension-9EAFE797"
                   }
                 },
                 "constructInfo": {
@@ -693,9 +641,9 @@
               "version": "2.79.0"
             }
           },
-          "AssociationResourceD5579": {
-            "id": "AssociationResourceD5579",
-            "path": "ExtensionIntegTest/AssociationResourceD5579",
+          "AssociationResource2C7B3": {
+            "id": "AssociationResource2C7B3",
+            "path": "BaseResourcesIntegTest/AssociationResource2C7B3",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -743,11 +691,11 @@
           },
           "MyTopic": {
             "id": "MyTopic",
-            "path": "ExtensionIntegTest/MyTopic",
+            "path": "BaseResourcesIntegTest/MyTopic",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyTopic/Resource",
+                "path": "BaseResourcesIntegTest/MyTopic/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                   "aws:cdk:cloudformation:props": {}
@@ -765,15 +713,15 @@
           },
           "MyTopicExtension": {
             "id": "MyTopicExtension",
-            "path": "ExtensionIntegTest/MyTopicExtension",
+            "path": "BaseResourcesIntegTest/MyTopicExtension",
             "children": {
-              "RoleE57D2": {
-                "id": "RoleE57D2",
-                "path": "ExtensionIntegTest/MyTopicExtension/RoleE57D2",
+              "RoleC2D34": {
+                "id": "RoleC2D34",
+                "path": "BaseResourcesIntegTest/MyTopicExtension/RoleC2D34",
                 "children": {
-                  "ImportRoleE57D2": {
-                    "id": "ImportRoleE57D2",
-                    "path": "ExtensionIntegTest/MyTopicExtension/RoleE57D2/ImportRoleE57D2",
+                  "ImportRoleC2D34": {
+                    "id": "ImportRoleC2D34",
+                    "path": "BaseResourcesIntegTest/MyTopicExtension/RoleC2D34/ImportRoleC2D34",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.79.0"
@@ -781,7 +729,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "ExtensionIntegTest/MyTopicExtension/RoleE57D2/Resource",
+                    "path": "BaseResourcesIntegTest/MyTopicExtension/RoleC2D34/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -829,27 +777,27 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyTopicExtension/Resource",
+                "path": "BaseResourcesIntegTest/MyTopicExtension/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
                   "aws:cdk:cloudformation:props": {
                     "actions": {
                       "ON_DEPLOYMENT_START": [
                         {
-                          "Name": "ExtensionIntegTest-MyTopicExtension-E0A397E2",
+                          "Name": "BaseResourcesIntegTest-MyTopicExtension-26713A73",
                           "Uri": {
                             "Ref": "MyTopic86869434"
                           },
                           "RoleArn": {
                             "Fn::GetAtt": [
-                              "MyTopicExtensionRoleE57D2F5B179C8",
+                              "MyTopicExtensionRoleC2D3485ED24A0",
                               "Arn"
                             ]
                           }
                         }
                       ]
                     },
-                    "name": "ExtensionIntegTest-MyTopicExtension-E0A397E2"
+                    "name": "BaseResourcesIntegTest-MyTopicExtension-26713A73"
                   }
                 },
                 "constructInfo": {
@@ -863,9 +811,9 @@
               "version": "2.79.0"
             }
           },
-          "AssociationResource3C704": {
-            "id": "AssociationResource3C704",
-            "path": "ExtensionIntegTest/AssociationResource3C704",
+          "AssociationResource01F96": {
+            "id": "AssociationResource01F96",
+            "path": "BaseResourcesIntegTest/AssociationResource01F96",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -913,7 +861,7 @@
           },
           "MyEventBus": {
             "id": "MyEventBus",
-            "path": "ExtensionIntegTest/MyEventBus",
+            "path": "BaseResourcesIntegTest/MyEventBus",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "2.79.0"
@@ -921,11 +869,11 @@
           },
           "MyEventBusExtension": {
             "id": "MyEventBusExtension",
-            "path": "ExtensionIntegTest/MyEventBusExtension",
+            "path": "BaseResourcesIntegTest/MyEventBusExtension",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyEventBusExtension/Resource",
+                "path": "BaseResourcesIntegTest/MyEventBusExtension/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
                   "aws:cdk:cloudformation:props": {
@@ -957,7 +905,7 @@
                         }
                       ]
                     },
-                    "name": "ExtensionIntegTest-MyEventBusExtension-D5862AA1",
+                    "name": "BaseResourcesIntegTest-MyEventBusExtension-BD37EB44",
                     "parameters": {
                       "testParam": {
                         "required": true
@@ -979,9 +927,9 @@
               "version": "2.79.0"
             }
           },
-          "AssociationResourceB4F90": {
-            "id": "AssociationResourceB4F90",
-            "path": "ExtensionIntegTest/AssociationResourceB4F90",
+          "AssociationResource33289": {
+            "id": "AssociationResource33289",
+            "path": "BaseResourcesIntegTest/AssociationResource33289",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
               "aws:cdk:cloudformation:props": {
@@ -1032,17 +980,17 @@
           },
           "MyDeployStrategy": {
             "id": "MyDeployStrategy",
-            "path": "ExtensionIntegTest/MyDeployStrategy",
+            "path": "BaseResourcesIntegTest/MyDeployStrategy",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/MyDeployStrategy/Resource",
+                "path": "BaseResourcesIntegTest/MyDeployStrategy/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
                   "aws:cdk:cloudformation:props": {
                     "deploymentDurationInMinutes": 0,
                     "growthFactor": 100,
-                    "name": "ExtensionIntegTest-MyDeployStrategy-6CB14495",
+                    "name": "BaseResourcesIntegTest-MyDeployStrategy-AEA1650E",
                     "replicateTo": "NONE",
                     "growthType": "LINEAR"
                   }
@@ -1060,11 +1008,11 @@
           },
           "HostedConfiguration": {
             "id": "HostedConfiguration",
-            "path": "ExtensionIntegTest/HostedConfiguration",
+            "path": "BaseResourcesIntegTest/HostedConfiguration",
             "children": {
               "ConfigurationProfile": {
                 "id": "ConfigurationProfile",
-                "path": "ExtensionIntegTest/HostedConfiguration/ConfigurationProfile",
+                "path": "BaseResourcesIntegTest/HostedConfiguration/ConfigurationProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1072,7 +1020,7 @@
                       "Ref": "MyApplication5C63EC1D"
                     },
                     "locationUri": "hosted",
-                    "name": "ExtensionIntegTest-HostedConfiguration-BB105928"
+                    "name": "BaseResourcesIntegTest-HostedConfiguration-ADE747D8"
                   }
                 },
                 "constructInfo": {
@@ -1082,7 +1030,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ExtensionIntegTest/HostedConfiguration/Resource",
+                "path": "BaseResourcesIntegTest/HostedConfiguration/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
                   "aws:cdk:cloudformation:props": {
@@ -1101,9 +1049,9 @@
                   "version": "2.79.0"
                 }
               },
-              "DeploymentC3FEE": {
-                "id": "DeploymentC3FEE",
-                "path": "ExtensionIntegTest/HostedConfiguration/DeploymentC3FEE",
+              "Deployment4FDEB": {
+                "id": "Deployment4FDEB",
+                "path": "BaseResourcesIntegTest/HostedConfiguration/Deployment4FDEB",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -1137,7 +1085,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "ExtensionIntegTest/BootstrapVersion",
+            "path": "BaseResourcesIntegTest/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "2.79.0"
@@ -1145,7 +1093,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "ExtensionIntegTest/CheckBootstrapVersion",
+            "path": "BaseResourcesIntegTest/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.79.0"

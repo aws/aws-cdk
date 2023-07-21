@@ -1,27 +1,27 @@
 {
   "version": "31.0.0",
   "artifacts": {
-    "DeploymentStrategyIntegTest.assets": {
+    "BaseResourcesIntegTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "DeploymentStrategyIntegTest.assets.json",
+        "file": "BaseResourcesIntegTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "DeploymentStrategyIntegTest": {
+    "BaseResourcesIntegTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "DeploymentStrategyIntegTest.template.json",
+        "templateFile": "BaseResourcesIntegTest.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8cf136ae70d474bc00a3a79d136972cc747fe8103e25bc34475c0a630cb86768.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1d9687d7b9d8092689c36d04ba228abc46cb3b868955cb318092225e3caf0ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "DeploymentStrategyIntegTest.assets"
+          "BaseResourcesIntegTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,273 +30,179 @@
         }
       },
       "dependencies": [
-        "DeploymentStrategyIntegTest.assets"
+        "BaseResourcesIntegTest.assets"
       ],
       "metadata": {
-        "/DeploymentStrategyIntegTest/MyDeploymentStrategy/Resource": [
+        "/BaseResourcesIntegTest/MyDeploymentStrategy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyDeploymentStrategy60D31FB0"
           }
         ],
-        "/DeploymentStrategyIntegTest/BootstrapVersion": [
+        "/BaseResourcesIntegTest/MyApplicationForEnv/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
+            "data": "MyApplicationForEnv1F597ED9"
           }
         ],
-        "/DeploymentStrategyIntegTest/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "DeploymentStrategyIntegTest"
-    },
-    "EnvironmentIntegTest.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "EnvironmentIntegTest.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "EnvironmentIntegTest": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "EnvironmentIntegTest.template.json",
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c2dd1dcc2d39c71095e0afa08be1c70a9b0c4c4d3653c6ee66f0624de13f3f6d.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "EnvironmentIntegTest.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "EnvironmentIntegTest.assets"
-      ],
-      "metadata": {
-        "/EnvironmentIntegTest/MyApplication/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyApplication5C63EC1D"
-          }
-        ],
-        "/EnvironmentIntegTest/MyAlarm/Resource": [
+        "/BaseResourcesIntegTest/MyAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAlarm696658B6"
           }
         ],
-        "/EnvironmentIntegTest/MyEnvironment/Role/Resource": [
+        "/BaseResourcesIntegTest/MyEnvironment/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEnvironmentRoleC08961D3"
           }
         ],
-        "/EnvironmentIntegTest/MyEnvironment/Resource": [
+        "/BaseResourcesIntegTest/MyEnvironment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEnvironment465E4DEA"
           }
         ],
-        "/EnvironmentIntegTest/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/EnvironmentIntegTest/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "EnvironmentIntegTest"
-    },
-    "ExtensionIntegTest.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "ExtensionIntegTest.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "ExtensionIntegTest": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "ExtensionIntegTest.template.json",
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68144fe16bae7d5f6aea16a9183c794384e8844bbc0f5dde206749ba027f3da7.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "ExtensionIntegTest.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "ExtensionIntegTest.assets"
-      ],
-      "metadata": {
-        "/ExtensionIntegTest/MyFunction/ServiceRole/Resource": [
+        "/BaseResourcesIntegTest/MyFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunctionServiceRole3C357FF2"
           }
         ],
-        "/ExtensionIntegTest/MyFunction/Resource": [
+        "/BaseResourcesIntegTest/MyFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunction3BAA72D1"
           }
         ],
-        "/ExtensionIntegTest/MyApplication/Resource": [
+        "/BaseResourcesIntegTest/MyApplication/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyApplication5C63EC1D"
           }
         ],
-        "/ExtensionIntegTest/MyApplication/MyEnv/Resource": [
+        "/BaseResourcesIntegTest/MyApplication/MyEnv/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyApplicationMyEnv55DE3293"
           }
         ],
-        "/ExtensionIntegTest/MyLambdaExtension/Role16D01/Resource": [
+        "/BaseResourcesIntegTest/MyLambdaExtension/RoleF0C20/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaExtensionRole16D01E02B2809"
+            "data": "MyLambdaExtensionRoleF0C204489D1C7"
           }
         ],
-        "/ExtensionIntegTest/MyLambdaExtension/Resource": [
+        "/BaseResourcesIntegTest/MyLambdaExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaExtensionAFA1476A"
           }
         ],
-        "/ExtensionIntegTest/AssociationResource915FC": [
+        "/BaseResourcesIntegTest/AssociationResourceB35E7": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResource915FC"
+            "data": "AssociationResourceB35E7"
           }
         ],
-        "/ExtensionIntegTest/MyQueue/Resource": [
+        "/BaseResourcesIntegTest/MyQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyQueueE6CA6235"
           }
         ],
-        "/ExtensionIntegTest/MyQueueExtension/Role6C837/Resource": [
+        "/BaseResourcesIntegTest/MyQueueExtension/RoleE768E/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyQueueExtensionRole6C837AF108E5C"
+            "data": "MyQueueExtensionRoleE768EF0708414"
           }
         ],
-        "/ExtensionIntegTest/MyQueueExtension/Resource": [
+        "/BaseResourcesIntegTest/MyQueueExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyQueueExtension872C5D27"
           }
         ],
-        "/ExtensionIntegTest/AssociationResourceD5579": [
+        "/BaseResourcesIntegTest/AssociationResource2C7B3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResourceD5579"
+            "data": "AssociationResource2C7B3"
           }
         ],
-        "/ExtensionIntegTest/MyTopic/Resource": [
+        "/BaseResourcesIntegTest/MyTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopic86869434"
           }
         ],
-        "/ExtensionIntegTest/MyTopicExtension/RoleE57D2/Resource": [
+        "/BaseResourcesIntegTest/MyTopicExtension/RoleC2D34/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTopicExtensionRoleE57D2F5B179C8"
+            "data": "MyTopicExtensionRoleC2D3485ED24A0"
           }
         ],
-        "/ExtensionIntegTest/MyTopicExtension/Resource": [
+        "/BaseResourcesIntegTest/MyTopicExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopicExtension9B6DF691"
           }
         ],
-        "/ExtensionIntegTest/AssociationResource3C704": [
+        "/BaseResourcesIntegTest/AssociationResource01F96": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResource3C704"
+            "data": "AssociationResource01F96"
           }
         ],
-        "/ExtensionIntegTest/MyEventBusExtension/Resource": [
+        "/BaseResourcesIntegTest/MyEventBusExtension/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEventBusExtensionADFE2273"
           }
         ],
-        "/ExtensionIntegTest/AssociationResourceB4F90": [
+        "/BaseResourcesIntegTest/AssociationResource33289": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssociationResourceB4F90"
+            "data": "AssociationResource33289"
           }
         ],
-        "/ExtensionIntegTest/MyDeployStrategy/Resource": [
+        "/BaseResourcesIntegTest/MyDeployStrategy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyDeployStrategy062CAEA2"
           }
         ],
-        "/ExtensionIntegTest/HostedConfiguration/ConfigurationProfile": [
+        "/BaseResourcesIntegTest/HostedConfiguration/ConfigurationProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HostedConfigurationConfigurationProfile3AB17BEA"
           }
         ],
-        "/ExtensionIntegTest/HostedConfiguration/Resource": [
+        "/BaseResourcesIntegTest/HostedConfiguration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HostedConfiguration257746B4"
           }
         ],
-        "/ExtensionIntegTest/HostedConfiguration/DeploymentC3FEE": [
+        "/BaseResourcesIntegTest/HostedConfiguration/Deployment4FDEB": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedConfigurationDeploymentC3FEED44FE1F5"
+            "data": "HostedConfigurationDeployment4FDEB30757BA2"
           }
         ],
-        "/ExtensionIntegTest/BootstrapVersion": [
+        "/BaseResourcesIntegTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ExtensionIntegTest/CheckBootstrapVersion": [
+        "/BaseResourcesIntegTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ExtensionIntegTest"
+      "displayName": "BaseResourcesIntegTest"
     },
     "Tree": {
       "type": "cdk:tree",
