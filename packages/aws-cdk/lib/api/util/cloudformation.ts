@@ -156,7 +156,7 @@ export class CloudFormationStack {
     if (!this.exists) { return {}; }
     const ret: Record<string, string> = {};
     for (const param of this.stack!.Parameters ?? []) {
-      ret[param.ParameterKey!] = param.ParameterValue!;
+      ret[param.ParameterKey!] = param.ResolvedValue ?? param.ParameterValue!;
     }
     return ret;
   }
