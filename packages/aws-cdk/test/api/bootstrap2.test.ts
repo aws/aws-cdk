@@ -207,6 +207,28 @@ describe('Bootstrapping v2', () => {
     ]));
   });
 
+  test('adding permission boundary with path in policy name', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name/with/path',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
+      ]),
+    ]));
+  });
+
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
     await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
