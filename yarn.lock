@@ -3857,11 +3857,6 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-18.11.19.tgz#35e26df9ec441ab99d73e99e9aca82935eea216d"
   integrity sha512-YUgMWAQBWLObABqrvx8qKO1enAvBUdjZOAWQ5grBAkp5LQv45jBvYKZ3oFS9iKRCQyFjqw6iuEa1vmFqtxYLZw==
 
-"@types/node@^14":
-  version "14.18.53"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.18.53.tgz#42855629b8773535ab868238718745bf56c56219"
-  integrity sha512-soGmOpVBUq+gaBMwom1M+krC/NNbWlosh4AtGA03SyWNDiqSKtwp7OulO1M6+mg8YkHMvJ/y0AkCeO8d1hNb7A==
-
 "@types/node@^16", "@types/node@^16.9.2":
   version "16.18.38"
   resolved "https://registry.npmjs.org/@types/node/-/node-16.18.38.tgz#1dcdb6c54d02b323f621213745f2e44af30c73e6"
@@ -8529,7 +8524,7 @@ jest-haste-map@^29.6.1:
   optionalDependencies:
     fsevents "^2.3.2"
 
-jest-junit@^13, jest-junit@^13.2.0:
+jest-junit@^13.2.0:
   version "13.2.0"
   resolved "https://registry.npmjs.org/jest-junit/-/jest-junit-13.2.0.tgz#66eeb86429aafac8c1745a70f44ace185aacb943"
   integrity sha512-B0XNlotl1rdsvFZkFfoa19mc634+rrd8E4Sskb92Bb8MmSXeWV9XJGUyctunZS1W410uAxcyYuPUGVnbcOH8cg==
@@ -8543,6 +8538,16 @@ jest-junit@^14.0.1:
   version "14.0.1"
   resolved "https://registry.npmjs.org/jest-junit/-/jest-junit-14.0.1.tgz#5b357d6f5d333459585d628a24cd48b5bbc92ba2"
   integrity sha512-h7/wwzPbllgpQhhVcRzRC76/cc89GlazThoV1fDxcALkf26IIlRsu/AcTG64f4nR2WPE3Cbd+i/sVf+NCUHrWQ==
+  dependencies:
+    mkdirp "^1.0.4"
+    strip-ansi "^6.0.1"
+    uuid "^8.3.2"
+    xml "^1.0.1"
+
+jest-junit@^15:
+  version "15.0.0"
+  resolved "https://registry.npmjs.org/jest-junit/-/jest-junit-15.0.0.tgz#a47544ab42e9f8fe7ada56306c218e09e52bd690"
+  integrity sha512-Z5sVX0Ag3HZdMUnD5DFlG+1gciIFSy7yIVPhOdGUi8YJaI9iLvvBb530gtQL2CHmv0JJeiwRZenr0VrSR7frvg==
   dependencies:
     mkdirp "^1.0.4"
     strip-ansi "^6.0.1"

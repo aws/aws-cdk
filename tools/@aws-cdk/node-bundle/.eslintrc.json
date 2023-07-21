@@ -35,11 +35,11 @@
   },
   "ignorePatterns": [
     "*.js",
-    "!.projenrc.js",
     "*.d.ts",
     "node_modules/",
     "*.generated.ts",
-    "coverage"
+    "coverage",
+    "!.projenrc.js"
   ],
   "rules": {
     "indent": [
