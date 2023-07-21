@@ -106,11 +106,11 @@ export interface DockerImageAssetInvalidationOptions {
   readonly buildSecrets?: boolean;
 
   /**
-   * Use `buildSSH` while calculating the asset hash
+   * Use `buildSsh` while calculating the asset hash
    *
    * @default true
    */
-  readonly buildSSH?: boolean;
+  readonly buildSsh?: boolean;
 
   /**
    * Use `target` while calculating the asset hash
@@ -245,7 +245,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * const sshFlag = 'default';
    *
    */
-  readonly buildSSH?: string;
+  readonly buildSsh?: string;
 
   /**
    * Docker target to build to
@@ -474,7 +474,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
     if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
-    if (props.invalidation?.buildSSH !== false && props.buildSSH) {extraHash.buildSSH = props.buildSSH; }
+    if (props.invalidation?.buildSsh !== false && props.buildSsh) {extraHash.buildSsh = props.buildSsh; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
@@ -506,7 +506,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.assetName = props.assetName;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildSecrets = props.buildSecrets;
-    this.dockerBuildSSH = props.buildSSH;
+    this.dockerBuildSSH = props.buildSsh;
     this.dockerBuildTarget = props.target;
     this.dockerOutputs = props.outputs;
     this.dockerCacheFrom = props.cacheFrom;
