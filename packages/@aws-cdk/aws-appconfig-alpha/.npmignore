@@ -26,3 +26,6 @@ jest.config.js
 junit.xml
 !*.lit.ts
 **/*.snapshot
+
+# exclude test
+test/

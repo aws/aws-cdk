@@ -572,6 +572,13 @@ export interface IExtension extends IResource {
   readonly extensionVersionNumber: number;
 }
 
+/**
+ * This class is meant to be used by AWS AppConfig resources (application,
+ * configuration profile, environment) directly. There is currently no use
+ * for this class outside of the AWS AppConfig construct implementation. It is
+ * intended to be used with the resources since there is currently no way to
+ * inherit from two classes (at least within JSII constraints).
+ */
 export class ExtensibleBase implements IExtensible {
   private resourceArn: string;
   private scope: Construct;

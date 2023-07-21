@@ -567,7 +567,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole || this.locationUri != 'hosted' && !this.locationUri.includes('codepipeline')
+    this.retrievalRole = props.retrievalRole || this.location.type != ConfigurationSourceType.CODE_PIPELINE
       ? new iam.Role(this, 'Role', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
         assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
@@ -605,6 +605,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       ${this.name!}
       ${environment.name!}
       ${this.versionNumber}
+      ${this.location.type}
     `;
     return getHash(combinedString);
   }
@@ -617,17 +618,17 @@ export class SourcedConfiguration extends ConfigurationBase {
       statements: [policy],
     });
 
-    if (this.locationUri.includes('ssm') && this.locationUri.includes('parameter')) {
+    if (this.location.type == ConfigurationSourceType.SSM_PARAMETER) {
       policy.addActions('ssm:GetParameter');
       policy.addResources(this.locationUri);
-    } else if (this.locationUri.includes('ssm') && this.locationUri.includes('document')) {
+    } else if (this.location.type == ConfigurationSourceType.SSM_DOCUMENT) {
       policy.addActions('ssm:GetDocument');
       policy.addResources(Stack.of(this).formatArn({
         service: 'ssm',
         resource: 'document',
         resourceName: this.locationUri.split('://')[1],
       }));
-    } else if (this.locationUri.includes('s3')) {
+    } else if (this.location.type == ConfigurationSourceType.S3) {
       const bucketAndObjectKey = this.locationUri.split('://')[1];
       const sep = bucketAndObjectKey.search('/');
       const bucketName = bucketAndObjectKey.substring(0, sep);
@@ -702,6 +703,14 @@ export enum ValidatorType {
   LAMBDA = 'LAMBDA',
 }
 
+export enum ConfigurationSourceType {
+  S3 = 'S3',
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
+  SSM_PARAMETER = 'SSM_PARAMETER',
+  SSM_DOCUMENT = 'SSM_DOCUMENT',
+  CODE_PIPELINE = 'CODE_PIPELINE'
+}
+
 export interface IValidator {
   /**
    * The content of the validator.
@@ -757,9 +766,11 @@ export abstract class LambdaValidator implements IValidator {
    * @param func The function that defines the validator
    */
   public static fromFunction(func: lambda.Function): LambdaValidator {
-    func.addPermission('AppConfigPermission', {
-      principal: new iam.ServicePrincipal('appconfig.amazonaws.com'),
-    });
+    if (!func.permissionsNode.tryFindChild('AppConfigPermission')) {
+      func.addPermission('AppConfigPermission', {
+        principal: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+      });
+    }
     return {
       content: func.functionArn,
       type: ValidatorType.LAMBDA,
@@ -779,7 +790,7 @@ export abstract class ConfigurationContent {
    *
    * @param path The path to the file that defines configuration content
    */
-  public static fromAsset(path: string): ConfigurationContent {
+  public static fromFile(path: string): ConfigurationContent {
     return {
       content: fs.readFileSync(path).toString(),
     };
@@ -815,7 +826,8 @@ export abstract class ConfigurationSource {
    */
   public static fromBucket(bucket: s3.IBucket, objectKey: string, key?: kms.IKey): ConfigurationSource {
     return {
-      locationUri: `s3://${bucket.bucketName}/${objectKey}`,
+      locationUri: bucket.s3UrlForObject(objectKey),
+      type: ConfigurationSourceType.S3,
       key,
     };
   }
@@ -826,10 +838,11 @@ export abstract class ConfigurationSource {
    * @param secret The secret where the configuration is stored
    * @param key The KMS Key that the secret is encrypted with
    */
-  public static fromSecret(secret: sm.ISecret, key?: kms.IKey): ConfigurationSource {
+  public static fromSecret(secret: sm.ISecret): ConfigurationSource {
     return {
       locationUri: secret.secretArn,
-      key,
+      type: ConfigurationSourceType.SECRETS_MANAGER,
+      key: secret.encryptionKey,
     };
   }
 
@@ -842,6 +855,7 @@ export abstract class ConfigurationSource {
   public static fromParameter(parameter: ssm.IParameter, key?: kms.IKey): ConfigurationSource {
     return {
       locationUri: parameter.parameterArn,
+      type: ConfigurationSourceType.SSM_PARAMETER,
       key,
     };
   }
@@ -851,9 +865,10 @@ export abstract class ConfigurationSource {
    *
    * @param document The SSM document where the configuration is stored
    */
-  public static fromDocument(document: ssm.CfnDocument): ConfigurationSource {
+  public static fromCfnDocument(document: ssm.CfnDocument): ConfigurationSource {
     return {
       locationUri: `ssm-document://${document.ref}`,
+      type: ConfigurationSourceType.SSM_DOCUMENT,
     };
   }
 
@@ -866,6 +881,7 @@ export abstract class ConfigurationSource {
   public static fromPipeline(pipeline: cp.IPipeline): ConfigurationSource {
     return {
       locationUri: `codepipeline://${pipeline.pipelineName}`,
+      type: ConfigurationSourceType.CODE_PIPELINE,
     };
   }
 
@@ -873,6 +889,11 @@ export abstract class ConfigurationSource {
    * The URI of the configuration source.
    */
   public abstract readonly locationUri: string;
+
+  /**
+   * The type of the configuration source.
+   */
+  public abstract readonly type: ConfigurationSourceType;
 
   /**
    * The KMS Key that encrypts the configuration.

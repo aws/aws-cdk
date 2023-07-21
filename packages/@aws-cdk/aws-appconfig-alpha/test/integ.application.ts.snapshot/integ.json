@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "appconfig-application/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-application"
+      ],
+      "assertionStack": "appconfig-application/DefaultTest/DeployAssert",
+      "assertionStackName": "appconfigapplicationDefaultTestDeployAssertD6537C40"
+    }
+  }
+}

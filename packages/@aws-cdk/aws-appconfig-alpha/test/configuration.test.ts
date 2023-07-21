@@ -309,7 +309,7 @@ describe('configuration', () => {
     const app = new Application(stack, 'MyAppConfig');
     new SourcedConfiguration(stack, 'MySourcedConfig', {
       versionNumber: '1',
-      location: ConfigurationSource.fromSecret(secret, key),
+      location: ConfigurationSource.fromSecret(secret),
       deploymentKey: key,
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
@@ -366,7 +366,6 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
-  // TODO: figure out path when running in github
   // test('default configuration from asset', () => {
   //   const stack = new cdk.Stack();
   //   const app = new AppConfig(stack, 'MyAppConfig', {
@@ -801,7 +800,7 @@ describe('configuration', () => {
     const app = new Application(stack, 'MyAppConfig');
     new SourcedConfiguration(stack, 'MyConfiguration', {
       name: 'TestConfigProfile',
-      location: ConfigurationSource.fromDocument(document),
+      location: ConfigurationSource.fromCfnDocument(document),
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
@@ -1066,7 +1065,7 @@ describe('configuration', () => {
     const app = new Application(stack, 'MyAppConfig');
     new SourcedConfiguration(stack, 'MyConfiguration', {
       name: 'TestConfigProfile',
-      location: ConfigurationSource.fromSecret(secret, key),
+      location: ConfigurationSource.fromSecret(secret),
       versionNumber: '1',
       application: app,
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {

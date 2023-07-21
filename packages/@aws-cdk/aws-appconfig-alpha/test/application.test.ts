@@ -64,33 +64,6 @@ describe('appconfig', () => {
     });
   });
 
-  // test('add agent to lambda', () => {
-  //   const app = new App();
-  //   const stack = new cdk.Stack(app, 'Stack', {
-  //     env: {
-  //       region: 'us-west-2',
-  //     },
-  //   });
-  //   const func = new Function(stack, 'MyFunc', {
-  //     handler: 'index.handler',
-  //     runtime: Runtime.PYTHON_3_7,
-  //     code: Code.fromInline('# this is my code'),
-  //   });
-  //   const appconfig = new AppConfig(stack, 'MyAppConfig', {
-  //     deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-  //       deploymentDurationInMinutes: 30,
-  //       growthFactor: 15,
-  //     }),
-  //   });
-  //   appconfig.addAgentToLambda(stack, func);
-
-  //   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-  //     Layers: [
-  //       'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension:143',
-  //     ],
-  //   });
-  // });
-
   test('pre create hosted configuration version', () => {
     const stack = new cdk.Stack();
     const appconfig = new Application(stack, 'MyAppConfig');
